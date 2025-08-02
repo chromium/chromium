@@ -31,7 +31,7 @@ source_set("impl") {
     ":webui_browser",
     "//base",
     "//chrome/browser/profiles",
-    "//chrome/browser/resources/webui_browser:resources_grit",
+    "//chrome/browser/resources/webui_browser:resources",
     "//chrome/browser/themes",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/web_applications",
