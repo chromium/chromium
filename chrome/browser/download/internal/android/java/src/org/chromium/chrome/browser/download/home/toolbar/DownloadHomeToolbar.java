@@ -50,8 +50,9 @@ public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
 
     /**
      * Removes a menu item from the toolbar.
+     *
      * @param menuItemId The menu item to be removed. Nothing happens if there is no menu item
-     *                   associated with this ID.
+     *     associated with this ID.
      */
     public void removeMenuItem(int menuItemId) {
         getMenu().removeItem(menuItemId);

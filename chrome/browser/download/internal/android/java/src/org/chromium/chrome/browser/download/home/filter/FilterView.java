@@ -93,4 +93,10 @@ class FilterView {
     public void setShowTabs(boolean show) {
         mTabsView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
+    /** Sets whether or not the divider is shown below the tabs. */
+    public void setShowDivider(boolean show) {
+        mView.findViewById(R.id.download_home_divider)
+                .setVisibility(show ? View.VISIBLE : View.GONE);
+    }
 }

@@ -33,7 +33,6 @@ import android.util.Pair;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
@@ -196,15 +195,20 @@ public class DownloadActivityV2Test {
     }
 
     private void setUpUi() {
-        setUpUi(/* showDangerousItems= */ false, /* autoFocusSearchBox= */ false);
+        setUpUi(
+                /* showDangerousItems= */ false,
+                /* inlineSearchBar= */ false,
+                /* autoFocusSearchBox= */ false);
     }
 
-    private void setUpUi(boolean showDangerousItems, boolean autoFocusSearchBox) {
+    private void setUpUi(
+            boolean showDangerousItems, boolean inlineSearchBar, boolean autoFocusSearchBox) {
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags(sActivity)
                         .setOtrProfileId(null)
                         .setIsSeparateActivity(true)
                         .setShowDangerousItems(showDangerousItems)
+                        .setInlineSearchBar(inlineSearchBar)
                         .setAutoFocusSearchBox(autoFocusSearchBox)
                         .build();
 
@@ -422,7 +426,10 @@ public class DownloadActivityV2Test {
     public void testAddRemoveDangerousItem() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         String storageHeaderText = "Using 1.10 KB of";
@@ -459,7 +466,10 @@ public class DownloadActivityV2Test {
     public void testDangerousItemNotShownDueToConfig() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ false, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ false,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         String storageHeaderText = "Using 1.10 KB of";
@@ -486,7 +496,10 @@ public class DownloadActivityV2Test {
     public void testDeleteDangerousUsingMenu() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         // Add a dangerous item.
@@ -512,7 +525,10 @@ public class DownloadActivityV2Test {
     public void testDeleteDangerousUsingSelection() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         // Add a dangerous item.
@@ -542,7 +558,10 @@ public class DownloadActivityV2Test {
     public void testBypassDangerousWarning() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         String storageHeaderText = "Using 1.10 KB of";
@@ -582,7 +601,10 @@ public class DownloadActivityV2Test {
     public void testWarningBypassDialogLearnMore() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         // Add a dangerous item.
@@ -871,19 +893,21 @@ public class DownloadActivityV2Test {
     public void testDownloadsFocus() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ false, /* autoFocusSearchBox= */ true);
+                    setUpUi(
+                            /* showDangerousItems= */ false,
+                            /* inlineSearchBar= */ true,
+                            /* autoFocusSearchBox= */ true);
                 });
 
-        onView(withText("Download")).check(doesNotExist());
+        onView(withText("Downloads")).check(matches(isDisplayed()));
         // Check the search field is displayed
-        onView(withId(R.id.search_text)).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.search_text), isDescendantOfA(withId(R.id.download_search_bar))))
+                .check(matches(isDisplayed()));
         // Check we can type in search query
-        onView(withId(R.id.search_text)).perform(ViewActions.typeText("Google"));
-        // Close keyboard first then press back to Download Page.
-        Espresso.closeSoftKeyboard();
-        Espresso.pressBack();
-        // After back to download pagem user should see the search field
-        onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.search_text), isDescendantOfA(withId(R.id.download_search_bar))))
+                .perform(ViewActions.typeText("Google"));
+        // Check no any downloaded item.
+        onView(withText(containsString("Using 0.00 KB of"))).check(matches(isDisplayed()));
     }
 
     /**

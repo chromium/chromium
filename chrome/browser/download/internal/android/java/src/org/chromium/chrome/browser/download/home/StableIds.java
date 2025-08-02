@@ -20,4 +20,7 @@ public class StableIds {
 
     /** The stable ID associated with the pagination header. */
     public static long PAGINATION_HEADER = Long.MAX_VALUE - 4;
+
+    /** The stable ID associated with the search header. */
+    public static long SEARCH_HEADER = Long.MAX_VALUE - 5;
 }

@@ -21,11 +21,11 @@ public class DownloadManagerUiConfigHelper {
         boolean showDangerousItems =
                 ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()
                         && !ChromeFeatureList.sMaliciousApkDownloadCheckTelemetryOnly.getValue();
+        boolean isLff = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         return new DownloadManagerUiConfig.Builder()
                 .setShowDangerousItems(showDangerousItems)
                 .setSupportsGrouping(true)
-                .setAutoFocusSearchBox(
-                        DeviceInput.supportsKeyboard()
-                                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
+                .setInlineSearchBar(isLff)
+                .setAutoFocusSearchBox(isLff && DeviceInput.supportsKeyboard());
     }
 }

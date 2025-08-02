@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.download.home.filter.FilterCoordinator;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.ListItem.ViewListItem;
 import org.chromium.chrome.browser.download.home.rename.RenameDialogManager;
+import org.chromium.chrome.browser.download.home.search.SearchBarCoordinator;
 import org.chromium.chrome.browser.download.home.storage.StorageCoordinator;
 import org.chromium.chrome.browser.download.home.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.download.internal.R;
@@ -97,6 +98,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     private final ModalDialogManager mModalDialogManager;
     private final DownloadHelpPageLauncher mHelpPageLauncher;
     private final RenameDialogManager mRenameDialogManager;
+    private final @Nullable SearchBarCoordinator mSearchBarCoordinator;
     private ViewGroup mMainView;
     private View mEmptyView;
     private int mWindowHeight;
@@ -169,10 +171,24 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
         mFilterCoordinator =
                 new FilterCoordinator(
-                        context, mMediator.getFilterSource(), exploreOfflineTabVisibilitySupplier);
+                        context,
+                        mMediator.getFilterSource(),
+                        exploreOfflineTabVisibilitySupplier,
+                        config);
         mFilterCoordinator.addObserver(mMediator::onFilterTypeSelected);
         mFilterCoordinator.addObserver(filterObserver);
         mFilterCoordinator.addObserver(mEmptyCoordinator);
+        mFilterCoordinator.setShowDivider(!config.inlineSearchBar);
+
+        if (config.inlineSearchBar) {
+            mSearchBarCoordinator =
+                    new SearchBarCoordinator(
+                            context, this::setSearchQuery, config.autoFocusSearchBox);
+            decoratedModel.addHeader(
+                    new ViewListItem(StableIds.SEARCH_HEADER, mSearchBarCoordinator.getView()));
+        } else {
+            mSearchBarCoordinator = null;
+        }
 
         decoratedModel.addHeader(
                 new ViewListItem(StableIds.STORAGE_HEADER, mStorageCoordinator.getView()));

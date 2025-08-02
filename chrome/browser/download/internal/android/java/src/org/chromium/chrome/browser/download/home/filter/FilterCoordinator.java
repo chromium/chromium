@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
@@ -47,16 +48,19 @@ public class FilterCoordinator {
 
     /**
      * Builds a new FilterCoordinator.
+     *
      * @param context The context to build the views and pull parameters from.
      * @param chipFilterSource The list of OfflineItems to use to generate the set of available
-     *         filters.
+     *     filters.
      * @param exploreOfflineTabVisibilitySupplier A supplier that indicates whether or not explore
-     *         offline tab is shown.
+     *     offline tab is shown.
+     * @param config The configuration of download page UI
      */
     public FilterCoordinator(
             Context context,
             OfflineItemFilterSource chipFilterSource,
-            Supplier<Boolean> exploreOfflineTabVisibilitySupplier) {
+            Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
+            DownloadManagerUiConfig config) {
         mChipsProvider =
                 new FilterChipsProvider(context, type -> handleChipSelected(), chipFilterSource);
         mChipsCoordinator = new ChipsCoordinator(context, mChipsProvider.getChips());
@@ -146,5 +150,10 @@ public class FilterCoordinator {
 
     private void handleChipSelected() {
         handleTabSelected(mModel.get(FilterProperties.SELECTED_TAB));
+    }
+
+    /** Sets whether or not the divider is shown below the tabs. */
+    public void setShowDivider(boolean show) {
+        mView.setShowDivider(show);
     }
 }
