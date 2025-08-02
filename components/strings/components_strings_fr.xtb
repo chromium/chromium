@@ -907,7 +907,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2514548229949738417">Maison et jardinage</translation>
 <translation id="2515629240566999685">Vérifiez le signal dans votre zone.</translation>
 <translation id="2515761554693942801">Vous avez choisi la validation avec Touch ID sur les sites Web utilisant <ph name="PROVIDER_ORIGIN" />. Il est possible que ce fournisseur ait stocké des informations sur votre mode de paiement. Vous pouvez <ph name="LINK_TEXT" />.</translation>
-<translation id="2518584823165598232">Cette carte n'est pas disponible. Veuillez contacter l'émetteur de votre carte.</translation>
+<translation id="2518584823165598232">Cette carte n'est pas disponible, veuillez contacter l'établissement émetteur.</translation>
 <translation id="2519250377986324805">En savoir plus</translation>
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2521736961081452453">Créer un formulaire</translation>
@@ -1330,7 +1330,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3270847123878663523">&amp;Annuler la réorganisation</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> tente de se connecter</translation>
 <translation id="3272091146646336650">Super B</translation>
-<translation id="3272112314896217187">Saisissez le code de validation à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
+<translation id="3272112314896217187">Entrez le code de validation (<ph name="NUMBER_OF_DIGITS" /> chiffres)</translation>
 <translation id="3272643614306383237">Moins de 1 Mo. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
 <translation id="3273738040255912340">Votre administrateur peut modifier à distance votre profil et votre navigateur, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires. Il est aussi possible que l'activité sur cet appareil soit gérée en dehors de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Invite "Enregistrer l'IBAN" ouverte à pleine hauteur.</translation>
@@ -1581,13 +1581,13 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3677008721441257057">Vouliez-vous accéder à &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ?</translation>
 <translation id="3678029195006412963">Impossible de signer la demande</translation>
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
-<translation id="3678914302246317895">Saisissez le code de validation à <ph name="OTP_LENGTH" /> chiffres</translation>
+<translation id="3678914302246317895">Entrez le code de validation (<ph name="OTP_LENGTH" /> chiffres)</translation>
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
 <translation id="3681421644246505351">Chrome relève les thèmes qui vous intéressent grâce à votre historique de navigation.</translation>
 <translation id="3681841880472207951">Vidéo QuickTime</translation>
 <translation id="3682094733650754138">L'option "Remplir l'adresse" a été sélectionnée</translation>
 <translation id="3687920599421452763">Fourgons et fourgonnettes</translation>
-<translation id="3693327506115126094">Choisir comment confirmer votre identité</translation>
+<translation id="3693327506115126094">Choisissez comment valider votre identité</translation>
 <translation id="3698353241727597930">Votre administrateur a configuré l'enregistrement des <ph name="FILES" /> dans votre espace de stockage <ph name="CLOUD_STORAGE" /> géré par l'entreprise. Ces fichiers peuvent être surveillés, audités et conservés lorsque vous les supprimez.</translation>
 <translation id="3698629142018988477">Bouton "Créer un site" à activer pour créer rapidement un site dans Google Sites</translation>
 <translation id="3700966190175650601">Vous utilisez votre empreinte digitale pour saisir les mots de passe</translation>
@@ -2107,7 +2107,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4570008401337135432">Alignement du texte</translation>
 <translation id="457875822857220463">Livraison</translation>
 <translation id="4579699065574932398">Services bancaires</translation>
-<translation id="4582595824823167856">Recevoir un SMS</translation>
+<translation id="4582595824823167856">Recevoir un message</translation>
 <translation id="4586607503179159908">Mode de paiement validé</translation>
 <translation id="4587425331216688090">Supprimer l'adresse de Chrome ?</translation>
 <translation id="459089498662672729">Une règle définie par l'administrateur interdit de coller du contenu provenant de "<ph name="ORIGIN_NAME" />" à cet endroit</translation>
@@ -2500,7 +2500,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5254043433801397071">Optimiser le contenu imprimé</translation>
 <translation id="5255583962255635076">Règles du navigateur appliquées dans votre profil professionnel</translation>
 <translation id="5255690596502591079">Capturer quand même</translation>
-<translation id="5255771248404149177">Le fournisseur de votre carte souhaite vérifier votre identité</translation>
+<translation id="5255771248404149177">L'émetteur de votre carte souhaite vérifier qu'il s'agit bien de vous</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Une règle de l'administrateur déconseille de copier ce fichier vers <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille de copier ce fichier vers <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille de copier ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Le groupe d'onglets "<ph name="GROUP_NAME" />" n'est plus disponible</translation>
@@ -2655,7 +2655,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5518352028556756716">La plupart des sites ne peuvent pas utiliser de cookies tiers pour vous suivre lorsque vous naviguez, et les sites ne peuvent pas utiliser de cookies tiers en mode navigation privée.</translation>
 <translation id="5519516356611866228">Avec vos modifications</translation>
 <translation id="5519696598216267194">Papier (perforé)</translation>
-<translation id="5520105693415771152">Vos infos actuelles ne sont pas affichées ? Contactez votre fournisseur pour les mettre à jour.</translation>
+<translation id="5520105693415771152">Les infos affichées ne sont pas à jour ? Contactez l'émetteur de votre carte pour les modifier.</translation>
 <translation id="5521782189689806907">Meubles de rangement</translation>
 <translation id="5523118979700054094">Nom de la règle</translation>
 <translation id="5523588073846127669">Le marchand n'accepte pas cette carte virtuelle</translation>
@@ -4283,7 +4283,7 @@ Informations supplémentaires :
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297545700510100061">Les cookies et les autres données des sites servent à se souvenir de vous (par exemple, pour vous permettre de vous connecter ou pour personnaliser les annonces). Pour gérer les cookies pour l'ensemble des sites, accédez aux <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Pour utiliser ce réseau Wi-Fi (<ph name="WIFI_NAME" />), il est possible que vous deviez vous rendre sur la page <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8301894345671534559">Saisir le code</translation>
+<translation id="8301894345671534559">Saisissez le code</translation>
 <translation id="8304912090860925649">Nouveau tableau comparatif</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8308653357438598313">Flux vidéo en direct</translation>

@@ -43,7 +43,7 @@
 <translation id="1070333806075222467">Метал (глянцевий)</translation>
 <translation id="1070901266639972381">Ніч</translation>
 <translation id="1073690811593784042">Скло (кольорове)</translation>
-<translation id="1074497978438210769">Не конфіденційний</translation>
+<translation id="1074497978438210769">Не захищено</translation>
 <translation id="1074779248866616641">Результат</translation>
 <translation id="1075364221219156102">Використовувати ключ доступу</translation>
 <translation id="1080116354587839789">За шириною сторінки</translation>
@@ -1986,7 +1986,7 @@
 <translation id="4329871760342656885">Помилка синтаксичного аналізу правила: <ph name="ERROR" /></translation>
 <translation id="433013776994920042">Веб-хостинг і реєстрація доменів</translation>
 <translation id="4331519897422864041">Накопичувач 5</translation>
-<translation id="4331708818696583467">Ненадійне</translation>
+<translation id="4331708818696583467">Не захищено</translation>
 <translation id="4332872603299969513">Дитяча література</translation>
 <translation id="4333295216031073611">Список покупок</translation>
 <translation id="4333561522337981382">керувати вікнами на всіх ваших екранах</translation>

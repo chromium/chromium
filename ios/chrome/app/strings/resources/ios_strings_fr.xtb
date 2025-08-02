@@ -1791,7 +1791,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8263809106706527890">Les paramètres de votre navigateur par défaut ont peut-être été modifiés. Vous pouvez vérifier cela dans les paramètres.</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été divulgués à la suite d'une violation de données non-Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, appuyez sur "Continuer" ci-dessous.</translation>
-<translation id="8273982424131314219">Vous saisirez des informations sur <ph name="URL" /></translation>
+<translation id="8273982424131314219">Les informations saisies seront partagées avec <ph name="URL" /></translation>
 <translation id="8275068909952022340">Plus…</translation>
 <translation id="8278488584187265939">Personnaliser la page d'accueil</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>

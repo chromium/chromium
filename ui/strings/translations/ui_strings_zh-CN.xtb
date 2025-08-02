@@ -119,7 +119,7 @@
 <translation id="4729257764711776855">电话号码</translation>
 <translation id="4746179598275229723">已取消固定该扩展程序</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{还有 1 个月的时间}other{还有 # 个月的时间}}</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{根据贵单位的要求，您必须安装一个扩展程序才能使用无痕模式}other{根据贵单位的要求，您必须安装一些扩展程序才能使用无痕模式}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{若想使用无痕模式，您所在的组织要求您安装一个扩展程序}other{若想使用无痕模式，您所在的组织要求您安装一些扩展程序}}</translation>
 <translation id="482932175346970750">在浏览器中输入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">致电</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>

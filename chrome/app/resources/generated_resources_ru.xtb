@@ -9952,7 +9952,7 @@
 <translation id="8028060951694135607">Восстановление ключей Microsoft</translation>
 <translation id="8028138772801251745">Автозаполнение с помощью ИИ</translation>
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
-<translation id="8028993641010258682">Размер</translation>
+<translation id="8028993641010258682">Толщина</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список для чтения}=1{Список для чтения ({SELECTED_ITEMS})}one{Список для чтения ({SELECTED_ITEMS})}few{Список для чтения ({SELECTED_ITEMS})}many{Список для чтения ({SELECTED_ITEMS})}other{Список для чтения ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите ⌘ + Option + Стрелка вверх, чтобы ответить.</translation>
 <translation id="8030169304546394654">Отключено</translation>

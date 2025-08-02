@@ -935,7 +935,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5271967389191913893">Não é possível abrir no dispositivo o conteúdo a ser baixado.</translation>
 <translation id="5273031377282080577">O administrador gerencia essa configuração.</translation>
 <translation id="5292796745632149097">Enviar para</translation>
-<translation id="5301876394151419436">A conta <ph name="EMAIL" /> está conectada. Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
+<translation id="5301876394151419436">Você fez login como <ph name="EMAIL" /> e pode interromper a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="5304593522240415983">Este campo não pode ficar em branco</translation>
 <translation id="5306014156308790439">"Adicionar à coleção" desativado</translation>
 <translation id="5308380583665731573">Conectar</translation>
@@ -1268,7 +1268,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6715020873764921614">Quer baixar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) mesmo assim?</translation>
 <translation id="671928215901716392">Bloquear tela</translation>
 <translation id="6723740634201835758">Na Conta do Google</translation>
-<translation id="6734310707649923383">Você pode consultar ou excluir as páginas visitadas do histórico</translation>
+<translation id="6734310707649923383">Você pode consultar as páginas visitadas ou excluir os registros do histórico</translation>
 <translation id="6738867403308150051">Fazendo o download...</translation>
 <translation id="674388916582496364">É comum que os sites que você visita se lembrem dos seus interesses para personalizar a experiência. Os sites também podem armazenar informações sobre seus interesses com o Chrome.</translation>
 <translation id="6746338529702829275">Analise os dados da conta</translation>

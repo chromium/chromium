@@ -171,7 +171,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis indstillinger for notifikationer. Notifikationer er slået fra for en app}one{Vis indstillinger for notifikationer. Notifikationer er slået fra for # app}other{Vis indstillinger for notifikationer. Notifikationer er slået fra for # apps}}</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> indtil fuldt opladet</translation>
-<translation id="1525508553941733066">AFVIS</translation>
+<translation id="1525508553941733066">LUK</translation>
 <translation id="1526448108126799339">Åbn ny fane i et nyt vindue</translation>
 <translation id="1528259147807435347">Redigeret inden for den seneste uge</translation>
 <translation id="1536604384701784949">Hvis du vil bruge <ph name="USER_EMAIL_ADDRESS" />, skal du først logge ud af alle dine konti først. Klik på Annuller for at gå tilbage og logge ud. Vælg derefter klokkeslættet for at åbne statusområdet, og vælg så Log ud. Log derefter ind på <ph name="USER_EMAIL_ADDRESS_2" /> igen.</translation>

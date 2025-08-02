@@ -987,7 +987,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2658843814961855121">Legislación laboral</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ninguna}=1{1 contraseña de <ph name="DOMAIN_LIST" />}=2{2 contraseñas de <ph name="DOMAIN_LIST" />}other{# contraseñas de <ph name="DOMAIN_LIST" />}}</translation>
-<translation id="2666092431469916601">Superior</translation>
+<translation id="2666092431469916601">Arriba</translation>
 <translation id="2666117266261740852">Cierra otras pestañas o aplicaciones</translation>
 <translation id="266935134738038806">Visitar sitio</translation>
 <translation id="2672201172023654893">Tu navegador no está administrado.</translation>
@@ -1208,7 +1208,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3082007635241601060">Permite que Google use tus carritos para encontrar descuentos personalizados cuando estén disponibles</translation>
 <translation id="3086269988715347183">No has aprobado <ph name="BLOCKED_URL" /> antes</translation>
 <translation id="3086579638707268289">Se está vigilando tu actividad en la Web</translation>
-<translation id="3087734570205094154">Inferior</translation>
+<translation id="3087734570205094154">Abajo</translation>
 <translation id="3090667236485488075">Cristal</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Se ignora porque la lista inhabilitada contiene un patrón igual a "*", lo que equivale a inhabilitar la política.</translation>
@@ -1437,7 +1437,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3453962258458347894">Número de intentos</translation>
 <translation id="3457781733462096492">Rap y hip-hop</translation>
 <translation id="3461266716147554923"><ph name="URL" /> quiere ver el texto y las imágenes que se hayan copiado en el portapapeles</translation>
-<translation id="3461824795358126837">Rotulador</translation>
+<translation id="3461824795358126837">Subrayador</translation>
 <translation id="3462200631372590220">Ocultar configuración avanzada</translation>
 <translation id="3465972433695735758">No se puede acceder a este PDF. Texto extraído con la IA de Google.</translation>
 <translation id="346601286295919445">Química</translation>
@@ -4124,7 +4124,7 @@ Más información:
 <translation id="8029829038322015001">Rojo 1</translation>
 <translation id="8030729864112325446">Formación profesional y continua</translation>
 <translation id="8032546467100845887">Transparencia</translation>
-<translation id="8035152190676905274">Pluma</translation>
+<translation id="8035152190676905274">Bolígrafo</translation>
 <translation id="8035264638816032066">Los títulos de las pestañas y las URLs de las páginas que añadas a la tabla se enviarán a Google</translation>
 <translation id="8037117624646282037">Quién ha usado este dispositivo recientemente</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>

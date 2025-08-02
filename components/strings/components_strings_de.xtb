@@ -508,7 +508,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1839331950812095887">einige Worte, die deine Gedanken zusammenfassen</translation>
 <translation id="1839551713262164453">Die Validierung der Richtlinienwerte hat Fehler ergeben und ist fehlgeschlagen</translation>
 <translation id="1840009953725035797">Heimkinosysteme</translation>
-<translation id="184153295865602321">Für zusätzlichen Schutz solltest du immer deinen Fingerabdruck, dein Gesicht oder eine andere Displaysperre verwenden, wenn du mit Autofill bezahlst</translation>
+<translation id="184153295865602321">Für zusätzlichen Schutz solltest du immer deinen Fingerabdruck, die Gesichtserkennung oder eine andere Displaysperre verwenden, wenn du mit Autofill bezahlst</translation>
 <translation id="1842969606798536927">Bezahlen</translation>
 <translation id="184517536440397176">Ein Elternteil oder Erziehungsberechtigter muss dir erlauben, diese Website zu besuchen. Bevor du ihn fragst, müssen wir aber zuerst überprüfen, ob du es bist.</translation>
 <translation id="1846432862466000825">Kunststoff (Archiv)</translation>
@@ -1633,7 +1633,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3754210790023674521">Bild im Bild beenden</translation>
 <translation id="3759461132968374835">Es liegen keine kürzlich gemeldeten Abstürze vor. Abstürze, die bei deaktivierter Absturzberichtsfunktion aufgetreten sind, werden hier nicht angezeigt.</translation>
 <translation id="3760561303380396507">Windows Hello anstelle des CVCs verwenden?</translation>
-<translation id="3761171036307311438">Name auf Karte:</translation>
+<translation id="3761171036307311438">Name auf der Karte:</translation>
 <translation id="3761718714832595332">Status ausblenden</translation>
 <translation id="3763752038825281594">Du hast die Berechtigung „<ph name="PERMISSION" />“ für diese Website zuvor nicht zugelassen</translation>
 <translation id="3765588406864124894">Ablage 9</translation>
@@ -2232,7 +2232,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4800132727771399293">Prüfe das Ablaufdatum und deinen CVC und versuche es dann noch einmal.</translation>
 <translation id="4800546479758254481">AR-Berechtigung gewährt</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4807098396393229769">Name auf Karte</translation>
+<translation id="4807098396393229769">Name auf der Karte</translation>
 <translation id="4809079943450490359">Anweisungen des Geräteadministrators:</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
 <translation id="4813512666221746211">Netzwerkfehler</translation>
@@ -3156,7 +3156,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6386565501269869892">Umschlag You 4</translation>
 <translation id="6387645831795005740">Angreifer kopieren manchmal Websites und nehmen kleine, unauffällige Änderungen an der URL vor.</translation>
 <translation id="6388060462449937608">Fitnessausrüstung und ‑zubehör</translation>
-<translation id="6389470377220713856">Name auf Karte</translation>
+<translation id="6389470377220713856">Name auf der Karte</translation>
 <translation id="6390200185239044127">Halbierte Z-Faltung</translation>
 <translation id="639068771471208680">Mehrteiliges Formular</translation>
 <translation id="6391700400718590966">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten ist geschlossen</translation>

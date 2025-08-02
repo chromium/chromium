@@ -6305,7 +6305,7 @@
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全角</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
-<translation id="5431318178759467895">彩色</translation>
+<translation id="5431318178759467895">颜色</translation>
 <translation id="5432145523462851548">在文件夹中显示 <ph name="FILE_NAME" /></translation>
 <translation id="5432223177001837288">若要分享音频，请改为分享标签页</translation>
 <translation id="5432872710261597882">选择“我喜欢”，会提交您喜欢此功能的反馈。</translation>
@@ -8710,7 +8710,7 @@
 <translation id="7181840534454431748">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组
               {NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}}</translation>
 <translation id="7182051712900867547">使用其他账号</translation>
-<translation id="7182063559013288142">即时热点</translation>
+<translation id="7182063559013288142">智能热点</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
 <translation id="718427252411067142">为防止他人使用您的密码，请打开该应用更改密码</translation>
 <translation id="718512729823942418">无可用麦克风</translation>

@@ -1440,7 +1440,7 @@
 <translation id="6807287147325542056">Паролі в інших додатках</translation>
 <translation id="681368974849482173">Закладку творено</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{{count} закладку збережено у вашому обліковому записі Google ({email}).}few{{count} закладки збережено у вашому обліковому записі Google ({email}).}many{{count} закладок збережено у вашому обліковому записі Google ({email}).}other{{count} закладки збережено у вашому обліковому записі Google ({email}).}}</translation>
-<translation id="6830728435402077660">Небезпечно</translation>
+<translation id="6830728435402077660">Не захищено</translation>
 <translation id="6831043979455480757">Перекласти</translation>
 <translation id="6842136130964845393">Щоб не втратити доступ до своїх збережених паролів, підтвердьте свою особу</translation>
 <translation id="6851516051005285358">Повна версія сайту</translation>

@@ -152,7 +152,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2802908157808345702">No permetis que els llocs web enviïn finestres emergents ni que utilitzin redireccions</translation>
 <translation id="2814830417943086299">Ara Chrome mostra les teves pestanyes recents als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="2822354292072154809">Confirmes que vols restablir tots els permisos del lloc web concedits a <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2850913818900871965">Sol·licita la visualització per a mòbils</translation>
+<translation id="2850913818900871965">Sol·licita la vista per a mòbils</translation>
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2891975107962658722">Impedeix que un lloc web desi dades al dispositiu</translation>
@@ -331,7 +331,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5063480226653192405">Ús</translation>
 <translation id="5068293087784369013">Personalitza la pàgina Pestanya nova</translation>
 <translation id="5091013926750941408">Lloc web per a mòbils</translation>
-<translation id="509133520954049755">Sol·licita la visualització per a ordinadors</translation>
+<translation id="509133520954049755">Sol·licita la vista d'escriptori</translation>
 <translation id="5091663350197390230">Quan aquesta opció està activada, els llocs web poden utilitzar JavaScript. Quan aquesta opció està desactivada, els llocs web no poden utilitzar JavaScript.</translation>
 <translation id="5099358668261120049">Aquesta acció suprimirà de la pantalla d'inici totes les dades i galetes emmagatzemades per <ph name="ORIGIN" /> o per la seva aplicació.</translation>
 <translation id="5100237604440890931">Vista replegada (feu clic per desplegar-la)</translation>
@@ -443,7 +443,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6439114592976064011">Impedeix que els llocs web utilitzin les teves dades i el teu dispositiu de realitat virtual</translation>
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6452138246455930388">Baixada de preu a la pestanya oberta (abans <ph name="OLD_PRICE" />, ara <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
-<translation id="6500423977866688905">Si la finestra és estreta, sol·licita la visualització per a mòbils</translation>
+<translation id="6500423977866688905">Si la finestra és estreta, sol·licita la vista per a mòbils</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6530703012083415527">Quan aquesta opció està activada, els llocs web poden utilitzar finestres emergents i redireccions. Quan aquesta opció està desactivada, els llocs web no poden utilitzar finestres emergents ni redireccions.</translation>
 <translation id="6540488083026747005">Has permès les galetes de tercers en aquest lloc web</translation>
@@ -607,7 +607,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
 <translation id="8593422116412089302">Quan aquesta opció està activada, els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu. Quan aquesta opció està desactivada, els llocs web no poden demanar-te permís per utilitzar la informació que han desat sobre tu.</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>
-<translation id="8617611086246832542">Quan aquesta opció està activada, es mostra la visualització per a ordinadors dels llocs web. Quan aquesta opció està desactivada, es mostra la visualització per a mòbils dels llocs web.</translation>
+<translation id="8617611086246832542">Quan aquesta opció està activada, es mostra la vista d'escriptori dels llocs web. Quan aquesta opció està desactivada, es mostra la vista per a mòbils dels llocs web.</translation>
 <translation id="8670078035093027626">Full inferior del navegador predeterminat obert a alçada completa</translation>
 <translation id="8676316391139423634">Quan aquesta opció està activada, els llocs web poden demanar permís per fer un seguiment de les teves mans. Quan aquesta opció està desactivada, els llocs web no poden fer un seguiment de les teves mans.</translation>
 <translation id="8676374126336081632">Esborra l'entrada</translation>
