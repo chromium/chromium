@@ -41,6 +41,8 @@ std::string_view HistogramSuffixForEntityType(EntityType type) {
       return "NationalIdCard";
     case EntityTypeName::kPassport:
       return "Passport";
+    case EntityTypeName::kRedressNumber:
+      return "RedressNumber";
     case EntityTypeName::kVehicle:
       return "Vehicle";
   }

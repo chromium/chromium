@@ -69,6 +69,8 @@ void EmitBubbleFunnelMetrics(
         return "Vehicle";
       case EntityTypeName::kPassport:
         return "Passport";
+      case EntityTypeName::kRedressNumber:
+        return "RedressNumber";
     }
     NOTREACHED();
   };
@@ -215,6 +217,9 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
+      case EntityTypeName::kRedressNumber:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kVehicle:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
@@ -233,6 +238,9 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE);
+      case EntityTypeName::kRedressNumber:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_UPDATE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kVehicle:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE);
@@ -288,6 +296,8 @@ int SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
       return IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
     case EntityTypeName::kPassport:
       return IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
+    case EntityTypeName::kRedressNumber:
+      return IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_LOTTIE;
     case EntityTypeName::kVehicle:
       return IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE;
   }

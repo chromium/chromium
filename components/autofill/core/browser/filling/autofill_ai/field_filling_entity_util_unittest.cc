@@ -91,6 +91,8 @@ std::u16string GetFillValueForEntity(
             return AttributeType(AttributeTypeName::kPassportName);
           case EntityTypeName::kNationalIdCard:
             return AttributeType(AttributeTypeName::kNationalIdCardName);
+          case EntityTypeName::kRedressNumber:
+            return AttributeType(AttributeTypeName::kRedressNumberName);
           case EntityTypeName::kVehicle:
             return AttributeType(AttributeTypeName::kVehicleOwner);
         }

@@ -412,6 +412,18 @@ using KnownTravelerNumberOptions = KnownTravelerNumberOptionsT<>;
 EntityInstance GetKnownTravelerNumberInstance(
     KnownTravelerNumberOptions options = {});
 
+template <typename = void>
+struct RedressNumberOptionsT {
+  const char16_t* number = u"987654321";
+  std::string_view guid = "00000000-0000-4000-8000-200000000000";
+  std::string_view nickname = "RedressNumber";
+  std::string_view app_locale = "en-US";
+};
+using RedressNumberOptions = RedressNumberOptionsT<>;
+
+EntityInstance GetRedressNumberEntityInstance(
+    RedressNumberOptions options = {});
+
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types);

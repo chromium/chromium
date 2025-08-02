@@ -69,6 +69,10 @@ std::u16string AttributeType::GetNameForI18n() const {
         return IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME;
       case AttributeTypeName::kPassportIssueDate:
         return IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kRedressNumberName:
+        return IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME;
+      case AttributeTypeName::kRedressNumberNumber:
+        return IDS_AUTOFILL_AI_REDRESS_NUMBER_ATTRIBUTE_NAME;
       case AttributeTypeName::kVehicleOwner:
         return IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME;
       case AttributeTypeName::kVehiclePlateNumber:
@@ -101,6 +105,8 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
         return 2;
       case EntityTypeName::kPassport:
         return 1;
+      case EntityTypeName::kRedressNumber:
+        return 6;
       case EntityTypeName::kVehicle:
         return 3;
     }
@@ -129,6 +135,9 @@ std::u16string EntityType::GetNameForI18n() const {
           IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME);
   }

@@ -32,21 +32,22 @@ namespace {
 
 optimization_guide::proto::AutofillAiEntityType GetEntityType(
     EntityType entity_type) {
+  using ProtoType = optimization_guide::proto::AutofillAiEntityType;
   switch (entity_type.name()) {
-    case EntityTypeName::kPassport:
-      return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_PASSPORT;
     case EntityTypeName::kDriversLicense:
-      return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_DRIVERS_LICENSE;
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_DRIVERS_LICENSE;
     case EntityTypeName::kKnownTravelerNumber:
-      return optimization_guide::proto::
-          AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER;
-    case EntityTypeName::kVehicle:
-      return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_VEHICLE;
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER;
     case EntityTypeName::kNationalIdCard:
-      return optimization_guide::proto::
-          AUTOFILL_AI_ENTITY_TYPE_NATIONAL_ID_CARD;
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_NATIONAL_ID_CARD;
+    case EntityTypeName::kPassport:
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_PASSPORT;
+    case EntityTypeName::kRedressNumber:
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_REDRESS_NUMBER;
+    case EntityTypeName::kVehicle:
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_VEHICLE;
   }
-  return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_UNKNOWN;
+  return ProtoType::AUTOFILL_AI_ENTITY_TYPE_UNKNOWN;
 }
 
 optimization_guide::proto::FormatStringSource GetFormatStringSource(

@@ -129,6 +129,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kKnownTravelerNumberName:
     case AttributeTypeName::kNationalIdCardName:
     case AttributeTypeName::kPassportName:
+    case AttributeTypeName::kRedressNumberName:
     case AttributeTypeName::kVehicleOwner:
       return DataType::kName;
     case AttributeTypeName::kNationalIdCardCountry:
@@ -149,6 +150,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kKnownTravelerNumberNumber:
     case AttributeTypeName::kNationalIdCardNumber:
     case AttributeTypeName::kPassportNumber:
+    case AttributeTypeName::kRedressNumberNumber:
     case AttributeTypeName::kVehiclePlateNumber:
     case AttributeTypeName::kVehicleVin:
     case AttributeTypeName::kVehicleMake:
@@ -201,6 +203,11 @@ constexpr FieldType AttributeType::field_type_with_tag_types() const {
       return PASSPORT_EXPIRATION_DATE;
     case AttributeTypeName::kPassportIssueDate:
       return PASSPORT_ISSUE_DATE;
+
+    case AttributeTypeName::kRedressNumberNumber:
+      return REDRESS_NUMBER;
+    case AttributeTypeName::kRedressNumberName:
+      return NAME_FULL;
 
     case AttributeTypeName::kVehicleOwner:
       return VEHICLE_OWNER_TAG;

@@ -69,5 +69,18 @@
     "disambiguation order": [ "Name" ],
     "syncable": false,
     "experiment feature": "AutofillAiKnownTravelerNumber"
+  },
+  {
+    "name": "Redress Number",
+    "attributes": [ "Name", "Number" ],
+    "required fields": "any",
+    "import constraints": [
+      [ "Number" ]
+    ],
+    "merge constraints": "import constraints",
+    "strike keys": "import constraints",
+    "disambiguation order": [ "Name" ],
+    "syncable": false,
+    "experiment feature": "AutofillAiRedressNumber"
   }
 ]

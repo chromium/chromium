@@ -995,6 +995,23 @@ EntityInstance GetKnownTravelerNumberInstance(
       /*use_date=*/base::Time::FromTimeT(0));
 }
 
+EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.number) {
+    attributes.emplace_back(AttributeType(kRedressNumberNumber));
+    attributes.back().SetInfo(
+        REDRESS_NUMBER, options.number, std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+
+  return EntityInstance(
+      EntityType(EntityTypeName::kRedressNumber), std::move(attributes),
+      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      /*use_date=*/base::Time::FromTimeT(0));
+}
+
 EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;

@@ -105,6 +105,9 @@ std::string GetAddEntityTypeStringForI18n(EntityType entity_type) {
           IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY);
   }
@@ -124,6 +127,9 @@ std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
           IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_EDIT_REDRESS_NUMBER_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY);
   }
@@ -143,6 +149,9 @@ std::string GetDeleteEntityTypeStringForI18n(EntityType entity_type) {
           IDS_AUTOFILL_AI_DELETE_NATIONAL_ID_CARD_ENTITY);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DELETE_PASSPORT_ENTITY);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_DELETE_REDRESS_NUMBER_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY);
   }

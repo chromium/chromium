@@ -76,7 +76,8 @@ class BaseAutofillAiTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
                               features::kAutofillAiNationalIdCard,
-                              features::kAutofillAiKnownTravelerNumber},
+                              features::kAutofillAiKnownTravelerNumber,
+                              features::kAutofillAiRedressNumber},
         /*disabled_features=*/{});
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
@@ -148,6 +149,12 @@ class BaseAutofillAiTest : public testing::Test {
     std::unique_ptr<FormStructure> form = CreateFormStructure(
         {KNOWN_TRAVELER_NUMBER, KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE},
         std::move(url));
+    return form;
+  }
+  [[nodiscard]] std::unique_ptr<FormStructure> CreateRedressNumberForm(
+      std::string url = std::string(kDefaultUrl)) {
+    std::unique_ptr<FormStructure> form =
+        CreateFormStructure({REDRESS_NUMBER}, std::move(url));
     return form;
   }
 
@@ -257,6 +264,8 @@ class AutofillAiFunnelMetricsTest
         return CreateDriversLicenseForm();
       case EntityTypeName::kKnownTravelerNumber:
         return CreateKnownTravelerNumberForm();
+      case EntityTypeName::kRedressNumber:
+        return CreateRedressNumberForm();
       case EntityTypeName::kVehicle:
         return CreateVehicleForm();
       case EntityTypeName::kNationalIdCard:
@@ -273,6 +282,8 @@ class AutofillAiFunnelMetricsTest
         return test::GetDriversLicenseEntityInstance();
       case EntityTypeName::kKnownTravelerNumber:
         return test::GetKnownTravelerNumberInstance();
+      case EntityTypeName::kRedressNumber:
+        return test::GetRedressNumberEntityInstance();
       case EntityTypeName::kVehicle:
         return test::GetVehicleEntityInstance();
       case EntityTypeName::kNationalIdCard:
@@ -366,6 +377,8 @@ class AutofillAiFunnelMetricsTest
         return "DriversLicense";
       case EntityTypeName::kKnownTravelerNumber:
         return "KnownTravelerNumber";
+      case EntityTypeName::kRedressNumber:
+        return "RedressNumber";
       case EntityTypeName::kVehicle:
         return "Vehicle";
       case EntityTypeName::kNationalIdCard:

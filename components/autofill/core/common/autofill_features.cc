@@ -147,6 +147,11 @@ BASE_FEATURE(kAutofillAiNationalIdCard,
              "AutofillAiNationalIdCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, AutofillAi supports redress number.
+BASE_FEATURE(kAutofillAiRedressNumber,
+             "AutofillAiRedressNumber",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, `*_TAG` types are replaced with dynamic attribute assignments.
 // This is a kill switch.
 //

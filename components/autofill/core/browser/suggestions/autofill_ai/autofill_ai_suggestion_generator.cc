@@ -250,6 +250,9 @@ Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
     case EntityTypeName::kKnownTravelerNumber:
       // TODO(crbug.com/429109329): Add proper icon.
       return Suggestion::Icon::kIdCard;
+    case EntityTypeName::kRedressNumber:
+      // TODO(crbug.com/429109329): Add proper icon.
+      return Suggestion::Icon::kIdCard;
     case EntityTypeName::kVehicle:
       return Suggestion::Icon::kVehicle;
   }
