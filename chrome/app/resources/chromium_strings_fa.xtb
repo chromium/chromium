@@ -293,6 +293,7 @@
 <translation id="4724676981607797757">نصب به‌دلیل خطای پروتکل پشتیبانی‌نشده انجام نشد.</translation>
 <translation id="4746050847053251315">‏درهرصورت از Chromium خارج می‌شوید؟</translation>
 <translation id="4748217263233248895">‏لحظاتی پیش به‌روزرسانی امنیتی ویژه‌ای برای Chromium اعمال شد. هم‌اکنون بازراه‌اندازی کنید و ما برگه‌هایتان را بازیابی خواهیم کرد.</translation>
+<translation id="4771701986670315895">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت.</translation>
 <translation id="4788777615168560705">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">‏از همان غلط‌یاب املا استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود. هروقت بخواهید می‌توانید این رفتار را در تنظیمات تغییر دهید.</translation>
 <translation id="4814736265800133385">‏استفاده از Chromium بدون حساب</translation>
@@ -305,6 +306,7 @@
 <translation id="4987820182225656817">‏مهمان‌ها می توانند از Chromium استفاده کنند بدون این‌که اثری از خود به جا بگذارند.</translation>
 <translation id="4994636714258228724">‏افرودن خودتان به Chromium</translation>
 <translation id="5123973130450702873">‏‫Chromium برای ردیابی کردن دست‌های شما به اجازه نیاز دارد</translation>
+<translation id="5141988424377517949">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت.</translation>
 <translation id="5174969993834422967">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان ارسال کند، روی نماد اعلان در گوشه چپ نوار نشانی کلیک کنید.</translation>
 <translation id="5187123684706427865">‏حساب Chromium به اصالت‌سنجی مجدد نیاز دارد</translation>
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
@@ -489,6 +491,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="734373864078049451">‏وب، نشانک‌ها و موارد دیگر Chromium شما در اینجا هستند.</translation>
 <translation id="7349591376906416160">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
+<translation id="7376384068949534168">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت.</translation>
 <translation id="7384121030444253939">‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chromium توصیه می‌کند آن را حذف کنید.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">نوشتار کپی شد</translation>
@@ -553,6 +556,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8248265253516264921">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="8254601181414348851">‏در نمایه جدید به سیستم Chromium وارد می‌شوید؟</translation>
 <translation id="8286943863733751221">‏‫Chromium درباره سایت‌ها و بارگیری‌های ناامن <ph name="BEGIN_LINK" />به شما هشدار می‌دهد<ph name="END_LINK" /></translation>
+<translation id="8295827201165805317">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION" /> را برداشت.</translation>
 <translation id="8313851650939857356">خطای راه‌اندازی: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">‏اگر <ph name="TIMEOUT_DURATION" /> از Chromium استفاده نشود، سازمانتان آن را می‌بندد.</translation>
 <translation id="8321888067342493336">ذخیره کردن به‌عنوان تصویر</translation>

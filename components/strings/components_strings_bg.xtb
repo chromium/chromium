@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">Грижи за косата</translation>
 <translation id="1935353813610900265">Изпращане на отзиви за търсенето в историята, базирано на AI</translation>
 <translation id="1935995810530254458">Копиране въпреки това</translation>
+<translation id="1938580037092872316">Добавяне на нова информация към запазения адрес</translation>
 <translation id="1939059826036755332">Автоматичен режим „картина в картината“</translation>
 <translation id="1939175642807587452">Може да поиска разрешение да изпраща известия</translation>
 <translation id="1940441167050915935">Изтриване на запазените кодове за сигурност</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Приложения за Android</translation>
 <translation id="2102519472192754194">Уеб браузъри</translation>
 <translation id="2103210856015238101">Списъкът с карти за лоялност, данните за които могат да бъдат попълнени при докосване, е отворен на пълната височина.</translation>
+<translation id="2104739941682874393">Подобрената функция за автоматично попълване разпознава формулярите по-добре и може да ги попълва по-бързо вместо вас</translation>
 <translation id="2105838220373099643">Ролеви игри</translation>
 <translation id="2107021941795971877">Опори при отпечатване</translation>
 <translation id="2108755909498034140">Рестартирайте компютъра си.</translation>
@@ -1527,6 +1529,7 @@
 <translation id="3570079787344939099">Превъртане и промяна на мащаба</translation>
 <translation id="357244642999988503">Премахване на колоната</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Добавяне на нова информация към адреса</translation>
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3575589330755445706">Избрана бе опцията за име на улицата</translation>
@@ -2426,6 +2429,7 @@
 <translation id="5052517576853118371">Активни теми</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
 <translation id="505757197798929356">Посочете причина за отварянето (задължително)</translation>
+<translation id="5058282932481719070">научете повече за подобреното автоматично попълване в настройките</translation>
 <translation id="5060419232449737386">Настройки за надписите</translation>
 <translation id="5060483733937416656">Избрахте опцията за потвърждаване чрез Windows Hello в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Може би имахте предвид <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3031,7 @@
 <translation id="6062937464449575061">Спиране на проследяването на цената</translation>
 <translation id="6063415549109819824">Жилищно финансиране</translation>
 <translation id="6070432475334343308">Един или повече файлове не бяха качени в папката „<ph name="FOLDER_NAME" />“ в(ъв) <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Услуга за синтактичен анализ на отметки за съдържание</translation>
 <translation id="6078069862923723141">синьо-зелено 2</translation>
 <translation id="6085149458302186532">Етикети (цветни)</translation>
 <translation id="6087312102907839798">Сродни търсения</translation>
@@ -3538,6 +3543,7 @@
 <translation id="6935082727755903526">Работни места в сферата на счетоводството и финансите</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. При следващото ви посещение някои сайтове може да се зареждат по-бавно.</translation>
 <translation id="6936976777388162184">Това устройство се предлага в пакет и не може да бъде регистрирано в Kiosk and Signage Upgrade.</translation>
+<translation id="6942444979237658241">Коментари – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Стратегически игри</translation>
 <translation id="6944692733090228304">Въведохте паролата си на сайт, който не се управлява от <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
 <translation id="6946949206576443118">Търсене в мрежата в Chrome</translation>
@@ -3550,6 +3556,7 @@
 <translation id="695140971690006676">Повторно задаване на всичко</translation>
 <translation id="6954049078461159956">Хокей</translation>
 <translation id="695582302419398462">Картон (двустенен)</translation>
+<translation id="6957153644870901611">Включете подобреното автоматично попълване, за да се попълват автоматично повече полета</translation>
 <translation id="6957887021205513506">Изглежда, че сертификатът на сървъра е подправен.</translation>
 <translation id="6958564499836457428">Управление на настройките за поверителност в Google в профила ви в Google</translation>
 <translation id="6961844873822989059">Може да поиска разрешение да използва шрифтовете, инсталирани на устройството ви</translation>
@@ -3996,6 +4003,7 @@
 <translation id="7668654391829183341">Неизвестно устройство</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" /> – <ph name="ITEM_POSITION" /> от <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Действията с данни, означени като поверителни (1 действие след влизането в профила). <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" />}other{Действията с данни, означени като поверителни (# действия след влизането в профила). <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Информацията от профила ви в Google <ph name="USER_EMAIL" /> може да ви помогне да попълвате по-бързо формуляри в Chrome</translation>
 <translation id="7673278391011283842">Пощенска кутия 6</translation>
 <translation id="7675325315208090829">Управление на начините на плащане…</translation>
 <translation id="767550629621587224">Предварително изрязани показалци</translation>
@@ -4128,6 +4136,7 @@
 <translation id="7908648876066812348">Виртуалната карта се включва</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да отворите страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="791107458486222637">Резултатът се възстановява</translation>
+<translation id="7912924955815015552">Импортирани от Safari</translation>
 <translation id="791551905239004656">Рисуване и оцветяване</translation>
 <translation id="7916162853251942238">Флексопечат</translation>
 <translation id="791698251820376781">Организацията ви не разрешава да влизате в профила си</translation>
@@ -4262,6 +4271,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Създадено преди 1 месец}other{Създадено преди {NUM_MONTHS} месеца}}</translation>
 <translation id="8148608574971654810">PDF версия:</translation>
 <translation id="8149426793427495338">Компютърът ви премина в спящ режим.</translation>
+<translation id="815036624016370447">Информацията от профила ви в Google <ph name="ACCOUNT" /> може да ви помогне да попълвате по-бързо формуляри в Chrome</translation>
 <translation id="8150722005171944719">Файлът на адрес <ph name="URL" /> не може да бъде прочетен.  Възможно е да е премахнат, преместен или разрешенията му да предотвратяват достъпа.</translation>
 <translation id="8151185429379586178">Инстр. за програмисти</translation>
 <translation id="8153865548451212769">{0,plural, =1{Според администраторско правило изтеглянето на този файл на <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило изтеглянето на тези файлове на <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>

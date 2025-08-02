@@ -556,6 +556,7 @@
 <translation id="1927439846988093361">頭髮保養</translation>
 <translation id="1935353813610900265">針對採用 AI 技術的搜尋記錄功能提供意見</translation>
 <translation id="1935995810530254458">仍要複製</translation>
+<translation id="1938580037092872316">新增已儲存地址的相關資訊</translation>
 <translation id="1939059826036755332">自動進入子母畫面</translation>
 <translation id="1939175642807587452">可以要求傳送通知</translation>
 <translation id="1940441167050915935">刪除已儲存的安全碼</translation>
@@ -656,6 +657,7 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2102519472192754194">網路瀏覽器</translation>
 <translation id="2103210856015238101">會員卡已顯示在整個畫面上，輕觸即可填入。</translation>
+<translation id="2104739941682874393">強化版自動填入功能可以更準確地辨識表單，更快自動填入相關資訊</translation>
 <translation id="2105838220373099643">角色扮演遊戲</translation>
 <translation id="2107021941795971877">列印支援</translation>
 <translation id="2108755909498034140">重新啟動電腦</translation>
@@ -1525,6 +1527,7 @@
 <translation id="3570079787344939099">捲動及縮放</translation>
 <translation id="357244642999988503">移除欄</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" />，<ph name="STATE" />，<ph name="CITY" /></translation>
+<translation id="3574520980813687946">新增地址資訊</translation>
 <translation id="3575121482199441727">允許這個網站的通知</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3575589330755445706">已選取「街道名稱」選項</translation>
@@ -2424,6 +2427,7 @@
 <translation id="5052517576853118371">有效主題</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用鄰近分享功能傳送這個檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用鄰近分享功能傳送這些檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">請提供要開啟的原因 (必填)</translation>
+<translation id="5058282932481719070">前往設定進一步瞭解強化版自動填入功能</translation>
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5060483733937416656">你已選擇使用 Windows Hello 在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。這個供應商可能已儲存你的付款方式相關資訊，你可以 <ph name="LINK_TEXT" />。</translation>
 <translation id="5061227663725596739">你是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
@@ -3025,6 +3029,7 @@
 <translation id="6062937464449575061">取消追蹤價格</translation>
 <translation id="6063415549109819824">家庭金融</translation>
 <translation id="6070432475334343308">一或多個檔案未上傳至「<ph name="CLOUD_PROVIDER" />」中的「<ph name="FOLDER_NAME" />」</translation>
+<translation id="6071503852498277813">內容書籤剖析器服務</translation>
 <translation id="6078069862923723141">青色 2</translation>
 <translation id="6085149458302186532">標籤 (彩色)</translation>
 <translation id="6087312102907839798">相關搜尋</translation>
@@ -3536,6 +3541,7 @@
 <translation id="6935082727755903526">會計和財務工作</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />。下次造訪某些網站時，載入速度可能會變慢。</translation>
 <translation id="6936976777388162184">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
+<translation id="6942444979237658241">留言 - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">策略遊戲</translation>
 <translation id="6944692733090228304">你在不是由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="6946949206576443118">使用 Chrome 搜尋網路</translation>
@@ -3548,6 +3554,7 @@
 <translation id="695140971690006676">全部重設</translation>
 <translation id="6954049078461159956">曲棍球</translation>
 <translation id="695582302419398462">紙板 (雙層瓦楞紙)</translation>
+<translation id="6957153644870901611">只要開啟強化版自動填入功能，即可自動填寫更多欄位</translation>
 <translation id="6957887021205513506">伺服器憑證疑似偽造。</translation>
 <translation id="6958564499836457428">在 Google 帳戶中管理 Google 隱私權設定</translation>
 <translation id="6961844873822989059">可以要求使用裝置上安裝的字型</translation>
@@ -3994,6 +4001,7 @@
 <translation id="7668654391829183341">不明的裝置</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />，第 <ph name="ITEM_POSITION" /> 個，共 <ph name="ITEMS_TOTAL" /> 個。</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{針對標記為機密的資料所執行的動作 (自登入後已回報 1 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}other{針對標記為機密的資料所執行的動作 (自登入後已回報 # 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">使用 Chrome 時，可以用 Google 帳戶 (<ph name="USER_EMAIL" />) 中的資訊加快表單填寫速度</translation>
 <translation id="7673278391011283842">出紙槽 6</translation>
 <translation id="7675325315208090829">管理付款方式...</translation>
 <translation id="767550629621587224">預先裁切分隔紙</translation>
@@ -4126,6 +4134,7 @@
 <translation id="7908648876066812348">正在啟用虛擬卡片</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，在設定中按下 Tab 鍵再按下 Enter 鍵，即可前往 Chrome 安全檢查頁面</translation>
 <translation id="791107458486222637">重新產生結果</translation>
+<translation id="7912924955815015552">由 Safari 匯入</translation>
 <translation id="791551905239004656">繪畫與著色</translation>
 <translation id="7916162853251942238">彈性凸版基底</translation>
 <translation id="791698251820376781">貴機構不允許你登入</translation>
@@ -4260,6 +4269,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入睡眠模式。</translation>
+<translation id="815036624016370447">使用 Chrome 時，可以用 Google 帳戶 (<ph name="ACCOUNT" />) 中的資訊加快表單填寫速度</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已遭移除或移動位置，或者檔案權限為禁止存取。</translation>
 <translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8153865548451212769">{0,plural, =1{根據管理員政策，建議你不要將這個檔案下載到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案下載到「<ph name="DESTINATION_NAME" />」}}</translation>

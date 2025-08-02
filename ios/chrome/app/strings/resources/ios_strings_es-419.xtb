@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="1523567067736644845">Desbloquea el dispositivo para mostrar la contraseña</translation>
 <translation id="1524563461097350801">No, gracias</translation>
+<translation id="1528290585275339320">Activa el uso compartido de contenido de la página</translation>
 <translation id="1531038290222364269">Mostrar las pestañas</translation>
 <translation id="1536390784834419204">Traducir la página</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
@@ -1045,6 +1046,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, historial y más en todos los dispositivos</translation>
 <translation id="5141363746588976328">Ocultar la tarjeta Reducciones de precio en las pestañas</translation>
+<translation id="514154868070499296">Fuente: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Salir del alternador de pestañas</translation>
 <translation id="5148717509369231739">Importación de Safari</translation>
 <translation id="5157638238828697074">Se produjo un error. No se pudo abrir la aplicación.</translation>
@@ -1974,6 +1976,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8637431369725868556">Obtén protección contra sitios peligrosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="8643403533759285912">Borrar grupo</translation>
+<translation id="8645245178269185266">Comparte el contenido de la página con Gemini para obtener respuestas más pertinentes</translation>
 <translation id="8647280737650867362">No se pudo anular el seguimiento del precio.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8660600697590740984">Imagen copiada de Lens</translation>

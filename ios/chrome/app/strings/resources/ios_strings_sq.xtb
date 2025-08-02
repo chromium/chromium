@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktiv sot</translation>
 <translation id="1523567067736644845">Shkyç për të shfaqur fjalëkalimin</translation>
 <translation id="1524563461097350801">Jo, faleminderit</translation>
+<translation id="1528290585275339320">Aktivizo ndarjen e përmbajtjes së faqes</translation>
 <translation id="1531038290222364269">Shfaq skedat</translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
@@ -1045,6 +1046,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5128788795241319992">Eksploro menynë e re</translation>
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
 <translation id="5141363746588976328">Fshih kartën "Uljet e çmimeve në skedat e tua"</translation>
+<translation id="514154868070499296">Fonti: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Largohu nga "Ndërruesi i skedave"</translation>
 <translation id="5148717509369231739">Importimi në Safari</translation>
 <translation id="5157638238828697074">Ndodhi një gabim. Aplikacioni nuk mund të hapej.</translation>
@@ -1974,6 +1976,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8637431369725868556">Merr mbrojtjen nga sajtet e rrezikshme.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="8643403533759285912">Fshi grupin</translation>
+<translation id="8645245178269185266">Ndaj përmbajtjen e faqes me Gemini për të marrë përgjigje më të përshtatshme</translation>
 <translation id="8647280737650867362">Monitorimi i çmimeve nuk mund të anulohej.</translation>
 <translation id="8654802032646794042">Anulo</translation>
 <translation id="8660600697590740984">Imazhi i "Lentes" që kopjove</translation>

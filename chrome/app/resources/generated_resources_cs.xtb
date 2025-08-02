@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">Automaticky získat účet z telefonu Android</translation>
 <translation id="1069814191880976658">Vybrat jinou obrazovku</translation>
 <translation id="107022587824771715">Návrhy skupin karet momentálně nejsou k dispozici. Můžete <ph name="BEGIN_LINK" />teď obnovit kartu<ph name="END_LINK" />, nebo to zkusit znovu později</translation>
+<translation id="1070357312245925724">Navigační zkratka</translation>
 <translation id="1070377999570795893">Jiný program ve vašem počítači nainstaloval rozšíření, které může měnit funkce Chromu.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1122913801042512795">Přihlašovací údaje k účtu jsou zastaralé. Odhlaste se a znovu se přihlaste.</translation>
 <translation id="1122960773616686544">Název záložky</translation>
 <translation id="1124772482545689468">Uživatel</translation>
+<translation id="1125371304736839151">Zobrazovat Gemini v horní části prohlížeče</translation>
 <translation id="1125550662859510761">Vypadá jako <ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativní)</translation>
 <translation id="1125921926864945797">Tapeta a styl</translation>
 <translation id="1128090040635299943">Linux se právě konfiguruje. Konfigurace zabere několik minut.</translation>
@@ -216,6 +218,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1142713751288681188">Typ papíru</translation>
 <translation id="1143142264369994168">Autor podpisu certifikátu</translation>
 <translation id="1145593918056169051">Tiskárna přestala fungovat</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Rozšíření}=1{Rozšíření ({SELECTED_ITEMS})}few{Rozšíření ({SELECTED_ITEMS})}many{Rozšíření ({SELECTED_ITEMS})}other{Rozšíření ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Ovládání ukazatele hlavou</translation>
 <translation id="114721135501989771">Získejte do Chromu chytré funkce Google</translation>
 <translation id="1147322039136785890">Teď je na řadě <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -735,6 +738,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="150411034776756821">Odebrat web <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Sdílené složky jsou ve Windows k dispozici v adresáři <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportovat hesla</translation>
+<translation id="1505654899813338756">Karty můžete seskupovat, abyste měli související stránky pohromadě a dostupné na všech zařízeních</translation>
 <translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1506187449813838456">Zvýšit výšku hlasu</translation>
 <translation id="1507170440449692343">Přístup této stránky k vaší kameře je zablokován.</translation>
@@ -989,6 +993,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1660763353352708040">Problém se síťovým adaptérem</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Řešení problému s kartou, která prohlížeč zpomaluje}few{Řešení problému s kartami, které prohlížeč zpomalují}many{Řešení problému s kartami, které prohlížeč zpomalují}other{Řešení problému s kartami, které prohlížeč zpomalují}}</translation>
 <translation id="16620462294541761">Litujeme, heslo nelze ověřit. Zkuste to prosím znovu.</translation>
+<translation id="1662572015199460525">Využijte při brouzdání po internetu hlasový nebo textový chat k získání odpovědí, klíčových poznatků a dalších informací</translation>
 <translation id="166278006618318542">Algoritmus veřejného klíče subjektu</translation>
 <translation id="1662801900924515589">Aplikace <ph name="APP" /> je nainstalována</translation>
 <translation id="1663698992894057019">Pokud chcete mít nejnovější zabezpečení a software, upgradujte na nový Chromebook</translation>
@@ -1091,6 +1096,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="174123615272205933">Vlastní</translation>
 <translation id="1741314857973421784">Pokračovat</translation>
 <translation id="1744108098763830590">stránka na pozadí</translation>
+<translation id="174516937379651657">Když sdílíte stránku s Gemini, celý obsah stránky a její adresa URL se odešlou do Googlu.</translation>
 <translation id="1745732479023874451">Spravovat kontakty</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Otevřít a upravit # soubory v této webové aplikaci?}many{Otevřít a upravit # souboru v této webové aplikaci?}other{Otevřít a upravit # souborů v této webové aplikaci?}}</translation>
 <translation id="1748329107062243374">K přihlášení na web <ph name="WEBSITE" /> použijte přístupový klíč ze zařízení <ph name="DEVICE_NAME" /></translation>
@@ -1402,6 +1408,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Zkontrolováno 1 rozšíření}few{Zkontrolována {NUM_EXTENSIONS} rozšíření}many{Zkontrolováno {NUM_EXTENSIONS} rozšíření}other{Zkontrolováno {NUM_EXTENSIONS} rozšíření}}</translation>
 <translation id="1959421829481337178">Zadejte aktivační kód, který vám poskytl váš operátor.</translation>
 <translation id="1960211333621141174">Útes</translation>
+<translation id="1962356719152496092">Tady si můžete přizpůsobit klávesovou zkratku</translation>
 <translation id="1963976881984600709">Standardní ochrana</translation>
 <translation id="1964009877615282740">Zobrazit více</translation>
 <translation id="1965578266762387357">Když požádáte o pomoc s psaním, adresa URL stránky, obsah a váš text se odešlou do Googlu. Nezadávejte osobní údaje (jako jsou zdravotní nebo finanční údaje)</translation>
@@ -1569,6 +1576,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2079053412993822885">Smažete-li jeden z vlastních certifikátů, nebudete ho již moci používat k identifikaci své osoby.</translation>
 <translation id="2079495302726689071">Otevřít odkaz na nové kartě aplikace <ph name="APP" /></translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
+<translation id="2079553700504470326">Namísto polohy odhadované na základě IP adresy používat přesnou polohu, aby výsledky od Gemini byly co nejpřesnější.</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2081816110395725788">Při provozu na baterii přejít do nečinnosti</translation>
 <translation id="2082187087049518845">Přidat kartu do skupiny</translation>
@@ -2197,6 +2205,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2496180316473517155">Historie procházení</translation>
 <translation id="2496616243169085015">Fotografie</translation>
 <translation id="2497229222757901769">Rychlost myši</translation>
+<translation id="24977856422126200"><ph name="WINDOW_TITLE" /> – Po dobu trvání této konverzace sdílíte tuto kartu s Gemini.</translation>
 <translation id="2497852260688568942">Synchronizace je administrátorem zakázána.</translation>
 <translation id="2498539833203011245">Minimalizovat</translation>
 <translation id="2498765460639677199">Obrovské</translation>
@@ -2521,6 +2530,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Když je Přesnost určování polohy zapnutá, informace o bezdrátových signálech, jako jsou přístupové body Wi-Fi a vysílače mobilní sítě, spolu s údaji ze senzorů zařízení, jako je akcelerometr a gyroskop, se používají k odhadu přesnější polohy zařízení, na základě které aplikace pro Android a služby poskytují funkce založené na poloze. Google proto pravidelně shromažďuje informace o senzorech zařízení a bezdrátových signálech v okolí a přispívá jimi do crowdsourcované databáze umístění zdrojů bezdrátových signálů.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Informace shromážděné z tohoto zařízení používá Google ke zlepšování přesnosti polohy a služeb založených na poloze a k obecnému zlepšování, poskytování a správě služeb Google. Tyto informace zpracováváme na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů. Tyto informace se nepoužívají k identifikaci žádných osob.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Přesnost polohy můžete kdykoli vypnout. Můžete to provést v nastavení polohy tohoto zařízení v sekci Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze &gt; Pokročilé geografické nastavení. Když je Přesnost určování polohy vypnutá, nebudou se pro ni shromažďovat žádná data. K určení polohy zařízení pro aplikace pro Android a služby se používá pouze IP adresa (pokud je k dispozici), což může ovlivnit dostupnost a přesnost polohy pro aplikace a služby pro Android, jako jsou Mapy Google.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">Zobrazit nebo spravovat aktivitu v aplikacích s Gemini</translation>
 <translation id="2730029791981212295">Zálohování aplikací a souborů systému Linux</translation>
 <translation id="2730550884708194161">O pracovních profilech</translation>
 <translation id="2730596696987224099">Vybrat vlastní</translation>
@@ -3389,6 +3399,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3360306038446926262">Okna</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> s vámi sdílí <ph name="ATTACHMENTS" />.}few{<ph name="DEVICE_NAME" /> s vámi sdílí <ph name="ATTACHMENTS" />.}many{<ph name="DEVICE_NAME" /> s vámi sdílí <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> s vámi sdílí <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361954577771524115">Z aplikace</translation>
+<translation id="3362651095484543782">Opouštět Gemini a vracet se do Gemini klávesovou zkratkou.</translation>
 <translation id="3362915550009543917">Poklidná olejomalba žlutě zbarvené louky navozující pocit klidu a intelektuální reflexe.</translation>
 <translation id="3363202073972776113">Tento nový profil bude spravovat vaše organizace. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt + umístění ukazatele</translation>
@@ -3612,6 +3623,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3511358375261756531">Rozbalit <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Písmo s pevnou šířkou</translation>
 <translation id="3511528412952710609">Krátká</translation>
+<translation id="3512465804715993309">Adaptivní zvýrazňování</translation>
 <translation id="3513019849832307207">Přidat se a otevřít</translation>
 <translation id="3513563267917474897">Posuvník odstínu do <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Ovládání hry</translation>
@@ -4956,6 +4968,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="443031431654216610">Použijte pouze číslice</translation>
 <translation id="4430369329743628066">Byla přidána záložka</translation>
 <translation id="4430422687972614133">Zapnout virtuální kartu</translation>
+<translation id="443196770280837407">Otevírejte Gemini klávesovou zkratkou.</translation>
 <translation id="4432621511648257259">Nesprávné heslo</translation>
 <translation id="4434611816075088065">Nic jiného teď vaši pozornost nevyžaduje</translation>
 <translation id="443475966875174318">Aktualizovat nebo odstranit nekompatibilní aplikace</translation>
@@ -4971,6 +4984,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4442863809158514979">Zobrazit webová oprávnění</translation>
 <translation id="4442937638623063085">Nebyly nalezeny žádné profily. Zadejte aktivační kód, který vám poskytl váš operátor.</translation>
 <translation id="4443536555189480885">&amp;Nápověda</translation>
+<translation id="4444191890945732856">Tuto stránku sdílíte s Gemini</translation>
 <translation id="4444304522807523469">Přístup ke skenerům dokumentů připojeným přes USB nebo v místní síti</translation>
 <translation id="4444512841222467874">Pokud neuvolníte místo, může dojít k automatickému odebrání uživatelů a dat.</translation>
 <translation id="4445446646109808714">Licenční smlouva s koncovým uživatelem: <ph name="EULA_LINK" /></translation>
@@ -5293,6 +5307,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4681930562518940301">Otevřít původní &amp;obrázek na nové kartě</translation>
 <translation id="4682481611456523884">Vložený obsah na tomto webu nemůže používat informace, které o vás uložil</translation>
 <translation id="4682807230647698604">Při používání těchto funkcí se relevantní data odesílají do Googlu ke zpracování pomocí umělé inteligence</translation>
+<translation id="4683143253481759090">Chrome se aktualizoval</translation>
 <translation id="4683629100208651599">Změnit na malá písmena</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (výchozí)</translation>
 <translation id="4684427112815847243">Synchronizovat vše</translation>
@@ -5302,6 +5317,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4687718960473379118">Reklamy navrhované weby</translation>
 <translation id="4688036121858134881">Místní ID protokolu: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761">Organizace <ph name="MANAGER" /> toto zařízení převádí na předchozí verzi (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4688870304423708920">Zkontrolujte připojení k internetu a zkuste Gemini použít znovu</translation>
 <translation id="4689235506267737042">Zvolte předvolby ukázkového režimu</translation>
 <translation id="4689421377817139245">Synchronizujte tuto záložku do svého iPhonu</translation>
 <translation id="4690091457710545971">&lt;Čtyři soubory vygenerované firmwarem Wi-Fi od společnosti Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. První tři jsou binární soubory s výpisy z registru a společnost Intel o nich prohlašuje, že neobsahují žádné informace umožňující identifikaci osob ani zařízení. Poslední soubor obsahuje trasovací informace z firmwaru Intel. Byly z něj odstraněny všechny informace umožňující identifikaci osob nebo zařízení, ale je příliš velký na to, aby jej zde bylo možné zobrazit. Tyto soubory byly vygenerovány v reakci na nedávné problémy se sítí Wi-Fi ve vašem zařízení a budou poskytnuty společnosti Intel, aby tyto problémy mohla odstranit.&gt;</translation>
@@ -5586,6 +5602,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4884937942297374058">Vylepšená ochrana je vypnutá</translation>
 <translation id="4884987973312178454">6×</translation>
 <translation id="4885692421645694729">Toto rozšíření nemá přístup k žádným dalším webům</translation>
+<translation id="4887391901725877182">Skryté titulky</translation>
 <translation id="4887424188275796356">Otevřít pomocí systémového prohlížeče</translation>
 <translation id="488785315393301722">Zobrazit podrobnosti</translation>
 <translation id="488862352499217187">Vytvořit novou složku</translation>
@@ -5736,6 +5753,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
 <translation id="5003070249435823986">Pomocí gesta přejděte do režimu posouvání a poté pohněte hlavou ve směru, kterým chcete posouvat. Až režim posouvání budete chtít ukončit, proveďte gesto znovu.</translation>
 <translation id="5003993274120026347">Další věta</translation>
+<translation id="5005113238422129109">Používat k chatování s Gemini mikrofon. Když s Gemini mluvíte, zvuk se ukládá do aktivity v aplikacích s Gemini (pokud je zapnutá).</translation>
 <translation id="5005311809885666699">Uloženo z Chromu</translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
 <translation id="5006218871145547804">ADB aplikací Android pro Crostini</translation>
@@ -6703,6 +6721,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5705005699929844214">Vždy zobrazovat možnosti usnadnění přístupu</translation>
 <translation id="5705882733397021510">Zpět</translation>
 <translation id="5707185214361380026">Načtení rozšíření z následujícího umístění se nezdařilo:</translation>
+<translation id="5707674184620508665">Vaše organizace <ph name="ACCOUNT_MANAGER" /> nebude moci zobrazit ani spravovat vaše stávající data. Zůstanou ve stávajícím profilu.</translation>
 <translation id="5708171344853220004">Hlavní název Microsoft</translation>
 <translation id="5711010025974903573">Protokoly služby</translation>
 <translation id="5711983031544731014">Zařízení nelze odemknout. Zadejte heslo.</translation>
@@ -7412,6 +7431,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="622484624075952240">Dolů</translation>
 <translation id="622537739776246443">Profil bude smazán</translation>
 <translation id="6225475702458870625">Je k dispozici datové připojení z vašeho zařízení <ph name="PHONE_NAME" /></translation>
+<translation id="622568138962270592">Aktivita v aplikacích s Gemini</translation>
 <translation id="6226777517901268232">Soubor soukromého klíče (volitelné)</translation>
 <translation id="6227280783235722609">rozšíření</translation>
 <translation id="622902691730729894">Odepnout skupinu z lišty záložek</translation>
@@ -7715,6 +7735,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6451861213630784801">Jste odhlášení</translation>
 <translation id="6452181791372256707">Odmítnout</translation>
 <translation id="6452251728599530347">Dokončeno <ph name="PERCENT" /></translation>
+<translation id="6452268285438583507">Přidat rozšíření</translation>
 <translation id="6452961788130242735">Problém se sítí nebo nesprávná sféra</translation>
 <translation id="6453191633103419909">Kvalita projekce karty/obrazovky</translation>
 <translation id="6453921811609336127">Pokud chcete přepnout na další metodu zadávání, stiskněte <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mezerník<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -8145,6 +8166,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6759193508432371551">Tovární nastavení</translation>
 <translation id="6760354150216532978">Upozornění: Tento web může vidět vámi provedené úpravy</translation>
 <translation id="6761209758867628753">Nástroj: Pomozte mi s psaním</translation>
+<translation id="6761459308170527362">Prostřednictvím hlasového nebo textového chatu můžete Gemini položit otázku ohledně obsahu stránky, kterou sdílíte</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Data webu v zařízení nejsou povolena</translation>
 <translation id="6762833852331690540">Zapnuto</translation>
@@ -8804,6 +8826,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7223952304612664117">Systémové služby budou moct k určení vaší polohy používat funkci Přesnost určování polohy. Přesnost polohy využívá k odhadu polohy zařízení informace o bezdrátových signálech a senzorech.</translation>
 <translation id="7225082563376899794">Při vyplňování hesel používat Windows Hello</translation>
 <translation id="7225179976675429563">Typ sítě není k dispozici.</translation>
+<translation id="7226163413959353072">AI asistent, který poskytuje klíčové poznatky, objasňuje koncepty, nachází odpovědi a nejen to</translation>
 <translation id="7227235818314667565">Spravovat sdílení</translation>
 <translation id="7227458944009118910">Odkazy s konkrétními protokoly mohou zpracovávat i aplikace uvedené níže. Ostatní aplikace budou žádat o oprávnění.</translation>
 <translation id="7228056665272655255">Pokud chcete nastavit otisk prstu, nechte dítě dotknout se snímače otisků prstů v pravém horním rohu klávesnice. Otisk prstu dítěte je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
@@ -8873,6 +8896,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="727595954130325265">Koupit</translation>
 <translation id="727952162645687754">Chyba při stahování</translation>
 <translation id="7280649757394340890">Nastavení hlasu převodu textu na řeč</translation>
+<translation id="7280683802406059877">Přizpůsobit klávesovou zkratku</translation>
 <translation id="7280877790564589615">Jsou požadována oprávnění</translation>
 <translation id="7281166215790160128">Režim</translation>
 <translation id="7282056103720203738">Číst informace o připojených zařízeních a jejich data</translation>
@@ -8931,6 +8955,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7320213904474460808">Nastavit výchozí síť</translation>
 <translation id="7321545336522791733">Server je nedostupný</translation>
 <translation id="7322515217754205362">Oprávnění k webům</translation>
+<translation id="7322919329844967709">Získáte relevantnější odpovědi související s obsahem stránky, kterou sdílíte</translation>
 <translation id="7323315405936922211">Velikost oblasti kurzoru</translation>
 <translation id="7324020307732396723">Otevřít nastavení jazyků</translation>
 <translation id="7324297612904500502">Fórum beta</translation>
@@ -9930,6 +9955,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7991296728590311172">Nastavení ovládání přepínači</translation>
 <translation id="7992080146463834191">Shrne obsah, zjednoduší složitý text a odpoví na otázky</translation>
 <translation id="7992203134935383159">Syntéza řeči</translation>
+<translation id="7993332993977106257">Snadný přístup k používání Gemini na zařízení, i když je Chrome minimalizovaný.</translation>
 <translation id="7997826902155442747">Priorita procesu</translation>
 <translation id="7997828719430450286">Úspěch.</translation>
 <translation id="7998701048266085837">Adresy URL</translation>
@@ -9983,6 +10009,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8028060951694135607">Obnovení klíčů Microsoft</translation>
 <translation id="8028803902702117856">Stahování souboru <ph name="FILE_NAME" /> – <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">Velikost</translation>
+<translation id="8029349782735515147">Při používání Gemini Live zobrazovat skryté titulky</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Seznam četby}=1{Seznam četby ({SELECTED_ITEMS})}few{Seznam četby ({SELECTED_ITEMS})}many{Seznam četby ({SELECTED_ITEMS})}other{Seznam četby ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Odpovězte na žádost o oprávnění stisknutím kláves ⌘ + Option + šipka nahoru</translation>
 <translation id="8030169304546394654">Odpojeno</translation>
@@ -10101,6 +10128,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8102139037507939978">Odstranit ze souboru system_logs.txt informace umožňující zjištění totožnosti.</translation>
 <translation id="810362914482827094">Vyhledat přístupové klíče</translation>
 <translation id="8104088837833760645">Stáhnout profil eSIM</translation>
+<translation id="8105050970626643057">Rychle Gemini otevřete, kdykoli potřebujete</translation>
 <translation id="8105273883928376822">Pokud chcete pokračovat, přihlaste se.</translation>
 <translation id="8106114112474206597">Klávesou „i“ stisknete tlačítko myši</translation>
 <translation id="8107015733319732394">Instalace Obchodu Google Play do zařízení <ph name="DEVICE_TYPE" />. Tato operace může několik minut trvat.</translation>
@@ -10257,6 +10285,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8222112516148944758">Skupiny karet se automaticky ukládají a aktualizují na všech vašich zařízeních</translation>
 <translation id="8222674561049363989">Soubor není platný dokument</translation>
 <translation id="822347941086490485">Hledání zařízení HID…</translation>
+<translation id="8224209912580158729">Sdílet obsah stránky s Gemini, aby odpovědi byly relevantnější.</translation>
 <translation id="8224427620313426549">Účet na webu <ph name="DOMAIN_LINK" /> smazán nebude</translation>
 <translation id="8225046344534779393">Zkontrolujte připojení k internetu</translation>
 <translation id="8225265270453771718">Sdílet okno aplikace</translation>
@@ -10400,6 +10429,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8314835274931377415">Spustit nastavení přístupu pomocí přepínačů?</translation>
 <translation id="8315018673856831477">Možnosti spořiče paměti</translation>
 <translation id="8315514906653279104">Zapínání…</translation>
+<translation id="8316480109537174997">Zobrazit Gemini na hlavním panelu systému a zapnout klávesovou zkratku</translation>
 <translation id="8317671367883557781">Přidat připojení k síti</translation>
 <translation id="8317965619823678157">kopírovat hesla</translation>
 <translation id="8318266828739827371">Pomocí rozdělené obrazovky můžete zobrazit zvětšenou oblast na obrazovce. Zabudovanou lupu zapnete a vypnete stisknutím kláves Hledat + Ctrl + D.</translation>
@@ -10800,6 +10830,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8607661817136110841">Vaše skupiny karet</translation>
 <translation id="8607828412110648570">Zařízení Bluetooth musí být v režimu párování a poblíž. Zařízení párujte pouze se zařízeními, kterým důvěřujete. Spárovaná zařízení jsou viditelná pro všechny účty v tomto Chromebooku. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Přidat lístek Kerberos</translation>
+<translation id="860907040896565281">Přizpůsobit klávesovou zkratku…</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8611922158252451755">Kdokoli s odkazem může upravovat všechny karty, proto sdílejte s rozmyslem. Platnost odkazu vyprší za 48 hodin.</translation>
 <translation id="8612252270453580753">&amp;Vyhledat snímek videa pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -11201,6 +11232,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8868838761037459823">Podrobnosti o mobilní síti</translation>
 <translation id="8870413625673593573">Nedávno zavřené</translation>
 <translation id="8871043459130124414">Spustí se pouze po kliknutí na rozšíření</translation>
+<translation id="8871126140396172266"><ph name="WINDOW_TITLE" /> – Tuto stránku sdílíte s Gemini</translation>
 <translation id="8871551568777368300">Připnuto administrátorem</translation>
 <translation id="8871696467337989339">Používáte nepodporované označení příkazového řádku: <ph name="BAD_FLAG" />. Bude to mít negativní vliv na stabilitu a zabezpečení.</translation>
 <translation id="8871974300055371298">Nastavení obsahu</translation>
@@ -11413,6 +11445,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="9011163749350026987">Vždy zobrazovat ikonu</translation>
 <translation id="9011262023858991985">Odesílání této karty</translation>
 <translation id="9011393886518328654">Poznámky k vydání</translation>
+<translation id="9012013036616593083">Gemini momentálně není k dispozici. Zkuste to později.</translation>
 <translation id="9012122671773859802">Při pohybu myši posouvat obrazovku souvisle</translation>
 <translation id="9012585441087414258">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Pokud stránka provede něco podezřelého, odešlou se adresy URL a části obsahu stránky do Bezpečného prohlížení Google.</translation>
 <translation id="9013037634206938463">K instalaci Linuxu je potřeba <ph name="INSTALL_SIZE" /> volného místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
@@ -11438,6 +11471,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="9024127637873500333">&amp;Otevřít v nové kartě</translation>
 <translation id="9024158959543687197">Při připojování sdílené složky došlo k chybě. Zkontrolujte adresu URL sdíleného úložiště a zkuste to znovu.</translation>
 <translation id="9024692527554990034">Pomocí zkratek v adresním řádku můžete rychle vyhledat konkrétní web nebo použít jiný vyhledávač</translation>
+<translation id="9024975946059881308">Zobrazit Gemini v liště s nabídkou na Macu a zapnout klávesové zkratky</translation>
 <translation id="9025222334598338152">Pomocí srovnávacích tabulek můžete sledovat postupné zužování zvažovaných možností</translation>
 <translation id="902638246363752736">Nastavení klávesnice</translation>
 <translation id="9026393603776578602">diktování</translation>

@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">‏אפליקציות Android</translation>
 <translation id="2102519472192754194">דפדפני אינטרנט</translation>
 <translation id="2103210856015238101">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע נפתחה בגובה המלא של המסך.</translation>
+<translation id="2104739941682874393">התכונה "מילוי אוטומטי משופר" מבינה את הטפסים טוב יותר ויכולה למלא אותם אוטומטית מהר יותר</translation>
 <translation id="2105838220373099643">משחקי תפקידים</translation>
 <translation id="2107021941795971877">תמיכות להדפסה</translation>
 <translation id="2108755909498034140">אתחול המחשב</translation>
@@ -2432,6 +2433,7 @@ Del</translation>
 <translation id="5052517576853118371">נושאים פעילים</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}one{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}two{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}other{כדי לשלוח את הקבצים האלה באמצעות 'שיתוף בקרבת מקום', צריך לפנות שטח אחסון (<ph name="DISK_SPACE_SIZE" />) במכשיר}}</translation>
 <translation id="505757197798929356">יש לציין את הסיבה לפתיחה (חובה)</translation>
+<translation id="5058282932481719070">מידע נוסף על התכונה "מילוי אוטומטי משופר" בהגדרות</translation>
 <translation id="5060419232449737386">הגדרות לכתוביות</translation>
 <translation id="5060483733937416656">‏בחרת לבצע אימות באמצעות Windows Hello באתרים שמשתמשים ב-<ph name="PROVIDER_ORIGIN" />. יכול להיות שהספק הזה אחסן מידע על אמצעי התשלום שלך, שאותו אפשר <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3034,6 +3036,7 @@ Del</translation>
 <translation id="6062937464449575061">ביטול המעקב אחר המחירים</translation>
 <translation id="6063415549109819824">מימון לבית</translation>
 <translation id="6070432475334343308">קובץ אחד או יותר לא הועלה אל <ph name="FOLDER_NAME" /> ב-<ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">שירות לניתוח סימניות תוכן</translation>
 <translation id="6078069862923723141">ציאן 2</translation>
 <translation id="6085149458302186532">Labels (Colored)</translation>
 <translation id="6087312102907839798">חיפושים קשורים</translation>
@@ -3558,6 +3561,7 @@ Del</translation>
 <translation id="695140971690006676">איפוס של הכול</translation>
 <translation id="6954049078461159956">הוקי</translation>
 <translation id="695582302419398462">Cardboard (Double Wall)</translation>
+<translation id="6957153644870901611">הפעלת התכונה "מילוי אוטומטי משופר" כדי למלא שדות נוספים באופן אוטומטי</translation>
 <translation id="6957887021205513506">נראה שהאישור של השרת מזויף.</translation>
 <translation id="6958564499836457428">‏ניהול הגדרות הפרטיות ב-Google בחשבון Google</translation>
 <translation id="6961844873822989059">האתר יכול לבקש הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>

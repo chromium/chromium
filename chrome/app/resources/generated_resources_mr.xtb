@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">पेपर टाइप</translation>
 <translation id="1143142264369994168">सर्टिफिकेट स्वाक्षरीकर्ता</translation>
 <translation id="1145593918056169051">प्रिंटर थांबला आहे</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{एक्स्टेंशन}=1{({SELECTED_ITEMS}) एक्स्टेंशन}other{({SELECTED_ITEMS}) एक्स्टेंशन}}</translation>
 <translation id="114715166554490743">हेड पॉइंटर</translation>
 <translation id="114721135501989771">Chrome मध्ये Google स्मार्ट मिळवा</translation>
 <translation id="1147322039136785890">आता <ph name="SUPERVISED_USER_NAME" /> ची पाळी आहे</translation>
@@ -736,6 +737,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> काढून टाका</translation>
 <translation id="1504551620756424144">शेअर केलेली फोल्डर Windows मध्ये <ph name="BASE_DIR" /> येथे उपलब्ध आहेत.</translation>
 <translation id="1505494256539862015">पासवर्ड एक्सपोर्ट करा</translation>
+<translation id="1505654899813338756">तुम्ही सुसंबद्ध पेज एकत्र ठेवण्यासाठी टॅबचा गट करू शकता आणि तो तुमच्या सर्व डिव्हाइसवर सेव्ह करू शकता</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1506187449813838456">पीच वाढवा</translation>
 <translation id="1507170440449692343">तुमच्या कॅमेराचा अ‍ॅक्सेस या पेजसाठी ब्लॉक केला आहे.</translation>
@@ -5316,6 +5318,7 @@
 <translation id="4681930562518940301">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
 <translation id="4682481611456523884">त्यांनी तुमच्याविषयी सेव्ह केलेली माहिती, या साइटवर एंबेड केलेला आशय वापरू शकत नाही</translation>
 <translation id="4682807230647698604">तुम्ही ही वैशिष्ट्ये वापरता, तेव्हा AI अनुभव तयार करण्यासाठी सुसंबद्ध डेटा Google ला पाठवला जातो</translation>
+<translation id="4683143253481759090">Chrome अपडेट झाले होते</translation>
 <translation id="4683629100208651599">लोअरकेस करा</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डीफॉल्ट)</translation>
 <translation id="4684427112815847243">सर्व सिंक करा</translation>
@@ -9218,6 +9221,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7481312909269577407">पुढील</translation>
 <translation id="7481358317100446445">तयार</translation>
 <translation id="748138892655239008">सर्टिफिकेट मूळ प्रतिबंध</translation>
+<translation id="7482823403440483089">वर्धित केलेले ऑटोफिल</translation>
 <translation id="7483732342458943943">ही लिंक काम करत नाही</translation>
 <translation id="7484645889979462775">या साइटसाठी कधीही नाही</translation>
 <translation id="7484943269191249363">तुम्ही या डिव्हाइसवर Google Password Manager मध्ये सेव्ह केलेल्या तुमच्या सर्व पासकी वापरू शकता. तुम्हाला हे एकदाच करावे लागेल.</translation>

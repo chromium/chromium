@@ -552,6 +552,7 @@
 <translation id="1927439846988093361">జుట్టు సంరక్షణ</translation>
 <translation id="1935353813610900265">AI సహాయంతో సెర్చ్ హిస్టరీకి సంబంధించి ఫీడ్‌బ్యాక్‌ను పంపండి</translation>
 <translation id="1935995810530254458">ఏదైమైనా కాపీ చేయండి</translation>
+<translation id="1938580037092872316">సేవ్ చేసిన అడ్రస్‌కు కొత్త సమాచారాన్ని జోడించండి</translation>
 <translation id="1939059826036755332">ఆటోమేటిక్ పిక్చర్-ఇన్-పిక్చర్</translation>
 <translation id="1939175642807587452">నోటిఫికేషన్‌లను పంపడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1940441167050915935">సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లను తొలగించండి</translation>
@@ -652,6 +653,7 @@
 <translation id="2102495993840063010">Android యాప్‌లు</translation>
 <translation id="2102519472192754194">వెబ్ బ్రౌజర్‌లు</translation>
 <translation id="2103210856015238101">'టచ్ చేసి నింపడానికి అందుబాటులో ఉన్న లాయల్టీ కార్డ్‌లు' పూర్తి స్థాయిలో తెరవబడ్డాయి.</translation>
+<translation id="2104739941682874393">మెరుగైన ఆటోఫిల్ ఫీచర్ ఫారమ్‌లను బాగా అర్థం చేసుకుంటుంది, మీ కోసం వాటిని వేగంగా ఆటోఫిల్ చేయగలదు</translation>
 <translation id="2105838220373099643">పాత్రలను పోషించే గేమ్‌లు</translation>
 <translation id="2107021941795971877">ప్రింట్ మద్దతులు</translation>
 <translation id="2108755909498034140">మీ కంప్యూటర్‌ను పునఃప్రారంభించండి</translation>
@@ -2422,6 +2424,7 @@
 <translation id="5052517576853118371">యాక్టివ్ టాపిక్‌లు</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైల్‌ను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}other{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైళ్ళను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}}</translation>
 <translation id="505757197798929356">తెరవడానికి కారణాన్ని అందించండి (అవసరం)</translation>
+<translation id="5058282932481719070">మెరుగైన ఆటోఫిల్ గురించి సెట్టింగ్‌ల్లో మరింత తెలుసుకోండి</translation>
 <translation id="5060419232449737386">క్యాప్షన్ సెట్టింగ్‌లు</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో Windows Helloతో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">మీరు <ph name="LOOKALIKE_DOMAIN" /> గురించి అడిగారా?</translation>
@@ -3023,6 +3026,7 @@
 <translation id="6062937464449575061">ధరను అన్‌ట్రాక్ చేయండి</translation>
 <translation id="6063415549109819824">హోమ్ ఫైనాన్సింగ్</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />‌లోని <ph name="FOLDER_NAME" />‌కి ఒకటి లేదా అంతకంటే ఎక్కువ ఫైళ్లు అప్‌లోడ్ చేయబడలేదు</translation>
+<translation id="6071503852498277813">కంటెంట్ బుక్‌మార్క్ పార్సర్ సర్వీస్</translation>
 <translation id="6078069862923723141">ముదురు నీలం రంగు 2</translation>
 <translation id="6085149458302186532">లేబుల్స్ (కలర్డ్)</translation>
 <translation id="6087312102907839798">సంబంధిత సెర్చ్‌లు</translation>
@@ -3534,6 +3538,7 @@
 <translation id="6935082727755903526">అకౌంటింగ్ &amp; ఫైనాన్స్ ఉద్యోగాలు</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. మీరు తర్వాతిసారి ఉపయోగించినప్పుడు కొన్ని సైట్‌లు మరింత నిదానంగా లోడ్ కావచ్చు.</translation>
 <translation id="6936976777388162184">ఇది బండిల్ చేయబడిన పరికరం, కియోస్క్, సంకేత చిహ్నాల అప్‌గ్రేడ్‌తో దీనిని ఎన్‌రోల్ చేయడం సాధ్యం కాదు.</translation>
+<translation id="6942444979237658241">కామెంట్‌లు - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">వ్యూహాత్మక గేమ్‌లు</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ని నమోదు చేశారు. మీ ఖాతాని రక్షించడం కోసం, మీ పాస్‌వర్డ్‌ని ఇతర యాప్‌లు మరియు సైట్‌లలో తిరిగి ఉపయోగించవద్దు.</translation>
 <translation id="6946949206576443118">Chromeలోని వెబ్‌లో సెర్చ్ చేయండి</translation>
@@ -3546,6 +3551,7 @@
 <translation id="695140971690006676">అన్నీ రీసెట్ చేయండి</translation>
 <translation id="6954049078461159956">హాకీ</translation>
 <translation id="695582302419398462">కార్డ్‌బోర్డ్ (డబుల్ వాల్)</translation>
+<translation id="6957153644870901611">మరిన్ని ఫీల్డ్స్‌ను ఆటోమేటిక్‌గా ఫిల్ చేయడానికి, మెరుగైన ఆటోఫిల్‌ను ఆన్ చేయండి</translation>
 <translation id="6957887021205513506">సర్వర్ ధృవీకరణ డాక్యుమెంట్‌ చెల్లదు.</translation>
 <translation id="6958564499836457428">మీ Google ఖాతాలో Google గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6961844873822989059">మీ పరికరంలో ఇన్‌స్టాల్ చేయబడిన ఫాంట్‌లను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
@@ -3992,6 +3998,7 @@
 <translation id="7668654391829183341">తెలియని పరికరం</translation>
 <translation id="7669320311687290322"><ph name="ITEMS_TOTAL" />లో <ph name="ITEM_POSITION" /> <ph name="ITEM_LABEL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{గోప్యమైనవిగా ఫ్లాగ్ చేయబడిన డేటాతో చర్యలు తీసుకోబడ్డాయి (లాగిన్ చేసినప్పటి నుంచి 1 చర్య రిపోర్ట్ చేయబడింది). <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" />}other{గోప్యమైనవిగా ఫ్లాగ్ చేయబడిన డేటాతో చర్యలు తీసుకోబడ్డాయి (లాగిన్ చేసినప్పటి నుంచి # చర్యలు రిపోర్ట్ చేయబడ్డాయి). <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">మీ Google ఖాతా <ph name="USER_EMAIL" />‌లో ఉన్న సమాచారం Chromeలో ఫారమ్‌లను వేగంగా ఫిల్ చేయడంలో సహాయపడగలదు</translation>
 <translation id="7673278391011283842">మెయిల్‌బాక్స్ 6</translation>
 <translation id="7675325315208090829">పేమెంట్ ఆప్షన్‌లను మేనేజ్ చేయండి...</translation>
 <translation id="767550629621587224">ప్రీ-కట్ ట్యాబ్స్</translation>
@@ -4259,6 +4266,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 నెల క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_MONTHS} నెలల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>
 <translation id="8149426793427495338">మీ కంప్యూటర్ నిద్రావస్థకి వెళ్లింది.</translation>
+<translation id="815036624016370447">మీ Google ఖాతా <ph name="ACCOUNT" />‌లో ఉన్న సమాచారం Chromeలో ఫారమ్‌లను వేగంగా ఫిల్ చేయడంలో సహాయపడగలదు</translation>
 <translation id="8150722005171944719"><ph name="URL" />లో ఫైల్ చదవగలిగేది కాదు. దీన్ని తీసివేసి ఉండవచ్చు, తరలించి ఉండవచ్చు లేదా ఫైల్ అనుమతులు యాక్సెస్‌ను నిరోధిస్తుండవచ్చు.</translation>
 <translation id="8151185429379586178">డెవలపర్ సాధనాలు</translation>
 <translation id="8153865548451212769">{0,plural, =1{ఈ ఫైల్‌ను <ph name="DESTINATION_NAME" />‌కు డౌన్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{ఈ ఫైల్స్‌ను <ph name="DESTINATION_NAME" />‌కు డౌన్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>

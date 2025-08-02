@@ -284,6 +284,7 @@
 <translation id="4598116752460667024">Тізімнен кез келген процесті іздейді.</translation>
 <translation id="4613863813562375431">ChromiumOS нұсқасы</translation>
 <translation id="4621240073146040695">Сәл қалды! Жаңартуды аяқтау үшін Chromium жүйесін қайта іске қосыңыз.</translation>
+<translation id="4625064703209785397">Chromium-нің V8 жүйесімен сайттар жылдам жұмыс істейді, бірақ Chromium-нің шабуылдарға төзімділігі сәл азаяды.</translation>
 <translation id="4654936675281451226">Chromium үлгілерді жақсы түсінеді және сізден де жылдам толтыра алады. Бұл параметр қосулы.</translation>
 <translation id="4665829708273112819">Ескерту: Chromium кеңейтімдердің браузерді қолдану тарихын жазуына кедергі бола алмайды. Бұл кеңейтімді Инкогнито режимінде өшіру үшін бұл опцияның белгісін алып тастаңыз.</translation>
 <translation id="4673151026126227699">Chromium пайдалану есептерін де бөліссеңіз, бұл есептерде сіз кірген URL мекенжайлары қамтылады.</translation>
@@ -329,6 +330,7 @@
 <translation id="5386450000063123300">Chromium жаңартылуда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium браузеріне кіруге рұқсат ету</translation>
 <translation id="5405650547142096840">Chromium-нен жою</translation>
+<translation id="5424544524441439284">Өнімділік азаяды, бірақ Chromium шабуылдарға төзімді болады.</translation>
 <translation id="5427571867875391349">Әдепкі браузер ретінде Chromium қолданбасын орнату</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium бета нұсқасы</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium браузер жұмысын баяулататын қойындыны кідіртуді ұсынады}other{Chromium браузер жұмысын баяулататын қойындыларды кідіртуді ұсынады}}</translation>

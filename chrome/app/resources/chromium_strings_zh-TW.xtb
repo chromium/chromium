@@ -293,6 +293,7 @@
 <translation id="4724676981607797757">發生不支援的通訊協定錯誤，因此安裝失敗。</translation>
 <translation id="4746050847053251315">確定要關閉 Chromium 嗎？</translation>
 <translation id="4748217263233248895">Chromium 剛才套用了特殊的安全性更新。請立即重新啟動，系統會恢復你原先開啟的分頁。</translation>
+<translation id="4771701986670315895">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 項權限。</translation>
 <translation id="4788777615168560705">Chromium 無法檢查你的密碼，請於 24 小時後再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
 <translation id="4814736265800133385">不登入帳戶使用 Chromium</translation>
@@ -305,6 +306,7 @@
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
+<translation id="5141988424377517949">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許這個網站傳送通知，請點選網址列右上角的通知圖示。</translation>
 <translation id="5187123684706427865">Chromium 帳戶需要重新驗證</translation>
 <translation id="5224391634244552924">未儲存任何密碼。你必須先儲存密碼，才能使用 Chromium 的密碼檢查功能。</translation>
@@ -490,6 +492,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="734373864078049451">你瀏覽的網頁、書籤和其他 Chromium 設定都在這裡。</translation>
 <translation id="7349591376906416160">你的系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
+<translation id="7376384068949534168">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="7384121030444253939">Chromium 不再支援這項擴充功能，建議你移除。</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7450541714075000668">已複製文字</translation>
@@ -554,6 +557,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8248265253516264921">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="8254601181414348851">要在新設定檔中登入 Chromium 嗎？</translation>
 <translation id="8286943863733751221">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chromium 會顯示警告<ph name="END_LINK" /></translation>
+<translation id="8295827201165805317">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION" />權限。</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">由於 Chromium 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。</translation>
 <translation id="8321888067342493336">另存成圖片</translation>

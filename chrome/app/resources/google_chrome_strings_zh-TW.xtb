@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">如要取得日後的 Google Chrome 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 條款</translation>
 <translation id="2094919256425865063">確定要關閉 Chrome 嗎？</translation>
+<translation id="2096213354152647998">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION" />權限。</translation>
 <translation id="2106831557840787829">ChromeOS Flex 藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
 <translation id="2108778574543343055">停用 Chrome 在應用程式背景執行的功能</translation>
 <translation id="2120620239521071941">登出後，系統會將 <ph name="ITEMS_COUNT" /> 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chrome。</translation>
@@ -456,6 +457,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6696915334902295848">Chrome 需要麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="6712881677154121168">下載錯誤：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">加快 Chrome 的運作速度</translation>
+<translation id="6734827584173583205">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 項權限。</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系統</translation>
 <translation id="6750954913813541382">Chrome 會將你在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防範攻擊的能力會稍微降低。這項設定已開啟。</translation>
@@ -481,6 +483,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7025800014283535195">你可以在這裡切換不同的 Chrome 設定檔</translation>
+<translation id="7051685429025310665">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
 <translation id="7060643578009939353">使用 Google 智慧鏡頭搜尋這部影片</translation>
 <translation id="7071827361006050863">Chrome 即將刪除瀏覽資料</translation>
@@ -542,6 +545,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="77283119132245232">提供 <ph name="BROWSER_NAME" /> 的系統追蹤服務。如果這項服務停用，瀏覽器建立的效能追蹤記錄就不會包含內容轉換和就緒執行緒事件等系統層級事件。</translation>
 <translation id="7736869414036750079">貴機構要求你登入 Chrome</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
+<translation id="7748969056734910029">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="7761834446675418963">按一下你的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="778331955594035129">Chrome 需要位置存取權，才能執行這個網站要求的功能</translation>

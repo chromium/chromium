@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Активен денес</translation>
 <translation id="1523567067736644845">Отклучете за да се прикаже лозинката</translation>
 <translation id="1524563461097350801">Не, фала</translation>
+<translation id="1528290585275339320">Вклучете „Споделување на содржините на страницата“</translation>
 <translation id="1531038290222364269">Прикажи ги картичките</translation>
 <translation id="1536390784834419204">Преведи ја страницата</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">Истражете го новото мени</translation>
 <translation id="5132942445612118989">Синхронизирајте ги лозинките, историјата и друго на сите уреди</translation>
 <translation id="5141363746588976328">Скриј ја картичката „Намалувања на цената на картичките“</translation>
+<translation id="514154868070499296">Фонт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Излези од „Менувачот на картички“</translation>
 <translation id="5148717509369231739">Увезување во Safari</translation>
 <translation id="5157638238828697074">Нешто тргна наопаку. Апликацијата не можеше да се отвори.</translation>
@@ -1974,6 +1976,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8637431369725868556">Заштитете се од опасни сајтови.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нема компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="8643403533759285912">Избриши група</translation>
+<translation id="8645245178269185266">Споделувајте ги содржините на страниците со Gemini за да добивате порелевантни одговори</translation>
 <translation id="8647280737650867362">Не можеше да се сопре со следење на цената.</translation>
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8660600697590740984">Копирана слика на Lens</translation>

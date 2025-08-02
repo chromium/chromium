@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8 استفاده می‌کند.</translation>
 <translation id="2094648590148273905">‏شرایط ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
+<translation id="2096213354152647998">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION" /> را برداشت.</translation>
 <translation id="2106831557840787829">‏ارائه ChromeOS Flex با <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مانند <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزاری Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="2108778574543343055">‏غیرفعال کردن اجرای Chrome در پس‌زمینه برای برنامه‌ها</translation>
 <translation id="2120620239521071941">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
@@ -455,6 +456,7 @@
 <translation id="6696915334902295848">‏Chrome برای این سایت به اجازه میکروفون نیاز دارد</translation>
 <translation id="6712881677154121168">خطای بارگیری: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">‏سرعت Chrome را افزایش دهید</translation>
+<translation id="6734827584173583205">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت.</translation>
 <translation id="6735387454586646204">‏سیستم ChromeOS Flex</translation>
 <translation id="6750954913813541382">‏Chrome برای رفع غلط‌های املایی، نوشتاری را که در مرورگر تایپ می‌کنید به Google ارسال می‌کند</translation>
 <translation id="6760235774835597023">‏با این کار سرعت سایت‌ها با موتور Chrome نسخه ۸ بالاتر می‌رود اما مقاومت Chrome دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم روشن است.</translation>
@@ -480,6 +482,7 @@
 <translation id="7024536598735240744">خطای لغو فشرده‌سازی: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">نصب متوقف شد.</translation>
 <translation id="7025800014283535195">‏می‌توانید در اینجا بین نمایه‌های Chrome جابه‌جا شوید</translation>
+<translation id="7051685429025310665">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت.</translation>
 <translation id="7059914902409643750">‏Chrome را برای خودتان اختصاصی کنید</translation>
 <translation id="7060643578009939353">‏جستجوی این ویدیو با «لنز Google»</translation>
 <translation id="7071827361006050863">‏Chrome به‌زودی داده‌های مرور را حذف می‌کند</translation>
@@ -541,6 +544,7 @@
 <translation id="77283119132245232">سرویس‌های ردیابی سیستم را برای <ph name="BROWSER_NAME" /> ارائه می‌دهد. اگر این سرویس غیرفعال باشد، ردیابی‌های عملکردی که مرورگر ایجاد می‌کند شامل رویدادهای در سطح سیستم مانند رویدادهای تغییر زمینه و آماده‌سازی رشته نخواهد بود.</translation>
 <translation id="7736869414036750079">‏سازمانتان شما را ملزم می‌کند به سیستم Chrome وارد شوید</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>
+<translation id="7748969056734910029">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت.</translation>
 <translation id="7761834446675418963">‏برای باز کردن Chrome و شروع به مرور، روی نامتان کلیک کنید.</translation>
 <translation id="7777080907402804672">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="778331955594035129">‏Chrome برای این سایت به اجازه مکان نیاز دارد</translation>

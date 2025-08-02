@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktīvs šodien</translation>
 <translation id="1523567067736644845">Atbloķējiet, lai skatītu paroli</translation>
 <translation id="1524563461097350801">Nē, paldies</translation>
+<translation id="1528290585275339320">Ieslēdziet lapas satura kopīgošanu</translation>
 <translation id="1531038290222364269">Rādīt cilnes</translation>
 <translation id="1536390784834419204">Tulkot lapu</translation>
 <translation id="1540800554400757039">1. adrese</translation>
@@ -1045,6 +1046,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5128788795241319992">Izpētiet jauno izvēlni</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
 <translation id="5141363746588976328">Paslēpt kartīti “Cenu samazinājums cilnēs”</translation>
+<translation id="514154868070499296">Fonts: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Aizvērt ciļņu pārslēdzēju</translation>
 <translation id="5148717509369231739">Safari datu importēšana</translation>
 <translation id="5157638238828697074">Radās problēma. Lietojumprogrammu nevarēja atvērt.</translation>
@@ -1974,6 +1976,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8637431369725868556">Iegūstiet aizsardzību pret bīstamām vietnēm.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nav uzlauztu paroļu}=1{{COUNT} uzlauzta parole}zero{{COUNT} uzlauztu paroļu}one{{COUNT} uzlauzta parole}other{{COUNT} uzlauztas paroles}}</translation>
 <translation id="8643403533759285912">Dzēst grupu</translation>
+<translation id="8645245178269185266">Lai saņemtu atbilstošākas atbildes, kopīgojiet lapas saturu ar Gemini.</translation>
 <translation id="8647280737650867362">Nevarēja pārtraukt cenas izsekošanu.</translation>
 <translation id="8654802032646794042">Atcelt</translation>
 <translation id="8660600697590740984">Pakalpojumā Lens nokopētais attēls</translation>

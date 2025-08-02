@@ -557,6 +557,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1927439846988093361">Péče o vlasy</translation>
 <translation id="1935353813610900265">Zpětná vazba k vyhledávání v historii s podporou AI</translation>
 <translation id="1935995810530254458">Přesto zkopírovat</translation>
+<translation id="1938580037092872316">Přidejte k uložené adrese nové informace</translation>
 <translation id="1939059826036755332">Automatický obraz v obraze</translation>
 <translation id="1939175642807587452">Může žádat o odesílání oznámení</translation>
 <translation id="1940441167050915935">Vymazat uložené bezpečnostní kódy</translation>
@@ -1525,6 +1526,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3570079787344939099">Posouvání a přibližování</translation>
 <translation id="357244642999988503">Odstranit sloupec</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Přidejte k adrese nové informace</translation>
 <translation id="3575121482199441727">Povolit pro tento web</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Byla vybrána možnost Název ulice</translation>
@@ -3536,6 +3538,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6935082727755903526">Zaměstnání v oboru financí a účetnictví</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="6936976777388162184">Toto zařízení je součástí balíčku a nelze ho zaregistrovat do upgradu Kiosk &amp; Signage.</translation>
+<translation id="6942444979237658241">Komentáře – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strategické hry</translation>
 <translation id="6944692733090228304">Zadali jste heslo na webu, který není spravován organizací <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Aby byl váš účet chráněn, nepoužívejte jeho heslo v jiných aplikacích a na jiných webech.</translation>
 <translation id="6946949206576443118">Vyhledávejte v Chromu na webu</translation>
@@ -3994,6 +3997,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7668654391829183341">Neznámé zařízení</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> z <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Akce provedené s daty, která byla označena jako důvěrná (od přihlášení 1 akce). <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" />}few{Akce provedené s daty, která byla označena jako důvěrná (od přihlášení # akce). <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" />}many{Akce provedené s daty, která byla označena jako důvěrná (od přihlášení # akce). <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" />}other{Akce provedené s daty, která byla označena jako důvěrná (od přihlášení # akcí). <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Informace z vašeho účtu Google <ph name="USER_EMAIL" /> vám pomůžou vyplňovat formuláře v Chromu rychleji</translation>
 <translation id="7673278391011283842">Schránka 6</translation>
 <translation id="7675325315208090829">Spravovat platební metody…</translation>
 <translation id="767550629621587224">Předřezané záložky</translation>
@@ -4126,6 +4130,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7908648876066812348">Zapínání virtuální karty</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter přejdete na stránku bezpečnostní kontroly Chromu v nastavení</translation>
 <translation id="791107458486222637">Opakování výsledku</translation>
+<translation id="7912924955815015552">Importováno z prohlížeče Safari</translation>
 <translation id="791551905239004656">Kreslení a vybarvování</translation>
 <translation id="7916162853251942238">Flexotisková báze</translation>
 <translation id="791698251820376781">Vaše organizace přihlášení nepovoluje</translation>
@@ -4260,6 +4265,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvořeno před 1 měsícem}few{Vytvořeno před {NUM_MONTHS} měsíci}many{Vytvořeno před {NUM_MONTHS} měsíce}other{Vytvořeno před {NUM_MONTHS} měsíci}}</translation>
 <translation id="8148608574971654810">Verze PDF:</translation>
 <translation id="8149426793427495338">Počítač přešel do režimu spánku.</translation>
+<translation id="815036624016370447">Informace z vašeho účtu Google <ph name="ACCOUNT" /> vám pomůžou vyplňovat formuláře v Chromu rychleji</translation>
 <translation id="8150722005171944719">Soubor na adrese <ph name="URL" /> nelze načíst. Možná byl odstraněn, přesunut nebo mohou přístupu bránit oprávnění souboru.</translation>
 <translation id="8151185429379586178">Nástroje pro vývojáře</translation>
 <translation id="8153865548451212769">{0,plural, =1{Zásady administrátora nedoporučují stahovat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují stahovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují stahovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují stahovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>

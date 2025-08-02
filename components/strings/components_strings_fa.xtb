@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">مراقبت از مو</translation>
 <translation id="1935353813610900265">ارسال بازخورد درباره جستجوی سابقه با بهره‌گیری از هوش مصنوعی</translation>
 <translation id="1935995810530254458">درهرصورت کپی شود</translation>
+<translation id="1938580037092872316">افزودن اطلاعات جدید به نشانی ذخیره‌شده</translation>
 <translation id="1939059826036755332">تصویر در تصویر خودکار</translation>
 <translation id="1939175642807587452">می‌تواند برای ارسال اعلان درخواست دهد</translation>
 <translation id="1940441167050915935">حذف کدهای امنیتی ذخیره‌شده</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
 <translation id="2102519472192754194">مرورگر وب</translation>
 <translation id="2103210856015238101">کارت‌های وفاداری دردسترس که با لمس کردن تکمیل می‌شود به‌صورت کامل باز شده است.</translation>
+<translation id="2104739941682874393">«تکمیل خودکار بهبودیافته» فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند</translation>
 <translation id="2105838220373099643">بازی‌های نقش‌آفرینی</translation>
 <translation id="2107021941795971877">پشتیبان‌های چاپ</translation>
 <translation id="2108755909498034140">رایانه را راه‌اندازی مجدد کنید</translation>
@@ -1527,6 +1529,7 @@
 <translation id="3570079787344939099">پیمایش و بزرگ‌نمایی</translation>
 <translation id="357244642999988503">برداشتن ستون</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">افزودن اطلاعات جدید به نشانی</translation>
 <translation id="3575121482199441727">مجاز برای این سایت</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">گزینه نام خیابان انتخاب شد</translation>
@@ -2426,6 +2429,7 @@
 <translation id="5052517576853118371">موضوع‌های فعال</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}one{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}other{برای ارسال این فایل‌ها ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}}</translation>
 <translation id="505757197798929356">دلیلی برای باز کردن ارائه دهید (الزامی)</translation>
+<translation id="5058282932481719070">در تنظیمات، اطلاعات بیشتری درباره «تکمیل خودکار بهبودیافته» کسب کنید</translation>
 <translation id="5060419232449737386">تنظیمات زیرنویس ناشنوایان</translation>
 <translation id="5060483733937416656">‏قبلاً انتخاب کرده‌اید در وب‌سایت‌هایی که از <ph name="PROVIDER_ORIGIN" /> استفاده می‌کنند درستی‌سنجی با Windows Hello انجام شود. این ارائه‌دهنده ممکن است اطلاعات روش پرداختتان را ذخیره کرده باشد، که می‌توانید <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">منظورتان <ph name="LOOKALIKE_DOMAIN" /> بود؟</translation>
@@ -3027,6 +3031,7 @@
 <translation id="6062937464449575061">لغو پیگیری قیمت</translation>
 <translation id="6063415549109819824">تأمین هزینه خرید خانه</translation>
 <translation id="6070432475334343308">یک یا چند فایل در پوشه <ph name="FOLDER_NAME" /> در <ph name="CLOUD_PROVIDER" /> بارگذاری نشدند</translation>
+<translation id="6071503852498277813">سرویس تجزیه‌کننده نشانک محتوا</translation>
 <translation id="6078069862923723141">فیروزه‌ای ۲</translation>
 <translation id="6085149458302186532">برچسب (رنگی)</translation>
 <translation id="6087312102907839798">جستجوهای مربوط</translation>
@@ -3538,6 +3543,7 @@
 <translation id="6935082727755903526">مشاغل حسابداری و مالی</translation>
 <translation id="6935179587384421592">‫<ph name="SIZE" />. ممکن است برخی سایت‌ها در بازدید بعدی‌تان کندتر بار شوند.</translation>
 <translation id="6936976777388162184">این دستگاه بسته‌ای است و نمی‌توان آن را در «ارتقای کیوسک و تابلوی دیجیتال» ثبت‌نام کرد.</translation>
+<translation id="6942444979237658241">نظرات - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">بازی‌های استراتژی</translation>
 <translation id="6944692733090228304">گذرواژه‌تان را در سایتی وارد کردید که توسط <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> مدیریت نمی‌شود. برای محافظت از حسابتان، از گذرواژه‌تان در برنامه‌ها و سایت‌های دیگر استفاده نکنید.</translation>
 <translation id="6946949206576443118">‏جستجوی وب در Chrome</translation>
@@ -3550,6 +3556,7 @@
 <translation id="695140971690006676">بازنشانی همه</translation>
 <translation id="6954049078461159956">هاكی</translation>
 <translation id="695582302419398462">مقوا (دوجداره)</translation>
+<translation id="6957153644870901611">«تکمیل خودکار بهبودیافته» را روشن کنید تا فیلدهای بیشتری را به‌طور خودکار تکمیل کند</translation>
 <translation id="6957887021205513506">به نظر می‌رسد که گواهی سرور جعلی باشد.</translation>
 <translation id="6958564499836457428">‏مدیریت تنظیمات حریم خصوصی Google در «حساب Google»</translation>
 <translation id="6961844873822989059">می‌تواند برای استفاده از قلم‌های نصب‌شده در دستگاه درخواست دهد</translation>
@@ -3996,6 +4003,7 @@
 <translation id="7668654391829183341">دستگاه ناشناس</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />، <ph name="ITEM_POSITION" /> از <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{اقدامات انجام‌شده درخصوص داده‌های پرچم‌گذاری‌شده به‌عنوان محرمانه (یک اقدام از زمان ورود به سیستم). <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />}one{اقدامات انجام‌شده درخصوص داده‌های پرچم‌گذاری‌شده به‌عنوان محرمانه (# اقدام از زمان ورود به سیستم). <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />}other{اقدامات انجام‌شده درخصوص داده‌های پرچم‌گذاری‌شده به‌عنوان محرمانه (# اقدام از زمان ورود به سیستم). <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">‏اطلاعات «حساب Google»‏ (<ph name="USER_EMAIL" />) می‌تواند به شما کمک کند فرم‌ها را در Chrome سریع‌تر تکمیل کنید</translation>
 <translation id="7673278391011283842">صندوق پست ۶</translation>
 <translation id="7675325315208090829">مدیریت روش‌های پرداخت…</translation>
 <translation id="767550629621587224">برگه‌های ازپیش برش‌خورده</translation>
@@ -4128,6 +4136,7 @@
 <translation id="7908648876066812348">درحال روشن کردن کارت مجازی</translation>
 <translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای رفتن به صفحه بررسی ایمنی Chrome در تنظیمات، کلید «جهش» و سپس «ورود» را فشار دهید.</translation>
 <translation id="791107458486222637">درحال ازنو انجام دادن نتیجه</translation>
+<translation id="7912924955815015552">‏واردشده از Safari</translation>
 <translation id="791551905239004656">نقاشی و رنگ‌آمیزی</translation>
 <translation id="7916162853251942238">پایه فلکسو</translation>
 <translation id="791698251820376781">سازمانتان به شما اجازه نمی‌دهد به سیستم وارد شوید</translation>
@@ -4262,6 +4271,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫۱ ماه پیش ایجاد شده است}one{‫{NUM_MONTHS} ماه پیش ایجاد شده است}other{‫{NUM_MONTHS} ماه پیش ایجاد شده است}}</translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
+<translation id="815036624016370447">‏اطلاعات «حساب Google»‏ (<ph name="ACCOUNT" />) می‌تواند به شما کمک کند فرم‌ها را در Chrome سریع‌تر تکمیل کنید</translation>
 <translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابجا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
 <translation id="8151185429379586178">ابزارهای برنامه‌نویس</translation>
 <translation id="8153865548451212769">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگیری کنید}}</translation>

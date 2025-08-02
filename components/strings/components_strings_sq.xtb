@@ -557,6 +557,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1927439846988093361">Kujdesi për flokët</translation>
 <translation id="1935353813610900265">Dërgo komente për kërkimin te historiku, mundësuar nga IA-ja</translation>
 <translation id="1935995810530254458">Kopjo gjithsesi</translation>
+<translation id="1938580037092872316">Shto informacione të reja për adresën e ruajtur</translation>
 <translation id="1939059826036755332">Modaliteti automatik "figurë brenda figurës"</translation>
 <translation id="1939175642807587452">Mund të kërkojë të dërgojë njoftime</translation>
 <translation id="1940441167050915935">Fshi kodet e ruajtura të sigurisë</translation>
@@ -657,6 +658,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2102495993840063010">Aplikacionet e Android</translation>
 <translation id="2102519472192754194">Shfletuesit e uebit</translation>
 <translation id="2103210856015238101">Kartat e besnikërisë të disponueshme për t'u plotësuar me prekje janë hapur në lartësi të plotë.</translation>
+<translation id="2104739941682874393">Plotësimi automatik i përmirësuar i kupton më mirë formularët dhe mund t'i plotësojë automatikisht më shpejt për ty</translation>
 <translation id="2105838220373099643">Lojëra me ndërrim rolesh</translation>
 <translation id="2107021941795971877">Mbështetjet e printimit</translation>
 <translation id="2108755909498034140">Rinis kompjuterin</translation>
@@ -1527,6 +1529,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3570079787344939099">Lëvizja dhe zmadhimi</translation>
 <translation id="357244642999988503">Hiq kolonën</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Shto informacione të reja tek adresa</translation>
 <translation id="3575121482199441727">Lejo për këtë sajt</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Është zgjedhur opsioni i emrit të rrugës</translation>
@@ -2426,6 +2429,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5052517576853118371">Temat aktive</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për ta dërguar këta skedarë duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
 <translation id="505757197798929356">Jep arsyen për hapjen (e detyrueshme)</translation>
+<translation id="5058282932481719070">mëso më shumë rreth plotësimit automatik të përmirësuar te cilësimet</translation>
 <translation id="5060419232449737386">Cilësimet e titrave</translation>
 <translation id="5060483733937416656">Ti zgjodhe që të verifikohesh me Windows Hello në uebsajtet që përdorin <ph name="PROVIDER_ORIGIN" />. Ky ofrues mund të ketë ruajtur informacione për mënyrën tënde të pagesës, të cilat mund <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Mos dëshiron të thuash <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3031,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6062937464449575061">Anulo monitorimin e çmimeve</translation>
 <translation id="6063415549109819824">Financimi i shtëpisë</translation>
 <translation id="6070432475334343308">Një ose disa skedarë nuk u ngarkuan në "<ph name="FOLDER_NAME" />" te "<ph name="CLOUD_PROVIDER" />"</translation>
+<translation id="6071503852498277813">Shërbimi i analizuesit të faqeshënuesve të përmbajtjeve</translation>
 <translation id="6078069862923723141">Gurkali 2</translation>
 <translation id="6085149458302186532">Etiketa (me ngjyra)</translation>
 <translation id="6087312102907839798">Kërkime të ngjashme</translation>
@@ -3537,6 +3542,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6935082727755903526">Punë në kontabilitet dhe financë</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Disa sajte mund të ngarkohen më ngadalë në vizitën tënde të radhës.</translation>
 <translation id="6936976777388162184">Kjo është një pajisje pjesë e një pakete dhe nuk mund të regjistrohet me përmirësimin e kioskës dhe sinjalizimit.</translation>
+<translation id="6942444979237658241">Komentet - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Lojëra me strategji</translation>
 <translation id="6944692733090228304">Ke futur fjalëkalimin tënd në një faqe që nuk menaxhohet nga <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Për të mbrojtur llogarinë, mos e ripërdor fjalëkalimin tënd në aplikacione dhe faqe të tjera.</translation>
 <translation id="6946949206576443118">Kërko në ueb në Chrome</translation>
@@ -3549,6 +3555,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="695140971690006676">Rivendos të gjitha</translation>
 <translation id="6954049078461159956">Hokej</translation>
 <translation id="695582302419398462">Karton (me dy mure)</translation>
+<translation id="6957153644870901611">Aktivizo plotësimin automatik të përmirësuar për të plotësuar automatikisht më shumë fusha</translation>
 <translation id="6957887021205513506">Certifikata e serverit duket se është e rreme.</translation>
 <translation id="6958564499836457428">Menaxho cilësimet e privatësisë të Google në "Llogarinë tënde të Google"</translation>
 <translation id="6961844873822989059">Mund të kërkojë të përdorë fontet e instaluara në pajisjen tënde</translation>
@@ -3994,6 +4001,7 @@ Detaje shtesë:
 <translation id="7668654391829183341">Pajisje e panjohur</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> nga <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Veprimet e kryera me të dhënat e raportuara si konfidenciale (1 veprim që nga identifikimi). <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" />}other{Veprimet e kryera me të dhënat e raportuara si konfidenciale (# veprime që nga identifikimi). <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Informacionet nga "Llogaria jote e Google" <ph name="USER_EMAIL" /> mund të të ndihmojnë t'i plotësosh më shpejt formularët në Chrome</translation>
 <translation id="7673278391011283842">Kutia postare 6</translation>
 <translation id="7675325315208090829">Menaxho mënyrat e pagesës...</translation>
 <translation id="767550629621587224">Skeda të prera paraprakisht</translation>
@@ -4126,6 +4134,7 @@ Detaje shtesë:
 <translation id="7908648876066812348">Karta virtuale po aktivizohet</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të shkuar te faqja e kontrollit të sigurisë të Chrome te cilësimet</translation>
 <translation id="791107458486222637">Po ribëhen rezultatet</translation>
+<translation id="7912924955815015552">Importuar nga Safari</translation>
 <translation id="791551905239004656">Vizatim dhe ngjyrosje</translation>
 <translation id="7916162853251942238">Baza fleksografike</translation>
 <translation id="791698251820376781">Organizata jote nuk lejon që të identifikohesh</translation>
@@ -4260,6 +4269,7 @@ Detaje shtesë:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Krijuar 1 muaj më parë}other{Krijuar {NUM_MONTHS} muaj më parë}}</translation>
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>
 <translation id="8149426793427495338">Kompjuteri yt kaloi në gjumë.</translation>
+<translation id="815036624016370447">Informacionet nga "Llogaria jote e Google" <ph name="ACCOUNT" /> mund të të ndihmojnë t'i plotësosh më shpejt formularët në Chrome</translation>
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>
 <translation id="8151185429379586178">Mjetet e zhvilluesit</translation>
 <translation id="8153865548451212769">{0,plural, =1{Politika e administratorit nuk rekomandon shkarkimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon shkarkimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>

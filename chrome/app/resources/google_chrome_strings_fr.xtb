@@ -85,6 +85,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2091012649849228750">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
 <translation id="2094648590148273905">Conditions d'utilisation de ChromeOS Flex</translation>
 <translation id="2094919256425865063">Quitter Chrome quand même ?</translation>
+<translation id="2096213354152647998">Vous n'avez pas consulté le site récemment. Chrome a supprimé "<ph name="PERMISSION" />".</translation>
 <translation id="2106831557840787829">ChromeOS Flex dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" /> et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
 <translation id="2108778574543343055">Désactiver l'exécution de Chrome en arrière-plan pour les applis</translation>
 <translation id="2120620239521071941">Cette action aura pour effet de supprimer <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
@@ -462,6 +463,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6696915334902295848">Chrome a besoin de l'autorisation d'accéder au micro pour ce site</translation>
 <translation id="6712881677154121168">Erreur de téléchargement : <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Rendre Chrome plus rapide</translation>
+<translation id="6734827584173583205">Vous n'avez pas consulté le site récemment. Chrome a supprimé "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" et <ph name="COUNT" /> autre(s).</translation>
 <translation id="6735387454586646204">Système ChromeOS Flex</translation>
 <translation id="6750954913813541382">Pour corriger les fautes d'orthographe, Chrome envoie à Google le texte que vous saisissez dans le navigateur</translation>
 <translation id="6760235774835597023">Accélère les sites avec le moteur V8 de Chrome, mais rend Chrome légèrement moins résistant aux attaques. Ce paramètre est activé.</translation>
@@ -487,6 +489,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation interrompue.</translation>
 <translation id="7025800014283535195">Vous pouvez passer d'un profil Chrome à un autre ici</translation>
+<translation id="7051685429025310665">Vous n'avez pas consulté le site récemment. Chrome a supprimé "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" et "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
 <translation id="7060643578009939353">Rechercher dans cette vidéo avec Google Lens</translation>
 <translation id="7071827361006050863">Chrome supprimera bientôt les données de navigation</translation>
@@ -548,6 +551,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="77283119132245232">Fournit des services de traçage système pour <ph name="BROWSER_NAME" />. Si ce service est désactivé, les traces de performances créées par le navigateur n'incluent pas les événements système tels que les changements de contexte et les threads prêts.</translation>
 <translation id="7736869414036750079">Votre organisation exige que vous vous connectiez à Chrome</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
+<translation id="7748969056734910029">Vous n'avez pas consulté le site récemment. Chrome a supprimé "<ph name="PERMISSION_1" />" et "<ph name="PERMISSION_2" />".</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver à tout moment cette option dans les paramètres.</translation>
 <translation id="778331955594035129">Chrome a besoin de l'autorisation d'accéder à la position pour ce site</translation>

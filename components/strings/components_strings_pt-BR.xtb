@@ -658,6 +658,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2102519472192754194">Navegadores da Web</translation>
 <translation id="2103210856015238101">Cartões fidelidade disponíveis para preenchimento com um toque abertos no tamanho máximo.</translation>
+<translation id="2104739941682874393">O Preenchimento Automático Aprimorado entende melhor os formulários e agiliza o processo para você</translation>
 <translation id="2105838220373099643">Jogos de RPG</translation>
 <translation id="2107021941795971877">Compatibilidades de impressão</translation>
 <translation id="2108755909498034140">Reiniciar seu computador</translation>
@@ -1528,6 +1529,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3570079787344939099">Rolagem e zoom</translation>
 <translation id="357244642999988503">Remover coluna</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Adicionar novas informações ao endereço</translation>
 <translation id="3575121482199441727">Permitir para este site</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">A opção de nome da rua foi selecionada</translation>
@@ -2427,6 +2429,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5052517576853118371">Temas ativos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes arquivos usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="505757197798929356">Informe o motivo da abertura (obrigatório)</translation>
+<translation id="5058282932481719070">Saiba mais sobre o Preenchimento Automático Aprimorado nas configurações</translation>
 <translation id="5060419232449737386">Configurações de legenda</translation>
 <translation id="5060483733937416656">Você escolheu fazer a verificação com o Windows Hello em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Esse provedor pode ter armazenado informações sobre sua forma de pagamento, mas você pode <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Você quis dizer "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
@@ -3028,6 +3031,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6062937464449575061">Não monitorar preço</translation>
 <translation id="6063415549109819824">Financiamento de imóveis residenciais</translation>
 <translation id="6070432475334343308">Um ou mais arquivos não foram enviados para <ph name="FOLDER_NAME" /> em <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Serviço de análise de favoritos de conteúdo</translation>
 <translation id="6078069862923723141">Ciano 2</translation>
 <translation id="6085149458302186532">Rótulos (coloridos)</translation>
 <translation id="6087312102907839798">Pesquisas relacionadas</translation>
@@ -3552,6 +3556,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="695140971690006676">Redefinir tudo</translation>
 <translation id="6954049078461159956">Hóquei</translation>
 <translation id="695582302419398462">Papelão (duplo)</translation>
+<translation id="6957153644870901611">Ative o Preenchimento Automático Aprimorado para preencher mais campos automaticamente</translation>
 <translation id="6957887021205513506">O certificado do servidor parece ser falsificado.</translation>
 <translation id="6958564499836457428">Gerenciar configurações de privacidade da Conta do Google</translation>
 <translation id="6961844873822989059">Pode pedir para usar as fontes instaladas no dispositivo</translation>
@@ -4131,6 +4136,7 @@ Mais detalhes:
 <translation id="7908648876066812348">Ativando o cartão virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para acessar a página de confirmação de segurança do Chrome nas configurações</translation>
 <translation id="791107458486222637">Botão "Refazer" pressionado</translation>
+<translation id="7912924955815015552">Importados do Safari</translation>
 <translation id="791551905239004656">Desenho e pintura</translation>
 <translation id="7916162853251942238">Flexográfica</translation>
 <translation id="791698251820376781">Sua organização não permite que você faça login</translation>

@@ -86,6 +86,7 @@
 <translation id="2091012649849228750">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд Windows 10 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер Windows 8-г ашиглаж байна.</translation>
 <translation id="2094648590148273905">ChromeOS Flex-н нөхцөл</translation>
 <translation id="2094919256425865063">Ямар ч байсан Chrome-с гарах уу?</translation>
+<translation id="2096213354152647998">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION" />-г хассан.</translation>
 <translation id="2106831557840787829">ChromeOS Flex-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="2108778574543343055">Аппуудын хувьд Chrome-г дэвсгэрт ажиллуулахыг идэвхгүй болгох</translation>
 <translation id="2120620239521071941">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйлийг устгана. Дараа нь өгөгдлөө сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
@@ -463,6 +464,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6696915334902295848">Chrome-д энэ сайтад зориулж микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="6712881677154121168">Татахад алдаа гарлаа: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome-г илүү хурдан болгоорой</translation>
+<translation id="6734827584173583205">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон өөр <ph name="COUNT" /> зөвшөөрлийг хассан.</translation>
 <translation id="6735387454586646204">ChromeOS Flex-н систем</translation>
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
 <translation id="6760235774835597023">Chrome-н V8 системээр сайтыг хурдасгах ч Chrome-г халдлагад арай тэсвэр багатай болгоно. Энэ тохиргоо асаалттай байна.</translation>
@@ -488,6 +490,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7024536598735240744">Задлахад алдаа гарлаа: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Суулгахыг зогсоосон.</translation>
 <translation id="7025800014283535195">Та энд Chrome-н профайлууд хооронд сэлгэх боломжтой</translation>
+<translation id="7051685429025310665">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
 <translation id="7059914902409643750">Chrome-г өөрийн болгоорой</translation>
 <translation id="7060643578009939353">Google Lens-р энэ видеоноос хай</translation>
 <translation id="7071827361006050863">Chrome удахгүй интернэтээр үзсэн өгөгдлийг устгана</translation>
@@ -549,6 +552,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />-д зориулж системийн ул мөрийн үйлчилгээгээр хангадаг. Хэрэв энэ үйлчилгээг идэвхгүй болгосон бол хөтчийн үүсгэсэн гүйцэтгэлийн ул мөрд хам сэдэв сэлгэх болон дэд процессыг бэлдэх үйл явдал зэрэг систем дээрх үйл явдлуудыг оруулахгүй.</translation>
 <translation id="7736869414036750079">Танай байгууллага таныг Chrome-д нэвтрэхийг шаардаж байна</translation>
 <translation id="7747138024166251722">Суулгагч нь түр зуурын хадгалалтын санг үүсгэж чадсангүй. Дискэнд сул зай байгаа эсэхийг мөн программ хангамж суулгах зөвшөөрлийг шалгана уу.</translation>
+<translation id="7748969056734910029">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />-г хассан.</translation>
 <translation id="7761834446675418963">Chrome-ыг нээж хайлтаа эхлүүлэх нэрэн дээрээ дарна уу.</translation>
 <translation id="7777080907402804672">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chrome танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ. Та үүнийг хүссэн үедээ тохиргоонд унтрааж болно.</translation>
 <translation id="778331955594035129">Chrome-д энэ сайтад зориулж байршлын зөвшөөрөл шаардлагатай</translation>

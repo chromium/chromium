@@ -86,6 +86,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2091012649849228750">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används Windows 8.</translation>
 <translation id="2094648590148273905">Villkor för ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vill du avsluta Chrome ändå?</translation>
+<translation id="2096213354152647998">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Inaktivera att Chrome körs i bakgrunden för appar</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> tas bort från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
@@ -463,6 +464,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6696915334902295848">Du behöver ge Chrome mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="6712881677154121168">Nedladdningsfel: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Gör Chrome snabbare</translation>
+<translation id="6734827584173583205">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="COUNT" /> till.</translation>
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6750954913813541382">Text som du skriver i webbläsaren Chrome skickas till Google för att kontrollera stavningen</translation>
 <translation id="6760235774835597023">Detta gör webbplatser snabbare med Chromes V8-motor men Chrome blir något mindre motståndskraftigt mot attacker. Inställningen är aktiverad.</translation>
@@ -488,6 +490,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7024536598735240744">Uppackningsfel: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installationen avbröts.</translation>
 <translation id="7025800014283535195">Du kan byta mellan Chrome-profiler här</translation>
+<translation id="7051685429025310665">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Anpassa Chrome</translation>
 <translation id="7060643578009939353">Sök i den här videon med Google Lens</translation>
 <translation id="7071827361006050863">Webbinformation raderas snart i Chrome</translation>
@@ -549,6 +552,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="77283119132245232">Tillhandahåller systemspårningstjänster för <ph name="BROWSER_NAME" />. Om tjänsten är inaktiverad innehåller prestandaspårning som skapas av webbläsaren inte systemhändelser som kontextbyten och färdiga trådhändelser.</translation>
 <translation id="7736869414036750079">Organisationen kräver att du loggar in i Chrome</translation>
 <translation id="7747138024166251722">Det gick inte att skapa en tillfällig katalog för installationsfilen. Kontrollera diskutrymmet och att du har behörighet att installera program.</translation>
+<translation id="7748969056734910029">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Öppna Chrome genom att klicka på ditt namn och börja surfa.</translation>
 <translation id="7777080907402804672">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras. Du kan när som helst inaktivera den här inställningen.</translation>
 <translation id="778331955594035129">Du behöver ge Chrome platsbehörighet för den här webbplatsen</translation>

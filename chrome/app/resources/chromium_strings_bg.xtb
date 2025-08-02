@@ -292,6 +292,7 @@
 <translation id="4724676981607797757">Инсталирането не бе успешно поради грешка, свързана с неподдържан протокол.</translation>
 <translation id="4746050847053251315">Искате ли да затворите Chromium въпреки това?</translation>
 <translation id="4748217263233248895">Току-що бе приложена специална актуализация за сигурност за Chromium. Рестартирайте сега – ще възстановим разделите ви.</translation>
+<translation id="4771701986670315895">Не сте посещавали този сайт наскоро. Chromium премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и още <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium не може да провери паролите ви. Опитайте отново след 24 часа или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Използва се същата услуга за проверка на правописа като в Google Търсене. Текстът, който въвеждате в браузъра, се изпраща до Google. Винаги можете да промените това поведение от настройките.</translation>
 <translation id="4814736265800133385">Използване на Chromium без профил</translation>
@@ -304,6 +305,7 @@
 <translation id="4987820182225656817">Гостите могат да използват Chromium, без да оставят следи.</translation>
 <translation id="4994636714258228724">Добавяне на вас към Chromium</translation>
 <translation id="5123973130450702873">Chromium се нуждае от разрешение да проследява ръцете ви</translation>
+<translation id="5141988424377517949">Не сте посещавали този сайт наскоро. Chromium премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“.</translation>
 <translation id="5174969993834422967">Обикновено блокирате известията. За да разрешите на този сайт да ви изпраща такива, кликнете върху иконата за известия в десния ъгъл на лентата за местоположението.</translation>
 <translation id="5187123684706427865">Изисква се повторно удостоверяване за профила в Chromium</translation>
 <translation id="5224391634244552924">Няма запазени пароли. Chromium може да проверява паролите ви, когато ги запазите.</translation>
@@ -485,6 +487,7 @@
 <translation id="734373864078049451">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chromium.</translation>
 <translation id="7349591376906416160">Системният ви администратор е конфигурирал Chromium да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
+<translation id="7376384068949534168">Не сте посещавали този сайт наскоро. Chromium премахна разрешенията „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“.</translation>
 <translation id="7384121030444253939">Това разширение вече не се поддържа. Chromium препоръчва да го премахнете.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Текстът е копиран</translation>
@@ -549,6 +552,7 @@
 <translation id="8248265253516264921">Ако няма полезно описание за дадено изображение, Chromium ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google. По всяко време можете да изключите тази функция от настройките.</translation>
 <translation id="8254601181414348851">Искате ли да влезете в Chromium с нов потребителски профил?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ви предупреждава<ph name="END_LINK" /> за опасни сайтове и изтегляния</translation>
+<translation id="8295827201165805317">Не сте посещавали този сайт наскоро. Chromium премахна разрешението „<ph name="PERMISSION" />“.</translation>
 <translation id="8313851650939857356">Грешка при стартирането: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Организацията ви затваря Chromium, когато не се използва в продължение на <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Запазване като изображение</translation>

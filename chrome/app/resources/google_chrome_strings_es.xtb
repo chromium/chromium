@@ -86,6 +86,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2091012649849228750">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.</translation>
 <translation id="2094648590148273905">Términos de ChromeOS Flex</translation>
 <translation id="2094919256425865063">¿Quieres cerrar Chrome de todas formas?</translation>
+<translation id="2096213354152647998">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Inhabilitar que Chrome se ejecute en segundo plano en las aplicaciones</translation>
 <translation id="2120620239521071941">Se eliminarán <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -463,6 +464,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6696915334902295848">Chrome necesita el permiso del micrófono para este sitio</translation>
 <translation id="6712881677154121168">Error de descarga: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Aumenta la velocidad de Chrome</translation>
+<translation id="6734827584173583205">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6750954913813541382">Chrome envía a Google el texto que escribes en el navegador para corregir los errores ortográficos</translation>
 <translation id="6760235774835597023">Acelera los sitios con el motor V8 de Chrome, pero hace que Chrome sea un poco menos resistente a los ataques. Esta opción está activada.</translation>
@@ -488,6 +490,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7024536598735240744">Error al descomprimir: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalación detenida.</translation>
 <translation id="7025800014283535195">Puedes cambiar de un perfil de Chrome a otro aquí</translation>
+<translation id="7051685429025310665">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu gusto</translation>
 <translation id="7060643578009939353">Busca este vídeo con Google Lens</translation>
 <translation id="7071827361006050863">Chrome eliminará los datos de navegación dentro de poco</translation>
@@ -549,6 +552,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="77283119132245232">Proporciona servicios de trazado del sistema para <ph name="BROWSER_NAME" />. Si se inhabilita este servicio, las trazas de rendimiento creadas por el navegador no incluirán eventos de todo el sistema, como los eventos de cambio de contexto y de hilo listo.</translation>
 <translation id="7736869414036750079">Tu organización requiere que inicies sesión en Chrome</translation>
 <translation id="7747138024166251722">El programa de instalación no ha podido crear un directorio temporal. Comprueba si hay espacio libre en el disco y si tienes autorización para instalar el software.</translation>
+<translation id="7748969056734910029">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
 <translation id="7777080907402804672">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
 <translation id="778331955594035129">Chrome necesita el permiso de ubicación para este sitio</translation>

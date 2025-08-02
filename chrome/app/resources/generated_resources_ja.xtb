@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">Android スマートフォンからアカウントを自動的に取得する</translation>
 <translation id="1069814191880976658">別の画面を選択</translation>
 <translation id="107022587824771715">タブグループの候補は現在ご利用いただけません。<ph name="BEGIN_LINK" />今すぐ更新<ph name="END_LINK" />するか、しばらくしてからもう一度お試しください</translation>
+<translation id="1070357312245925724">ナビゲーション ショートカット</translation>
 <translation id="1070377999570795893">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のある拡張機能が追加されました。
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@
 <translation id="1122913801042512795">アカウントのログイン情報が古くなっています。いったんログアウトしてからもう一度ログインしてください。</translation>
 <translation id="1122960773616686544">ブックマーク名</translation>
 <translation id="1124772482545689468">ユーザー</translation>
+<translation id="1125371304736839151">ブラウザの上部に Gemini を表示する</translation>
 <translation id="1125550662859510761">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
 <translation id="1125921926864945797">壁紙とスタイル</translation>
 <translation id="1128090040635299943">Linux を設定しています。設定には数分かかります。</translation>
@@ -216,6 +218,7 @@
 <translation id="1142713751288681188">用紙の種類</translation>
 <translation id="1143142264369994168">証明書の署名者</translation>
 <translation id="1145593918056169051">プリンタが停止しました</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{拡張機能}=1{拡張機能（{SELECTED_ITEMS}）}other{拡張機能（{SELECTED_ITEMS}）}}</translation>
 <translation id="114715166554490743">ヘッド ポインター</translation>
 <translation id="114721135501989771">Chrome で Google の最先端技術を活用</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
@@ -733,6 +736,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> を削除</translation>
 <translation id="1504551620756424144">共有フォルダは Windows では <ph name="BASE_DIR" /> にあります。</translation>
 <translation id="1505494256539862015">パスワードをエクスポート</translation>
+<translation id="1505654899813338756">タブをグループ化して、関連するページをまとめて保存し、お使いのすべてのデバイスからアクセスできます。</translation>
 <translation id="1506061864768559482">検索エンジン</translation>
 <translation id="1506187449813838456">ピッチを上げる</translation>
 <translation id="1507170440449692343">このページはカメラへのアクセスを禁止されています。</translation>
@@ -986,6 +990,7 @@
 <translation id="1660763353352708040">電源アダプターに関する問題</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを修正}other{ブラウザの動作を遅くしているタブを修正}}</translation>
 <translation id="16620462294541761">パスワードを確認できませんでした。もう一度お試しください。</translation>
+<translation id="1662572015199460525">ブラウジング中に音声やテキストによる会話形式で、質問の回答や重要なポイントなどを確認できます</translation>
 <translation id="166278006618318542">サブジェクトの公開鍵アルゴリズム</translation>
 <translation id="1662801900924515589"><ph name="APP" /> をインストールしました</translation>
 <translation id="1663698992894057019">新しい Chromebook にアップグレードして、最新のセキュリティとソフトウェアを手に入れましょう</translation>
@@ -1088,6 +1093,7 @@
 <translation id="174123615272205933">カスタム</translation>
 <translation id="1741314857973421784">次へ</translation>
 <translation id="1744108098763830590">バックグラウンド ページ</translation>
+<translation id="174516937379651657">ページを Gemini と共有すると、ページのコンテンツ全体と URL が Google に送信されます。</translation>
 <translation id="1745732479023874451">連絡先を管理</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# 件のファイルをこのウェブアプリで開いて編集しますか？}}</translation>
 <translation id="1748329107062243374"><ph name="DEVICE_NAME" /> のパスキーを使用して <ph name="WEBSITE" /> にログインする</translation>
@@ -1397,6 +1403,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 件の拡張機能が審査されました}other{{NUM_EXTENSIONS} 件の拡張機能が審査されました}}</translation>
 <translation id="1959421829481337178">携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="1960211333621141174">崖</translation>
+<translation id="1962356719152496092">キーボード ショートカットをここでカスタマイズします</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
 <translation id="1964009877615282740">もっと見る</translation>
 <translation id="1965578266762387357">文書作成サポートを使用すると、ページの URL、コンテンツ、テキストが Google に送信されます。個人情報（医療情報や財務情報など）は入力しないでください</translation>
@@ -1564,6 +1571,7 @@
 <translation id="2079053412993822885">ユーザーの証明書のいずれかを削除すると、それを使って身元を証明することはできなくなります。</translation>
 <translation id="2079495302726689071"><ph name="APP" /> の新しいタブでリンクを開く</translation>
 <translation id="2079545284768500474">元に戻す</translation>
+<translation id="2079553700504470326">Gemini で最も正確な結果を得るには、IP アドレスに基づくおおよその位置情報ではなく、正確な位置情報を使用してください。</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2081816110395725788">バッテリー駆動時のアイドル設定</translation>
 <translation id="2082187087049518845">タブをグループ化する</translation>
@@ -2190,6 +2198,7 @@
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2496616243169085015">写真</translation>
 <translation id="2497229222757901769">マウスの速度</translation>
+<translation id="24977856422126200"><ph name="WINDOW_TITLE" /> - 会話の間、このタブは Gemini と共有されます</translation>
 <translation id="2497852260688568942">同期は管理者により無効にされています</translation>
 <translation id="2498539833203011245">最小化</translation>
 <translation id="2498765460639677199">極大</translation>
@@ -2513,6 +2522,7 @@
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">Gemini アプリ アクティビティの表示と管理</translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
 <translation id="2730550884708194161">仕事用プロフィールについて</translation>
 <translation id="2730596696987224099">自分で設定</translation>
@@ -3381,6 +3391,7 @@
 <translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}other{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}}</translation>
 <translation id="3361954577771524115">アプリから</translation>
+<translation id="3362651095484543782">Gemini を終了するか、Gemini に戻るには、キーボード ショートカットを使用します。</translation>
 <translation id="3362915550009543917">静謐さと知的な雰囲気をたたえる黄色の草地を描いた穏やかな油絵。</translation>
 <translation id="3363202073972776113">この新しいプロフィールは組織によって管理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+マウスオーバー</translation>
@@ -3604,6 +3615,7 @@
 <translation id="3511358375261756531"><ph name="HEADER" /> を開く</translation>
 <translation id="351152300840026870">固定幅フォント</translation>
 <translation id="3511528412952710609">短い</translation>
+<translation id="3512465804715993309">アダプティブ ハイライト表示</translation>
 <translation id="3513019849832307207">参加して開く</translation>
 <translation id="3513563267917474897">色相スライダー <ph name="MIN_VALUE" />～<ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">ゲームの管理</translation>
@@ -4946,6 +4958,7 @@
 <translation id="443031431654216610">数字のみ指定可能</translation>
 <translation id="4430369329743628066">ブックマークを追加しました</translation>
 <translation id="4430422687972614133">仮想カードを有効にする</translation>
+<translation id="443196770280837407">キーボード ショートカットで Gemini を開きます。</translation>
 <translation id="4432621511648257259">パスワードが正しくありません。</translation>
 <translation id="4434611816075088065">他に確認の必要な項目はありません</translation>
 <translation id="443475966875174318">互換性のないアプリケーションの更新または削除</translation>
@@ -4961,6 +4974,7 @@
 <translation id="4442863809158514979">ウェブ権限を表示</translation>
 <translation id="4442937638623063085">プロファイルが見つかりませんでした。携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="4443536555189480885">ヘルプ(&amp;H)</translation>
+<translation id="4444191890945732856">このページは Gemini と共有されています</translation>
 <translation id="4444304522807523469">USB 接続またはローカル ネットワーク上のドキュメント スキャナーへのアクセス</translation>
 <translation id="4444512841222467874">十分な空き領域がない場合、ユーザーとデータが自動的に削除される可能性があります。</translation>
 <translation id="4445446646109808714">エンドユーザー使用許諾契約: <ph name="EULA_LINK" /></translation>
@@ -5283,6 +5297,7 @@
 <translation id="4681930562518940301">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="4682481611456523884">このサイトの埋め込みコンテンツでは、保存したあなたに関する情報は使用できません</translation>
 <translation id="4682807230647698604">これらの機能を使用すると、AI によるエクスペリエンスを提供するため、関連するデータが Google に送信されます</translation>
+<translation id="4683143253481759090">Chrome を更新しました</translation>
 <translation id="4683629100208651599">小文字にする</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
@@ -5292,6 +5307,7 @@
 <translation id="4687718960473379118">ウェブサイトによる広告の提案</translation>
 <translation id="4688036121858134881">ローカルログ ID は <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /> です。</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> がこのデバイスを以前のバージョンに戻しています（<ph name="PROGRESS_PERCENT" />）</translation>
+<translation id="4688870304423708920">インターネット接続を確認して、Gemini をもう一度お試しください</translation>
 <translation id="4689235506267737042">デモ設定の選択</translation>
 <translation id="4689421377817139245">このブックマークは iPhone と同期できます</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi ファームウェアにより生成された 4 つのファイル: csr.lst、fh_regs.lst、radio_reg.lst、monitor.lst.sysmon。最初の 3 つはレジスタダンプを含むバイナリ ファイルで、個人情報や端末を特定できる情報を一切含まないことが Intel により表明されています。最後の 1 つは Intel ファームウェアからの実行トレースで、個人情報や端末を特定できる情報は除かれていますが、サイズが大きいためここには表示できません。これらのファイルはご使用の端末で最近発生した Wi-Fi の問題への応答として生成されたもので、問題を調査するために Intel と共有されます。&gt;</translation>
@@ -5576,6 +5592,7 @@
 <translation id="4884937942297374058">保護強化機能がオフになっています</translation>
 <translation id="4884987973312178454">6 倍</translation>
 <translation id="4885692421645694729">この拡張機能では、追加のサイトアクセスは行われません</translation>
+<translation id="4887391901725877182">字幕</translation>
 <translation id="4887424188275796356">システム ビューアで開く</translation>
 <translation id="488785315393301722">詳細を表示</translation>
 <translation id="488862352499217187">新規フォルダを作成</translation>
@@ -5726,6 +5743,7 @@
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
 <translation id="5003070249435823986">ジェスチャーでスクロール モードに切り替えてから、スクロールしたい方向に頭を動かします。スクロール モードを終了するには、もう一度ジェスチャーを使用します。</translation>
 <translation id="5003993274120026347">次の文</translation>
+<translation id="5005113238422129109">マイクを使用して Gemini と会話できます。Gemini に話しかけると、音声は Gemini アプリ アクティビティに保存されます（オンになっている場合）。</translation>
 <translation id="5005311809885666699">Chrome から保存</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5006218871145547804">Crostini Android アプリ ADB</translation>
@@ -6692,6 +6710,7 @@
 <translation id="5705005699929844214">ユーザー補助オプションを常に表示</translation>
 <translation id="5705882733397021510">戻る</translation>
 <translation id="5707185214361380026">次の場所から拡張機能を読み込むことができませんでした:</translation>
+<translation id="5707674184620508665">組織（<ph name="ACCOUNT_MANAGER" />）は、既存のデータを確認または管理することはできません。このデータは既存のプロフィールに残ります。</translation>
 <translation id="5708171344853220004">Microsoft プリンシパル名</translation>
 <translation id="5711010025974903573">サービスログ</translation>
 <translation id="5711983031544731014">ロックを解除できません。パスワードを入力してください。</translation>
@@ -7402,6 +7421,7 @@
 <translation id="622484624075952240">下矢印キー</translation>
 <translation id="622537739776246443">プロフィールは削除されます</translation>
 <translation id="6225475702458870625"><ph name="PHONE_NAME" /> からデータ接続が可能です</translation>
+<translation id="622568138962270592">Gemini アプリ アクティビティ</translation>
 <translation id="6226777517901268232">秘密鍵ファイル（省略可能）</translation>
 <translation id="6227280783235722609">拡張機能</translation>
 <translation id="622902691730729894">ブックマーク バーへのグループの固定を解除</translation>
@@ -7705,6 +7725,7 @@
 <translation id="6451861213630784801">ログアウトしています</translation>
 <translation id="6452181791372256707">拒否</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> 完了</translation>
+<translation id="6452268285438583507">拡張機能を追加する</translation>
 <translation id="6452961788130242735">ネットワークに問題があるか、レルムが正しくありません</translation>
 <translation id="6453191633103419909">タブや画面投影の品質</translation>
 <translation id="6453921811609336127">次の入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
@@ -8130,6 +8151,7 @@
 <translation id="6759193508432371551">初期状態へのリセット</translation>
 <translation id="6760354150216532978">警告: このサイトはあなたが行った編集内容を参照できます</translation>
 <translation id="6761209758867628753">ツール: 文書作成サポート</translation>
+<translation id="6761459308170527362">音声やテキストによる会話形式で、共有しているページのコンテンツについて Gemini に質問できます</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6761623907967804682">デバイス上のサイトデータは許可されていません</translation>
 <translation id="6762833852331690540">オン</translation>
@@ -8788,6 +8810,7 @@
 <translation id="7223952304612664117">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、ワイヤレス シグナルとセンサーに関する情報に基づいて、デバイスの位置情報が推定されます。</translation>
 <translation id="7225082563376899794">Windows Hello を使用してパスワードを入力する</translation>
 <translation id="7225179976675429563">ネットワークの種類が指定されていません</translation>
+<translation id="7226163413959353072">重要なポイントの要約、コンセプトの明確化、疑問の解決などに役立つ AI アシスタント</translation>
 <translation id="7227235818314667565">共有を管理</translation>
 <translation id="7227458944009118910">以下のアプリでもプロトコル リンクを処理できます。他のアプリでは許可が必要となります。</translation>
 <translation id="7228056665272655255">指紋を設定するには、キーボードの右上にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
@@ -8857,6 +8880,7 @@
 <translation id="727595954130325265">今すぐ購入</translation>
 <translation id="727952162645687754">ダウンロード エラー</translation>
 <translation id="7280649757394340890">テキスト読み上げの音声の設定</translation>
+<translation id="7280683802406059877">キーボード ショートカットをカスタマイズ</translation>
 <translation id="7280877790564589615">許可の要求</translation>
 <translation id="7281166215790160128">モード</translation>
 <translation id="7282056103720203738">添付されたデバイス情報やデータを読み取る</translation>
@@ -8915,6 +8939,7 @@
 <translation id="7320213904474460808">デフォルトのネットワーク</translation>
 <translation id="7321545336522791733">サーバーにアクセスできません</translation>
 <translation id="7322515217754205362">サイトの権限</translation>
+<translation id="7322919329844967709">共有しているページのコンテンツに基づく関連性の高い回答が得られます</translation>
 <translation id="7323315405936922211">カーソル領域のサイズ</translation>
 <translation id="7324020307732396723">言語設定を開く</translation>
 <translation id="7324297612904500502">ベータ版フォーラム</translation>
@@ -9165,6 +9190,7 @@
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481358317100446445">準備完了</translation>
 <translation id="748138892655239008">証明書の基本制約</translation>
+<translation id="7482823403440483089">拡張自動入力</translation>
 <translation id="7483732342458943943">このリンクは機能していません</translation>
 <translation id="7484645889979462775">このサイトでは保存しない</translation>
 <translation id="7484943269191249363">本人確認を行うと、Google パスワード マネージャーに保存されているすべてのパスキーをこのデバイスで使用できます。この操作が必要なのは 1 回だけです。</translation>
@@ -9913,6 +9939,7 @@
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
 <translation id="7992080146463834191">コンテンツを要約したり、複雑な表現をわかりやすくしたり、質問したりできます。</translation>
 <translation id="7992203134935383159">音声合成</translation>
+<translation id="7993332993977106257">Chrome を最小化している場合でも、デバイスのさまざまな場所から Gemini にすばやくアクセスできます。</translation>
 <translation id="7997826902155442747">プロセスの優先値</translation>
 <translation id="7997828719430450286">成功。</translation>
 <translation id="7998701048266085837">URL</translation>
@@ -9966,6 +9993,7 @@
 <translation id="8028060951694135607">Microsoft キー回復</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" /> をダウンロードしています。<ph name="SIZE" /> 完了</translation>
 <translation id="8028993641010258682">サイズ</translation>
+<translation id="8029349782735515147">Gemini Live の使用時に字幕を表示します</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{リーディング リスト}=1{リーディング リスト（{SELECTED_ITEMS}）}other{リーディング リスト（{SELECTED_ITEMS}）}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 権限がリクエストされました。対応するには、⌘+option+上矢印キーを押してください</translation>
 <translation id="8030169304546394654">切断済み</translation>
@@ -10084,6 +10112,7 @@
 <translation id="8102139037507939978">system_logs.txt から個人を特定できる情報を削除する。</translation>
 <translation id="810362914482827094">パスキーを検索</translation>
 <translation id="8104088837833760645">eSIM プロファイルのダウンロード</translation>
+<translation id="8105050970626643057">必要なときに Gemini をすばやく開くことができます</translation>
 <translation id="8105273883928376822">続行するにはログインしてください。</translation>
 <translation id="8106114112474206597">I キーを使用してマウスボタンを押す</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" /> に Google Play ストアをインストールしています。この処理には数分かかる可能性があります。</translation>
@@ -10240,6 +10269,7 @@
 <translation id="8222112516148944758">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
 <translation id="8222674561049363989">ファイルは有効なドキュメントではありません</translation>
 <translation id="822347941086490485">HID デバイスを検出しています...</translation>
+<translation id="8224209912580158729">ページのコンテンツを Gemini と共有して、より関連性の高い回答を得ることができます。</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> のアカウントは削除されません</translation>
 <translation id="8225046344534779393">インターネット接続をご確認ください</translation>
 <translation id="8225265270453771718">アプリケーション ウィンドウの共有</translation>
@@ -10383,6 +10413,7 @@
 <translation id="8314835274931377415">スイッチ アクセスの設定を開始しますか？</translation>
 <translation id="8315018673856831477">メモリセーバー オプション</translation>
 <translation id="8315514906653279104">オンにしています...</translation>
+<translation id="8316480109537174997">システムトレイに Gemini を表示して、キーボード ショートカットをオンにする</translation>
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8317965619823678157">パスワードをコピー</translation>
 <translation id="8318266828739827371">分割画面ビューを使用して、画面の拡大領域を表示できます。ドッキング拡大鏡をオンまたはオフにするには、検索+Ctrl+D キーを使用します。</translation>
@@ -10783,6 +10814,7 @@
 <translation id="8607661817136110841">タブグループ</translation>
 <translation id="8607828412110648570">Bluetooth デバイスがペア設定モードになっていて、近くにあることを確認してください。ペア設定は信頼しているデバイスとのみ行ってください。ペア設定したデバイスは、この Chromebook のすべてのアカウントに表示されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos チケットの追加</translation>
+<translation id="860907040896565281">キーボード ショートカットをカスタマイズ...</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8611922158252451755">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。共有は慎重に行ってください。リンクは 48 時間で期限切れになります。</translation>
 <translation id="8612252270453580753"><ph name="VISUAL_SEARCH_PROVIDER" /> で動画フレームを検索(&amp;S)</translation>
@@ -11183,6 +11215,7 @@
 <translation id="8868838761037459823">モバイル ネットワークの詳細</translation>
 <translation id="8870413625673593573">最近閉じたタブ</translation>
 <translation id="8871043459130124414">拡張機能をクリックした後にのみ実行します</translation>
+<translation id="8871126140396172266"><ph name="WINDOW_TITLE" /> - このページは Gemini と共有されています</translation>
 <translation id="8871551568777368300">管理者によって固定</translation>
 <translation id="8871696467337989339">サポートされていないコマンドライン フラグ <ph name="BAD_FLAG" /> を使用しています。これにより、安全性とセキュリティが損なわれます。</translation>
 <translation id="8871974300055371298">コンテンツの設定</translation>
@@ -11395,6 +11428,7 @@
 <translation id="9011163749350026987">アイコンを常に表示</translation>
 <translation id="9011262023858991985">このタブをキャストしています</translation>
 <translation id="9011393886518328654">リリースノート</translation>
+<translation id="9012013036616593083">Gemini は現在使用できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="9012122671773859802">マウスの動きに合わせて画面を移動する</translation>
 <translation id="9012585441087414258">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ページで不審な動作が検出された場合、URL と一部のページ コンテンツが Google セーフ ブラウジングに送信されます。</translation>
 <translation id="9013037634206938463">Linux をインストールするには <ph name="INSTALL_SIZE" /> の空き容量が必要です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
@@ -11420,6 +11454,7 @@
 <translation id="9024127637873500333">新しいタブで開く(&amp;O)</translation>
 <translation id="9024158959543687197">共有フォルダのマウントエラー。ファイルの共有 URL を確認してもう一度お試しください。</translation>
 <translation id="9024692527554990034">アドレスバーにショートカットを入力して、特定のサイト内をすばやく検索したり、別の検索エンジンを使用したりできます</translation>
+<translation id="9024975946059881308">Gemini を Mac のメニューバーに表示して、キーボード ショートカットを有効にする</translation>
 <translation id="9025222334598338152">比較表を使用して、商品の絞り込みの記録を残すことができます</translation>
 <translation id="902638246363752736">キーボードの設定</translation>
 <translation id="9026393603776578602">音声入力</translation>

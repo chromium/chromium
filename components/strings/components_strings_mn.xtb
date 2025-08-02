@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">Үс арчилгаа</translation>
 <translation id="1935353813610900265">ХОУ-аар дэмжсэн түүхийн хайлтад зориулж санал хүсэлт илгээнэ үү</translation>
 <translation id="1935995810530254458">Ямартай ч хуулах</translation>
+<translation id="1938580037092872316">Хадгалсан хаягт шинэ мэдээлэл нэмнэ үү</translation>
 <translation id="1939059826036755332">Автомат дэлгэц доторх дэлгэц</translation>
 <translation id="1939175642807587452">Мэдэгдэл илгээхийг хүсэх боломжтой</translation>
 <translation id="1940441167050915935">Хадгалсан аюулгүй байдлын кодуудыг устгах</translation>
@@ -1529,6 +1530,7 @@
 <translation id="3570079787344939099">Гүйлгэж, томруулах</translation>
 <translation id="357244642999988503">Баганыг хасах</translation>
 <translation id="3574305903863751447"><ph name="CITY" /> , <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Хаягт шинэ мэдээлэл нэмнэ үү</translation>
 <translation id="3575121482199441727">Энэ сайтад зориулж зөвшөөрөх</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Гудамжны нэрийн сонголтыг сонгосон</translation>
@@ -3541,6 +3543,7 @@
 <translation id="6935082727755903526">Нягтлан бодох бүртгэл болон санхүүгийн ажлын байрууд</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Таныг дараагийн удаа зочлоход зарим сайт илүү удаан ачаалж магадгүй.</translation>
 <translation id="6936976777388162184">Энэ нь багцалсан төхөөрөмж бөгөөд Kiosk болон Пайзны сайжруулалтаар бүртгүүлэх боломжгүй.</translation>
+<translation id="6942444979237658241">Сэтгэгдэл - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Стратегийн тоглоомууд</translation>
 <translation id="6944692733090228304">Та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-с удирдаагүй сайтад нууц үгээ оруулсан байна. Бүртгэлээ хамгаалахын тулд бусад апп болон сайтад нууц үгээ дахин бүү ашиглана уу.</translation>
 <translation id="6946949206576443118">Chrome-д вебээс хайна уу</translation>
@@ -3999,6 +4002,7 @@
 <translation id="7668654391829183341">Үл таних төхөөрөмж</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />-с <ph name="ITEM_POSITION" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Нууцлалтай гэж дарцагласан өгөгдөл дээр хийсэн үйлдэл (нэвтэрснээс хойш 1 үйлдэл). <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" />}other{Нууцлалтай гэж дарцагласан өгөгдөл дээр хийсэн үйлдлүүд (нэвтэрснээс хойш # үйлдэл). <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Таны <ph name="USER_EMAIL" /> Google Бүртгэлийн мэдээлэл Chrome-д маягтыг илүү хурдан бөглөхөд туслах боломжтой</translation>
 <translation id="7673278391011283842">Шуудангийн хайрцаг 6</translation>
 <translation id="7675325315208090829">Төлбөрийн хэрэгслүүдийг удирдах...</translation>
 <translation id="767550629621587224">Урьдчилж зүссэн хавтас</translation>
@@ -4131,6 +4135,7 @@
 <translation id="7908648876066812348">Виртуал картыг асааж байна</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, тохиргооны Chrome-н аюулгүй байдлын шалгалтын хуудас руу очихын тулд Tab, дараа нь Enter-г дарна уу</translation>
 <translation id="791107458486222637">Үр дүнг дахин гаргаж байна</translation>
+<translation id="7912924955815015552">Safari-с импортолсон</translation>
 <translation id="791551905239004656">Зурах, будах</translation>
 <translation id="7916162853251942238">Флексо суурь</translation>
 <translation id="791698251820376781">Танай байгууллага танд нэвтрэхийг зөвшөөрдөггүй</translation>
@@ -4265,6 +4270,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 сарын өмнө үүсгэсэн}other{{NUM_MONTHS} сарын өмнө үүсгэсэн}}</translation>
 <translation id="8148608574971654810">PDF хувилбар:</translation>
 <translation id="8149426793427495338">Таны компьютер идэвхгүй болсон байна.</translation>
+<translation id="815036624016370447">Таны <ph name="ACCOUNT" /> Google Бүртгэлийн мэдээлэл Chrome-д маягтыг илүү хурдан бөглөхөд туслах боломжтой</translation>
 <translation id="8150722005171944719"><ph name="URL" /> дахь файлыг унших боломжгүй байна. Энэ файл нь устгагдсан, шилжигдсэн, эсвэл хандалтыг хазгаарласан байж болно.</translation>
 <translation id="8151185429379586178">Хөгжүүлэгчийн багажнууд</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администраторын бодлого нь энэ файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}other{Администраторын бодлого нь эдгээр файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}}</translation>

@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">Тип паперу</translation>
 <translation id="1143142264369994168">Підписувач сертифіката</translation>
 <translation id="1145593918056169051">Збій у роботі принтера</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Розширення}=1{Розширення ({SELECTED_ITEMS})}one{Розширення ({SELECTED_ITEMS})}few{Розширення ({SELECTED_ITEMS})}many{Розширення ({SELECTED_ITEMS})}other{Розширення ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Керування головою</translation>
 <translation id="114721135501989771">Розумні функції в Chrome</translation>
 <translation id="1147322039136785890">Тепер <ph name="SUPERVISED_USER_NAME" /> може отримати пристрій</translation>
@@ -739,6 +740,7 @@
 <translation id="150411034776756821">Видалити дані сайту <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Спільні папки у Windows доступні за шляхом <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">експортувати паролі</translation>
+<translation id="1505654899813338756">Вкладки можна групувати, щоб зберігати схожі сторінки на всіх своїх пристроях</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
 <translation id="1506187449813838456">Збільшити висоту звуку</translation>
 <translation id="1507170440449692343">Доступ цієї сторінки до вашої камери заблоковано.</translation>
@@ -5322,6 +5324,7 @@
 <translation id="4681930562518940301">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="4682481611456523884">Вбудований контент на цьому сайті не може використовувати збережену про вас інформацію</translation>
 <translation id="4682807230647698604">Коли ви використовуєте ці функції, відповідні дані надсилаються в Google, щоб забезпечити роботу продуктів на основі ШІ</translation>
+<translation id="4683143253481759090">Chrome оновлено</translation>
 <translation id="4683629100208651599">Застосувати нижній регістр</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (за умовчанням)</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
@@ -9221,6 +9224,7 @@
 <translation id="7481312909269577407">Уперед</translation>
 <translation id="7481358317100446445">Готова</translation>
 <translation id="748138892655239008">Базові обмеження сертифіката</translation>
+<translation id="7482823403440483089">Розширене автозаповнення</translation>
 <translation id="7483732342458943943">Це посилання не працює</translation>
 <translation id="7484645889979462775">Ніколи для цього сайта</translation>
 <translation id="7484943269191249363">Ви можете використовувати на цьому пристрої всі ключі доступу, збережені в Google Менеджері паролів. Підтвердити особу потрібно лише раз.</translation>

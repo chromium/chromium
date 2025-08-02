@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">ಕಾಗದದ ಪ್ರಕಾರ</translation>
 <translation id="1143142264369994168">ಪ್ರಮಾಣಪತ್ರ ಸಹಿ ಮಾಡುವವರು</translation>
 <translation id="1145593918056169051">ಪ್ರಿಂಟರ್ ನಿಂತುಹೋಗಿದೆ</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು}=1{{SELECTED_ITEMS} ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು}one{{SELECTED_ITEMS} ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು}other{{SELECTED_ITEMS} ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು}}</translation>
 <translation id="114715166554490743">ಗೆಡ್‌ ಪಾಯಿಂಟರ್‌</translation>
 <translation id="114721135501989771">Chrome ನಲ್ಲಿ Google ಸ್ಮಾರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1147322039136785890">ಇದೀಗ <ph name="SUPERVISED_USER_NAME" /> ಅವರ ಸರದಿ</translation>
@@ -737,6 +738,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1504551620756424144">ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್‌ಗಳು Windows ನಲ್ಲಿ <ph name="BASE_DIR" /> ಆಯ್ಕೆಯ ಅಡಿಯಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ.</translation>
 <translation id="1505494256539862015">ಪಾಸ್‌ವರ್ಡ್‍ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ</translation>
+<translation id="1505654899813338756">ಸಂಬಂಧಿತ ಪುಟಗಳನ್ನು ಒಟ್ಟಿಗೆ ಇರಿಸಿಕೊಳ್ಳಲು ಮತ್ತು ನಿಮ್ಮ ಸಾಧನಗಳಲ್ಲಿ ಸೇವ್ ಮಾಡಲು ನೀವು ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಬಹುದು</translation>
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="1506187449813838456">ಪಿಚ್ ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="1507170440449692343">ನಿಮ್ಮ ಕ್ಯಾಮೆರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದರಿಂದ ಈ ಪುಟವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
@@ -5311,6 +5313,7 @@
 <translation id="4681930562518940301">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಮೂಲ &amp;ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4682481611456523884">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾದ ಕಂಟೆಂಟ್ ಅವುಗಳು ನಿಮ್ಮ ಬಗ್ಗೆ ಸೇವ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="4682807230647698604">ನೀವು ಈ ಫೀಚರ್‌ಗಳನ್ನು ಬಳಸಿದಾಗ, AI ಅನುಭವಗಳನ್ನು ರಚಿಸಲು ಸಂಬಂಧಿತ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="4683143253481759090">Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4683629100208651599">ಲೋವರ್‌ಕೇಸ್ ಮಾಡಿ</translation>
 <translation id="4683947955326903992">ಶೇಕಡಾ <ph name="PERCENTAGE" /> (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
@@ -9212,6 +9215,7 @@
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7481358317100446445">ಸಿದ್ಧ</translation>
 <translation id="748138892655239008">ಪ್ರಮಾಣಪತ್ರ ಆಧಾರಿತ ನಿರ್ಬಂಧಗಳು</translation>
+<translation id="7482823403440483089">ವರ್ಧಿತ ಆಟೋಫಿಲ್</translation>
 <translation id="7483732342458943943">ಈ ಲಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="7484645889979462775">ಈ ಸೈಟ್‌ಗೆ ಎಂದಿಗೂ ಬೇಡ</translation>
 <translation id="7484943269191249363">ಈ ಸಾಧನದಲ್ಲಿ Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ನಿಮ್ಮ ಎಲ್ಲಾ ಪಾಸ್‌ಕೀಗಳನ್ನು ನೀವು ಬಳಸಬಹುದು. ನೀವು ಇದನ್ನು ಒಂದು ಬಾರಿ ಮಾತ್ರ ಮಾಡಬೇಕು.</translation>

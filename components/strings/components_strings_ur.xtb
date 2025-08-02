@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">‏Android ایپس</translation>
 <translation id="2102519472192754194">ویب براؤزرز</translation>
 <translation id="2103210856015238101">ٹچ پر پُر کیے جانے والے لائلٹی کارڈز دستیاب ہیں جو پوری اونچائی پر کھلے ہیں۔</translation>
+<translation id="2104739941682874393">بہتر کردہ آٹو فل خصوصیت فارمز کو بہتر طور پر سمجھتی ہے اور آپ کے لیے انہیں تیزی سے آٹو فل کر سکتی ہے</translation>
 <translation id="2105838220373099643">رول پلے کرنے والی گیمز</translation>
 <translation id="2107021941795971877">پرنٹ سپورٹس</translation>
 <translation id="2108755909498034140">اپنے کمپیوٹر کو دوبارہ شروع کریں</translation>
@@ -2429,6 +2430,7 @@
 <translation id="5052517576853118371">فعال موضوعات</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{اس فائل کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}other{ان فائلز کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}}</translation>
 <translation id="505757197798929356">کھولنے کی وجہ فراہم کریں (درکار ہے)</translation>
+<translation id="5058282932481719070">ترتیبات میں بہتر کردہ آٹو فل خصوصیت کے بارے میں مزید جانیں</translation>
 <translation id="5060419232449737386">کیپشن کی ترتیبات</translation>
 <translation id="5060483733937416656">‏آپ نے <ph name="PROVIDER_ORIGIN" /> کا استعمال کرنے والی ویب سائٹس پر Windows Hello سے تصدیق کرنے کا انتخاب کیا ہے۔ ممکن ہے کہ اس فراہم کنندہ کے پاس آپ کی ادائیگی کے طریقہ کے بارے میں معلومات اسٹور کردہ ہے جن کو <ph name="LINK_TEXT" />آپ کر سکتے ہیں۔</translation>
 <translation id="5061227663725596739">کیا آپ کا مطلب <ph name="LOOKALIKE_DOMAIN" /> ہے؟</translation>
@@ -3030,6 +3032,7 @@
 <translation id="6062937464449575061">قیمت کو ٹریک کرنا بند کریں</translation>
 <translation id="6063415549109819824">گھر کیلئے سرمایہ کی فراہمی</translation>
 <translation id="6070432475334343308">ایک یا ایک زیادہ فائلز <ph name="CLOUD_PROVIDER" /> پر <ph name="FOLDER_NAME" /> میں اپ لوڈ نہیں ہوئیں</translation>
+<translation id="6071503852498277813">کنٹینٹ بُک مارک پارسر سروس</translation>
 <translation id="6078069862923723141">سبزی مائل نیلا 2</translation>
 <translation id="6085149458302186532">لیبلز (رنگین)</translation>
 <translation id="6087312102907839798">متعلقہ تلاشیں</translation>
@@ -3555,6 +3558,7 @@
 <translation id="695140971690006676">تمام کو ری سیٹ کریں</translation>
 <translation id="6954049078461159956">ہاکی</translation>
 <translation id="695582302419398462">کارڈ بورڈ (ڈبل وال)</translation>
+<translation id="6957153644870901611">مزید فیلڈز کو خودکار طور پر پُر کرنے کے لیے بہتر کردہ آٹو فل خصوصیت کو آن کریں</translation>
 <translation id="6957887021205513506">سرور کا سرٹیفکیٹ ایک جعل سازی معلوم پڑتی ہے۔</translation>
 <translation id="6958564499836457428">‏اپنے Google اکاؤنٹ میں Google کی رازداری کی ترتیبات کا نظم کریں</translation>
 <translation id="6961844873822989059">سائٹ آپ کے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>

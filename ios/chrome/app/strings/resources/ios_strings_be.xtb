@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
 <translation id="1523567067736644845">Пароль: разблакіруйце</translation>
 <translation id="1524563461097350801">Не, дзякуй</translation>
+<translation id="1528290585275339320">Уключыце абагульванне змесціва старонкі</translation>
 <translation id="1531038290222364269">Паказваць укладкі</translation>
 <translation id="1536390784834419204">Перакласці старонку</translation>
 <translation id="1540800554400757039">Радок адраса 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">Даведайцеся больш пра магчымасці новага меню</translation>
 <translation id="5132942445612118989">Сінхранізуйце паролі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="5141363746588976328">Схаваць картку "Зніжэнне цэн на ўкладках"</translation>
+<translation id="514154868070499296">Шрыфт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Выйсці з пераключальніка ўкладак</translation>
 <translation id="5148717509369231739">Імпарт у Safari</translation>
 <translation id="5157638238828697074">Адбылася памылка. Не ўдалося адкрыць праграму.</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8637431369725868556">Абараніцеся ад небяспечных сайтаў.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="8643403533759285912">Выдаліць групу</translation>
+<translation id="8645245178269185266">Абагульце з Gemini змесціва старонкі, каб атрымаць найбольш рэлевантныя адказы</translation>
 <translation id="8647280737650867362">Не ўдалося скасаваць адсочванне цаны.</translation>
 <translation id="8654802032646794042">Скасаваць</translation>
 <translation id="8660600697590740984">Пошук скапіраванага відарыса праз Аб’ектыў</translation>

@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktif hari ini</translation>
 <translation id="1523567067736644845">Buka kunci untuk menampilkan sandi</translation>
 <translation id="1524563461097350801">Lain Kali</translation>
+<translation id="1528290585275339320">Aktifkan berbagi konten halaman</translation>
 <translation id="1531038290222364269">Tampilkan tab</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
 <translation id="1540800554400757039">Alamat 1</translation>
@@ -1045,6 +1046,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5128788795241319992">Jelajahi menu baru</translation>
 <translation id="5132942445612118989">Sinkronkan sandi, histori, dan lainnya di semua perangkat</translation>
 <translation id="5141363746588976328">Sembunyikan kartu penurunan harga di tab Anda</translation>
+<translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tutup pengalih tab</translation>
 <translation id="5148717509369231739">Impor Safari</translation>
 <translation id="5157638238828697074">Terjadi error. Aplikasi tidak dapat dibuka.</translation>
@@ -1974,6 +1976,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8637431369725868556">Dapatkan perlindungan dari situs berbahaya.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Tidak ada sandi yang telah dibobol}=1{{COUNT} sandi telah dibobol}other{{COUNT} sandi telah dibobol}}</translation>
 <translation id="8643403533759285912">Hapus Grup</translation>
+<translation id="8645245178269185266">Bagikan konten halaman kepada Gemini untuk mendapatkan jawaban yang lebih relevan</translation>
 <translation id="8647280737650867362">Tidak dapat membatalkan pemantauan harga.</translation>
 <translation id="8654802032646794042">Batal</translation>
 <translation id="8660600697590740984">Gambar yang disalin Lens</translation>

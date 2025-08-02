@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">Ottieni automaticamente l'account dallo smartphone Android</translation>
 <translation id="1069814191880976658">Scegli un altro schermo</translation>
 <translation id="107022587824771715">Al momento i suggerimenti relativi ai gruppi di schede non sono disponibili. Puoi <ph name="BEGIN_LINK" />aggiornare ora<ph name="END_LINK" /> o riprovare più tardi.</translation>
+<translation id="1070357312245925724">Scorciatoia di navigazione</translation>
 <translation id="1070377999570795893">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1122913801042512795">I dati di accesso del tuo account sono obsoleti. Esci ed esegui nuovamente l'accesso.</translation>
 <translation id="1122960773616686544">Aggiungi il nome ai segnalibri</translation>
 <translation id="1124772482545689468">Utente</translation>
+<translation id="1125371304736839151">Mostra Gemini nella parte superiore del browser</translation>
 <translation id="1125550662859510761">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125921926864945797">Sfondo e stile</translation>
 <translation id="1128090040635299943">È in corso la configurazione di Linux. L'operazione richiederà alcuni minuti.</translation>
@@ -989,6 +991,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1660763353352708040">Problema con l'alimentatore</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Risolvi il problema della scheda che rallenta il browser}other{Risolvi il problema delle schede che rallentano il browser}}</translation>
 <translation id="16620462294541761">Spiacenti, impossibile verificare la password. Riprova.</translation>
+<translation id="1662572015199460525">Interagisci usando la voce o il testo per ricevere risposte, informazioni chiave e altro mentre navighi</translation>
 <translation id="166278006618318542">Algoritmo chiave pubblica del soggetto</translation>
 <translation id="1662801900924515589">App <ph name="APP" /> installata</translation>
 <translation id="1663698992894057019">Esegui l'upgrade a un nuovo Chromebook per avere la versione di sicurezza e software più recente</translation>
@@ -1091,6 +1094,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="174123615272205933">Personalizzati</translation>
 <translation id="1741314857973421784">Continua</translation>
 <translation id="1744108098763830590">pagina di sfondo</translation>
+<translation id="174516937379651657">Quando condividi una pagina con Gemini, i contenuti completi e l'URL della pagina vengono inviati a Google.</translation>
 <translation id="1745732479023874451">Gestisci contatti</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Aprire e modificare # file in questa app web?}}</translation>
 <translation id="1748329107062243374">Usa una passkey di <ph name="DEVICE_NAME" /> per accedere al sito <ph name="WEBSITE" /></translation>
@@ -1402,6 +1406,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 estensione esaminata}other{{NUM_EXTENSIONS} estensioni esaminate}}</translation>
 <translation id="1959421829481337178">Inserisci il codice di attivazione fornito dall'operatore.</translation>
 <translation id="1960211333621141174">Scogliera</translation>
+<translation id="1962356719152496092">Personalizza la scorciatoia da tastiera qui</translation>
 <translation id="1963976881984600709">Protezione standard</translation>
 <translation id="1964009877615282740">Vedi altro</translation>
 <translation id="1965578266762387357">Quando ricevi aiuto per la scrittura, l'URL della pagina, i contenuti e il tuo testo vengono inviati a Google. Non inserire informazioni personali (come dettagli medici o finanziari)</translation>
@@ -1569,6 +1574,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2079053412993822885">Se elimini uno dei tuoi certificati, non potrai più utilizzarlo per identificarti.</translation>
 <translation id="2079495302726689071">Apri link in un'altra scheda di <ph name="APP" /></translation>
 <translation id="2079545284768500474">Annulla</translation>
+<translation id="2079553700504470326">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta.</translation>
 <translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2081816110395725788">Inattività durante l'utilizzo della batteria</translation>
 <translation id="2082187087049518845">Aggiungi scheda a nuovo gruppo</translation>
@@ -2197,6 +2203,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="2496616243169085015">Fotografia</translation>
 <translation id="2497229222757901769">Velocità mouse</translation>
+<translation id="24977856422126200"><ph name="WINDOW_TITLE" />: stai condividendo questa scheda con Gemini per tutta la durata della conversazione</translation>
 <translation id="2497852260688568942">La sincronizzazione è stata disattivata dall'amministratore</translation>
 <translation id="2498539833203011245">Riduci a icona</translation>
 <translation id="2498765460639677199">Enorme</translation>
@@ -2521,6 +2528,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Quando la precisione della posizione è attiva, le informazioni sui segnali wireless, ad esempio i punti di accesso Wi-Fi, le torri di reti mobile, così come i dati dei sensori dei dispositivi, ad esempio l'accelerometro e il giroscopio, vengono usati per stimare con maggiore precisione la posizione del dispositivo, che le app e i servizi Android usano per offrire funzionalità basate sulla posizione. A questo scopo, Google raccoglie periodicamente informazioni relative a sensori dei dispositivi e segnali wireless nelle vicinanze del dispositivo per contribuire alla localizzazione dei segnali wireless mediante crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google utilizza queste informazioni raccolte da questo dispositivo per: migliorare la precisione della posizione e i servizi basati sulla posizione geografica e, in generale, migliorare, fornire e gestire i servizi di Google. Trattiamo queste informazioni in base agli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. Queste informazioni non vengono utilizzate per identificare alcuna persona.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puoi disattivare la precisione della posizione in qualsiasi momento nelle impostazioni di localizzazione del dispositivo in Impostazioni &gt; Privacy e sicurezza &gt; Controlli per la privacy &gt; Accesso alla posizione &gt; Impostazioni di localizzazione avanzate. Se la precisione della posizione è disattivata, non verranno raccolti dati relativi alla precisione della posizione. Per le app e i servizi Android, viene usato solo l'indirizzo IP, se disponibile, per determinare la posizione di questo dispositivo, il che può influire sulla disponibilità e sulla precisione delle posizioni per app e servizi Android come Google Maps.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">Visualizza e gestisci l'attività delle app Gemini</translation>
 <translation id="2730029791981212295">Backup di app e file Linux</translation>
 <translation id="2730550884708194161">Informazioni sui profili di lavoro</translation>
 <translation id="2730596696987224099">Scegli la tua password</translation>
@@ -3391,6 +3399,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3360306038446926262">Finestre</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}other{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}}</translation>
 <translation id="3361954577771524115">Dall'app</translation>
+<translation id="3362651095484543782">Usa la scorciatoia da tastiera per uscire da Gemini o tornarci.</translation>
 <translation id="3362915550009543917">Un dipinto a olio rilassante che mostra un prato dai toni gialli ed evoca un senso di tranquillità e riflessione intellettuale.</translation>
 <translation id="3363202073972776113">Questo nuovo profilo verrà gestito dalla tua organizzazione. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt + passaggio del mouse sopra</translation>
@@ -3614,6 +3623,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3511358375261756531">Espandi <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Carattere a larghezza fissa</translation>
 <translation id="3511528412952710609">Breve</translation>
+<translation id="3512465804715993309">Evidenziazione adattiva</translation>
 <translation id="3513019849832307207">Entra e apri</translation>
 <translation id="3513563267917474897">Cursore di tonalità da <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Controllo dei giochi</translation>
@@ -4959,6 +4969,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="443031431654216610">Usa solo numeri</translation>
 <translation id="4430369329743628066">Aggiunto ai preferiti</translation>
 <translation id="4430422687972614133">Attiva la carta virtuale</translation>
+<translation id="443196770280837407">Apri Gemini con una scorciatoia da tastiera.</translation>
 <translation id="4432621511648257259">Password errata</translation>
 <translation id="4434611816075088065">Al momento non c'è nient'altro che richiede la tua attenzione</translation>
 <translation id="443475966875174318">Aggiorna o rimuovi le applicazioni non compatibili</translation>
@@ -4974,6 +4985,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4442863809158514979">Visualizza autorizzazioni web</translation>
 <translation id="4442937638623063085">Nessun profilo trovato. Inserisci il codice di attivazione fornito dall'operatore.</translation>
 <translation id="4443536555189480885">&amp;Guida</translation>
+<translation id="4444191890945732856">Stai condividendo questa pagina con Gemini</translation>
 <translation id="4444304522807523469">Accesso a scanner di documenti aggiunti tramite USB o sulla rete locale</translation>
 <translation id="4444512841222467874">Se non viene liberato dello spazio, utenti e dati potrebbero essere rimossi automaticamente.</translation>
 <translation id="4445446646109808714">Contratto di licenza con l'utente finale: <ph name="EULA_LINK" /></translation>
@@ -5306,6 +5318,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4687718960473379118">Annunci suggeriti dai siti</translation>
 <translation id="4688036121858134881">ID log locale: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> sta riportando questo dispositivo a una versione precedente (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4688870304423708920">Controlla la connessione a internet e riprova a usare Gemini</translation>
 <translation id="4689235506267737042">Scegli le preferenze relative alle demo</translation>
 <translation id="4689421377817139245">Sincronizza il preferito con l'iPhone</translation>
 <translation id="4690091457710545971">&lt;Quattro file generati dal firmware Intel Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. I primi tre sono file binari che contengono dump di registro e che, secondo quanto dichiarato da Intel, non contengono informazioni personali o di identificazione del dispositivo. L'ultimo file è una traccia di esecuzione dal firmware Intel, privato di ogni informazione personale o di identificazione del dispositivo, ma troppo grande per essere mostrato qui. Questi file sono stati generati in risposta ai recenti problemi del tuo dispositivo con la rete Wi-Fi e verranno condivisi con Intel per agevolare la risoluzione di tali problemi.&gt;</translation>
@@ -5590,6 +5603,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4884937942297374058">La Protezione avanzata è disattivata</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">L'estensione non ha accesso a siti aggiuntivi</translation>
+<translation id="4887391901725877182">Sottotitolaggio codificato</translation>
 <translation id="4887424188275796356">Apri con visualizzatore di sistema</translation>
 <translation id="488785315393301722">Mostra dettagli</translation>
 <translation id="488862352499217187">Crea nuova cartella</translation>
@@ -5740,6 +5754,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5001526427543320409">Cookie di terze parti</translation>
 <translation id="5003070249435823986">Utilizza il gesto per attivare la modalità di scorrimento, quindi muovi la testa nella direzione in cui vuoi scorrere. Utilizza di nuovo il gesto per uscire dalla modalità di scorrimento.</translation>
 <translation id="5003993274120026347">Frase successiva</translation>
+<translation id="5005113238422129109">Usa il microfono per parlare con Gemini. Quando parli con Gemini, l'audio viene memorizzato nell'Attività delle app Gemini (se è attiva)</translation>
 <translation id="5005311809885666699">Foto e video salvati da Chrome</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5006218871145547804">ADB app Android su Crostini</translation>
@@ -6708,6 +6723,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5705005699929844214">Mostrare sempre le opzioni di accessibilità</translation>
 <translation id="5705882733397021510">Indietro</translation>
 <translation id="5707185214361380026">Impossibile caricare l'estensione da:</translation>
+<translation id="5707674184620508665">La tua organizzazione, <ph name="ACCOUNT_MANAGER" />, non potrà visualizzare o gestire i tuoi dati esistenti, che rimarranno nel profilo esistente.</translation>
 <translation id="5708171344853220004">Nome entità Microsoft</translation>
 <translation id="5711010025974903573">Log di servizio</translation>
 <translation id="5711983031544731014">Impossibile sbloccare. Inserisci la password.</translation>
@@ -7417,6 +7433,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="622484624075952240">Giù</translation>
 <translation id="622537739776246443">Il profilo verrà eliminato</translation>
 <translation id="6225475702458870625">Connessione dati disponibile dal tuo dispositivo <ph name="PHONE_NAME" /></translation>
+<translation id="622568138962270592">Attività delle app Gemini</translation>
 <translation id="6226777517901268232">File chiave privata (facoltativo)</translation>
 <translation id="6227280783235722609">estensione</translation>
 <translation id="622902691730729894">Sblocca gruppo dalla barra dei preferiti</translation>
@@ -7720,6 +7737,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6451861213630784801">Accesso non eseguito</translation>
 <translation id="6452181791372256707">Rifiuto</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> completato</translation>
+<translation id="6452268285438583507">Aggiungi estensioni</translation>
 <translation id="6452961788130242735">Problema di rete o area di autenticazione non valida</translation>
 <translation id="6453191633103419909">Qualità di proiezione schede/schermo</translation>
 <translation id="6453921811609336127">Per passare al metodo di immissione successivo, premi <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maiusc<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Spazio<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -8146,6 +8164,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6759193508432371551">Ripristino dati di fabbrica</translation>
 <translation id="6760354150216532978">Attenzione: questo sito può vedere le modifiche che apporti</translation>
 <translation id="6761209758867628753">Strumento: Aiutami a scrivere</translation>
+<translation id="6761459308170527362">Puoi usare la chat vocale o di testo per fare una domanda a Gemini sui contenuti della pagina che stai condividendo</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Dati dei siti sul dispositivo non consentiti</translation>
 <translation id="6762833852331690540">On</translation>
@@ -8805,6 +8824,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7223952304612664117">Questo consente ai servizi di sistema di utilizzare la precisione della localizzazione per determinare la tua posizione. La precisione della localizzazione utilizza informazioni su segnali wireless e sensori per stimare la posizione del dispositivo.</translation>
 <translation id="7225082563376899794">Usa Windows Hello in fase di inserimento delle password</translation>
 <translation id="7225179976675429563">Tipo di rete mancante</translation>
+<translation id="7226163413959353072">L'assistente AI che fornisce informazioni chiave, chiarisce concetti, trova risposte e altro ancora</translation>
 <translation id="7227235818314667565">Gestisci condivisione</translation>
 <translation id="7227458944009118910">Le app elencate di seguito possono gestire anche link protocollo. Le altre app richiederanno l'autorizzazione.</translation>
 <translation id="7228056665272655255">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali nell'angolo in alto a destra della tastiera. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
@@ -8874,6 +8894,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="727595954130325265">Acquista ora</translation>
 <translation id="727952162645687754">Errore di download</translation>
 <translation id="7280649757394340890">Impostazioni voce per sintesi vocale</translation>
+<translation id="7280683802406059877">Personalizza scorciatoia da tastiera</translation>
 <translation id="7280877790564589615">Richiesta di autorizzazione</translation>
 <translation id="7281166215790160128">Modalità</translation>
 <translation id="7282056103720203738">Lettura di dati e informazioni dei dispositivi allegati</translation>
@@ -8932,6 +8953,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7320213904474460808">Scegli rete predefinita</translation>
 <translation id="7321545336522791733">Server non raggiungibile</translation>
 <translation id="7322515217754205362">Autorizzazioni siti</translation>
+<translation id="7322919329844967709">Riceverai risposte più pertinenti relative ai contenuti della pagina che stai condividendo</translation>
 <translation id="7323315405936922211">Dimensione area cursore</translation>
 <translation id="7324020307732396723">Apri le impostazioni di lingua</translation>
 <translation id="7324297612904500502">Forum per la versione Beta</translation>
@@ -9932,6 +9954,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7991296728590311172">Impostazioni Switch Access</translation>
 <translation id="7992080146463834191">Riepiloga i contenuti, semplifica il linguaggio complesso o poni domande.</translation>
 <translation id="7992203134935383159">Sintesi vocale</translation>
+<translation id="7993332993977106257">Accedi facilmente a Gemini sul tuo dispositivo, anche se Chrome è ridotto a icona.</translation>
 <translation id="7997826902155442747">Priorità processo</translation>
 <translation id="7997828719430450286">Operazione riuscita.</translation>
 <translation id="7998701048266085837">URL</translation>
@@ -9985,6 +10008,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8028060951694135607">Recupero chiavi Microsoft</translation>
 <translation id="8028803902702117856">Download in corso di <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Dimensioni</translation>
+<translation id="8029349782735515147">Mostra i sottotitoli codificati quando usi Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Elenco di lettura}=1{Elenco di lettura ({SELECTED_ITEMS})}other{Elenco di lettura ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Autorizzazione richiesta, premi ⌘ + Opzione + Freccia su per rispondere</translation>
 <translation id="8030169304546394654">Disconnessa</translation>
@@ -10103,6 +10127,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8102139037507939978">Rimuovi le informazioni che consentono l'identificazione personale dal file system_logs.txt.</translation>
 <translation id="810362914482827094">Cerca nelle passkey</translation>
 <translation id="8104088837833760645">Scarica profilo eSIM</translation>
+<translation id="8105050970626643057">Apri rapidamente Gemini quando ti serve</translation>
 <translation id="8105273883928376822">Accedi per continuare.</translation>
 <translation id="8106114112474206597">Usa il tasto "I" per premere un tasto del mouse</translation>
 <translation id="8107015733319732394">Installazione in corso del Google Play Store sul tuo dispositivo <ph name="DEVICE_TYPE" />. L'operazione potrebbe richiedere alcuni minuti.</translation>
@@ -10259,6 +10284,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8222112516148944758">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi</translation>
 <translation id="8222674561049363989">Il file non è un documento valido</translation>
 <translation id="822347941086490485">Ricerca di dispositivi HID in corso…</translation>
+<translation id="8224209912580158729">Condividi i contenuti della pagina con Gemini per ricevere risposte più pertinenti.</translation>
 <translation id="8224427620313426549">Il tuo account <ph name="DOMAIN_LINK" /> non verrà eliminato</translation>
 <translation id="8225046344534779393">Controlla la connessione a Internet</translation>
 <translation id="8225265270453771718">Condividi una finestra dell'applicazione</translation>
@@ -10402,6 +10428,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8314835274931377415">Vuoi avviare la configurazione di Switch Access?</translation>
 <translation id="8315018673856831477">Opzioni per il Risparmio memoria</translation>
 <translation id="8315514906653279104">Attivazione in corso…</translation>
+<translation id="8316480109537174997">Mostra Gemini nella barra delle applicazioni e attiva la scorciatoia da tastiera</translation>
 <translation id="8317671367883557781">Aggiungi connesione di rete</translation>
 <translation id="8317965619823678157">copiare le password</translation>
 <translation id="8318266828739827371">Utilizza una visualizzazione a schermo diviso per vedere l'area ingrandita dello schermo. Utilizza il tasto per la ricerca + Ctrl + D per attivare e disattivare il riquadro d'ingrandimento ancorato.</translation>
@@ -10802,6 +10829,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8607661817136110841">I tuoi gruppi di schede</translation>
 <translation id="8607828412110648570">Assicurati che il dispositivo Bluetooth sia in modalità di accoppiamento e nelle vicinanze. Esegui l'accoppiamento solo con i dispositivi che ritieni attendibili. I dispositivi accoppiati sono visibili a tutti gli account su questo Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Aggiungi una richiesta di Kerberos</translation>
+<translation id="860907040896565281">Personalizzazione della scorciatoia da tastiera in corso…</translation>
 <translation id="8609465669617005112">Sposta su</translation>
 <translation id="8611922158252451755">Chiunque abbia il link può modificare tutte le schede, quindi condividilo con prudenza. Il link scade tra 48 ore.</translation>
 <translation id="8612252270453580753">Cerca frame con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -11202,6 +11230,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8868838761037459823">Dettagli rete mobile</translation>
 <translation id="8870413625673593573">Chiusi di recente</translation>
 <translation id="8871043459130124414">Accede solo dopo aver fatto clic sull'estensione</translation>
+<translation id="8871126140396172266"><ph name="WINDOW_TITLE" />: stai condividendo questa pagina con Gemini</translation>
 <translation id="8871551568777368300">Bloccata dall'amministratore</translation>
 <translation id="8871696467337989339">Stai utilizzando una segnalazione della riga di comando non supportata: <ph name="BAD_FLAG" />. Stabilità e sicurezza ne risentiranno.</translation>
 <translation id="8871974300055371298">Impostazioni contenuti</translation>
@@ -11414,6 +11443,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9011163749350026987">Mostra sempre l'icona</translation>
 <translation id="9011262023858991985">Trasmissione di questa scheda in corso…</translation>
 <translation id="9011393886518328654">Note di rilascio</translation>
+<translation id="9012013036616593083">Gemini non è al momento disponibile. Riprova più tardi.</translation>
 <translation id="9012122671773859802">Sposta continuamente lo schermo quando il puntatore del mouse si muove</translation>
 <translation id="9012585441087414258">Protezione da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura</translation>
 <translation id="9013037634206938463">Sono necessari <ph name="INSTALL_SIZE" /> di spazio libero per installare Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
@@ -11439,6 +11469,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9024127637873500333">&amp;Apri in un'altra scheda</translation>
 <translation id="9024158959543687197">Errore durante il montaggio della condivisione. Verifica l'URL condivisione file e riprova.</translation>
 <translation id="9024692527554990034">Puoi usare le scorciatoie nella barra degli indirizzi per cercare rapidamente in un sito specifico o usare un motore di ricerca diverso</translation>
+<translation id="9024975946059881308">Mostra Gemini nella barra dei menu di Mac e attiva la scorciatoia da tastiera</translation>
 <translation id="9025222334598338152">Puoi utilizzare le tabelle di confronto per tenere traccia delle opzioni man mano che le restringi</translation>
 <translation id="902638246363752736">Impostazioni tastiera</translation>
 <translation id="9026393603776578602">dettatura</translation>

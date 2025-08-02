@@ -216,6 +216,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1142713751288681188">Kağız növü</translation>
 <translation id="1143142264369994168">Sertifikat İmzaçısı</translation>
 <translation id="1145593918056169051">Printer dayanıb</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Artırmalar}=1{Artırmalar ({SELECTED_ITEMS})}other{Artırmalar ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Baş poynteri</translation>
 <translation id="114721135501989771">Chrome'da Google yenilikləri əldə edin</translation>
 <translation id="1147322039136785890">İndi <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin növbəsidir</translation>
@@ -733,6 +734,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="150411034776756821"><ph name="SITE" /> saytını silin</translation>
 <translation id="1504551620756424144">Paylaşılmış qovluqlar <ph name="BASE_DIR" /> ünvanındakı Windows'da əlçatandır.</translation>
 <translation id="1505494256539862015">parolları eksport edin</translation>
+<translation id="1505654899813338756">Əlaqəli səhifələri bir yerdə saxlamaq və cihazlarınızda yadda saxlamaq üçün tabları qruplaşdıra bilərsiniz</translation>
 <translation id="1506061864768559482">Axtarış mühərriki</translation>
 <translation id="1506187449813838456">Tonu artırın</translation>
 <translation id="1507170440449692343">Bu səhifə ilə kameranıza daxil olma bloklandı.</translation>
@@ -5303,6 +5305,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4681930562518940301">Original şəkli yeni tabda açın</translation>
 <translation id="4682481611456523884">Bu saytda daxil edilmiş kontent haqqınızda yadda saxlanan məlumatdan istifadə edə bilməz</translation>
 <translation id="4682807230647698604">Bu funksiyalardan istifadə etdiyiniz zaman Sİ təcrübələri yaratmaq üçün müvafiq data Google-a göndərilir</translation>
+<translation id="4683143253481759090">Chrome güncəlləndi</translation>
 <translation id="4683629100208651599">Kiçik hərflərə çevirin</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (defolt)</translation>
 <translation id="4684427112815847243">Hər şeyi sinxronlaşdırın</translation>
@@ -9199,6 +9202,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7481312909269577407">İrəli</translation>
 <translation id="7481358317100446445">Hazırdır</translation>
 <translation id="748138892655239008">Sertifikat əsas maneələr</translation>
+<translation id="7482823403440483089">Təkmilləşdirilmiş avto-doldurma</translation>
 <translation id="7483732342458943943">Bu keçid işləmir</translation>
 <translation id="7484645889979462775">Bu sayt üçün heç vaxt</translation>
 <translation id="7484943269191249363">Bu cihazda Google Parol Menecerində saxlanmış bütün giriş açarlarından istifadə edə bilərsiniz. Bunu ancaq bir dəfə etməlisiniz.</translation>

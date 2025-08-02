@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Virkt í dag</translation>
 <translation id="1523567067736644845">Taktu úr lás til að sýna aðgangsorð</translation>
 <translation id="1524563461097350801">Nei, takk</translation>
+<translation id="1528290585275339320">Kveikja á efnisdeilingu síðu</translation>
 <translation id="1531038290222364269">Sýna flipa</translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
 <translation id="1540800554400757039">Heimilisfang 1</translation>
@@ -1045,6 +1046,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5128788795241319992">Skoðaðu nýju valmyndina</translation>
 <translation id="5132942445612118989">Samstilltu aðgangsorðin, ferilinn og fleira í öllum tækjum</translation>
 <translation id="5141363746588976328">Fela spjaldið „Verðlækkun í flipunum þínum“</translation>
+<translation id="514154868070499296">Letur: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Loka flipavali</translation>
 <translation id="5148717509369231739">Safari-innflutningur</translation>
 <translation id="5157638238828697074">Eitthvað fór úrskeiðis. Ekki tókst að opna forritið.</translation>
@@ -1974,6 +1976,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8637431369725868556">Verðu þig fyrir hættulegum vefsvæðum.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Engin aðgangsorð í hættu}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
 <translation id="8643403533759285912">Eyða hópi</translation>
+<translation id="8645245178269185266">Deildu efni síðu með Gemini til að fá meira viðeigandi svör</translation>
 <translation id="8647280737650867362">Ekki tókst að stöðva verðrakningu.</translation>
 <translation id="8654802032646794042">Hætta við</translation>
 <translation id="8660600697590740984">Linsumynd sem þú afritaðir</translation>

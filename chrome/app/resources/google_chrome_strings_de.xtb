@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="2094648590148273905">Nutzungsbedingungen für Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome trotzdem beenden?</translation>
+<translation id="2096213354152647998">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION" />“ entfernt.</translation>
 <translation id="2106831557840787829">Chrome OS Flex und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="2108778574543343055">Chrome-Ausführung im Hintergrund für Apps deaktivieren</translation>
 <translation id="2120620239521071941">Dadurch werden <ph name="ITEMS_COUNT" /> Elemente von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
@@ -454,6 +455,7 @@
 <translation id="6696915334902295848">Chrome benötigt die Mikrofonberechtigung für diese Website</translation>
 <translation id="6712881677154121168">Fehler beim Herunterladen: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome noch schneller machen</translation>
+<translation id="6734827584173583205">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere Berechtigungen entfernt.</translation>
 <translation id="6735387454586646204">Chrome OS Flex-System</translation>
 <translation id="6750954913813541382">Zur Behebung von Tippfehlern sendet Chrome im Browser eingegebenen Text an Google</translation>
 <translation id="6760235774835597023">Websites werden mit der V8-Engine von Chrome beschleunigt, Chrome wird dadurch aber etwas anfälliger für Angriffe. Diese Einstellung ist aktiviert.</translation>
@@ -479,6 +481,7 @@
 <translation id="7024536598735240744">Fehler beim Entpacken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation angehalten.</translation>
 <translation id="7025800014283535195">Hier kannst du zwischen Chrome-Profilen wechseln</translation>
+<translation id="7051685429025310665">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="7059914902409643750">Chrome personalisieren</translation>
 <translation id="7060643578009939353">Dieses Video mit Google Lens durchsuchen</translation>
 <translation id="7071827361006050863">Browserdaten in Chrome werden bald gelöscht</translation>
@@ -540,6 +543,7 @@
 <translation id="77283119132245232">Bietet Ablaufverfolgungsdienste für <ph name="BROWSER_NAME" />. Wenn dieser Dienst deaktiviert ist, enthalten die vom Browser erstellten Leistungstraces keine systemweiten Ereignisse wie Kontextwechsel und Thread-Ereignisse.</translation>
 <translation id="7736869414036750079">Deine Organisation verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
+<translation id="7748969056734910029">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>

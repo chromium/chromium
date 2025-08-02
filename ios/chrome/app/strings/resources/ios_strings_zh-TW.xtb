@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">上次使用時間：今天</translation>
 <translation id="1523567067736644845">必須解鎖才能查看密碼</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
+<translation id="1528290585275339320">開啟網頁內容分享功能</translation>
 <translation id="1531038290222364269">顯示分頁</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
 <translation id="1540800554400757039">地址 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">瀏覽新選單</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="5141363746588976328">隱藏「分頁中有產品降價」資訊卡</translation>
+<translation id="514154868070499296">字型：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">退出分頁切換工具</translation>
 <translation id="5148717509369231739">Safari 匯入</translation>
 <translation id="5157638238828697074">發生錯誤，無法開啟應用程式。</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8637431369725868556">守護網頁瀏覽安全，有效防堵危險網站。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{沒有任何密碼外洩}=1{有 {COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="8643403533759285912">刪除群組</translation>
+<translation id="8645245178269185266">與 Gemini 分享網頁內容，即可取得更符合需求的答案</translation>
 <translation id="8647280737650867362">無法取消追蹤價格。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8660600697590740984">複製的智慧鏡頭圖片</translation>

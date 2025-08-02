@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">Тып паперы</translation>
 <translation id="1143142264369994168">Сродак подпісу сертыфікатаў</translation>
 <translation id="1145593918056169051">Прынтар спыніў работу</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Пашырэнні}=1{Пашырэнні ({SELECTED_ITEMS})}one{Пашырэнні ({SELECTED_ITEMS})}few{Пашырэнні ({SELECTED_ITEMS})}many{Пашырэнні ({SELECTED_ITEMS})}other{Пашырэнні ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Кіраванне з дапамогай рухаў галавы</translation>
 <translation id="114721135501989771">Разумныя функцыі ў Chrome</translation>
 <translation id="1147322039136785890">Перадайце прыладу карыстальніку <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -738,6 +739,7 @@
 <translation id="150411034776756821">Выдаліць <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Абагуленыя папкі даступныя ў сістэме Windows у каталозе "<ph name="BASE_DIR" />".</translation>
 <translation id="1505494256539862015">экспартаваць паролі</translation>
+<translation id="1505654899813338756">Вы можаце групаваць укладкі, каб звязаныя старонкі захоўваліся разам і былі даступнымі на ўсіх вашых прыладах</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
 <translation id="1506187449813838456">Павялічыць вышыню голасу</translation>
 <translation id="1507170440449692343">Гэтай старонцы быў заблакіраваны доступ да вашай камеры.</translation>
@@ -5305,6 +5307,7 @@
 <translation id="4681930562518940301">Адкрыць зыходны &amp;відарыс у новай укладцы</translation>
 <translation id="4682481611456523884">Убудаванае змесціва на гэтым сайце не можа выкарыстоўваць захаваную пра вас інфармацыю</translation>
 <translation id="4682807230647698604">Каб вы маглі выкарыстоўваць функцыі штучнага інтэлекту, падчас іх выканання адпаведныя даныя адпраўляюцца ў Google</translation>
+<translation id="4683143253481759090">Браўзер Chrome абноўлены</translation>
 <translation id="4683629100208651599">Зрабіць усе літары малымі</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (стандартна)</translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
@@ -9208,6 +9211,7 @@
 <translation id="7481312909269577407">Далей</translation>
 <translation id="7481358317100446445">Гатова</translation>
 <translation id="748138892655239008">Асноўныя абмежаванні сертыфікатаў</translation>
+<translation id="7482823403440483089">Палепшанае аўтазапаўненне</translation>
 <translation id="7483732342458943943">Гэта спасылка не працуе</translation>
 <translation id="7484645889979462775">Ніколі для гэтага сайта</translation>
 <translation id="7484943269191249363">Вы можаце выкарыстоўваць усе свае ключы доступу, захаваныя ў Менеджары пароляў Google, на гэтай прыладзе. Прайсці спраўджанне асобы трэба будзе толькі адзін раз.</translation>

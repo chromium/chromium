@@ -402,6 +402,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1260810365552581339">Có thể Linux không có đủ dung lượng ổ đĩa. Bạn có thể tăng dung lượng ổ đĩa Linux rồi thử khôi phục lại trong phần <ph name="LINK_START" />Cài đặt<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Thông thường</translation>
 <translation id="126156426083987769">Đã xảy ra lỗi với giấy phép thiết bị ở chế độ minh họa.</translation>
+<translation id="1262395978737369974">Luôn được phép sử dụng tính năng tối ưu hoá JavaScript</translation>
 <translation id="1262564987698748643">Các trang web có thể yêu cầu ghi đè thao tác nhập bằng bàn phím</translation>
 <translation id="1263231323834454256">Danh sách đọc</translation>
 <translation id="1263733306853729545">Dùng phím <ph name="MINUS" /> và <ph name="EQUAL" /> để chuyển đến danh sách các tùy chọn</translation>
@@ -1986,6 +1987,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2343160676229467122">Các tiện ích không được cho phép trên <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Vườn quốc gia Núi Rocky</translation>
 <translation id="2343747224442182863">Lấy tiêu điểm thẻ này</translation>
+<translation id="2343971313330854480">Tìm tệp trong thư mục <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">Không thể kết nối với máy chủ. Hãy kiểm tra kết nối mạng rồi thử lại. Nếu bạn vẫn gặp sự cố, hãy thử khởi động lại Chromebook.</translation>
 <translation id="234559068082989648">Các phiên bản cũ của Ứng dụng Chrome sẽ không mở sau tháng Mười hai năm 2022. Hãy liên hệ với quản trị viên để cập nhật lên phiên bản mới hoặc xóa ứng dụng này.</translation>
 <translation id="2348176352564285430">Ứng dụng: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2233,6 +2235,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> của <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Sắp xếp màn hình</translation>
 <translation id="2507253002925770350">Đã xóa phiếu</translation>
+<translation id="2507339521369019923">Lưu vào tài khoản của bạn</translation>
 <translation id="2507491234071975894">Loa</translation>
 <translation id="2508747373511408451">Ứng dụng <ph name="APPLICATION_NAME" /> cần có Google Drive thì mới hoạt động được.</translation>
 <translation id="2509495747794740764">Số tỷ lệ phải là một số giữa 10 và 200.</translation>
@@ -7988,6 +7991,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
 <translation id="6613267708691765962">Đang quét tìm phần mềm độc hại...</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
+<translation id="6618013221808317456">Không cho phép các trang web sử dụng tính năng tối ưu hoá JavaScript</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Trang web có thể theo dõi vị trí của bạn</translation>
 <translation id="6619243162837544323">Trạng thái mạng</translation>
@@ -9851,6 +9855,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7920482456679570420">Thêm các từ mà bạn muốn tính năng kiểm tra lỗi chính tả bỏ qua</translation>
 <translation id="7920715534283810633">Không thể mở <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Bạn không xem được thông báo của điện thoại trên tài khoản được quản lý này. Hãy thử một tài khoản khác. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Các trang web có thể sử dụng tính năng tối ưu hoá JavaScript</translation>
 <translation id="7921901223958867679">Tiện ích này có thể đọc và thay đổi <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 tiện ích</translation>
 <translation id="7923564237306226146">Đã hoàn tất quá trình nâng cấp Linux</translation>
@@ -10397,6 +10402,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8276560076771292512">Làm trống bộ nhớ đệm và tải lại cứng</translation>
 <translation id="8276850948802942358">Tìm hiểu thêm về cách cấp cho một trang web quyền tạm thời sử dụng cookie của bên thứ ba</translation>
 <translation id="8277907305629781277">Bạn đã tạo khoá truy cập này vào <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Không được phép sử dụng tính năng tối ưu hoá JavaScript</translation>
 <translation id="827966378414194229">Sử dụng chuyển động của đầu và biểu cảm trên khuôn mặt để điều khiển Chromebook. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Trang web hiển thị bằng ngôn ngữ của bạn</translation>
 <translation id="8280848878018088610">Những con sóng xô trên biển, phía sau là khung cảnh thành phố và lâu đài kỳ ảo, trong bầu không khí u ám.</translation>
@@ -10616,6 +10622,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8431190899827883166">Hiển thị điểm khi nhấn</translation>
 <translation id="843173223122814223">Tạo nền bằng AI</translation>
 <translation id="8431977087510901105">Đã đặt lại chế độ cài đặt con trỏ</translation>
+<translation id="843210078733508372">Hãy đăng nhập để tiếp tục thay đổi mật khẩu</translation>
 <translation id="8433186206711564395">Cài đặt mạng</translation>
 <translation id="8434109185104929038">Góc đọc sách</translation>
 <translation id="8434837876193928924">Thông tin về nhóm thẻ</translation>
@@ -11369,6 +11376,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="895347679606913382">Đang bắt đầu...</translation>
 <translation id="8954796993367253220">Để xoá nhật ký ở chế độ Khách, hãy đóng tất cả cửa sổ Khách.</translation>
 <translation id="8955174612586215829">Tìm giao diện</translation>
+<translation id="8957656266859671822">Chọn tài khoản của bạn</translation>
 <translation id="8957757410289731985">Tùy chỉnh hồ sơ</translation>
 <translation id="8959144235813727886">Trang web và ứng dụng</translation>
 <translation id="895944840846194039">Bộ nhớ dành cho JavaScript</translation>
@@ -11681,6 +11689,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9153367754133725216">Xem thông tin đề xuất về nội dung trên web và ứng dụng mới trong Trình chạy và kết quả tìm kiếm. Chỉ gửi số liệu thống kê cho mục đích cải thiện thông tin đề xuất khi bạn đã chọn gửi báo cáo sự cố, dữ liệu chẩn đoán và dữ liệu sử dụng cho ChromeOS.</translation>
 <translation id="9154194610265714752">Đã cập nhật</translation>
 <translation id="915485121129452731">Bảng vẽ điện tử</translation>
+<translation id="9155100833189043833">Sử dụng giấy tờ tuỳ thân theo cách an toàn trên thiết bị di động</translation>
 <translation id="9155344700756733162">Bỏ chọn màu</translation>
 <translation id="9157096865782046368">0,8 giây</translation>
 <translation id="9157697743260533322">Không thiết lập được cập nhật tự động cho tất cả người dùng (lỗi khởi chạy kiểm tra <ph name="ERROR_NUMBER" /></translation>

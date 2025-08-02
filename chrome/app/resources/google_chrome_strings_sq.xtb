@@ -86,6 +86,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2091012649849228750">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
 <translation id="2094648590148273905">Kushtet e Chrome OS Flex</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
+<translation id="2096213354152647998">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION" />".</translation>
 <translation id="2106831557840787829">ChromeOS Flex mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Çaktivizo ekzekutimin e Chrome në sfond për aplikacionet</translation>
 <translation id="2120620239521071941">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
@@ -462,6 +463,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6696915334902295848">Chrome ka nevojë për lejen e mikrofonit për këtë sajt</translation>
 <translation id="6712881677154121168">Gabim shkarkimi: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Bëje Chrome më të shpejtë</translation>
+<translation id="6734827584173583205">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" dhe <ph name="COUNT" /> më shumë.</translation>
 <translation id="6735387454586646204">Sistemi Chrome OS Flex</translation>
 <translation id="6750954913813541382">Për të rregulluar gabimet drejtshkrimore, Chrome e dërgon tekstin që shkruan në shfletues te Google</translation>
 <translation id="6760235774835597023">Shpejton sajtet me motorin V8 të Chrome, por e bën Chrome disi më pak rezistent ndaj sulmeve. Ky cilësim është aktiv.</translation>
@@ -487,6 +489,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7024536598735240744">Gabim shpaketimi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalimi ndaloi.</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
+<translation id="7051685429025310665">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Bëje Chrome tëndin</translation>
 <translation id="7060643578009939353">Kërkoje këtë video me "Lenten e Google"</translation>
 <translation id="7071827361006050863">Chrome do t'i fshijë së shpejti të dhënat e shfletimit</translation>
@@ -548,6 +551,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="77283119132245232">Ofron shërbime të gjurmimit të sistemit për <ph name="BROWSER_NAME" />. Nëse ky shërbim është i çaktivizuar, gjurmët e performancës të krijuara nga shfletuesi nuk do të përfshijnë ngjarjet e të gjithë sistemit, si p.sh. ngjarjet e ndryshimit të kontekstit dhe të nënprocesit të gatshëm.</translation>
 <translation id="7736869414036750079">Organizata jote kërkon që të identifikohesh në Chrome</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
+<translation id="7748969056734910029">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />".</translation>
 <translation id="7761834446675418963">Kliko tek emri yt për të hapur Chrome dhe fillo shfletimin.</translation>
 <translation id="7777080907402804672">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="778331955594035129">Chrome ka nevojë për lejen e vendndodhjes për të këtë sajt</translation>

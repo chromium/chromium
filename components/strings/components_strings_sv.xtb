@@ -557,6 +557,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1927439846988093361">Hårvård</translation>
 <translation id="1935353813610900265">Skicka feedback om historiksökningen med hjälp av AI</translation>
 <translation id="1935995810530254458">Kopiera ändå</translation>
+<translation id="1938580037092872316">Lägg till nya uppgifter i den sparade adressen</translation>
 <translation id="1939059826036755332">Automatisk bild-i-bild</translation>
 <translation id="1939175642807587452">Får begära tillstånd att skicka aviseringar</translation>
 <translation id="1940441167050915935">Radera sparade säkerhetskoder</translation>
@@ -657,6 +658,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2102495993840063010">Android-appar</translation>
 <translation id="2102519472192754194">Webbläsare</translation>
 <translation id="2103210856015238101">Tillgängliga stamkundskort vars uppgifter kan fyllas i med ett tryck har öppnats över hela skärmen.</translation>
+<translation id="2104739941682874393">Förbättrad autofyll förstår formulär bättre och kan autofylla dem snabbare åt dig</translation>
 <translation id="2105838220373099643">Rollspel</translation>
 <translation id="2107021941795971877">Skriva ut underlag</translation>
 <translation id="2108755909498034140">Starta om datorn</translation>
@@ -1527,6 +1529,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3570079787344939099">Scrolla och zooma</translation>
 <translation id="357244642999988503">Ta bort kolumn</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Lägg till nya uppgifter i adressen</translation>
 <translation id="3575121482199441727">Tillåt för den här webbplatsen</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3575589330755445706">Alternativet för gatunamn har valts</translation>
@@ -2426,6 +2429,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5052517576853118371">Aktiva ämnen</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Om du vill skicka den här filen med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}other{Om du vill skicka de här filerna med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="505757197798929356">Ange anledning till att den öppnas (obligatoriskt)</translation>
+<translation id="5058282932481719070">läs mer om förbättrad autofyll i inställningarna</translation>
 <translation id="5060419232449737386">Textningsinställningar</translation>
 <translation id="5060483733937416656">Du har valt att verifiera dig med Windows Hello på webbplatser där <ph name="PROVIDER_ORIGIN" /> används. Den här leverantören kan ha lagrat uppgifter om din betalningsmetod som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Menade du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3031,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6062937464449575061">Ta bort prisbevakning</translation>
 <translation id="6063415549109819824">Bostadslån</translation>
 <translation id="6070432475334343308">En eller flera filer laddades inte upp till <ph name="FOLDER_NAME" /> i <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Analystjänst för bokmärken för innehåll</translation>
 <translation id="6078069862923723141">Cyan 2</translation>
 <translation id="6085149458302186532">Etiketter (färgade)</translation>
 <translation id="6087312102907839798">Relaterade sökningar</translation>
@@ -3538,6 +3543,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6935082727755903526">Jobb inom redovisning och finans</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="6936976777388162184">Det här är en paketerad enhet som inte kan registreras för kiosk- och skyltuppgraderingar.</translation>
+<translation id="6942444979237658241">Kommentarer: <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strategispel</translation>
 <translation id="6944692733090228304">Du har angett ditt lösenord på en webbplats som inte hanteras av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Skydda kontot genom att inte återanvända lösenordet i andra appar och webbplatser.</translation>
 <translation id="6946949206576443118">Söka på webben i Chrome</translation>
@@ -3550,6 +3556,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="695140971690006676">Återställ alla</translation>
 <translation id="6954049078461159956">Hockey</translation>
 <translation id="695582302419398462">Kartong (dubbla skikt)</translation>
+<translation id="6957153644870901611">Aktivera förbättrad autofyll för att automatiskt fylla i fler fält</translation>
 <translation id="6957887021205513506">Serverns certifikat verkar vara falskt.</translation>
 <translation id="6958564499836457428">Hantera Googles integritetsinställningar i ditt Google-konto</translation>
 <translation id="6961844873822989059">Får begära tillstånd att använda teckensnitt som har installerats på enheten</translation>
@@ -3996,6 +4003,7 @@ Mer information.
 <translation id="7668654391829183341">Okänd enhet</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> av <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Åtgärder som gjorts med data som markerats som konfidentiell (1 åtgärd sedan inloggningen) <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />}other{Åtgärder som gjorts med data som markerats som konfidentiell (# åtgärder sedan inloggningen) <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Du kan fylla i formulär i Chrome snabbare med uppgifter från ditt Google-konto <ph name="USER_EMAIL" /></translation>
 <translation id="7673278391011283842">Postfack 6</translation>
 <translation id="7675325315208090829">Hantera betalningsmetoder …</translation>
 <translation id="767550629621587224">Förskurna flikar</translation>
@@ -4128,6 +4136,7 @@ Mer information.
 <translation id="7908648876066812348">Aktiverar virtuella kort</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur för att öppna sidan Säkerhetskontroll i Chrome-inställningarna</translation>
 <translation id="791107458486222637">Gör om resultatet</translation>
+<translation id="7912924955815015552">Importerat från Safari</translation>
 <translation id="791551905239004656">Rita och måla</translation>
 <translation id="7916162853251942238">Flexo-base</translation>
 <translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
@@ -4262,6 +4271,7 @@ Mer information.
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Skapades för 1 månad sedan}other{Skapades för {NUM_MONTHS} månader sedan}}</translation>
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Datorn gick i viloläge.</translation>
+<translation id="815036624016370447">Du kan fylla i formulär i Chrome snabbare med uppgifter från ditt Google-konto <ph name="ACCOUNT" /></translation>
 <translation id="8150722005171944719">Det går inte att läsa filen på <ph name="URL" />. Den kan ha tagits bort eller flyttats, eller så krävs behörighet för att få åtkomst till den.</translation>
 <translation id="8151185429379586178">Verktyg för utvecklare</translation>
 <translation id="8153865548451212769">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att ladda ned den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att ladda ned dessa filer till <ph name="DESTINATION_NAME" />}}</translation>

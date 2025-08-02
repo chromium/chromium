@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktief vandag</translation>
 <translation id="1523567067736644845">Ontsluit om wagwoord te wys</translation>
 <translation id="1524563461097350801">Nee, dankie</translation>
+<translation id="1528290585275339320">Skakel bladsyinhouddeling aan</translation>
 <translation id="1531038290222364269">Wys oortjies</translation>
 <translation id="1536390784834419204">Vertaal bladsy</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -1045,6 +1046,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5128788795241319992">Verken die nuwe kieslys</translation>
 <translation id="5132942445612118989">Sinkroniseer jou wagwoorde, geskiedenis en meer op alle toestelle</translation>
 <translation id="5141363746588976328">Versteek prysdalings op jou oortjieskaart</translation>
+<translation id="514154868070499296">Lettertipe: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Verlaat oortjiewisselaar</translation>
 <translation id="5148717509369231739">Safari-invoer</translation>
 <translation id="5157638238828697074">Iets het skeefgeloop. Die app kon nie oopgemaak word nie.</translation>
@@ -1974,6 +1976,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8637431369725868556">Kry beskerming teen gevaarlike werwe.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Geen gekompromitteerde wagwoorde nie}=1{{COUNT} gekompromitteerde wagwoord}other{{COUNT} gekompromitteerde wagwoorde}}</translation>
 <translation id="8643403533759285912">Vee groep uit</translation>
+<translation id="8645245178269185266">Deel bladsyinhoud met Gemini om meer relevante antwoorde te kry</translation>
 <translation id="8647280737650867362">Kon nie nasporing van die prys stop nie.</translation>
 <translation id="8654802032646794042">Kanselleer</translation>
 <translation id="8660600697590740984">Prent wat deur Lens gekopieer is</translation>

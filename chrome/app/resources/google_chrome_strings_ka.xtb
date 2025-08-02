@@ -86,6 +86,7 @@
 <translation id="2091012649849228750">Google Chrome-ის მომავალი განახლებების მისაღებად დაგჭირდებათ Windows 10 ან უფრო ახალი ვერსია. ეს კომპიუტერი იყენებს Windows 8-ს.</translation>
 <translation id="2094648590148273905">ChromeOS Flex-ის პირობები</translation>
 <translation id="2094919256425865063">მაინც გსურთ Chrome-იდან გასვლა?</translation>
+<translation id="2096213354152647998">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო<ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="2108778574543343055">Chrome-ის აპების ფონურ რეჟიმში მუშაობის გათიშვა</translation>
 <translation id="2120620239521071941">ეს მოქმედება წაშლის <ph name="ITEMS_COUNT" /> ერთეულს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
@@ -463,6 +464,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6696915334902295848">Chrome საჭიროებს მიკროფონზე წვდომის ნებართვას ამ საიტისთვის</translation>
 <translation id="6712881677154121168">შეცდომა ჩამოტვირთვისას: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">ააჩქარეთ Chrome-ის მუშაობა</translation>
+<translation id="6734827584173583205">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და კიდევ <ph name="COUNT" />.</translation>
 <translation id="6735387454586646204">ChromeOS Flex სისტემა</translation>
 <translation id="6750954913813541382">მართლწერის შეცდომების შესასწორებლად Chrome უგზავნის Google-ს თქვენ მიერ ბრაუზერში აკრეფილ ტექსტს</translation>
 <translation id="6760235774835597023">აჩქარებს Chrom-ის V8 მექანიზმის მქონე საიტების მუშაობას, მაგრამ Chrom ოდნავ ნაკლებად უძლებს შეტევებს. ეს პარამეტრი ჩართულია.</translation>
@@ -488,6 +490,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7024536598735240744">შეცდომა ამოღებისას: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ინსტალაცია შეწყდა.</translation>
 <translation id="7025800014283535195">აქ შეგიძლიათ Chrome პროფილებს შორის გადართვა</translation>
+<translation id="7051685429025310665">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">მოირგეთ Chrome</translation>
 <translation id="7060643578009939353">ამ ვიდეოს ძიება Google Lens-ის მეშვეობით</translation>
 <translation id="7071827361006050863">Chrome მალე წაშლის დათვალიერების მონაცემებს</translation>
@@ -549,6 +552,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="77283119132245232">უზრუნველყოფს სისტემის კონტროლის სერვისს <ph name="BROWSER_NAME" />-ისთვის. თუ ეს სერვისი გათიშულია, ბრაუზერის მიერ შექმნილი ეფექტურობის ჩანაწერები არ მიიღებს მონაწილეობას სისტემის დონის მოვლენებში, როგორიცაა კონტექსტის გადართვა თუ მზა ნაკადების მოვლენები.</translation>
 <translation id="7736869414036750079">თქვენი ორგანიზაცია მოითხოვს, რომ Chrome-ში შეხვიდეთ</translation>
 <translation id="7747138024166251722">ინსტალერმა ვერ შექმნა დროებითი დირექტორია. გთხოვთ, გადაამოწმოთ დისკზე თავისუფალი სივრცე და პროგრამული უზრუნველყოფის დაყენების ნებართვა.</translation>
+<translation id="7748969056734910029">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">დააწკაპუნეთ თქვენს სახელზე Chrome-ის გასახსნელად და დაიწყეთ დათვალიერება.</translation>
 <translation id="7777080907402804672">თუ სურათს არ ექნება სასარგებლო აღწერილობა, Chrome შეეცდება მის უზრუნველყოფას. აღწერილობების შესაქმნელად სურათები იგზავნება Google-ში. ამის გამორთვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="778331955594035129">Chrome საჭიროებს მდებარეობაზე წვდომის ნებართვას ამ საიტისთვის</translation>

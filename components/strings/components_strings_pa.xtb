@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">ਵਾਲਾਂ ਦੀ ਦੇਖਭਾਲ</translation>
 <translation id="1935353813610900265">AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਇਤਿਹਾਸ ਦੀ ਖੋਜ ਲਈ ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="1935995810530254458">ਫਿਰ ਵੀ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="1938580037092872316">ਰੱਖਿਅਤ ਕੀਤੇ ਪਤੇ ਵਿੱਚ ਨਵੀਂ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1939059826036755332">ਸਵੈਚਲਿਤ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ</translation>
 <translation id="1939175642807587452">ਸਾਈਟ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1940441167050915935">ਰੱਖਿਅਤ ਕੀਤੇ ਸੁਰੱਖਿਆ ਕੋਡਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Android ਐਪਾਂ</translation>
 <translation id="2102519472192754194">ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="2103210856015238101">ਸਪਰਸ਼ ਕਰ ਕੇ ਭਰੇ ਜਾਣ ਵਾਲੇ ਉਪਲਬਧ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
+<translation id="2104739941682874393">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਸੁਵਿਧਾ ਫ਼ਾਰਮਾਂ ਨੂੰ ਬਿਹਤਰ ਢੰਗ ਨਾਲ ਸਮਝਦੀ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਆਟੋਫਿਲ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="2105838220373099643">ਭੂਮਿਕਾ ਨਿਭਾਉਣ ਵਾਲੀਆਂ ਗੇਮਾਂ</translation>
 <translation id="2107021941795971877">ਪ੍ਰਿੰਟ ਸੰਬੰਧੀ ਸਹਾਇਤਾਵਾਂ</translation>
 <translation id="2108755909498034140">ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
@@ -1525,6 +1527,7 @@
 <translation id="3570079787344939099">ਸਕ੍ਰੋਲ ਕਰਨਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨਾ</translation>
 <translation id="357244642999988503">ਕਾਲਮ ਹਟਾਓ</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">ਪਤੇ ਵਿੱਚ ਨਵੀਂ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3575121482199441727">ਇਸ ਸਾਈਟ ਨੂੰ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">'ਗਲੀ ਦਾ ਨਾਮ' ਵਿਕਲਪ ਚੁਣਿਆ ਗਿਆ</translation>
@@ -2423,6 +2426,7 @@
 <translation id="5052517576853118371">ਕਿਰਿਆਸ਼ੀਲ ਵਿਸ਼ੇ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਇਹ ਫ਼ਾਈਲ ਭੇਜਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ (<ph name="DISK_SPACE_SIZE" />) ਖਾਲੀ ਕਰੋ}one{ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਇਹ ਫ਼ਾਈਲ ਭੇਜਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ (<ph name="DISK_SPACE_SIZE" />) ਖਾਲੀ ਕਰੋ}other{ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਭੇਜਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ (<ph name="DISK_SPACE_SIZE" />) ਖਾਲੀ ਕਰੋ}}</translation>
 <translation id="505757197798929356">ਖੋਲ੍ਹਣ ਦਾ ਕਾਰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ (ਲੋੜੀਂਦਾ)</translation>
+<translation id="5058282932481719070">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5060419232449737386">ਸੁਰਖੀ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5060483733937416656">ਤੁਸੀਂ <ph name="PROVIDER_ORIGIN" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ Windows Hello ਨਾਲ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚੁਣਿਆ ਹੈ। ਇਸ ਪ੍ਰਦਾਨਕ ਨੇ ਤੁਹਾਡੀ ਭੁਗਤਾਨ ਵਿਧੀ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਸਟੋਰ ਕੀਤਾ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਲਈ ਤੁਸੀਂ <ph name="LINK_TEXT" /> ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5061227663725596739">ਕੀ ਤੁਹਾਡਾ ਮਤਲਬ <ph name="LOOKALIKE_DOMAIN" /> ਤੋਂ ਸੀ?</translation>
@@ -3024,6 +3028,7 @@
 <translation id="6062937464449575061">ਕੀਮਤ ਟਰੈਕਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="6063415549109819824">ਘਰ ਸੰਬੰਧੀ ਵਿੱਤ ਸੇਵਾਵਾਂ</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> 'ਤੇ ਮੌਜੂਦ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਨੂੰ ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="6071503852498277813">ਸਮੱਗਰੀ ਬੁੱਕਮਾਰਕ ਪਾਰਸਰ ਸੇਵਾ</translation>
 <translation id="6078069862923723141">ਸੀਆਨ 2</translation>
 <translation id="6085149458302186532">ਲੇਬਲ (ਰੰਗੀਨ)</translation>
 <translation id="6087312102907839798">ਸੰਬੰਧਿਤ ਖੋਜਾਂ</translation>
@@ -3534,6 +3539,7 @@
 <translation id="6935082727755903526">ਲੇਖਾਕਾਰੀ ਜਾਂ ਵਿੱਤੀ ਖੇਤਰ ਵਾਲੀਆਂ ਨੌਕਰੀਆਂ</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋਣ।</translation>
 <translation id="6936976777388162184">ਇਹ ਬੰਡਲ ਡੀਵਾਈਸ ਹੈ ਅਤੇ ਇਸਨੂੰ ਕਿਓਸਕ ਅਤੇ ਸਾਈਨੇਜ ਅੱਪਗ੍ਰੇਡ ਨਾਲ ਦਰਜ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
+<translation id="6942444979237658241">ਟਿੱਪਣੀ - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">ਰਣਨੀਤਕ ਗੇਮਾਂ</translation>
 <translation id="6944692733090228304">ਤੁਸੀਂ ਉਸ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ ਜੋ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਹੋਰਾਂ ਐਪਾਂ ਅਤੇ ਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਮੁੜ ਨਾ ਵਰਤੋ।</translation>
 <translation id="6946949206576443118">Chrome ਵਿੱਚ ਵੈੱਬ ਖੋਜੋ</translation>
@@ -3546,6 +3552,7 @@
 <translation id="695140971690006676">ਸਭ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6954049078461159956">ਹਾਕੀ</translation>
 <translation id="695582302419398462">ਕਾਰਡਬੋਰਡ (ਡਬਲ ਵਾਲ)</translation>
+<translation id="6957153644870901611">ਹੋਰ ਖੇਤਰਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਭਰਨ ਲਈ ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6957887021205513506">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇੱਕ ਧੋਖਾ ਜਾਪਦਾ ਹੈ।</translation>
 <translation id="6958564499836457428">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Google ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6961844873822989059">ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਪਤ ਫ਼ੌਂਟਾਂ ਨੂੰ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
@@ -3991,6 +3998,7 @@
 <translation id="7668654391829183341">ਅਗਿਆਤ ਡੀਵਾਈਸ</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> ਵਿੱਚੋਂ <ph name="ITEM_POSITION" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{ਗੁਪਤ ਵਜੋਂ ਫਲੈਗ ਕੀਤੇ ਗਏ ਡਾਟੇ 'ਤੇ ਕੀਤੀਆਂ ਗਈਆਂ ਕਾਰਵਾਈਆਂ (ਲੌਗ-ਇਨ ਤੋਂ ਬਾਅਦ 1 ਕਾਰਵਾਈ)। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}one{ਗੁਪਤ ਵਜੋਂ ਫਲੈਗ ਕੀਤੇ ਗਏ ਡਾਟੇ 'ਤੇ ਕੀਤੀਆਂ ਗਈਆਂ ਕਾਰਵਾਈਆਂ (ਲੌਗ-ਇਨ ਤੋਂ ਬਾਅਦ # ਕਾਰਵਾਈ)। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}other{ਗੁਪਤ ਵਜੋਂ ਫਲੈਗ ਕੀਤੇ ਗਏ ਡਾਟੇ 'ਤੇ ਕੀਤੀਆਂ ਗਈਆਂ ਕਾਰਵਾਈਆਂ (ਲੌਗ-ਇਨ ਤੋਂ ਬਾਅਦ # ਕਾਰਵਾਈਆਂ)। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">ਤੁਹਾਡੇ <ph name="USER_EMAIL" /> Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ Chrome ਵਿੱਚ ਫ਼ਾਰਮਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਭਰਨ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="7673278391011283842">ਮੇਲਬਾਕਸ 6</translation>
 <translation id="7675325315208090829">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="767550629621587224">ਪ੍ਰੀ-ਕੱਟ ਟੈਬ</translation>
@@ -4123,6 +4131,7 @@
 <translation id="7908648876066812348">ਆਭਾਸੀ ਕਾਰਡ ਚਾਲੂ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chrome ਸੁਰੱਖਿਆ ਜਾਂਚ ਪੰਨੇ 'ਤੇ ਜਾਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="791107458486222637">ਨਤੀਜੇ ਨੂੰ ਮੁੜ-ਓਹੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="7912924955815015552">Safari ਤੋਂ ਆਯਾਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="791551905239004656">ਚਿੱਤਰਕਾਰੀ ਅਤੇ ਰੰਗ ਕਰਨ ਸੰਬੰਧੀ ਗੇਮਾਂ</translation>
 <translation id="7916162853251942238">ਫਲੈਕਸੋ ਬੇਸ</translation>
 <translation id="791698251820376781">ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦੀ</translation>
@@ -4257,6 +4266,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ਮਹੀਨਾ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}one{{NUM_MONTHS} ਮਹੀਨਾ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}other{{NUM_MONTHS} ਮਹੀਨੇ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}}</translation>
 <translation id="8148608574971654810">PDF ਵਰਜਨ:</translation>
 <translation id="8149426793427495338">ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਸਲੀਪ ਮੋਡ ਵਿੱਚ ਚਲਾ ਗਿਆ।</translation>
+<translation id="815036624016370447">ਤੁਹਾਡੇ <ph name="ACCOUNT" /> Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ Chrome ਵਿੱਚ ਫ਼ਾਰਮਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਭਰਨ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="8150722005171944719"><ph name="URL" /> ਤੇ ਫਾਈਲ ਪੜ੍ਹਨਯੋਗ ਨਹੀਂ ਹੈ। ਇਹ ਹਟਾਈ ਗਈ, ਮੂਵ ਕੀਤੀ ਗਈ ਹੋ ਸਕਦੀ ਹੈ ਜਾਂ ਸ਼ਾਇਦ ਫਾਈਲ ਅਨੁਮਤੀਆਂ ਪਹੁੰਚ ਰੋਕ ਰਹੀਆਂ ਹਨ।</translation>
 <translation id="8151185429379586178">ਵਿਕਾਸਕਾਰ ਟੂਲਾਂ</translation>
 <translation id="8153865548451212769">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}}</translation>

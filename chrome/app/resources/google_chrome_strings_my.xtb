@@ -86,6 +86,7 @@
 <translation id="2091012649849228750">နောင်လာမည့် Google Chrome အပ်ဒိတ်များ ရယူရန် Windows 10 နှင့်အထက် လိုအပ်မည်။ ဤကွန်ပျူတာက Windows 8 သုံးနေသည်။</translation>
 <translation id="2094648590148273905">ChromeOS Flex စည်းမျဉ်းများ</translation>
 <translation id="2094919256425865063">Chrome ကို မည်သို့ပင်ဖြစ်စေ ပိတ်လိုပါသလား။</translation>
+<translation id="2096213354152647998">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION" /> ကို ဖယ်ရှားလိုက်သည်။</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS Flex ကို ရေးဆွဲထားသည်။</translation>
 <translation id="2108778574543343055">အက်ပ်များအတွက် နောက်ခံတွင် ပွင့်နေသည့် Chrome ကို ပိတ်ခြင်း</translation>
 <translation id="2120620239521071941">၎င်းသည် ဤစက်ပစ္စည်းမှ အကြောင်းအရာ <ph name="ITEMS_COUNT" /> ခုကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
@@ -463,6 +464,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6696915334902295848">Chrome သည် ဤဝဘ်ဆိုက်အတွက် မိုက်ခရိုဖုန်းခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="6712881677154121168">ဒေါင်းလုဒ် အမှား- <ph name="DOWNLOAD_ERROR" />။</translation>
 <translation id="6718739135284199302">Chrome ပိုမြန်အောင်လုပ်ခြင်း</translation>
+<translation id="6734827584173583205">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="COUNT" /> ခုတို့ကို ဖယ်ရှားလိုက်သည်။</translation>
 <translation id="6735387454586646204">ChromeOS Flex စနစ်</translation>
 <translation id="6750954913813541382">စာလုံးပေါင်း အမှားများ ပြင်ရန် Chrome က ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ ပို့ပါသည်</translation>
 <translation id="6760235774835597023">Chrome ၏ V8 အင်ဂျင်ဖြင့် ဝဘ်ဆိုက်များကို အရှိန်မြှင့်တင်ပါ။ သို့သော် Chrome ကို တိုက်ခိုက်ခံရခြင်းမှ ကာကွယ်နိုင်စွမ်း အနည်းငယ်လျော့သွားပါမည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
@@ -488,6 +490,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7024536598735240744">ဖိုင်တွဲဖြေခြင်းဆိုင်ရာ အမှား- <ph name="UNPACK_ERROR" />။</translation>
 <translation id="7025789849649390912">ထည့်သွင်းမှု ရပ်လိုက်သည်။</translation>
 <translation id="7025800014283535195">ဤနေရာတွင် Chrome ပရိုဖိုင်များအကြား ပြောင်းနိုင်သည်</translation>
+<translation id="7051685429025310665">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" />၊ <ph name="PERMISSION_3" /> တို့ကို ဖယ်ရှားလိုက်သည်။</translation>
 <translation id="7059914902409643750">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="7060643578009939353">ဤဗီဒီယိုကို Google Lens ဖြင့် ရှာရန်</translation>
 <translation id="7071827361006050863">Chrome သည် ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို မကြာမီဖျက်ပါမည်</translation>
@@ -549,6 +552,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> အတွက် စနစ်လုပ်ဆောင်ချက်မှတ်တမ်းဆိုင်ရာ ဝန်ဆောင်မှုများကို ပေးသည်။ ဤဝန်ဆောင်မှုကို ပိတ်ထားလျှင် ဘရောင်ဇာက ပြုလုပ်ထားသော စွမ်းဆောင်ရည်လုပ်ဆောင်ချက်မှတ်တမ်းတွင် အခြေအနေပြောင်းလဲမှုနှင့် အဆင်သင့် Thread ဖြစ်ရပ်များကဲ့သို့ စနစ်တစ်ခုလုံးစာ ဖြစ်ရပ်များ ပါဝင်မည်မဟုတ်ပါ။</translation>
 <translation id="7736869414036750079">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားသည်</translation>
 <translation id="7747138024166251722">ဤထည့်သွင်းသူသည် ယာယီဒါရိုက်ထရီကို မဖန်တီးနိုင်ခဲ့ပါ။ ကျေးဇူးပြု၍ ဒစ်က် နေရာလွတ်နှင့် ဆော့ဖ်ဝဲထည့်သွင်းရန် ခွင့်ပြုချက်ကို စစ်ဆေးပါ။</translation>
+<translation id="7748969056734910029">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> တို့ကို ဖယ်ရှားလိုက်သည်။</translation>
 <translation id="7761834446675418963">Chrome အားဖွင့်ရန် သင့်အမည်ကို နှိပ်ကာ စတင်အသုံးပြုပါ။</translation>
 <translation id="7777080907402804672">ပုံတွင် အသုံးဝင်သော အကြောင်းအရာ မပါလျှင် Chrome က သင့်အတွက် ဖော်ပြပေးပါမည်။ အကြောင်းအရာများ ဖော်ပြပေးရန် ပုံများကို Google သို့ပို့လိုက်ပါသည်။ ၎င်းကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="778331955594035129">Chrome သည် ဤဝဘ်ဆိုက်အတွက် တည်နေရာခွင့်ပြုချက် လိုအပ်သည်</translation>

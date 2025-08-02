@@ -86,6 +86,7 @@
 <translation id="2091012649849228750">За да добивате идни ажурирања на Google Chrome, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.</translation>
 <translation id="2094648590148273905">Услови за ChromeOS Flex</translation>
 <translation id="2094919256425865063">Сепак да се напушти Chrome?</translation>
+<translation id="2096213354152647998">Не сте дошле одамна. Chrome ја отстрани следнава дозвола: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />Linux-околината за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Оневозможете Chrome да се извршува во заднина за апликациите</translation>
 <translation id="2120620239521071941">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
@@ -463,6 +464,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6696915334902295848">На Chrome му треба дозвола за микрофонот за сајтов</translation>
 <translation id="6712881677154121168">Грешка при преземање: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Имајте побрз Chrome</translation>
+<translation id="6734827584173583205">Не сте дошле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="COUNT" />.</translation>
 <translation id="6735387454586646204">Системот ChromeOS Flex</translation>
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
 <translation id="6760235774835597023">Ги забрзува сајтовите со пребарувачот V8 на Chrome, но го прави Chrome малку понеотпорен на напади. Поставкава е вклучена.</translation>
@@ -488,6 +490,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7024536598735240744">Грешка при отпакување: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталирањето запре.</translation>
 <translation id="7025800014283535195">Може да се префрлате помеѓу профилите на Chrome тука</translation>
+<translation id="7051685429025310665">Не сте дошле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Направете го Chrome свој</translation>
 <translation id="7060643578009939353">Пребарај го видеово со Google Lens</translation>
 <translation id="7071827361006050863">Chrome ќе ги избрише податоците од прелистување наскоро</translation>
@@ -549,6 +552,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="77283119132245232">Обезбедува системски услуги за следење за <ph name="BROWSER_NAME" />. Ако е оневозможена услугава, трагите од изведбата што ги создава прелистувачот нема да опфаќаат настани низ целиот систем како префрлање контекст и настани на готови нишки.</translation>
 <translation id="7736869414036750079">Вашата организација бара да се најавите на Chrome</translation>
 <translation id="7747138024166251722">Инсталаторот не може да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>
+<translation id="7748969056734910029">Не сте дошле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Кликнете си на името за да го отворите Chrome и да започнете со прелистување.</translation>
 <translation id="7777080907402804672">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="778331955594035129">На Chrome му треба дозвола за локација за сајтов</translation>

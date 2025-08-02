@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
 <translation id="1523567067736644845">Ապակողպեք՝ գաղտնաբառը տեսնելու համար</translation>
 <translation id="1524563461097350801">Ոչ</translation>
+<translation id="1528290585275339320">Միացրեք էջի բովանդակության հասանելիությունը</translation>
 <translation id="1531038290222364269">Ցույց տալ ներդիրները</translation>
 <translation id="1536390784834419204">Թարգմանել էջը</translation>
 <translation id="1540800554400757039">Հասցե 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">Բացահայտեք նոր ընտրացանկը</translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="5141363746588976328">Թաքցնել ձեր ներդիրներում գների իջեցման քարտը</translation>
+<translation id="514154868070499296">Տառատեսակ՝ <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Փակել ներդիրների փոխանջատիչը</translation>
 <translation id="5148717509369231739">Ներմուծում Safari</translation>
 <translation id="5157638238828697074">Սխալ առաջացավ։ Չհաջողվեց բացել հավելվածը։</translation>
@@ -1974,6 +1976,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8637431369725868556">Պաշտպանեք ձեզ վտանգավոր կայքերից։</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="8643403533759285912">Ջնջել խումբը</translation>
+<translation id="8645245178269185266">Ավելի համապատասխան պատասխաններ ստանալու համար Gemini-ին թույլատրեք օգտագործել էջերի բովանդակությունը</translation>
 <translation id="8647280737650867362">Չհաջողվեց չեղարկել գնի հետագծումը։</translation>
 <translation id="8654802032646794042">Չեղարկել</translation>
 <translation id="8660600697590740984">Որոնել պատճենված պատկերը Տեսապակու միջոցով</translation>

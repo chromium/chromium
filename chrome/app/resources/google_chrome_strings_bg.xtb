@@ -84,6 +84,7 @@
 <translation id="2091012649849228750">За да получавате бъдещи актуализации на Google Chrome, трябва да използвате Windows 10 или по-нова версия. Компютърът ви работи с Windows 8.</translation>
 <translation id="2094648590148273905">Общи условия на ChromeOS Flex</translation>
 <translation id="2094919256425865063">Искате ли да затворите Chrome въпреки това?</translation>
+<translation id="2096213354152647998">Не сте посещавали този сайт наскоро. Chrome премахна разрешението „<ph name="PERMISSION" />“.</translation>
 <translation id="2106831557840787829">ChromeOS Flex съществува благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Деактивиране на изпълнението на Chrome на заден план за приложения</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> елемента ще се изтрият от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
@@ -457,6 +458,7 @@
 <translation id="6696915334902295848">За този сайт Chrome се нуждае от разрешение за достъп до микрофона</translation>
 <translation id="6712881677154121168">Грешка при изтеглянето: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Ускорете Chrome</translation>
+<translation id="6734827584173583205">Не сте посещавали този сайт наскоро. Chrome премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и още <ph name="COUNT" />.</translation>
 <translation id="6735387454586646204">Система ChromeOS Flex</translation>
 <translation id="6750954913813541382">С цел поправка на правописни грешки Chrome изпраща до Google текста, който въвеждате в браузъра</translation>
 <translation id="6760235774835597023">Ускорява сайтовете с машината V8 на Chrome, но същевременно устойчивостта на браузъра срещу атаки леко намалява. Тази настройка е включена.</translation>
@@ -482,6 +484,7 @@
 <translation id="7024536598735240744">Грешка при разпакетирането: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталирането спря.</translation>
 <translation id="7025800014283535195">Оттук можете да превключвате между потребителските профили в Chrome</translation>
+<translation id="7051685429025310665">Не сте посещавали този сайт наскоро. Chrome премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“.</translation>
 <translation id="7059914902409643750">Персонализирайте Chrome според вкуса си</translation>
 <translation id="7060643578009939353">Потърсете този видеоклип с Google Обектив</translation>
 <translation id="7071827361006050863">Chrome скоро ще изтрие данните за сърфирането</translation>
@@ -543,6 +546,7 @@
 <translation id="77283119132245232">Осигурява услуги за системно трасиране за <ph name="BROWSER_NAME" />. Ако тази услуга е деактивирана, създадените от браузъра трасирания за ефективността няма да включват събития за цялата система, като например събития за превключване на контекста и такива за готовност на нишката.</translation>
 <translation id="7736869414036750079">Организацията ви изисква да влезете в профила си в Chrome</translation>
 <translation id="7747138024166251722">Инсталационната програма не можа да създаде временна директория. Моля, проверете дали има свободно дисково пространство и разрешение за инсталиране на софтуер.</translation>
+<translation id="7748969056734910029">Не сте посещавали този сайт наскоро. Chrome премахна разрешенията „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“.</translation>
 <translation id="7761834446675418963">Кликнете върху името си, за да отворите Chrome и да започнете да сърфирате.</translation>
 <translation id="7777080907402804672">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google. По всяко време можете да изключите тази функция от настройките.</translation>
 <translation id="778331955594035129">За този сайт Chrome се нуждае от разрешение за достъп до местоположението</translation>

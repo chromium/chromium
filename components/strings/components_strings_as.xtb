@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">Android এপ্‌</translation>
 <translation id="2102519472192754194">ৱেব ব্ৰাউজাৰ</translation>
 <translation id="2103210856015238101">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া উপলব্ধ লয়েল্টী কাৰ্ডসমূহ সম্পূৰ্ণ উচ্চতাত খোল খাইছে।</translation>
+<translation id="2104739941682874393">স্বয়ংক্রিয়ভাৱে পূৰ হোৱা বৰ্ধিত সুবিধাই ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে</translation>
 <translation id="2105838220373099643">চৰিত্ৰাভিনয় কৰা গে’ম</translation>
 <translation id="2107021941795971877">প্ৰিণ্টৰ সমৰ্থন</translation>
 <translation id="2108755909498034140">আপোনাৰ কম্পিউটাৰটো ৰিষ্টাৰ্ট কৰক</translation>
@@ -2424,6 +2425,7 @@
 <translation id="5052517576853118371">সক্ৰিয় বিষয়বস্তু</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share ব্যৱহাৰ কৰি এই ফাইলটো পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}one{Nearby Share ব্যৱহাৰ কৰি এই ফাইলসমূহ পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}other{Nearby Share ব্যৱহাৰ কৰি এই ফাইলসমূহ পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}}</translation>
 <translation id="505757197798929356">খোলাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
+<translation id="5058282932481719070">ছেটিঙত স্বয়ংক্রিয়ভাৱে পূৰ হোৱা বৰ্ধিত সুবিধাৰ বিষয়ে অধিক জানক</translation>
 <translation id="5060419232449737386">কেপশ্বনৰ ছেটিং</translation>
 <translation id="5060483733937416656">আপুনি <ph name="PROVIDER_ORIGIN" /> ব্যৱহাৰ কৰা ৱেবছাইটসমূহত Windows Helloৰ জৰিয়তে সত্যাপন কৰিবলৈ বাছনি কৰিছে। এই প্ৰদানকাৰীয়ে হয়তো আপোনাৰ পৰিশোধ পদ্ধতিৰ বিষয়ে তথ্য ষ্ট’ৰ কৰি ৰাখিব পাৰে, যিটো আপুনি <ph name="LINK_TEXT" /> পাৰে।</translation>
 <translation id="5061227663725596739">আপুনি <ph name="LOOKALIKE_DOMAIN" />ৰ কথা বুজাব বিচাৰিছিল নেকি?</translation>
@@ -3025,6 +3027,7 @@
 <translation id="6062937464449575061">মূল্য ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="6063415549109819824">ঘৰ ক্ৰয় কৰিবলৈ পুঁজিৰ যোগান</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />ৰ <ph name="FOLDER_NAME" />ত এটা বা ততোধিক ফাইল আপল’ড কৰা হোৱা নাই</translation>
+<translation id="6071503852498277813">সমলৰ বুকমাৰ্ক পাৰ্ছাৰ সেৱা</translation>
 <translation id="6078069862923723141">সেউজ নীলা ২</translation>
 <translation id="6085149458302186532">লেবেল (ৰঙীন)</translation>
 <translation id="6087312102907839798">সম্বন্ধীয় সন্ধানসমুহ</translation>
@@ -3548,6 +3551,7 @@
 <translation id="695140971690006676">সকলো ৰিছেট কৰক</translation>
 <translation id="6954049078461159956">হকী</translation>
 <translation id="695582302419398462">কাৰ্ডব’ৰ্ড (ডাবল ৱাল)</translation>
+<translation id="6957153644870901611">অধিক ক্ষেত্ৰ পূৰ কৰিবলৈ স্বয়ংক্রিয়ভাৱে পূৰ হোৱা বৰ্ধিত সুবিধাটো অন কৰক</translation>
 <translation id="6957887021205513506">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰখন নকল যেন লাগিছে।</translation>
 <translation id="6958564499836457428">আপোনাৰ Google একাউণ্টত Googleৰ গোপনীয়তাৰ ছেটিং পৰিচালনা কৰক</translation>
 <translation id="6961844873822989059">আপোনাৰ ডিভাইচত ইনষ্টল হৈ থকা ফণ্ট ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>

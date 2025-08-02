@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">අද ක්‍රියාත්මකයි</translation>
 <translation id="1523567067736644845">මුරපදය පෙන්වීමට අගුළු හරින්න</translation>
 <translation id="1524563461097350801">එපා, ස්තූතියි</translation>
+<translation id="1528290585275339320">පිටු අන්තර්ගත බෙදා ගැනීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="1531038290222364269">පටිති පෙන්වන්න</translation>
 <translation id="1536390784834419204">පිටුව පරිවර්තනය කරන්න</translation>
 <translation id="1540800554400757039">ලිපිනය 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">නව මෙනුව ගවේෂණය කරන්න</translation>
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
 <translation id="5141363746588976328">ඔබේ පටිති කාඩ්පතේ මිල පහත වැටීම් සඟවන්න</translation>
+<translation id="514154868070499296">අකුරු වර්ගය: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">පටිති මාරුකරවනය වෙතින් ඉවත් වන්න</translation>
 <translation id="5148717509369231739">Safari ආයාත කිරීම</translation>
 <translation id="5157638238828697074">යමක් වැරදිණි. යෙදුම විවෘත කළ නොහැකි විය.</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8637431369725868556">භයානක අඩවිවලින් ආරක්ෂණය ලබා ගන්න.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{සමථයට පත් වූ මුරපද නැත}=1{සමථයට පත් වූ {COUNT} මුරපදයක්}one{සමථයට පත් වූ මුරපද {COUNT}ක්}other{සමථයට පත් වූ මුරපද {COUNT}ක්}}</translation>
 <translation id="8643403533759285912">සමූහය මකන්න</translation>
+<translation id="8645245178269185266">වඩාත් අදාළ පිළිතුරු ලබා ගැනීමට Gemini සමග පිටු අන්තර්ගතය බෙදා ගන්න</translation>
 <translation id="8647280737650867362">මිල නිරීක්ෂණය කිරීමට නොහැකි විය.</translation>
 <translation id="8654802032646794042">අවලංගු කරන්න</translation>
 <translation id="8660600697590740984">Lens පිටපත් කළ රූපය</translation>

@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">헤어 케어</translation>
 <translation id="1935353813610900265">AI 기반 방문 기록 검색에 관한 의견 보내기</translation>
 <translation id="1935995810530254458">무시하고 복사</translation>
+<translation id="1938580037092872316">저장된 주소에 새 정보를 추가하세요</translation>
 <translation id="1939059826036755332">자동 PIP 모드</translation>
 <translation id="1939175642807587452">알림 전송을 요청할 수 있음</translation>
 <translation id="1940441167050915935">저장된 보안 코드 삭제</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Android 앱</translation>
 <translation id="2102519472192754194">웹브라우저</translation>
 <translation id="2103210856015238101">터치하여 입력할 수 있는 포인트 카드가 전체 높이로 열렸습니다.</translation>
+<translation id="2104739941682874393">향상된 자동 완성 기능은 양식을 정확하게 파악한 후, 빠르고 정확하게 자동 입력해 줍니다.</translation>
 <translation id="2105838220373099643">롤플레잉 게임</translation>
 <translation id="2107021941795971877">인쇄 지지대</translation>
 <translation id="2108755909498034140">컴퓨터 다시 시작</translation>
@@ -1527,6 +1529,7 @@
 <translation id="3570079787344939099">스크롤 및 확대/축소</translation>
 <translation id="357244642999988503">열 삭제</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" />, <ph name="CITY" /></translation>
+<translation id="3574520980813687946">주소에 새 정보 추가</translation>
 <translation id="3575121482199441727">이 사이트에 허용</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">거리 이름 옵션 선택됨</translation>
@@ -2426,6 +2429,7 @@
 <translation id="5052517576853118371">활성 주제</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
 <translation id="505757197798929356">열려는 이유 입력(필수)</translation>
+<translation id="5058282932481719070">설정에서 향상된 자동 완성에 관해 자세히 알아보기</translation>
 <translation id="5060419232449737386">자막 설정</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> 주소를 사용하는 웹사이트의 인증 방식으로 Windows Hello를 선택했습니다. 이 제공업체에서 내 결제 수단 정보를 저장했을 수 있으며 직접 <ph name="LINK_TEXT" />할 수 있습니다.</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" />을(를) 찾으셨나요?</translation>
@@ -3027,6 +3031,7 @@
 <translation id="6062937464449575061">가격 추적 취소</translation>
 <translation id="6063415549109819824">주택담보대출</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />의 <ph name="FOLDER_NAME" />에 하나 이상의 파일이 업로드되지 않았습니다.</translation>
+<translation id="6071503852498277813">콘텐츠 북마크 파서 서비스</translation>
 <translation id="6078069862923723141">청록색 2</translation>
 <translation id="6085149458302186532">라벨(색상 있음)</translation>
 <translation id="6087312102907839798">관련 검색어</translation>
@@ -3538,6 +3543,7 @@
 <translation id="6935082727755903526">회계 및 금융직</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />입니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="6936976777388162184">번들 기기이므로 Kiosk &amp; Signage 업그레이드에 등록할 수 없습니다.</translation>
+<translation id="6942444979237658241">댓글 - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">전략 게임</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />에서 관리하지 않는 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
 <translation id="6946949206576443118">Chrome에서 웹 검색</translation>
@@ -3550,6 +3556,7 @@
 <translation id="695140971690006676">모두 재설정</translation>
 <translation id="6954049078461159956">하키</translation>
 <translation id="695582302419398462">골판지(이중양면)</translation>
+<translation id="6957153644870901611">향상된 자동 완성을 사용 설정하여 더 많은 입력란을 자동으로 채우세요.</translation>
 <translation id="6957887021205513506">서버의 인증서가 위조된 것 같습니다.</translation>
 <translation id="6958564499836457428">Google 계정에서 Google 개인 정보 보호 설정 관리</translation>
 <translation id="6961844873822989059">기기에 설치된 글꼴 사용을 요청할 수 있음</translation>
@@ -3995,6 +4002,7 @@
 <translation id="7668654391829183341">알 수 없는 기기</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" /></translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{기밀로 표시된 데이터로 실행한 작업(로그인 이후 작업 1개) <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" />}other{기밀로 표시된 데이터로 실행한 작업(로그인 이후 작업 #개) <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Google 계정(<ph name="USER_EMAIL" />)의 정보를 사용하면 Chrome에서 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="7673278391011283842">메일박스 6</translation>
 <translation id="7675325315208090829">결제 수단 관리...</translation>
 <translation id="767550629621587224">미리 커팅된 탭</translation>
@@ -4127,6 +4135,7 @@
 <translation id="7908648876066812348">가상 카드 사용 설정 중</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 설정의 Chrome 안전 확인 페이지로 이동</translation>
 <translation id="791107458486222637">결과 재실행</translation>
+<translation id="7912924955815015552">Safari에서 가져온 북마크</translation>
 <translation id="791551905239004656">그리기 및 컬러링</translation>
 <translation id="7916162853251942238">Flexo 베이스</translation>
 <translation id="791698251820376781">조직에서 로그인을 허용하지 않음</translation>
@@ -4261,6 +4270,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1개월 전 생성됨}other{{NUM_MONTHS}개월 전 생성됨}}</translation>
 <translation id="8148608574971654810">PDF 버전:</translation>
 <translation id="8149426793427495338">컴퓨터가 절전 모드 상태입니다.</translation>
+<translation id="815036624016370447">Google 계정(<ph name="ACCOUNT" />)의 정보를 사용하면 Chrome에서 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="8150722005171944719"><ph name="URL" />의 파일을 읽을 수 없습니다. 삭제 또는 이동되었거나 파일 사용 권한이 액세스를 차단할 수도 있습니다.</translation>
 <translation id="8151185429379586178">개발자 도구</translation>
 <translation id="8153865548451212769">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 다운로드하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 다운로드하지 않는 것이 좋습니다.}}</translation>

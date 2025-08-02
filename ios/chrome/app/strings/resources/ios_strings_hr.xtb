@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="1523567067736644845">Otključajte za prikaz zaporke</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
+<translation id="1528290585275339320">Uključite dijeljenje sadržaja stranice</translation>
 <translation id="1531038290222364269">Prikažite kartice</translation>
 <translation id="1536390784834419204">Prevedi stranicu</translation>
 <translation id="1540800554400757039">1. adresni redak</translation>
@@ -1045,6 +1046,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5128788795241319992">Istražite novi izbornik</translation>
 <translation id="5132942445612118989">Sinkronizirajte svoje zaporke, povijest i drugo na svim uređajima</translation>
 <translation id="5141363746588976328">Sakrij karticu Sniženja cijena na karticama</translation>
+<translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Zatvori izmjenjivanje kartica</translation>
 <translation id="5148717509369231739">Safari – uvoz</translation>
 <translation id="5157638238828697074">Nešto nije u redu. Otvaranje aplikacije nije uspjelo.</translation>
@@ -1974,6 +1976,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8637431369725868556">Zaštitite se od opasnih web-lokacija.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nema ugroženih zaporki}=1{{COUNT} ugrožena zaporka}one{{COUNT} ugrožena zaporka}few{{COUNT} ugrožene zaporke}other{{COUNT} ugroženih zaporki}}</translation>
 <translation id="8643403533759285912">Izbriši grupu</translation>
+<translation id="8645245178269185266">Podijelite sadržaj stranice s Geminijem da biste dobili relevantnije odgovore</translation>
 <translation id="8647280737650867362">Poništavanje praćenja cijene nije uspjelo.</translation>
 <translation id="8654802032646794042">Odustani</translation>
 <translation id="8660600697590740984">Slika koju je kopirao Objektiv</translation>

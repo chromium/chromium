@@ -86,6 +86,7 @@
 <translation id="2091012649849228750">Google Chrome жаңыртууларын алып туруу үчүн Windows 10 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 8 версиясы колдонулууда.</translation>
 <translation id="2094648590148273905">ChromeOS Flex шарттары</translation>
 <translation id="2094919256425865063">Баары бир Chrome'ду токтотосузбу?</translation>
+<translation id="2096213354152647998">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION" /> өчүрдү.</translation>
 <translation id="2106831557840787829">ChromeOS Flex тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="2108778574543343055">Колдонмолор үчүн фондо иштеген Chrome'ду өчүрүү</translation>
 <translation id="2120620239521071941">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
@@ -463,6 +464,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6696915334902295848">Chrome'го бул сайтта микрофонду колдонууга уруксат бериңиз</translation>
 <translation id="6712881677154121168">Жүктөп алуу катасы: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome'ду ылдамдатуу</translation>
+<translation id="6734827584173583205">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="COUNT" /> уруксатты өчүрдү.</translation>
 <translation id="6735387454586646204">ChromeOS Flex тутуму</translation>
 <translation id="6750954913813541382">Орфографиялык каталарды оңдоо үчүн Chrome серепчиде терилген текстти Google кызматтарына жөнөтүп турат</translation>
 <translation id="6760235774835597023">Chrome'дун V8 каражаты менен сайттардын жүктөлүшүн тездетет, бирок Chrome'дун чабуулдарга туруктуулугун начарлатат. Бул параметр күйүк.</translation>
@@ -488,6 +490,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7024536598735240744">Топтомдон чыгаруу катасы: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Орнотуу токтотулду.</translation>
 <translation id="7025800014283535195">Chrome профилдерин бул жерден которо аласыз</translation>
+<translation id="7051685429025310665">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана <ph name="PERMISSION_3" /> өчүрдү.</translation>
 <translation id="7059914902409643750">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
 <translation id="7060643578009939353">Бул видеону Google Lens аркылуу издөө</translation>
 <translation id="7071827361006050863">Chrome серептөө дайындарын жакында өчүрөт</translation>
@@ -549,6 +552,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="77283119132245232">Тутум <ph name="BROWSER_NAME" /> үчүн кызматтардагы аракеттерди жаздырат. Эгер бул кызмат өчүрүлсө, серепчи тарабынан жаздырылган аракеттер контексттик которгучтар жана топтомдогу даяр окуялар сыяктуу жалпы тутумдук окуяларды камтыбайт.</translation>
 <translation id="7736869414036750079">Уюмуңуз Chrome'го кирүүнү талап кылат</translation>
 <translation id="7747138024166251722">Орнотуучу убактылуу каталогду түзө алган жок. Дискте бош орун бар экендигин жана программаны орнотууга боло тургандыгын текшериңиз.</translation>
+<translation id="7748969056734910029">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> өчүрдү.</translation>
 <translation id="7761834446675418963">Chrome'ду ачып, серептеп баштоо үчүн ысымыңызды киргизиңиз.</translation>
 <translation id="7777080907402804672">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chrome аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт. Аны жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="778331955594035129">Chrome'го бул сайтта жайгашкан жерди колдонууга уруксат бериңиз</translation>

@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">හිසකෙස් රැකවරණය</translation>
 <translation id="1935353813610900265">AI බලගන්වන ඉතිහාස සෙවීම සඳහා ප්‍රතිපෝෂණය යවන්න</translation>
 <translation id="1935995810530254458">කෙසේ වෙතත් පිටපත් කරන්න</translation>
+<translation id="1938580037092872316">සුරකින ලද ලිපිනයට නව තතු එක් කරන්න</translation>
 <translation id="1939059826036755332">ස්වයංක්‍රීය පින්තූරය තුළ පින්තූරය</translation>
 <translation id="1939175642807587452">දැනුම්දීම් යැවීමට ඉල්ලිය හැකිය</translation>
 <translation id="1940441167050915935">සුරැකි සුරැකුම් කේත මකන්නද?</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Android යෙදුම්</translation>
 <translation id="2102519472192754194">වෙබ් බ්‍රවුසර</translation>
 <translation id="2103210856015238101">ස්පර්ශ කිරීමෙන් පිරවිය හැකි විශ්වාස කාඩ්පත් සම්පූර්ණ උසින් විවෘත කර ඇත.</translation>
+<translation id="2104739941682874393">ඉහළ නැංවූ ස්වයං පිරවුම මඟින් පෝරම වඩා හොඳින් වටහා ගන්නා අතර ඒවා ඔබට වේගයෙන් ස්වයංව පිරවිය හැක</translation>
 <translation id="2105838220373099643">භූමිකා නිරූපණ ක්‍රීඩා</translation>
 <translation id="2107021941795971877">මුද්‍රණ සහය</translation>
 <translation id="2108755909498034140">ඔබේ පරිගණකය යළි අරඹන්න</translation>
@@ -1527,6 +1529,7 @@
 <translation id="3570079787344939099">අනුචලනය සහ විශාලනය</translation>
 <translation id="357244642999988503">තීරුව ඉවත් කරන්න</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">ලිපිනයට නව තතු එක් කරන්න</translation>
 <translation id="3575121482199441727">මෙම වෙබ් අඩවිය සඳහා අවසර දෙන්න</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">වීදි නම් විකල්පය තෝරා ඇත</translation>
@@ -2426,6 +2429,7 @@
 <translation id="5052517576853118371">සක්‍රිය මාතෘකා</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනුව යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}one{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}other{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}}</translation>
 <translation id="505757197798929356">විවෘත කිරීමට හේතුව සපයන්න (අවශ්‍යයි)</translation>
+<translation id="5058282932481719070">සැකසීම් තුළ ඉහළ නැංවූ ස්වයං පිරවුම පිළිබඳ තව දැන ගන්න</translation>
 <translation id="5060419232449737386">සිරස්තල සැකසීම්</translation>
 <translation id="5060483733937416656">ඔබ <ph name="PROVIDER_ORIGIN" /> භාවිත කරන වෙබ් අඩවිවල Windows Hello සමඟ සත්‍යාපනය කිරීමට තෝරා ඇත. මෙම සපයන්නා ඔබට <ph name="LINK_TEXT" /> හැකි, ඔබගේ ගෙවීම් ක්‍රමය පිළිබඳ තොරතුරු ගබඩා කර තිබිය හැකිය.</translation>
 <translation id="5061227663725596739">ඔබ අදහස් කළේ <ph name="LOOKALIKE_DOMAIN" /> ද?</translation>
@@ -3027,6 +3031,7 @@
 <translation id="6062937464449575061">මිල හඹා නොයන්න</translation>
 <translation id="6063415549109819824">නිවාස මූල්‍යය</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> හි <ph name="FOLDER_NAME" /> වෙත ගොනු එකක් හෝ කිහිපයක් උඩුගත කර නැත</translation>
+<translation id="6071503852498277813">අන්තර්ගත පිටු සලකුණු විග්‍රහක සේවාව</translation>
 <translation id="6078069862923723141">සියන් 2</translation>
 <translation id="6085149458302186532">ලේබල් (වර්ණ සහිත)</translation>
 <translation id="6087312102907839798">අදාළ සෙවීම්</translation>
@@ -3538,6 +3543,7 @@
 <translation id="6935082727755903526">ගිණුම්කරණ සහ මූල්‍යමය අංශයේ රැකියා</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. සමහර අඩවි ඔබේ මීළඟ පිවිසීමෙහි වඩා සෙමින් පූරණය විය හැක.</translation>
 <translation id="6936976777388162184">මෙය පොදි බඳින ලද උපාංගයක් වන අතර Kiosk සහ Signage Upgrade සමග ලියාපදිංචි විය නොහැක.</translation>
+<translation id="6942444979237658241">අදහස් - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">උපායාත්මක ක්‍රීඩා</translation>
 <translation id="6944692733090228304">ඔබ ඔබගේ මුරපදය <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> වෙතින් කළමනාකරණය නොවන අඩවියකට ඇතුළත් කළා. ඔබගේ ගිණුම ආරක්ෂා කිරීමට, ඔබගේ මුරපදය වෙනත් යෙදුම් සහ අඩවිවල නැවත භාවිතා නොකරන්න.</translation>
 <translation id="6946949206576443118">Chrome හි වෙබය සොයන්න</translation>
@@ -3550,6 +3556,7 @@
 <translation id="695140971690006676">සියල්ල යළි සකසන්න</translation>
 <translation id="6954049078461159956">හොකී</translation>
 <translation id="695582302419398462">කාඩ්බෝඩ් (ද්විත්ව බිත්තිය)</translation>
+<translation id="6957153644870901611">තවත් ක්ෂේත්‍ර ස්වයංක්‍රීයව පිරවීම සඳහා ඉහළ නැංවූ ස්වයං පිරවුම ක්‍රියාත්මක කරන්න</translation>
 <translation id="6957887021205513506">සේවාදායකයෙහි සහතිකය කූටරචනයක් බව පෙනෙන්නට තිබේ.</translation>
 <translation id="6958564499836457428">ඔබගේ Google ගිණුම තුළ Google පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="6961844873822989059">ඔබගේ උපාංගයේ ස්ථාපනය කර ඇති ෆොන්ට භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
@@ -3995,6 +4002,7 @@
 <translation id="7668654391829183341">නොදන්නා උපාංගය</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />න් <ph name="ITEM_POSITION" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{රහසිගත ලෙස ලකුණු කළ දත්ත සම්බන්ධව ගත් ක්‍රියා (පිරීමේ සිට ක්‍රියා 1). <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" />}one{රහසිගත ලෙස ලකුණු කළ දත්ත සම්බන්ධව ගත් ක්‍රියා (පිරීමේ සිට ක්‍රියා #). <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" />}other{රහසිගත ලෙස ලකුණු කළ දත්ත සම්බන්ධව ගත් ක්‍රියා (පිරීමේ සිට ක්‍රියා #). <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">ඔබේ Google ගිණුමෙන් <ph name="USER_EMAIL" /> ලැබෙන තතු ඔබට Chrome හි පෝරම වේගයෙන් පිරවීමට උදවු වේ</translation>
 <translation id="7673278391011283842">තැපැල් පෙට්ටිය 6</translation>
 <translation id="7675325315208090829">ගෙවීමේ ක්‍රම කළමනාකරණය කරන්න...</translation>
 <translation id="767550629621587224">පෙර කැපුම් පටිති</translation>
@@ -4127,6 +4135,7 @@
 <translation id="7908648876066812348">අතථ්‍ය කාඩ්පත ක්‍රියාත්මක කිරීම</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, සැකසීම් තුළ Chrome සුරක්ෂිත පිරික්සුම් පිටුවට යාමට පටිත්ත සහ එන්ටර් ඔබන්න</translation>
 <translation id="791107458486222637">ප්‍රතිඵලය නැවත සිදු කිරීම</translation>
+<translation id="7912924955815015552">Safari වෙතින් ආයාත කරන ලදි</translation>
 <translation id="791551905239004656">ඇඳීම සහ වර්ණ ගැන්වීම</translation>
 <translation id="7916162853251942238">ෆ්ලෙක්සෝ පදනම</translation>
 <translation id="791698251820376781">ඔබේ සංවිධානය ඔබට පුරනය වීමට ඉඩ නොදේ</translation>
@@ -4261,6 +4270,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{මාස 1කට පෙර තනන ලදි}one{මාස {NUM_MONTHS}කට පෙර තනන ලදි}other{මාස {NUM_MONTHS}කට පෙර තනන ලදි}}</translation>
 <translation id="8148608574971654810">PDF අනුවාදය:</translation>
 <translation id="8149426793427495338">ඔබේ පරිගණකය නින්දට ගියේය.</translation>
+<translation id="815036624016370447">ඔබේ Google ගිණුමෙන් <ph name="ACCOUNT" /> ලැබෙන තතු ඔබට Chrome හි පෝරම වේගයෙන් පිරවීමට උදවු වේ</translation>
 <translation id="8150722005171944719"><ph name="URL" /> හි ඇති ගොනුව කියවිය නොහැක. එය ඉවත්කර, ස්ථාන මාරු කර හෝ ගොනු බලතල මගින් පිවිසිම වලකා තිබිය හැක.</translation>
 <translation id="8151185429379586178">සංවර්ධක උපකරණ</translation>
 <translation id="8153865548451212769">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> වෙත බාගැනීම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත බාගැනීම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත බාගැනීම නිර්දේශ නොකරයි}}</translation>

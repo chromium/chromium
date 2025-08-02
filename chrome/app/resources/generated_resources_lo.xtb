@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">ຮັບບັນຊີຈາກໂທລະສັບ Android ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1069814191880976658">ເລືອກໜ້າຈໍອື່ນ</translation>
 <translation id="107022587824771715">ຄຳແນະນຳກຸ່ມແຖບບໍ່ພ້ອມໃຫ້ບໍລິການໃນຕອນນີ້. ທ່ານສາມາດ <ph name="BEGIN_LINK" />ໂຫຼດຂໍ້ມູນຄືນໃໝ່ຕອນນີ້<ph name="END_LINK" /> ຫຼື ລອງໃໝ່ໃນພາຍຫຼັງ</translation>
+<translation id="1070357312245925724">ທາງລັດການນໍາທາງ</translation>
 <translation id="1070377999570795893">ໂປຣແກຣມອື່ນຢູ່ໃນຄອມພິວເຕີຂອງທ່{ານໄດ້ເພີ່ມສ່ວນ​ຂະ​ຫຍາຍທີ່ອາດຈະປ່ຽນແປງວິທີການເຮັດວຽກຂອງ Chrome ແລ້ວ.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@
 <translation id="1122913801042512795">ລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ. ກະລຸນາອອກຈາກລະບົບແລ້ວເຂົ້າສູ່ລະບົບອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="1122960773616686544">ຊື່ບຸກມາກສ໌</translation>
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
+<translation id="1125371304736839151">ສະແດງ Gemini ຢູ່ເທິງສຸດຂອງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="1125550662859510761">ຄວາມລະອຽດ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ເດີມ)</translation>
 <translation id="1125921926864945797">ຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="1128090040635299943">ຕອນນີ້ກຳລັງຕັ້ງຄ່າ Linux ຢູ່. ການຕັ້ງຄ່າຈະໃຊ້ເວລາສອງສາມນາທີ.</translation>
@@ -400,6 +402,7 @@
 <translation id="1260810365552581339">Linux ອາດມີພື້ນທີ່ດິສກ໌ບໍ່ພຽງພໍ. ທ່ານສາມາດເພີ່ມພື້ນທີ່ດິສກ໌ Linux ຂອງທ່ານແລ້ວລອງກູ້ຄືນໃໝ່ໄດ້ໃນ <ph name="LINK_START" />ການຕັ້ງຄ່າ<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">ປານກາງ</translation>
 <translation id="126156426083987769">ເກີດບັນຫາກັບໃບອະນຸຍາດອຸປະກອນໃນໂໝດສາທິດ.</translation>
+<translation id="1262395978737369974">ອະນຸຍາດທຸກເທື່ອເພື່ອໃຊ້ການເພີ່ມປະສິດທິພາບ JavaScript</translation>
 <translation id="1262564987698748643">ເວັບໄຊສາມາດຂໍຍົກເລີກອິນພຸດແປ້ນພິມຂອງທ່ານ</translation>
 <translation id="1263231323834454256">ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="1263733306853729545">ໃຊ້ປຸ່ມ <ph name="MINUS" /> ແລະ <ph name="EQUAL" /> ເພື່ອສົ່ງສັນຍານຕິດຕາມລາຍຊື່ຕົວເລືອກ</translation>
@@ -988,6 +991,7 @@
 <translation id="1660763353352708040">ບັນຫາອະແດັບເຕີໄຟ</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{ແກ້ໄຂແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງ}other{ແກ້ໄຂແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງ}}</translation>
 <translation id="16620462294541761">ຂໍອະໄພ, ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ອີກ.</translation>
+<translation id="1662572015199460525">ສົນທະນາດ້ວຍສຽງ ຫຼື ຂໍ້ຄວາມເພື່ອຮັບຄຳຕອບ, ປະເດັນທີ່ສຳຄັນ ແລະ ອື່ນໆອີກໃນເວລາທີ່ທ່ານເລືອກເບິ່ງ</translation>
 <translation id="166278006618318542">ລໍາດັບຂະບວນການປຸ່ມທົ່ວໄປຂອງຜູ້ໄດ້ຮັບ</translation>
 <translation id="1662801900924515589">ຕິດຕັ້ງ <ph name="APP" /> ແລ້ວ</translation>
 <translation id="1663698992894057019">ອັບເກຣດໄປໃຊ້ Chromebook ເຄື່ອງໃໝ່ເພື່ອຮັບການຮັກສາຄວາມປອດໄພ ແລະ ຊອບແວຫຼ້າສຸດ</translation>
@@ -1098,6 +1102,7 @@
 <translation id="174123615272205933">ກຳນົດເອງ</translation>
 <translation id="1741314857973421784">ສືບຕໍ່</translation>
 <translation id="1744108098763830590">ຫນ້າ​ພື້ນຫຼັງ</translation>
+<translation id="174516937379651657">ເມື່ອທ່ານແບ່ງປັນໜ້າກັບ Gemini, ລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ແບບເຕັມຂອງໜ້າເວັບດັ່ງກ່າວໄປຫາ Google.</translation>
 <translation id="1745732479023874451">ຈັດການລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ເປີດ ແລະ ແກ້ໄຂ # ໄຟລ໌ໃນເວັບແອັບນີ້ບໍ?}}</translation>
 <translation id="1748329107062243374">ໃຊ້ກະແຈຜ່ານຈາກ <ph name="DEVICE_NAME" /> ເພື່ອເຂົ້າສູ່ລະບົບຫາ <ph name="WEBSITE" /></translation>
@@ -1409,6 +1414,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{ກວດສອບສ່ວນຂະຫຍາຍ 1 ລາຍການແລ້ວ}other{ກວດສອບສ່ວນຂະຫຍາຍ {NUM_EXTENSIONS} ລາຍການແລ້ວ}}</translation>
 <translation id="1959421829481337178">ກະລຸນາລະບຸລະຫັດການເປີດນຳໃຊ້ທີ່ໄດ້ຮັບຈາກຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.</translation>
 <translation id="1960211333621141174">ໜ້າຜາ</translation>
+<translation id="1962356719152496092">ປັບແຕ່ງຄີລັດຢູ່ບ່ອນນີ້</translation>
 <translation id="1963976881984600709">ການປົກປ້ອງມາດຕະຖານ</translation>
 <translation id="1964009877615282740">ເບິ່ງເພີ່ມເຕີມ</translation>
 <translation id="1965578266762387357">ເມື່ອທ່ານຮັບຄວາມຊ່ວຍເຫຼືອໃນການຂຽນ, ລະບົບຈະສົ່ງ URL ແລະ ເນື້ອຫາຂອງໜ້າ, ຮວມທັງຂໍ້ຄວາມຂອງທ່ານໄປຫາ Google. ຢ່າໃສ່ຂໍ້ມູນສ່ວນຕົວ (ເຊັ່ນ: ລາຍລະອຽດທາງການແພດ ຫຼື ການເງິນ)</translation>
@@ -1576,6 +1582,7 @@
 <translation id="2079053412993822885">ຖ້າທ່ານລຶບໜຶ່ງໃນໃບຢັ້ງຢືນຂອງທ່ານ, ທ່ານຈະບໍ່ສາມາດໃຊ້ມັນລະບຸຕົວທ່ານໄດ້ອີກ.</translation>
 <translation id="2079495302726689071">ເປີດລິ້ງໃນແຖບ <ph name="APP" /> ໃໝ່</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
+<translation id="2079553700504470326">ໃຊ້ສະຖານທີ່ແບບລະອຽດຂອງທ່ານເພື່ອໃຫ້ Gemini ສະແດງຜົນການຊອກຫາທີ່ຖືກຕ້ອງທີ່ສຸດ, ແທນທີ່ຈະໃຊ້ສະຖານທີ່ໂດຍປະມານຕາມທີ່ຢູ່ IP ຂອງທ່ານ.</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2081816110395725788">ພັກເຄື່ອງໃນຂະນະໃຊ້ແບັດເຕີຣີ</translation>
 <translation id="2082187087049518845">ຈັດກຸ່ມແຖບ</translation>
@@ -1979,6 +1986,7 @@
 <translation id="2343160676229467122">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ສ່ວນຂະຫຍາຍໃນ <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">ອຸທະຍານແຫ່ງຊາດຣັອກກີ ເມົາເທນ</translation>
 <translation id="2343747224442182863">ໂຟກັສແຖບນີ້</translation>
+<translation id="2343971313330854480">ຊອກຫາໄຟລ໌ຂອງທ່ານໂຟນເດີ <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີໄດ້. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານແລ້ວລອງໃໝ່. ຫາກທ່ານຍັງຄົງພົບບັນຫາຢູ່, ໃຫ້ລອງຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="234559068082989648">ຈະບໍ່ສາມາດເປີດແອັບ Chrome ເວີຊັນເກົ່າໄດ້ຫຼັງຈາກເດືອນທັນວາ 2022. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເພື່ອອັບເດດເປັນເວີຊັນໃໝ່ ຫຼື ລຶບແອັບນີ້ອອກ.</translation>
 <translation id="2348176352564285430">ແອັບ: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2209,6 +2217,7 @@
 <translation id="2496180316473517155">ປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="2496616243169085015">ການຖ່າຍຮູບ</translation>
 <translation id="2497229222757901769">ຄວາມໄວເມົ້າ</translation>
+<translation id="24977856422126200"><ph name="WINDOW_TITLE" /> - ທ່ານກໍາລັງແບ່ງປັນແຖບນີ້ກັບ Gemini ສໍາລັບໄລຍະເວລາຂອງການສົນທະນານີ້</translation>
 <translation id="2497852260688568942">ການຊິ້ງຂໍ້ມູນຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="2498539833203011245">ຫຍໍ້ລົງ</translation>
 <translation id="2498765460639677199">ໃຫຍ່</translation>
@@ -2225,6 +2234,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> ຈາກ <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">ການຈັດວາງຈໍສະແດງຜົນ</translation>
 <translation id="2507253002925770350">ລຶບປີ້ອອກແລ້ວ</translation>
+<translation id="2507339521369019923">ບັນທຶກໃສ່ບັນຊີຂອງທ່ານ</translation>
 <translation id="2507491234071975894">ລຳໂພງ</translation>
 <translation id="2508747373511408451">ແອັບພລິເຄຊັນ <ph name="APPLICATION_NAME" /> ຕ້ອງໃຊ້ Google Drive ຈຶ່ງຈະສະແດງໄດ້.</translation>
 <translation id="2509495747794740764">ຈຳນວນຂະໜາດຕ້ອງແມ່ນຕົວເລກລະຫວ່າງ 10 ຫາ 200.</translation>
@@ -2533,6 +2543,7 @@
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />ເມື່ອຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ເປີດຢູ່, ຈະມີການໃຊ້ຂໍ້ມູນກ່ຽວກັບສັນຍານໄຮ້ສາຍ ເຊັ່ນ: ຈຸດເຂົ້າເຖິງ Wi-Fi ແລະ ເສົາເຄືອຂ່າຍມືຖື, ຕະຫຼອດຈົນຮອດຂໍ້ມູນເຊັນເຊີຂອງອຸປະກອນ ເຊັ່ນ: ຕົວວັດແທກຄວາມເລັ່ງ ແລະ ຕົວວັດແທກການໝຸນຮອບ, ເພື່ອປະເມີນສະຖານທີ່ທີ່ຖືກຕ້ອງຍິ່ງຂຶ້ນຂອງອຸປະກອນ, ເຊິ່ງແອັບ ແລະ ບໍລິການຕ່າງໆຂອງ Android ໃຊ້ໃນການໃຫ້ບໍລິການຄຸນສົມບັດຕາມສະຖານທີ່. ເພື່ອດຳເນີນການນີ້, Google ຈະຮວບຮວມຂໍ້ມູນກ່ຽວກັບເຊັນເຊີໃນອຸປະກອນ ແລະ ສັນຍານໄຮ້ສາຍທີ່ຢູ່ໃກ້ກັບອຸປະກອນນີ້ເປັນໄລຍະເພື່ອຮວບຮວມຂໍ້ມູນສະຖານທີ່ຂອງສັນຍານໄຮ້ສາຍຈາກມວນຊົນ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google ຈະໃຊ້ຂໍ້ມູນນີ້ທີ່ຮວບຮວມຈາກອຸປະກອນນີ້ເພື່ອ: ປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ບໍລິການທີ່ອ້າງອີງສະຖານທີ່ ຮວມທັງເພື່ອປັບປຸງ, ຈັດຫາ ແລະ ເບິ່ງແຍງຮັກສາບໍລິການຂອງ Google ໂດຍທົ່ວໄປ. ພວກເຮົາປະມວນຜົນຂໍ້ມູນນີ້ໂດຍອີງຕາມຜົນປະໂຫຍດທີ່ຖືກຕ້ອງຕາມກົດໝາຍຂອງ Google ແລະ ຂອງພາກສ່ວນທີສາມໃນການຕອບສະໜອງຄວາມຕ້ອງການຂອງຜູ້ໃຊ້. ຂໍ້ມູນນີ້ຈະບໍ່ຖືກໃຊ້ເພື່ອລະບຸຕົວຕົນບຸກຄົນໃດກໍຕາມ.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ທ່ານສາມາດປິດຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າສະຖານທີ່ຂອງອຸປະກອນນີ້ພາຍໃຕ້ ການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ &gt; ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ &gt; ສິດເຂົ້າເຖິງສະຖານທີ່ &gt; ການຕັ້ງຄ່າສະຖານທີ່ຂັ້ນສູງ. ຫາກຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ປິດຢູ່, ກໍຈະບໍ່ມີການຮວບຮວມຂໍ້ມູນຄວາມຖືກຕ້ອງຂອງສະຖານທີ່. ສຳລັບແອັບ ແລະ ບໍລິການຕ່າງໆຂອງ Android, ລະບົບຈະໃຊ້ສະເພາະທີ່ຢູ່ IP ເທົ່ານັ້ນ, ຫາກມີ, ເພື່ອລະບຸສະຖານທີ່ຂອງອຸປະກອນນີ້, ເຊິ່ງອາດສົ່ງຜົນຕໍ່ຄວາມພ້ອມໃຫ້ນຳໃຊ້ ແລະ ຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ສຳລັບແອັບ ແລະ ບໍລິການຕ່າງໆຂອງ Android ເຊັ່ນ: Google ແຜນທີ່.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">ເບິ່ງ ແລະ ຈັດການການເຄື່ອນໄຫວແອັບ Gemini ຂອງທ່ານ</translation>
 <translation id="2730029791981212295">ກຳລັງສຳຮອງຂໍ້ມູນແອັບ ແລະ ໄຟລ໌ Linux ໄວ້</translation>
 <translation id="2730550884708194161">ກ່ຽວກັບໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
 <translation id="2730596696987224099">ເລືອກເອງ</translation>
@@ -3403,6 +3414,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}other{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}}</translation>
 <translation id="3361954577771524115">ຈາກແອັບ</translation>
+<translation id="3362651095484543782">ເພື່ອອອກຈາກ ຫຼື ກັບຄືນໄປຫາ Gemini, ໃຫ້ໃຊ້ຄີລັດ.</translation>
 <translation id="3362915550009543917">ຮູບແຕ້ມສີນ້ຳມັນທີ່ຮຽບງ່າຍເຊິ່ງສະແດງໃຫ້ເຫັນທົ່ງຫຍ້າໂທນສີເຫຼືອງ, ເຊິ່ງເຮັດໃຫ້ຄິດຮອດຄວາມງຽບສະຫງົບ ແລະ ການສະທ້ອນທາງສະຕິປັນຍາ.</translation>
 <translation id="3363202073972776113">ໂປຣໄຟລ໌ໃໝ່ນີ້ຈະໄດ້ຮັບການຈັດການໂດຍອົງການຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+ວາງ</translation>
@@ -3626,6 +3638,7 @@
 <translation id="3511358375261756531">ຂະຫຍາຍ <ph name="HEADER" /></translation>
 <translation id="351152300840026870">ຟ້ອນໜັງສືຄວາມກ້ວາງ-ກໍານົດແລ້ວ</translation>
 <translation id="3511528412952710609">ສັ້ນ</translation>
+<translation id="3512465804715993309">ການໄຮໄລ້ທີ່ປັບໄດ້</translation>
 <translation id="3513019849832307207">ເຂົ້າຮ່ວມ ແລະ ເປີດ</translation>
 <translation id="3513563267917474897">ແຖບເລື່ອນໂທນສີຈາກ <ph name="MIN_VALUE" /> ຫາ <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">ການຄວບຄຸມເກມ</translation>
@@ -4971,6 +4984,7 @@
 <translation id="443031431654216610">ໃຊ້ສະເພາະຕົວເລກເທົ່ານັ້ນ</translation>
 <translation id="4430369329743628066">ເພີ່ມບຸກມາກແລ້ວ</translation>
 <translation id="4430422687972614133">ເປີດໃຊ້ບັດສະເໝືອນ</translation>
+<translation id="443196770280837407">ເປີດ Gemini ດ້ວຍຄີລັດ.</translation>
 <translation id="4432621511648257259">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4434611816075088065">ບໍ່ມີຫຍັງທີ່ທ່ານຕ້ອງກວດສອບໃນຕອນນີ້</translation>
 <translation id="443475966875174318">ອັບເດດ ຫຼື ລຶບແອັບພລິເຄຊັນທີ່ບໍ່ເຂົ້າກັນອອກ</translation>
@@ -4986,6 +5000,7 @@
 <translation id="4442863809158514979">ເບິ່ງການອະນຸຍາດເວັບ</translation>
 <translation id="4442937638623063085">ບໍ່ພົບໂປຣໄຟລ໌. ກະລຸນາລະບຸລະຫັດການເປີດນຳໃຊ້ທີ່ໄດ້ຮັບຈາກຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.</translation>
 <translation id="4443536555189480885">ຊ່ວຍ​ເຫຼືອ</translation>
+<translation id="4444191890945732856">ທ່ານກໍາລັງແບ່ງປັນໜ້ານີ້ກັບ Gemini</translation>
 <translation id="4444304522807523469">ເຂົ້າ​ຫາ​ເຄື່ອງ​ສະ​ແກນ​ເອ​ກະ​ສານ​ຄັດ​ຕິດ​ຜ່ານ USB ຫຼື​ຢູ່​ເທິງ​ເຄືອ​ຂ່າຍ​ກັບ​ທີ່</translation>
 <translation id="4444512841222467874">ຖ້າບໍ່ສ້າງພື້ນທີ່ຫວ່າງ, ຜູ້ໃຊ້ ແລະ ຂໍ້ມູນອາດຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="4445446646109808714">ຂໍ້ຕົກລົງໃບອະນຸຍາດຜູ້ໃຊ້ປາຍທາງ: <ph name="EULA_LINK" /></translation>
@@ -5318,6 +5333,7 @@
 <translation id="4687718960473379118">ໂຄສະນາທີ່ເວັບໄຊແນະນຳ</translation>
 <translation id="4688036121858134881">ID ບັນທຶກໃນເຄື່ອງ: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> ກຳລັງປ່ຽນອຸປະກອນນີ້ກັບໄປເປັນເວີຊັນກ່ອນໜ້າ (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4688870304423708920">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ ແລະ ພະຍາຍາມໃຊ້ Gemini ອີກຄັ້ງ</translation>
 <translation id="4689235506267737042">ເລືອກການຕັ້ງຄ່າສາທິດຂອງທ່ານ</translation>
 <translation id="4689421377817139245">ຊິ້ງບຸກມາກນີ້ກັບ iPhone ຂອງທ່ານ</translation>
 <translation id="4690091457710545971">&lt;ສີ່ໄຟລ໌ທີ່ສ້າງຂຶ້ນໂດຍເຟີມແວ Intel Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. ສາມໄຟລ໌ທຳອິດແມ່ນໄຟລ໌ໄບນາຣີທີ່ປະກອບມີ register dump ແລະ ຢືນຢັນໂດຍ Intel ເພື່ອບໍ່ໃຫ້ປະກອບມີຂໍ້ມູນສ່ວນຕົວ ຫຼື ຂໍ້ມູນລະບຸອຸປະກອນ. ໄຟລ໌ສຸດທ້າຍແມ່ນການຕິດຕາມການດຳເນີນການຈາກເຟີມແວ Intel; ໄດ້ມີການກຳຈັດຂໍ້ມູນສ່ວນຕົວ ຫຼື ຂໍ້ມູນລະບຸອຸປະກອນອອກແລ້ວ, ແຕ່ມັນໃຫຍ່ເກີນໄປທີ່ຈະສະແດງຢູ່ບ່ອນນີ້ໄດ້. ໄຟລ໌ເຫຼົ່ານີ້ຖືກສ້າງຂຶ້ນໃນການຕອບສະໜອງຕໍ່ກັບບັນຫາ Wi-Fi ທີ່ເກີດຂຶ້ນເມື່ອບໍ່ດົນມານີ້ກັບອຸປະກອນຂອງທ່ານ ແລະ ຈະແບ່ງປັນກັບ Intel ເພື່ອຊ່ວຍແກ້ໄຂບັນຫາເຫຼົ່ານີ້.&gt;</translation>
@@ -5603,6 +5619,7 @@
 <translation id="4884937942297374058">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນປິດຢູ່</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">ສ່ວນຂະຫຍາຍນີ້ບໍ່ມີສິດເຂົ້າເຖິງເວັບໄຊເພີ່ມເຕີມ</translation>
+<translation id="4887391901725877182">ຄຳບັນຍາຍ</translation>
 <translation id="4887424188275796356">ເປີດດ້ວຍຕົວເບິ່ງລະບົບ</translation>
 <translation id="488785315393301722">ສະແດງລາຍລະອຽດ</translation>
 <translation id="488862352499217187">ສ້າງໂຟນເດີໃໝ່</translation>
@@ -5753,6 +5770,7 @@
 <translation id="5001526427543320409">ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="5003070249435823986">ໃຊ້ທ່າທາງເພື່ອເຂົ້າສູ່ໂໝດເລື່ອນ, ຈາກນັ້ນຫຍັບຫົວຂອງທ່ານໄປໃນທິດທາງທີ່ທ່ານຕ້ອງການເລື່ອນ. ໃຊ້ທ່າທາງອີກຄັ້ງເພື່ອອອກຈາກໂໝດເລື່ອນ.</translation>
 <translation id="5003993274120026347">ປະໂຫຍດຕໍ່ໄປ</translation>
+<translation id="5005113238422129109">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານເພື່ອສົນທະນາກັບ Gemini. ເມື່ອທ່ານເວົ້າກັບ Gemini, ສຽງຈະຖືກເກັບໄວ້ໃນການເຄື່ອນໄຫວແອັບ Gemini (ຖ້າມັນເປີດໄວ້)</translation>
 <translation id="5005311809885666699">ບັນທຶກຈາກ Chrome ແລ້ວ</translation>
 <translation id="5005498671520578047">ອັດ​ສຳ​ເນົາ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="5006218871145547804">ADB ຂອງແອັບ Android ໃນ Crostini</translation>
@@ -6722,6 +6740,7 @@
 <translation id="5705005699929844214">ສະແດງຕົວເລືອກການຊ່ວຍເຂົ້າເຖິງທຸກເທື່ອ</translation>
 <translation id="5705882733397021510">ກັບຄືນ</translation>
 <translation id="5707185214361380026">ບໍ່​ສາມາດໂຫຼດສ່ວນຂະຫຍາຍຈາກ:</translation>
+<translation id="5707674184620508665">ອົງການຈັດຕັ້ງຂອງທ່ານ, <ph name="ACCOUNT_MANAGER" />, ຈະບໍ່ສາມາດເຫັນ ຫຼື ຈັດການຂໍ້ມູນທີ່ມີຢູ່ຂອງທ່ານໄດ້. ໂດຍຂໍ້ມູນຈະຍັງຄົງຢູ່ໃນໂປຣໄຟລ໌ທີ່ມີຢູ່.</translation>
 <translation id="5708171344853220004">ຊື່ສໍາຄັນຂອງ Microsoft</translation>
 <translation id="5711010025974903573">ບັນທຶກບໍລິການ</translation>
 <translation id="5711983031544731014">ບໍ່​ສາ​ມາດປົດລັອກໄດ້. ປ້ອນ​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານເຂົ້າໄປ​.</translation>
@@ -7432,6 +7451,7 @@
 <translation id="622484624075952240">ລົງ</translation>
 <translation id="622537739776246443">ໂປຣໄຟລ໌ຈະຖືກລຶບ</translation>
 <translation id="6225475702458870625">ການເຊື່ອມຕໍ່ຂໍ້ມູນທີ່ມີໃຫ້ຈາກ <ph name="PHONE_NAME" /> ຂອງທ່ານ</translation>
+<translation id="622568138962270592">ການເຄື່ອນໄຫວແອັບ Gemini</translation>
 <translation id="6226777517901268232">ໄຟລ​໌​ລະຫັດສ່ວນຕົວ (ເລືອກໄດ້​)​</translation>
 <translation id="6227280783235722609">ສ່ວນຂະຫຍາຍ</translation>
 <translation id="622902691730729894">ຖອນໝຸດກຸ່ມສຳລັບແຖບບຸກມາກ</translation>
@@ -7735,6 +7755,7 @@
 <translation id="6451861213630784801">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="6452181791372256707">ປະ​ຕິ​ເສດ</translation>
 <translation id="6452251728599530347">ສຳເລັດ <ph name="PERCENT" /></translation>
+<translation id="6452268285438583507">ເພີ່ມສ່ວນຂະຫຍາຍ</translation>
 <translation id="6452961788130242735">ພົບບັນຫາເຄືອຂ່າຍ ຫຼື ຂອບເຂດບໍ່ດີ</translation>
 <translation id="6453191633103419909">ຄຸນນະພາບການສາຍ ແຖບ/ໜ້າຈໍ</translation>
 <translation id="6453921811609336127">ເພື່ອສະຫຼັບໄປຫາວິທີການປ້ອນຂໍ້ມູນຕໍ່ໄປ, ກະລຸນາກົດ <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />ຍະຫວ່າງ<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -7968,6 +7989,7 @@
 <translation id="661266467055912436">ປັບປຸງຄວາມປອດໄພສຳລັບທ່ານ ແລະ ທຸກຄົນໃນເວັບ.</translation>
 <translation id="6613267708691765962">ກຳລັງສະແກນຫາເມົາແວ...</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
+<translation id="6618013221808317456">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ການເພີ່ມປະສິດທິພາບ JavaScript</translation>
 <translation id="6619058681307408113">ເຄື່ອງພິມແດມອນແບບໃຊ້ສາຍ (LPD)</translation>
 <translation id="661907246513853610">ເວັບໄຊສາມາດຕິດຕາມສະຖານທີ່ຂອງທ່ານໄດ້</translation>
 <translation id="6619243162837544323">ສະຖານະເຄືອຂ່າຍ</translation>
@@ -8161,6 +8183,7 @@
 <translation id="6759193508432371551">ຕັ້ງຄ່າຄືນເປັນຄ່າໂຮງ​ງານ</translation>
 <translation id="6760354150216532978">ຄຳເຕືອນ: ເວັບໄຊນີ້ຈະເຫັນການແກ້ໄຂທີ່ທ່ານເຮັດ</translation>
 <translation id="6761209758867628753">ເຄື່ອງມື: ຊ່ວຍຂ້ອຍຂຽນ</translation>
+<translation id="6761459308170527362">ທ່ານສາມາດໃຊ້ສຽງ ຫຼື ຂໍ້ຄວາມສົນທະນາເພື່ອຖາມ Gemini ກ່ຽວກັບເນື້ອຫາໜ້າທີ່ທ່ານກໍາລັງແບ່ງປັນ</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">ບໍ່ອະນຸຍາດຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="6762833852331690540">ເປີດ</translation>
@@ -8819,6 +8842,7 @@
 <translation id="7223952304612664117">ເຊິ່ງຈະເຮັດໃຫ້ບໍລິການລະບົບສາມາດໃຊ້ຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ເພື່ອລະບຸສະຖານທີ່ຂອງທ່ານໄດ້. ຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ຈະໃຊ້ຂໍ້ມູນກ່ຽວກັບສັນຍານໄຮ້ສາຍ ແລະ ເຊັນເຊີເພື່ອປະເມີນສະຖານທີ່ຂອງອຸປະກອນ.</translation>
 <translation id="7225082563376899794">ໃຊ້ Windows Hello ເມື່ອຕື່ມລະຫັດຜ່ານ</translation>
 <translation id="7225179976675429563">ປະ​ເພດ​ເຄືອ​ຂ່າຍຂາດຫາຍໄປ</translation>
+<translation id="7226163413959353072">ຜູ້ຊ່ວຍ AI ທີ່ໃຫ້ປະເດັນສໍາຄັນ, ຊີ້ແຈງຄອນເຊັບ, ຊອກຫາຄໍາຕອບ ແລະ ອື່ນໆອີກ</translation>
 <translation id="7227235818314667565">ຈັດການການແບ່ງປັນ</translation>
 <translation id="7227458944009118910">ແອັບທີ່ມີລາຍຊື່ທາງລຸ່ມສາມາດຈັດການລິ້ງໂປຣໂຕຄໍໄດ້ເຊັ່ນກັນ. ແອັບອື່ນໆຈະຖາມຫາການອະນຸຍາດ.</translation>
 <translation id="7228056665272655255">ເພື່ອຕັ້ງຄ່າລາຍນິ້ວມື, ໃຫ້ລູກຂອງທ່ານແຕະໃສ່ເຊັນເຊີລາຍນິ້ວມືຢູ່ມຸມຂວາເທິງສຸດຂອງແປ້ນພິມ. ຂໍ້ມູນລາຍນິ້ວມືຂອງລູກທ່ານແມ່ນຖືກເກັບໄວ້ຢ່າງປອດໄພ ແລະ ຢູ່ໃນ <ph name="DEVICE_TYPE" /> ນີ້ສະເໝີ.</translation>
@@ -8888,6 +8912,7 @@
 <translation id="727595954130325265">ຊື້ດຽວນີ້</translation>
 <translation id="727952162645687754">ດາວ​ໂຫລດ​ຜິດພາດ</translation>
 <translation id="7280649757394340890">ການຕັ້ງຄ່າສຽງສຳລັບການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
+<translation id="7280683802406059877">ປັບແຕ່ງຄີລັດ</translation>
 <translation id="7280877790564589615">ຂໍ​ເອົາການອະ​ນຸ​ຍາດ​ແລ້ວ</translation>
 <translation id="7281166215790160128">ໂໝດ</translation>
 <translation id="7282056103720203738">ອ່ານຂໍ້ມູນອຸປະກອນ ແລະ ຂໍ້ມູນທີ່ແນບມາ</translation>
@@ -8946,6 +8971,7 @@
 <translation id="7320213904474460808">ໃຫ້ເປັນເຄືອຂ່າຍເລີ່ມຕົ້ນ</translation>
 <translation id="7321545336522791733">ບໍ່ສາມາດຕິດຕໍ່ຫາເຊີບເວີໄດ້</translation>
 <translation id="7322515217754205362">ການອະນຸຍາດເວັບໄຊ</translation>
+<translation id="7322919329844967709">ທ່ານຈະໄດ້ຮັບຄໍາຕອບທີ່ກ່ຽວຂ້ອງກັບເນື້ອຫາໜ້າທີ່ທ່ານກໍາລັງແບ່ງປັນ</translation>
 <translation id="7323315405936922211">ຂະໜາດພື້ນທີ່ເຄີເຊີ</translation>
 <translation id="7324020307732396723">ເປີດການຕັ້ງຄ່າພາສາ</translation>
 <translation id="7324297612904500502">ເວທີເບຕ້າ</translation>
@@ -9195,6 +9221,7 @@
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
 <translation id="7481358317100446445">ພ້ອມແລ້ວ</translation>
 <translation id="748138892655239008">ຂໍ້ຈໍາກັດ​ພື້ນຖານ​ຂອງ​ໃບ​ຢັ້ງຢືນ</translation>
+<translation id="7482823403440483089">ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="7483732342458943943">ລິ້ງນີ້ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="7484645889979462775">ຢ່າເລີຍສໍາລັບເວັບໄຊທ໌ນີ້</translation>
 <translation id="7484943269191249363">ທ່ານສາມາດໃຊ້ກະແຈຜ່ານທັງໝົດຂອງທ່ານທີ່ບັນທຶກໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານ Google ໃນອຸປະກອນນີ້ໄດ້. ເຊິ່ງທ່ານຕ້ອງດຳເນີນການນີ້ພຽງເທື່ອດຽວເທົ່ານັ້ນ.</translation>
@@ -9821,6 +9848,7 @@
 <translation id="7920482456679570420">ເພີ່ມຄຳທີ່ທ່ານຕ້ອງການໃຫ້ການກວດຄຳຜິດຂ້າມ</translation>
 <translation id="7920715534283810633">ບໍ່ສາມາດເປີດ <ph name="FILE_NAMES" /> ໄດ້</translation>
 <translation id="7921347341284348270">ທ່ານບໍ່ສາມາດເບິ່ງການແຈ້ງເຕືອນໂທລະສັບຂອງທ່ານຢູ່ບັນຊີທີ່ມີການຈັດການນີ້ໄດ້. ໃຫ້ລອງໃຊ້ບັນຊີອື່ນແທນ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">ເວັບໄຊສາມາດໃຊ້ການເພີ່ມປະສິດທິພາບ JavaScript ໄດ້</translation>
 <translation id="7921901223958867679">ສ່ວນຂະຫຍາຍນີ້ສາມາດອ່ານ ແລະ ປ່ຽນແປງໄດ້ <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 ສ່ວນຂະຫຍາຍ</translation>
 <translation id="7923564237306226146">ອັບເກຣດ Linux ສຳເລັດແລ້ວ</translation>
@@ -9943,6 +9971,7 @@
 <translation id="7991296728590311172">ການຕັ້ງຄ່າການເຂົ້າເຖິງປຸ່ມ</translation>
 <translation id="7992080146463834191">ສະຫຼຸບເນື້ອຫາ, ອະທິບາຍພາສາທີ່ຊັບຊ້ອນໃຫ້ເຂົ້າໃຈງ່າຍ ຫຼື ຖາມຄຳຖາມ.</translation>
 <translation id="7992203134935383159">ອ່ານໜັງສືດ້ວຍສຽງທຽມ</translation>
+<translation id="7993332993977106257">ເຂົ້າເຖິງເພື່ອໃຊ້ Gemini ທົ່ວອຸປະກອນຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ, ເຖິງແມ່ນວ່າ Chrome ຈະຖືກຫຍໍ້ຂະໜາດໄວ້ກໍຕາມ.</translation>
 <translation id="7997826902155442747">ບຸລິມະສິດຂອງຂະບວນການ</translation>
 <translation id="7997828719430450286">ສຳເລັດ.</translation>
 <translation id="7998701048266085837">URL</translation>
@@ -9995,6 +10024,7 @@
 <translation id="8028060951694135607">ການກູ້ຄືນລະຫັດ Microsoft</translation>
 <translation id="8028803902702117856">ກຳລັງດາວໂຫຼດ <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
+<translation id="8029349782735515147">ສະແດງຄຳບັນຍາຍເມື່ອໃຊ້ Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{ລາຍຊື່ການອ່ານ}=1{ລາຍຊື່ການອ່ານ ({SELECTED_ITEMS})}other{ລາຍຊື່ການອ່ານ ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ຂໍການອະນຸຍາດແລ້ວ, ກະລຸນາກົດ ⌘ + ຕົວເລືອກ + ລູກສອນຂຶ້ນເພື່ອຕອບກັບ</translation>
 <translation id="8030169304546394654">ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
@@ -10113,6 +10143,7 @@
 <translation id="8102139037507939978">ລຶບຂໍ້ມູນທີ່ລະບຸຕົວຕົນບຸກຄົນໄດ້ອອກຈາກ system_logs.txt.</translation>
 <translation id="810362914482827094">ຊອກຫາກະແຈຜ່ານ</translation>
 <translation id="8104088837833760645">ດາວໂຫຼດໂປຣໄຟລ໌ eSIM</translation>
+<translation id="8105050970626643057">ເປີດ Gemini ຢ່າງໄວວາເມື່ອທ່ານຕ້ອງການ</translation>
 <translation id="8105273883928376822">ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອດຳເນີນການຕໍ່.</translation>
 <translation id="8106114112474206597">ໃຊ້ປຸ່ມ “i” ເພື່ອກົດປຸ່ມເມົ້າ</translation>
 <translation id="8107015733319732394">ກຳລັງຕິດຕັ້ງ Google Play Store ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ນີ້ສາມາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
@@ -10269,6 +10300,7 @@
 <translation id="8222112516148944758">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກ ແລະ ອັບເດດໂດຍອັດຕະໂນມັດໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="8222674561049363989">ໄຟລ໌ບໍ່ແມ່ນເອກະສານທີ່ຖືກຕ້ອງ</translation>
 <translation id="822347941086490485">ກຳລັງຊອກຫາອຸປະກອນ HID...</translation>
+<translation id="8224209912580158729">ແບ່ງປັນເນື້ອຫາຂອງໜ້າເວັບກັບ Gemini ເພື່ອຮັບຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ.</translation>
 <translation id="8224427620313426549">ບັນຊີ <ph name="DOMAIN_LINK" /> ຂອງທ່ານຈະບໍ່ຖືກລຶບ</translation>
 <translation id="8225046344534779393">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="8225265270453771718">ແບ່ງປັນໜ້າຈໍແອັບພລິເຄຊັນ</translation>
@@ -10362,6 +10394,7 @@
 <translation id="8276560076771292512">ແຄຊ໌ຫວ່າງເປົ່າ ແລະໂຫຼດໃໝ່ຍາກ</translation>
 <translation id="8276850948802942358">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການໃຫ້ສິດການອະນຸຍາດຊົ່ວຄາວແກ່ເວັບໄຊເພື່ອໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="8277907305629781277">ທ່ານສ້າງກະແຈຜ່ານນີ້ເມື່ອວັນທີ <ph name="DATE" /></translation>
+<translation id="8278702675516957539">ບໍ່ອະນຸຍາດເພື່ອໃຊ້ການເພີ່ມປະສິດທິພາບ JavaScript</translation>
 <translation id="827966378414194229">ໃຊ້ການເຄື່ອນໄຫວຂອງຫົວ ແລະ ການສະແດງອອກທາງໃບໜ້າເພື່ອຄວບຄຸມ Chromebook ຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">ເວັບໄຊໃນພາສາຂອງທ່ານ</translation>
 <translation id="8280848878018088610">ຄື້ນຊັດໃນທະເລ, ໂດຍມີພາບເມືອງ ແລະ ຜາສາດທີ່ໜ້າອັດສະຈັນໃນພື້ນຫຼັງ, ໃນຮູບແບບອາລົມໝົ່ນໆ.</translation>
@@ -10412,6 +10445,7 @@
 <translation id="8314835274931377415">ເລີ່ມການຕັ້ງຄ່າການເຂົ້າເຖິງດ້ວຍສະວິດບໍ?</translation>
 <translation id="8315018673856831477">ຕົວເລືອກຕົວປະຢັດໜ່ວຍຄວາມຈຳ</translation>
 <translation id="8315514906653279104">ກຳລັງເປີດ...</translation>
+<translation id="8316480109537174997">ສະແດງ Gemini ໃນຖາດລະບົບ ແລະ ເປີດໃຊ້ຄີລັດ</translation>
 <translation id="8317671367883557781">ເພີ່ມການເຊື່ອມຕໍ່ເຄືອຂ່າຍ</translation>
 <translation id="8317965619823678157">ສຳເນົາລະຫັດຜ່ານ</translation>
 <translation id="8318266828739827371">ໃຊ້ມຸມມອງແບ່ງໜ້າຈໍເພື່ອເບິ່ງພື້ນທີ່ຂະຫຍາຍຂອງໜ້າຈໍທ່ານ. ໃຊ້ຊອກຫາ + Ctrl + D ເພື່ອເປີດ ແລະ ປິດແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້.</translation>
@@ -10580,6 +10614,7 @@
 <translation id="8431190899827883166">ສະແດງການແຕະ</translation>
 <translation id="843173223122814223">ສ້າງພາບພື້ນຫຼັງດ້ວຍ AI</translation>
 <translation id="8431977087510901105">ຣີເຊັດການຕັ້ງຄ່າເຄີເຊີແລ້ວ</translation>
+<translation id="843210078733508372">ເຂົ້າສູ່ລະບົບ ແລະ ການປ່ຽນແປງລະຫັດຜ່ານຈະສືບຕໍ່</translation>
 <translation id="8433186206711564395">ການຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
 <translation id="8434109185104929038">ມຸມອ່ານປຶ້ມ</translation>
 <translation id="8434837876193928924">ລາຍລະອຽດກຸ່ມແຖບ</translation>
@@ -10812,6 +10847,7 @@
 <translation id="8607661817136110841">ກຸ່ມແຖບຂອງທ່ານ</translation>
 <translation id="8607828412110648570">ກະລຸນາກວດສອບວ່າອຸປະກອນ Bluetooth ຂອງທ່ານຢູ່ໃນໂໝດຈັບຄູ່ ແລະ ຢູ່ໃກ້ຄຽງ. ທ່ານຄວນຈັບຄູ່ກັບອຸປະກອນທີ່ທ່ານເຊື່ອຖືເທົ່ານັ້ນ. ທຸກບັນຊີໃນ Chromebook ນີ້ຈະເຫັນອຸປະກອນທີ່ຈັບຄູ່ແລ້ວ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">ເພີ່ມປີ້ Kerberos</translation>
+<translation id="860907040896565281">ປັບແຕ່ງຄີລັດ...</translation>
 <translation id="8609465669617005112">ຍ້າຍຂຶ້ນ</translation>
 <translation id="8611922158252451755">ທຸກຄົນທີ່ມີລິ້ງສາມາດແກ້ໄຂແຖບທັງໝົດໄດ້, ດັ່ງນັ້ນກະລຸນາແບ່ງປັນຢ່າງລະມັດລະວັງ. ລິ້ງຈະໝົດອາຍຸໃນ 48 ຊົ່ວໂມງ.</translation>
 <translation id="8612252270453580753">ຊອກຫາເຟຣມວິດີໂອດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -11212,6 +11248,7 @@
 <translation id="8868838761037459823">ລາຍລະອຽດເຄືອຂ່າຍມືຖື</translation>
 <translation id="8870413625673593573">ປິດ​ບໍ່​ດົນ​ມາ​ນີ້</translation>
 <translation id="8871043459130124414">ເຮັດວຽກຫຼັງຈາກທີ່ທ່ານຄລິກສ່ວນຂະຫຍາຍເທົ່ານັ້ນ</translation>
+<translation id="8871126140396172266"><ph name="WINDOW_TITLE" /> - ທ່ານກໍາລັງແບ່ງປັນໜ້ານີ້ກັບ Gemini</translation>
 <translation id="8871551568777368300">ປັກໝຸດໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="8871696467337989339">ທ່ານກໍາລັງໃຊ້ທຸງສາຍຄໍາສັ່ງທີ່ບໍ່ຮອງຮັບ: <ph name="BAD_FLAG" />. ຄວາມໝັ້ນຄົງ ແລະຄວາມປອດໄພຈະມີບັນຫາ.</translation>
 <translation id="8871974300055371298">ການ​ຕັ້ງ​ຄ່າ​ເນື້ອ​ໃນ</translation>
@@ -11331,6 +11368,7 @@
 <translation id="895347679606913382">ກໍາລັງເລີ່ມຕົ້ນ...</translation>
 <translation id="8954796993367253220">ເພື່ອລຶບປະຫວັດໃນໂໝດແຂກ, ໃຫ້ປິດໜ້າຈໍແຂກທັງໝົດ.</translation>
 <translation id="8955174612586215829">ຊອກຫາຮູບແບບສີສັນ</translation>
+<translation id="8957656266859671822">ເລືອກບັນຊີຂອງທ່ານ</translation>
 <translation id="8957757410289731985">ປັບແຕ່ງໂປຣໄຟລ໌</translation>
 <translation id="8959144235813727886">ເວັບໄຊ ແລະ ແອັບ</translation>
 <translation id="895944840846194039">ຄວາມ​ຈໍາ JavaScript</translation>
@@ -11424,6 +11462,7 @@
 <translation id="9011163749350026987">ສະແດງໄອຄອນສະເໝີ</translation>
 <translation id="9011262023858991985">ກຳລັງສົ່ງສັນຍານແຖບນີ້</translation>
 <translation id="9011393886518328654">ບັນທຶກການປ່ຽນແປງ</translation>
+<translation id="9012013036616593083">Gemini ບໍ່ພ້ອມໃຫ້ນຳໃຊ້ໃນຕອນນີ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="9012122671773859802">ຍ້າຍໜ້າຈໍໄດ້ຢ່າງຕໍ່ເນື່ອງໃນເວລາເມົ້າຍ້າຍ</translation>
 <translation id="9012585441087414258">ປົກປ້ອງຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ຮູ້ແລ້ວວ່າເປັນອັນຕະລາຍ. ຫາກໜ້າເວັບເຮັດສິ່ງທີ່ໜ້າສົງໄສ, URL ແລະ ເນື້ອຫາຂອງໜ້າເວັບບາງສ່ວນຈະຖືກສົ່ງໄປຫາ Google Safe Browsing.</translation>
 <translation id="9013037634206938463">ຈຳເປັນຕ້ອງມີພື້ນທີ່ຫວ່າງ <ph name="INSTALL_SIZE" /> ເພື່ອຕິດຕັ້ງ Linux. ເພື່ອເພີ່ມພື້ນທີ່ຫວ່າງ, ກະລຸນາລຶບໄຟລ໌ຕ່າງໆອອກຈາກອຸປະກອນຂອງທ່ານ.</translation>
@@ -11449,6 +11488,7 @@
 <translation id="9024127637873500333">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="9024158959543687197">ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ການແບ່ງປັນ. ກະລຸນາກວດເບິ່ງ URL ການແບ່ງປັນໄຟລ໌ ແລະ ລອງອີກຄັ້ງ.</translation>
 <translation id="9024692527554990034">ທ່ານສາມາດໃຊ້ທາງລັດໃນແຖບທີ່ຢູ່ເພື່ອຊອກຫາເວັບໄຊສະເພາະໃດໜຶ່ງແບບດ່ວນ ຫຼື ເພື່ອໃຊ້ໂປຣແກຣມຊອກຫາອື່ນໄດ້</translation>
+<translation id="9024975946059881308">ສະແດງ Gemini ໃນແຖບເມນູ Mac ແລະ ເປີດໃຊ້ຄີລັດ</translation>
 <translation id="9025222334598338152">ທ່ານສາມາດນໍາໃຊ້ຕາຕະລາງການປຽບທຽບຂອງທ່ານເພື່ອຕິດຕາມໃນຂະນະທີ່ທ່ານຈຳກັດຕົວເລືອກຂອງທ່ານໃຫ້ແຄບລົງ</translation>
 <translation id="902638246363752736">ການຕັ້ງຄ່າຄີບອດ</translation>
 <translation id="9026393603776578602">ການປ້ອນຂໍ້ມູນດ້ວຍສຽງ</translation>
@@ -11641,6 +11681,7 @@
 <translation id="9153367754133725216">ເບິ່ງການແນະນຳສຳລັບແອັບ ແລະ ເນື້ອຫາເວັບໃໝ່ໆໃນຕົວເປີດໃຊ້ ແລະ ຜົນການຊອກຫາ. ສົ່ງສະຖິຕິເພື່ອປັບປຸງການແນະນຳກໍຕໍ່ເມື່ອທ່ານໄດ້ເລືອກສົ່ງລາຍງານການຂັດຂ້ອງ ຮວມທັງຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້ໄປຫາ ChromeOS ແລ້ວ.</translation>
 <translation id="9154194610265714752">ອັບເດດແລ້ວ</translation>
 <translation id="915485121129452731">ແທັບເລັດສຳລັບແຕ້ມຮູບ</translation>
+<translation id="9155100833189043833">ໃຊ້ ID ຈາກອຸປະກອນມືຖືຂອງທ່ານໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="9155344700756733162">ບໍ່ເລືອກສີ</translation>
 <translation id="9157096865782046368">0.8 ວິນາທີ</translation>
 <translation id="9157697743260533322">ຕັ້ງຄ່າການອັບເດດອັດຕະໂນມັດສຳລັບຜູ້ໃຊ້ທຸກຄົນບໍ່ສຳເລັດ (ຄວາມຜິດພາດການເປີດໃຊ້ preflight: <ph name="ERROR_NUMBER" />)</translation>

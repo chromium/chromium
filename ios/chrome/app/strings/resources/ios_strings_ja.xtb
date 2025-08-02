@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">最終同期: 今日</translation>
 <translation id="1523567067736644845">パスワードを表示するにはロックを解除してください</translation>
 <translation id="1524563461097350801">スキップ</translation>
+<translation id="1528290585275339320">ページ コンテンツの共有をオンにする</translation>
 <translation id="1531038290222364269">タブを表示</translation>
 <translation id="1536390784834419204">ページを翻訳</translation>
 <translation id="1540800554400757039">住所1行目</translation>
@@ -432,7 +433,7 @@
 <translation id="2635918910848538771">CVC を自動入力</translation>
 <translation id="2640733327287333451">ユーザー名が指定されていません ••••••••</translation>
 <translation id="264215785133931186">前回の確認: たった今</translation>
-<translation id="2647434099613338025">言語の追加</translation>
+<translation id="2647434099613338025">言語を追加</translation>
 <translation id="2649592894792404568">Google パスワード マネージャーのデータを削除しようとしています</translation>
 <translation id="2652129567809778422">パスワードを選択</translation>
 <translation id="2658056020748144467">ファイルを開けません</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">新しいメニューを確認する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5141363746588976328">タブの値下げ情報カードを非表示にする</translation>
+<translation id="514154868070499296">フォント: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">タブ切り替え機能を終了</translation>
 <translation id="5148717509369231739">Safari からのインポート</translation>
 <translation id="5157638238828697074">エラーが発生しました。アプリケーションを開けませんでした。</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8637431369725868556">危険なサイトから保護してください。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="8643403533759285912">グループを削除</translation>
+<translation id="8645245178269185266">より関連性の高い回答を得るには、ページのコンテンツを Gemini と共有してください</translation>
 <translation id="8647280737650867362">価格のトラッキングを解除できませんでした。</translation>
 <translation id="8654802032646794042">キャンセル</translation>
 <translation id="8660600697590740984">コピーした画像をレンズで検索</translation>

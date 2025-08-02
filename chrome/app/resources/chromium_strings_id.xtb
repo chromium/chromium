@@ -294,6 +294,7 @@
 <translation id="4724676981607797757">Penginstalan gagal karena error protokol yang tidak didukung.</translation>
 <translation id="4746050847053251315">Tetap tutup Chromium?</translation>
 <translation id="4748217263233248895">Update keamanan khusus untuk Chromium baru saja diterapkan. Mulai ulang Chromium sekarang dan kami akan memulihkan tab Anda.</translation>
+<translation id="4771701986670315895">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="COUNT" /> lainnya.</translation>
 <translation id="4788777615168560705">Chromium tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4814736265800133385">Gunakan Chromium tanpa akun</translation>
@@ -306,6 +307,7 @@
 <translation id="4987820182225656817">Tamu dapat menggunakan Chromium tanpa meninggalkan apa pun.</translation>
 <translation id="4994636714258228724">Tambahkan diri Anda ke Chromium</translation>
 <translation id="5123973130450702873">Chromium memerlukan izin untuk melacak tangan Anda</translation>
+<translation id="5141988424377517949">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik ikon notifikasi di sudut kanan kolom lokasi.</translation>
 <translation id="5187123684706427865">Akun Chromium memerlukan autentikasi ulang</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
@@ -491,6 +493,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="734373864078049451">Web, bookmark, dan barang Chromium Anda lainnya tersedia di sini.</translation>
 <translation id="7349591376906416160">Administrator sistem Anda telah mengonfigurasi Chromium untuk membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
+<translation id="7376384068949534168">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Ekstensi ini tidak lagi didukung. Chromium merekomendasikan agar Anda menghapusnya.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Teks disalin</translation>
@@ -555,6 +558,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8248265253516264921">Jika gambar tidak memiliki deskripsi yang berguna, Chromium akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>
 <translation id="8254601181414348851">Login ke Chromium di profil baru?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium akan memperingatkan Anda<ph name="END_LINK" /> tentang situs dan download yang tidak aman</translation>
+<translation id="8295827201165805317">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION" />.</translation>
 <translation id="8313851650939857356">Error saat sistem dimulai: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi Anda menutup Chromium saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Simpan sebagai gambar</translation>

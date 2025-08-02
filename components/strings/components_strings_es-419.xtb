@@ -557,6 +557,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1927439846988093361">Cuidados del cabello</translation>
 <translation id="1935353813610900265">Envía comentarios sobre history search con la tecnología de IA</translation>
 <translation id="1935995810530254458">Copiar de todos modos</translation>
+<translation id="1938580037092872316">Agrega información nueva a la dirección guardada</translation>
 <translation id="1939059826036755332">Modo de pantalla en pantalla automático</translation>
 <translation id="1939175642807587452">Puede solicitar permiso para enviar notificaciones</translation>
 <translation id="1940441167050915935">Borrar los códigos de seguridad guardados</translation>
@@ -1529,6 +1530,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3570079787344939099">Desplazamiento y zoom</translation>
 <translation id="357244642999988503">Quitar columna</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Agrega información nueva a la dirección</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Se seleccionó la opción de nombre de calle</translation>
@@ -3542,6 +3544,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6935082727755903526">Trabajos en contabilidad y finanzas</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Es posible que algunos sitios tarden más en cargar cuando vuelvas a visitarlos.</translation>
 <translation id="6936976777388162184">Este es un dispositivo agrupado y no se puede inscribir en la actualización de Kiosk &amp; Signage.</translation>
+<translation id="6942444979237658241">Comentarios: <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Juegos de estrategia</translation>
 <translation id="6944692733090228304">Ingresaste tu contraseña en un sitio que no está administrado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger tu cuenta, no vuelvas a usar la contraseña en otras apps y sitios.</translation>
 <translation id="6946949206576443118">Busca en la Web con Chrome</translation>
@@ -4001,6 +4004,7 @@ Detalles adicionales:
 <translation id="7668654391829183341">Dispositivo desconocido</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Las acciones que se realizan con los datos marcados como confidenciales (1 acción desde el acceso). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" />}other{Las acciones que se realizan con los datos marcados como confidenciales (# acciones desde el acceso). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">La información de tu Cuenta de Google <ph name="USER_EMAIL" /> puede ayudarte a completar formularios más rápido en Chrome</translation>
 <translation id="7673278391011283842">Buzón 6</translation>
 <translation id="7675325315208090829">Administrar formas de pago…</translation>
 <translation id="767550629621587224">Tiras precortadas</translation>
@@ -4133,6 +4137,7 @@ Detalles adicionales:
 <translation id="7908648876066812348">Activando la tarjeta virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para ir a la página de verificación de seguridad de Chrome en la configuración</translation>
 <translation id="791107458486222637">Rehaciendo resultado</translation>
+<translation id="7912924955815015552">Importados de Safari</translation>
 <translation id="791551905239004656">Dibujar y colorear</translation>
 <translation id="7916162853251942238">Base para flexografía</translation>
 <translation id="791698251820376781">Tu organización no te permite acceder</translation>
@@ -4267,6 +4272,7 @@ Detalles adicionales:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Se creó hace 1 mes}other{Se creó hace {NUM_MONTHS} meses}}</translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>
 <translation id="8149426793427495338">La computadora se suspendió.</translation>
+<translation id="815036624016370447">La información de tu Cuenta de Google <ph name="ACCOUNT" /> puede ayudarte a completar formularios más rápido en Chrome</translation>
 <translation id="8150722005171944719">El archivo de <ph name="URL" /> no se puede leer. Es posible que se haya eliminado o movido o que se impida el acceso a los permisos del archivo.</translation>
 <translation id="8151185429379586178">Herramientas del programador</translation>
 <translation id="8153865548451212769">{0,plural, =1{La política del administrador no recomienda descargar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda descargar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>

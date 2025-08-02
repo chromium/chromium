@@ -310,6 +310,7 @@
 <translation id="4747730611090640388">Chrome może szacować Twoje zainteresowania.  Później odwiedzana przez Ciebie witryna może wykorzystać te informacje, żeby spersonalizować wyświetlane Ci reklamy.</translation>
 <translation id="475321580758063259">Zaktualizuj Chrome, aby nadal korzystać z danych Chrome na koncie <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chrome, ale będzie ona trochę mniej odporna na ataki</translation>
 <translation id="479167709087336770">Będzie stosowany ten sam mechanizm sprawdzania pisowni, który jest używany w wyszukiwarce Google. Tekst wpisywany w przeglądarce jest wysyłany do Google. Zawsze możesz to zmienić w ustawieniach.</translation>
 <translation id="4793679854893018356">Jak Chrome dba o Twoje bezpieczeństwo</translation>
 <translation id="4828579605166583682">Google Chrome próbuje zastąpić istniejące hasła. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
@@ -591,6 +592,7 @@
 <translation id="8342675569599923794">Ten plik jest niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
 <translation id="8349094670477064572">Gdy zalogujesz się w Chrome, będziesz mieć możliwość zapisywania haseł i innych danych na swoim koncie Google oraz korzystania z nich. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Tłumacz na</translation>
+<translation id="8366770919198174997">Zmniejsza wydajność, ale sprawia, że przeglądarka Chrome jest bardziej odporna na ataki</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8387459386171870978">Nadal korzystaj z Chrome</translation>
 <translation id="8394720698884623075">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome.</translation>

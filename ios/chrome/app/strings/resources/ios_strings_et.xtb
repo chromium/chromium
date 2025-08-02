@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktiivne täna</translation>
 <translation id="1523567067736644845">Avage, et kuvada parool</translation>
 <translation id="1524563461097350801">Ei, tänan</translation>
+<translation id="1528290585275339320">Lehe sisu jagamise sisselülitamine</translation>
 <translation id="1531038290222364269">Kuva vahelehed</translation>
 <translation id="1536390784834419204">Tõlgi leht</translation>
 <translation id="1540800554400757039">Aadress 1</translation>
@@ -1045,6 +1046,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5128788795241319992">Uue menüü avastamine</translation>
 <translation id="5132942445612118989">Teie paroolide, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="5141363746588976328">Teie vahelehtede hinnalanguste kaardi peitmine</translation>
+<translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Välju vahelehtede vahetist</translation>
 <translation id="5148717509369231739">Safari importimised</translation>
 <translation id="5157638238828697074">Midagi läks valesti. Rakendust ei õnnestunud avada.</translation>
@@ -1974,6 +1976,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8637431369725868556">Kaitske end ohtlike veebisaitide eest.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ohustatud paroole pole}=1{{COUNT} ohustatud parool}other{{COUNT} ohustatud parooli}}</translation>
 <translation id="8643403533759285912">Kustuta grupp</translation>
+<translation id="8645245178269185266">Jagage lehe sisu Geminiga, et saada asjakohasemaid vastuseid.</translation>
 <translation id="8647280737650867362">Hinna jälgimist ei saanud lõpetada.</translation>
 <translation id="8654802032646794042">Tühista</translation>
 <translation id="8660600697590740984">Otsi kopeeritud pilti Lensiga</translation>

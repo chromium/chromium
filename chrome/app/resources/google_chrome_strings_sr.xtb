@@ -315,6 +315,7 @@
 <translation id="4747730611090640388">Chrome може да процени ваша интересовања.  Сајт који касније посетите може да затражи од Chrome-а приступ вашим интересовањима да би персонализовао огласе који вам се приказују.</translation>
 <translation id="475321580758063259">Ажурирајте Chrome да бисте наставили да користите Chrome податке на Google налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Убрзава сајтове уз Chrome механизам V8, али чини Chrome мало мање отпорним на нападе</translation>
 <translation id="479167709087336770">Користи исту проверу правописа као Google претрага. Текст који унесете у прегледач се шаље Google-у. То увек можете да промените у подешавањима.</translation>
 <translation id="4793679854893018356">Сазнајте како вас Chrome штити</translation>
 <translation id="4828579605166583682">Google Chrome покушава да замени постојеће лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
@@ -600,6 +601,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8342675569599923794">Ова датотека је опасна, па ју је Chrome блокирао.</translation>
 <translation id="8349094670477064572">Чуваћете и користићете лозинке и друго на Google налогу сваки пут када сте пријављени у Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Преводи на језик</translation>
+<translation id="8366770919198174997">Смањује перформансе, али чини Chrome отпорнијим на нападе</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
 <translation id="8387459386171870978">Наставите са коришћењем Chrome-а</translation>
 <translation id="8394720698884623075">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chrome-у</translation>

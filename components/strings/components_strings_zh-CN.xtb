@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">Android 应用</translation>
 <translation id="2102519472192754194">网络浏览器</translation>
 <translation id="2103210856015238101">会员卡列表已以最大高度显示，轻触即可填充。</translation>
+<translation id="2104739941682874393">增强型自动填充功能可以更好地理解表单，并更快地为您自动填充表单</translation>
 <translation id="2105838220373099643">角色扮演游戏</translation>
 <translation id="2107021941795971877">打印方面的支持</translation>
 <translation id="2108755909498034140">重新启动计算机</translation>
@@ -1525,6 +1526,7 @@
 <translation id="3570079787344939099">滚动和缩放</translation>
 <translation id="357244642999988503">移除列</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /><ph name="STATE" /><ph name="CITY" /></translation>
+<translation id="3574520980813687946">向现有地址添加新信息</translation>
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">已选择“街道名称”选项</translation>
@@ -2423,6 +2425,7 @@
 <translation id="5052517576853118371">活跃的主题</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">请提供打开原因（必填）</translation>
+<translation id="5058282932481719070">在设置中详细了解增强型自动填充功能</translation>
 <translation id="5060419232449737386">字幕设置</translation>
 <translation id="5060483733937416656">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过 Windows Hello 来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
@@ -3024,6 +3027,7 @@
 <translation id="6062937464449575061">取消跟踪价格</translation>
 <translation id="6063415549109819824">住宅融资</translation>
 <translation id="6070432475334343308">有一个或多个文件未上传到“<ph name="CLOUD_PROVIDER" />”上的“<ph name="FOLDER_NAME" />”</translation>
+<translation id="6071503852498277813">内容书签解析器服务</translation>
 <translation id="6078069862923723141">青色 2</translation>
 <translation id="6085149458302186532">标签（彩色）</translation>
 <translation id="6087312102907839798">相关搜索</translation>
@@ -3547,6 +3551,7 @@
 <translation id="695140971690006676">全部重置</translation>
 <translation id="6954049078461159956">曲棍球</translation>
 <translation id="695582302419398462">纸板（双层）</translation>
+<translation id="6957153644870901611">开启增强型自动填充功能，即可自动填充更多字段</translation>
 <translation id="6957887021205513506">该服务器的证书似乎是伪造的。</translation>
 <translation id="6958564499836457428">在您的 Google 账号中管理 Google 隐私设置</translation>
 <translation id="6961844873822989059">可以询问能否使用您设备上安装的字体</translation>
@@ -4126,6 +4131,7 @@
 <translation id="7908648876066812348">正在开启虚拟卡</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="791107458486222637">正在重新生成结果</translation>
+<translation id="7912924955815015552">由 Safari 导入</translation>
 <translation id="791551905239004656">绘画与着色</translation>
 <translation id="7916162853251942238">柔印底基</translation>
 <translation id="791698251820376781">您所在的组织不允许您登录</translation>

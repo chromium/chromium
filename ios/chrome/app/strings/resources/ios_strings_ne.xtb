@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">आज सक्रिय गरिएको समय</translation>
 <translation id="1523567067736644845">पासवर्ड देखाउन अनलक गर्नुहोस्</translation>
 <translation id="1524563461097350801">पर्दैन, धन्यवाद</translation>
+<translation id="1528290585275339320">पेजको कन्टेन्ट सेयर गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="1531038290222364269">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="1536390784834419204">यो पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="1540800554400757039">ठेगाना 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">नयाँ मेनुका बारेमा जान्नुहोस्</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
 <translation id="5141363746588976328">"तपाईंका ट्याबमा भएका उत्पादनको मूल्य घटेको छ" नामक कार्ड लुकाउनुहोस्</translation>
+<translation id="514154868070499296">फन्ट: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ट्याब स्विचरबाट बाहिरिनुहोस्</translation>
 <translation id="5148717509369231739">Safari बाट इम्पोर्ट गर्ने सुविधा</translation>
 <translation id="5157638238828697074">कुनै समस्या आयो। यो एप खोल्न मिल्दैन।</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8637431369725868556">खतरनाक साइटहरूबाट सुरक्षित रहनुहोस्।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन}=1{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएको छ}other{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
 <translation id="8643403533759285912">समूह मेटाउनुहोस्</translation>
+<translation id="8645245178269185266">अझ सान्दर्भिक जवाफहरू प्राप्त गर्न Gemini सँग पेजको कन्टेन्ट सेयर गर्नुहोस्</translation>
 <translation id="8647280737650867362">मूल्य ट्र्याक गर्ने कार्य रद्द गर्न सकिएन।</translation>
 <translation id="8654802032646794042">रद्द गर्नुहोस्</translation>
 <translation id="8660600697590740984">कपी गरिएको लेन्स इमेज</translation>

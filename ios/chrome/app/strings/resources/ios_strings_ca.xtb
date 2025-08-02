@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Actiu avui</translation>
 <translation id="1523567067736644845">Desbloqueja per mostrar la contrasenya</translation>
 <translation id="1524563461097350801">No, gràcies</translation>
+<translation id="1528290585275339320">Activa la compartició del contingut de la pàgina</translation>
 <translation id="1531038290222364269">Mostra les pestanyes</translation>
 <translation id="1536390784834419204">Tradueix la pàgina</translation>
 <translation id="1540800554400757039">Adreça 1</translation>
@@ -1045,6 +1046,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5128788795241319992">Explora el menú nou</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
 <translation id="5141363746588976328">Amaga la targeta Baixades de preu a les pestanyes</translation>
+<translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Surt del selector de pestanyes</translation>
 <translation id="5148717509369231739">Importació de Safari</translation>
 <translation id="5157638238828697074">S'ha produït un error. No s'ha pogut obrir l'aplicació.</translation>
@@ -1974,6 +1976,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8637431369725868556">Obtén protecció contra llocs web perillosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Cap contrasenya en perill}=1{{COUNT} contrasenya en perill}other{{COUNT} contrasenyes en perill}}</translation>
 <translation id="8643403533759285912">Suprimeix el grup</translation>
+<translation id="8645245178269185266">Comparteix el contingut de la pàgina amb Gemini per obtenir respostes més rellevants</translation>
 <translation id="8647280737650867362">No s'ha pogut deixar de fer el seguiment del preu.</translation>
 <translation id="8654802032646794042">Cancel·la</translation>
 <translation id="8660600697590740984">Imatge de Lens copiada</translation>

@@ -285,6 +285,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4598116752460667024">Potražite bilo koji proces sa liste.</translation>
 <translation id="4613863813562375431">Verzija Chromium OS-a</translation>
 <translation id="4621240073146040695">Ažuriranje je skoro gotovo! Ponovo pokrenite Chromium da biste dovršili ažuriranje.</translation>
+<translation id="4625064703209785397">Ubrzava sajtove uz Chromium mehanizam V8, ali čini Chromium malo manje otpornim na napade</translation>
 <translation id="4654936675281451226">Chromium bolje razume obrasce i može brže automatski da ih popunjava za vas. Ovo podešavanje je uključeno.</translation>
 <translation id="4665829708273112819">Upozorenje: Chromium ne može da spreči dodatke da čuvaju istoriju pregledanja. Da biste onemogućili ovaj dodatak u režimu bez arhiviranja, poništite izbor ove opcije.</translation>
 <translation id="4673151026126227699">Ako delite i Chromium izveštaje o korišćenju, ti izveštaji obuhvataju URL-ove koje posećujete</translation>
@@ -330,6 +331,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5386450000063123300">Ažuriranje Chromium-a (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Dozvoli prijavljivanje u Chromium</translation>
 <translation id="5405650547142096840">Ukloni iz Chromium-a</translation>
+<translation id="5424544524441439284">Smanjuje performanse, ali čini Chromium otpornijim na napade</translation>
 <translation id="5427571867875391349">Podesi Chromium kao podrazumevani pregledač</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium preporučuje da pauzirate karticu koja usporava pregledač}one{Chromium preporučuje da pauzirate kartice koje usporavaju pregledač}few{Chromium preporučuje da pauzirate kartice koje usporavaju pregledač}other{Chromium preporučuje da pauzirate kartice koje usporavaju pregledač}}</translation>

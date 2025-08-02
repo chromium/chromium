@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="1523567067736644845">I-unlock para ipakita ang password</translation>
 <translation id="1524563461097350801">Hindi, Salamat na lang</translation>
+<translation id="1528290585275339320">I-on ang pag-share ng content ng page</translation>
 <translation id="1531038290222364269">Ipakita ang mga tab</translation>
 <translation id="1536390784834419204">Isalin ang page</translation>
 <translation id="1540800554400757039">Address 1</translation>
@@ -1045,6 +1046,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5128788795241319992">I-explore ang bagong menu</translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
 <translation id="5141363746588976328">I-hide ang card na mga pagbaba ng presyo sa iyong mga tab</translation>
+<translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Umalis sa tab switcher</translation>
 <translation id="5148717509369231739">Pag-import mula sa Safari</translation>
 <translation id="5157638238828697074">Nagkaproblema. Hindi mabuksan ang application.</translation>
@@ -1974,6 +1976,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8637431369725868556">Makakuha ng proteksyon laban sa mga mapanganib na site.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Walang nakompromisong password}=1{{COUNT} nakompromisong password}one{{COUNT} nakompromisong password}other{{COUNT} na nakompromisong password}}</translation>
 <translation id="8643403533759285912">I-delete ang Grupo</translation>
+<translation id="8645245178269185266">I-share ang content ng page sa Gemini para makakuha ng mga mas nauugnay na sagot</translation>
 <translation id="8647280737650867362">Hindi maihinto ang pagsubaybay sa presyo.</translation>
 <translation id="8654802032646794042">Kanselahin</translation>
 <translation id="8660600697590740984">Larawang kinopya gamit ang Lens</translation>

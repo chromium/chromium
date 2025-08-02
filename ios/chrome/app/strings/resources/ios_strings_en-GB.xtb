@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Active today</translation>
 <translation id="1523567067736644845">Unlock to show password</translation>
 <translation id="1524563461097350801">No, thanks</translation>
+<translation id="1528290585275339320">Turn on page content sharing</translation>
 <translation id="1531038290222364269">Show tabs</translation>
 <translation id="1536390784834419204">Translate page</translation>
 <translation id="1540800554400757039">Address 1</translation>
@@ -1045,6 +1046,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5128788795241319992">Explore the new menu</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
 <translation id="5141363746588976328">Hide price drops on your tabs card</translation>
+<translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Leave Tab Switcher</translation>
 <translation id="5148717509369231739">Safari import</translation>
 <translation id="5157638238828697074">Something went wrong. The application couldn’t be opened.</translation>
@@ -1974,6 +1976,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="8643403533759285912">Delete group</translation>
+<translation id="8645245178269185266">Share page content with Gemini to get more relevant answers</translation>
 <translation id="8647280737650867362">Couldn't untrack the price.</translation>
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8660600697590740984">Lens copied image</translation>

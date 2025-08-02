@@ -557,6 +557,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1927439846988093361">Hiustenhoito</translation>
 <translation id="1935353813610900265">Lähetä palautetta tekoälyä hyödyntävästä historiahausta</translation>
 <translation id="1935995810530254458">Kopioi silti</translation>
+<translation id="1938580037092872316">Lisää uusia tietoja tallennettuun osoitteeseen</translation>
 <translation id="1939059826036755332">Automaattinen pikkuruutu</translation>
 <translation id="1939175642807587452">Saa pyytää lupaa ilmoitusten lähettämiseen</translation>
 <translation id="1940441167050915935">Poista tallennetut turvakoodit</translation>
@@ -3543,6 +3544,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6935082727755903526">Kirjanpidon ja rahoitusalan työpaikat</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="6936976777388162184">Tämä on laite kuuluu pakettiin, eikä sitä voi rekisteröidä Kiosk &amp; Signage Upgradeen.</translation>
+<translation id="6942444979237658241">Kommentit: <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strategiapelit</translation>
 <translation id="6944692733090228304">Kirjoitit salasanan sivustolle, jota <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ei ylläpidä. Älä käytä samaa salasanaa muissa sovelluksissa tai muilla sivustoilla tilisi turvallisuuden vuoksi.</translation>
 <translation id="6946949206576443118">Hae verkosta Chromella</translation>
@@ -4002,6 +4004,7 @@ Lisätietoja:
 <translation id="7668654391829183341">Tuntematon laite</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Luottamukselliseen dataan liittyvät tapahtumat (1 tapahtuma kirjautumisen jälkeen). <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" />}other{Luottamukselliseen dataan liittyvät tapahtumat (# tapahtumaa kirjautumisen jälkeen). <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Google-tilisi (<ph name="USER_EMAIL" />) tiedot voivat auttaa sinua täyttämään lomakkeita nopeammin Chromessa</translation>
 <translation id="7673278391011283842">Postilaatikko 6</translation>
 <translation id="7675325315208090829">Muuta maksutapoja…</translation>
 <translation id="767550629621587224">Esileikatut sarkaimet</translation>
@@ -4269,6 +4272,7 @@ Lisätietoja:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Luotu 1 kuukausi sitten}other{Luotu {NUM_MONTHS} kuukautta sitten}}</translation>
 <translation id="8148608574971654810">PDF-versio:</translation>
 <translation id="8149426793427495338">Tietokoneesi siirtyi virransäästötilaan.</translation>
+<translation id="815036624016370447">Google-tilisi (<ph name="ACCOUNT" />) tiedot voivat auttaa sinua täyttämään lomakkeita nopeammin Chromessa</translation>
 <translation id="8150722005171944719">Tiedosto osoitteessa <ph name="URL" /> ei ole luettavissa. Se on voitu poistaa tai siirtää, tai tiedoston käyttöluvat voivat estää sen käytön.</translation>
 <translation id="8151185429379586178">Kehittäjän työkalut</translation>
 <translation id="8153865548451212769">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tämän tiedoston lataamista tänne: <ph name="DESTINATION_NAME" />}other{Järjestelmänvalvojakäytännössä ei suositella näiden tiedostojen lataamista tänne: <ph name="DESTINATION_NAME" />}}</translation>

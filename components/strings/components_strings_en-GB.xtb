@@ -557,6 +557,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1927439846988093361">Hair care</translation>
 <translation id="1935353813610900265">Send feedback for history search powered by AI</translation>
 <translation id="1935995810530254458">Copy anyway</translation>
+<translation id="1938580037092872316">Add new info to saved address</translation>
 <translation id="1939059826036755332">Automatic picture-in-picture</translation>
 <translation id="1939175642807587452">Can ask to send notifications</translation>
 <translation id="1940441167050915935">Delete saved security codes</translation>
@@ -657,6 +658,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2102495993840063010">Android apps</translation>
 <translation id="2102519472192754194">Web browsers</translation>
 <translation id="2103210856015238101">Loyalty cards available to be filled on touch opened at full height.</translation>
+<translation id="2104739941682874393">Enhanced autofill understands forms better and can autofill them faster for you</translation>
 <translation id="2105838220373099643">Role-playing games</translation>
 <translation id="2107021941795971877">Print supports</translation>
 <translation id="2108755909498034140">Restart your computer</translation>
@@ -1527,6 +1529,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3570079787344939099">Scrolling and zooming</translation>
 <translation id="357244642999988503">Remove column</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Add new info to address</translation>
 <translation id="3575121482199441727">Allow for this site</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3575589330755445706">Street name option selected</translation>
@@ -2426,6 +2429,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5052517576853118371">Active topics</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
 <translation id="505757197798929356">Provide reason for opening (required)</translation>
+<translation id="5058282932481719070">learn more about enhanced autofill in settings</translation>
 <translation id="5060419232449737386">Caption settings</translation>
 <translation id="5060483733937416656">You chose to verify with Windows Hello on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Did you mean <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3031,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6062937464449575061">Untrack price</translation>
 <translation id="6063415549109819824">Home financing</translation>
 <translation id="6070432475334343308">One or more files were not uploaded to <ph name="FOLDER_NAME" /> on <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Content bookmark parser service</translation>
 <translation id="6078069862923723141">Cyan 2</translation>
 <translation id="6085149458302186532">Labels (coloured)</translation>
 <translation id="6087312102907839798">Related searches</translation>
@@ -3538,6 +3543,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6935082727755903526">Accounting and Finance Jobs</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="6936976777388162184">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>
+<translation id="6942444979237658241">Comments – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strategy games</translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
 <translation id="6946949206576443118">Search the web in Chrome</translation>
@@ -3550,6 +3556,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="695140971690006676">Reset all</translation>
 <translation id="6954049078461159956">Hockey</translation>
 <translation id="695582302419398462">Cardboard (double wall)</translation>
+<translation id="6957153644870901611">Turn on enhanced autofill to automatically fill more fields</translation>
 <translation id="6957887021205513506">The server's certificate appears to be a forgery.</translation>
 <translation id="6958564499836457428">Manage Google privacy settings in your Google Account</translation>
 <translation id="6961844873822989059">Can ask to use fonts installed on your device</translation>
@@ -3996,6 +4003,7 @@ Additional details:
 <translation id="7668654391829183341">Unknown device</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> of <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Actions taken with data flagged as confidential (1 action since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}other{Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Info from your Google Account <ph name="USER_EMAIL" /> can help you fill in forms faster in Chrome</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7675325315208090829">Manage payment methods…</translation>
 <translation id="767550629621587224">Pre-cut tabs</translation>
@@ -4128,6 +4136,7 @@ Additional details:
 <translation id="7908648876066812348">Turning on virtual card</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to go to Chrome safety check page in settings</translation>
 <translation id="791107458486222637">Redoing result</translation>
+<translation id="7912924955815015552">Imported from Safari</translation>
 <translation id="791551905239004656">Drawing and colouring</translation>
 <translation id="7916162853251942238">Flexo base</translation>
 <translation id="791698251820376781">Your organisation doesn't allow you to sign in</translation>
@@ -4262,6 +4271,7 @@ Additional details:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Created 1 month ago}other{Created {NUM_MONTHS} months ago}}</translation>
 <translation id="8148608574971654810">PDF version:</translation>
 <translation id="8149426793427495338">Your computer went to sleep.</translation>
+<translation id="815036624016370447">Info from your Google Account <ph name="ACCOUNT" /> can help you fill in forms faster in Chrome</translation>
 <translation id="8150722005171944719">The file at <ph name="URL" /> is not readable.  It may have been removed, moved or file permissions may be preventing access.</translation>
 <translation id="8151185429379586178">Developer tools</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend downloading these files to <ph name="DESTINATION_NAME" />}}</translation>

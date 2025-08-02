@@ -313,6 +313,7 @@
 <translation id="4747730611090640388">Chrome có thể ước đoán mối quan tâm của bạn.  Sau đó, trang web mà bạn truy cập có thể đề nghị Chrome cho biết mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
 <translation id="475321580758063259">Cập nhật Chrome để tiếp tục sử dụng dữ liệu Chrome trong Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Tăng tốc độ tải trang web bằng công cụ V8 của Chrome nhưng làm giảm khả năng chống lại các cuộc tấn công của Chrome</translation>
 <translation id="479167709087336770">Dịch vụ này sử dụng cùng một trình kiểm tra chính tả dùng trong Google Tìm kiếm. Thông tin bạn nhập vào trình duyệt sẽ được gửi tới Google. Bạn luôn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="4793679854893018356">Tìm hiểu cách Chrome bảo vệ bạn</translation>
 <translation id="4828579605166583682">Google Chrome đang cố gắng thay thế các mật khẩu hiện tại. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
@@ -596,6 +597,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8342675569599923794">Tệp này nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="8349094670477064572">Bạn sẽ lưu và sử dụng mật khẩu cùng nhiều nội dung khác trong Tài khoản Google mỗi khi đăng nhập vào Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Dịch sang</translation>
+<translation id="8366770919198174997">Làm giảm hiệu suất nhưng giúp Chrome tăng khả năng chống lại các cuộc tấn công</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="8387459386171870978">Tiếp tục sử dụng Chrome</translation>
 <translation id="8394720698884623075">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome</translation>

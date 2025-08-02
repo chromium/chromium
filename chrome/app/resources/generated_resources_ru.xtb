@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">Тип бумаги</translation>
 <translation id="1143142264369994168">Подписчик сертификата</translation>
 <translation id="1145593918056169051">Сбой в работе принтера</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Расширения}=1{{SELECTED_ITEMS} расширение}one{{SELECTED_ITEMS} расширение}few{{SELECTED_ITEMS} расширения}many{{SELECTED_ITEMS} расширений}other{{SELECTED_ITEMS} расширения}}</translation>
 <translation id="114715166554490743">Управление головой</translation>
 <translation id="114721135501989771">Интеллектуальные функции Google в Chrome</translation>
 <translation id="1147322039136785890">Передайте устройство пользователю <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -738,6 +739,7 @@
 <translation id="150411034776756821">Удалить <ph name="SITE" /></translation>
 <translation id="1504551620756424144">В Windows общие папки находятся здесь: <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">экспортировать пароли</translation>
+<translation id="1505654899813338756">Вы можете объединять вкладки в группы, чтобы хранить связанные страницы вместе и синхронизировать их между устройствами.</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
 <translation id="1506187449813838456">Повысить тон</translation>
 <translation id="1507170440449692343">Доступ к вашей камере для этой страницы заблокирован.</translation>
@@ -5308,6 +5310,7 @@
 <translation id="4681930562518940301">Открыть оригинальное изображение в новой вкладке</translation>
 <translation id="4682481611456523884">Страницы, с которых на этот сайт встроен контент, не могут использовать сохраненную информацию о вас</translation>
 <translation id="4682807230647698604">Данные будут передаваться в Google и использоваться для работы функций ИИ.</translation>
+<translation id="4683143253481759090">Chrome обновлен.</translation>
 <translation id="4683629100208651599">Заменить на строчные</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (по умолчанию)</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
@@ -9211,6 +9214,7 @@
 <translation id="7481312909269577407">Вперед</translation>
 <translation id="7481358317100446445">Готово</translation>
 <translation id="748138892655239008">Базовые ограничения сертификата</translation>
+<translation id="7482823403440483089">Улучшенное автозаполнение</translation>
 <translation id="7483732342458943943">Ссылка не работает</translation>
 <translation id="7484645889979462775">Никогда для этого сайта</translation>
 <translation id="7484943269191249363">Вы сможете использовать на этом устройстве все ключи доступа, сохраненные в Google Менеджере паролей. Подтвердить личность нужно только один раз.</translation>

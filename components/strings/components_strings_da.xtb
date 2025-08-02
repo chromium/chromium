@@ -557,6 +557,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1927439846988093361">Hårpleje</translation>
 <translation id="1935353813610900265">Send feedback om søgning i historikken, som er baseret på AI</translation>
 <translation id="1935995810530254458">Kopiér alligevel</translation>
+<translation id="1938580037092872316">Føj nye oplysninger til den gemte adresse</translation>
 <translation id="1939059826036755332">Automatisk integreret billede</translation>
 <translation id="1939175642807587452">Websitet kan anmode om tilladelse til at sende notifikationer</translation>
 <translation id="1940441167050915935">Slet gemte sikkerhedskoder</translation>
@@ -657,6 +658,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2102519472192754194">Webbrowsere</translation>
 <translation id="2103210856015238101">Loyalitetskort, der kan udfyldes ved berøring, er åbnet i fuld højde.</translation>
+<translation id="2104739941682874393">Forbedret autofyld forstår formularer bedre og kan udfylde dem hurtigere for dig</translation>
 <translation id="2105838220373099643">Rollespil</translation>
 <translation id="2107021941795971877">Understøttelse til udskrivning</translation>
 <translation id="2108755909498034140">Genstart computeren</translation>
@@ -1527,6 +1529,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3570079787344939099">Rulning og zoom</translation>
 <translation id="357244642999988503">Fjern kolonne</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Føj nye oplysninger til adressen</translation>
 <translation id="3575121482199441727">Tillad for dette website</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Valgmuligheden for gadenavn blev valgt</translation>
@@ -2426,6 +2429,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5052517576853118371">Aktive emner</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}one{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}other{Hvis du vil sende disse filer ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}}</translation>
 <translation id="505757197798929356">Angiv årsag til åbning (påkrævet)</translation>
+<translation id="5058282932481719070">få flere oplysninger om forbedret autofyld i indstillingerne</translation>
 <translation id="5060419232449737386">Indstillinger for undertekster</translation>
 <translation id="5060483733937416656">Du har valgt at verificere med Windows Hello på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3031,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6062937464449575061">Hold ikke længere øje med prisen</translation>
 <translation id="6063415549109819824">Husfinansiering</translation>
 <translation id="6070432475334343308">En eller flere filer blev ikke uploadet til <ph name="FOLDER_NAME" /> i <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Parsingtjeneste til indholdsbogmærker</translation>
 <translation id="6078069862923723141">Cyan 2</translation>
 <translation id="6085149458302186532">Etiketter (farvede)</translation>
 <translation id="6087312102907839798">Relaterede søgninger</translation>
@@ -3538,6 +3543,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6935082727755903526">Jobs inden for regnskab og finans</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Nogle websites indlæses muligvis langsommere, næste gang du besøger dem.</translation>
 <translation id="6936976777388162184">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage-opgraderingen.</translation>
+<translation id="6942444979237658241">Kommentarer – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strategispil</translation>
 <translation id="6944692733090228304">Du indtastede din adgangskode på et website, der ikke administreres af <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Du kan beskytte din konto ved at undgå at bruge din adgangskode i andre apps og på andre websites.</translation>
 <translation id="6946949206576443118">Søg på nettet i Chrome</translation>
@@ -3550,6 +3556,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="695140971690006676">Nulstil alle</translation>
 <translation id="6954049078461159956">Hockey</translation>
 <translation id="695582302419398462">Pap (med dobbelt væg)</translation>
+<translation id="6957153644870901611">Aktivér forbedret autofyld for at få udfyldt flere felter automatisk</translation>
 <translation id="6957887021205513506">Serverens certifikat ser ud til at være en forfalskning.</translation>
 <translation id="6958564499836457428">Administrer privatlivsindstillingerne på din Google-konto</translation>
 <translation id="6961844873822989059">Websitet kan anmode om tilladelse til at bruge de skrifttyper, der er installeret på din enhed</translation>
@@ -3996,6 +4003,7 @@ Yderligere oplysninger:
 <translation id="7668654391829183341">Ukendt enhed</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> af <ph name="ITEMS_TOTAL" /></translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Handlinger, som er foretaget i forbindelse med data, der er rapporteret som fortrolige (1 handling siden login). <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />}one{Handlinger, som er foretaget i forbindelse med data, der er rapporteret som fortrolige (# handling siden login). <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />}other{Handlinger, som er foretaget i forbindelse med data, der er rapporteret som fortrolige (# handlinger siden login). <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Oplysninger fra din Google-konto <ph name="USER_EMAIL" /> kan hjælpe dig med at udfylde formularer hurtigere i Chrome</translation>
 <translation id="7673278391011283842">Postkasse 6</translation>
 <translation id="7675325315208090829">Administrer betalingsmetoder…</translation>
 <translation id="767550629621587224">Forskårne faner</translation>
@@ -4128,6 +4136,7 @@ Yderligere oplysninger:
 <translation id="7908648876066812348">Aktiverer virtuelt kort</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at gå til siden for Chromes sikkerhedstjek i indstillingerne</translation>
 <translation id="791107458486222637">Annullerer fortrydelse af resultat</translation>
+<translation id="7912924955815015552">Importeret fra Safari</translation>
 <translation id="791551905239004656">Tegning og farvelægning</translation>
 <translation id="7916162853251942238">Flexo-base</translation>
 <translation id="791698251820376781">Din organisation tillader ikke, at du logger ind</translation>
@@ -4262,6 +4271,7 @@ Yderligere oplysninger:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Oprettet for 1 måned siden}one{Oprettet for {NUM_MONTHS} måned siden}other{Oprettet for {NUM_MONTHS} måneder siden}}</translation>
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Din computer gik i dvale.</translation>
+<translation id="815036624016370447">Oplysninger fra din Google-konto <ph name="ACCOUNT" /> kan hjælpe dig med at udfylde formularer hurtigere i Chrome</translation>
 <translation id="8150722005171944719">Filen i <ph name="URL" /> kan ikke læses. Den kan være blevet fjernet, flyttet, eller også forhindrer filtilladelser muligvis adgangen.</translation>
 <translation id="8151185429379586178">Udviklerværktøjer</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administratorpolitikken fraråder at downloade denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at download denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at download disse filer til <ph name="DESTINATION_NAME" />}}</translation>

@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">امروز فعال بود</translation>
 <translation id="1523567067736644845">برای نمایش گذرواژه، قفل را باز کنید</translation>
 <translation id="1524563461097350801">نه، متشکرم</translation>
+<translation id="1528290585275339320">«هم‌رسانی محتوای صفحه» را روشن کنید</translation>
 <translation id="1531038290222364269">نشان دادن برگه‌ها</translation>
 <translation id="1536390784834419204">ترجمه صفحه</translation>
 <translation id="1540800554400757039">آدرس ۱</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">کاوش کردن منو جدید</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="5141363746588976328">پنهان کردن کارت «کاهش قیمت در برگه‌ها»</translation>
+<translation id="514154868070499296">قلم: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ترک کردن «تعویض‌کننده برگه»</translation>
 <translation id="5148717509369231739">‏درون‌بُرد Safari</translation>
 <translation id="5157638238828697074">مشکلی پیش آمد. برنامه باز نشد.</translation>
@@ -1974,6 +1976,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8637431369725868556">از خودتان دربرابر سایت‌های خطرناک محافظت کنید.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="8643403533759285912">حذف گروه</translation>
+<translation id="8645245178269185266">‏محتوای صفحه را با Gemini هم‌رسانی کنید تا پاسخ‌های مربوط‌تری دریافت کنید</translation>
 <translation id="8647280737650867362">پیگیری قیمت لغو نشد.</translation>
 <translation id="8654802032646794042">لغو</translation>
 <translation id="8660600697590740984">جستجوی تصویر کپی‌شده با «لنز»</translation>

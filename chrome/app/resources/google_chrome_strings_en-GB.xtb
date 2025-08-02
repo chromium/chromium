@@ -86,6 +86,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2091012649849228750">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex terms</translation>
 <translation id="2094919256425865063">Quit Chrome anyway?</translation>
+<translation id="2096213354152647998">You haven't visited recently. Chrome removed <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Disable Chrome running in background for apps</translation>
 <translation id="2120620239521071941">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
@@ -463,6 +464,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6696915334902295848">Chrome needs microphone permission for this site</translation>
 <translation id="6712881677154121168">Download error: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Make Chrome faster</translation>
+<translation id="6734827584173583205">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more.</translation>
 <translation id="6735387454586646204">Chrome OS Flex system</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
 <translation id="6760235774835597023">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is on.</translation>
@@ -488,6 +490,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation stopped.</translation>
 <translation id="7025800014283535195">You can switch between Chrome profiles here</translation>
+<translation id="7051685429025310665">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Make Chrome your own</translation>
 <translation id="7060643578009939353">Search this video with Google Lens</translation>
 <translation id="7071827361006050863">Chrome will soon delete browsing data</translation>
@@ -549,6 +552,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="77283119132245232">Provides system tracing services for <ph name="BROWSER_NAME" />. If this service is disabled, performance traces created by the browser will not include system-wide events, such as context switch and ready thread events.</translation>
 <translation id="7736869414036750079">Your organisation requires you to sign in to Chrome</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
+<translation id="7748969056734910029">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="778331955594035129">Chrome needs location permission for this site</translation>

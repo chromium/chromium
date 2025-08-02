@@ -84,6 +84,7 @@
 <translation id="2091012649849228750">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex noteikumi</translation>
 <translation id="2094919256425865063">Vai tik un tā aizvērt pārlūku Chrome?</translation>
+<translation id="2096213354152647998">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chrome tika noņemta šāda atļauja: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2108778574543343055">Atspējot Chrome darbību fonā lietotnēm</translation>
 <translation id="2120620239521071941">Veicot šo darbību, no šīs ierīces tiks dzēsts(-i) <ph name="ITEMS_COUNT" /> vienums(-i). Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chrome kā <ph name="USER_EMAIL" />.</translation>
@@ -458,6 +459,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6696915334902295848">Pārlūkam Chrome ir nepieciešama atļauja izmantot mikrofonu šajā vietnē.</translation>
 <translation id="6712881677154121168">Lejupielādes kļūda: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Pārlūka Chrome darbības paātrināšana</translation>
+<translation id="6734827584173583205">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chrome tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="COUNT" />.</translation>
 <translation id="6735387454586646204">Chrome OS Flex sistēma</translation>
 <translation id="6750954913813541382">Lai labotu pareizrakstības kļūdas, Chrome nosūta jūsu pārlūkprogrammā ievadīto tekstu Google serveriem</translation>
 <translation id="6760235774835597023">Paātrina vietņu darbību, izmantojot Chrome programmu V8, bet nedaudz samazina Chrome izturību pret uzbrukumiem. Šis iestatījums ir ieslēgts.</translation>
@@ -483,6 +485,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7024536598735240744">Atpakošanas kļūda: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalēšana apturēta.</translation>
 <translation id="7025800014283535195">Šeit varat pārslēgties starp Chrome profiliem.</translation>
+<translation id="7051685429025310665">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chrome tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Pielāgojiet pārlūku Chrome savām vajadzībām</translation>
 <translation id="7060643578009939353">Meklēt šo videoklipu, izmantojot Google Lens</translation>
 <translation id="7071827361006050863">Pārlūkā Chrome drīz tiks dzēsti pārlūkošanas dati</translation>
@@ -544,6 +547,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="77283119132245232">Nodrošina sistēmas izsekošanas pakalpojumus pārlūkā <ph name="BROWSER_NAME" />. Ja šis pakalpojums ir atspējots, pārlūka izveidotajos veiktspējas izsekošanas datos netiek ietverti sistēmas līmeņa notikumi, piemēram, konteksta maiņas un pavedienu gatavības notikumi.</translation>
 <translation id="7736869414036750079">Saskaņā ar jūsu organizācijas politiku jums ir jāpierakstās pārlūkā Chrome.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
+<translation id="7748969056734910029">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chrome tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Noklikšķiniet uz sava vārda, lai atvērtu pārlūku Chrome un sāktu pārlūkošanu.</translation>
 <translation id="7777080907402804672">Ja attēlam nav vērtīga apraksta, pārlūks Chrome mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google. Jebkurā brīdī iestatījumos varat izslēgt šo iespēju.</translation>
 <translation id="778331955594035129">Pārlūkam Chrome ir nepieciešama atrašanās vietas atļauja šai vietnei.</translation>

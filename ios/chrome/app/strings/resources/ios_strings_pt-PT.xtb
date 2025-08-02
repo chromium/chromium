@@ -165,7 +165,6 @@
 <translation id="1612754831519568745">A Navegação Segura está atualmente desativada. Proteja-se contra transferências, extensões e sites perigosos.</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1622717322707146952">Selecione "Adicionar ao Calendário Google" ou "Adicionar ao Calendário Apple".</translation>
-<translation id="1625502944725673937">Não foi possível importar o ficheiro</translation>
 <translation id="1629162218487290695">Validar a sua identidade…</translation>
 <translation id="1636234353664774105">Receba direções para o seu destino com as orientações passo a passo da funcionalidade de navegação</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
@@ -303,6 +302,7 @@
 <translation id="2120553909046681540">A sua organização desativou a navegação anónima.</translation>
 <translation id="2122754583996902531">O seu navegador é gerido. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Os chats da sua organização não são usados para melhorar os nossos modelos. O Gemini pode apresentar informações incorretas, inclusive sobre pessoas, por isso, verifique-as. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">As seguintes palavras-passe não foram importadas para o Gestor de Palavras-passe da Google porque não correspondem aos requisitos.</translation>
 <translation id="2139867232736819575">Pesquisar o texto que copiou</translation>
 <translation id="2147127444698817042">Disponível apenas no iPhone</translation>
 <translation id="2148799636999124959">Inicie sessão rapidamente em sites e apps com as suas palavras-passe guardadas.</translation>
@@ -573,6 +573,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3213807041830307252">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos.</translation>
 <translation id="3214379938835224220">Como parte da reposição do iPad, a sua sessão foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
 <translation id="3218296450292600703">Iniciar sessão com a sua conta gerida ajuda a manter a navegação relacionada com a sua organização (incluindo separadores, histórico e palavras-passe) separada da restante navegação</translation>
+<translation id="3219075100684645795">App do navegador</translation>
 <translation id="3224075676564434205">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado de todos os dispositivos com sessão iniciada com o endereço <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Para exportar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="3227137524299004712">Microfone</translation>
@@ -903,6 +904,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4621768135601674446">Abrir opções do Modo de leitura</translation>
 <translation id="4624080227980645783">Nova janela de navegação anónima</translation>
 <translation id="4627107755957573804">Permitir que os sites e as apps atualizem as contas existentes para usarem chaves de acesso</translation>
+<translation id="4629065796475200039">A sua palavra-passe não foi importada</translation>
 <translation id="4630212057753624203">Balão de amostra</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> palavras-passe reutilizadas</translation>
 <translation id="4631890462758052414">Novo separador de navegação anónima</translation>
@@ -1508,6 +1510,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6790502149545262384">Em breve, vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
 <translation id="6791425686608802741">Toque em "Adicionar separador a novo grupo"</translation>
 <translation id="6794476726485507147">Escolha uma data e uma hora para receber uma notificação de lembrete para consultar esta página novamente</translation>
+<translation id="6795481620482106033">Dados inválidos</translation>
 <translation id="6807287147325542056">Palavras-passe noutras apps</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcador guardado na sua Conta Google, {email}}other{{count} marcadores guardados na sua Conta Google, {email}}}</translation>
@@ -1565,7 +1568,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tem 1 palavra-passe fraca. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="7016958933495968912">Opções para o Discover</translation>
-<translation id="7017863468226238797">Este ficheiro está vazio ou contém dados no formato incorreto</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7035825883570480307">Ativar as notificações?</translation>
 <translation id="7039345315346323556">Recentes</translation>

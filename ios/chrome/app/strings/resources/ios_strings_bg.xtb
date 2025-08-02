@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Активно днес</translation>
 <translation id="1523567067736644845">Отключете, за да видите паролата</translation>
 <translation id="1524563461097350801">Не, благодаря</translation>
+<translation id="1528290585275339320">Включване на споделянето на съдържанието на страниците</translation>
 <translation id="1531038290222364269">Показване на разделите</translation>
 <translation id="1536390784834419204">Превод на страницата</translation>
 <translation id="1540800554400757039">Адрес 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">Разглеждане на новото меню</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
 <translation id="5141363746588976328">Скриване на картата за понижения на цените в разделите</translation>
+<translation id="514154868070499296">Шрифт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Излизане от превключвателя на раздели</translation>
 <translation id="5148717509369231739">Импортиране от Safari</translation>
 <translation id="5157638238828697074">Нещо се обърка. Приложението не се отвори.</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8637431369725868556">Получете защита срещу опасни сайтове.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Няма компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="8643403533759285912">Изтриване на групата</translation>
+<translation id="8645245178269185266">Споделяйте съдържанието на страниците с Gemini, за да получавате по-уместни отговори</translation>
 <translation id="8647280737650867362">Спирането на проследяването на цената не бе успешно.</translation>
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8660600697590740984">Търсене с Обектив на копираното изображение</translation>

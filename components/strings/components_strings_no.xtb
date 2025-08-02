@@ -557,6 +557,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1927439846988093361">Hårpleie</translation>
 <translation id="1935353813610900265">Send tilbakemelding om AI-basert loggsøk</translation>
 <translation id="1935995810530254458">Kopier likevel</translation>
+<translation id="1938580037092872316">Legg til ny informasjon i den lagrede adressen</translation>
 <translation id="1939059826036755332">Automatisk bilde-i-bilde</translation>
 <translation id="1939175642807587452">Kan be om å få sende varsler</translation>
 <translation id="1940441167050915935">Slett lagrede sikkerhetskoder</translation>
@@ -657,6 +658,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2102495993840063010">Android-apper</translation>
 <translation id="2102519472192754194">Nettlesere</translation>
 <translation id="2103210856015238101">Stamkundekort som kan fylles ut ved berøring, åpnes i full høyde.</translation>
+<translation id="2104739941682874393">Forbedret autofyll forstår skjemaer bedre og kan autofylle dem raskere for deg</translation>
 <translation id="2105838220373099643">Rollespill</translation>
 <translation id="2107021941795971877">Utskriftsstøtter</translation>
 <translation id="2108755909498034140">Start datamaskinen på nytt.</translation>
@@ -2427,6 +2429,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5052517576853118371">Aktive emner</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="505757197798929356">Oppgi årsaken til åpningen (obligatorisk)</translation>
+<translation id="5058282932481719070">finn ut mer om utvidet autofyll i innstillingene</translation>
 <translation id="5060419232449737386">Innstillinger for teksting</translation>
 <translation id="5060483733937416656">Du har valgt å bekrefte med Windows Hello på nettsteder som bruker <ph name="PROVIDER_ORIGIN" />. Denne leverandøren kan ha lagret informasjon om betalingsmåten din, som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3028,6 +3031,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6062937464449575061">Slutt å spore pris</translation>
 <translation id="6063415549109819824">Boligfinansiering</translation>
 <translation id="6070432475334343308">En eller flere filer ble ikke lastet opp til <ph name="FOLDER_NAME" /> i <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Tjeneste for parsing av innholdsbokmerker</translation>
 <translation id="6078069862923723141">Turkis 2</translation>
 <translation id="6085149458302186532">Etiketter (farget)</translation>
 <translation id="6087312102907839798">Relaterte søk</translation>
@@ -3539,6 +3543,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6935082727755903526">Regnskaps- og finansjobber</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Det kan hende at enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="6936976777388162184">Dette er en pakkeenhet og kan ikke registreres med Kiosk- og skiltoppgradering.</translation>
+<translation id="6942444979237658241">Kommentarer – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strategispill</translation>
 <translation id="6944692733090228304">Du har skrevet inn passordet ditt på et nettsted som ikke administreres av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. For å beskytte kontoen din må du ikke bruke det samme passordet i andre apper eller på andre nettsteder.</translation>
 <translation id="6946949206576443118">Søk på nettet i Chrome</translation>
@@ -3551,6 +3556,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="695140971690006676">Tilbakestill alle</translation>
 <translation id="6954049078461159956">Hockey</translation>
 <translation id="695582302419398462">Kartong (dobbeltvegg)</translation>
+<translation id="6957153644870901611">Slå på utvidet autofyll for å fylle ut flere felt automatisk</translation>
 <translation id="6957887021205513506">Tjenersertifikatet ser ut til å være forfalsket.</translation>
 <translation id="6958564499836457428">Administrer Google-personverninnstillinger i Google-kontoen din</translation>
 <translation id="6961844873822989059">Kan be om å få bruke skrifttyper som er installert på enheten</translation>
@@ -3996,6 +4002,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7668654391829183341">Ukjent enhet</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> av <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Handlinger som utføres med data som er merket som konfidensielle (1 handling siden pålogging). <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" />}other{Handlinger som utføres med data som er merket som konfidensielle (# handlinger siden pålogging). <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Informasjon fra Google-kontoen din <ph name="USER_EMAIL" /> kan hjelpe deg med å fylle ut skjemaer raskere i Chrome</translation>
 <translation id="7673278391011283842">Postkasse 6</translation>
 <translation id="7675325315208090829">Administrer betalingsmåter…</translation>
 <translation id="767550629621587224">Forhåndsstanset fanepapir</translation>
@@ -4263,6 +4270,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Opprettet for én måned siden}other{Opprettet for {NUM_MONTHS} måneder siden}}</translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>
 <translation id="8149426793427495338">Datamaskinen din gikk inn i hvilemodus.</translation>
+<translation id="815036624016370447">Informasjon fra Google-kontoen din <ph name="ACCOUNT" /> kan hjelpe deg med å fylle ut skjemaer raskere i Chrome</translation>
 <translation id="8150722005171944719">Kunne ikke lese filen på <ph name="URL" /> Den kan ha blitt fjernet eller flyttet. Det kan også være filtillatelser som forhindrer tilgang.</translation>
 <translation id="8151185429379586178">Utviklerverktøy</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administratorreglene anbefaler ikke at du laster ned denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du laster ned disse filene til <ph name="DESTINATION_NAME" />}}</translation>

@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Vandaag actief</translation>
 <translation id="1523567067736644845">Ontgrendel om het wachtwoord te tonen</translation>
 <translation id="1524563461097350801">Nee, bedankt</translation>
+<translation id="1528290585275339320">Zet het delen van paginacontent aan</translation>
 <translation id="1531038290222364269">Tabbladen tonen</translation>
 <translation id="1536390784834419204">Pagina vertalen</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -1045,6 +1046,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5128788795241319992">Het nieuwe menu ontdekken</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5141363746588976328">Kaart Prijsdalingen op je tabbladen verbergen</translation>
+<translation id="514154868070499296">Lettertype: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tabbladschakelaar verlaten</translation>
 <translation id="5148717509369231739">Safari-import</translation>
 <translation id="5157638238828697074">Er is iets misgegaan. De app kan niet worden geopend.</translation>
@@ -1974,6 +1976,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8637431369725868556">Krijg bescherming tegen gevaarlijke sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Geen gehackte wachtwoorden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="8643403533759285912">Groep verwijderen</translation>
+<translation id="8645245178269185266">Deel paginacontent met Gemini om relevantere antwoorden te krijgen</translation>
 <translation id="8647280737650867362">Kan de prijs niet ontvolgen.</translation>
 <translation id="8654802032646794042">Annuleren</translation>
 <translation id="8660600697590740984">Afbeelding gekopieerd door Lens</translation>

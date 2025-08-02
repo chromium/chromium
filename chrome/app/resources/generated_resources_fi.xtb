@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">Paperityyppi</translation>
 <translation id="1143142264369994168">Varmenteen allekirjoittaja</translation>
 <translation id="1145593918056169051">Tulostin on pysähtynyt</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Laajennukset}=1{Laajennukset ({SELECTED_ITEMS})}other{Laajennukset ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Pääosoitin</translation>
 <translation id="114721135501989771">Googlen älykkäitä ratkaisuja Chromeen</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> voi nyt ottaa ohjat</translation>
@@ -736,6 +737,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="150411034776756821">Poista <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Jaettujen kansioiden sijainti Windowsissa: <ph name="BASE_DIR" /></translation>
 <translation id="1505494256539862015">vie salasanat</translation>
+<translation id="1505654899813338756">Voit ryhmitellä välilehtiä sekä pitää toisiinsa liittyvät sivut yhdessä ja tallennettuina kaikilla laitteillasi</translation>
 <translation id="1506061864768559482">Hakukone</translation>
 <translation id="1506187449813838456">Lisää äänenkorkeutta</translation>
 <translation id="1507170440449692343">Tältä sivulta on estetty kameran käyttö.</translation>
@@ -5315,6 +5317,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4681930562518940301">Avaa alkuperäinen &amp;kuva uudessa välilehdessä</translation>
 <translation id="4682481611456523884">Tällä sivustolla oleva upotettu sisältö ei voi käyttää sinusta tallentamiaan tietoja</translation>
 <translation id="4682807230647698604">Kun käytät näitä ominaisuuksia, Googlelle lähetetään dataa tekoälykokemusten luomiseksi</translation>
+<translation id="4683143253481759090">Chrome on päivitetty</translation>
 <translation id="4683629100208651599">Muuta pieniksi kirjaimiksi</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (oletus)</translation>
 <translation id="4684427112815847243">Synkronoi kaikki</translation>

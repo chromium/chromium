@@ -557,6 +557,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1927439846988093361">Njega kose</translation>
 <translation id="1935353813610900265">Pošaljite povratne informacije za pretraživanje povijesti pomoću AI-ja</translation>
 <translation id="1935995810530254458">Ipak kopiraj</translation>
+<translation id="1938580037092872316">Spremljenoj adresi dodajte nove podatke</translation>
 <translation id="1939059826036755332">Automatska slika u slici</translation>
 <translation id="1939175642807587452">Može tražiti dopuštenje za slanje obavijesti</translation>
 <translation id="1940441167050915935">Izbriši spremljene sigurnosne kodove</translation>
@@ -657,6 +658,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2102495993840063010">Android aplikacije</translation>
 <translation id="2102519472192754194">Web-preglednici</translation>
 <translation id="2103210856015238101">Kartice vjernosti dostupne za unos dodirom otvorene su preko cijelog zaslona.</translation>
+<translation id="2104739941682874393">Poboljšano automatsko popunjavanje bolje razumije obrasce i može ih brže automatski popuniti</translation>
 <translation id="2105838220373099643">Igre igranja uloga</translation>
 <translation id="2107021941795971877">Podrška ispisu</translation>
 <translation id="2108755909498034140">Ponovo pokrenite računalo</translation>
@@ -2426,6 +2428,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5052517576853118371">Aktivne teme</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali tu datoteku pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="505757197798929356">Navedite razlog otvaranja (obavezno)</translation>
+<translation id="5058282932481719070">saznajte više o poboljšanom automatskom popunjavanju u postavkama</translation>
 <translation id="5060419232449737386">Postavke titlova</translation>
 <translation id="5060483733937416656">Odabrali ste potvrdu putem značajke Windows Hello na web-lokacijama koje koriste <ph name="PROVIDER_ORIGIN" />. Taj je davatelj usluga možda pohranio podatke o vašem načinu plaćanja za koje možete <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Jeste li mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3030,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6062937464449575061">Poništi praćenje cijene</translation>
 <translation id="6063415549109819824">Osobne financije</translation>
 <translation id="6070432475334343308">Jedna datoteka ili više njih nije prenesena u mapu <ph name="FOLDER_NAME" /> na usluzi <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Usluga raščlanjivača sintakse oznaka sadržaja</translation>
 <translation id="6078069862923723141">Cijan 2</translation>
 <translation id="6085149458302186532">Naljepnice (obojene)</translation>
 <translation id="6087312102907839798">Povezana pretraživanja</translation>
@@ -3538,6 +3542,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6935082727755903526">Računovodstveni i financijski poslovi</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Neke će se web-lokacije možda učitavati sporije prilikom vašeg sljedećeg posjeta.</translation>
 <translation id="6936976777388162184">Ovo je grupirani uređaj i ne može se registrirati za nadogradnju za kiosk i znakovlje.</translation>
+<translation id="6942444979237658241">Komentari – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strateške igre</translation>
 <translation id="6944692733090228304">Unijeli ste zaporku na web-lokaciju kojom ne upravlja <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da biste zaštitili račun, nemojte upotrebljavati tu zaporku za druge aplikacije i web-lokacije.</translation>
 <translation id="6946949206576443118">Pretraživanje weba u Chromeu</translation>
@@ -3550,6 +3555,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="695140971690006676">Vrati sve na zadano</translation>
 <translation id="6954049078461159956">Hokej</translation>
 <translation id="695582302419398462">Karton (dvostruka stijenka)</translation>
+<translation id="6957153644870901611">Uključite poboljšano automatsko popunjavanje da biste automatski ispunili više polja</translation>
 <translation id="6957887021205513506">Certifikat poslužitelja izgleda kao falsifikat.</translation>
 <translation id="6958564499836457428">Upravljajte postavkama privatnosti na Googleu na svojem Google računu</translation>
 <translation id="6961844873822989059">Može tražiti dopuštenje za korištenje fontova instaliranih na vašem uređaju</translation>
@@ -3996,6 +4002,7 @@ Dodatne pojedinosti:
 <translation id="7668654391829183341">Nepoznati uređaj</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Radnje poduzete s podacima koji su označeni kao povjerljivi (jedna radnja od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}one{Radnje poduzete s podacima koji su označeni kao povjerljivi (# radnja od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}few{Radnje poduzete s podacima koji su označeni kao povjerljivi (# radnje od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}other{Radnje poduzete s podacima koji su označeni kao povjerljivi (# radnji od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Pomoću podataka sa svog Google računa <ph name="USER_EMAIL" /> možete brže ispuniti obrasce u Chromeu</translation>
 <translation id="7673278391011283842">Izlazni spremnik s odjeljcima 6</translation>
 <translation id="7675325315208090829">Upravljanje načinima plaćanja...</translation>
 <translation id="767550629621587224">Perforirane kartice</translation>
@@ -4263,6 +4270,7 @@ Dodatne pojedinosti:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Izrađeno prije mjesec dana}one{Izrađeno prije {NUM_MONTHS} mjesec}few{Izrađeno prije {NUM_MONTHS} mjeseca}other{Izrađeno prije {NUM_MONTHS} mjeseci}}</translation>
 <translation id="8148608574971654810">Verzija PDF-a:</translation>
 <translation id="8149426793427495338">Računalo je u stanju mirovanja.</translation>
+<translation id="815036624016370447">Pomoću podataka sa svog Google računa <ph name="ACCOUNT" /> možete brže ispuniti obrasce u Chromeu</translation>
 <translation id="8150722005171944719">Datoteka na adresi <ph name="URL" /> nije čitljiva. Možda je uklonjena ili premještena ili dozvole datoteka sprječavaju pristup.</translation>
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8153865548451212769">{0,plural, =1{Prema pravilima administratora ne preporučuje se preuzimanje te datoteke na: <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se preuzimanje tih datoteka na: <ph name="DESTINATION_NAME" />}}</translation>

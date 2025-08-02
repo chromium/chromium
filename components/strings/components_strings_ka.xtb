@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">თმის მოვლა</translation>
 <translation id="1935353813610900265">ისტორიაში ძიების შესახებ გამოხმაურება შექმნილია AI-ს დახმარებით</translation>
 <translation id="1935995810530254458">მაინც კოპირება</translation>
+<translation id="1938580037092872316">შენახულ მისამართებს ახალი ინფორმაცია დაამატეთ</translation>
 <translation id="1939059826036755332">რეჟიმში „ეკრანი ეკრანში“ ავტომატურად შესვლა</translation>
 <translation id="1939175642807587452">შეუძლია შეტყობინებების გამოგზავნის თხოვნა</translation>
 <translation id="1940441167050915935">უსაფრთხოების შენახული კოდების წაშლა</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Android-ის აპები</translation>
 <translation id="2102519472192754194">ვებ-ბრაუზერები</translation>
 <translation id="2103210856015238101">ერთგული კლიენტის ბარათების შეხებით შევსება შესაძლებელია, მათი სრულად გახსნისას.</translation>
+<translation id="2104739941682874393">გაძლიერებული ავტომატური შევსება ფორმებს უკეთესად იგებს და თქვენთვის მათი ავტომატური შევსება უფრო სწრაფად შეუძლია</translation>
 <translation id="2105838220373099643">როლური თამაშები</translation>
 <translation id="2107021941795971877">ბეჭდვის დამხმარე საშუალებები</translation>
 <translation id="2108755909498034140">თქვენი კომპიუტერის გადატვირთვა</translation>
@@ -1527,6 +1529,7 @@
 <translation id="3570079787344939099">გადაადგილება და მასშტაბირება</translation>
 <translation id="357244642999988503">სვეტის წაშლა</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">დაამატეთ ახალი ინფორმაცია მისამართისთვის</translation>
 <translation id="3575121482199441727">დაშვება ამ საიტისთვის</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">არჩეული იყო ქუჩის სახელი ვარიანტი</translation>
@@ -2426,6 +2429,7 @@
 <translation id="5052517576853118371">აქტიური თემები</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ეს ფაილი მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}other{ეს ფაილები მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}}</translation>
 <translation id="505757197798929356">მიუთითეთ გახსნის მიზეზი (სავალდებულო)</translation>
+<translation id="5058282932481719070">შეიტყვეთ მეტი გაძლიერებული ავტომატური შევსების შესახებ პარამეტრებში</translation>
 <translation id="5060419232449737386">სუბტიტრების პარამეტრები</translation>
 <translation id="5060483733937416656">თქვენ აირჩიეთ Windows Hello-ს მეშვეობით დადასტურება ვებსაიტებზე, რომელთა მიერაც გამოიყენება <ph name="PROVIDER_ORIGIN" />. ამ პროვაიდერს შეიძლებოდა შეენახა ინფორმაცია თქვენი გადახდის მეთოდის შესახებ. სურვილისამებრ, შეგიძლიათ <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ხომ არ იგულისხმეთ?</translation>
@@ -3027,6 +3031,7 @@
 <translation id="6062937464449575061">ფასისთვის თვალის მიდევნების გაუქმება</translation>
 <translation id="6063415549109819824">დაფინანსება სახლისთვის</translation>
 <translation id="6070432475334343308">ერთი ან მეტი ფაილი არ აიტვირთა <ph name="FOLDER_NAME" />-ში, <ph name="CLOUD_PROVIDER" />-ზე</translation>
+<translation id="6071503852498277813">კონტაქტის სანიშნის გარჩევის სერვისი</translation>
 <translation id="6078069862923723141">ცისფერი 2</translation>
 <translation id="6085149458302186532">ლეიბლები (ფერადი)</translation>
 <translation id="6087312102907839798">დაკავშირებული ძიებები</translation>
@@ -3538,6 +3543,7 @@
 <translation id="6935082727755903526">დასაქმება ბუღალტერიისა და ფინანსების სფეროში</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. შესაძლოა, ზოგიერთი საიტი შემდეგ ვიზიტზე უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="6936976777388162184">ეს მოწყობილობა მოწოდებულია ნაკრებში, ამიტომ მოწყობილობა-ჯიხურის ან მიმთითებელი მოწყობილობის სახით მისი რეგისტრაცია ვერ მოხერხდება.</translation>
+<translation id="6942444979237658241">კომენტარები - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">სტრატეგიული თამაშები</translation>
 <translation id="6944692733090228304">თქვენ შეიყვანეთ პაროლი საიტზე, რომელსაც არ მართავს <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. თქვენი ანგარიშის დასაცავად არ გამოიყენოთ იგივე პაროლი სხვა აპებსა და საიტებზე.</translation>
 <translation id="6946949206576443118">ვებში ძიება Chrome-ის მეშვეობით</translation>
@@ -3550,6 +3556,7 @@
 <translation id="695140971690006676">ყველას გადაყენება</translation>
 <translation id="6954049078461159956">ჰოკეი</translation>
 <translation id="695582302419398462">მუყაო (ორშრიანი)</translation>
+<translation id="6957153644870901611">ჩართეთ გაძლიერებული ავტომატური შევსება მეტი ველის ავტომატურად შესავსებად</translation>
 <translation id="6957887021205513506">როგორც ჩანს, სერვერის სერტიფიკატი ყალბია.</translation>
 <translation id="6958564499836457428">თქვენს Google ანგარიშში Google კონფიდენციალურობის პარამეტრების მართვა</translation>
 <translation id="6961844873822989059">შეუძლია თქვენს მოწყობილობაზე არსებული შრიფტების გამოყენების თხოვნა</translation>
@@ -3995,6 +4002,7 @@
 <translation id="7668654391829183341">უცნობი მოწყობილობა</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> / <ph name="ITEMS_TOTAL" />-დან.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{კონფიდენციალურად მონიშნულ მონაცემებთან დაკავშირებით განხორციელებული ქმედებები (შესვლის შემდეგ განხორციელდა 1 ქმედება). <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" />}other{კონფიდენციალურად მონიშნულ მონაცემებთან დაკავშირებით განხორციელებული ქმედებები (შესვლის შემდეგ განხორციელდა # ქმედება). <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">ინფორმაცია თქვენი Google ანგარიშიდან <ph name="USER_EMAIL" /> შეიძლება, Chrome-ში ფორმების უფრო სწრაფად შევსებაში დაგეხმაროთ</translation>
 <translation id="7673278391011283842">საფოსტო ყუთი 6</translation>
 <translation id="7675325315208090829">გადახდის მეთოდების მართვა…</translation>
 <translation id="767550629621587224">წინასწარ ამოჭრილი ჩანართები</translation>
@@ -4127,6 +4135,7 @@
 <translation id="7908648876066812348">მიმდინარეობს ვირტუალური ბარათის გააქტიურება</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, პარამეტრებში Chrome-ის უსაფრთხოების შემოწმების გვერდზე გადასასვლელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="791107458486222637">შედეგების ხელახლა გენერირება</translation>
+<translation id="7912924955815015552">იმპორტირებულია Safari-დან</translation>
 <translation id="791551905239004656">ხატვა და გაფერადება</translation>
 <translation id="7916162853251942238">ფლექსოგრაფიული ბაზა</translation>
 <translation id="791698251820376781">თქვენი ორგანიზაცია არ გაძლევთ შესვლის ნებართვას</translation>
@@ -4261,6 +4270,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{შეიქმნა 1 თვის წინ}other{შეიქმნა {NUM_MONTHS} თვის წინ}}</translation>
 <translation id="8148608574971654810">PDF ვერსია:</translation>
 <translation id="8149426793427495338">თქვენი კომპიუტერი ძილის რეჟიმზე გადავიდა.</translation>
+<translation id="815036624016370447">ინფორმაცია თქვენი Google ანგარიშიდან <ph name="ACCOUNT" /> შეიძლება, Chrome-ში ფორმების უფრო სწრაფად შევსებაში დაგეხმაროთ</translation>
 <translation id="8150722005171944719">ფაილი <ph name="URL" />-ზე არაწაკითხვადია. შესაძლოა, იგი წაშლილი ან გადატანილი იქნა, ან წვდომა აკრძალულია ნებართვების გამო.</translation>
 <translation id="8151185429379586178">დეველოპერის ხელსაწყოები</translation>
 <translation id="8153865548451212769">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ზე ჩამოტვირთვა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ზე ჩამოტვირთვა რეკომენდებული არ არის}}</translation>

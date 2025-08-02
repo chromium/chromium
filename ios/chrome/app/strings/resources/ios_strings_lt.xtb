@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktyvus šiandien</translation>
 <translation id="1523567067736644845">Atrakinkite, kad būtų rodomas slaptažodis</translation>
 <translation id="1524563461097350801">Ačiū, ne</translation>
+<translation id="1528290585275339320">Įjunkite puslapio turinio bendrinimą</translation>
 <translation id="1531038290222364269">Rodyti skirtukus</translation>
 <translation id="1536390784834419204">Versti puslapį</translation>
 <translation id="1540800554400757039">1 adreso eil.</translation>
@@ -1045,6 +1046,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5128788795241319992">Naujo meniu naršymas</translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
 <translation id="5141363746588976328">Slėpti sumažintų kainų skirtukuose kortelę</translation>
+<translation id="514154868070499296">Šriftas: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Išjungti skirtukų perjungiklį</translation>
 <translation id="5148717509369231739">„Safari“ importavimas</translation>
 <translation id="5157638238828697074">Kažkas nepavyko. Nepavyko atidaryti programos.</translation>
@@ -1974,6 +1976,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8637431369725868556">Pasinaudokite apsauga nuo pavojingų svetainių.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Pažeistų slaptažodžių nėra}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="8643403533759285912">Ištrinti grupę</translation>
+<translation id="8645245178269185266">Bendrinkite puslapio turinį su „Gemini“, kad gautumėte aktualesnius atsakymus</translation>
 <translation id="8647280737650867362">Nepavyko atsisakyti kainos stebėjimo.</translation>
 <translation id="8654802032646794042">Atšaukti</translation>
 <translation id="8660600697590740984">Nukopijuotas „Lens“ vaizdas</translation>

@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 条款</translation>
 <translation id="2094919256425865063">仍要退出 Chrome？</translation>
+<translation id="2096213354152647998">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION" />权限。</translation>
 <translation id="2106831557840787829">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
 <translation id="2108778574543343055">为应用停用 Chrome 后台运行功能</translation>
 <translation id="2120620239521071941">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
@@ -454,6 +455,7 @@
 <translation id="6696915334902295848">Chrome 需要为此网站授予麦克风权限</translation>
 <translation id="6712881677154121168">下载时出错：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">提高 Chrome 的运行速度</translation>
+<translation id="6734827584173583205">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和另外 <ph name="COUNT" /> 项权限。</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系统</translation>
 <translation id="6750954913813541382">为了修正拼写错误，Chrome 会将您在浏览器中输入的文字发送给 Google</translation>
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已开启。</translation>
@@ -479,6 +481,7 @@
 <translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安装。</translation>
 <translation id="7025800014283535195">您可在此处切换 Chrome 个人资料</translation>
+<translation id="7051685429025310665">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
 <translation id="7059914902409643750">定制您的专属 Chrome</translation>
 <translation id="7060643578009939353">使用 Google 智能镜头搜索此视频</translation>
 <translation id="7071827361006050863">Chrome 即将删除浏览数据</translation>
@@ -540,6 +543,7 @@
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7736869414036750079">贵组织要求您登录 Chrome</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
+<translation id="7748969056734910029">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限和<ph name="PERMISSION_2" />权限。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>
 <translation id="7777080907402804672">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>
 <translation id="778331955594035129">Chrome 需要为此网站授予位置信息权限</translation>

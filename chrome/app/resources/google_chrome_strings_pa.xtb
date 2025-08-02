@@ -86,6 +86,7 @@
 <translation id="2091012649849228750">Google Chrome ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ Windows 10 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ Windows 8 ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2094648590148273905">ChromeOS Flex ਦੇ ਨਿਯਮ</translation>
 <translation id="2094919256425865063">ਕੀ ਫਿਰ ਵੀ Chrome ਨੂੰ ਛੱਡਣਾ ਹੈ?</translation>
+<translation id="2096213354152647998">ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ। Chrome ਨੇ <ph name="PERMISSION" /> ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="2106831557840787829">ChromeOS Flex ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
 <translation id="2108778574543343055">ਐਪਾਂ ਲਈ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚੱਲ ਰਹੇ Chrome ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="2120620239521071941">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ <ph name="ITEMS_COUNT" /> ਆਈਟਮਾਂ ਮਿਟਾ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -463,6 +464,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6696915334902295848">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6712881677154121168">ਡਾਊਨਲੋਡ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="DOWNLOAD_ERROR" />।</translation>
 <translation id="6718739135284199302">Chrome ਨੂੰ ਵਧੇਰੇ ਤੇਜ਼ ਬਣਾਓ</translation>
+<translation id="6734827584173583205">ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ। Chrome ਨੇ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="COUNT" /> ਹੋਰ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="6735387454586646204">ChromeOS Flex ਸਿਸਟਮ</translation>
 <translation id="6750954913813541382">ਸ਼ਬਦ-ਜੋੜ ਗੜਬੜੀਆਂ ਠੀਕ ਕਰਨ ਲਈ, Chrome, ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਾਈਪ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਲਿਖਤ Google ਨੂੰ ਭੇਜਦਾ ਹੈ</translation>
 <translation id="6760235774835597023">ਇਸ ਨਾਲ Chrome ਦੇ V8 ਇੰਜਣ ਨਾਲ ਸਾਈਟਾਂ ਦੀ ਗਤੀ ਵਧ ਜਾਂਦੀ ਹੈ, ਪਰ Chrome 'ਤੇ ਹਮਲਿਆਂ ਤੋਂ ਸੁਰੱਖਿਆ ਘਟ ਜਾਂਦੀ ਹੈ। ਇਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ।</translation>
@@ -488,6 +490,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7024536598735240744">ਅਣਪੈਕ ਕਰਨ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="UNPACK_ERROR" />।</translation>
 <translation id="7025789849649390912">ਸਥਾਪਨਾ ਨੂੰ ਰੋਕਿਆ ਗਿਆ।</translation>
 <translation id="7025800014283535195">ਤੁਸੀਂ ਇੱਥੇ Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਵਿਚਾਲੇ ਅਦਲਾ-ਬਦਲੀ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="7051685429025310665">ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ। Chrome ਨੇ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="7059914902409643750">ਸਾਈਨ-ਇਨ ਕਰਕੇ Chrome ਨੂੰ ਆਪਣੇ ਮੁਤਾਬਕ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7060643578009939353">ਇਸ ਵੀਡੀਓ ਨੂੰ Google Lens ਨਾਲ ਖੋਜੋ</translation>
 <translation id="7071827361006050863">Chrome ਜਲਦ ਹੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾ ਦੇਵੇਗਾ</translation>
@@ -549,6 +552,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="77283119132245232">ਇਹ <ph name="BROWSER_NAME" /> ਲਈ ਸਿਸਟਮ ਟ੍ਰੇਸਿੰਗ ਸੇਵਾਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦੀ ਹੈ। ਜੇ ਇਹ ਸੇਵਾ ਬੰਦ ਹੈ, ਤਾਂ ਬ੍ਰਾਊਜ਼ਰ ਵੱਲੋਂ ਬਣਾਏ ਗਏ ਕਾਰਗੁਜ਼ਾਰੀ ਟ੍ਰੇਸ ਵਿੱਚ ਸਿਸਟਮ-ਵਿਆਪਕ ਇਵੈਂਟ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋਣਗੇ, ਜਿਵੇਂ ਕਿ ਸੰਦਰਭ ਸਵਿੱਚ ਅਤੇ ਤਿਆਰ ਥ੍ਰੈੱਡ ਇਵੈਂਟ।</translation>
 <translation id="7736869414036750079">ਤੁਹਾਡੀ ਸੰਸਥਾ ਲਈ ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7747138024166251722">ਸਥਾਪਨਾਕਾਰ ਇੱਕ ਅਸਥਾਈ ਡਾਇਰੈਕਟਰੀ ਨਹੀਂ ਬਣਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਖਾਲੀ ਡਿਸਕ ਸਪੇਸ ਅਤੇ ਇਜਾਜ਼ਤ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
+<translation id="7748969056734910029">ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ। Chrome ਨੇ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="7761834446675418963">Chrome ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਆਪਣੇ ਨਾਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="7777080907402804672">ਜੇ ਕਿਸੇ ਚਿੱਤਰ ਦਾ ਲਾਭਕਾਰੀ ਵਰਣਨ ਨਹੀਂ ਹੈ, ਤਾਂ Chrome ਤੁਹਾਡੇ ਲਈ ਇੱਕ ਵਰਣਨ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੇਗਾ। ਵਰਣਨ ਬਣਾਉਣ ਲਈ, ਚਿੱਤਰ Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ। ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="778331955594035129">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਟਿਕਾਣਾ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>

@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ Android ਫ਼ੋਨ ਤੋਂ ਖਾਤਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1069814191880976658">ਕੋਈ ਵੱਖਰੀ ਸਕ੍ਰੀਨ ਚੁਣੋ</translation>
 <translation id="107022587824771715">ਫ਼ਿਲਹਾਲ ਟੈਬ ਗਰੁੱਪ ਸੁਝਾਅ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਹੁਣੇ ਰਿਫ੍ਰੈਸ਼ ਕਰ<ph name="END_LINK" /> ਸਕਦੇ ਹੋ ਜਾਂ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="1070357312245925724">ਨੈਵੀਗੇਸ਼ਨ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="1070377999570795893">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਜੋੜ ਦਿੱਤੀ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@
 <translation id="1122913801042512795">ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਆਊਟ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="1122960773616686544">ਬੁੱਕਮਾਰਕ ਨਾਮ</translation>
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
+<translation id="1125371304736839151">Gemini ਨੂੰ ਬ੍ਰਾਊਜ਼ਰ ਦੇ ਸਿਖਰ 'ਤੇ ਦਿਖਾਓ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ਵਰਗਾ ਲੱਗਦਾ ਹੈ (ਮੂਲ)</translation>
 <translation id="1125921926864945797">ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ</translation>
 <translation id="1128090040635299943">ਫ਼ਿਲਹਾਲ Linux ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਸੰਰੂਪਣ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗਣਗੇ।</translation>
@@ -216,6 +218,7 @@
 <translation id="1142713751288681188">ਪੇਪਰ ਦੀ ਕਿਸਮ</translation>
 <translation id="1143142264369994168">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਾਈਨਰ</translation>
 <translation id="1145593918056169051">ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{ਐਕਸਟੈਂਸ਼ਨਾਂ}=1{ਐਕਸਟੈਂਸ਼ਨਾਂ ({SELECTED_ITEMS})}other{ਐਕਸਟੈਂਸ਼ਨਾਂ ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">ਹੈੱਡ ਪੁਆਇੰਟਰ</translation>
 <translation id="114721135501989771">Chrome ਵਿੱਚ Google ਸਮਾਰਟ ਲਓ</translation>
 <translation id="1147322039136785890">ਹੁਣ <ph name="SUPERVISED_USER_NAME" /> ਦੀ ਵਾਰੀ ਹੈ</translation>
@@ -735,6 +738,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> ਨੂੰ ਹਟਾਓ</translation>
 <translation id="1504551620756424144">ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰ Windows ਵਿੱਚ <ph name="BASE_DIR" /> 'ਤੇ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="1505494256539862015">ਪਾਸਵਰਡਾਂ ਨੂੰ ਨਿਰਯਾਤ ਕਰੋ</translation>
+<translation id="1505654899813338756">ਤੁਸੀਂ ਸੰਬੰਧਿਤ ਪੰਨਿਆਂ ਨੂੰ ਇਕੱਠਾ ਰੱਖਣ ਅਤੇ ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="1506061864768559482">ਖੋਜ ਇੰਜਣ</translation>
 <translation id="1506187449813838456">ਪਿਚ ਵਧਾਓ</translation>
 <translation id="1507170440449692343">ਇਹ ਸਫ਼ਾ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚਣ ਤੋਂ ਬਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -989,6 +993,7 @@
 <translation id="1660763353352708040">ਪਾਵਰ ਅਡਾਪਟਰ ਦੀ ਸਮੱਸਿਆ</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਹੌਲੀ ਕਰਨ ਵਾਲੇ ਟੈਬ ਨੂੰ ਠੀਕ ਕਰੋ}one{ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਹੌਲੀ ਕਰਨ ਵਾਲੇ ਟੈਬ ਨੂੰ ਠੀਕ ਕਰੋ}other{ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਹੌਲੀ ਕਰਨ ਵਾਲੇ ਟੈਬਾਂ ਨੂੰ ਠੀਕ ਕਰੋ}}</translation>
 <translation id="16620462294541761">ਮਾਫ਼ ਕਰਨਾ, ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਪ੍ਰਮਾਣਿਤ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="1662572015199460525">ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਸਮੇਂ ਜਵਾਬ, ਮੁੱਖ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਅਵਾਜ਼ੀ ਜਾਂ ਲਿਖਤ ਚੈਟ ਕਰੋ</translation>
 <translation id="166278006618318542">ਵਿਸ਼ਾ ਜਨਤਕ ਕੁੰਜੀ ਅਲਗੋਰਿਦਮ</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ਐਪ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="1663698992894057019">ਨਵੀਨਤਮ ਸੁਰੱਖਿਆ ਅਤੇ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਨਵੀਂ Chromebook 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰੋ</translation>
@@ -1099,6 +1104,7 @@
 <translation id="174123615272205933">ਵਿਉਂਤਬੱਧ</translation>
 <translation id="1741314857973421784">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="1744108098763830590">ਪਿਛੋਕੜ ਸਫ਼ਾ</translation>
+<translation id="174516937379651657">ਜਦੋਂ ਤੁਸੀਂ Gemini ਨਾਲ ਕੋਈ ਪੰਨਾ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਪੰਨੇ ਦੀ ਪੂਰੀ ਸਮੱਗਰੀ ਅਤੇ URL ਨੂੰ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="1745732479023874451">ਸੰਪਰਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{ਕੀ ਇਸ ਵੈੱਬ ਐਪ ਵਿੱਚ # ਫ਼ਾਈਲ ਖੋਲ੍ਹਣਾ ਅਤੇ ਉਸਦਾ ਸੰਪਾਦਨ ਕਰਨਾ ਹੈ?}other{ਕੀ ਇਸ ਵੈੱਬ ਐਪ ਵਿੱਚ # ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣਾ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ <ph name="DEVICE_NAME" /> ਤੋਂ ਪਾਸਕੀ ਵਰਤੋ</translation>
@@ -1411,6 +1417,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}one{{NUM_EXTENSIONS} ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}other{{NUM_EXTENSIONS} ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="1959421829481337178">ਕਿਰਪਾ ਕਰਕੇ ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਗਿਆ 'ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ' ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="1960211333621141174">ਟਿੱਲਾ</translation>
+<translation id="1962356719152496092">ਇੱਥੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="1963976881984600709">ਮਿਆਰੀ ਸੁਰੱਖਿਆ</translation>
 <translation id="1964009877615282740">ਹੋਰ ਦੇਖੋ</translation>
 <translation id="1965578266762387357">ਜਦੋਂ ਤੁਹਾਨੂੰ ਲਿਖਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ, ਤਾਂ ਪੰਨੇ ਦਾ URL, ਸਮੱਗਰੀ ਅਤੇ ਤੁਹਾਡੀ ਲਿਖਤ Google ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ। ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦਾਖਲ ਨਾ ਕਰੋ (ਜਿਵੇਂ ਕਿ ਡਾਕਟਰੀ ਜਾਂ ਵਿੱਤੀ ਵੇਰਵੇ)</translation>
@@ -1578,6 +1585,7 @@
 <translation id="2079053412993822885">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣਾ ਖੁਦ ਦਾ ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਮਿਟਾਉਂਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਹੁਣ ਇਸਨੂੰ ਖੁਦ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਨਹੀਂ ਵਰਤ ਸਕਦੇ।</translation>
 <translation id="2079495302726689071">ਨਵੀਂ <ph name="APP" /> ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="2079553700504470326">ਸਭ ਤੋਂ ਸਟੀਕ Gemini ਨਤੀਜਿਆਂ ਲਈ, ਤੁਹਾਡੇ IP ਪਤੇ 'ਤੇ ਆਧਾਰਿਤ ਅੰਦਾਜ਼ਨ ਟਿਕਾਣੇ ਦੀ ਬਜਾਏ ਆਪਣਾ ਸਟੀਕ ਟਿਕਾਣਾ ਵਰਤੋ।</translation>
 <translation id="2080070583977670716">ਹੋਰ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2081816110395725788">ਬੈਟਰੀ ਚਾਰਜ ਨਾ ਹੋਣ ਦੌਰਾਨ ਸਲੀਪ ਮੋਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="2082187087049518845">ਟੈਬ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ</translation>
@@ -2209,6 +2217,7 @@
 <translation id="2496180316473517155">ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ</translation>
 <translation id="2496616243169085015">ਫ਼ੋਟੋਗ੍ਰਾਫ਼ੀ</translation>
 <translation id="2497229222757901769">ਮਾਊਸ ਦੀ ਗਤੀ</translation>
+<translation id="24977856422126200"><ph name="WINDOW_TITLE" /> - ਤੁਸੀਂ ਇਸ ਗੱਲਬਾਤ ਦੀ ਮਿਆਦ ਤੱਕ ਇਸ ਟੈਬ ਨੂੰ Gemini ਨਾਲ ਸਾਂਝਾ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="2497852260688568942">ਸਿੰਕ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੁਆਰਾ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="2498539833203011245">ਛੋਟਾ ਕਰੋ</translation>
 <translation id="2498765460639677199">ਵਿਸ਼ਾਲ</translation>
@@ -2533,6 +2542,7 @@
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਚਾਲੂ ਹੋਣ 'ਤੇ, ਐਕਸੈੱਲਰੋਮੀਟਰ ਅਤੇ ਜਾਇਰੋਸਕੋਪ ਵਰਗੇ ਡੀਵਾਈਸ ਸੈਂਸਰ ਡਾਟਾ ਦੇ ਨਾਲ-ਨਾਲ ਵਾਈ-ਫਾਈ ਪਹੁੰਚ ਬਿੰਦੂ ਅਤੇ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਟਾਵਰਾਂ ਵਰਗੇ ਵਾਇਰਲੈੱਸ ਸਿਗਨਲਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਵਧੇਰੇ ਸਟੀਕ ਡੀਵਾਈਸ ਟਿਕਾਣੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਸਦੀ ਵਰਤੋਂ Android ਐਪਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਟਿਕਾਣਾ-ਆਧਾਰਿਤ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਕਰਦੀਆਂ ਹਨ। ਅਜਿਹਾ ਕਰਨ ਲਈ, Google ਸਮੇਂ-ਸਮੇਂ 'ਤੇ ਇਸ ਡੀਵਾਈਸ ਦੇ ਨੇੜਲੇ ਸੈਂਸਰਾਂ ਅਤੇ ਵਾਇਰਲੈੱਸ ਸਿਗਨਲਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ 'ਇਕੱਤਰ ਕਰਦਾ ਹੈ, ਤਾਂ ਕਿ ਵਾਇਰਲੈੱਸ ਸਿਗਨਲ ਵਾਲੇ ਟਿਕਾਣਿਆਂ ਨੂੰ ਕਰਾਊਡਸੋਰਸ ਕਰਨ ਵਿੱਚ ਯੋਗਦਾਨ ਪਾਇਆ ਜਾ ਸਕੇ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਇਕੱਤਰ ਕੀਤੀ ਇਸ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਇਸ ਲਈ ਕਰਦਾ ਹੈ: ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਅਤੇ ਟਿਕਾਣਾ ਆਧਾਰਿਤ ਸੇਵਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣਾ ਅਤੇ ਆਮ ਤੌਰ 'ਤੇ Google ਦੀਆਂ ਸੇਵਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ, ਪ੍ਰਦਾਨ ਕਰਨ ਅਤੇ ਬਣਾਈ ਰੱਖਣ ਲਈ। ਅਸੀਂ ਇਸ ਜਾਣਕਾਰੀ 'ਤੇ ਵਰਤੋਂਕਾਰਾਂ ਦੀਆਂ ਲੋੜਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Google ਅਤੇ ਤੀਜੀਆਂ ਧਿਰਾਂ ਦੇ ਕਨੂੰਨੀ ਮਕਸਦਾਂ ਦੇ ਆਧਾਰ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਦੇ ਹਾਂ। ਇਹ ਜਾਣਕਾਰੀ ਕਿਸੇ ਵੀ ਵਿਅਕਤੀ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਨਹੀਂ ਵਰਤੀ ਜਾਂਦੀ।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ &gt; ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ &gt; ਟਿਕਾਣਾ ਪਹੁੰਚ &gt; ਅਡਵਾਂਸ ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ ਦੇ ਅੰਦਰ ਇਸ ਡੀਵਾਈਸ ਦੀਆਂ ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੀ ਸਮੇਂ ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਜੇ ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਬੰਦ ਹੈ, ਤਾਂ ਕੋਈ ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਡਾਟਾ ਇਕੱਤਰ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Android ਐਪਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਲਈ, ਇਸ ਡੀਵਾਈਸ ਦੇ ਟਿਕਾਣੇ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ, ਜੇ ਉਪਲਬਧ ਹੋਵੇ, ਤਾਂ ਸਿਰਫ਼ IP ਪਤਾ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ, ਜੋ ਕਿ Google Maps ਵਰਗੀਆਂ Android ਐਪਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਲਈ ਟਿਕਾਣਿਆਂ ਦੀ ਉਪਲਬਧਤਾ ਅਤੇ ਸਟੀਕਤਾ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਸਕਦਾ ਹੈ।<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">ਆਪਣੀ Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ ਦੇਖੋ ਅਤੇ ਉਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2730029791981212295">Linux ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2730550884708194161">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲਾਂ ਬਾਰੇ</translation>
 <translation id="2730596696987224099">ਆਪਣਾ ਖੁਦ ਦਾ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
@@ -3404,6 +3414,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਤੁਹਾਡੇ ਨਾਲ <ph name="ATTACHMENTS" /> ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।}one{<ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਤੁਹਾਡੇ ਨਾਲ <ph name="ATTACHMENTS" /> ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।}other{<ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਤੁਹਾਡੇ ਨਾਲ <ph name="ATTACHMENTS" /> ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।}}</translation>
 <translation id="3361954577771524115">ਐਪ ਤੋਂ</translation>
+<translation id="3362651095484543782">Gemini ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ ਜਾਂ ਇਸ 'ਤੇ ਵਾਪਸ ਜਾਣ ਲਈ, ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="3362915550009543917">ਮਨ ਨੂੰ ਸ਼ਾਂਤ ਕਰਨ ਵਾਲੀ ਅਜਿਹੀ ਆਇਲ ਪੇਂਟਿੰਗ, ਜਿਸ ਵਿੱਚ ਪੀਲੀ ਛਾਂ ਵਿੱਚ ਘਾਹ ਦਾ ਮੈਦਾਨ ਦਿਖਾਇਆ ਗਿਆ ਹੈ। ਇਸ ਨਾਲ ਸ਼ਾਂਤੀ ਅਤੇ ਬੌਧਿਕ ਭਾਵਨਾ ਉਜਾਗਰ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="3363202073972776113">ਇਸ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+ਕਰਸਰ ਘੁਮਾਓ</translation>
@@ -3627,6 +3638,7 @@
 <translation id="3511358375261756531"><ph name="HEADER" /> ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="351152300840026870">ਫਿਕਸਡ-ਚੁੜਾਈ ਫੌਂਟ</translation>
 <translation id="3511528412952710609">ਛੋਟਾ</translation>
+<translation id="3512465804715993309">ਅਡੈਪਟਿਵ ਹਾਈਲਾਈਟਿੰਗ</translation>
 <translation id="3513019849832307207">ਸ਼ਾਮਲ ਹੋਵੋ ਅਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> ਤੋਂ <ph name="MAX_VALUE" /> ਤੱਕ ਦਾ ਹਿਊ ਸਲਾਈਡਰ</translation>
 <translation id="3514335087372914653">ਗੇਮ ਦਾ ਕੰਟਰੋਲ</translation>
@@ -4972,6 +4984,7 @@
 <translation id="443031431654216610">ਸਿਰਫ਼ ਸੰਖਿਆਤਮਿਕ ਅੰਕ ਵਰਤੋ</translation>
 <translation id="4430369329743628066">ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4430422687972614133">ਆਭਾਸੀ ਕਾਰਡ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="443196770280837407">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਨਾਲ Gemini ਖੋਲ੍ਹੋ।</translation>
 <translation id="4432621511648257259">ਪਾਸਵਰਡ ਗਲਤ ਹੈ</translation>
 <translation id="4434611816075088065">ਕਿਸੇ ਹੋਰ ਚੀਜ਼ ਨੂੰ ਇਸ ਸਮੇਂ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ</translation>
 <translation id="443475966875174318">ਗੈਰ-ਅਨੁਰੂਪ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਜਾਂ ਹਟਾਓ</translation>
@@ -4987,6 +5000,7 @@
 <translation id="4442863809158514979">ਵੈੱਬ ਇਜਾਜ਼ਤਾਂ ਦੇਖੋ</translation>
 <translation id="4442937638623063085">ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਨਹੀਂ ਮਿਲਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਗਿਆ 'ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ' ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="4443536555189480885">&amp;ਸਹਾਇਤਾ</translation>
+<translation id="4444191890945732856">ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਨੂੰ Gemini ਨਾਲ ਸਾਂਝਾ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="4444304522807523469">USB ਜਾਂ ਸਥਾਨਕ ਨੈੱਟਵਰਕ ਰਾਹੀਂ ਅਟੈਚ ਕੀਤੇ ਦਸਤਾਵੇਜ਼ ਸਕੈਨਰਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4444512841222467874">ਜੇਕਰ ਜਗ੍ਹਾ ਉਪਲਬਧ ਨਹੀਂ ਕਰਵਾਈ ਜਾਂਦੀ ਹੈ, ਤਾਂ ਵਰਤੋਂਕਾਰਾਂ ਅਤੇ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਆਪ ਹਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4445446646109808714">ਵਰਤੋਂਕਾਰ ਦਾ ਲਾਇਸੰਸ ਇਕਰਾਰਨਾਮਾ: <ph name="EULA_LINK" /></translation>
@@ -5309,6 +5323,7 @@
 <translation id="4681930562518940301">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਮੂਲ &amp;ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="4682481611456523884">ਇਸ ਸਾਈਟ 'ਤੇ ਜੋੜੀ ਗਈ ਸਮੱਗਰੀ ਉਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਬਾਰੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਦੀ</translation>
 <translation id="4682807230647698604">ਜਦੋਂ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋ, ਤਾਂ AI ਅਨੁਭਵ ਬਣਾਉਣ ਲਈ ਸੰਬੰਧਿਤ ਡਾਟਾ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="4683143253481759090">Chrome ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4683629100208651599">ਛੋਟੇ ਅੱਖਰਾਂ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="4684427112815847243">ਸਭ ਕੁਝ ਸਿੰਕ ਕਰੋ</translation>
@@ -5318,6 +5333,7 @@
 <translation id="4687718960473379118">ਸਾਈਟ ਵੱਲੋਂ ਸੁਝਾਏ ਵਿਗਿਆਪਨ</translation>
 <translation id="4688036121858134881">ਸਥਾਨਕ ਲੌਗ ਆਈ.ਡੀ.: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ (<ph name="PROGRESS_PERCENT" />) 'ਤੇ ਵਾਪਸ ਲੈ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="4688870304423708920">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ Gemini ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="4689235506267737042">ਆਪਣੇ ਡੈਮੋ ਦੀਆਂ ਤਰਜੀਹਾਂ ਚੁਣੋ</translation>
 <translation id="4689421377817139245">ਆਪਣੇ iPhone 'ਤੇ ਇਸ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="4690091457710545971">&lt;Intel ਵਾਈ-ਫਾਈ ਫ਼ਰਮਵੇਅਰ ਦੁਆਰਾ ਚਾਰ ਫਾਈਲਾਂ ਬਣਾਈਆਂ ਗਈਆਂ: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon। ਪਹਿਲੀਆਂ ਤਿੰਨ ਬਾਈਨਰੀ ਫ਼ਾਈਲਾਂ ਹਨ ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਰਜਿਸਟਰ ਡੰਪ ਹਨ, ਅਤੇ ਇਹਨਾਂ ਬਾਰੇ Intel ਦੁਆਰਾ ਕੋਈ ਨਿੱਜੀ ਜਾਂ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨਾ ਹੋਣ ਦਾ ਦਾਅਵਾ ਕੀਤਾ ਗਿਆ ਹੈ। ਆਖਰੀ ਫ਼ਾਈਲ Intel ਫ਼ਰਮਵੇਅਰ ਤੋਂ ਚਲਾਏ ਜਾਣ ਦਾ ਟ੍ਰੇਸ ਹੈ; ਇਸ ਤੋਂ ਕੋਈ ਵੀ ਨਿੱਜੀ ਜਾਂ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਸਾਫ਼ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ, ਪਰ ਇੱਥੇ ਪ੍ਰਦਰਸ਼ਿਤ ਕੀਤੇ ਜਾਣ ਲਈ ਬਹੁਤ ਵੱਡੀ ਹੈ। ਇਹ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਹਾਲੀਆ ਵਾਈ-ਫਾਈ ਸਮੱਸਿਆਵਾਂ 'ਤੇ ਪ੍ਰਤਿਕਿਰਿਆ ਵਿੱਚ ਉਤਪੰਨ ਹੋਈਆਂ ਸਨ, ਅਤੇ ਇਹਨਾਂ ਸਮੱਸਿਆਵਾਂ ਦਾ ਨਿਪਟਾਰਾ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ Intel ਨਾਲ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ।&gt;</translation>
@@ -5602,6 +5618,7 @@
 <translation id="4884937942297374058">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਬੰਦ ਹੈ</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਕੋਲ ਸਾਈਟ ਤੱਕ ਕੋਈ ਵਾਧੂ ਪਹੁੰਚ ਨਹੀਂ ਹੈ</translation>
+<translation id="4887391901725877182">ਬੰਦ ਸੁਰਖੀਆਂ ਬਣਾਉਣਾ</translation>
 <translation id="4887424188275796356">ਸਿਸਟਮ ਵਿਊਅਰ ਨਾਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="488785315393301722">ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="488862352499217187">ਨਵਾਂ ਫੋਲਡਰ ਬਣਾਓ</translation>
@@ -5752,6 +5769,7 @@
 <translation id="5001526427543320409">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼</translation>
 <translation id="5003070249435823986">ਸਕ੍ਰੋਲ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਣ ਲਈ ਇਸ਼ਾਰੇ ਦੀ ਵਰਤੋਂ ਕਰੋ, ਫਿਰ ਆਪਣੇ ਸਿਰ ਨੂੰ ਉਸ ਦਿਸ਼ਾ ਵੱਲ ਲਿਜਾਓ, ਜਿਸ ਵੱਲ ਤੁਸੀਂ ਸਕ੍ਰੋਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ। ਸਕ੍ਰੋਲ ਮੋਡ ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ ਲਈ, ਇਸ਼ਾਰੇ ਦੀ ਦੁਬਾਰਾ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="5003993274120026347">ਅਗਲਾ ਵਾਕ</translation>
+<translation id="5005113238422129109">Gemini ਨਾਲ ਚੈਟ ਕਰਨ ਲਈ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਜਦੋਂ ਤੁਸੀਂ Gemini ਨਾਲ ਗੱਲ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਡੀਓ Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ ਵਿੱਚ ਸਟੋਰ ਹੋ ਜਾਂਦੀ ਹੈ (ਜੇ ਇਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ)</translation>
 <translation id="5005311809885666699">Chrome ਤੋਂ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5005498671520578047">ਪਾਸਵਰਡ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="5006218871145547804">Crostini Android ਐਪ ADB</translation>
@@ -6722,6 +6740,7 @@
 <translation id="5705005699929844214">ਹਮੇਸ਼ਾਂ ਪਹੁੰਚਯੋਗਤਾ ਵਿਕਲਪ ਦਿਖਾਓ</translation>
 <translation id="5705882733397021510">ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="5707185214361380026">ਇਸ ਤੋਂ ਐਕਸਟੈਂਸ਼ਨ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ:</translation>
+<translation id="5707674184620508665">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="ACCOUNT_MANAGER" />, ਤੁਹਾਡੇ ਮੌਜੂਦਾ ਡਾਟੇ ਨੂੰ ਦੇਖ ਜਾਂ ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਨਹੀਂ ਕਰ ਸਕੇਗੀ। ਇਹ ਮੌਜੂਦਾ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਰਹੇਗਾ।</translation>
 <translation id="5708171344853220004">Microsoft ਪ੍ਰਿੰਸੀਪਲ ਨਾਮ</translation>
 <translation id="5711010025974903573">ਸੇਵਾ ਲੌਗ</translation>
 <translation id="5711983031544731014">ਅਣਲਾਕ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ। ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ।</translation>
@@ -7432,6 +7451,7 @@
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
 <translation id="622537739776246443">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="6225475702458870625">ਤੁਹਾਡੇ <ph name="PHONE_NAME" /> ਤੋਂ ਡਾਟਾ ਕਨੈਕਸ਼ਨ ਉਪਲਬਧ ਹੈ</translation>
+<translation id="622568138962270592">Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ</translation>
 <translation id="6226777517901268232">ਪ੍ਰਾਈਵੇਟ ਕੁੰਜੀ ਫ਼ਾਈਲ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="6227280783235722609">ਐਕਸਟੈਂਸ਼ਨ</translation>
 <translation id="622902691730729894">ਬੁੱਕਮਾਰਕ ਬਾਰ ਵਿੱਚੋਂ ਗਰੁੱਪ ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
@@ -7735,6 +7755,7 @@
 <translation id="6451861213630784801">ਤੁਸੀਂ ਸਾਈਨ-ਆਊਟ ਹੋ ਗਏ ਹੋ</translation>
 <translation id="6452181791372256707">ਰੱਦ ਕਰੋ</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> ਪੂਰਾ</translation>
+<translation id="6452268285438583507">ਐਕਸਟੈਂਸ਼ਨਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6452961788130242735">ਨੈੱਟਵਰਕ ਸਮੱਸਿਆ ਜਾਂ ਖਰਾਬ ਖੇਤਰ</translation>
 <translation id="6453191633103419909">ਟੈਬ/ਸਕ੍ਰੀਨ ਪ੍ਰੋਜੈਕਸ਼ਨ ਕੁਆਲਿਟੀ</translation>
 <translation id="6453921811609336127">ਅਗਲੀ ਇਨਪੁੱਟ ਵਿਧੀ 'ਤੇ ਜਾਣ ਲਈ, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ਦਬਾਓ</translation>
@@ -8164,6 +8185,7 @@
 <translation id="6759193508432371551">ਫੈਕਟਰੀ ਰੀਸੈਟ</translation>
 <translation id="6760354150216532978">ਚਿਤਾਵਨੀ: ਇਹ ਸਾਈਟ ਤੁਹਾਡੇ ਵੱਲੋਂ ਕੀਤੇ ਸੰਪਾਦਨਾਂ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ</translation>
 <translation id="6761209758867628753">ਟੂਲ: ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
+<translation id="6761459308170527362">ਤੁਸੀਂ Gemini ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਂਝੀ ਕੀਤੀ ਜਾ ਰਹੀ ਪੰਨੇ ਦੀ ਸਮੱਗਰੀ ਬਾਰੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਅਵਾਜ਼ੀ ਜਾਂ ਲਿਖਤ ਚੈਟ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਟ ਡਾਟੇ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="6762833852331690540">ਚਾਲੂ</translation>
@@ -8822,6 +8844,7 @@
 <translation id="7223952304612664117">ਇਸ ਨਾਲ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਨੂੰ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਨਿਰਧਾਰਿਤ ਕਰਨ ਲਈ ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਮਿਲਦੀ ਹੈ। ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਸੈਟਿੰਗ ਵਾਇਰਲੈੱਸ ਸਿਗਨਲਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ, ਤਾਂ ਜੋ ਡੀਵਾਈਸ ਟਿਕਾਣੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਇਆ ਜਾ ਸਕੇ।</translation>
 <translation id="7225082563376899794">ਪਾਸਵਰਡ ਭਰਨ ਦੌਰਾਨ Windows Hello ਵਰਤੋ</translation>
 <translation id="7225179976675429563">ਨੈੱਟਵਰਕ ਪ੍ਰਕਾਰ ਲੁਪਤ</translation>
+<translation id="7226163413959353072">AI ਅਸਿਸਟੈਂਟ ਜੋ ਮੁੱਖ ਜਾਣਕਾਰੀ ਦਿੰਦਾ ਹੈ, ਧਾਰਨਾਵਾਂ ਨੂੰ ਸਪਸ਼ਟ ਕਰਦਾ ਹੈ, ਜਵਾਬ ਲੱਭਦਾ ਹੈ ਅਤੇ ਹੋਰ ਵੀ ਬਹੁਤ ਕੁਝ ਕਰਦਾ ਹੈ</translation>
 <translation id="7227235818314667565">ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7227458944009118910">ਹੇਠਾਂ ਸੂਚੀਬੱਧ ਐਪਾਂ ਵੀ ਪ੍ਰੋਟੋਕੋਲ ਲਿੰਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਵੀ ਇਜਾਜ਼ਤ ਮੰਗਣਗੀਆਂ।</translation>
 <translation id="7228056665272655255">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਆਪਣੇ ਬੱਚੇ ਨੂੰ ਕੀ-ਬੋਰਡ ਦੇ ਸਿਖਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ 'ਤੇ ਸਪਰਸ਼ ਕਰਨ ਲਈ ਕਹੋ। ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਕਦੇ ਵੀ ਇਸ <ph name="DEVICE_TYPE" /> ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਂਦਾ।</translation>
@@ -8891,6 +8914,7 @@
 <translation id="727595954130325265">ਹੁਣੇ ਖਰੀਦੋ</translation>
 <translation id="727952162645687754">ਡਾਊਨਲੋਡ ਗੜਬੜ</translation>
 <translation id="7280649757394340890">ਲਿਖਤ ਤੋਂ ਬੋਲੀ ਲਈ ਅਵਾਜ਼ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="7280683802406059877">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7280877790564589615">ਅਨੁਮਤੀ ਦੀ ਬੇਨਤੀ ਕੀਤੀ</translation>
 <translation id="7281166215790160128">ਮੋਡ</translation>
 <translation id="7282056103720203738">ਨੱਥੀ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਦੀ ਜਾਣਕਾਰੀ ਅਤੇ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹੋ</translation>
@@ -8949,6 +8973,7 @@
 <translation id="7320213904474460808">ਨੈੱਟਵਰਕ 'ਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="7321545336522791733">ਸਰਵਰ ਪਹੁੰਚਯੋਗ ਨਹੀਂ</translation>
 <translation id="7322515217754205362">ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ</translation>
+<translation id="7322919329844967709">ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਂਝੀ ਕੀਤੀ ਜਾ ਰਹੀ ਪੰਨੇ ਦੀ ਸਮੱਗਰੀ ਨਾਲ ਸੰਬੰਧਿਤ ਹੋਰ ਢੁਕਵੇਂ ਜਵਾਬ ਮਿਲਣਗੇ</translation>
 <translation id="7323315405936922211">ਕਰਸਰ ਖੇਤਰ ਦਾ ਆਕਾਰ</translation>
 <translation id="7324020307732396723">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7324297612904500502">ਬੀਟਾ ਫ਼ੋਰਮ</translation>
@@ -9199,6 +9224,7 @@
 <translation id="7481312909269577407">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="7481358317100446445">ਤਿਆਰ ਹੈ</translation>
 <translation id="748138892655239008">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਮੂਲ ਪਾਬੰਦੀਆਂ</translation>
+<translation id="7482823403440483089">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ</translation>
 <translation id="7483732342458943943">ਇਹ ਲਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰਦਾ</translation>
 <translation id="7484645889979462775">ਇਸ ਸਾਈਟ ਲਈ ਕਦੇ ਵੀ ਨਹੀਂ</translation>
 <translation id="7484943269191249363">ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਪਾਸਕੀਆਂ ਨੂੰ ਵਰਤ ਸਕਦੇ ਹੋ। ਅਜਿਹਾ ਤੁਹਾਨੂੰ ਸਿਰਫ਼ ਇੱਕ ਵਾਰ ਕਰਨਾ ਪਵੇਗਾ।</translation>
@@ -9947,6 +9973,7 @@
 <translation id="7991296728590311172">ਸਵਿੱਚ ਪਹੁੰਚ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7992080146463834191">ਸਮੱਗਰੀ ਦਾ ਸਾਰਾਂਸ਼ ਦਿਓ, ਪੇਚੀਦਾ ਭਾਸ਼ਾ ਨੂੰ ਸਰਲ ਬਣਾਓ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ।</translation>
 <translation id="7992203134935383159">ਸਪੀਚ ਸਿੰਥੈਸਿਸ</translation>
+<translation id="7993332993977106257">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ Gemini ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਆਸਾਨ ਪਹੁੰਚ, ਭਾਵੇਂ Chrome ਨੂੰ ਛੋਟਾ ਕੀਤਾ ਗਿਆ ਹੋਵੇ।</translation>
 <translation id="7997826902155442747">ਪ੍ਰਕਿਰਿਆ ਤਰਜੀਹ</translation>
 <translation id="7997828719430450286">ਹੋ ਗਿਆ।</translation>
 <translation id="7998701048266085837">URL</translation>
@@ -9999,6 +10026,7 @@
 <translation id="8028060951694135607">Microsoft ਕੁੰਜੀ ਰਿਕਵਰੀ</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" />, <ph name="SIZE" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8028993641010258682">ਆਕਾਰ</translation>
+<translation id="8029349782735515147">Gemini Live ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਸਮੇਂ ਬੰਦ ਸੁਰਖੀਆਂ ਦਿਖਾਓ</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{ਪੜ੍ਹਨ-ਸੂਚੀ}=1{ਪੜ੍ਹਨ-ਸੂਚੀ ({SELECTED_ITEMS})}other{ਪੜ੍ਹਨ-ਸੂਚੀ ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ, ਜਵਾਬ ਦੇਣ ਲਈ ⌘ + Option + ਉੱਪਰ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="8030169304546394654">ਡਿਸਕਨੈਕਟ ਕੀਤਾ</translation>
@@ -10117,6 +10145,7 @@
 <translation id="8102139037507939978">system_logs.txt ਤੋਂ ਨਿੱਜੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨੂੰ ਹਟਾਓ।</translation>
 <translation id="810362914482827094">ਪਾਸਕੀਆਂ ਖੋਜੋ</translation>
 <translation id="8104088837833760645">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
+<translation id="8105050970626643057">ਜਦੋਂ ਵੀ ਚਾਹੋ, Gemini ਨੂੰ ਤੁਰੰਤ ਖੋਲ੍ਹੋ</translation>
 <translation id="8105273883928376822">ਕਿਰਪਾ ਕਰਕੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="8106114112474206597">ਮਾਊਸ ਬਟਨ ਦਬਾਉਣ ਲਈ “i” ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8107015733319732394">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> 'ਤੇ Google Play Store ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਥੋੜ੍ਹੀ ਦੇਰ ਲੱਗ ਸਕਦੀ ਹੈ।</translation>
@@ -10273,6 +10302,7 @@
 <translation id="8222112516148944758">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਹੁੰਦੇ ਹਨ ਅਤੇ ਅੱਪਡੇਟ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="8222674561049363989">ਫ਼ਾਈਲ ਵੈਧ ਦਸਤਾਵੇਜ਼ ਨਹੀਂ ਹੈ</translation>
 <translation id="822347941086490485">HID ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
+<translation id="8224209912580158729">ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Gemini ਨਾਲ ਪੰਨਾ ਸਮੱਗਰੀ ਸਾਂਝੀ ਕਰੋ।</translation>
 <translation id="8224427620313426549">ਤੁਹਾਡੇ <ph name="DOMAIN_LINK" /> ਖਾਤੇ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ</translation>
 <translation id="8225046344534779393">ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="8225265270453771718">ਐਪਲੀਕੇਸ਼ਨ ਵਿੰਡੋ ਸਾਂਝੀ ਕਰੋ</translation>
@@ -10416,6 +10446,7 @@
 <translation id="8314835274931377415">ਕੀ 'ਸਵਿੱਚ ਪਹੁੰਚ' ਸੈੱਟਅੱਪ ਸ਼ੁਰੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8315018673856831477">ਮੈਮੋਰੀ ਸੇਵਰ ਸੰਬੰਧੀ ਵਿਕਲਪ</translation>
 <translation id="8315514906653279104">ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="8316480109537174997">Gemini ਨੂੰ ਸਿਸਟਮ ਟ੍ਰੇਅ ਵਿੱਚ ਦਿਖਾਓ ਅਤੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8317671367883557781">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8317965619823678157">ਪਾਸਵਰਡਾਂ ਨੂੰ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="8318266828739827371">ਆਪਣੀ ਸਕ੍ਰੀਨ ਦੇ ਵਿਸਤ੍ਰਿਤ ਖੇਤਰ ਨੂੰ ਦੇਖਣ ਲਈ ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦ੍ਰਿਸ਼ ਵਰਤੋ। ਡੌਕ ਕੀਤਾ ਵੱਡਦਰਸ਼ੀ ਚਾਲੂ ਅਤੇ ਬੰਦ ਕਰਨ ਲਈ Search + Ctrl + D ਵਰਤੋ।</translation>
@@ -10816,6 +10847,7 @@
 <translation id="8607661817136110841">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="8607828412110648570">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਜੋੜਾਬੱਧਕਰਨ ਮੋਡ ਵਿੱਚ ਹੈ ਅਤੇ ਨਜ਼ਦੀਕ ਹੈ। ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਡੀਵਾਈਸਾਂ ਨਾਲ ਜੋੜਾਬੱਧ ਕਰੋ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਭਰੋਸਾ ਕਰਦੇ ਹੋ। ਜੋੜਾਬੱਧ ਕੀਤੇ ਡੀਵਾਈਸ ਇਸ Chromebook 'ਤੇ ਮੌਜੂਦ ਸਾਰੇ ਖਾਤਿਆਂ 'ਤੇ ਦਿਖਣਯੋਗ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos ਟਿਕਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="860907040896565281">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ...</translation>
 <translation id="8609465669617005112">ਉੱਪਰ ਜਾਓ</translation>
 <translation id="8611922158252451755">ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ ਉਹ ਸਾਰੀਆਂ ਟੈਬਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਇਸ ਲਈ ਸਮਝਦਾਰੀ ਨਾਲ ਸਾਂਝਾ ਕਰੋ। ਲਿੰਕ ਦੀ ਮਿਆਦ 48 ਘੰਟਿਆਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="8612252270453580753"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਵੀਡੀਓ ਫ੍ਰੇਮ ਖੋਜੋ</translation>
@@ -11217,6 +11249,7 @@
 <translation id="8868838761037459823">ਸੈਲਿਊਲਰ ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
 <translation id="8870413625673593573">ਹੁਣੇ ਜਿਹੇ ਬੰਦ ਕੀਤੀਆਂ</translation>
 <translation id="8871043459130124414">ਤੁਹਾਡੇ ਵੱਲੋਂ ਐਕਸਟੈਂਸ਼ਨ 'ਤੇ ਕਲਿੱਕ ਕਰਨ ਤੋਂ ਬਾਅਦ ਹੀ ਚੱਲਦਾ ਹੈ</translation>
+<translation id="8871126140396172266"><ph name="WINDOW_TITLE" /> - ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਨੂੰ Gemini ਨਾਲ ਸਾਂਝਾ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="8871551568777368300">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8871696467337989339">ਤੁਸੀਂ ਇੱਕ ਅਸਮਰਥਿਤ ਕਮਾਂਡ-ਲਾਈਨ ਫਲੈਗ ਵਰਤ ਰਹੇ ਹੋ: <ph name="BAD_FLAG" />. ਸਥਿਰਤਾ ਅਤੇ ਸੁਰੱਖਿਆ 'ਤੇ ਅਸਰ ਪਵੇਗਾ।</translation>
 <translation id="8871974300055371298">ਸਮੱਗਰੀ ਸੈਟਿੰਗਾਂ</translation>
@@ -11429,6 +11462,7 @@
 <translation id="9011163749350026987">ਹਮੇਸ਼ਾਂ ਚਿੰਨ੍ਹ ਦਿਖਾਓ</translation>
 <translation id="9011262023858991985">ਇਸ ਟੈਬ ਨੂੰ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="9011393886518328654">ਰਿਲੀਜ਼ ਨੋਟ-ਕਥਨ</translation>
+<translation id="9012013036616593083">ਫ਼ਿਲਹਾਲ Gemini ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="9012122671773859802">ਮਾਊਸ ਦੀ ਹਲਚਲ ਮੁਤਾਬਕ ਲਗਾਤਾਰ ਸਕ੍ਰੀਨ ਨੂੰ ਹਿਲਾਓ</translation>
 <translation id="9012585441087414258">ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਖਤਰਨਾਕ ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ। ਜੇ ਕੋਈ ਪੰਨਾ ਕੋਈ ਸ਼ੱਕੀ ਸਰਗਰਮੀ ਕਰਦਾ ਹੈ, ਤਾਂ URL ਅਤੇ ਪੰਨੇ ਦੀ ਥੋੜ੍ਹੀ ਸਮੱਗਰੀ ਨੂੰ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="9013037634206938463">Linux ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ <ph name="INSTALL_SIZE" /> ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਖਾਲੀ ਜਗ੍ਹਾ ਨੂੰ ਵਧਾਉਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
@@ -11454,6 +11488,7 @@
 <translation id="9024127637873500333">&amp;ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="9024158959543687197">ਸਾਂਝਾਕਰਨ ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਸਾਂਝਾਕਰਨ URL ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="9024692527554990034">ਤੁਸੀਂ ਪਤਾ ਬਾਰ ਵਿੱਚ ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਵਰਤ ਕੇ ਕੋਈ ਖਾਸ ਸਾਈਟ ਤੁਰੰਤ ਖੋਜ ਸਕਦੇ ਹੋ ਜਾਂ ਕੋਈ ਵੱਖਰਾ ਖੋਜ ਇੰਜਣ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
+<translation id="9024975946059881308">Gemini ਨੂੰ Mac ਦੇ ਮੀਨੂ ਬਾਰ ਵਿੱਚ ਦਿਖਾਓ ਅਤੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9025222334598338152">ਆਪਣੇ ਵਿਕਲਪਾਂ ਨੂੰ ਸੀਮਤ ਕਰ ਕੇ, ਉਨ੍ਹਾਂ ਦਾ ਟਰੈਕ ਰੱਖਣ ਲਈ ਤੁਸੀਂ ਆਪਣੀਆਂ ਤੁਲਨਾ ਸਾਰਨੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="902638246363752736">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="9026393603776578602">ਡਿਕਟੇਸ਼ਨ</translation>

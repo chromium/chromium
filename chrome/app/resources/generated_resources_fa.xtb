@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">‏دریافت خودکار حساب از تلفن Android</translation>
 <translation id="1069814191880976658">صفحه دیگری را انتخاب کنید</translation>
 <translation id="107022587824771715">پیشنهادهای گروه برگه فعلاً دردسترس نیست. می‌توانید <ph name="BEGIN_LINK" />اکنون بازآوری کنید<ph name="END_LINK" /> یا بعداً دوباره امتحان کنید</translation>
+<translation id="1070357312245925724">میان‌بر پیمایش</translation>
 <translation id="1070377999570795893">‏برنامه دیگری در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@
 <translation id="1122913801042512795">جزئیات ورود به سیستم حسابتان قدیمی است. لطفاً از سیستم خارج شوید و دوباره وارد شوید.</translation>
 <translation id="1122960773616686544">نام نشانک</translation>
 <translation id="1124772482545689468">کاربر</translation>
+<translation id="1125371304736839151">‏نشان دادن Gemini در بالای مرورگر</translation>
 <translation id="1125550662859510761">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد (داخلی)</translation>
 <translation id="1125921926864945797">کاغذدیواری و سبک</translation>
 <translation id="1128090040635299943">‏اکنون Linux درحال پیکربندی است. پیکربندی چند دقیقه طول می‌کشد.</translation>
@@ -216,6 +218,7 @@
 <translation id="1142713751288681188">نوع کاغذ</translation>
 <translation id="1143142264369994168">امضا کننده گواهی</translation>
 <translation id="1145593918056169051">چاپگر متوقف شده است</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{افزونه‌ها}=1{افزونه‌ها ({SELECTED_ITEMS})}one{افزونه‌ها ({SELECTED_ITEMS})}other{افزونه‌ها ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">اشاره با سر</translation>
 <translation id="114721135501989771">‏هوشمندی‌های Google را در Chrome دریافت کنید</translation>
 <translation id="1147322039136785890">حالا نوبت <ph name="SUPERVISED_USER_NAME" /> است</translation>
@@ -735,6 +738,7 @@
 <translation id="150411034776756821">حذف <ph name="SITE" /></translation>
 <translation id="1504551620756424144">‏پوشه‌های هم‌رسانی‌شده در Windows در <ph name="BASE_DIR" /> دردسترس هستند.</translation>
 <translation id="1505494256539862015">صادر کردن گذرواژه‌ها</translation>
+<translation id="1505654899813338756">می‌توانید زبانه‌ها را گروه‌بندی کنید تا صفحات مرتبط را کنار هم نگه دارید و آن‌ها را در همه دستگاه‌هایتان ذخیره کنید</translation>
 <translation id="1506061864768559482">موتور جستجو</translation>
 <translation id="1506187449813838456">افزایش گام</translation>
 <translation id="1507170440449692343">این صفحه از دسترسی به دوربین شما بازداشته شده است.</translation>
@@ -986,6 +990,7 @@
 <translation id="1660763353352708040">مشکل آداپتور برق</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{مشکل زبانه‌ای که مرورگرتان را کند کرده است برطرف کنید}one{مشکل زبانه‌ای که مرورگرتان را کند کرده است برطرف کنید}other{مشکل زبانه‌هایی که مرورگرتان را کند کرده است برطرف کنید}}</translation>
 <translation id="16620462294541761">متأسفانه، گذرواژه شما تأیید نشد. لطفاً دوباره امتحان کنید.</translation>
+<translation id="1662572015199460525">با گپ صوتی یا نوشتاری، پاسخ‌ها، نکات کلیدی، و موارد دیگر را درحین مرور دریافت کنید</translation>
 <translation id="166278006618318542">الگوریتم کلید عمومی موضوع</translation>
 <translation id="1662801900924515589"><ph name="APP" /> نصب شد</translation>
 <translation id="1663698992894057019">‏برای دریافت آخرین ویژگی‌های امنیتی و نرم‌افزاری، دستگاهتان را به Chromebook جدیدی ارتقا دهید.</translation>
@@ -1096,6 +1101,7 @@
 <translation id="174123615272205933">سفارشی</translation>
 <translation id="1741314857973421784">ادامه</translation>
 <translation id="1744108098763830590">صفحه پس‌زمینه</translation>
+<translation id="174516937379651657">‏وقتی صفحه‌ای را با Gemini هم‌رسانی می‌کنید محتوای کامل صفحه و نشانی وب به Google ارسال می‌شود.</translation>
 <translation id="1745732479023874451">مدیریت مخاطبین</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{# فایل در این برنامهٔ وب باز و ویرایش شود؟}other{# فایل در این برنامهٔ وب باز و ویرایش شود؟}}</translation>
 <translation id="1748329107062243374">از گذرکلید <ph name="DEVICE_NAME" /> برای ورود به سیستم <ph name="WEBSITE" /> استفاده کنید</translation>
@@ -1407,6 +1413,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{‫۱ افزونه بررسی شد}one{‫{NUM_EXTENSIONS} افزونه بررسی شد}other{‫{NUM_EXTENSIONS} افزونه بررسی شد}}</translation>
 <translation id="1959421829481337178">لطفاً کد فعال‌سازی ارائه‌شده توسط شرکت مخابراتی‌تان را وارد کنید.</translation>
 <translation id="1960211333621141174">صخره</translation>
+<translation id="1962356719152496092">میان‌بر صفحه‌کلید را در اینجا سفارشی‌سازی کنید</translation>
 <translation id="1963976881984600709">محافظت استاندارد</translation>
 <translation id="1964009877615282740">دیدن موارد بیشتر</translation>
 <translation id="1965578266762387357">‏وقتی در نوشتن کمک می‌گیرید، نشانی وب صفحه، محتوا، و نوشتار شما به Google ارسال می‌شود. اطلاعات شخصی (مانند جزئیات پزشکی یا مالی) را وارد نکنید</translation>
@@ -1574,6 +1581,7 @@
 <translation id="2079053412993822885">درصورتی‌که یکی از مجوزهای خود را حذف کنید، دیگر نمی‌توانید از آن برای راستی‌آزمایی خود استفاده کنید.</translation>
 <translation id="2079495302726689071">باز کردن پیوند در برگه جدید <ph name="APP" /></translation>
 <translation id="2079545284768500474">لغو</translation>
+<translation id="2079553700504470326">‏برای دریافت دقیق‌ترین نتایج از Gemini، به‌جای استفاده از مکان تخمینی مبتنی بر نشانی IP، از مکان دقیق خود استفاده کنید.</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2081816110395725788">حالت راکد هنگام استفاده از باتری</translation>
 <translation id="2082187087049518845">گروه‌بندی برگه</translation>
@@ -2205,6 +2213,7 @@
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2496616243169085015">عکاسی</translation>
 <translation id="2497229222757901769">سرعت موشواره</translation>
+<translation id="24977856422126200">‏‫<ph name="WINDOW_TITLE" /> - شما این زبانه را درطول این مکالمه با Gemini هم‌رسانی می‌کنید</translation>
 <translation id="2497852260688568942">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="2498539833203011245">کوچک کردن</translation>
 <translation id="2498765460639677199">بسیار بزرگ</translation>
@@ -2529,6 +2538,7 @@
 <translation id="2729661575355442512">‏<ph name="BEGIN_PARAGRAPH1" />وقتی «دقت مکان» روشن است، از اطلاعات مربوط به سیگنال‌های بی‌سیم، مثل نقاط دسترسی Wi-Fi و دکل‌های شبکه تلفن همراه و همچنین داده‌های حسگر دستگاه مثل شتاب‌سنج و ژیروسکوپ برای تخمین دقیق‌تر مکان دستگاه استفاده می‌شود، و برنامه‌ها و سرویس‌های Android از این مکان تخمینی برای ارائه ویژگی‌های مکان‌مبنا استفاده می‌کنند. برای انجام این کار، Google به‌صورت دوره‌ای اطلاعات مربوط به حسگرهای دستگاه و سیگنال‌های بی‌سیم نزدیک این دستگاه را برای انبوه‌سپاری مکان‌های سیگنال بی‌سیم جمع‌آوری می‌کند.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />‫Google از اطلاعات جمع‌آوری‌شده از این دستگاه برای بهبود دقت مکان و خدمات مکان‌مبنا، و به‌طورکلی بهبود، ارائه، و حفظ سرویس‌های Google استفاده می‌کند. ما این اطلاعات را براساس منافع مشروع Google و اشخاص ثالث به‌منظور برآورده کردن نیازهای کاربران پردازش می‌کنیم. این اطلاعات برای شناسایی هیچ فردی استفاده نمی‌شود.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />هرزمان بخواهید می‌توانید «دقت مکان» را در تنظیمات مکان این دستگاه خاموش کنید («تنظیمات» &gt; «حریم خصوصی و امنیت» &gt; «کنترل‌های حریم خصوصی» &gt; «دسترسی به مکان» &gt; «تنظیمات پیشرفته مکان»). اگر «دقت مکان» خاموش باشد، داده‌های «دقت مکان» جمع‌آوری نخواهد شد. برای برنامه‌ها و سرویس‌های Android، درصورت وجود فقط از نشانی IP برای تعیین مکان این دستگاه استفاده می‌شود که ممکن است بر دردسترس بودن و دقت مکان برای برنامه‌ها و سرویس‌های Android مثل Google Maps تأثیر بگذارد.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">‏مشاهده و مدیریت فعالیت «برنامه‌های Gemini»</translation>
 <translation id="2730029791981212295">‏درحال پشتیبان‌گیری از برنامه‌ها و فایل‌های Linux</translation>
 <translation id="2730550884708194161">درباره نمایه‌های کاری</translation>
 <translation id="2730596696987224099">انتخاب گذرواژه خود</translation>
@@ -3399,6 +3409,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}one{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}other{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}}</translation>
 <translation id="3361954577771524115">از برنامه</translation>
+<translation id="3362651095484543782">‏برای ترک کردن یا برگشتن به Gemini، از میان‌بر صفحه‌کلید استفاده کنید.</translation>
 <translation id="3362915550009543917">نقاشی رنگ روغن آرامش‌بخشی که چمنزاری زردرنگ را به‌نمایش می‌گذارد و حس آرامش و بازتاب معنوی را برمی‌انگیزد.</translation>
 <translation id="3363202073972776113">سازمانتان این نمایه جدید را مدیریت خواهد کرد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">دگرساز + نگه داشتن نشانگر</translation>
@@ -3622,6 +3633,7 @@
 <translation id="3511358375261756531">ازهم بازکردن <ph name="HEADER" /></translation>
 <translation id="351152300840026870">قلم با عرض ثابت</translation>
 <translation id="3511528412952710609">کوتاه</translation>
+<translation id="3512465804715993309">رنگی کردن تطبیقی</translation>
 <translation id="3513019849832307207">پیوستن و باز کردن</translation>
 <translation id="3513563267917474897">لغزنده رنگ‌مایه از <ph name="MIN_VALUE" /> تا <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">کنترل بازی</translation>
@@ -4967,6 +4979,7 @@
 <translation id="443031431654216610">فقط از اعداد استفاده کنید</translation>
 <translation id="4430369329743628066">نشانک اضافه شد</translation>
 <translation id="4430422687972614133">روشن کردن کارت مجازی</translation>
+<translation id="443196770280837407">‏‫Gemini را با میان‌بر صفحه‌کلید باز کنید.</translation>
 <translation id="4432621511648257259">گذرواژه نادرست است</translation>
 <translation id="4434611816075088065">درحال‌حاضر مورد دیگری نیاز به رسیدگی ندارد</translation>
 <translation id="443475966875174318">به‌روزرسانی یا برداشتن برنامه‌های ناسازگار</translation>
@@ -4982,6 +4995,7 @@
 <translation id="4442863809158514979">مشاهده اجازه‌های وب</translation>
 <translation id="4442937638623063085">نمایه‌ای پیدا نشد. لطفاً کد فعال‌سازی ارائه‌شده توسط شرکت مخابراتی‌تان را وارد کنید.</translation>
 <translation id="4443536555189480885">&amp;راهنما</translation>
+<translation id="4444191890945732856">‏درحال هم‌رسانی این صفحه با Gemini هستید</translation>
 <translation id="4444304522807523469">‏دسترسی به اسکنرهای سند متصل شده از طریق USB یا در شبکه محلی</translation>
 <translation id="4444512841222467874">اگر فضای کافی در دسترس قرار نگیرد، ممکن است کاربران و داده‌ها به‌طور خودکار حذف شوند.</translation>
 <translation id="4445446646109808714">قرارداد مجوز کاربر نهایی: <ph name="EULA_LINK" /></translation>
@@ -5304,6 +5318,7 @@
 <translation id="4681930562518940301">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
 <translation id="4682481611456523884">محتوای جاسازی‌شده در این سایت نمی‌تواند از اطلاعات ذخیره‌شده درباره شما استفاده کند</translation>
 <translation id="4682807230647698604">‏وقتی از این ویژگی‌ها استفاده می‌کنید، داده‌های مربوطه برای ایجاد تجربه‌های هوش مصنوعی به Google ارسال می‌شود</translation>
+<translation id="4683143253481759090">‏‫Chrome به‌روز شد</translation>
 <translation id="4683629100208651599">تبدیل به حروف کوچک</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (پیش‌فرض)</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
@@ -5313,6 +5328,7 @@
 <translation id="4687718960473379118">آگهی‌های پیشنهادی سایت</translation>
 <translation id="4688036121858134881">شناسه گزارش محلی: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> درحال برگرداندن این دستگاه را به نسخه قبلی است (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4688870304423708920">‏اتصال اینترنت را بررسی کنید و دوباره سعی کنید از Gemini استفاده کنید</translation>
 <translation id="4689235506267737042">انتخاب اولویت‌های حالت نمایشی</translation>
 <translation id="4689421377817139245">‏این نشانک را در iPhone خود همگام‌سازی کنید</translation>
 <translation id="4690091457710545971">‏&lt;سفت‌افزار Wi-Fi ‏Intel چهار فایل ایجاد می‌کند: csr.lst، ‏fh_regs.lst، ‏radio_reg.lst، ‏monitor.lst.sysmon.  سه فایل اول فایل‌های دودویی حاوی رونوشت‌های ثبت هستند و Intel تصریح کرده این فایل‌ها حاوی اطلاعات شخصی یا اطلاعات هویتی دستگاه نیست.  فایل آخر ردیابی اجرا از سفت‌افزار Intel است؛ هرگونه اطلاعات شخصی یا هویتی دستگاه از این فایل حذف شده اما برای نمایش در اینجا بسیار حجیم است.  این فایل‌ها جهت رفع مشکلات اخیر Wi-Fi در دستگاهتان ایجاد شده است و با Intel هم‌رسانی خواهد شد تا به عیب‌یابی این مشکلات کمک کند.&gt;</translation>
@@ -5598,6 +5614,7 @@
 <translation id="4884937942297374058">«محافظت بهبودیافته» خاموش است</translation>
 <translation id="4884987973312178454">۶ برابر</translation>
 <translation id="4885692421645694729">این افزونه هیچ‌گونه دسترسی اضافی به سایت ندارد</translation>
+<translation id="4887391901725877182">ارائه زیرنویس ناشنوایان</translation>
 <translation id="4887424188275796356">‏باز کردن با System Viewer</translation>
 <translation id="488785315393301722">نمایش جزئیات</translation>
 <translation id="488862352499217187">ایجاد پوشه جدید</translation>
@@ -5748,6 +5765,7 @@
 <translation id="5001526427543320409">کوکی‌های طرف سوم</translation>
 <translation id="5003070249435823986">بااستفاده از اشاره به حالت پیمایش وارد شوید، سپس سرتان را به جهت موردنظر برای پیمایش حرکت دهید. برای خروج از حالت پیمایش، دوباره از اشاره استفاده کنید.</translation>
 <translation id="5003993274120026347">جمله بعدی</translation>
+<translation id="5005113238422129109">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی با Gemini صحبت می‌کنید، صدای شما در «فعالیت برنامه‌های Gemini» (درصورت فعال بودن) ذخیره می‌شود</translation>
 <translation id="5005311809885666699">‏ذخیره‌شده از Chrome</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5006218871145547804">‏پُل اشکال‌زدایی برنامه Android در Crostini</translation>
@@ -6718,6 +6736,7 @@
 <translation id="5705005699929844214">نمایش همیشگی گزینه‌های دسترس‌پذیری</translation>
 <translation id="5705882733397021510">برگشت</translation>
 <translation id="5707185214361380026">بارگیری برنامه افزودنی از اینجا ناموفق بود:</translation>
+<translation id="5707674184620508665">سازمانتان، <ph name="ACCOUNT_MANAGER" />، نمی‌تواند داده‌های موجود شما را ببیند یا مدیریت کند. این داده‌ها در نمایه فعلی باقی خواهد ماند.</translation>
 <translation id="5708171344853220004">‏نام اصلی Microsoft</translation>
 <translation id="5711010025974903573">گزارش‌های سرویس</translation>
 <translation id="5711983031544731014">قفل باز نشد. گذرواژه‌تان را وارد کنید.</translation>
@@ -7428,6 +7447,7 @@
 <translation id="622484624075952240">پیکان پایین</translation>
 <translation id="622537739776246443">نمایه حذف خواهد شد</translation>
 <translation id="6225475702458870625">اتصال داده از <ph name="PHONE_NAME" /> دردسترس است</translation>
+<translation id="622568138962270592">‏فعالیت برنامه‌های Gemini</translation>
 <translation id="6226777517901268232">فایل کلید خصوصی (اختیاری)</translation>
 <translation id="6227280783235722609">افزونه</translation>
 <translation id="622902691730729894">برداشتن سنجاق گروه از نوار نشانک‌ها</translation>
@@ -7731,6 +7751,7 @@
 <translation id="6451861213630784801">از سیستم خارج شده‌اید</translation>
 <translation id="6452181791372256707">عدم پذیرش</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> تکمیل شد</translation>
+<translation id="6452268285438583507">افزودن افزونه‌ها</translation>
 <translation id="6452961788130242735">مشکل شبکه یا حوزه نادرست</translation>
 <translation id="6453191633103419909">کیفیت پخش محتوای برگه/ صفحه</translation>
 <translation id="6453921811609336127">برای رفتن به روش ورودی بعدی، کلیدهای <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />مهار<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />تبدیل<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />فاصله<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> را فشار دهید</translation>
@@ -8159,6 +8180,7 @@
 <translation id="6759193508432371551">بازنشانی به تنظیمات کارخانه</translation>
 <translation id="6760354150216532978">هشدار: این سایت می‌تواند ویرایش‌های شما را ببیند</translation>
 <translation id="6761209758867628753">ابزار: کمک به نوشتن</translation>
+<translation id="6761459308170527362">‏برای پرسیدن سؤال از Gemini درباره محتوای صفحه‌ای که درحال هم‌رسانی هستید می‌توانید از گپ صوتی یا نوشتاری استفاده کنید</translation>
 <translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6761623907967804682">ذخیره داده‌های سایت در دستگاه مجاز نیست</translation>
 <translation id="6762833852331690540">روشن</translation>
@@ -8818,6 +8840,7 @@
 <translation id="7223952304612664117">با این کار، خدمات سیستم می‌تواند برای تعیین مکان شما از «دقت مکان» استفاده کند. «دقت مکان» می‌تواند برای برآورد کردن مکان دستگاه از اطلاعات مربوط به حسگرها و سیگنال‌های بی‌سیم استفاده کند.</translation>
 <translation id="7225082563376899794">‏استفاده از Windows Hello هنگام وارد کردن گذرواژه‌ها</translation>
 <translation id="7225179976675429563">نوع شبکه موجود نیست</translation>
+<translation id="7226163413959353072">دستیار هوش مصنوعی که در ارائه نکات کلیدی، توضیح دادن مفاهیم، یافتن پاسخ، و… کمک می‌کند</translation>
 <translation id="7227235818314667565">مدیریت هم‌رسانی</translation>
 <translation id="7227458944009118910">برنامه‌های فهرست‌شده در زیر نیز می‌توانند پیوندهای پروتکل را مدیریت کنند. برنامه‌های دیگر اجازه درخواست خواهند کرد.</translation>
 <translation id="7228056665272655255">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در بالا گوشه سمت راست صفحه‌کلید لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
@@ -8887,6 +8910,7 @@
 <translation id="727595954130325265">اکنون بخرید</translation>
 <translation id="727952162645687754">خطای بارگیری</translation>
 <translation id="7280649757394340890">تنظیمات صدای نوشتار به گفتار</translation>
+<translation id="7280683802406059877">سفارشی‌سازی میان‌بر صفحه‌کلید</translation>
 <translation id="7280877790564589615">مجوز درخواست شد</translation>
 <translation id="7281166215790160128">حالت</translation>
 <translation id="7282056103720203738">خواندن داده‌ها و اطلاعات دستگاه‌های پیوست‌شده</translation>
@@ -8945,6 +8969,7 @@
 <translation id="7320213904474460808">شبکه پیش‌فرض</translation>
 <translation id="7321545336522791733">سرور غیرقابل دسترسی است</translation>
 <translation id="7322515217754205362">اجازه‌های سایت</translation>
+<translation id="7322919329844967709">پاسخ‌های مربوط‌تری درباره محتوای صفحه‌ای که هم‌رسانی می‌کنید دریافت خواهید کرد</translation>
 <translation id="7323315405936922211">اندازه ناحیه مکان‌نما</translation>
 <translation id="7324020307732396723">باز کردن تنظیمات زبان</translation>
 <translation id="7324297612904500502">تالار گفتمان بتا</translation>
@@ -9195,6 +9220,7 @@
 <translation id="7481312909269577407">ارسال کردن</translation>
 <translation id="7481358317100446445">آماده</translation>
 <translation id="748138892655239008">محدودیت‌های اصلی گواهی</translation>
+<translation id="7482823403440483089">تکمیل خودکار بهبودیافته</translation>
 <translation id="7483732342458943943">این پیوند کار نمی‌کند</translation>
 <translation id="7484645889979462775">هرگز برای این سایت</translation>
 <translation id="7484943269191249363">‏می‌توانید از همه گذرکلیدهایی که در «مدیر گذرواژه Google» ذخیره کرده‌اید در این دستگاه استفاده کنید. کافی است فقط یک‌بار این کار را انجام دهید.</translation>
@@ -9943,6 +9969,7 @@
 <translation id="7991296728590311172">تنظیمات دسترسی کلیدی</translation>
 <translation id="7992080146463834191">محتوا را خلاصه کنید، زبان پیچیده را ساده کنید، یا سؤال بپرسید.</translation>
 <translation id="7992203134935383159">ترکیب گفتار</translation>
+<translation id="7993332993977106257">‏دسترسی آسان به Gemini در سراسر دستگاه، حتی وقتی Chrome کوچک شده است.</translation>
 <translation id="7997826902155442747">پردازش اولویت‌دار</translation>
 <translation id="7997828719430450286">انجام شد.</translation>
 <translation id="7998701048266085837">نشانی‌های وب</translation>
@@ -9996,6 +10023,7 @@
 <translation id="8028060951694135607">‏بازیابی کلید Microsot</translation>
 <translation id="8028803902702117856">درحال بارگیری <ph name="SIZE" />، <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">اندازه</translation>
+<translation id="8029349782735515147">‏نمایش زیرنویس ناشنوایان هنگام استفاده از Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{فهرست خواندن}=1{فهرست خواندن ({SELECTED_ITEMS})}one{فهرست خواندن ({SELECTED_ITEMS})}other{فهرست خواندن ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید «⌘ + گزینه + پیکان روبه‌بالا» را فشار دهید</translation>
 <translation id="8030169304546394654">اتصال قطع شد</translation>
@@ -10114,6 +10142,7 @@
 <translation id="8102139037507939978">‏«اطلاعات قابل‌شناسایی شخصی» از system_logs.txt حذف شود.</translation>
 <translation id="810362914482827094">جستجوی گذرکلیدها</translation>
 <translation id="8104088837833760645">بارگیری نمایه سیم‌کارت داخلی</translation>
+<translation id="8105050970626643057">‏هر زمان نیاز داشتید Gemini را به‌سرعت باز کنید</translation>
 <translation id="8105273883928376822">لطفاً برای ادامه به سیستم وارد شوید.</translation>
 <translation id="8106114112474206597">‏از «i» برای فشار دادن دکمه موشواره استفاده کنید</translation>
 <translation id="8107015733319732394">‏«فروشگاه Google Play» در <ph name="DEVICE_TYPE" /> شما درحال نصب شدن است. ممکن است این کار چند دقیقه طول بکشد.</translation>
@@ -10270,6 +10299,7 @@
 <translation id="8222112516148944758">گروه‌های برگه شما به‌طور خودکار در همه دستگاه‌هایتان ذخیره و به‌روز می‌شود</translation>
 <translation id="8222674561049363989">این فایل سند معتبری نیست</translation>
 <translation id="822347941086490485">‏درحال پیدا کردن دستگاه‌های HID…</translation>
+<translation id="8224209912580158729">‏محتوای صفحه را با Gemini هم‌رسانی کنید تا پاسخ‌های مربوط‌تری دریافت کنید.</translation>
 <translation id="8224427620313426549">حساب <ph name="DOMAIN_LINK" /> حذف نخواهد شد</translation>
 <translation id="8225046344534779393">اتصال اینترنت را بررسی کنید</translation>
 <translation id="8225265270453771718">هم‌رسانی پنجره برنامه</translation>
@@ -10413,6 +10443,7 @@
 <translation id="8314835274931377415">راه‌اندازی «دسترسی کلیدی» شروع شود؟</translation>
 <translation id="8315018673856831477">گزینه‌های بهینه‌سازی حافظه</translation>
 <translation id="8315514906653279104">درحال روشن کردن…</translation>
+<translation id="8316480109537174997">‏نشان دادن Gemini در سینی سیستم و روشن کردن میان‌بر صفحه‌کلید</translation>
 <translation id="8317671367883557781">افزودن اتصال شبکه</translation>
 <translation id="8317965619823678157">کپی کردن گذرواژه‌ها</translation>
 <translation id="8318266828739827371">‏از نمای صفحهٔ دونیمه برای دیدن ناحیه درشت‌نمایی‌شده در صفحه‌نمایش استفاده کنید. از کلیدهای «جستجو + مهار + D» برای روشن و خاموش کردن ذره‌بین متصل استفاده کنید.</translation>
@@ -10813,6 +10844,7 @@
 <translation id="8607661817136110841">گروه زبانه‌های شما</translation>
 <translation id="8607828412110648570">‏مطمئن شوید دستگاه بلوتوث درحالت جفت‌سازی و در همین اطراف باشد. فقط با دستگاه‌هایی که به آن‌ها اعتماد دارید جفت شوید. دستگاه‌های جفت‌شده برای همه حساب‌های موجود در این Chromebook قابل‌مشاهده است. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">‏افزودن بلیت Kerberos</translation>
+<translation id="860907040896565281">سفارشی‌سازی میان‌بر صفحه‌کلید…</translation>
 <translation id="8609465669617005112">انتقال به بالا</translation>
 <translation id="8611922158252451755">هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند، پس بااحتیاط هم‌رسانی کنید. پیوند ظرف ۴۸ ساعت منقضی می‌شود.</translation>
 <translation id="8612252270453580753">جستجوی فریم ویدیو با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -11214,6 +11246,7 @@
 <translation id="8868838761037459823">جزئیات شبکه تلفن همراه</translation>
 <translation id="8870413625673593573">اخیراً بسته‌شده</translation>
 <translation id="8871043459130124414">فقط پس‌از کلیک کردن روی افزونه اجرا می‌شود</translation>
+<translation id="8871126140396172266">‏‫<ph name="WINDOW_TITLE" /> - درحال هم‌رسانی این صفحه با Gemini هستید</translation>
 <translation id="8871551568777368300">پین‌شده توسط سرپرست</translation>
 <translation id="8871696467337989339">شما از علامت پشتیبانی نشده خط فرمان <ph name="BAD_FLAG" /> استفاده می‌کنید. ثبات و امنیت صدمه می‌بینند.</translation>
 <translation id="8871974300055371298">تنظیمات محتوا</translation>
@@ -11426,6 +11459,7 @@
 <translation id="9011163749350026987">نماد همیشه نشان داده شود</translation>
 <translation id="9011262023858991985">درحال پخش کردن محتوای این برگه</translation>
 <translation id="9011393886518328654">یادداشت‌های انتشار</translation>
+<translation id="9012013036616593083">‏‫Gemini فعلاً دردسترس نیست. بعداً دوباره امتحان کنید.</translation>
 <translation id="9012122671773859802">حرکت مداوم صفحه هم‌زمان با حرکت موشواره</translation>
 <translation id="9012585441087414258">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. اگر صفحه‌ای کار مشکوکی انجام دهد، نشانی‌های وب و بیت‌های محتوای صفحه به «مرور ایمن Google» ارسال می‌شود.</translation>
 <translation id="9013037634206938463">‏برای نصب Linux <ph name="INSTALL_SIZE" /> فضای آزاد لازم است. برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
@@ -11451,6 +11485,7 @@
 <translation id="9024127637873500333">باز کردن در &amp;برگه جدید</translation>
 <translation id="9024158959543687197">هنگام نشاندن دستگاه ذخیره‌سازی متصل به شبکه خطایی روی داد. لطفاً نشانی وب دستگاه ذخیره‌سازی متصل به شبکه را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="9024692527554990034">می‌توانید با وارد کردن میان‌بر در نوار نشانی، سایت خاصی را سریع جستجو کنید یا از موتور جستجوی دیگری استفاده کنید</translation>
+<translation id="9024975946059881308">‏نشان دادن Gemini در نوار منو Mac و روشن کردن میان‌بر صفحه‌کلید</translation>
 <translation id="9025222334598338152">می‌توانید هنگام محدود کردن گزینه‌هایتان، از جدول‌های مقایسه برای ردیابی استفاده کنید</translation>
 <translation id="902638246363752736">تنظیمات صفحه‌کلید</translation>
 <translation id="9026393603776578602">دیکته</translation>

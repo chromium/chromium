@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="1523567067736644845">Lås op for at få vist adgangskoden</translation>
 <translation id="1524563461097350801">Nej tak</translation>
+<translation id="1528290585275339320">Aktivér deling af sideindhold</translation>
 <translation id="1531038290222364269">Vis faner</translation>
 <translation id="1536390784834419204">Oversæt side</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
@@ -1045,6 +1046,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5128788795241319992">Se den nye menu</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="5141363746588976328">Skjul kortet Vis prisfald på dine faner</translation>
+<translation id="514154868070499296">Skrifttype: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Luk Faneskift</translation>
 <translation id="5148717509369231739">Safari-import</translation>
 <translation id="5157638238828697074">Noget gik galt. Appen kunne ikke åbnes.</translation>
@@ -1974,6 +1976,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8637431369725868556">Bliv beskyttet mod farlige websites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ingen kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
 <translation id="8643403533759285912">Slet gruppe</translation>
+<translation id="8645245178269185266">Del sideindhold med Gemini for at få mere relevante svar</translation>
 <translation id="8647280737650867362">Prissporingen kunne ikke deaktiveres.</translation>
 <translation id="8654802032646794042">Annuller</translation>
 <translation id="8660600697590740984">Lens-billede, du har kopieret</translation>

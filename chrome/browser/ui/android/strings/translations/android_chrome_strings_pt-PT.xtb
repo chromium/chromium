@@ -559,6 +559,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3619255692378312441">Faça a gestão do acesso</translation>
 <translation id="3622349720008044802">Faça a gestão das janelas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
+<translation id="3623464286911819905">O modo de leitor não está disponível</translation>
 <translation id="3625870480639975468">Repor zoom</translation>
 <translation id="3631987586758005671">A partilhar com <ph name="DEVICE_NAME" />…</translation>
 <translation id="363484704507524488">Pode gerir a verificação de identidade nas definições de proteção contra roubo. <ph name="BEGIN_LINK" />Aceda às definições<ph name="END_LINK" /></translation>

@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8 kullanıyor.</translation>
 <translation id="2094648590148273905">ChromeOS Flex şartları</translation>
 <translation id="2094919256425865063">Yine de Chrome'dan çıkılsın mı?</translation>
+<translation id="2096213354152647998">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION" /> iznini kaldırdı.</translation>
 <translation id="2106831557840787829">ChromeOS Flex, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="2108778574543343055">Uygulamalar İçin Chrome'un Arka Planda Çalışmasını Devre Dışı Bırak</translation>
 <translation id="2120620239521071941">Bu işlem, <ph name="ITEMS_COUNT" /> öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
@@ -456,6 +457,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6696915334902295848">Bu site için Chrome'un mikrofon iznine ihtiyacı var</translation>
 <translation id="6712881677154121168">İndirme hatası: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome'u daha hızlı hale getirin</translation>
+<translation id="6734827584173583205">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> izni ile birlikte <ph name="COUNT" /> izni daha kaldırdı.</translation>
 <translation id="6735387454586646204">ChromeOS Flex Sistemi</translation>
 <translation id="6750954913813541382">Yazım hatalarını düzeltmek için Chrome, tarayıcıda yazdığınız metni Google'a gönderir</translation>
 <translation id="6760235774835597023">Chrome'un V8 motoruyla siteleri hızlandırır ancak bu durumda Chrome, saldırılara karşı biraz daha dirençsiz hale gelir. Bu ayar açık.</translation>
@@ -481,6 +483,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Yükleme İşlemi Durduruldu.</translation>
 <translation id="7025800014283535195">Chrome profilleri arasında burada geçiş yapabilirsiniz</translation>
+<translation id="7051685429025310665">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
 <translation id="7059914902409643750">Chrome'u Kendinize Uyarlayın</translation>
 <translation id="7060643578009939353">Bu videoyu Google Lens ile arayın</translation>
 <translation id="7071827361006050863">Chrome yakında tarama verilerini silecek</translation>
@@ -542,6 +545,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> için sistem izleme hizmetleri sağlar. Bu hizmet devre dışı bırakılırsa tarayıcı tarafından oluşturulan performans izleri, bağlam geçişi ve hazır iş parçacığı etkinlikleri gibi sistem genelindeki etkinlikleri içermez.</translation>
 <translation id="7736869414036750079">Kuruluşunuz, Chrome'da oturum açmanızı zorunlu kılıyor</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
+<translation id="7748969056734910029">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> iznini kaldırdı.</translation>
 <translation id="7761834446675418963">Chrome'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>
 <translation id="7777080907402804672">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir. Bu özelliği istediğiniz zaman ayarlardan kapatabilirsiniz.</translation>
 <translation id="778331955594035129">Bu site için Chrome'un konum iznine ihtiyacı var</translation>

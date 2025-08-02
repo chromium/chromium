@@ -659,6 +659,7 @@
 <translation id="2102495993840063010">Android အက်ပ်များ</translation>
 <translation id="2102519472192754194">ဝဘ်ဘရောင်ဇာ</translation>
 <translation id="2103210856015238101">ထိရုံဖြင့် ဖြည့်၍ရနိုင်သော ဖောက်သည်ကတ်များကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်။</translation>
+<translation id="2104739941682874393">‘အဆင့်မြင့် အော်တိုဖြည့်’ သည် ဖောင်များကို ပိုမိုကောင်းမွန်စွာ နားလည်နိုင်ပြီး သင့်အတွက် ပိုမြန်ဆန်စွာ အော်တိုဖြည့်ပေးနိုင်သည်</translation>
 <translation id="2105838220373099643">သရုပ်ဆောင်တင်ဆက်မှုဂိမ်း</translation>
 <translation id="2107021941795971877">ပုံနှိပ်မှုဆိုင်ရာ အကူအညီများ</translation>
 <translation id="2108755909498034140">သင်၏ကွန်ပျူတာကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
@@ -1529,6 +1530,7 @@
 <translation id="3570079787344939099">လှိမ့်ခြင်းနှင့် ဇူးမ်ဆွဲခြင်း</translation>
 <translation id="357244642999988503">ကော်လံကို ဖယ်ရှားရန်</translation>
 <translation id="3574305903863751447"><ph name="CITY" />၊ <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">လိပ်စာတွင် အချက်အလက်အသစ် ထည့်ခြင်း</translation>
 <translation id="3575121482199441727">ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုရန်</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">လမ်းအမည် ရွေးစရာကို ရွေးထားသည်</translation>
@@ -2428,6 +2430,7 @@
 <translation id="5052517576853118371">ဖွင့်ထားသည့် အကြောင်းအရာများ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
 <translation id="505757197798929356">ဖွင့်ရန်အတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
+<translation id="5058282932481719070">အဆင့်မြင့် အော်တိုဖြည့်အကြောင်း ဆက်တင်များတွင် ပိုလေ့လာရန်</translation>
 <translation id="5060419232449737386">ခေါင်းစီး ဆက်တင်များ</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> သုံးသည့် ဝဘ်ဆိုက်များတွင် Windows Hello ဖြင့် အတည်ပြုရန် သင်ရွေးထားသည်။ သင့်ငွေပေးချေနည်းလမ်း အချက်အလက်တွေကို ဤပံ့ပိုးသူက သိမ်းထားနိုင်ပြီး ၎င်းတို့ကို <ph name="LINK_TEXT" />နိုင်ပါသည်။</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ကို ဆိုလိုခြင်းဖြစ်ပါသလား။</translation>
@@ -3029,6 +3032,7 @@
 <translation id="6062937464449575061">ဈေးနှုန်းစောင့်ကြည့်ခြင်း ရပ်ရန်</translation>
 <translation id="6063415549109819824">အိမ်ဝယ်ယူမှုဆိုင်ရာ ငွေထောက်ပံ့ခြင်း</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> တွင် ဖိုင်တစ်ခုနှင့်အထက်ကို <ph name="FOLDER_NAME" /> သို့ အပ်လုဒ်လုပ်၍ မရလိုက်ပါ</translation>
+<translation id="6071503852498277813">အကြောင်းအရာလိပ်စာ ပါဆာဝန်ဆောင်မှု</translation>
 <translation id="6078069862923723141">စိမ်းပြာ ၂</translation>
 <translation id="6085149458302186532">လေဘယ်လ် (အရောင်)</translation>
 <translation id="6087312102907839798">ဆက်စပ်သော ရှာဖွေမှုများ</translation>
@@ -3552,6 +3556,7 @@
 <translation id="695140971690006676">အားလုံး ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6954049078461159956">ဟော်ကီ</translation>
 <translation id="695582302419398462">ကတ်ထူ (နှစ်ထပ်)</translation>
+<translation id="6957153644870901611">နောက်ထပ်အကွက်များကို အလိုအလျောက် ဖြည့်နိုင်ရန် ‘အဆင့်မြင့် အော်တိုဖြည့်’ ဖွင့်ပါ</translation>
 <translation id="6957887021205513506">ဆာဗာ၏ လက်မှတ်မှာ အတုဟု ထင်ရသည်။</translation>
 <translation id="6958564499836457428">သင်၏ Google Account ရှိ Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များကို စီမံနိုင်သည်</translation>
 <translation id="6961844873822989059">သင့်စက်တွင်ထည့်သွင်းထားသော ဖောင့်များသုံးရန် ခွင့်တောင်းနိုင်သည်</translation>
@@ -4131,6 +4136,7 @@
 <translation id="7908648876066812348">ပကတိအသွင်ကတ်ကို ဖွင့်နေသည်</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ‘တဘ်’ နှိပ်ပြီးနောက် Enter နှိပ်၍ ဆက်တင်များရှိ Chrome လုံခြုံရေး စစ်ဆေးမှု စာမျက်နှာသို့ သွားပါ</translation>
 <translation id="791107458486222637">ရလဒ် ပြန်လုပ်နေသည်</translation>
+<translation id="7912924955815015552">Safari မှ ထည့်သွင်းထားသည်</translation>
 <translation id="791551905239004656">ပုံဆွဲခြင်း၊ ဆေးရောင်ခြယ်ခြင်း</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">သင့်အဖွဲ့အစည်းသည် သင့်အား လက်မှတ်ထိုးဝင်ခွင့်မပြုပါ</translation>

@@ -659,6 +659,7 @@
 <translation id="2102495993840063010">Android অ্যাপ্লিকেশানগুলি</translation>
 <translation id="2102519472192754194">ওয়েব ব্রাউজার</translation>
 <translation id="2103210856015238101">টাচ করে পূরণ করার জন্য উপলভ্য লয়্যালটি কার্ড সম্পূর্ণ উচ্চতায় খোলা আছে।</translation>
+<translation id="2104739941682874393">উন্নত অটোফিল করার সুবিধা ফর্মকে আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে</translation>
 <translation id="2105838220373099643">রোলপ্লেয়িং গেম</translation>
 <translation id="2107021941795971877">প্রিন্ট সংক্রান্ত সহায়তা</translation>
 <translation id="2108755909498034140">আপনার কম্পিউটার পুনরায় চালু করুন</translation>
@@ -2429,6 +2430,7 @@
 <translation id="5052517576853118371">অ্যাক্টিভ বিষয়</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইল পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}one{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}other{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}}</translation>
 <translation id="505757197798929356">খোলার কারণ লিখুন (খালি রাখা যাবে না)</translation>
+<translation id="5058282932481719070">সেটিংস থেকে উন্নত অটোফিল করার সুবিধা সম্পর্কে আরও জানুন</translation>
 <translation id="5060419232449737386">ক্যাপশন সেটিংস</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> ব্যবহার করে এমন ওয়েবসাইটে Windows Hello ব্যবহার করে যাচাই করার বিকল্প বেছে নিয়েছেন। এই পরিষেবা প্রদানকারী আপনার পেমেন্ট পদ্ধতি সম্পর্কে তথ্য স্টোর করে থাকতে পারে যা আপনি <ph name="LINK_TEXT" /> পারেন।</translation>
 <translation id="5061227663725596739">আপনি কি <ph name="LOOKALIKE_DOMAIN" /> ডোমেনের কথা বলছেন?</translation>
@@ -3030,6 +3032,7 @@
 <translation id="6062937464449575061">দাম ট্র্যাক করা বন্ধ করুন</translation>
 <translation id="6063415549109819824">হোম ফাইন্যান্সিং</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />-এ <ph name="FOLDER_NAME" />-এ এক বা তার থেকে বেশি ফাইল আপলোড করা যায়নি</translation>
+<translation id="6071503852498277813">কন্টেন্ট বুকমার্ক পার্সার পরিষেবা</translation>
 <translation id="6078069862923723141">সায়ান ২</translation>
 <translation id="6085149458302186532">লেবেল (রঙিন)</translation>
 <translation id="6087312102907839798">সম্পর্কিত সার্চ</translation>
@@ -3553,6 +3556,7 @@
 <translation id="695140971690006676">সব রিসেট করুন</translation>
 <translation id="6954049078461159956">হকি</translation>
 <translation id="695582302419398462">কার্ডবোর্ড (ডবল ওয়াল)</translation>
+<translation id="6957153644870901611">আরও ফিল্ড অটোমেটিক পূরণ করতে উন্নত অটোফিল করার সুবিধা চালু করুন</translation>
 <translation id="6957887021205513506">সার্ভারটির সার্টিফিকেটটি একটি জাল হিসাবে উপস্থিত হয়েছে৷</translation>
 <translation id="6958564499836457428">আপনার Google অ্যাকাউন্টে Google-এর গোপনীয়তা সেটিংস ম্যানেজ করুন</translation>
 <translation id="6961844873822989059">আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করার অনুমতি চাইতে পারে</translation>

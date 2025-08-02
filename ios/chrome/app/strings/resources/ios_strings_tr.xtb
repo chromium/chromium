@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Bugün etkindi</translation>
 <translation id="1523567067736644845">Şifreyi göstermek için kilidi açın</translation>
 <translation id="1524563461097350801">Hayır, Teşekkürler</translation>
+<translation id="1528290585275339320">Sayfa içeriği paylaşımını etkinleştirin</translation>
 <translation id="1531038290222364269">Sekmeleri göster</translation>
 <translation id="1536390784834419204">Sayfayı çevir</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -1045,6 +1046,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5128788795241319992">Yeni menüyü keşfedin</translation>
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
 <translation id="5141363746588976328">Sekmelerinizdeki fiyat düşüşleri kartını gizle</translation>
+<translation id="514154868070499296">Yazı tipi: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Sekme Değiştirici'den çık</translation>
 <translation id="5148717509369231739">Safari'den içe aktarma</translation>
 <translation id="5157638238828697074">Bir hata oluştu. Uygulama açılamadı.</translation>
@@ -1974,6 +1976,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8637431369725868556">Tehlikeli sitelere karşı korunun.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Sızdırılmış şifre yok}=1{Sızdırılmış {COUNT} şifre var}other{Sızdırılmış {COUNT} şifre var}}</translation>
 <translation id="8643403533759285912">Grubu Sil</translation>
+<translation id="8645245178269185266">Daha alakalı yanıtlar almak için sayfa içeriğini Gemini ile paylaşın</translation>
 <translation id="8647280737650867362">Fiyat takibini bırakılamadı.</translation>
 <translation id="8654802032646794042">İptal</translation>
 <translation id="8660600697590740984">Kopyaladığınız Lens resmi</translation>

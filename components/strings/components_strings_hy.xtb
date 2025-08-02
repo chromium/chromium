@@ -561,6 +561,7 @@
 <translation id="1927439846988093361">Մազերի խնամք</translation>
 <translation id="1935353813610900265">Կարծիք հայտնեք ԱԲ-ի միջոցով այցելությունների պատմությունում որոնման մասին</translation>
 <translation id="1935995810530254458">Պատճենել</translation>
+<translation id="1938580037092872316">Թարմացրեք պահված հասցեն</translation>
 <translation id="1939059826036755332">«Նկար նկարի մեջ» պատուհանի ավտոմատ ցուցադրում</translation>
 <translation id="1939175642807587452">Կարող է հայցել ծանուցումներ ուղարկելու թույլտվություն</translation>
 <translation id="1940441167050915935">Ջնջե՞լ անվտանգության պահված կոդերը</translation>
@@ -1534,6 +1535,7 @@
 <translation id="3570079787344939099">Ոլորումով մասշտաբի փոփոխում</translation>
 <translation id="357244642999988503">Հեռացնել սյունակը</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Նոր տեղեկություններ ավելացրեք հասցեին</translation>
 <translation id="3575121482199441727">Թույլատրել այս կայքի համար</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Ընտրվել է փողոցի անվանման տարբերակը</translation>
@@ -3550,6 +3552,7 @@
 <translation id="6935082727755903526">Աշխատանք հաշվապահության և ֆինանսների ոլորտում</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />։ Որոշ կայքեր կարող են ավելի դանդաղ բեռնվել հաջորդ այցելության ժամանակ։</translation>
 <translation id="6936976777388162184">Այս սարքում ներկառուցված է լիցենզիայի փաթեթ, և սարքը հնարավոր չէ գրանցել կրպակի և ցուցանակի ռեժիմում։</translation>
+<translation id="6942444979237658241">Մեկնաբանություններ – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Ռազմավարական խաղեր</translation>
 <translation id="6944692733090228304">Դուք մուտքագրել եք գաղտնաբառը մի կայքում, որը չի կառավարվում <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ի կողմից: Ձեր հաշիվը պաշտպանելու համար խորհուրդ ենք տալիս չօգտագործել այդ գաղտնաբառն այլ հավելվածներում և կայքերում:</translation>
 <translation id="6946949206576443118">Որոնեք համացանցում Chrome-ի միջոցով</translation>
@@ -4008,6 +4011,7 @@
 <translation id="7668654391829183341">Անհայտ սարք</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />՝ <ph name="ITEMS_TOTAL" />-ից։</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Գործողություններ տվյալների հետ, որոնք նշված են որպես գաղտնի (հաշիվ մտնելուց հետո 1 գործողություն)։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" />}one{Գործողություններ տվյալների հետ, որոնք նշված են որպես գաղտնի (հաշիվ մտնելուց հետո # գործողություն)։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" />}other{Գործողություններ տվյալների հետ, որոնք նշված են որպես գաղտնի (հաշիվ մտնելուց հետո # գործողություն)։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Ձեր <ph name="USER_EMAIL" /> Google հաշվի տեղեկությունները կարող են օգնել ձեզ ավելի արագ լրացնել ձևերը Chrome-ում</translation>
 <translation id="7673278391011283842">Փոստարկղ 6</translation>
 <translation id="7675325315208090829">Կառավարել վճարման եղանակները…</translation>
 <translation id="767550629621587224">Նախապես կտրված ներդիրներ</translation>
@@ -4140,6 +4144,7 @@
 <translation id="7908648876066812348">Վիրտուալ քարտը միացվում է</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Կարգավորումներում Chrome-ի անվտանգության ստուգման էջ անցնելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="791107458486222637">Արդյունքը վերարկվում է</translation>
+<translation id="7912924955815015552">Safari-ից ներմուծված</translation>
 <translation id="791551905239004656">Նկարչություն և գունավորում</translation>
 <translation id="7916162853251942238">Ֆլեքսոգրաֆիկ հիմք</translation>
 <translation id="791698251820376781">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ մուտք գործել</translation>
@@ -4274,6 +4279,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ստեղծվել է 1 ամիս առաջ}one{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}other{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}}</translation>
 <translation id="8148608574971654810">PDF-ի տարբեակը՝</translation>
 <translation id="8149426793427495338">Ձեր համակարգիչը մտել է քնի ռեժիմ:</translation>
+<translation id="815036624016370447">Ձեր <ph name="ACCOUNT" /> Google հաշվի տեղեկությունները կարող են օգնել ձեզ ավելի արագ լրացնել ձևերը Chrome-ում</translation>
 <translation id="8150722005171944719"><ph name="URL" />-ում գտնվող ֆայլը ընթեռնելի չէ: Հնարավոր է, այն հեռացվել է, տեղափոխվել կամ ֆայլի թույլտվությունները կանխում են մուտքը:</translation>
 <translation id="8151185429379586178">Ծրագրավորողի գործիքներ</translation>
 <translation id="8153865548451212769">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը ներբեռնել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը ներբեռնել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը ներբեռնել <ph name="DESTINATION_NAME" />}}</translation>

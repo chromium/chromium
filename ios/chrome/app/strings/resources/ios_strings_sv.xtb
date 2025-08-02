@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktiv idag</translation>
 <translation id="1523567067736644845">Lås upp för att visa lösenordet</translation>
 <translation id="1524563461097350801">Nej tack</translation>
+<translation id="1528290585275339320">Aktivera delning av sidinnehåll</translation>
 <translation id="1531038290222364269">Visa flikar</translation>
 <translation id="1536390784834419204">Översätt sidan</translation>
 <translation id="1540800554400757039">Adressrad 1</translation>
@@ -1045,6 +1046,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5128788795241319992">Utforska den nya menyn</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="5141363746588976328">Dölj kortet Sänkta priser på dina flikar</translation>
+<translation id="514154868070499296">Teckensnitt: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Stäng Flikbyte</translation>
 <translation id="5148717509369231739">Safari-import</translation>
 <translation id="5157638238828697074">Något gick fel. Det gick inte att öppna appen.</translation>
@@ -1974,6 +1976,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8637431369725868556">Få skydd mot farliga webbplatser.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="8643403533759285912">Radera grupp</translation>
+<translation id="8645245178269185266">Dela sidinnehåll med Gemini för att få mer relevanta svar</translation>
 <translation id="8647280737650867362">Det gick inte att avsluta prisbevakningen.</translation>
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8660600697590740984">Sök efter kopierad bild med Lens</translation>

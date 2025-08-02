@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">Εφαρμογές Android</translation>
 <translation id="2102519472192754194">Προγράμματα περιήγησης στον ιστό</translation>
 <translation id="2103210856015238101">Οι κάρτες επιβράβευσης αφοσιωμένων πελατών που είναι διαθέσιμες για συμπλήρωση μέσω αφής είναι ανοιχτές σε πλήρες ύψος.</translation>
+<translation id="2104739941682874393">Η βελτιωμένη αυτόματη συμπλήρωση κατανοεί καλύτερα τις φόρμες και μπορεί να τις συμπληρώνει αυτόματα πιο γρήγορα για εσάς</translation>
 <translation id="2105838220373099643">Παιχνίδια ρόλων</translation>
 <translation id="2107021941795971877">Εκτύπωση υποστηριγμάτων</translation>
 <translation id="2108755909498034140">Επανεκκινήστε τον υπολογιστή σας</translation>
@@ -1528,6 +1529,7 @@
 <translation id="3570079787344939099">Κύλιση και εστίαση</translation>
 <translation id="357244642999988503">Κατάργηση στήλης</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Προσθήκη νέων πληροφοριών στη διεύθυνση</translation>
 <translation id="3575121482199441727">Να επιτρέπεται για αυτόν τον ιστότοπο</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Ορίστηκε η επιλογή για το όνομα οδού</translation>
@@ -2428,6 +2430,7 @@
 <translation id="5052517576853118371">Ενεργά θέματα</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την Κοινοποίηση κοντά, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την Κοινοποίηση κοντά, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
 <translation id="505757197798929356">Καταχωρίστε τον λόγο για το άνοιγμα (απαιτείται)</translation>
+<translation id="5058282932481719070">μάθετε περισσότερα σχετικά με τη βελτιωμένη αυτόματη συμπλήρωση στις ρυθμίσεις</translation>
 <translation id="5060419232449737386">Ρυθμίσεις υποτίτλων</translation>
 <translation id="5060483733937416656">Επιλέξατε να γίνεται επαλήθευση με το Windows Hello σε ιστοτόπους που χρησιμοποιούν τον πάροχο <ph name="PROVIDER_ORIGIN" />. Αυτός ο πάροχος μπορεί να έχει αποθηκεύσει πληροφορίες σχετικά με τον τρόπο πληρωμής σας, τις οποίες μπορείτε να <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Μήπως εννοούσατε <ph name="LOOKALIKE_DOMAIN" />;</translation>
@@ -3030,6 +3033,7 @@
 <translation id="6062937464449575061">Κατάργηση παρακολούθησης τιμής</translation>
 <translation id="6063415549109819824">Στεγαστική χρηματοδότηση</translation>
 <translation id="6070432475334343308">Ένα ή περισσότερα αρχεία δεν ανέβηκαν στον φάκελο <ph name="FOLDER_NAME" /> στο <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Υπηρεσία συντακτικού αναλυτή σελιδοδεικτών περιεχομένου</translation>
 <translation id="6078069862923723141">Κυανό 2</translation>
 <translation id="6085149458302186532">Ετικέτες (Έγχρωμες)</translation>
 <translation id="6087312102907839798">Συναφείς αναζητήσεις</translation>
@@ -3555,6 +3559,7 @@
 <translation id="695140971690006676">Επαναφορά όλων</translation>
 <translation id="6954049078461159956">Χόκεϊ</translation>
 <translation id="695582302419398462">Χαρτόνι (Διπλό τείχος)</translation>
+<translation id="6957153644870901611">Ενεργοποιήστε τη βελτιωμένη αυτόματη συμπλήρωση για να συμπληρώνετε αυτόματα περισσότερα πεδία</translation>
 <translation id="6957887021205513506">Το πιστοποιητικό του διακομιστή φαίνεται να είναι πλαστό.</translation>
 <translation id="6958564499836457428">Διαχειριστείτε τις ρυθμίσεις απορρήτου Google στον Λογαριασμό σας Google</translation>
 <translation id="6961844873822989059">Μπορεί να ζητά να χρησιμοποιεί τις γραμματοσειρές που είναι εγκατεστημένες στη συσκευή σας.</translation>
@@ -4134,6 +4139,7 @@
 <translation id="7908648876066812348">Ενεργοποίηση εικονικής κάρτας</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και μετά το Enter για να μεταβείτε στη σελίδα του ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="791107458486222637">Επανάληψη αποτελέσματος</translation>
+<translation id="7912924955815015552">Εισήχθησαν από το Safari</translation>
 <translation id="791551905239004656">Ζωγραφική και χρωματισμός</translation>
 <translation id="7916162853251942238">Βάση Flexo</translation>
 <translation id="791698251820376781">Ο οργανισμός σας δεν σας επιτρέπει να συνδεθείτε</translation>

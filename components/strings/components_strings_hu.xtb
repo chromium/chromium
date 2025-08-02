@@ -658,6 +658,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2102495993840063010">Android-alkalmazások</translation>
 <translation id="2102519472192754194">Böngészők</translation>
 <translation id="2103210856015238101">Az érintéssel kitölthető hűségkártyák listája teljes magasságban van megnyitva.</translation>
+<translation id="2104739941682874393">A továbbfejlesztett automatikus kitöltés pontosabban megérti az űrlapokat, és gyorsabban tudja automatikusan kitölteni őket.</translation>
 <translation id="2105838220373099643">Szerepjátékok</translation>
 <translation id="2107021941795971877">Nyomtató támogatásai</translation>
 <translation id="2108755909498034140">Indítsa újra a számítógépet</translation>
@@ -2425,6 +2426,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5052517576853118371">Aktív témák</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}other{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}}</translation>
 <translation id="505757197798929356">Adja meg a megnyitás okát (kötelező)</translation>
+<translation id="5058282932481719070">További információ a továbbfejlesztett automatikus kitöltésről a beállításokban</translation>
 <translation id="5060419232449737386">Feliratbeállítások</translation>
 <translation id="5060483733937416656">Úgy döntött, hogy a Windows Hello használatával igazolja magát a következőt használó webhelyeken: <ph name="PROVIDER_ORIGIN" />. Ez a szolgáltató eltárolhatott információkat az Ön fizetési módjáról. Ön <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Erre gondolt: <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3026,6 +3028,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6062937464449575061">Árkövetés kikapcsolása</translation>
 <translation id="6063415549109819824">Lakásfinanszírozás</translation>
 <translation id="6070432475334343308">Valamelyik (vagy több) fájl nem lett feltöltve a(z) <ph name="FOLDER_NAME" /> mappába itt: <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Tartalomkönyvjelző-elemzési szolgáltatás</translation>
 <translation id="6078069862923723141">Cián 2</translation>
 <translation id="6085149458302186532">Címkék (színes)</translation>
 <translation id="6087312102907839798">Kapcsolódó keresések</translation>
@@ -3550,6 +3553,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="695140971690006676">Az összes visszaállítása</translation>
 <translation id="6954049078461159956">Jégkorong</translation>
 <translation id="695582302419398462">Karton (kettős falú)</translation>
+<translation id="6957153644870901611">Kapcsolja be a továbbfejlesztett automatikus kitöltést, hogy még több mezőt tölthessen ki automatikusan.</translation>
 <translation id="6957887021205513506">A szerver tanúsítványa hamisítványnak tűnik.</translation>
 <translation id="6958564499836457428">A Google-lal kapcsolatos adatvédelmi beállítások kezelése a Google-fiókban</translation>
 <translation id="6961844873822989059">Engedélyt kérhet arra, hogy használja az eszközre telepített betűtípusokat</translation>

@@ -84,6 +84,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2091012649849228750">Ak chcete v budúcnosti dostávať aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.</translation>
 <translation id="2094648590148273905">Zmluvné podmienky systému Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chcete Chrome napriek tomu ukončiť?</translation>
+<translation id="2096213354152647998">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenie <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Deaktivovať spustenie Chromu na pozadí pre aplikácie</translation>
 <translation id="2120620239521071941">Táto akcia odstráni zo zariadenia niekoľko položiek (počet: <ph name="ITEMS_COUNT" />). Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
@@ -460,6 +461,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6696915334902295848">Chrome vyžaduje pre tento web povolený prístup k mikrofónu</translation>
 <translation id="6712881677154121168">Chyba sťahovania: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Zrýchlenie Chromu</translation>
+<translation id="6734827584173583205">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ďalšie (<ph name="COUNT" />).</translation>
 <translation id="6735387454586646204">Systém Chrome OS Flex</translation>
 <translation id="6750954913813541382">Chrome odošle text zadaný v prehliadači Googlu s cieľom opraviť pravopisné chyby</translation>
 <translation id="6760235774835597023">Zrýchľuje weby pomocou nástroja V8 Chromu, ale mierne zníži odolnosť prehliadača voči útokom. Toto nastavenie je zapnuté.</translation>
@@ -485,6 +487,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7024536598735240744">Chyba pri rozbalení: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Inštalácia bola zastavená.</translation>
 <translation id="7025800014283535195">Tu môžete prepínať profily Chromu</translation>
+<translation id="7051685429025310665">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Upravte Chrome podľa seba</translation>
 <translation id="7060643578009939353">Vyhľadať toto video pomocou funkcie Google Lens</translation>
 <translation id="7071827361006050863">Chrome čoskoro odstráni dáta prehliadania</translation>
@@ -546,6 +549,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="77283119132245232">Poskytuje služby sledovanie systému pre <ph name="BROWSER_NAME" />. Ak je táto služba vypnutá, stopy výkonnosti vytvorené prehliadačom nebudú zahŕňať udalosti na úrovni systému, ako sú udalosti prepínania kontextu a pripravených vlákien.</translation>
 <translation id="7736869414036750079">Vaša organizácia vyžaduje, aby ste sa prihlásili do Chromu</translation>
 <translation id="7747138024166251722">Inštalátor nemohol vytvoriť dočasný priečinok. Skontrolujte úroveň zaplnenia disku a povolenie na inštaláciu softvéru.</translation>
+<translation id="7748969056734910029">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Ak chcete otvoriť prehliadač Chrome a začať prehliadať, kliknite na svoje meno.</translation>
 <translation id="7777080907402804672">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy. Môžete to kedykoľvek vypnúť v nastaveniach.</translation>
 <translation id="778331955594035129">Chrome vyžaduje pre tento web povolený prístup k polohe</translation>

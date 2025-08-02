@@ -3233,6 +3233,11 @@ Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Outlook sẽ không hiể
           Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="3273221114520206906">Cài đặt JavaScript  mặc định</translation>
 <translation id="3278042410658310805">Tắt tính năng phản hồi bằng giọng nói trên màn hình đăng nhập và cho phép người dùng tạm thời bật tính năng này</translation>
+<translation id="3279532732818711062">Nếu bạn đặt chính sách này thì các nguồn gốc có trong danh sách sẽ có thể lấy thông tin về thuộc tính của thiết bị (ví dụ: số sê-ri, tên máy chủ) bằng Device Attributes API.
+
+Các nguồn gốc phải tương ứng với các ứng dụng web là Ứng dụng web tách biệt bị buộc cài đặt (bằng chính sách <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (kể từ phiên bản 125), được thiết lập dưới dạng ứng dụng kiosk hoặc các ứng dụng web bị buộc cài đặt (bằng chính sách <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (trước phiên bản 140). Để xem thông số kỹ thuật của Device Attributes API, vui lòng truy cập vào https://wicg.github.io/WebApiDevice/device_attributes.
+
+Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ (kể từ phiên bản 127), vui lòng truy cập https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="328347261792478720">Theo mặc định, trình duyệt sẽ hiển thị các mục đề xuất nội dung nghe nhìn phù hợp với người dùng. Nếu bạn đặt chính sách này thành Tắt, thì các mục đề xuất này sẽ không hiển thị với người dùng. Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì các mục đề xuất nội dung nghe nhìn sẽ hiển thị cho người dùng.</translation>
 <translation id="3284094172359247914">Kiểm soát việc sử dụng API WebUSB</translation>
 <translation id="3285231260918855067">Độ mờ viền của văn bản hình mờ, từ 0 (trong suốt) đến 100 (mờ).</translation>
@@ -4313,6 +4318,7 @@ Nếu bạn không đặt chính sách này, hành vi của chính sách sẽ do
 <translation id="4051723201852944592">Bật tính năng Che kín cửa sổ</translation>
 <translation id="4052529125939620019">Tải tiện ích thành phần CryptoToken khi khởi động</translation>
 <translation id="4053157306171963473">Tắt tính năng báo cáo thời gian hoạt động của thiết bị</translation>
+<translation id="4053168888967633418">Chế độ cài đặt Thuộc tính thiết bị</translation>
 <translation id="4056842786707010434">Chọn xem bạn có cho phép xoá window.name đối với các thao tác điều hướng ở cấp cao nhất giữa các trang web và dẫn đến một nhóm bối cảnh duyệt web mới hay không.</translation>
 <translation id="4056910949759281379">Vô hiệu hóa giao thức SPDY</translation>
 <translation id="4057442294431066708">Chính sách này kiểm soát tuỳ chọn phím tắt đã chọn để gán lại các sự kiện thành

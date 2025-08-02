@@ -285,6 +285,7 @@
 <translation id="4598116752460667024">Потражите било који процес са листе.</translation>
 <translation id="4613863813562375431">Верзија Chromium ОС-а</translation>
 <translation id="4621240073146040695">Ажурирање је скоро готово! Поново покрените Chromium да бисте довршили ажурирање.</translation>
+<translation id="4625064703209785397">Убрзава сајтове уз Chromium механизам V8, али чини Chromium мало мање отпорним на нападе</translation>
 <translation id="4654936675281451226">Chromium боље разуме обрасце и може брже аутоматски да их попуњава за вас. Ово подешавање је укључено.</translation>
 <translation id="4665829708273112819">Упозорење: Chromium не може да спречи додатке да чувају историју прегледања. Да бисте онемогућили овај додатак у режиму без архивирања, поништите избор ове опције.</translation>
 <translation id="4673151026126227699">Ако делите и Chromium извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
@@ -330,6 +331,7 @@
 <translation id="5386450000063123300">Ажурирање Chromium-а (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволи пријављивање у Chromium</translation>
 <translation id="5405650547142096840">Уклони из Chromium-а</translation>
+<translation id="5424544524441439284">Смањује перформансе, али чини Chromium отпорнијим на нападе</translation>
 <translation id="5427571867875391349">Подеси Chromium као подразумевани прегледач</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium препоручује да паузирате картицу која успорава прегледач}one{Chromium препоручује да паузирате картице које успоравају прегледач}few{Chromium препоручује да паузирате картице које успоравају прегледач}other{Chromium препоручује да паузирате картице које успоравају прегледач}}</translation>

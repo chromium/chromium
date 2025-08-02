@@ -557,6 +557,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1927439846988093361">Plaukų priežiūra</translation>
 <translation id="1935353813610900265">Siųsti atsiliepimus apie DI teikiamą istorijos paiešką</translation>
 <translation id="1935995810530254458">Vis tiek kopijuoti</translation>
+<translation id="1938580037092872316">Pridėkite naujos informacijos prie išsaugoto adreso</translation>
 <translation id="1939059826036755332">Automatinis vaizdas vaizde</translation>
 <translation id="1939175642807587452">Gali būti prašoma siųsti pranešimus</translation>
 <translation id="1940441167050915935">Ištrinti išsaugotus saugos kodus</translation>
@@ -657,6 +658,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2102495993840063010">„Android“ programos</translation>
 <translation id="2102519472192754194">Žiniatinklio naršyklės</translation>
 <translation id="2103210856015238101">Lojalumo kortelės, kurias galima užpildyti palietus, atidarytos per visą ekrano aukštį.</translation>
+<translation id="2104739941682874393">Patobulinto automatinio pildymo funkcija geriau supranta formas ir gali greičiau jas automatiškai užpildyti</translation>
 <translation id="2105838220373099643">Vaidmenų žaidimai</translation>
 <translation id="2107021941795971877">Spausdinimo atraminės struktūros</translation>
 <translation id="2108755909498034140">Iš naujo paleiskite kompiuterį</translation>
@@ -1528,6 +1530,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3570079787344939099">Slinkimas ir mastelio keitimas</translation>
 <translation id="357244642999988503">Pašalinti stulpelį</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Pridėti naujos informacijos prie adreso</translation>
 <translation id="3575121482199441727">Leisti šioje svetainėje</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Pasirinkta gatvės pavadinimo parinktis</translation>
@@ -2427,6 +2430,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5052517576853118371">Aktyvios temos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jei norite siųsti šį failą naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}one{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}few{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}many{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}other{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}}</translation>
 <translation id="505757197798929356">Nurodykite atidarymo priežastį (būtina)</translation>
+<translation id="5058282932481719070">sužinokite daugiau apie patobulintą automatinį pildymą nustatymų puslapyje</translation>
 <translation id="5060419232449737386">Subtitrų nustatymai</translation>
 <translation id="5060483733937416656">Svetainėse, kuriose naudojama <ph name="PROVIDER_ORIGIN" />, pasirinkote patvirtinti naudodami „Windows Hello“. Šis teikėjas galėjo išsaugoti informaciją apie jūsų mokėjimo metodą, ir galite <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Turėjote omenyje <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3028,6 +3032,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6062937464449575061">Nebestebėti kainų</translation>
 <translation id="6063415549109819824">Namų finansinė apskaita</translation>
 <translation id="6070432475334343308">Vienas ar daugiau failų neįkelti į „<ph name="FOLDER_NAME" />“ sistemoje „<ph name="CLOUD_PROVIDER" />“</translation>
+<translation id="6071503852498277813">Turinio žymių analizavimo įrankio paslauga</translation>
 <translation id="6078069862923723141">Žydra (2)</translation>
 <translation id="6085149458302186532">Etiketės (spalvotos)</translation>
 <translation id="6087312102907839798">Susijusios paieškos</translation>
@@ -3539,6 +3544,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6935082727755903526">Apskaitos ir finansiniai darbai</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Per kitą apsilankymą kai kurios svetainės gali būti įkeltos gerokai lėčiau.</translation>
 <translation id="6936976777388162184">Tai yra grupės įrenginys, kurio negalima užregistruoti naudojant viešojo terminalo ir ženklų naujovinimą.</translation>
+<translation id="6942444979237658241">Komentarai – grupė „<ph name="GROUP_NAME" />“</translation>
 <translation id="6944557544071529399">Strateginiai žaidimai</translation>
 <translation id="6944692733090228304">Įvedėte slaptažodį svetainėje, kurios netvarko organizacija <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Kad apsaugotumėte paskyrą, nenaudokite to paties slaptažodžio kitose programose ir svetainėse.</translation>
 <translation id="6946949206576443118">Paieška žiniatinklyje naudojant „Chrome“</translation>
@@ -3551,6 +3557,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="695140971690006676">Nustatyti viską iš naujo</translation>
 <translation id="6954049078461159956">Riedulys</translation>
 <translation id="695582302419398462">Kartonas (dvigubos sienos)</translation>
+<translation id="6957153644870901611">Įjunkite patobulintą automatinį pildymą, kad automatiškai užpildytumėte daugiau laukų</translation>
 <translation id="6957887021205513506">Panašu, kad serverio sertifikatas yra suklastotas.</translation>
 <translation id="6958564499836457428">Tvarkyti „Google“ privatumo nustatymus „Google“ paskyroje</translation>
 <translation id="6961844873822989059">Gali būti prašoma leidimo naudoti šriftus, įdiegtus jūsų įrenginyje</translation>
@@ -3997,6 +4004,7 @@ Papildoma išsami informacija:
 <translation id="7668654391829183341">Nežinomas įrenginys</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> iš <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (1 veiksmas nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}one{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmas nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}few{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmai nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}many{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmo nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}other{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmų nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Informacija iš „Google“ paskyros <ph name="USER_EMAIL" /> gali padėti greičiau užpildyti formas naršyklėje „Chrome“</translation>
 <translation id="7673278391011283842">6 pašto dėžutė</translation>
 <translation id="7675325315208090829">Tvarkykite mokėjimo metodus...</translation>
 <translation id="767550629621587224">Iš anksto iškirpti lakštai</translation>
@@ -4129,6 +4137,7 @@ Papildoma išsami informacija:
 <translation id="7908648876066812348">Įjungiama virtuali kortelė</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, kad pereitumėte į „Chrome“ saugos patikros puslapį nustatymuose</translation>
 <translation id="791107458486222637">Grąžinamas rezultatas</translation>
+<translation id="7912924955815015552">Importuota iš „Safari“</translation>
 <translation id="791551905239004656">Piešimas ir spalvinimas</translation>
 <translation id="7916162853251942238">Lankstusis pagrindas</translation>
 <translation id="791698251820376781">Jūsų organizacija neleidžia jums prisijungti</translation>
@@ -4263,6 +4272,7 @@ Papildoma išsami informacija:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Sukurta prieš 1 mėnesį}one{Sukurta prieš {NUM_MONTHS} mėnesį}few{Sukurta prieš {NUM_MONTHS} mėnesius}many{Sukurta prieš {NUM_MONTHS} mėnesio}other{Sukurta prieš {NUM_MONTHS} mėnesių}}</translation>
 <translation id="8148608574971654810">PDF versija:</translation>
 <translation id="8149426793427495338">Įjungta kompiuterio miego būsena.</translation>
+<translation id="815036624016370447">Informacija iš „Google“ paskyros <ph name="ACCOUNT" /> gali padėti greičiau užpildyti formas naršyklėje „Chrome“</translation>
 <translation id="8150722005171944719"><ph name="URL" /> nurodyto failo negalima skaityti. Gali būti, kad jis pašalintas, perkeltas arba neleidžiama prieiga prie jo dėl failo leidimų.</translation>
 <translation id="8151185429379586178">Kūrėjo įrankiai</translation>
 <translation id="8153865548451212769">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šio failo į „<ph name="DESTINATION_NAME" />“}one{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}few{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}many{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}other{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}}</translation>

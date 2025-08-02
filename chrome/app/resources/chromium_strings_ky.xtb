@@ -296,6 +296,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4724676981607797757">Орнотулган жок, анткени протокол колдоого алынбайт.</translation>
 <translation id="4746050847053251315">Баары бир Chromium'ду токтотосузбу?</translation>
 <translation id="4748217263233248895">Жаңы эле Chromium үчүн өзгөчө коопсуздук жаңыртуулары орнотулду. Өтмөктөрдү калыбына келтирүү үчүн аны өчүрүп-күйгүзүңүз.</translation>
+<translation id="4771701986670315895">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="COUNT" /> уруксатты өчүрдү.</translation>
 <translation id="4788777615168560705">Chromium сырсөздөрүңүздү текшере албай жатат. 24 сааттан кийин кайталап көрүңүз же <ph name="BEGIN_LINK" />Google аккаунтуңуздагы сырсөздөрдү текшериңиз<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Ал Google Издөөдө колдонулган орфографияны текшерүүчү программаны колдонот. Серепчиде терилген текстти Google кызматтарына жөнөтүп турат. Бул параметрди каалаган убакта параметрлерге өтүп, өзгөртүп койсоңуз болот.</translation>
 <translation id="4814736265800133385">Chromium'ду аккаунтсуз колдонуу</translation>
@@ -308,6 +309,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4987820182225656817">Коноктор Chromium'ду артында эч нерсе калтырбай колдоно алышат.</translation>
 <translation id="4994636714258228724">Өзүңүздү Chromium'га кошуңуз</translation>
 <translation id="5123973130450702873">Chromium'га колдорго көз салууга уруксат керек</translation>
+<translation id="5141988424377517949">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана <ph name="PERMISSION_3" /> өчүрдү.</translation>
 <translation id="5174969993834422967">Адатта сиз билдирмелерге тыюу саласыз. Бул сайттан билдирмелерди алуу үчүн дарек тилкесинин оң бурчундагы билдирменин сүрөтчөсүн басыңыз.</translation>
 <translation id="5187123684706427865">Chromium аккаунтунун аныктыгын кайрадан текшерүү керек</translation>
 <translation id="5224391634244552924">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Chromium аларды текшере алат.</translation>
@@ -493,6 +495,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="734373864078049451">Веб, кыстармаларыңыз жана Chromium'дагы жеке дайын-даректериңиз бул жерде жайгашкан.</translation>
 <translation id="7349591376906416160">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> доменин <ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу ачууга конфигуациялады.</translation>
 <translation id="7352651011704765696">Бир жерден ката кетти</translation>
+<translation id="7376384068949534168">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> өчүрдү.</translation>
 <translation id="7384121030444253939">Бул кеңейтүү колдоого алынбай калган. Chromium аны өчүрүүнү сунуштайт.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Иштеп чыгуучулар үчүн</translation>
 <translation id="7450541714075000668">Текст көчүрүлдү</translation>
@@ -557,6 +560,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8248265253516264921">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт. Аны жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="8254601181414348851">Chromium'га жаңы профилден киресизби?</translation>
 <translation id="8286943863733751221">Кооптуу сайттар жана жүктөп алуулар жөнүндө <ph name="BEGIN_LINK" />Chromium эскертет<ph name="END_LINK" /></translation>
+<translation id="8295827201165805317">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION" /> өчүрдү.</translation>
 <translation id="8313851650939857356">Ишке киргизүү катасы: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> колдонулбаса, уюмуңуз Chromium'ду жаап коёт.</translation>
 <translation id="8321888067342493336">Сүрөт катары сактоо</translation>

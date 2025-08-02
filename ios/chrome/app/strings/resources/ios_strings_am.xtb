@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">ገባሪ ዛሬ</translation>
 <translation id="1523567067736644845">የይለፍ ቃል ለማሳየት ይክፈቱ</translation>
 <translation id="1524563461097350801">አይ፣ አመሰግናለሁ</translation>
+<translation id="1528290585275339320">የገፅ ይዘት ማጋራትን ያብሩ</translation>
 <translation id="1531038290222364269">ትሮችን አሳይ</translation>
 <translation id="1536390784834419204">ገፅ ተርጉም</translation>
 <translation id="1540800554400757039">አድራሻ 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">አዲሱን ምናሌ ያስሱ</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="5141363746588976328">በትሮች ካርድዎ ላይ የዋጋ ቅነሳዎችን ደብቅ</translation>
+<translation id="514154868070499296">ቅርጸ ቁምፊ፦ <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ከትር መቀያየሪያ ውጣ</translation>
 <translation id="5148717509369231739">የSafari ማምጣት</translation>
 <translation id="5157638238828697074">የሆነ ስህተት ተከስቷል። መተግበሪያውን መክፈት አልተቻለም።</translation>
@@ -1974,6 +1976,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8637431369725868556">ከአደገኛ ጣቢያዎች ጥበቃ ያግኙ።</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ምንም የተጠለፉ የይለፍ ቃሎች የሉም}=1{{COUNT} የተጠለፈ የይለፍ ቃል}one{{COUNT} የተጠለፈ የይለፍ ቃል}other{{COUNT} የተጠለፉ የይለፍ ቃሎች}}</translation>
 <translation id="8643403533759285912">ቡድን ይሰርዙ</translation>
+<translation id="8645245178269185266">ይበልጥ አግባብነት ያላቸው መልሶችን ለማግኘት የገፅ ይዘትን ለGemini ያጋሩ</translation>
 <translation id="8647280737650867362">ዋጋውን አለመከታተል አልተቻለም።</translation>
 <translation id="8654802032646794042">ይቅር</translation>
 <translation id="8660600697590740984">በሌንስ የተቀዳ ምስል</translation>

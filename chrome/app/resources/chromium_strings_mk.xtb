@@ -296,6 +296,7 @@
 <translation id="4724676981607797757">Инсталацијата не успеа поради грешка при неподдржан протокол.</translation>
 <translation id="4746050847053251315">Сепак да се напушти Chromium?</translation>
 <translation id="4748217263233248895">Тукушто применивме посебно безбедносно ажурирање за Chromium. Рестартирајте сега и ќе ви ги вратиме картичките.</translation>
+<translation id="4771701986670315895">Не сте дошле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium не може да ги провери вашите лозинки. Обидете се пак по 24 часа или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Услугава ја користи истата проверка на правопис што се користи и во „Пребарување на Google“. Текстот што ќе го напишете во прелистувачот се испраќа до Google. Ваквото однесување може да го смените во поставки во секое време.</translation>
 <translation id="4814736265800133385">Користи Chromium без сметка</translation>
@@ -308,6 +309,7 @@
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
 <translation id="5123973130450702873">Chromium бара дозвола да ги следи вашите раце</translation>
+<translation id="5141988424377517949">Не сте дошле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Обично ги блокирате известувањата. За да овозможите сајтов да ве известува, кликнете ја иконата за известувања во десниот агол на лентата за локација.</translation>
 <translation id="5187123684706427865">Сметката на Chromium треба да се автентицира повторно</translation>
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
@@ -493,6 +495,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="734373864078049451">Вашите веб, обележувачи и други работи на Chromium живеат тука.</translation>
 <translation id="7349591376906416160">Системскиот администратор го конфигурирал Chromium да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
+<translation id="7376384068949534168">Не сте дошле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Екстензијава веќе не е поддржана. Затоа, Chromium препорачува да ја отстраните.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
@@ -557,6 +560,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8248265253516264921">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="8254601181414348851">Ќе се најавите на Chromium во нов профил?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ве предупредува<ph name="END_LINK" /> за небезбедни сајтови и преземања</translation>
+<translation id="8295827201165805317">Не сте дошле одамна. Chromium ја отстрани следнава дозвола: <ph name="PERMISSION" />.</translation>
 <translation id="8313851650939857356">Грешка при стартување: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Вашата организација го затвора Chromium кога не се користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Зачувај како слика</translation>

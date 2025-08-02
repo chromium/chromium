@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Bu gün aktivdir</translation>
 <translation id="1523567067736644845">Parolu göstərmək üçün kiliddən çıxarın</translation>
 <translation id="1524563461097350801">Xeyr, təşəkkürlər</translation>
+<translation id="1528290585275339320">Səhifə kontent paylaşımını aktivləşdirin</translation>
 <translation id="1531038290222364269">Tabları göstərin</translation>
 <translation id="1536390784834419204">Səhifəni tərcümə edin</translation>
 <translation id="1540800554400757039">Ünvan 1</translation>
@@ -1045,6 +1046,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5128788795241319992">Yeni menyunu araşdırın</translation>
 <translation id="5132942445612118989">Bütün cihazlarda parol, tarixçə və s. sinxronizasiya edin</translation>
 <translation id="5141363746588976328">Tablarınızda qiymətin düşməsi kartını gizlədin</translation>
+<translation id="514154868070499296">Şrift: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tab keçiricisindən çıxın</translation>
 <translation id="5148717509369231739">Safari importu</translation>
 <translation id="5157638238828697074">Xəta oldu. Tətbiq açılmadı.</translation>
@@ -1974,6 +1976,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8637431369725868556">Təhlükəli saytlardan qorunun.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Oğurlanmış parol yoxdur}=1{{COUNT} oğurlanmış parol}other{{COUNT} oğurlanmış parol}}</translation>
 <translation id="8643403533759285912">Qrupu silin</translation>
+<translation id="8645245178269185266">Daha uyğun cavablar almaq üçün səhifə kontentini Gemini ilə paylaşın</translation>
 <translation id="8647280737650867362">Qiymət izlənmədi.</translation>
 <translation id="8654802032646794042">Ləğv edin</translation>
 <translation id="8660600697590740984">Linza ilə kopiyalanan şəkil</translation>

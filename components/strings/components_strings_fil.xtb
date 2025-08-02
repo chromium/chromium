@@ -557,6 +557,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1927439846988093361">Pangangalaga ng Buhok</translation>
 <translation id="1935353813610900265">Magpadala ng feedback para sa paghahanap sa history na pinapagana ng AI</translation>
 <translation id="1935995810530254458">Kopyahin pa rin</translation>
+<translation id="1938580037092872316">Magdagdag ng bagong impormasyon sa naka-save na address</translation>
 <translation id="1939059826036755332">Awtomatikong picture-in-picture</translation>
 <translation id="1939175642807587452">Puwedeng hilinging magpadala ng mga notification</translation>
 <translation id="1940441167050915935">I-delete ang mga naka-save na panseguridad na code</translation>
@@ -3539,6 +3540,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6935082727755903526">Mga Trabaho sa Accounting at Pananalapi</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Posibleng mag-load nang mas mabagal ang ilang site sa iyong susunod na pagbisita.</translation>
 <translation id="6936976777388162184">Isa itong naka-bundle na device at hindi ito puwedeng i-enroll sa Upgrade para sa Kiosk at Signage.</translation>
+<translation id="6942444979237658241">Mga Komento - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Mga Strategy Game</translation>
 <translation id="6944692733090228304">Inilagay mo ang iyong password sa site na hindi pinapamahalaan ng <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protektahan ang iyong account, huwag gamiting muli ang password mo sa iba pang app at site.</translation>
 <translation id="6946949206576443118">Maghanap sa web sa Chrome</translation>
@@ -3997,6 +3999,7 @@ Mga karagdagang detalye:
 <translation id="7668654391829183341">Hindi kilalang device</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> ng <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Mga pagkilos na ginawa sa data na na-flag bilang kumpidensyal (1 pagkilos mula noong nag-log in). <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" />}one{Mga pagkilos na ginawa sa data na na-flag bilang kumpidensyal (# pagkilos mula noong nag-log in). <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" />}other{Mga pagkilos na ginawa sa data na na-flag bilang kumpidensyal (# na pagkilos mula noong nag-log in). <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Ang impormasyong mula sa Google Account mong <ph name="USER_EMAIL" /> ay makakatulong sa iyong mas mabilis na punan ang mga form sa Chrome</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7675325315208090829">Pamahalaan ang Mga Paraan ng Pagbabayad...</translation>
 <translation id="767550629621587224">Mga Naka-Precut na Tab</translation>
@@ -4264,6 +4267,7 @@ Mga karagdagang detalye:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ginawa 1 buwan ang nakalipas}one{Ginawa {NUM_MONTHS} buwan ang nakalipas}other{Ginawa {NUM_MONTHS} na buwan ang nakalipas}}</translation>
 <translation id="8148608574971654810">Bersyon ng PDF:</translation>
 <translation id="8149426793427495338">Nag-sleep ang iyong computer.</translation>
+<translation id="815036624016370447">Ang impormasyong mula sa Google Account mong <ph name="ACCOUNT" /> ay makakatulong sa iyong mas mabilis na punan ang mga form sa Chrome</translation>
 <translation id="8150722005171944719">Hindi nababasa ang file sa <ph name="URL" />. Maaaring ito ay naalis, nalipat, o maaaring pinipigilan ng mga pagpapahintulot ng file ang access.</translation>
 <translation id="8151185429379586178">Mga tool ng developer</translation>
 <translation id="8153865548451212769">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na i-download ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na i-download ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na i-download ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>

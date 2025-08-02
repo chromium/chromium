@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="1523567067736644845">Desbloquea para mostrar o contrasinal</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
+<translation id="1528290585275339320">Activa o uso compartido de contido da páxina</translation>
 <translation id="1531038290222364269">Mostrar as pestanas</translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
@@ -1045,6 +1046,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5128788795241319992">Explora o novo menú</translation>
 <translation id="5132942445612118989">Sincroniza os teus contrasinais, o historial e moito máis en todos os dispositivos</translation>
 <translation id="5141363746588976328">Ocultar a tarxeta Baixadas de prezo nas túas pestanas</translation>
+<translation id="514154868070499296">Tipo de letra: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Saír do selector de pestanas</translation>
 <translation id="5148717509369231739">Importación de Safari</translation>
 <translation id="5157638238828697074">Produciuse un erro. Non se puido abrir a aplicación.</translation>
@@ -1974,6 +1976,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8637431369725868556">Protéxete contra os sitios perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ningún contrasinal vulnerado}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="8643403533759285912">Eliminar grupo</translation>
+<translation id="8645245178269185266">Comparte o contido da páxina con Gemini para obter resultados máis relevantes</translation>
 <translation id="8647280737650867362">Non se puido facer un seguimento do prezo.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8660600697590740984">Imaxe de Lens copiada</translation>

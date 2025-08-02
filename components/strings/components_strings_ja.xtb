@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">ヘアケア</translation>
 <translation id="1935353813610900265">AI を活用した履歴検索に関するフィードバックを送信</translation>
 <translation id="1935995810530254458">このままコピー</translation>
+<translation id="1938580037092872316">保存済みの住所に新しい情報を追加</translation>
 <translation id="1939059826036755332">ピクチャー イン ピクチャーの自動開始</translation>
 <translation id="1939175642807587452">通知の送信を要求できる</translation>
 <translation id="1940441167050915935">保存したセキュリティ コードを削除</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Android アプリ</translation>
 <translation id="2102519472192754194">ウェブブラウザ</translation>
 <translation id="2103210856015238101">タップ操作で入力できるポイントカードが画面全体に表示されています。</translation>
+<translation id="2104739941682874393">拡張自動入力では、フォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="2105838220373099643">ロールプレイング ゲーム</translation>
 <translation id="2107021941795971877">印刷サポート</translation>
 <translation id="2108755909498034140">パソコンを再起動する</translation>
@@ -1527,6 +1529,7 @@
 <translation id="3570079787344939099">スクロールとズーム</translation>
 <translation id="357244642999988503">列を削除</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" /> <ph name="CITY" /></translation>
+<translation id="3574520980813687946">住所に新しい情報を追加</translation>
 <translation id="3575121482199441727">このサイトの通知を許可</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">町名のオプションが選択されました</translation>
@@ -2426,6 +2429,7 @@
 <translation id="5052517576853118371">アクティブなトピック</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
+<translation id="5058282932481719070">設定で拡張自動入力の詳細を確認</translation>
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで Windows Hello による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="LINK_TEXT" /> を行うことができます。</translation>
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>
@@ -3027,6 +3031,7 @@
 <translation id="6062937464449575061">価格トラッキングを停止</translation>
 <translation id="6063415549109819824">住宅ローン</translation>
 <translation id="6070432475334343308">1 つ以上のファイルが <ph name="CLOUD_PROVIDER" /> の <ph name="FOLDER_NAME" /> にアップロードされませんでした</translation>
+<translation id="6071503852498277813">コンテンツ ブックマーク パーサー サービス</translation>
 <translation id="6078069862923723141">シアン 2</translation>
 <translation id="6085149458302186532">ラベル（カラー）</translation>
 <translation id="6087312102907839798">他のキーワード</translation>
@@ -3538,6 +3543,7 @@
 <translation id="6935082727755903526">会計、財務系の求人情報</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="6936976777388162184">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
+<translation id="6942444979237658241">コメント - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">ストラテジー ゲーム</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
 <translation id="6946949206576443118">Chrome でウェブを検索</translation>
@@ -3550,6 +3556,7 @@
 <translation id="695140971690006676">すべてリセット</translation>
 <translation id="6954049078461159956">ホッケー</translation>
 <translation id="695582302419398462">段ボール（二重）</translation>
+<translation id="6957153644870901611">拡張自動入力をオンにすると、より多くの項目を自動入力できます</translation>
 <translation id="6957887021205513506">サーバーの証明書が偽造されたもののようです。</translation>
 <translation id="6958564499836457428">Google アカウントで Google のプライバシー設定を管理します</translation>
 <translation id="6961844873822989059">デバイスにインストールされたフォントの使用を要求できる</translation>
@@ -3997,6 +4004,7 @@
 <translation id="7668654391829183341">不明なデバイス</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />（<ph name="ITEM_POSITION" /> / <ph name="ITEMS_TOTAL" />）</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{機密として指定されたデータに対する操作（ログイン以降 1 件）。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" />}other{機密として指定されたデータに対する操作（ログイン以降 # 件）。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Google アカウント（<ph name="USER_EMAIL" />）の情報を使用して、Chrome でフォームにすばやく入力できるようにします</translation>
 <translation id="7673278391011283842">用紙受け 6</translation>
 <translation id="7675325315208090829">お支払い方法を管理...</translation>
 <translation id="767550629621587224">プレカットタブ</translation>
@@ -4129,6 +4137,7 @@
 <translation id="7908648876066812348">仮想カードを有効にしています</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome 設定の安全チェックページに移動します</translation>
 <translation id="791107458486222637">結果をやり直しています</translation>
+<translation id="7912924955815015552">Safari からのインポート</translation>
 <translation id="791551905239004656">お絵かき、塗り絵</translation>
 <translation id="7916162853251942238">フレキソベース</translation>
 <translation id="791698251820376781">組織がログインを許可していません</translation>
@@ -4263,6 +4272,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 か月前に作成}other{{NUM_MONTHS} か月前に作成}}</translation>
 <translation id="8148608574971654810">PDF バージョン:</translation>
 <translation id="8149426793427495338">パソコンがスリープ状態です。</translation>
+<translation id="815036624016370447">Google アカウント（<ph name="ACCOUNT" />）の情報を使用して、Chrome でフォームにすばやく入力できるようにします</translation>
 <translation id="8150722005171944719"><ph name="URL" /> のファイルを読むことができません。削除されたか移動された可能性があります。ファイルに対するアクセス権がない場合もあります。</translation>
 <translation id="8151185429379586178">デベロッパー ツール</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}}</translation>

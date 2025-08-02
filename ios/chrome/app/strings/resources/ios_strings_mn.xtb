@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Өнөөдөр идэвхтэй</translation>
 <translation id="1523567067736644845">Нууц үгийг харуулахын тулд түгжээг тайлна уу</translation>
 <translation id="1524563461097350801">Үгүй, баярлалаа</translation>
+<translation id="1528290585275339320">Хуудасны агуулга хуваалцахыг асаана уу</translation>
 <translation id="1531038290222364269">Табуудыг харуулах</translation>
 <translation id="1536390784834419204">Хуудсыг орчуулах</translation>
 <translation id="1540800554400757039">Хаяг 1</translation>
@@ -1045,6 +1046,7 @@
 <translation id="5128788795241319992">Шинэ цэсийг судлах</translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
 <translation id="5141363746588976328">Таны таб дээрх үнийн бууралтын картыг нуух</translation>
+<translation id="514154868070499296">Фонт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Таб хооронд шилжүүлэгчээс гарах</translation>
 <translation id="5148717509369231739">Safari-н импорт</translation>
 <translation id="5157638238828697074">Ямар нэг алдаа гарлаа. Аппликэйшнийг нээж чадсангүй.</translation>
@@ -1974,6 +1976,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8637431369725868556">Аюултай сайтуудаас хамгаалалттай байгаарай.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Алдагдсан нууц үг алга}=1{Алдагдсан {COUNT} нууц үг}other{Алдагдсан {COUNT} нууц үг}}</translation>
 <translation id="8643403533759285912">Бүлэг устгах</translation>
+<translation id="8645245178269185266">Илүү хамааралтай хариулт авахын тулд хуудасны агуулгыг Gemini-тай хуваалцана уу</translation>
 <translation id="8647280737650867362">Үнийг мөшгөхөө больж чадсангүй.</translation>
 <translation id="8654802032646794042">Цуцлах</translation>
 <translation id="8660600697590740984">Таны хуулсан Lens-н зураг</translation>

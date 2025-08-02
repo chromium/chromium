@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">Îngrijirea părului</translation>
 <translation id="1935353813610900265">Trimite feedback pentru căutarea în istoric, bazată pe AI</translation>
 <translation id="1935995810530254458">Copiază oricum</translation>
+<translation id="1938580037092872316">Adaugă informații noi la adresa salvată</translation>
 <translation id="1939059826036755332">Picture-in-picture automat</translation>
 <translation id="1939175642807587452">Poate solicita permisiunea de a trimite notificări</translation>
 <translation id="1940441167050915935">Șterge codurile de securitate salvate</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Aplicații Android</translation>
 <translation id="2102519472192754194">Browsere web</translation>
 <translation id="2103210856015238101">Cardurile de fidelitate disponibile pentru completarea la atingere, deschise la înălțimea completă.</translation>
+<translation id="2104739941682874393">Completarea automată îmbunătățită înțelege mai bine formularele și le poate completa automat mai rapid</translation>
 <translation id="2105838220373099643">Jocuri de rol</translation>
 <translation id="2107021941795971877">Suporturi de printare</translation>
 <translation id="2108755909498034140">repornește computerul;</translation>
@@ -1527,6 +1529,7 @@
 <translation id="3570079787344939099">Derulare și zoom</translation>
 <translation id="357244642999988503">Elimină coloana</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Adaugă informații noi la adresă</translation>
 <translation id="3575121482199441727">Permite pentru acest site</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">A fost selectată opțiunea pentru numele străzii</translation>
@@ -2426,6 +2429,7 @@
 <translation id="5052517576853118371">Subiecte active</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pentru a trimite fișierul prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}few{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}other{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}}</translation>
 <translation id="505757197798929356">Specifică motivul deschiderii (obligatoriu)</translation>
+<translation id="5058282932481719070">află mai multe despre completarea automată îmbunătățită în setări</translation>
 <translation id="5060419232449737386">Setări pentru subtitrări</translation>
 <translation id="5060483733937416656">Ai ales să confirmi cu Windows Hello pe site-urile care folosesc <ph name="PROVIDER_ORIGIN" />. Este posibil ca acest furnizor să fi stocat informații despre metoda de plată, pe care le poți <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Ai vrut să scrii <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3031,7 @@
 <translation id="6062937464449575061">Anulează urmărirea prețului</translation>
 <translation id="6063415549109819824">Credite imobiliare</translation>
 <translation id="6070432475334343308">Unul sau mai multe fișiere nu s-au încărcat în <ph name="FOLDER_NAME" /> pe <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Serviciul de analiză a marcajelor pentru conținut</translation>
 <translation id="6078069862923723141">Cyan 2</translation>
 <translation id="6085149458302186532">Etichete (colorate)</translation>
 <translation id="6087312102907839798">Căutări similare</translation>
@@ -3538,6 +3543,7 @@
 <translation id="6935082727755903526">Locuri de muncă în contabilitate și finanțe</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea vizită.</translation>
 <translation id="6936976777388162184">Acesta este un dispozitiv care face parte dintr-un grup și nu poate fi înregistrat pentru Upgrade-ul la Chioșc și afișaj.</translation>
+<translation id="6942444979237658241">Comentarii - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Jocuri de strategie</translation>
 <translation id="6944692733090228304">Ai introdus parola pe un site care nu este gestionat de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pentru a proteja contul, nu folosi aceeași parolă pentru alte aplicații și site-uri.</translation>
 <translation id="6946949206576443118">Caută pe web din Chrome</translation>
@@ -3550,6 +3556,7 @@
 <translation id="695140971690006676">Resetează-le pe toate</translation>
 <translation id="6954049078461159956">Hochei</translation>
 <translation id="695582302419398462">Carton (perete dublu)</translation>
+<translation id="6957153644870901611">Activează completarea automată îmbunătățită pentru a completa automat mai multe câmpuri</translation>
 <translation id="6957887021205513506">Certificatul serverului pare a fi un fals.</translation>
 <translation id="6958564499836457428">Gestionează setările de confidențialitate Google din Contul Google</translation>
 <translation id="6961844873822989059">Poate solicita permisiunea de a folosi fonturile instalate pe dispozitiv</translation>
@@ -3996,6 +4003,7 @@ Detalii suplimentare:
 <translation id="7668654391829183341">Dispozitiv necunoscut</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> din <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Acțiuni realizate cu datele marcate drept confidențiale (o acțiune de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}few{Acțiuni realizate cu datele marcate drept confidențiale (# acțiuni de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}other{Acțiuni realizate cu datele marcate drept confidențiale (# de acțiuni de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Informațiile din Contul Google <ph name="USER_EMAIL" /> te pot ajuta să completezi mai rapid formularele în Chrome</translation>
 <translation id="7673278391011283842">Căsuța de e-mail 6</translation>
 <translation id="7675325315208090829">Gestionează metodele de plată…</translation>
 <translation id="767550629621587224">Separatoare pretăiate</translation>
@@ -4128,6 +4136,7 @@ Detalii suplimentare:
 <translation id="7908648876066812348">Se activează cardul virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a accesa pagina Verificarea de siguranță din Chrome din setări</translation>
 <translation id="791107458486222637">Repetă</translation>
+<translation id="7912924955815015552">Importate din Safari</translation>
 <translation id="791551905239004656">Desenat și colorat</translation>
 <translation id="7916162853251942238">Bază Flexo</translation>
 <translation id="791698251820376781">Organizația nu îți permite să te conectezi</translation>
@@ -4262,6 +4271,7 @@ Detalii suplimentare:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creat acum o lună}few{Creat acum {NUM_MONTHS} luni}other{Creat acum {NUM_MONTHS} de luni}}</translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>
 <translation id="8149426793427495338">Computerul este inactiv.</translation>
+<translation id="815036624016370447">Informațiile din Contul Google <ph name="ACCOUNT" /> te pot ajuta să completezi mai rapid formularele în Chrome</translation>
 <translation id="8150722005171944719">Fișierul de la <ph name="URL" /> nu poate fi citit.  Este posibil să fi fost eliminat ori mutat sau ca permisiunile pentru fișiere să împiedice accesarea acestuia.</translation>
 <translation id="8151185429379586178">Instrumente dezvoltator</translation>
 <translation id="8153865548451212769">{0,plural, =1{Politica implementată de administrator nu recomandă să descarci acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să descarci aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să descarci aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>

@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
 <translation id="1523567067736644845">Avaa lukitus, niin salasana näkyy</translation>
 <translation id="1524563461097350801">Ei kiitos</translation>
+<translation id="1528290585275339320">Laita sivun sisällön jakaminen päälle</translation>
 <translation id="1531038290222364269">Näytä välilehdet</translation>
 <translation id="1536390784834419204">Käännä sivu</translation>
 <translation id="1540800554400757039">Osoite 1</translation>
@@ -1045,6 +1046,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5128788795241319992">Tutustu uuteen valikkoon</translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
 <translation id="5141363746588976328">Piilota "Hinnanlaskut avoimilla välilehdillä" ‑kortti</translation>
+<translation id="514154868070499296">Fontti: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Sulje välilehden vaihtaja</translation>
 <translation id="5148717509369231739">Safarin tuominen</translation>
 <translation id="5157638238828697074">Jotain meni pieleen. Sovelluksen avaaminen epäonnistui.</translation>
@@ -1974,6 +1976,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8637431369725868556">Suojaudu vaarallisilta sivustoilta.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ei vaarantuneita salasanoja}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
 <translation id="8643403533759285912">Poista ryhmä</translation>
+<translation id="8645245178269185266">Jaa sivun sisältö Geminille, niin saat relevantimpia vastauksia</translation>
 <translation id="8647280737650867362">Hinnan seuraamisen lopettaminen epäonnistui.</translation>
 <translation id="8654802032646794042">Peru</translation>
 <translation id="8660600697590740984">Kopioitu Lens-kuva</translation>

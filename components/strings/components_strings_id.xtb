@@ -558,6 +558,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1927439846988093361">Perawatan Rambut</translation>
 <translation id="1935353813610900265">Kirim masukan untuk penelusuran histori yang didukung teknologi AI</translation>
 <translation id="1935995810530254458">Tetap salin</translation>
+<translation id="1938580037092872316">Tambahkan info baru ke alamat tersimpan</translation>
 <translation id="1939059826036755332">Picture-in-picture otomatis</translation>
 <translation id="1939175642807587452">Dapat meminta untuk mengirimkan notifikasi</translation>
 <translation id="1940441167050915935">Hapus kode keamanan yang tersimpan</translation>
@@ -658,6 +659,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2102495993840063010">Aplikasi Android</translation>
 <translation id="2102519472192754194">Browser Web</translation>
 <translation id="2103210856015238101">Kartu loyalitas yang tersedia untuk diisi dengan gestur sentuh terbuka sepenuhnya.</translation>
+<translation id="2104739941682874393">Isi otomatis yang ditingkatkan memahami formulir lebih baik dan dapat melakukan pengisian otomatis lebih cepat untuk Anda</translation>
 <translation id="2105838220373099643">Game RPG</translation>
 <translation id="2107021941795971877">Dukungan cetak</translation>
 <translation id="2108755909498034140">Mulai ulang komputer</translation>
@@ -1527,6 +1529,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3570079787344939099">Scroll &amp; zoom</translation>
 <translation id="357244642999988503">Hapus kolom</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Tambahkan Info Baru ke Alamat</translation>
 <translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Opsi nama jalan dipilih</translation>
@@ -2426,6 +2429,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5052517576853118371">Topik aktif</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}other{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}}</translation>
 <translation id="505757197798929356">Berikan alasan membuka (wajib)</translation>
+<translation id="5058282932481719070">pelajari lebih lanjut isi otomatis yang ditingkatkan di setelan</translation>
 <translation id="5060419232449737386">Setelan teks</translation>
 <translation id="5060483733937416656">Anda memilih untuk memverifikasi dengan Windows Hello di situs yang menggunakan <ph name="PROVIDER_ORIGIN" />. Penyedia ini mungkin telah menyimpan informasi tentang metode pembayaran Anda, yang dapat Anda <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Mungkin maksud Anda <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3027,6 +3031,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6062937464449575061">Batalkan Pemantauan Harga</translation>
 <translation id="6063415549109819824">Pembiayaan Rumah</translation>
 <translation id="6070432475334343308">Satu atau beberapa file tidak diupload ke <ph name="FOLDER_NAME" /> di <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Layanan Parser Bookmark Konten</translation>
 <translation id="6078069862923723141">Sian 2</translation>
 <translation id="6085149458302186532">Label (Berwarna)</translation>
 <translation id="6087312102907839798">Penelusuran terkait</translation>
@@ -3538,6 +3543,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6935082727755903526">Pekerjaan Akuntansi &amp; Keuangan</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="6936976777388162184">Ini adalah perangkat yang dipaketkan dan tidak dapat didaftarkan dengan Signage and Kiosk Upgrade.</translation>
+<translation id="6942444979237658241">Komentar - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Game Strategi</translation>
 <translation id="6944692733090228304">Anda memasukkan sandi di situs yang tidak dikelola oleh <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Untuk melindungi akun, jangan gunakan sandi yang sama di aplikasi dan situs lain.</translation>
 <translation id="6946949206576443118">Telusuri web di Chrome</translation>
@@ -3550,6 +3556,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="695140971690006676">Reset semua</translation>
 <translation id="6954049078461159956">Hoki</translation>
 <translation id="695582302419398462">Kertas kardus (Lapis Ganda)</translation>
+<translation id="6957153644870901611">Aktifkan isi otomatis yang ditingkatkan untuk mengisi lebih banyak kolom secara otomatis</translation>
 <translation id="6957887021205513506">Sertifikat server tampaknya palsu.</translation>
 <translation id="6958564499836457428">Kelola setelan privasi Google di Akun Google Anda</translation>
 <translation id="6961844873822989059">Dapat meminta untuk menggunakan font yang diinstal di perangkat Anda</translation>
@@ -3994,6 +4001,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7668654391829183341">Perangkat tidak dikenal</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> dari <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Tindakan yang dilakukan dengan data yang ditandai sebagai rahasia (1 tindakan sejak login). <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" />}other{Tindakan yang dilakukan dengan data yang ditandai sebagai rahasia (# tindakan sejak login). <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Info dari Akun Google Anda <ph name="USER_EMAIL" /> dapat membantu Anda mengisi formulir lebih cepat di Chrome</translation>
 <translation id="7673278391011283842">Kotak surat 6</translation>
 <translation id="7675325315208090829">Kelola Metode Pembayaran ...</translation>
 <translation id="767550629621587224">Tab Prapotong</translation>
@@ -4126,6 +4134,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7908648876066812348">Mengaktifkan kartu virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuka halaman pemeriksaan keamanan Chrome di setelan</translation>
 <translation id="791107458486222637">Ulangi hasil</translation>
+<translation id="7912924955815015552">Diimpor dari Safari</translation>
 <translation id="791551905239004656">Menggambar &amp; Mewarnai</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">Organisasi Anda tidak mengizinkan Anda login</translation>
@@ -4260,6 +4269,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan lalu}other{Dibuat {NUM_MONTHS} bulan lalu}}</translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
 <translation id="8149426793427495338">Komputer Anda sedang dalam mode tidur.</translation>
+<translation id="815036624016370447">Info dari Akun Google Anda <ph name="ACCOUNT" /> dapat membantu Anda mengisi formulir lebih cepat di Chrome</translation>
 <translation id="8150722005171944719">File pada <ph name="URL" /> tidak dapat dibaca.  File mungkin telah dihapus, dipindahkan, atau izin file mungkin mencegah akses.</translation>
 <translation id="8151185429379586178">Developer Tools</translation>
 <translation id="8153865548451212769">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}}</translation>

@@ -218,6 +218,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1142713751288681188">Papirtype</translation>
 <translation id="1143142264369994168">Sertifikat-signatar</translation>
 <translation id="1145593918056169051">Skriveren har stoppet</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Utvidelser}=1{Utvidelser ({SELECTED_ITEMS})}other{Utvidelser ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Hodepeker</translation>
 <translation id="114721135501989771">Få Googles smartfunksjoner i Chrome</translation>
 <translation id="1147322039136785890">Nå kan du gi enheten til <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -736,6 +737,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="150411034776756821">Fjern <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Delte mapper er tilgjengelige i Windows i <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">eksportere passord</translation>
+<translation id="1505654899813338756">Du kan gruppere faner for å holde relaterte sider samlet og lagret på alle enhetene dine</translation>
 <translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1506187449813838456">Øk stemmeleiet</translation>
 <translation id="1507170440449692343">Kameraet er blokkert for denne siden.</translation>
@@ -5311,6 +5313,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4681930562518940301">Åpne det opprinnelige &amp;bildet i en ny fane</translation>
 <translation id="4682481611456523884">Innebygd innhold på dette nettstedet kan ikke bruke informasjon de har lagret om deg</translation>
 <translation id="4682807230647698604">Når du bruker disse funksjonene, sendes relevante data til Google for å skape AI-opplevelser</translation>
+<translation id="4683143253481759090">Chrome er oppdatert</translation>
 <translation id="4683629100208651599">Gjør om til små bokstaver</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
@@ -9207,6 +9210,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481358317100446445">Klar</translation>
 <translation id="748138892655239008">Hovedbegrensninger for sertifikat</translation>
+<translation id="7482823403440483089">Forbedret autofyll</translation>
 <translation id="7483732342458943943">Denne linken fungerer ikke</translation>
 <translation id="7484645889979462775">Aldri for dette nettstedet</translation>
 <translation id="7484943269191249363">Du kan bruke alle passnøklene som er lagret i Google Passordlagring, på denne enheten. Du trenger bare å gjøre dette én gang.</translation>

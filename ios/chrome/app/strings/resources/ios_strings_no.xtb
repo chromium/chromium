@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="1523567067736644845">Lås opp for å vise passordet</translation>
 <translation id="1524563461097350801">Nei takk</translation>
+<translation id="1528290585275339320">Slå på deling av sideinnhold</translation>
 <translation id="1531038290222364269">Vis faner</translation>
 <translation id="1536390784834419204">Oversett siden</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
@@ -1045,6 +1046,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5128788795241319992">Utforsk den nye menyen</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
 <translation id="5141363746588976328">Skjul «Avslag på faner»-kortet</translation>
+<translation id="514154868070499296">Skrifttype: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Gå ut av fanevelgeren</translation>
 <translation id="5148717509369231739">Safari-import</translation>
 <translation id="5157638238828697074">Noe gikk galt. Kunne ikke åpne appen.</translation>
@@ -1974,6 +1976,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8637431369725868556">Få beskyttelse mot farlige nettsteder.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{{COUNT} passord er utsatt for sikkerhetsbrudd}other{{COUNT} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="8643403533759285912">Slett gruppen</translation>
+<translation id="8645245178269185266">Del sideinnhold med Gemini for å få mer relevante svar</translation>
 <translation id="8647280737650867362">Kunne ikke avslutte prissporing.</translation>
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8660600697590740984">Lens-bildet du har kopiert</translation>

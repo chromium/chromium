@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">केसांची निगा</translation>
 <translation id="1935353813610900265">AI द्वारे सक्षम केलेल्या इतिहास शोधासाठी फीडबॅक पाठवा</translation>
 <translation id="1935995810530254458">तरीही कॉपी करा</translation>
+<translation id="1938580037092872316">सेव्ह केलेल्या पत्त्यामध्ये नवीन माहिती जोडा</translation>
 <translation id="1939059826036755332">ऑटोमॅटिक चित्रात-चित्र</translation>
 <translation id="1939175642807587452">सूचना पाठवण्याची विनंती करू शकते</translation>
 <translation id="1940441167050915935">सेव्ह केलेले सुरक्षा कोड हटवा</translation>
@@ -657,6 +658,7 @@
 <translation id="2102495993840063010">Android अ‍ॅप्स</translation>
 <translation id="2102519472192754194">वेब ब्राउझर</translation>
 <translation id="2103210856015238101">स्पर्श करून भरण्यासाठी उपलब्ध असलेली लॉयल्‍टी कार्ड पूर्ण उंचीवर उघडली आहेत.</translation>
+<translation id="2104739941682874393">वर्धित केलेले ऑटोफिल हे फॉर्म आणखी चांगल्या पद्धतीने समजून घेते आणि ते तुमच्यासाठी अधिक जलद ऑटोफिल करू शकते.</translation>
 <translation id="2105838220373099643">भूमिका बजावण्याशी संबंधित गेम</translation>
 <translation id="2107021941795971877">प्रिंट सपोर्ट</translation>
 <translation id="2108755909498034140">तुमचा कॉंप्युटर रीस्टार्ट करा</translation>
@@ -2426,6 +2428,7 @@
 <translation id="5052517576853118371">ॲक्टिव्ह विषय</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby सह शेअरिंग वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}other{Nearby सह शेअरिंग वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}}</translation>
 <translation id="505757197798929356">उघड्याचे कारण द्या (आवश्यक)</translation>
+<translation id="5058282932481719070">सेटिंग्जमध्ये वर्धित केलेल्या ऑटोफिलबद्दल अधिक जाणून घ्या</translation>
 <translation id="5060419232449737386">कॅप्शन सेटिंग्ज</translation>
 <translation id="5060483733937416656">तुम्ही <ph name="PROVIDER_ORIGIN" /> वापरणाऱ्या वेबसाइटवर Windows Hello वापरून पडताळणी करण्याचे निवडले आहे. या पुरवठादाराने तुमच्या पेमेंट पद्धतीविषयी माहिती स्टोअर केलेली असू शकते, जी तुम्ही <ph name="LINK_TEXT" /> करू शकता.</translation>
 <translation id="5061227663725596739">तुम्हाला <ph name="LOOKALIKE_DOMAIN" />असे म्हणायचे होते का?</translation>
@@ -3027,6 +3030,7 @@
 <translation id="6062937464449575061">किमतीचा माग ठेवणे बंद करा</translation>
 <translation id="6063415549109819824">गृह अर्थसाहाय्य</translation>
 <translation id="6070432475334343308">एक किंवा अधिक फाइल <ph name="CLOUD_PROVIDER" /> वरील <ph name="FOLDER_NAME" /> मध्ये अपलोड केल्या गेल्या नाहीत</translation>
+<translation id="6071503852498277813">आशय बुकमार्क पार्सर सेवा</translation>
 <translation id="6078069862923723141">सियान २</translation>
 <translation id="6085149458302186532">लेबल (कलर्ड)</translation>
 <translation id="6087312102907839798">संबंधित शोध</translation>
@@ -3539,6 +3543,7 @@
 <translation id="6935082727755903526">अकाउंटिंग आणि वित्त उद्योगातील नोकऱ्या</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी हळू लोड होऊ शकतात.</translation>
 <translation id="6936976777388162184">हे बंडल केलेले डिव्हाइस आहे आणि कियोस्क व साइनेज अपग्रेड सह नोंदणी केली जाऊ शकत नाही.</translation>
+<translation id="6942444979237658241">टिप्पण्या - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">रणनीतीशी संबंधित गेम</translation>
 <translation id="6944692733090228304">तुम्ही पासवर्ड एंटर केलेली साइट <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> द्वारे व्यवस्थापित केलेली नाही. तुमच्या खात्याच्या संरक्षणासाठी, तुमचा पासवर्ड इतर ॲप्स किंवा साइटवर पुन्हा वापरू नका.</translation>
 <translation id="6946949206576443118">Chrome मध्ये वेबवर शोधा</translation>
@@ -3551,6 +3556,7 @@
 <translation id="695140971690006676">सर्व रीसेट करा</translation>
 <translation id="6954049078461159956">हॉकी</translation>
 <translation id="695582302419398462">कार्डबोर्ड (डबल वॉल)</translation>
+<translation id="6957153644870901611">आणखी फील्ड आपोआप भरण्यासाठी वर्धित केलेले ऑटोफिल सुरू करा</translation>
 <translation id="6957887021205513506">सर्व्हरचे सर्टिफिकेट बनावट असल्याचे दिसून येते.</translation>
 <translation id="6958564499836457428">तुमच्या Google खाते मध्ये Google गोपनीयता सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6961844873822989059">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्याची विनंती करू शकते</translation>
@@ -3997,6 +4003,7 @@
 <translation id="7668654391829183341">अज्ञात डिव्हाइस</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> पैकी <ph name="ITEM_POSITION" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{डेटाशी संबंधित कृती गोपनीय म्हणून फ्लॅग केल्या (लॉगिन केल्यापासून एक कृती). <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" />}other{डेटाशी संबंधित कृती गोपनीय म्हणून फ्लॅग केल्या (लॉगिन केल्यापासून # कृती). <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">तुमच्या Google खाते <ph name="USER_EMAIL" /> मधील माहिती तुम्हाला Chrome मध्ये फॉर्म आणखी जलद भरण्यात मदत करू शकते</translation>
 <translation id="7673278391011283842">मेलबॉक्स ६</translation>
 <translation id="7675325315208090829">पेमेंट पद्धती व्यवस्थापित करा…</translation>
 <translation id="767550629621587224">प्री-कट टॅब</translation>
@@ -4264,6 +4271,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{१ महिन्यापूर्वी तयार केला आहे}other{{NUM_MONTHS} महिन्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="8148608574971654810">पीडीएफ आवृत्ती:</translation>
 <translation id="8149426793427495338">तुमचा कॉंप्युटर निष्क्रीय झाला.</translation>
+<translation id="815036624016370447">तुमच्या Google खाते <ph name="ACCOUNT" /> मधील माहिती तुम्हाला Chrome मध्ये फॉर्म आणखी जलद भरण्यात मदत करू शकते</translation>
 <translation id="8150722005171944719"><ph name="URL" /> येथील फाइल वाचनीय नाही. ती काढून टाकलेली, हलविलेली असू शकते किंवा फाइल परवानग्या ॲक्सेस प्रतिबंधित करत असू शकतात.</translation>
 <translation id="8151185429379586178">डेव्हलपर टूल</translation>
 <translation id="8153865548451212769">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}}</translation>

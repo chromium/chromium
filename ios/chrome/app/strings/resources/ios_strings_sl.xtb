@@ -165,7 +165,6 @@
 <translation id="1612754831519568745">Varno brskanje je trenutno izklopljeno. Zagotovite si zaščito pred nevarnimi spletnimi mesti, prenosi in razširitvami.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Izberite možnost »Add to Google Calendar« (Dodajte v Google Koledar) ali »Add to Apple Calendar« (Dodajte v Apple Calendar).</translation>
-<translation id="1625502944725673937">Datoteke ni bilo mogoče uvoziti</translation>
 <translation id="1629162218487290695">Potrditev identitete …</translation>
 <translation id="1636234353664774105">Uporabite navigacijo in pridobite podrobna navodila za pot do cilja</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
@@ -1565,7 +1564,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7015418667643980944">Razdeljeni pogled</translation>
 <translation id="7016070607649558507">Imate 1 šibko geslo. Popravite ga, če se želite zavarovati.</translation>
 <translation id="7016958933495968912">Možnosti za Odkrivanje</translation>
-<translation id="7017863468226238797">Ta datoteka je prazna ali vsebuje podatke v napačni obliki zapisa</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7035825883570480307">Želite vklopiti obvestila?</translation>
 <translation id="7039345315346323556">Nedavno</translation>

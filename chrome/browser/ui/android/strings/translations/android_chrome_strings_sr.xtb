@@ -559,6 +559,7 @@
 <translation id="3619255692378312441">Управљајте приступом</translation>
 <translation id="3622349720008044802">Управљајте прозорима</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{и још 1 сајт}one{и још # сајт}few{и још # сајта}other{и још # сајтова}}</translation>
+<translation id="3623464286911819905">Режим читаоца није доступан</translation>
 <translation id="3625870480639975468">Враћање зума на почетне вредности</translation>
 <translation id="3631987586758005671">Дели се са: <ph name="DEVICE_NAME" /></translation>
 <translation id="363484704507524488">Провером идентитета можете да управљате у подешавањима заштите од крађе. <ph name="BEGIN_LINK" />Иди у подешавања<ph name="END_LINK" /></translation>

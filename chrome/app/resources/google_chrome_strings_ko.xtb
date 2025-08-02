@@ -86,6 +86,7 @@
 <translation id="2091012649849228750">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8을 사용 중입니다.</translation>
 <translation id="2094648590148273905">ChromeOS Flex 약관</translation>
 <translation id="2094919256425865063">Chrome을 종료하시겠습니까?</translation>
+<translation id="2096213354152647998">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION" /> 권한을 삭제했습니다.</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="2108778574543343055">앱에서 백그라운드 실행 중인 Chrome 사용 중지</translation>
 <translation id="2120620239521071941">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
@@ -462,6 +463,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6696915334902295848">Chrome에서 사이트에 대한 마이크 권한이 필요합니다.</translation>
 <translation id="6712881677154121168">다운로드 오류(<ph name="DOWNLOAD_ERROR" />)가 발생했습니다.</translation>
 <translation id="6718739135284199302">Chrome의 속도를 높여보세요</translation>
+<translation id="6734827584173583205">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 권한 <ph name="COUNT" />개를 삭제했습니다.</translation>
 <translation id="6735387454586646204">ChromeOS Flex 시스템</translation>
 <translation id="6750954913813541382">맞춤법 오류를 바로잡기 위해 Chrome에서 브라우저에 입력된 텍스트를 Google로 전송합니다.</translation>
 <translation id="6760235774835597023">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다. 설정이 사용 설정되어 있습니다.</translation>
@@ -487,6 +489,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7024536598735240744">압축해제 오류(<ph name="UNPACK_ERROR" />)가 발생했습니다.</translation>
 <translation id="7025789849649390912">설치가 중단되었습니다.</translation>
 <translation id="7025800014283535195">여기에서 Chrome 프로필 간에 전환할 수 있습니다.</translation>
+<translation id="7051685429025310665">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
 <translation id="7059914902409643750">나만의 Chrome 만들기</translation>
 <translation id="7060643578009939353">Google 렌즈로 이 동영상 검색하기</translation>
 <translation id="7071827361006050863">Chrome에서 곧 인터넷 사용 기록을 삭제합니다</translation>
@@ -548,6 +551,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />에 시스템 추적 서비스가 제공됩니다. 이 서비스를 사용 중지하면 브라우저에서 생성한 성능 추적에 컨텍스트 전환 및 준비된 스레드 이벤트와 같은 시스템 전체 이벤트가 포함되지 않습니다.</translation>
 <translation id="7736869414036750079">조직에서 Chrome에 로그인할 것을 요구합니다</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
+<translation id="7748969056734910029">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="778331955594035129">Chrome에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>

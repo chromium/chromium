@@ -296,6 +296,7 @@
 <translation id="4724676981607797757">Produciuse un erro na instalación debido a un erro de protocolo non compatible.</translation>
 <translation id="4746050847053251315">Queres saír de Chromium de todas formas?</translation>
 <translation id="4748217263233248895">Acábase de aplicar unha actualización de seguranza especial para Chromium. Reinicia agora e restauraremos as túas pestanas.</translation>
+<translation id="4771701986670315895">Levas un tempo sen entrar. Chromium quitou os seguintes permisos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="COUNT" /> máis.</translation>
 <translation id="4788777615168560705">Chromium non puido comprobar os teus contrasinais. Téntao de novo dentro de 24 horas ou <ph name="BEGIN_LINK" />comproba os contrasinais na túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Esta función utiliza o mesmo corrector ortográfico que o usado na busca de Google. O texto que escribas no navegador enviarase a Google. Podes cambiar esta opción na configuración cando queiras.</translation>
 <translation id="4814736265800133385">Utilizar Chromium sen ningunha conta</translation>
@@ -308,6 +309,7 @@
 <translation id="4987820182225656817">Os invitados poden utilizar Chromium sen perder información.</translation>
 <translation id="4994636714258228724">Engádete a Chromium</translation>
 <translation id="5123973130450702873">Chromium necesita permiso para facer un seguimento das mans</translation>
+<translation id="5141988424377517949">Levas un tempo sen entrar. Chromium quitou os seguintes permisos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Adoitas bloquear as notificacións. Para permitir que este sitio che envíe notificacións, fai clic na icona de notificación que está no canto dereito da barra de localización.</translation>
 <translation id="5187123684706427865">Para poder usar a conta de Chromium, é necesario volver autenticarse</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
@@ -493,6 +495,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="734373864078049451">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chromium.</translation>
 <translation id="7349591376906416160">A persoa que administra o teu sistema configurou Chromium para abrir o navegador <ph name="TARGET_URL_HOSTNAME" /> co obxectivo de acceder a <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
+<translation id="7376384068949534168">Levas un tempo sen entrar. Chromium quitou os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Xa non se admite esta extensión. Chromium recomenda que a quites.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> (Chromium para programadores)</translation>
 <translation id="7450541714075000668">Copiouse o texto</translation>
@@ -557,6 +560,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8248265253516264921">Se unha imaxe non ten unha descrición útil, Chromium tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="8254601181414348851">Queres iniciar sesión en Chromium cun perfil novo?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium avísate<ph name="END_LINK" /> sobre descargas e sitios pouco seguros</translation>
+<translation id="8295827201165805317">Levas un tempo sen entrar. Chromium quitou o seguinte permiso: <ph name="PERMISSION" />.</translation>
 <translation id="8313851650939857356">Produciuse un erro de inicio do sistema: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">A túa organización pecha Chromium cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Gardar como imaxe</translation>

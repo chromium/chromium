@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Iyasebenza namhlanje</translation>
 <translation id="1523567067736644845">Vula ukuze uveze iphasiwedi</translation>
 <translation id="1524563461097350801">Cha, Ngiyabonga</translation>
+<translation id="1528290585275339320">Vula ukwabelana kwekhontenti yekhasi</translation>
 <translation id="1531038290222364269">Bonisa amathebhu</translation>
 <translation id="1536390784834419204">Humusha ikhasi</translation>
 <translation id="1540800554400757039">Ikheli 1</translation>
@@ -1045,6 +1046,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="5128788795241319992">Hlola imenyu entsha</translation>
 <translation id="5132942445612118989">Vumelanisa amaphasiwedi akho, umlando nokuningi kuwo wonke amadivayisi</translation>
 <translation id="5141363746588976328">Fihla ukwehla kwentengo ekhadini lamathebhu</translation>
+<translation id="514154868070499296">Ifonti: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Shiya isishintshi sethebhu</translation>
 <translation id="5148717509369231739">Ukungenisa kweSafari</translation>
 <translation id="5157638238828697074">Kukhona okungahambanga kahle. Le-application ayikwazanga ukuvulwa.</translation>
@@ -1974,6 +1976,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8637431369725868556">Thola isivikelo kumasayithi ayingozi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Awekho amaphasiwedi onakalisiwe}=1{Iphasiwedi eyonakalisiwe e-{COUNT}}one{Amaphasiwedi onakalisiwe angu-{COUNT}}other{Amaphasiwedi onakalisiwe angu-{COUNT}}}</translation>
 <translation id="8643403533759285912">Sula Iqembu</translation>
+<translation id="8645245178269185266">Yabelana ngekhontenti yekhasi ngeGemini ukuze uthole izimpendulo ezihambisana kakhudlwana</translation>
 <translation id="8647280737650867362">Ayikwazanga ukukhipha ukulandelela intengo.</translation>
 <translation id="8654802032646794042">Khansela</translation>
 <translation id="8660600697590740984">Isithombe esikopishiwe seLens</translation>

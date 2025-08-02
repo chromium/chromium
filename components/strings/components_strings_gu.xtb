@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">Android ઍપ્લિકેશનો</translation>
 <translation id="2102519472192754194">વેબ બ્રાઉઝર</translation>
 <translation id="2103210856015238101">ટચ કરીને ભરવા માટે ઉપલબ્ધ લૉયલ્ટિ કાર્ડ પૂરી ઊંચાઈએ ખોલ્યા છે.</translation>
+<translation id="2104739941682874393">વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા ફોર્મને વધુ સારી રીતે સમજે છે અને તમારા માટે ઑટોમૅટિક રીતે તેમને વધુ ઝડપથી ભરી શકે છે</translation>
 <translation id="2105838220373099643">રોલપ્લેઇંગ ગેમ</translation>
 <translation id="2107021941795971877">પ્રિન્ટ માટેના સપોર્ટ</translation>
 <translation id="2108755909498034140">તમારું કમ્પ્યુટર પુનઃપ્રારંભ કરો</translation>
@@ -2428,6 +2429,7 @@
 <translation id="5052517576853118371">સક્રિય વિષયો</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}one{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}other{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલો મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}}</translation>
 <translation id="505757197798929356">ખોલવાનું કારણ આપો (આવશ્યક છે)</translation>
+<translation id="5058282932481719070">સેટિંગમાં વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા વિશે વધુ જાણો</translation>
 <translation id="5060419232449737386">કૅપ્શન સેટિંગ</translation>
 <translation id="5060483733937416656">તમે <ph name="PROVIDER_ORIGIN" />નો ઉપયોગ કરતી વેબસાઇટ પર Windows Hello વડે ચકાસણી કરવાનું પસંદ કર્યું છે. આ પ્રદાતાએ તમારી ચુકવણી પદ્ધતિ વિશેની માહિતી કદાચ સ્ટોર કરી હોઈ શકે છે, જેને તમે <ph name="LINK_TEXT" /> કરી શકો છો.</translation>
 <translation id="5061227663725596739">શું તમારો અર્થ <ph name="LOOKALIKE_DOMAIN" /> હતો?</translation>
@@ -3029,6 +3031,7 @@
 <translation id="6062937464449575061">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="6063415549109819824">ઘર ખરીદવા માટે લોન આપતી સેવાઓ</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> પર ઉપલબ્ધ <ph name="FOLDER_NAME" />માં એક કે તેથી વધુ ફાઇલો અપલોડ કરવામાં આવી નથી</translation>
+<translation id="6071503852498277813">કન્ટેન્ટ બુકમાર્ક વિશ્લેષક સેવા</translation>
 <translation id="6078069862923723141">સ્યાન 2</translation>
 <translation id="6085149458302186532">લેબલ (રંગીન)</translation>
 <translation id="6087312102907839798">સંબંધિત શોધ</translation>
@@ -3553,6 +3556,7 @@
 <translation id="695140971690006676">બધુ રીસેટ કરો</translation>
 <translation id="6954049078461159956">હૉકી</translation>
 <translation id="695582302419398462">કાર્ડબોર્ડ (ડબલ વૉલ)</translation>
+<translation id="6957153644870901611">વધુ ફીલ્ડ ઑટોમૅટિક રીતે ભરવા માટે વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="6957887021205513506">સર્વરનું પ્રમાણપત્ર બનાવટી હોય એવું લાગે છે.</translation>
 <translation id="6958564499836457428">તમારા Google એકાઉન્ટમાં Google પ્રાઇવસી સેટિંગ મેનેજ કરો</translation>
 <translation id="6961844873822989059">તમારા ડિવાઇસમાં ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
