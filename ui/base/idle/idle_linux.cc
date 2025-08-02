@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/base/idle/idle.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/config/linux/dbus/buildflags.h"
 #include "ui/base/idle/idle_internal.h"
@@ -15,12 +13,11 @@
 
 #if BUILDFLAG(USE_DBUS)
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/task/task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/name_has_owner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -73,18 +70,7 @@ class DBusScreenSaverWatcher {
     kUnlocked,
   };
 
-  DBusScreenSaverWatcher()
-      : task_runner_(
-            base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits(
-                base::MayBlock(),
-                base::TaskPriority::USER_VISIBLE,
-                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN))) {
-    dbus::Bus::Options options;
-    options.bus_type = dbus::Bus::SESSION;
-    options.connection_type = dbus::Bus::PRIVATE;
-    options.dbus_task_runner = task_runner_;
-    bus_ = base::MakeRefCounted<dbus::Bus>(options);
-
+  DBusScreenSaverWatcher() : bus_(dbus_thread_linux::GetSharedSessionBus()) {
     TryCurrentService();
   }
 
@@ -98,10 +84,12 @@ class DBusScreenSaverWatcher {
   void TryCurrentService() {
     // Detach the proxy, if we have one from the previous attempt.
     if (proxy_) {
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&dbus::ObjectProxy::Detach, base::Unretained(proxy_)));
+      CHECK_GT(current_service_, 0u);
       proxy_ = nullptr;
+      bus_->RemoveObjectProxy(
+          kServices[current_service_ - 1].service_name,
+          dbus::ObjectPath(kServices[current_service_ - 1].object_path),
+          base::DoNothing());
     }
 
     if (current_service_ >= kServiceCount) {
@@ -203,7 +191,6 @@ class DBusScreenSaverWatcher {
   size_t current_service_ = 0;
 
   scoped_refptr<dbus::Bus> bus_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<DBusScreenSaverWatcher> weak_factory_{this};
