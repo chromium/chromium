@@ -69,8 +69,7 @@ void SelectToSpeakHandler::OnVoicesChanged() {
                        g_browser_process->GetApplicationLocale(), true));
     }
     for (auto& event : voice.events) {
-      const char* event_name_constant = TtsEventTypeToString(event);
-      event_types.Append(event_name_constant);
+      event_types.Append(TtsEventTypeToString(event));
     }
     response.Set("eventTypes", std::move(event_types));
     response.Set("extensionId", voice.engine_id);

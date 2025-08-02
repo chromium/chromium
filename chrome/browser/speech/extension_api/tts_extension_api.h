@@ -23,8 +23,9 @@ namespace content {
 class BrowserContext;
 }
 
-const char* TtsEventTypeToString(content::TtsEventType event_type);
-content::TtsEventType TtsEventTypeFromString(const std::string& str);
+[[nodiscard]] std::string_view TtsEventTypeToString(
+    content::TtsEventType event_type);
+content::TtsEventType TtsEventTypeFromString(std::string_view str);
 
 namespace extensions {
 
