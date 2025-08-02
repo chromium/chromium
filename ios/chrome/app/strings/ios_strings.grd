@@ -1839,10 +1839,10 @@ See your search engine’s instructions for deleting your search history, if app
         Built for iPadOS
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_BROWSER_APP" desc="Text in the default browser promo animation mimicking the iOS Default Apps settings page. [iOS only]" meaning="The specific Browser App string appearing in iOS Default Apps settings">
-        Browser app
+        Browser App
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP" desc="Text in the default browser video promo indicating the default browser app in the chrome settings to set a default browser. [iOS only]">
-        Default browser app
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP" desc="Text in the default browser promo animation mimicking the iOS settings page for the current app. [iOS only]">
+        Default Browser App
       </message>
       <message name="IDS_IOS_DEFAULT_NON_MODAL_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to Chrome or iOS settings where they can change the default browser. Used in the non-modal default browser promo [iOS only]">
         Set…
