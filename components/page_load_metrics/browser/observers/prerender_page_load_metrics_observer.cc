@@ -97,6 +97,9 @@ const char kDomContentLoadedToActivation[] =
 const char kMainResourceParseStartToActivation[] =
     "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation";
 
+// Prewarm prerender metrics
+const char kHistogramHostReused[] = "PageLoad.Clients.Prerender.HostReused";
+
 }  // namespace internal
 
 PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver(
@@ -186,6 +189,9 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
       .SetNavigation_InitiatorLocation(
           static_cast<int>(prerender_trigger_type));
   builder.Record(ukm::UkmRecorder::Get());
+
+  base::UmaHistogramBoolean(AppendSuffix(internal::kHistogramHostReused),
+                            navigation_handle->IsPrerenderHostReused());
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(

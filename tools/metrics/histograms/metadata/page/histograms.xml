@@ -2186,6 +2186,17 @@ chromium-metrics-reviews@google.com.
   <token key="LoadedIdleVisibility" variants="LoadedIdleVisibility"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.Prerender.HostReused{PreloadingTriggerType}"
+    enum="Boolean" expires_after="2026-01-18">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
+  <summary>
+    Whether the prerendering navigation is reusing a prerender host or not. This
+    is recorded once, when a prerendered page is activated.
+  </summary>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PreloadingTriggerType}"
     units="ms" expires_after="2026-01-18">

@@ -248,6 +248,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Gets the trigger type from the reserved PrerenderHost.
   PreloadingTriggerType GetPrerenderTriggerType(
       FrameTreeNodeId frame_tree_node_id);
+
   // Gets the embedder histogram suffix from the reserved PrerenderHost. Only
   // used for metrics.
   const std::string& GetPrerenderEmbedderHistogramSuffix(

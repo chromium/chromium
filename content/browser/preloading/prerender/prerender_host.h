@@ -400,6 +400,8 @@ class CONTENT_EXPORT PrerenderHost {
 
   bool were_headers_received() const { return were_headers_received_; }
 
+  bool host_reused() const { return host_reused_; }
+
   // Gets the timeout configured for waiting on head.
   base::TimeDelta WaitUntilHeadTimeout();
 
@@ -575,6 +577,8 @@ class CONTENT_EXPORT PrerenderHost {
 
   // True if headers were received.
   bool were_headers_received_ = false;
+
+  const bool host_reused_ = false;
 };
 
 }  // namespace content

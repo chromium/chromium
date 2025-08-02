@@ -10983,6 +10983,11 @@ std::string NavigationRequest::GetPrerenderEmbedderHistogramSuffix() {
   return reserved_prerender_host_info_->embedder_histogram_suffix;
 }
 
+bool NavigationRequest::IsPrerenderHostReused() {
+  DCHECK(reserved_prerender_host_info_.has_value());
+  return reserved_prerender_host_info_->is_prerender_host_reused;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 const base::android::JavaRef<jobject>&
 NavigationRequest::GetJavaNavigationHandle() {

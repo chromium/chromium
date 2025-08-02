@@ -364,7 +364,8 @@ PrerenderHost::PrerenderHost(
                                            embedder_histogram_suffix())),
       attempt_(std::move(attempt)),
       devtools_attempt_(std::move(devtools_attempt)),
-      web_contents_(web_contents) {
+      web_contents_(web_contents),
+      host_reused_(reuse_host) {
 #if BUILDFLAG(IS_ANDROID)
   if (trigger_type() == PreloadingTriggerType::kSpeculationRule) {
     base::trace_event::EmitNamedTrigger("sp-prerender-start");

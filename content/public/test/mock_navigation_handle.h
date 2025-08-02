@@ -243,6 +243,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(void, CancelNavigationTimeout, ());
   MOCK_METHOD(PreloadingTriggerType, GetPrerenderTriggerType, ());
   MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
+  MOCK_METHOD(bool, IsPrerenderHostReused, ());
   MOCK_METHOD(void, SetAllowCookiesFromBrowser, (bool));
   MOCK_METHOD(void, GetResponseBody, (ResponseBodyCallback));
   MOCK_METHOD(std::optional<NavigationDiscardReason>,

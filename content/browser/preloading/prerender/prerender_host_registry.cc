@@ -1304,7 +1304,8 @@ PrerenderHostRegistry::ReserveHostToActivate(
 
   return ReservedPrerenderHostInfo(
       host_id, reserved_prerender_host_->trigger_type(),
-      reserved_prerender_host_->embedder_histogram_suffix());
+      reserved_prerender_host_->embedder_histogram_suffix(),
+      reserved_prerender_host_->host_reused());
 }
 
 RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(

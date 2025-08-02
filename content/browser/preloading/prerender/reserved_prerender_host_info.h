@@ -15,11 +15,13 @@ namespace content {
 struct ReservedPrerenderHostInfo {
   ReservedPrerenderHostInfo(FrameTreeNodeId frame_tree_node_id,
                             PreloadingTriggerType trigger_type,
-                            std::string embedder_histogram_suffix);
+                            std::string embedder_histogram_suffix,
+                            bool is_prerender_host_reused);
 
   FrameTreeNodeId frame_tree_node_id;
   PreloadingTriggerType trigger_type;
   std::string embedder_histogram_suffix;
+  bool is_prerender_host_reused;
 };
 
 }  // namespace content
