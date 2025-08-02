@@ -6855,8 +6855,9 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
   PaintRecordBuilder builder;
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  paint_layer_painter.Paint(builder.Context(),
-                            PaintFlag::kPaintingCanvasDrawElement);
+  paint_layer_painter.Paint(
+      builder.Context(),
+      PaintFlag::kPaintingCanvasDrawElement | PaintFlag::kPrivacyPreserving);
 
   PropertyTreeState tree_state = layer->GetLayoutObject()
                                      .FirstFragment()

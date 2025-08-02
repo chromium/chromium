@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Canvas.drawElement: getImageData non-tainted</title>
+<title>Canvas.drawElement: getImageData tainting behavior</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:vmpstr@chromium.org">
 
@@ -23,7 +23,7 @@
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = 'rgb(3, 4, 5)';
     ctx.fillRect(0, 0, 200, 200);
-    ctx.drawElement(child, 20, 30);
+    ctx.drawElement(child, 20, 30, { allowReadback: true });
 
     const image_data = ctx.getImageData(19, 35, 2, 1);
     assert_equals(image_data.width, 2);
@@ -41,5 +41,11 @@
     assert_equals(data[5], 255);
     assert_equals(data[6], 2);
     assert_equals(data[7], 255);
+
+    ctx.drawElement(child, 20, 30);
+
+    assert_throws_dom("SecurityError",
+      () => ctx.getImageData(19, 35, 2, 1),
+      "getImageData should throw after drawElement without allowReadback");
   }, 'canvas drawElement readback');
 </script>

@@ -799,6 +799,8 @@ void CanvasRenderingContext2D::DrawElementInternal(
   PaintFlags paint_flags = PaintFlag::kPaintingCanvasDrawElement;
   if (options && options->allowReadback()) {
     paint_flags |= PaintFlag::kPrivacyPreserving;
+  } else {
+    SetOriginTainted();
   }
   paint_layer_painter.Paint(builder.Context(), paint_flags);
 
