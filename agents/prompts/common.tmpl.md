@@ -125,5 +125,3 @@ the user about the reason to skip.
       any fixes.
 8.  **Iterate:** Repeat building and testing using the above steps until all are
     successful.
-9.  **Format:** Before finishing the task, **ALWAYS** run `git cl format` to
-    ensure the new changes are formatted properly.

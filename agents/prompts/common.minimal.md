@@ -31,3 +31,21 @@ single agentic tool.
 
 Unless otherwise instructed, run tests with:
 `tools/autotest.py --quiet --run-all -C {OUT_DIR} {RELEVANT_TEST_FILENAMES}`
+
+## Coding
+
+* Stay on task: Do not address code health issues or TODOs in code unless it is
+  required to achieve your given task.
+* Add code comments sparingly: Focus on *why* something is done, not *what* is
+  done.
+
+## Presumbit Checks
+
+When you have finished validating your changes through other means, run:
+
+```sh
+git cl format
+git cl presubmit -u --force
+```
+* Fix errors / warnings related to your change, but do not fix pre-existing
+  warnings (from lines that you did not change).
