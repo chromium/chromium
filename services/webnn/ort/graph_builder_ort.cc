@@ -2843,9 +2843,8 @@ void GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
   switch (pad.mode->which()) {
     case mojom::PaddingMode::Tag::kConstant: {
       mode = "constant";
-      constant = CreateScalarInitializer(
-          input_descriptor.data_type(),
-          MLNumber::FromFloat64(pad.mode->get_constant()->value));
+      constant = CreateScalarInitializer(input_descriptor.data_type(),
+                                         pad.mode->get_constant()->value);
       inputs.push_back(constant.c_str());
       break;
     }

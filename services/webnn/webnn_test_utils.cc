@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/ml_number.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -145,7 +146,7 @@ void GraphInfoBuilder::BuildPad(OperandId input_operand_id,
   switch (mode) {
     case mojom::PaddingMode::Tag::kConstant: {
       auto constant_padding = mojom::ConstantPadding::New();
-      constant_padding->value = value;
+      constant_padding->value = MLNumber::FromFloat64(value);
       pad->mode = mojom::PaddingMode::NewConstant(std::move(constant_padding));
       break;
     }

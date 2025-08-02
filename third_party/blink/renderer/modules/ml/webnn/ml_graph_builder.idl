@@ -150,7 +150,7 @@ enum MLPaddingMode {
 
 dictionary MLPadOptions : MLOperatorOptions {
   MLPaddingMode mode = "constant";
-  float value = 0;
+  MLNumber value = 0;
 };
 
 enum MLRoundingType {

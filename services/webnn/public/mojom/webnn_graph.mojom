@@ -354,7 +354,7 @@ struct Expand {
 // Specifies the different ways to pad a tensor. The padding value is only
 // specified when the mode is "constant".
 struct ConstantPadding {
-  float value = 0;
+  Number value;
 };
 
 struct EdgePadding {};

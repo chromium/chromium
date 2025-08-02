@@ -912,7 +912,7 @@ OperationPtr CreatePadOperation(const OperandToIdMap& operand_to_id_map,
   switch (options->mode().AsEnum()) {
     case blink::V8MLPaddingMode::Enum::kConstant: {
       auto constant_padding = blink_mojom::ConstantPadding::New();
-      constant_padding->value = options->value();
+      constant_padding->value = pad->Value();
       pad_mojo->mode =
           blink_mojom::PaddingMode::NewConstant(std::move(constant_padding));
       break;

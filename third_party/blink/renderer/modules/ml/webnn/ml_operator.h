@@ -268,6 +268,7 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
   MLPadOperator(MLGraphBuilder* builder,
                 const Vector<uint32_t>& beginning_padding,
                 const Vector<uint32_t>& ending_padding,
+                webnn::MLNumber value,
                 MLPadOptions* options);
 
   MLPadOperator(const MLPadOperator&) = delete;
@@ -277,10 +278,12 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
 
   const Vector<uint32_t>& BeginningPadding() const;
   const Vector<uint32_t>& EndingPadding() const;
+  const webnn::MLNumber& Value() const { return value_; }
 
  private:
   Vector<uint32_t> beginning_padding_;
   Vector<uint32_t> ending_padding_;
+  const webnn::MLNumber value_;
 };
 
 class MODULES_EXPORT MLReverseOperator : public MLOperator {

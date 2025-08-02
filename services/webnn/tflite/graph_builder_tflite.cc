@@ -6297,8 +6297,10 @@ auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
 auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
     -> base::expected<OperatorOffset, std::string> {
   CHECK_EQ(pad.beginning_padding.size(), pad.ending_padding.size());
+  const OperandDescriptor& input_descriptor =
+      GetOperand(pad.input_operand_id).descriptor;
   CHECK(context_properties_.data_type_limits.pad_input.Supports(
-      GetOperand(pad.input_operand_id).descriptor));
+      input_descriptor));
 
   std::vector<int32_t> paddings;
   paddings.resize(pad.beginning_padding.size() * 2);
@@ -6340,8 +6342,8 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
       // that the constant value is 0.0f and the operator code is
       // BuiltinOperator_PAD.
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=5025;drc=4e673771b1ee61f0e9f854e2d1420f353c67c401
-      const float constant_value = pad.mode->get_constant()->value;
-      if (constant_value == 0.0f) {
+      const MLNumber& constant_value = pad.mode->get_constant()->value;
+      if (constant_value.AsFloat32() == 0.0f) {
         operator_code = ::tflite::BuiltinOperator::BuiltinOperator_PAD;
         builtin_options_type =
             ::tflite::BuiltinOptions::BuiltinOptions_PadOptions;
@@ -6355,15 +6357,36 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
       builtin_options = ::tflite::CreatePadV2Options(builder_).Union();
 
       // Add the padding value as an input.
-      //
-      // TODO: crbug.com/328567884 - This is not correct to always use floats,
-      // though for now WebNN only supports passing a float32 constant value.
-      // https://www.tensorflow.org/mlir/tfl_ops#tflpadv2_tflpadv2op specifies
-      // that this constant value should match the type of the input operand.
-      const std::array<float, 1> padding_value_buffer = {constant_value};
       const std::array<int32_t, 1> padding_value_dimensions = {1};
-      const TensorIndex padding_value_index = SerializeTensorWithBuffer<float>(
-          padding_value_buffer, padding_value_dimensions);
+      TensorIndex padding_value_index;
+      switch (input_descriptor.data_type()) {
+        case OperandDataType::kFloat16:
+          // The float16 data type has been cast to float32.
+          [[fallthrough]];
+        case OperandDataType::kFloat32:
+          padding_value_index = SerializeTensorWithBuffer<float>(
+              {constant_value.AsFloat32()}, padding_value_dimensions);
+          break;
+        case OperandDataType::kInt32:
+          padding_value_index = SerializeTensorWithBuffer<int32_t>(
+              {constant_value.AsInt32()}, padding_value_dimensions);
+          break;
+        case OperandDataType::kInt64:
+          padding_value_index = SerializeTensorWithBuffer<int64_t>(
+              {constant_value.AsInt64()}, padding_value_dimensions);
+          break;
+        case OperandDataType::kUint8:
+          padding_value_index = SerializeTensorWithBuffer<uint8_t>(
+              {constant_value.AsUint8()}, padding_value_dimensions);
+          break;
+        case OperandDataType::kUint32:
+        case OperandDataType::kInt8:
+        case OperandDataType::kUint64:
+        case OperandDataType::kInt4:
+        case OperandDataType::kUint4:
+          NOTREACHED() << "This data type is not supported by pad.";
+      }
+
       if (fuse_dequantize) {
         // The padding value should be quantized to the same data type of input
         // to meet the requirements of QDQ fusion and get the correct results.

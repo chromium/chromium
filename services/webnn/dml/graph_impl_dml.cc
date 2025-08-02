@@ -2512,7 +2512,7 @@ void CreateOperatorNodeForPad(const ContextProperties& context_properties,
   switch (pad->mode->which()) {
     case mojom::PaddingMode::Tag::kConstant:
       padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_CONSTANT;
-      padding_value = pad->mode->get_constant()->value;
+      padding_value = pad->mode->get_constant()->value.AsFloat32();
       break;
     case mojom::PaddingMode::Tag::kEdge:
       padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_EDGE;

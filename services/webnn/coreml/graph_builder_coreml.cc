@@ -4586,7 +4586,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
   constexpr char kParamConstantVal[] = "constant_val";
 
   std::string_view mode;
-  float constant = 0;
+  MLNumber constant = MLNumber::FromFloat64(0);
   switch (operation.mode->which()) {
     case mojom::PaddingMode::Tag::kConstant:
       mode = "constant";

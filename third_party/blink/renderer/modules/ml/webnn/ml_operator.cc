@@ -618,10 +618,12 @@ MLGruCellOperator::~MLGruCellOperator() = default;
 MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
                              const Vector<uint32_t>& beginning_padding,
                              const Vector<uint32_t>& ending_padding,
+                             webnn::MLNumber value,
                              MLPadOptions* options)
     : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kPad, options),
       beginning_padding_(beginning_padding),
-      ending_padding_(ending_padding) {}
+      ending_padding_(ending_padding),
+      value_(std::move(value)) {}
 
 MLPadOperator::~MLPadOperator() = default;
 

@@ -4844,6 +4844,18 @@ TEST_F(WebNNGraphImplTest, PadTest) {
         .Test(*this);
   }
   {
+    // Test pad with value = NAN, beginningPadding = {1, 2} and
+    // endingPadding = {1, 2}.
+    PadTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3}},
+        .beginning_padding = {1, 2},
+        .ending_padding = {1, 2},
+        .value = NAN,
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {4, 7}},
+        .expected = true}
+        .Test(*this);
+  }
+  {
     // Test the invalid graph when the length of beginningPadding is not
     // equal to the input rank.
     PadTester{

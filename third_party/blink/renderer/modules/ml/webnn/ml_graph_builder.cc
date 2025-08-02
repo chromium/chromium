@@ -2670,8 +2670,17 @@ MLOperand* MLGraphBuilder::pad(ScriptState* script_state,
           ending_padding, BlinkPaddingModeToComponent(options->mode().AsEnum()),
           label));
 
+  base::expected<webnn::MLNumber, String> pad_value =
+      ToMLNumberAsType(*options->value(), input->DataType());
+  if (!pad_value.has_value()) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
+        pad_value.error());
+    return nullptr;
+  }
+
   if (options->mode().AsEnum() != V8MLPaddingMode::Enum::kConstant &&
-      fabs(options->value() - 0.0f) > std::numeric_limits<float>::epsilon()) {
+      pad_value.value().AsFloat64() != 0.0) {
     LogConsoleWarning(
         script_state,
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
@@ -2680,8 +2689,8 @@ MLOperand* MLGraphBuilder::pad(ScriptState* script_state,
                 "constant."));
   }
 
-  auto* pad = MakeGarbageCollected<MLPadOperator>(this, beginning_padding,
-                                                  ending_padding, options);
+  auto* pad = MakeGarbageCollected<MLPadOperator>(
+      this, beginning_padding, ending_padding, std::move(*pad_value), options);
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad, the output
   // tensor of pad has the same data type as its input.
