@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_baseline_accumulator.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
@@ -232,6 +233,10 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
       style, masonry_available_size_, is_for_columns ? kForRows : kForColumns);
 
+  // TODO(kschmi): Handle baselines in the stacking direction, depending on the
+  // resolution for https://github.com/w3c/csswg-drafts/issues/9530.
+  GridBaselineAccumulator baseline_accumulator(style.GetFontBaseline());
+
   for (auto& masonry_item : masonry_items) {
     // Find the definite span that the masonry items should be placed in.
     LayoutUnit max_position;
@@ -331,6 +336,8 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
                                                     new_running_position);
 
     container_builder_.AddResult(*result, containing_rect.offset, margins);
+    baseline_accumulator.Accumulate(masonry_item, fragment,
+                                    containing_rect.offset.block_offset);
   }
   if (is_for_columns) {
     // Remove last gap that was added, since there is no item after it.
@@ -344,6 +351,14 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     // If the stacking axis is the inline axis, add the size of the tracks to
     // `intrinsic_block_size_`.
     intrinsic_block_size_ = track_collection.CalculateSetSpanSize();
+  }
+
+  // Propagate the baselines to the container.
+  if (auto first_baseline = baseline_accumulator.FirstBaseline()) {
+    container_builder_.SetFirstBaseline(*first_baseline);
+  }
+  if (auto last_baseline = baseline_accumulator.LastBaseline()) {
+    container_builder_.SetLastBaseline(*last_baseline);
   }
 }
 

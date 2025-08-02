@@ -1112,15 +1112,12 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/masonry-grid-templ
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/parsing/* [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/subgrid/* [ Failure ]
 # Masonry sizing test failures
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/gap/masonry-gap-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/* [ Failure Skip ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/order/masonry-order-001.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-015.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/column-explicit-placement-002.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-003.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-006.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-012.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-014.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-006.html [ Failure ]
 # Masonry named line failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-001.html [ Failure ]
@@ -1130,13 +1127,6 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-align-content-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-justify-content-003.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-justify-content-004.html [ Failure ]
-# Masonry container alignment failures
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-004.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-005.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-006.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-007.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-justify-content-001.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-align-content-003.html [ Failure ]
 # Failing because of the divergence in default track definition
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-003.html [ Failure ]

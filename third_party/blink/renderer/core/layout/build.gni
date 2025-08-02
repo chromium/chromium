@@ -180,6 +180,7 @@ blink_core_sources_layout = [
   "geometry/writing_mode_converter.cc",
   "geometry/writing_mode_converter.h",
   "grid/grid_break_token_data.h",
+  "grid/grid_baseline_accumulator.h",
   "grid/grid_data.h",
   "grid/grid_item.cc",
   "grid/grid_item.h",
