@@ -5976,6 +5976,13 @@
        ]
       ]
      },
+     "if-range-with-attr-crash.html": [
+      "0943f1856244cea3f929a2a2bcacd5b43ff7f6f6",
+      [
+       null,
+       {}
+      ]
+     ],
      "max-function-crash.html": [
       "7b483efb6af873ecee72230add71a153c921dacc",
       [
@@ -136838,6 +136845,58 @@
         {}
        ]
       ],
+      "grid-gap-decorations-048.html": [
+       "0943502fcf53dcd1959e00f6c37e57d0066787c8",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-048-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-049.html": [
+       "7eeeb0341d9247c71e15a4c738819c44f083833a",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-049-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-050.html": [
+       "93b160bdc115db4e234c0018eb3c4aa2551768bb",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-050-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-051.html": [
+       "9197ffd1dacdca43ffbf829aa31dbe10679c5e48",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-051-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-decorations-38.html": [
        "8b87bcd4860ac50a1c2f3de98cec9599bebb77a3",
        [
@@ -214980,7 +215039,7 @@
        ]
       ],
       "text-spacing-trim-fallback-001.html": [
-       "1a13be3b30635d036d3b990c8084c19e8efe9171",
+       "3c31fec2cb05cecf05034419a7592f7c96c8d2af",
        [
         null,
         [
@@ -280343,7 +280402,7 @@
       ]
      ],
      "backdrop-filter-plus-filter.html": [
-      "5c83faae8686bd1b22f655f9aac2c50f1ab32a0a",
+      "e68d28ce6ca9f7aebacda93038b56f4f5e90a8ac",
       [
        null,
        [
@@ -280363,7 +280422,7 @@
            ],
            [
             0,
-            210
+            298
            ]
           ]
          ]
@@ -338761,20 +338820,40 @@
       "4343e9e262cc932ae5e4e0943ecf8d5ad3c465b7",
       []
      ],
+     "anchor-getComputedStyle-002-expected.txt": [
+      "cda14f3fc67b30f7471bd714ea6dfdaa6886c1a8",
+      []
+     ],
      "anchor-name-multicol-003-expected.txt": [
-      "6ac93ee7a49bb2d31902ed9afdc0f4f4bd432f09",
+      "5aec40681f48e640e80a3ae85b95645c403e3248",
+      []
+     ],
+     "anchor-name-multicol-004-expected.txt": [
+      "bf953d062207bb731c5ba6f5be305aa2a46caa7a",
       []
      ],
      "anchor-position-005-print-ref.html": [
       "2c8824bbc3536186d6bc8aed7222ded7da2c40be",
       []
      ],
+     "anchor-position-grid-001-expected.txt": [
+      "e4a7a86f2df7267d26b163dce419a65636a955b7",
+      []
+     ],
+     "anchor-position-multicol-002-expected.txt": [
+      "30ebfd6d79da8671985269a2d13fc93242be6f24",
+      []
+     ],
      "anchor-position-multicol-003-expected.txt": [
-      "7f03f52a900220153e28834fdbb2cca9f2d99da5",
+      "ad89fdedc77fe9c33d7f4bdcfe81ed8a363f6fa4",
+      []
+     ],
+     "anchor-position-multicol-004-expected.txt": [
+      "e08023a2567715199cb41f6540ccaead69296ccc",
       []
      ],
      "anchor-position-multicol-fixed-001-expected.txt": [
-      "3cc5c1233cec98e6615574d8c5f5d4b65cd7d79b",
+      "92541321de958c156e218dd6b28310cfc095d10e",
       []
      ],
      "anchor-position-top-layer-ref.html": [
@@ -338799,7 +338878,7 @@
      ],
      "parsing": {
       "position-visibility-computed-expected.txt": [
-       "c613bf124e3cea7db3c507e0c0b4935d50360d37",
+       "be8542ca4b363ec6bb56bc297752884c9131bfff",
        []
       ],
       "position-visibility-parsing-expected.txt": [
@@ -343049,7 +343128,7 @@
        []
       ],
       "opacity-valid-expected.txt": [
-       "52b24269051446a1eeb4111faa8291c094700cac",
+       "37db89c021da9c993e2e4322d296e38bb10f90d4",
        []
       ],
       "relative-color-out-of-gamut-expected.txt": [
@@ -356490,6 +356569,22 @@
       ],
       "grid-gap-decorations-045-ref.html": [
        "b002cf0fb3a3481e476ee6fc5adfed14b8d19f79",
+       []
+      ],
+      "grid-gap-decorations-048-ref.html": [
+       "0e34c5af2767b847c5384df9b6333a8b73cdb5a9",
+       []
+      ],
+      "grid-gap-decorations-049-ref.html": [
+       "fda312af62dd4206f6e30dafcae063d9688d2b06",
+       []
+      ],
+      "grid-gap-decorations-050-ref.html": [
+       "72dbb2c3385f00886c662998cf9ce75a1c6881b7",
+       []
+      ],
+      "grid-gap-decorations-051-ref.html": [
+       "cafaa519cce2ff943218d3f7e61a11ee535c66c7",
        []
       ],
       "subgrid": {
@@ -373245,7 +373340,7 @@
        []
       ],
       "text-spacing-trim-fallback-001-ref.html": [
-       "d3f72b2ecee9848c1a9460ce2bda82bef848798e",
+       "cf5086157127d353204396127dee1c6701e5899a",
        []
       ],
       "text-spacing-trim-feature-001-ref.html": [
@@ -374792,6 +374887,10 @@
      "parsing": {
       "WEB_FEATURES.yml": [
        "bc8409c24dd3ea29cd8ed34d071e9e1102860b30",
+       []
+      ],
+      "text-decoration-computed-expected.txt": [
+       "eb86551ea9eb846f65ae6da32e420fbb6d01e4a3",
        []
       ],
       "text-decoration-valid-expected.txt": [
@@ -379895,11 +379994,11 @@
        []
       ],
       "url-request-modifiers-computed.sub-expected.txt": [
-       "3f6e89da10ddbb4783c2a70648434ce49e34527a",
+       "592f620a352e9b731117c045f0985003c6e7d6bc",
        []
       ],
       "url-request-modifiers-serialize.sub-expected.txt": [
-       "69eb24d9c525daab852ceb81a299c451c71b10b7",
+       "ff97ac595d81b2f66cd2cfc48fba2b2a618693be",
        []
       ]
      },
@@ -392006,7 +392105,7 @@
       ]
      },
      "fedcm-helper.sub.js": [
-      "7330c3ef6c57748152a528a0923a88f695f655e5",
+      "045e9fad6f59419dfed30dbd4348cfa15d8d26a3",
       []
      ],
      "fedcm-helper.sub.js.headers": [
@@ -396932,6 +397031,10 @@
        "cd0f08ca4f8d4bff4828034df9332b7a69d4fdd7",
        []
       ],
+      "NotoSansCJKjp-Regular-subset-halt-300C.otf": [
+       "a7fb34672445f8756168c694976957ac41896966",
+       []
+      ],
       "NotoSansCJKjp-Regular-subset-halt-FF1A.otf": [
        "159aec5f717017658ac416a789722e3ae937f196",
        []
@@ -396949,7 +397052,7 @@
        []
       ],
       "subset.sh": [
-       "899db77945df516444a327b88e6e3db79f421de1",
+       "5f5ebbd83408542a240132f57e5e996fb51f98da",
        []
       ]
      },
@@ -411731,8 +411834,12 @@
         "54436ebd6ff037be33fcea9abada1b7c89bd00d7",
         []
        ],
+       "color-expected.txt": [
+        "2942a87d8654b4406d995cc81fb6ff0978f7afe1",
+        []
+       ],
        "color.window-expected.txt": [
-        "ca5a73fcdc9eaa6fff3724c3d7a152d90d6494cf",
+        "8a99d22ea52eb6c1591cd2273e443044ab1c49c9",
         []
        ],
        "date-time-with-trusted-types-ref.html": [
@@ -423089,6 +423196,10 @@
        ]
       }
      },
+     "navigation-back-same-document-preventDefault-expected.txt": [
+      "066db64544f39fc32458d3ce03c595fb351ddffa",
+      []
+     ],
      "resources": {
       "cross-origin-redirect-on-second-visit.py": [
        "41de092969ebbc8419066ce8118c7d43e7944afd",
@@ -435347,10 +435458,6 @@
      ]
     },
     "shapes": {
-     "animatedPoints-non-animated-expected.txt": [
-      "3884c60296bff8f21f5ce7c89749046fc769869e",
-      []
-     ],
      "circle-01-ref.svg": [
       "1d62e8e2af82f8da03937be22d4c3f695111edb8",
       []
@@ -436146,22 +436253,6 @@
       []
      ]
     },
-    "script-enforcement-001-expected.txt": [
-     "0ecfbd066818b87c223e430f0071ca766aa2f7f9",
-     []
-    ],
-    "script-enforcement-002-expected.txt": [
-     "b8e0fbbcdd6f7e9f6bf2e3aa7a74198f88e63991",
-     []
-    ],
-    "script-enforcement-003-expected.txt": [
-     "16728ce21312feb62fd6dbdff60d71e306c1d348",
-     []
-    ],
-    "script-enforcement-004-expected.txt": [
-     "b8e0fbbcdd6f7e9f6bf2e3aa7a74198f88e63991",
-     []
-    ],
     "set-event-handlers-content-attributes.tentative-expected.txt": [
      "530d09d58956c1087df7cb317c8773ec07f7fc4d",
      []
@@ -507056,7 +507147,7 @@
        ]
       ],
       "at-container-style-parsing.html": [
-       "2890727ad4ce3a3e8fb397e0707cc0a5b7bc3e69",
+       "1bb5e1a7e7bda911ef746b232b4aad571401cf77",
        [
         null,
         {}
@@ -525513,7 +525604,7 @@
       ]
      ],
      "snap-at-user-scroll-end.html": [
-      "8643b3c1486a294709b1445f32c9eb54e4305164",
+      "0ed0b07fd565fe2e5c5ffc0f0bcd36039360ca0c",
       [
        null,
        {
@@ -537861,7 +537952,7 @@
       ]
      ],
      "if-conditionals.html": [
-      "a299b267af5011f94160705cbd1fe0ec2cb58e51",
+      "1167172e542d1ed53a4217c0799fa3eb3cec9dcf",
       [
        null,
        {}
@@ -573815,7 +573906,7 @@
      ]
     ],
     "fedcm-accounts-endpoint-rejects-redirects.https.html": [
-     "ae3b52a5789ec96193a35b62c60fc8ee67bf13b4",
+     "8e0edef19f997260b5a24bec760cddfa03da0e59",
      [
       null,
       {
@@ -573918,7 +574009,7 @@
      ]
     },
     "fedcm-auto-reauthn-without-approved-clients.https.html": [
-     "fb93cb632db09dfd3332ac6008f1f40253361ea6",
+     "c87cd095654c212318b6d97fa418eac095c532de",
      [
       null,
       {
@@ -574055,7 +574146,7 @@
      ]
     ],
     "fedcm-disconnect-errors.https.html": [
-     "4d5fb0a457c7acd0d5c23818f4623826324f7336",
+     "2c3e8b760c85364bdf2c0b87b3a9384c11fea90d",
      [
       null,
       {
@@ -574073,7 +574164,7 @@
      ]
     ],
     "fedcm-disconnect.sub.https.html": [
-     "a80ed48534ae33d027595f7b2a392693c781cea2",
+     "a291202d8fac072ad9cfd0514ccae3fd89d078e0",
      [
       null,
       {
@@ -574119,7 +574210,7 @@
      ]
     ],
     "fedcm-identity-assertion-nocors.https.html": [
-     "79da95d50061d5274811b067a5e1be116edb680b",
+     "a5e2e52e47aba95e6a02f8244ca0234e25f6a08e",
      [
       null,
       {
@@ -574138,7 +574229,7 @@
     ],
     "fedcm-login-status": {
      "confirm-idp-login.https.html": [
-      "174cdafd50266a6e212efdb8028a3806eeaa890a",
+      "c77286db3312ae19bd4e103b61919360bed5fdb1",
       [
        null,
        {
@@ -574174,7 +574265,7 @@
       ]
      ],
      "login-page-broken.https.html": [
-      "cda9ee4fd509ea971f95d249117645a423a2549f",
+      "06be5e48ed3b8a20c66d778ed4afbeb98165989d",
       [
        null,
        {
@@ -574192,17 +574283,8 @@
       ]
      ]
     },
-    "fedcm-login-status-unknown.https.html": [
-     "d542524c884790fe6a957ffa789d8336284df252",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "fedcm-loginhint.https.html": [
-     "fe35007a87dc06a9062e6a81fcd6558f102782b7",
+     "1a4adbe81615b21fd36b0d016b9c756e2543c2ac",
      [
       null,
       {
@@ -574276,7 +574358,7 @@
      ]
     },
     "fedcm-no-domainhint-matches-account.https.html": [
-     "c2bf1419022277649c6ba7861bc366f4ac438778",
+     "31a9e2ea5f58942df8067db4f016a632ea5edbc1",
      [
       null,
       {
@@ -574285,7 +574367,7 @@
      ]
     ],
     "fedcm-no-login-url.https.html": [
-     "94592d2dbfbfb9f308f4aa97a198816119a36502",
+     "480254c029414423baa38de2318078d457d384ca",
      [
       null,
       {
@@ -574330,7 +574412,7 @@
      ]
     ],
     "fedcm-pending-disconnect.https.html": [
-     "1b60acc10880ddf359aeeb5974f2f93e82df641c",
+     "306de02e6a32da5a4d1d65be14c06c9b85d00db3",
      [
       null,
       {
@@ -574404,7 +574486,7 @@
      ]
     ],
     "fedcm-token-endpoint-rejects-redirects.https.html": [
-     "8d74e06bb2203e98fc5ec01af070e1087cf48615",
+     "c7a16dfdcfd8671f7bd677f0041fce3fbc1fa09e",
      [
       null,
       {
@@ -574422,7 +574504,7 @@
      ]
     ],
     "fedcm-too-many-disconnect-calls.https.html": [
-     "eb87c2377a916b68e1ebf189a0de7d8af1c191df",
+     "72cc26f4d20c5761953a3caa7d3a8a4b14715e72",
      [
       null,
       {
@@ -648328,7 +648410,7 @@
        ]
       ],
       "beforematch-infinite-loop.html": [
-       "b1c9e83ebeab51071739307e3d4e50af3c8d1bb4",
+       "4688020b8a6d62cd64fa0358c93cac2e8bb307e9",
        [
         null,
         {}
@@ -723520,6 +723602,24 @@
     ],
     "detection": {
      "tentative": {
+      "overwriting-text-once-per-interaction.html": [
+       "41a363888fc04e225b01ccc334b53919fb976b6f",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "overwriting-text.html": [
+       "653ae6848ecb9a4ad1da14adeb059af8a272dd62",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "racing-soft-navigations.html": [
        "b513ff4f99bf8d3714fc8b6f12909747ca4fd549",
        [
