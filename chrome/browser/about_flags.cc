@@ -13169,6 +13169,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kApplyClientsideModelPredictionsForOtps)},
 
+    {"canvas-draw-element", flag_descriptions::kCanvasDrawElementName,
+     flag_descriptions::kCanvasDrawElementDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCanvasDrawElement)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

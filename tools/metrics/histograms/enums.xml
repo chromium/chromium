@@ -14206,6 +14206,7 @@ from previous Chrome versions.
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="29769995" label="DataSharingNonProductionEnvironment:enabled"/>
   <int value="29924596" label="AiModeOmniboxEntryPoint:enabled"/>
+  <int value="30668734" label="CanvasDrawElement:enabled"/>
   <int value="31258497"
       label="AutofillEnableSyncingOfPixBankAccounts:disabled"/>
   <int value="31439497" label="ZeroSuggestInMemoryCaching:disabled"/>
@@ -14655,6 +14656,7 @@ from previous Chrome versions.
   <int value="195335115" label="AudioWorkletRealtimeThread:disabled"/>
   <int value="195570937" label="EnableHomeLauncher:disabled"/>
   <int value="196103097" label="PaintPreviewShowOnStartup:disabled"/>
+  <int value="196265972" label="CanvasDrawElement:disabled"/>
   <int value="197180779" label="SearchResumptionModuleAndroid:disabled"/>
   <int value="198386935" label="OmitCorsClientCert:enabled"/>
   <int value="198719062" label="WebAssemblyLazyCompilation:disabled"/>

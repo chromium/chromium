@@ -203,6 +203,9 @@ extern const char kCampaignsOverrideName[];
 extern const char kCampaignsOverrideDescription[];
 #endif  // IS_CHROMEOS
 
+extern const char kCanvasDrawElementName[];
+extern const char kCanvasDrawElementDescription[];
+
 extern const char kCertVerificationNetworkTimeName[];
 extern const char kCertVerificationNetworkTimeDescription[];
 

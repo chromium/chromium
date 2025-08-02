@@ -1435,6 +1435,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "canvas-draw-element",
+    "owners": [ "schenney@chromium.org", "pdr@chromium.org", "chrishtr@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "canvas-oop-rasterization",
     "owners": [ "fserb@chromium.org", "vasilyt@chromium.org" ],
     "expiry_milestone": 140

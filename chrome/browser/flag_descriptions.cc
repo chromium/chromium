@@ -292,6 +292,12 @@ const char kBundledSecuritySettingsDescription[] =
     "standard bundle which should simplify the security settings page and also "
     "help simplify the user's decision.";
 
+const char kCanvasDrawElementName[] = "HTML-in-Canvas";
+const char kCanvasDrawElementDescription[] =
+    "Enables the Canvas 2D drawElement API and the WebGL texElement2D API for "
+    "drawing HTML content into a canvas. "
+    "See: https://github.com/WICG/html-in-canvas";
+
 const char kCertVerificationNetworkTimeName[] =
     "Network Time for Certificate Verification";
 const char kCertVerificationNetworkTimeDescription[] =
