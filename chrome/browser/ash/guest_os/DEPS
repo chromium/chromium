@@ -13,18 +13,14 @@ include_rules = [
   "+chrome/browser/ash/arc/test",
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/bruschetta",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/exo",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/plugin_vm",
-  "+chrome/browser/ash/policy/local_user_files",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/component_updater",
-  "+chrome/browser/extensions/api/messaging",
   "+chrome/browser/extensions/api/terminal",
   "+chrome/browser/icon_transcoder",
   "+chrome/browser/profiles",
@@ -36,9 +32,6 @@ include_rules = [
   "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
   "+chrome/test/base",
-
-  # Dependencies outside of //chrome:
-  "+third_party/xdg_shared_mime_info",
 ]
 
 specific_include_rules = {

@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/chromeos/drivefs",
   "+chrome/browser/download",
-  "+chrome/browser/drive",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
@@ -33,9 +32,6 @@ include_rules = [
   "+chrome/common/chrome_paths_internal.h",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
-
-  # Dependencies outside of //chrome:
-  "+services/device/public/mojom",
 ]
 
 specific_include_rules = {
