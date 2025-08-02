@@ -328,7 +328,9 @@ public class TabUiThemeProvider {
      * @return The background resource id for message card view.
      */
     public static int getMessageCardBackgroundResourceId(boolean isIncognito) {
-        return isIncognito ? R.drawable.incognito_card_bg : R.drawable.card_with_corners_background;
+        return isIncognito
+                ? R.drawable.card_background_corners_16dp_baseline
+                : R.drawable.card_background_corners_16dp;
     }
 
     /**
