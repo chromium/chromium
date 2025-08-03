@@ -134,6 +134,28 @@ TEST_F(AutofillFieldTest, NoPredictions) {
   EXPECT_EQ(field.PredictionSource(), std::nullopt);
 }
 
+// There are two ways to map a HtmlFieldType `t` to a FieldTypeGroup:
+// - `GroupTypeOfHtmlFieldType(t)`
+// - `GroupTypeOfFieldType(HtmlFieldTypeToBestCorrespondingFieldType(t))`
+// This test validates that they're mostly equivalent.
+// TODO(crbug.com/432827625): Make them fully equivalent.
+TEST_F(AutofillFieldTest, GroupsOfHtmlTypes) {
+  using enum HtmlFieldType;
+  static constexpr DenseSet<HtmlFieldType> kInconsistent = {
+      kTransactionAmount, kTransactionCurrency};
+  for (HtmlFieldType t : kAllHtmlFieldTypes) {
+    SCOPED_TRACE(testing::Message()
+                 << "HtmlFieldType: " << FieldTypeToStringView(t));
+    if (kInconsistent.contains(t)) {
+      continue;
+    }
+    FieldTypeGroup g1 = GroupTypeOfHtmlFieldType(t);
+    FieldTypeGroup g2 =
+        GroupTypeOfFieldType(HtmlFieldTypeToBestCorrespondingFieldType(t));
+    EXPECT_EQ(g1, g2);
+  }
+}
+
 constexpr HeuristicSource kRegexSource = HeuristicSource::kRegexes;
 constexpr HeuristicSource kMlSource = HeuristicSource::kAutofillMachineLearning;
 
