@@ -19091,7 +19091,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Got it
       </message>
       <message name="IDS_MULTI_CAPTURE_NOTIFICATION_BUTTON_TEXT" desc="Text for the notification button to reach the details view.">
-        View details
+        Details
       </message>
     </if>
 

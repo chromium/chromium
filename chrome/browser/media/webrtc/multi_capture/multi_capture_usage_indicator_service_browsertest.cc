@@ -65,8 +65,8 @@ struct MultiCaptureUsageIndicatorBrowserTestData {
   std::vector<InstalledApp> allowlisted_capture_apps;
   std::vector<InstalledApp> skip_notification_apps;
   std::vector<InstalledApp> capturing_apps;
-  std::u16string expected_icon_notification_message_before_capture;
-  std::u16string expected_icon_notification_message_after_capture;
+  std::u16string expected_icon_notification_title_before_capture;
+  std::u16string expected_icon_notification_title_after_capture;
   std::optional<std::u16string>
       expected_no_icon_notification_message_after_capture;
 };
@@ -256,9 +256,9 @@ IN_PROC_BROWSER_TEST_P(
       "multi-capture-login-privacy-indicators"));
   const auto& notification =
       visible_notifications_.at("multi-capture-login-privacy-indicators");
-  EXPECT_EQ(notification.title(), u"");
-  EXPECT_EQ(notification.message(),
-            GetParam().expected_icon_notification_message_before_capture);
+  EXPECT_EQ(notification.title(),
+            GetParam().expected_icon_notification_title_before_capture);
+  EXPECT_EQ(notification.message(), u"");
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -276,9 +276,9 @@ IN_PROC_BROWSER_TEST_P(
       "multi-capture-login-privacy-indicators"));
   const auto& notification =
       visible_notifications_.at("multi-capture-login-privacy-indicators");
-  EXPECT_EQ(notification.title(), u"");
-  EXPECT_EQ(notification.message(),
-            GetParam().expected_icon_notification_message_before_capture);
+  EXPECT_EQ(notification.title(),
+            GetParam().expected_icon_notification_title_before_capture);
+  EXPECT_EQ(notification.message(), u"");
 
   if (GetParam().capturing_apps.empty()) {
     return;
@@ -294,14 +294,13 @@ IN_PROC_BROWSER_TEST_P(
       visible_notifications_,
       Contains(Pair(
           "multi-capture-login-privacy-indicators",
-          AllOf(
-              Property(&message_center::Notification::title, u""),
-              Property(
-                  &message_center::Notification::message,
-                  GetParam().expected_icon_notification_message_after_capture),
-              Property(&message_center::Notification::notifier_id,
-                       Field(&message_center::NotifierId::id,
-                             "multi-capture-login-privacy-indicators"))))));
+          AllOf(Property(
+                    &message_center::Notification::title,
+                    GetParam().expected_icon_notification_title_after_capture),
+                Property(&message_center::Notification::message, u""),
+                Property(&message_center::Notification::notifier_id,
+                         Field(&message_center::NotifierId::id,
+                               "multi-capture-login-privacy-indicators"))))));
 
   if (GetParam()
           .expected_no_icon_notification_message_after_capture.has_value()) {
@@ -309,12 +308,12 @@ IN_PROC_BROWSER_TEST_P(
         visible_notifications_,
         Contains(Pair(
             GetLastCapturingNotificationWithAppId(),
-            AllOf(Property(&message_center::Notification::title, u""),
-                  Property(
-                      &message_center::Notification::message,
+            AllOf(Property(
+                      &message_center::Notification::title,
                       GetParam()
                           .expected_no_icon_notification_message_after_capture
-                          .value())))));
+                          .value()),
+                  Property(&message_center::Notification::message, u"")))));
   }
 }
 
@@ -341,10 +340,10 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureUsageIndicatorDynamicAppBrowserTest,
       Contains(Pair(
           "multi-capture-login-privacy-indicators",
           AllOf(
-              Property(&message_center::Notification::title, u""),
-              Property(&message_center::Notification::message,
+              Property(&message_center::Notification::title,
                        u"Your administrator can record your screen with app 1. "
                        u"You will not be notified when the recording starts."),
+              Property(&message_center::Notification::message, u""),
               Property(&message_center::Notification::notifier_id,
                        Field(&message_center::NotifierId::id,
                              "multi-capture-login-privacy-indicators"))))));
@@ -355,10 +354,10 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureUsageIndicatorDynamicAppBrowserTest,
       visible_notifications_,
       Contains(Pair(
           "multi-capture-login-privacy-indicators",
-          AllOf(Property(&message_center::Notification::title, u""),
-                Property(&message_center::Notification::message,
+          AllOf(Property(&message_center::Notification::title,
                          u"Your administrator can record your screen with app "
                          u"1 and app 2."),
+                Property(&message_center::Notification::message, u""),
                 Property(&message_center::Notification::notifier_id,
                          Field(&message_center::NotifierId::id,
                                "multi-capture-login-privacy-indicators"))))));
@@ -375,10 +374,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1},
             .skip_notification_apps = {},
             .capturing_apps = {kApp1},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1. "
                 "You will be notified when the recording starts.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator is recording your screen with app 1.",
             .expected_no_icon_notification_message_after_capture =
                 std::nullopt},
@@ -389,10 +388,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1, kApp2},
             .skip_notification_apps = {},
             .capturing_apps = {kApp1},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1. "
                 "You will be notified when the recording starts.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator is recording your screen with app 1.",
             .expected_no_icon_notification_message_after_capture =
                 std::nullopt},
@@ -405,10 +404,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1, kApp2},
             .skip_notification_apps = {},
             .capturing_apps = {kApp1},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1 and "
                 u"app 2. You will be notified when the recording starts.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator can record your screen with app 2. You "
                 u"will be notified when the recording starts.",
             .expected_no_icon_notification_message_after_capture =
@@ -421,10 +420,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1, kApp2},
             .skip_notification_apps = {},
             .capturing_apps = {kApp1, kApp2},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1 and "
                 u"app 2. You will be notified when the recording starts.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator is recording your screen with app 1.",
             .expected_no_icon_notification_message_after_capture =
                 u"Your administrator is recording your screen with app 2."},
@@ -435,10 +434,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1},
             .skip_notification_apps = {kApp1},
             .capturing_apps = {},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1. You "
                 u"will not be notified when the recording starts.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator can record your screen with app 1. You "
                 u"will not be notified when the recording starts.",
             .expected_no_icon_notification_message_after_capture =
@@ -450,10 +449,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1, kApp2},
             .skip_notification_apps = {kApp1},
             .capturing_apps = {kApp1},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1. You "
                 u"will not be notified when the recording starts.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator can record your screen with app 1. You "
                 u"will not be notified when the recording starts.",
             .expected_no_icon_notification_message_after_capture =
@@ -466,10 +465,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1, kApp2},
             .skip_notification_apps = {kApp1},
             .capturing_apps = {kApp2},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1 and app "
                 u"2.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator can record your screen with app 1. You "
                 u"will not be notified when the recording starts.",
             .expected_no_icon_notification_message_after_capture =
@@ -482,10 +481,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1, kApp2},
             .skip_notification_apps = {kApp1},
             .capturing_apps = {kApp1},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1 and app "
                 u"2.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator can record your screen with app 1 and app "
                 u"2.",
             .expected_no_icon_notification_message_after_capture =
@@ -498,10 +497,10 @@ INSTANTIATE_TEST_SUITE_P(
             .allowlisted_capture_apps = {kApp1, kApp2},
             .skip_notification_apps = {kApp1, kApp2},
             .capturing_apps = {kApp1, kApp2},
-            .expected_icon_notification_message_before_capture =
+            .expected_icon_notification_title_before_capture =
                 u"Your administrator can record your screen with app 1 and app "
                 u"2. You will not be notified when the recording starts.",
-            .expected_icon_notification_message_after_capture =
+            .expected_icon_notification_title_after_capture =
                 u"Your administrator can record your screen with app 1 and app "
                 u"2. You will not be notified when the recording starts.",
             .expected_no_icon_notification_message_after_capture =

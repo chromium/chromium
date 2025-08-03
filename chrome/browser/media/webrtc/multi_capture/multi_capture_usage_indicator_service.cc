@@ -246,9 +246,8 @@ MultiCaptureUsageIndicatorService::CreateFutureCaptureNotification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       // TODO(crbug.com/428895081): Prevent this text from being trimmed.
       kPrivacyIndicatorsMultiCaptureLoginNotificationId,
-      /*title=*/u"",
-      /*message=*/
-      CreateFutureCaptureNotificationMessage(apps),
+      /*title=*/CreateFutureCaptureNotificationMessage(apps),
+      /*message=*/u"",
       /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
@@ -275,7 +274,6 @@ MultiCaptureUsageIndicatorService::CreateFutureCaptureNotification(
 
   notification.set_system_notification_warning_level(
       message_center::SystemNotificationWarningLevel::NORMAL);
-  notification.set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
   return notification;
 }
 
@@ -310,14 +308,14 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
   message_center::Notification notification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       notification_id,
-      /*title=*/u"",
-      /*message=*/
+      /*title=*/
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(
               IDS_MULTI_CAPTURE_ACTIVE_CAPTURE_NOTIFICATION_MESSAGE),
           "NUM_APPS", /*plurality=*/1, "APP_NAME",
           gfx::TruncateString(base::UTF8ToUTF16(app_name), kAppLength,
                               gfx::BreakType::WORD_BREAK)),
+      /*message=*/u"",
       /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
@@ -330,7 +328,6 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
       base::MakeRefCounted<message_center::NotificationDelegate>());
   notification.set_system_notification_warning_level(
       message_center::SystemNotificationWarningLevel::NORMAL);
-  notification.set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
 
   return notification;
 }
