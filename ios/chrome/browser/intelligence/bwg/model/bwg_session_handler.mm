@@ -73,7 +73,12 @@
 // Called when a new chat button is tapped.
 - (void)didTapNewChatButtonWithSessionID:(NSString*)sessionID
                           conversationID:(NSString*)conversationID {
-  // NO-OP.
+  web::WebState* webState = [self webStateWithClientID:sessionID];
+  if (!webState) {
+    return;
+  }
+  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
+  BWGTabHelper->DeleteBwgSessionInStorage();
 }
 
 #pragma mark - Private

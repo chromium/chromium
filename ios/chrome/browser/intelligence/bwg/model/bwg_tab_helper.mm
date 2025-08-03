@@ -229,6 +229,15 @@ void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
 }
 
 void BwgTabHelper::CleanupSessionFromPrefs(std::string session_id) {
+  if (IsGeminiCrossTabEnabled()) {
+    // TODO(crbug.com/436012307): Once this launches, remove `session_id` from
+    // method.
+    PrefService* pref_service =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
+    pref_service->ClearPref(prefs::kGeminiConversationId);
+    return;
+  }
+
   if (session_id.empty()) {
     return;
   }

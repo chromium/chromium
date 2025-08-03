@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
               pageContextAttached:(BOOL)pageContextAttached;
 
 // Called when a new chat button is tapped.
+// TODO(crbug.com/436019705) Rename this to `clientID` and `serverID`.
 - (void)didTapNewChatButtonWithSessionID:(NSString*)sessionID
                           conversationID:(NSString*)conversationID;
 
