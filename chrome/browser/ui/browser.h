@@ -846,6 +846,13 @@ class Browser : public TabStripModelObserver,
   void DidBecomeActive();
   void DidBecomeInactive();
 
+  // Synchronously destroys the browser, `this` is no longer valid after the
+  // operation completes.
+  // WARNING: Clients should generally not use this and instead prefer
+  // requesting the browser close via BrowserWindow::Close(), which happens
+  // async and allows graceful teardown of the tab strip and associated data.
+  void SynchronouslyDestroyBrowser();
+
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask();
   void SetLockedForOnTask(bool locked);

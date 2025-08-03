@@ -194,7 +194,7 @@ void BrowserCloseManager::CloseBrowsers() {
       // force skip these warnings and manually close all the tabs to make sure
       // the browser is destroyed and cleanup can happen.
       browser->tab_strip_model()->CloseAllTabs();
-      browser->window()->DestroyBrowser();
+      browser->SynchronouslyDestroyBrowser();
       // Destroying the browser should have removed it from the browser list.
       DCHECK(!base::Contains(*BrowserList::GetInstance(), browser));
     }

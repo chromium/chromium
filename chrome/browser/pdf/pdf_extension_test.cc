@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -3600,8 +3599,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
   // objects and the rest of the browser process and appears to be unsupported
   // in tests.
   chrome::CloseWindow(incognito);
-  BrowserView* incognito_view = static_cast<BrowserView*>(incognito->window());
-  incognito_view->DestroyBrowser();
+  incognito->SynchronouslyDestroyBrowser();
 
   // The test succeeds if it doesn't crash when the posted PDF task attempts to
   // run (the task should be canceled/ignored), so wait for this to happen.
@@ -4373,9 +4371,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   // The `content::WebContents` needs to be deleted before the browser can be
   // destroyed.
   incognito->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
-
-  BrowserView* incognito_view = static_cast<BrowserView*>(incognito->window());
-  incognito_view->DestroyBrowser();
+  incognito->SynchronouslyDestroyBrowser();
 
   // The test succeeds if it doesn't crash when the posted PDF task attempts to
   // run (the task should be canceled/ignored), so wait for this to happen.

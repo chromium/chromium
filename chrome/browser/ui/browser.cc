@@ -1200,6 +1200,11 @@ base::CallbackListSubscription Browser::RegisterDidBecomeInactive(
   return did_become_inactive_callback_list_.Add(std::move(callback));
 }
 
+void Browser::SynchronouslyDestroyBrowser() {
+  CHECK(window_);
+  window_->DestroyBrowser();
+}
+
 ExclusiveAccessManager* Browser::GetExclusiveAccessManager() {
   return GetFeatures().exclusive_access_manager();
 }

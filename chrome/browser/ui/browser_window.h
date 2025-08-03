@@ -656,8 +656,10 @@ class BrowserWindow : public ui::BaseWindow {
   virtual BrowserView* AsBrowserView() = 0;
 
  protected:
-  friend class BrowserCloseManager;
-  friend class BrowserView;
+  // Synchronously destroys the Browser.
+  // TODO(crbug.com/413168662): This can be removed once the ownership structure
+  // is updated and Browser owns BrowserWindow.
+  friend class Browser;
   virtual void DestroyBrowser() = 0;
 };
 
