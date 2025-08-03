@@ -151,6 +151,7 @@ class BaseAutofillAiTest : public testing::Test {
         std::move(url));
     return form;
   }
+
   [[nodiscard]] std::unique_ptr<FormStructure> CreateRedressNumberForm(
       std::string url = std::string(kDefaultUrl)) {
     std::unique_ptr<FormStructure> form =

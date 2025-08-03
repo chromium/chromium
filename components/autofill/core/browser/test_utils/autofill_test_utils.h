@@ -390,7 +390,7 @@ struct NationalIdCardOptionsT {
   const char16_t* country = u"United States";
   const char16_t* issue_date = u"01/12/2020";
   const char16_t* expiry_date = u"01/12/2030";
-  std::string_view guid = "00000000-0000-4000-8000-200000000000";
+  std::string_view guid = "00000000-0000-4000-8000-300000000000";
   std::string_view nickname = "IdCard";
   std::string_view app_locale = "en-US";
 };
@@ -403,7 +403,7 @@ template <typename = void>
 struct KnownTravelerNumberOptionsT {
   const char16_t* number = u"987654321";
   const char16_t* expiration_date = u"01/12/2030";
-  std::string_view guid = "00000000-0000-4000-8000-200000000000";
+  std::string_view guid = "00000000-0000-4000-8000-400000000000";
   std::string_view nickname = "Known Traveler Number";
   std::string_view app_locale = "en-US";
 };
@@ -415,7 +415,7 @@ EntityInstance GetKnownTravelerNumberInstance(
 template <typename = void>
 struct RedressNumberOptionsT {
   const char16_t* number = u"987654321";
-  std::string_view guid = "00000000-0000-4000-8000-200000000000";
+  std::string_view guid = "00000000-0000-4000-8000-500000000000";
   std::string_view nickname = "RedressNumber";
   std::string_view app_locale = "en-US";
 };
