@@ -213,12 +213,7 @@ bool PreferHeuristicOverServer(FieldType heuristic_type,
 // exceptions. Check function `ComputedType` for more details.
 DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
                                           FieldType server_prediction) {
-  DenseSet<HtmlFieldType> believed_html_types = {};
-  constexpr auto kMin = base::to_underlying(HtmlFieldType::kMinValue);
-  constexpr auto kMax = base::to_underlying(HtmlFieldType::kMaxValue);
-  for (auto i = kMin; i <= kMax; ++i) {
-    believed_html_types.insert(static_cast<HtmlFieldType>(i));
-  }
+  DenseSet<HtmlFieldType> believed_html_types = kAllHtmlFieldTypes;
   // We always override unspecified autocomplete attribute.
   believed_html_types.erase(HtmlFieldType::kUnspecified);
   auto is_street_name_or_house_number_type = [](FieldType field_type) {
