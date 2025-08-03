@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] for selectURL(), multiple saved queries can be handled simultaneously.
+  promise_test: Unhandled rejection with value: object "Error: {"selectURLStatus":"Error: assert_equals: expected \\"frame1_loaded\\" but got \\"frame0_loaded\\"","origin":"https://www.web-platform.test:8444","query":"query1","mockResultIndex":1,"module":"simple-module","operation":"test-slow-url-selection-operation","urlCount":4,"savedExpected":true,"successExpected":true}"
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] hidden=until-found and details revealing algorithm should abort if attribute states are mutated on beforematch events.
+  assert_equals: a3 should not be open expected false but got true
+Harness: the test ran to completion.
+

@@ -278024,6 +278024,19 @@
        {}
       ]
      ],
+     "text-combine-upright-gen-con-001.html": [
+      "88e1ef16a9431d866d3535e8a12c499114612c20",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/text-combine-upright-gen-con-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-combine-upright-inherit-all-001.html": [
       "6bb0a13b396335b3588ab980d95887b2a715496e",
       [
@@ -383728,6 +383741,10 @@
       "a0cba009aa5a3f5b3e397821a3228651af32390d",
       []
      ],
+     "text-combine-upright-gen-con-001-ref.html": [
+      "521a3f0c4a2bbafc484c3fcd7e405a8e042de512",
+      []
+     ],
      "text-combine-upright-line-breaking-rules-001-ref.html": [
       "e1b7b34b562c8c125c5a6b2dfa885f679ebf812c",
       []
@@ -408043,6 +408060,22 @@
        "73836a3bc66b79397258b73a94d577386f0ab81e",
        []
       ],
+      "beforematch-attribute-removal-001-expected.txt": [
+       "5632660f2e9fd0a5a61bbb0a5c3ee2e5029b0b41",
+       []
+      ],
+      "beforematch-attribute-removal-002-expected.txt": [
+       "5632660f2e9fd0a5a61bbb0a5c3ee2e5029b0b41",
+       []
+      ],
+      "beforematch-element-removal-001-expected.txt": [
+       "dfb73c738f009b80cc4f74c13e9af36c68c5bd27",
+       []
+      ],
+      "beforematch-element-removal-002-expected.txt": [
+       "5632660f2e9fd0a5a61bbb0a5c3ee2e5029b0b41",
+       []
+      ],
       "hidden-1-ref.html": [
        "7346ce919d210a740104ca5e82264bed8377c2d0",
        []
@@ -408057,6 +408090,10 @@
       ],
       "hidden-until-found-006-ref.html": [
        "d8b9761694c396cdab6dfd2b382989c1c3604ab0",
+       []
+      ],
+      "hidden-until-found-and-details-expected.txt": [
+       "76de9d4c6cf0ba4ec05be61139861e017391c63d",
        []
       ],
       "resources": {
@@ -648402,8 +648439,36 @@
       }
      },
      "the-hidden-attribute": {
+      "beforematch-attribute-removal-001.html": [
+       "c1ffabbcca5283ebb84c2f0b8a288430fbb83166",
+       [
+        null,
+        {}
+       ]
+      ],
+      "beforematch-attribute-removal-002.html": [
+       "ad1d5655d2bd7afd1a39ca1c7fc8d4b5c3e3925d",
+       [
+        null,
+        {}
+       ]
+      ],
       "beforematch-element-fragment-navigation.html": [
        "96f5c8e77b231eb1ce49505edf23e8ad8c595d38",
+       [
+        null,
+        {}
+       ]
+      ],
+      "beforematch-element-removal-001.html": [
+       "ee2631f2180fb9325f815c2ed4e8ae8ccce456c4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "beforematch-element-removal-002.html": [
+       "48ac2a69055bb761b5f495abe04b41cb535e96bc",
        [
         null,
         {}
@@ -648447,6 +648512,13 @@
         {
          "testdriver": true
         }
+       ]
+      ],
+      "hidden-until-found-and-details.html": [
+       "d963beca29a8080f794682c0c4473af6ad8a677d",
+       [
+        null,
+        {}
        ]
       ],
       "hidden-until-found-idl.html": [
@@ -785724,7 +785796,7 @@
       ]
      ],
      "pad.https.any.js": [
-      "67fb9118969b4fd90106e0d56d8f5731eb1dd52c",
+      "750e4aee617cfe4193fed8c66f7e382f696bd154",
       [
        "webnn/conformance_tests/pad.https.any.html?cpu",
        {
