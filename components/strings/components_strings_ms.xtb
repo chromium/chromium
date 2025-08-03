@@ -1193,6 +1193,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3002501248619246229">Semak media dulang input</translation>
 <translation id="3005723025932146533">Paparkan salinan disimpan</translation>
 <translation id="300580149047131921">Digunakan baru-baru ini</translation>
+<translation id="3006864083554020786">alamat rumah</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menyemak imbas tindakan yang tersedia, kemudian tekan Enter untuk melaksanakan tindakan yang dipilih.</translation>
 <translation id="3010991137650052245">Untuk menggunakan <ph name="PERMISSION" /> anda pada laman ini, berikan akses kepada <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Bekalan Isi Rumah</translation>
@@ -1827,6 +1828,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="404831776305217138">URL kemaskinian untuk sambungan dengan ID "<ph name="EXTENSION_ID" />" tidak sah atau menggunakan skema yang tidak disokong. Skema yang disokong ialah: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dan <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Anda dapat menggunakan alamat ini merentas produk Google</translation>
 <translation id="4050599136622776556">Chromium sedang cuba mengedit kaedah pembayaran.</translation>
+<translation id="4052683751389375539">Edit, membuka tetingkap baharu</translation>
 <translation id="405399507749852140">Dapatkan makluman sekiranya harga jatuh pada mana-mana laman</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Ketahui lebih lanjut tentang perlindungan Data Sensitif</translation>
@@ -3518,6 +3520,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6881240511396774766">Buat Google Docs baharu dengan pantas</translation>
 <translation id="6882210908253838664">Jika laman tidak berfungsi, anda boleh cuba memberikan kebenaran sementara untuk menggunakan kuki pihak ketiga. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Helaian pengesahan bukti kelayakan pembayaran selamat ditutup</translation>
+<translation id="6883745783646124431">alamat tempat kerja</translation>
 <translation id="6884662655240309489">Saiz 1</translation>
 <translation id="6886283082988906333">Arkib ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

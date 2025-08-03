@@ -302,6 +302,7 @@
 <translation id="2120553909046681540">Organisasi anda telah mematikan penyemakan imbas peribadi.</translation>
 <translation id="2122754583996902531">Penyemak imbas anda diurus. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Sembang organisasi anda tidak digunakan untuk meningkatkan model kami. Gemini mungkin memaparkan maklumat yang tidak tepat, termasuk tentang orang, maka semak semula respons yang diberikan. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">Kata laluan yang berikut tidak diimport kepada Google Password Manager kerana kata laluan tersebut tidak sepadan dengan keperluan.</translation>
 <translation id="2139867232736819575">Cari Teks yang Anda Salin</translation>
 <translation id="2147127444698817042">Hanya tersedia pada iPhone</translation>
 <translation id="2148799636999124959">Log masuk ke laman dan apl dengan pantas menggunakan kata laluan anda yang disimpan.</translation>
@@ -572,6 +573,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3213807041830307252">Beli, terjemah dan kenal pasti perkara yang anda lihat menggunakan kamera dan galeri foto anda.</translation>
 <translation id="3214379938835224220">Anda telah dilog keluar sebagai sebahagian daripada tetapan semula iPad anda. Ketik teruskan di bawah untuk log masuk.</translation>
 <translation id="3218296450292600703">Tindakan log masuk dengan akaun terurus anda membantu anda meneruskan penyemakan imbas berkaitan dengan organisasi anda (termasuk tab, sejarah dan kata laluan) berasingan daripada penyemakan imbas anda yang lain</translation>
+<translation id="3219075100684645795">Apl penyemak imbas</translation>
 <translation id="3224075676564434205">Tab akan kekal terbuka pada peranti ini tetapi kumpulan akan dipadamkan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Untuk mengeksport kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -902,6 +904,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4621768135601674446">Buka pilihan Mod membaca</translation>
 <translation id="4624080227980645783">Tetingkap Inkognito baharu</translation>
 <translation id="4627107755957573804">Benarkan laman dan apl meningkatkan akaun sedia ada untuk menggunakan kunci laluan</translation>
+<translation id="4629065796475200039">Kata laluan anda tidak diimport</translation>
 <translation id="4630212057753624203">Sampel gelembung</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> kata laluan yang digunakan semula</translation>
 <translation id="4631890462758052414">Tab Inkognito baharu</translation>
@@ -1507,6 +1510,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6790502149545262384">Tidak lama lagi, anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="6791425686608802741">Ketik "Tambahkan Tab pada Kumpulan Baharu"</translation>
 <translation id="6794476726485507147">Pilih tarikh dan masa untuk menerima pemberitahuan peringatan untuk melawat semula halaman ini</translation>
+<translation id="6795481620482106033">Data Tidak Sah</translation>
 <translation id="6807287147325542056">Kata laluan dalam apl lain</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6825078212112407882">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{{count} penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
