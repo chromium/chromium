@@ -4,18 +4,6 @@ Test that back/forward navigations report the bfcache status
     loaderId : <string>
     notRestoredExplanations : [
         [0] : {
-            details : [
-                [0] : {
-                    columnNumber : 22
-                    lineNumber : 3
-                    url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
-                }
-                [1] : {
-                    columnNumber : 22
-                    lineNumber : 3
-                    url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
-                }
-            ]
             reason : WebLocks
             type : SupportPending
         }
@@ -25,18 +13,6 @@ Test that back/forward navigations report the bfcache status
         ]
         explanations : [
             [0] : {
-                details : [
-                    [0] : {
-                        columnNumber : 22
-                        lineNumber : 3
-                        url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
-                    }
-                    [1] : {
-                        columnNumber : 22
-                        lineNumber : 3
-                        url : https://devtools.test:8443/inspector-protocol/bfcache/resources/blocking-feature.js
-                    }
-                ]
                 reason : WebLocks
                 type : SupportPending
             }

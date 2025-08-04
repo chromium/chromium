@@ -296,10 +296,6 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
 
-  context->GetScheduler()->RegisterStickyFeature(
-      blink::SchedulingPolicy::Feature::kWebLocks,
-      {blink::SchedulingPolicy::DisableBackForwardCache()});
-
   // 5. If origin is an opaque origin, then reject promise with a
   // "SecurityError" DOMException.
   //

@@ -224,7 +224,6 @@ WebSchedulerTrackedFeatures StickyFeatures() {
           WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
           WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
           WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
-          WebSchedulerTrackedFeature::kWebLocks,
           WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
           WebSchedulerTrackedFeature::kWebNfc,
           WebSchedulerTrackedFeature::kPrinting,
