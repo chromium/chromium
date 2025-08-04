@@ -26,7 +26,8 @@ const std::array<WebGLCompressedTextureASTC::BlockSizeCompressASTC, 14>
          {GL_COMPRESSED_RGBA_ASTC_12x12_KHR, 12, 12}}};
 
 WebGLCompressedTextureASTC::WebGLCompressedTextureASTC(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_KHR_texture_compression_astc_ldr");

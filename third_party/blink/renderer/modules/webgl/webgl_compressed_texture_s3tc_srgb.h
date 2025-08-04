@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLCompressedTextureS3TCsRGB final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -16,7 +18,7 @@ class WebGLCompressedTextureS3TCsRGB final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLCompressedTextureS3TCsRGB(WebGLRenderingContextBase*);
+  WebGLCompressedTextureS3TCsRGB(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

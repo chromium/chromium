@@ -30,7 +30,8 @@
 namespace blink {
 
 WebGLCompressedTexturePVRTC::WebGLCompressedTexturePVRTC(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_IMG_texture_compression_pvrtc");

@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTTextureNorm16::EXTTextureNorm16(WebGLRenderingContextBase* context)
+EXTTextureNorm16::EXTTextureNorm16(WebGLRenderingContextBase* context,
+                                   ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_texture_norm16");
 }
@@ -18,7 +19,7 @@ WebGLExtensionName EXTTextureNorm16::GetName() const {
 }
 
 EXTTextureNorm16* EXTTextureNorm16::Create(WebGLRenderingContextBase* context) {
-  return MakeGarbageCollected<EXTTextureNorm16>(context);
+  return MakeGarbageCollected<EXTTextureNorm16>(context, nullptr);
 }
 
 bool EXTTextureNorm16::Supported(WebGLRenderingContextBase* context) {

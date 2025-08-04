@@ -29,18 +29,20 @@
 
 namespace blink {
 
-OESTextureFloat::OESTextureFloat(WebGLRenderingContextBase* context)
+OESTextureFloat::OESTextureFloat(WebGLRenderingContextBase* context,
+                                 ExecutionContext* execution_context)
     : WebGLExtension(context) {
   if (context->ExtensionsUtil()->EnsureExtensionEnabled(
           "GL_OES_texture_float")) {
     // Spec requires WEBGL_color_buffer_float to be implicitly turned
     // on here if it's supported.
-    context->EnableExtensionIfSupported("WEBGL_color_buffer_float");
+    context->EnableExtensionIfSupported("WEBGL_color_buffer_float",
+                                        execution_context);
 
     // https://github.com/KhronosGroup/WebGL/pull/2830
     // Spec requires EXT_float_blend to be implicitly turned on here if
     // it's supported.
-    context->EnableExtensionIfSupported("EXT_float_blend");
+    context->EnableExtensionIfSupported("EXT_float_blend", execution_context);
   }
 }
 

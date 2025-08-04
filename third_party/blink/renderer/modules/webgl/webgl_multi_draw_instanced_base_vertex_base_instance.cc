@@ -11,7 +11,8 @@ namespace blink {
 
 WebGLMultiDrawInstancedBaseVertexBaseInstance::
     WebGLMultiDrawInstancedBaseVertexBaseInstance(
-        WebGLRenderingContextBase* context)
+        WebGLRenderingContextBase* context,
+        ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_WEBGL_multi_draw_instanced_base_vertex_base_instance");

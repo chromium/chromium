@@ -9,7 +9,8 @@
 namespace blink {
 
 EXTTextureMirrorClampToEdge::EXTTextureMirrorClampToEdge(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_texture_mirror_clamp_to_edge");

@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class OESElementIndexUint final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -39,7 +41,7 @@ class OESElementIndexUint final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  explicit OESElementIndexUint(WebGLRenderingContextBase*);
+  OESElementIndexUint(WebGLRenderingContextBase*, ExecutionContext*);
 };
 
 }  // namespace blink

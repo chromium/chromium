@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTClipControl::EXTClipControl(WebGLRenderingContextBase* context)
+EXTClipControl::EXTClipControl(WebGLRenderingContextBase* context,
+                               ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_clip_control");
 }

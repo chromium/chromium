@@ -9,7 +9,8 @@
 namespace blink {
 
 WebGLRenderSharedExponent::WebGLRenderSharedExponent(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_QCOM_render_shared_exponent");

@@ -11,6 +11,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLMultiDrawInstancedBaseVertexBaseInstance final
     : public WebGLExtension,
       public WebGLMultiDrawCommon {
@@ -20,8 +22,8 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLMultiDrawInstancedBaseVertexBaseInstance(
-      WebGLRenderingContextBase*);
+  WebGLMultiDrawInstancedBaseVertexBaseInstance(WebGLRenderingContextBase*,
+                                                ExecutionContext*);
   WebGLExtensionName GetName() const override;
 
   void multiDrawArraysInstancedBaseInstanceWEBGL(

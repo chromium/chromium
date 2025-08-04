@@ -31,6 +31,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLDrawInstancedBaseVertexBaseInstance final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -38,7 +40,8 @@ class WebGLDrawInstancedBaseVertexBaseInstance final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLDrawInstancedBaseVertexBaseInstance(WebGLRenderingContextBase*);
+  WebGLDrawInstancedBaseVertexBaseInstance(WebGLRenderingContextBase*,
+                                           ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

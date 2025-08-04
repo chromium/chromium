@@ -9,7 +9,8 @@
 
 namespace blink {
 
-WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context)
+WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context,
+                               ExecutionContext* execution_context)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_WEBGL_multi_draw");
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_ANGLE_multi_draw");
@@ -17,7 +18,8 @@ WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context)
   // Spec requires ANGLE_instanced_arrays to be implicitly turned on
   // here in WebGL 1.0 contexts.
   if (!context->IsWebGL2()) {
-    context->EnableExtensionIfSupported("ANGLE_instanced_arrays");
+    context->EnableExtensionIfSupported("ANGLE_instanced_arrays",
+                                        execution_context);
   }
 }
 

@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class OESShaderMultisampleInterpolation final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,8 @@ class OESShaderMultisampleInterpolation final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit OESShaderMultisampleInterpolation(WebGLRenderingContextBase*);
+  OESShaderMultisampleInterpolation(WebGLRenderingContextBase*,
+                                    ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

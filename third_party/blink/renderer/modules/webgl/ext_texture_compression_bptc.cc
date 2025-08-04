@@ -9,7 +9,8 @@
 namespace blink {
 
 EXTTextureCompressionBPTC::EXTTextureCompressionBPTC(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_texture_compression_bptc");

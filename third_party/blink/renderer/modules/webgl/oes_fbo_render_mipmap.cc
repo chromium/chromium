@@ -8,7 +8,8 @@
 
 namespace blink {
 
-OESFboRenderMipmap::OESFboRenderMipmap(WebGLRenderingContextBase* context)
+OESFboRenderMipmap::OESFboRenderMipmap(WebGLRenderingContextBase* context,
+                                       ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_OES_fbo_render_mipmap");
 }

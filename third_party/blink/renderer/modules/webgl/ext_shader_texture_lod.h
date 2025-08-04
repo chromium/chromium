@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class EXTShaderTextureLOD final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -16,7 +18,7 @@ class EXTShaderTextureLOD final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit EXTShaderTextureLOD(WebGLRenderingContextBase*);
+  EXTShaderTextureLOD(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

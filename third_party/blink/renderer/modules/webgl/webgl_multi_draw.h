@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLMultiDraw final : public WebGLExtension,
                              public WebGLMultiDrawCommon {
   DEFINE_WRAPPERTYPEINFO();
@@ -18,7 +20,7 @@ class WebGLMultiDraw final : public WebGLExtension,
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLMultiDraw(WebGLRenderingContextBase*);
+  WebGLMultiDraw(WebGLRenderingContextBase*, ExecutionContext*);
   WebGLExtensionName GetName() const override;
 
   void multiDrawArraysWEBGL(GLenum mode,

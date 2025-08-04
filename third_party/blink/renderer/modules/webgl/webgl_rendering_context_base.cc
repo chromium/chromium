@@ -3651,7 +3651,8 @@ bool WebGLRenderingContextBase::ExtensionSupportedAndAllowed(
 }
 
 WebGLExtension* WebGLRenderingContextBase::EnableExtensionIfSupported(
-    const String& name) {
+    const String& name,
+    ExecutionContext* execution_context) {
   if (isContextLost()) {
     return nullptr;
   }
@@ -3661,7 +3662,7 @@ WebGLExtension* WebGLRenderingContextBase::EnableExtensionIfSupported(
       continue;
     }
 
-    WebGLExtension* extension = tracker->GetExtension(this);
+    WebGLExtension* extension = tracker->GetExtension(this, execution_context);
     if (!extension) {
       continue;
     }
@@ -3682,12 +3683,13 @@ bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
 
 ScriptObject WebGLRenderingContextBase::getExtension(ScriptState* script_state,
                                                      const String& name) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
   if (name == WebGLDebugRendererInfo::ExtensionName()) {
-    ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kWebGLDebugRendererInfo);
   }
 
-  WebGLExtension* extension = EnableExtensionIfSupported(name);
+  WebGLExtension* extension = EnableExtensionIfSupported(name, context);
   return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<WebGLExtension>>::ToV8(script_state, extension));

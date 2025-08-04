@@ -9,7 +9,8 @@
 namespace blink {
 
 OESShaderMultisampleInterpolation::OESShaderMultisampleInterpolation(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_OES_shader_multisample_interpolation");

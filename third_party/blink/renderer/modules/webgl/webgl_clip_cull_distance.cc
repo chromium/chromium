@@ -8,7 +8,8 @@
 
 namespace blink {
 
-WebGLClipCullDistance::WebGLClipCullDistance(WebGLRenderingContextBase* context)
+WebGLClipCullDistance::WebGLClipCullDistance(WebGLRenderingContextBase* context,
+                                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_clip_cull_distance");

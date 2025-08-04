@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class EXTsRGB final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -16,7 +18,7 @@ class EXTsRGB final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit EXTsRGB(WebGLRenderingContextBase*);
+  EXTsRGB(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

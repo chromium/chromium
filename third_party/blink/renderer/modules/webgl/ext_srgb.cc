@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTsRGB::EXTsRGB(WebGLRenderingContextBase* context) : WebGLExtension(context) {
+EXTsRGB::EXTsRGB(WebGLRenderingContextBase* context, ExecutionContext*)
+    : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_sRGB");
 }
 

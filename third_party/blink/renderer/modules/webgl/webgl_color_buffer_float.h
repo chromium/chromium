@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLColorBufferFloat final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -37,7 +39,7 @@ class WebGLColorBufferFloat final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLColorBufferFloat(WebGLRenderingContextBase*);
+  WebGLColorBufferFloat(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

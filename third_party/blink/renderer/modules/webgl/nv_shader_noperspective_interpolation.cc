@@ -9,7 +9,8 @@
 namespace blink {
 
 NVShaderNoperspectiveInterpolation::NVShaderNoperspectiveInterpolation(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_NV_shader_noperspective_interpolation");

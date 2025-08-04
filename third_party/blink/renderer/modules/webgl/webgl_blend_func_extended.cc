@@ -9,7 +9,8 @@
 namespace blink {
 
 WebGLBlendFuncExtended::WebGLBlendFuncExtended(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_blend_func_extended");

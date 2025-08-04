@@ -33,7 +33,8 @@
 
 namespace blink {
 
-OESVertexArrayObject::OESVertexArrayObject(WebGLRenderingContextBase* context)
+OESVertexArrayObject::OESVertexArrayObject(WebGLRenderingContextBase* context,
+                                           ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_OES_vertex_array_object");

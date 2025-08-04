@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLDebugRendererInfo final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -39,7 +41,7 @@ class WebGLDebugRendererInfo final : public WebGLExtension {
     kUnmaskedRendererWebgl = 0x9246
   };
 
-  explicit WebGLDebugRendererInfo(WebGLRenderingContextBase*);
+  WebGLDebugRendererInfo(WebGLRenderingContextBase*, ExecutionContext*);
 
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();

@@ -29,7 +29,8 @@
 
 namespace blink {
 
-WebGLDepthTexture::WebGLDepthTexture(WebGLRenderingContextBase* context)
+WebGLDepthTexture::WebGLDepthTexture(WebGLRenderingContextBase* context,
+                                     ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_CHROMIUM_depth_texture");

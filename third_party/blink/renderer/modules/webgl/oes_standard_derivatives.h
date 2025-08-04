@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class OESStandardDerivatives final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -39,7 +41,7 @@ class OESStandardDerivatives final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  explicit OESStandardDerivatives(WebGLRenderingContextBase*);
+  OESStandardDerivatives(WebGLRenderingContextBase*, ExecutionContext*);
 };
 
 }  // namespace blink

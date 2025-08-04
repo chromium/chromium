@@ -8,7 +8,8 @@
 
 namespace blink {
 
-OESDrawBuffersIndexed::OESDrawBuffersIndexed(WebGLRenderingContextBase* context)
+OESDrawBuffersIndexed::OESDrawBuffersIndexed(WebGLRenderingContextBase* context,
+                                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_OES_draw_buffers_indexed");

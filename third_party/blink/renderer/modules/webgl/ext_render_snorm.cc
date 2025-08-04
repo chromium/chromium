@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTRenderSnorm::EXTRenderSnorm(WebGLRenderingContextBase* context)
+EXTRenderSnorm::EXTRenderSnorm(WebGLRenderingContextBase* context,
+                               ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_render_snorm");
 }

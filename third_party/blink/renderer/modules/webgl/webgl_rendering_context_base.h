@@ -1001,7 +1001,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
     bool MatchesName(const String&) const;
 
-    virtual WebGLExtension* GetExtension(WebGLRenderingContextBase*) = 0;
+    virtual WebGLExtension* GetExtension(WebGLRenderingContextBase*,
+                                         ExecutionContext*) = 0;
     virtual bool Supported(WebGLRenderingContextBase*) const = 0;
     virtual const char* ExtensionName() const = 0;
     virtual void LoseExtension(bool) = 0;
@@ -1025,9 +1026,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
     explicit TypedExtensionTracker(ExtensionFlags flags)
         : ExtensionTracker(flags) {}
 
-    WebGLExtension* GetExtension(WebGLRenderingContextBase* context) override {
+    WebGLExtension* GetExtension(WebGLRenderingContextBase* context,
+                                 ExecutionContext* execution_context) override {
       if (!extension_) {
-        extension_ = MakeGarbageCollected<T>(context);
+        extension_ = MakeGarbageCollected<T>(context, execution_context);
       }
 
       return extension_.Get();
@@ -1073,7 +1075,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
   }
 
   bool ExtensionSupportedAndAllowed(const ExtensionTracker*);
-  WebGLExtension* EnableExtensionIfSupported(const String& name);
+  WebGLExtension* EnableExtensionIfSupported(
+      const String& name,
+      ExecutionContext* execution_context);
 
   bool TimerQueryExtensionsEnabled();
 

@@ -34,7 +34,8 @@
 namespace blink {
 
 KHRParallelShaderCompile::KHRParallelShaderCompile(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_KHR_parallel_shader_compile");
