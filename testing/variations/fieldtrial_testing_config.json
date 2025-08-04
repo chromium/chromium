@@ -2005,6 +2005,24 @@
             ]
         }
     ],
+    "AutofillAiIPHString": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SeeHow",
+                    "enable_features": [
+                        "IPH_AutofillAiOptIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAiUs": [
         {
             "platforms": [
