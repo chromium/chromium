@@ -79,12 +79,15 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   _lightThemeButton.configuration =
       [self createLightThemeButtonConfigurationSelected:
                 theme == dom_distiller::mojom::Theme::kLight];
+  _lightThemeButton.selected = theme == dom_distiller::mojom::Theme::kLight;
   _sepiaThemeButton.configuration =
       [self createSepiaThemeButtonConfigurationSelected:
                 theme == dom_distiller::mojom::Theme::kSepia];
+  _sepiaThemeButton.selected = theme == dom_distiller::mojom::Theme::kSepia;
   _darkThemeButton.configuration =
       [self createDarkThemeButtonConfigurationSelected:
                 theme == dom_distiller::mojom::Theme::kDark];
+  _darkThemeButton.selected = theme == dom_distiller::mojom::Theme::kDark;
 }
 
 - (void)setDecreaseFontSizeButtonEnabled:(BOOL)enabled {
