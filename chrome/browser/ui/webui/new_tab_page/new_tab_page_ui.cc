@@ -183,8 +183,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       features::kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds.Get());
   source->AddBoolean(
       "prerenderOnPressEnabled",
-      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2) &&
-          features::kPrerenderNewTabPageOnMousePressedTrigger.Get());
+      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
 
   source->AddBoolean(
       "oneGoogleBarEnabled",

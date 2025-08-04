@@ -64,9 +64,6 @@ const base::FeatureParam<int>
     kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "preconnect_start_delay_on_mouse_hover_ms", 100};
-const base::FeatureParam<bool> kPrerenderNewTabPageOnMousePressedTrigger{
-    &features::kNewTabPageTriggerForPrerender2,
-    "prerender_new_tab_page_on_mouse_pressed_trigger", true};
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);

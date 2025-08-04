@@ -119,8 +119,7 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
       features::kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds.Get());
   source->AddBoolean(
       "prerenderOnPressEnabled",
-      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2) &&
-          features::kPrerenderNewTabPageOnMousePressedTrigger.Get());
+      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
 
   // Needed by <cr-most-visited> but not used in
   // chrome://new-tab-page-third-party/.

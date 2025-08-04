@@ -214,12 +214,6 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
     return;
   }
 
-  if (!features::kPrerenderNewTabPageOnMousePressedTrigger.Get()) {
-    page_handler_.ReportBadMessage(
-        "PrerenderMostVisitedTile by pressing is only expected to be called "
-        "when kPrerenderNewTabPageOnMousePressedTrigger is true.");
-    return;
-  }
   new_tab_page_preload_manager_ =
       NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
           ->GetWeakPtr();
