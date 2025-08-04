@@ -72,6 +72,11 @@ using FillingPayload = std::variant<const AutofillProfile*,
 // It holds any state that is only relevant for [re]filling.
 class FormFiller {
  public:
+  struct ValueAndType {
+    std::u16string value;
+    FieldType type = NO_SERVER_DATA;
+  };
+
   explicit FormFiller(BrowserAutofillManager& manager);
 
   FormFiller(const FormFiller&) = delete;
@@ -198,20 +203,16 @@ class FormFiller {
                      AutofillTriggerSource trigger_source,
                      RefillTriggerReason refill_trigger_reason);
 
-  // Stores the value to be filled into a field, along with its field type and
-  // if it's an override.
-  struct FieldFillingData {
-    std::u16string value_to_fill;
-    FieldType field_type;
-    bool value_is_an_override;
+  struct ValueAndTypeAndOverride : public ValueAndType {
+    bool value_is_an_override = false;
   };
 
   // Returns the value to fill along with the field type and if the value is an
   // override.
-  FieldFillingData GetFieldFillingData(
+  ValueAndTypeAndOverride GetFieldFillingData(
       const AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
-      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+      const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
       const FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
@@ -226,7 +227,7 @@ class FormFiller {
   std::optional<FieldType> FillField(
       AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
-      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+      const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
       bool allow_suggestion_swapping,
