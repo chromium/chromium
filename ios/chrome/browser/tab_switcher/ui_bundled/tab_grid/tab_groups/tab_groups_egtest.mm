@@ -99,7 +99,7 @@ void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
   // It happens that on certain bots, the grey_longPress action doesn't return
   // an error for EarlGrey, but the context menu doesn't open accordingly.
   // Waiting has been seen as fixing this.
-  base::PlatformThread::Sleep(base::Seconds(1));
+  base::PlatformThread::Sleep(base::Seconds(2));
 
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
       performAction:grey_longPress()];
