@@ -170,9 +170,10 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // font, can be present in other monochromatic fonts without "Zsym" locale
   // (for instance "NotoSansSymbols-Regular-Subsetted.ttf" is a font without
   // emoji locales). So, if text presentation was requested for emoji character,
-  // but `GetFamilyNameForCharacter` returned colored font, we should try to get
-  // monochromatic font by searching for the font without emoji locales "Zsym"
-  // or "Zsye", see https://unicode.org/reports/tr51/#Emoji_Script.
+  // but `CreateFontPlatformDataForCharacter` returned colored font, we should
+  // try to get monochromatic font by searching for the font without emoji
+  // locales "Zsym" or "Zsye", see
+  // https://unicode.org/reports/tr51/#Emoji_Script.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
       IsTextPresentationEmoji(fallback_priority_with_emoji_text) &&
       is_color(font_platform_data)) {
@@ -274,9 +275,17 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
   }
 
   sk_sp<SkFontMgr> font_manager(skia::DefaultFontMgr());
-  return GetFamilyNameForCharacter(font_manager.get(), exampler_char,
-                                   font_description, nullptr,
-                                   FontFallbackPriority::kText);
+  Bcp47Vector locales =
+      GetBcp47LocaleForRequest(font_description, FontFallbackPriority::kText);
+  sk_sp<SkTypeface> typeface(font_manager->matchFamilyStyleCharacter(
+      nullptr, SkFontStyle(), locales.data(), locales.size(), exampler_char));
+  if (!typeface) {
+    return g_empty_atom;
+  }
+
+  SkString skia_family_name;
+  typeface->getFamilyName(&skia_family_name);
+  return ToAtomicString(skia_family_name);
 }
 
 }  // namespace blink

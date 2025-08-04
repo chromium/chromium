@@ -321,11 +321,6 @@ class PLATFORM_EXPORT FontCache final {
                                    std::string& name);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  static AtomicString GetFamilyNameForCharacter(SkFontMgr*,
-                                                UChar32,
-                                                const FontDescription&,
-                                                const char* family_name,
-                                                FontFallbackPriority);
   static const FontPlatformData* CreateFontPlatformDataForCharacter(
       SkFontMgr*,
       UChar32,

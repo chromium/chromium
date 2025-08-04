@@ -70,27 +70,6 @@ AtomicString ToAtomicString(const SkString& str) {
 // linux and the embedder has overriden the default fontManager with
 // WebFontRendering::setSkiaFontMgr.
 // static
-AtomicString FontCache::GetFamilyNameForCharacter(
-    SkFontMgr* fm,
-    UChar32 c,
-    const FontDescription& font_description,
-    const char* family_name,
-    FontFallbackPriority fallback_priority) {
-  DCHECK(fm);
-
-  Bcp47Vector locales =
-      GetBcp47LocaleForRequest(font_description, fallback_priority);
-  sk_sp<SkTypeface> typeface(fm->matchFamilyStyleCharacter(
-      family_name, SkFontStyle(), locales.data(), locales.size(), c));
-  if (!typeface)
-    return g_empty_atom;
-
-  SkString skia_family_name;
-  typeface->getFamilyName(&skia_family_name);
-  return ToAtomicString(skia_family_name);
-}
-
-// static
 const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
     SkFontMgr* fm,
     UChar32 c,
