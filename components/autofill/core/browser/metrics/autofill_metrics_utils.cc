@@ -46,8 +46,7 @@ bool IsEmailOnlyForm(const FormStructure& form) {
     }
     if (!field_types.contains(EMAIL_ADDRESS) &&
         !field_types.contains(UNKNOWN_TYPE) &&
-        FieldTypeGroupToFormType(field->Type().group()) !=
-            FormType::kPasswordForm) {
+        !field->Type().GetFormTypes().contains(FormType::kPasswordForm)) {
       return false;
     }
   }

@@ -275,8 +275,9 @@ bool EntityShouldProduceSuggestion(
     return false;
   }
   std::u16string trigger_value = trigger_attribute->GetInfo(
-      trigger_field.field->Type().GetStorableType(), app_locale,
-      trigger_field.field->format_string());
+      trigger_field.field->Type().GetAutofillAiTypeAndResolveTagTypes(
+          entity.type()),
+      app_locale, trigger_field.field->format_string());
   if (trigger_value.empty()) {
     return false;
   }
@@ -308,10 +309,13 @@ bool CanFillSomeField(const EntityInstance& entity,
         DCHECK_EQ(entity.type(), f.type.entity_type());
         base::optional_ref<const AttributeInstance> attribute =
             entity.attribute(f.type);
-        return attribute && !attribute
-                                 ->GetInfo(f.field->Type().GetStorableType(),
-                                           app_locale, f.field->format_string())
-                                 .empty();
+        return attribute &&
+               !attribute
+                    ->GetInfo(
+                        f.field->Type().GetAutofillAiTypeAndResolveTagTypes(
+                            entity.type()),
+                        app_locale, f.field->format_string())
+                    .empty();
       });
 }
 
@@ -334,7 +338,8 @@ SuggestionWithMetadata GetSuggestionForEntity(
     }
 
     std::u16string attribute_value = attribute->GetInfo(
-        field->Type().GetStorableType(), app_locale, field->format_string());
+        field->Type().GetAutofillAiTypeAndResolveTagTypes(entity.type()),
+        app_locale, field->format_string());
 
     if (attribute_value.empty()) {
       continue;
@@ -354,11 +359,12 @@ SuggestionWithMetadata GetSuggestionForEntity(
                                          std::move(full_attribute_value));
   }
 
-  Suggestion suggestion =
-      Suggestion(trigger_attribute.GetInfo(
-                     trigger_field.field->Type().GetStorableType(), app_locale,
-                     trigger_field.field->format_string()),
-                 SuggestionType::kFillAutofillAi);
+  Suggestion suggestion = Suggestion(
+      trigger_attribute.GetInfo(
+          trigger_field.field->Type().GetAutofillAiTypeAndResolveTagTypes(
+              trigger_attribute.type().entity_type()),
+          app_locale, trigger_field.field->format_string()),
+      SuggestionType::kFillAutofillAi);
   suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
   suggestion.icon = GetSuggestionIcon(entity.type());
   return SuggestionWithMetadata(suggestion, raw_ref(entity), trigger_field.type,

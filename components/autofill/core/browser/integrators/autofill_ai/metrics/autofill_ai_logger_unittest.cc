@@ -649,8 +649,11 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
     EXPECT_EQ(mqls_field_event.field_rank_in_signature_group(),
               field.rank_in_signature_group())
         << event;
-    EXPECT_EQ(mqls_field_event.field_type(),
-              static_cast<int>(field.Type().GetStorableType()))
+    EXPECT_EQ(mqls_field_event.field_type(), static_cast<int>([&field] {
+                FieldTypeSet field_types = field.Type().GetTypes();
+                return !field_types.empty() ? *field_types.begin()
+                                            : UNKNOWN_TYPE;
+              }()))
         << event;
     EXPECT_EQ(mqls_field_event.ai_field_type(), static_cast<int>([&field] {
                 FieldTypeSet autofill_ai_types =

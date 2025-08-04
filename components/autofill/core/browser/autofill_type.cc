@@ -177,16 +177,6 @@ HtmlFieldType AutofillType::html_type() const {
   return html_type ? *html_type : HtmlFieldType::kUnspecified;
 }
 
-FieldType AutofillType::GetStorableType() const {
-  FieldTypeSet types = GetTypes();
-  return !types.empty() ? *types.begin() : NO_SERVER_DATA;
-}
-
-FieldTypeGroup AutofillType::group() const {
-  FieldTypeGroupSet groups = GetGroups();
-  return !groups.empty() ? *groups.begin() : FieldTypeGroup::kNoGroup;
-}
-
 FieldTypeSet AutofillType::GetTypes() const {
   return std::visit(
       absl::Overload{

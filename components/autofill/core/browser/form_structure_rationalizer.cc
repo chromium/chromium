@@ -994,7 +994,7 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
     const bool is_max_length_small =
         first_zip.max_length() <= kMaxZipCodePartLength &&
         second_zip.max_length() <= kMaxZipCodePartLength;
-    if (second_zip.Type().GetStorableType() == ADDRESS_HOME_ZIP_SUFFIX) {
+    if (second_zip.Type().GetAddressType() == ADDRESS_HOME_ZIP_SUFFIX) {
       LOG_AF(log_manager)
           << LoggingScope::kRationalization << LogMessage::kRationalization
           << "Zip Code Rationalization: Converting sequence of (zip, "
@@ -1018,7 +1018,7 @@ void FormStructureRationalizer::RationalizeZipCodeSuffixFields(
     LogManager* log_manager) {
   FieldType prev_type = UNKNOWN_TYPE;
   for (const std::unique_ptr<AutofillField>& field : *fields_) {
-    FieldType type = field->Type().GetStorableType();
+    FieldType type = field->Type().GetAddressType();
     if (type == ADDRESS_HOME_ZIP_SUFFIX &&
         prev_type != ADDRESS_HOME_ZIP_PREFIX) {
       field->SetTypeTo(AutofillType(ADDRESS_HOME_ZIP),

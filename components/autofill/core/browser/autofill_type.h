@@ -56,10 +56,6 @@ class AutofillType {
   // TODO(crbug.com/432645177): Remove HtmlFieldType from this class.
   HtmlFieldType html_type() const;
 
-  // TODO(crbug.com/432645177): Remove when all calls have been migrated.
-  FieldType GetStorableType() const;
-  FieldTypeGroup group() const;
-
   // Returns the FieldTypes held by this AutofillType.
   //
   // If this AutofillType holds an HtmlFieldType, it is mapped to a FieldType.
