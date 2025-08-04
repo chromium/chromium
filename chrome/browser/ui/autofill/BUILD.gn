@@ -21,6 +21,7 @@ source_set("autofill") {
     "autofill_popup_view_delegate.h",
     "autofill_suggestion_controller.h",
     "autofill_suggestion_controller_utils.h",
+    "bubble_controller_base.h",
     "chrome_autofill_client.h",
     "next_idle_barrier.h",
     "popup_controller_common.h",

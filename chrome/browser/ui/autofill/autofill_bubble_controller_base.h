@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "content/public/browser/web_contents.h"
@@ -30,10 +31,15 @@ enum class BubbleState {
 };
 
 // Interface that exposes controller functionality to all autofill bubbles.
-class AutofillBubbleControllerBase : public content::WebContentsObserver {
+class AutofillBubbleControllerBase : public BubbleControllerBase,
+                                     public content::WebContentsObserver {
  public:
   explicit AutofillBubbleControllerBase(content::WebContents* web_contents);
   ~AutofillBubbleControllerBase() override;
+
+  // BubbleControllerBase:
+  void ShowBubble() override;
+  void HideBubble() override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -52,12 +58,6 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
   void set_bubble_view(AutofillBubbleBase* bubble_view) {
     bubble_view_ = bubble_view;
   }
-
-  // Shows the bubbles.
-  void ShowBubble();
-
-  // Remove the |bubble_view_| and hide the bubble.
-  void HideBubble();
 
  private:
   // Weak reference. Will be nullptr if no bubble is currently shown.
