@@ -2751,29 +2751,6 @@ BASE_FEATURE(kWebAudioAllowDenormalInProcessing,
              "WebAudioAllowDenormalInProcessing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Parameters can be used to control to which latency hints the feature is
-// applied.
-BASE_FEATURE_PARAM(bool,
-                   kWebAudioBypassOutputBufferingInteractive,
-                   &kWebAudioBypassOutputBuffering,
-                   "latency_interactive",
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kWebAudioBypassOutputBufferingBalanced,
-                   &kWebAudioBypassOutputBuffering,
-                   "latency_balanced",
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kWebAudioBypassOutputBufferingPlayback,
-                   &kWebAudioBypassOutputBuffering,
-                   "latency_playback",
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kWebAudioBypassOutputBufferingExact,
-                   &kWebAudioBypassOutputBuffering,
-                   "latency_exact",
-                   true);
-
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
 // https://crbug.com/942440.

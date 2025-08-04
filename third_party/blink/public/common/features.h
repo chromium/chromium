@@ -1815,19 +1815,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensionsBySite);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAudioAllowDenormalInProcessing);
-// Parameters are used to control to which latency hints the feature is applied
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kWebAudioBypassOutputBufferingInteractive);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kWebAudioBypassOutputBufferingBalanced);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kWebAudioBypassOutputBufferingPlayback);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kWebAudioBypassOutputBufferingExact);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebFontsCacheAwareTimeoutAdaption);
 
