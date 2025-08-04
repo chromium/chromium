@@ -68,14 +68,23 @@ class _VersionTest(unittest.TestCase):
 
     self.assertEqual(webview_beta_version_code, '484400010')
 
-  def testGenerateVersionCodesAndroidWebviewDev(self):
+  def testGenerateVersionCodesAndroidWebviewAuto(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm')
+                                  arch='arm64')
 
-    webview_dev_version_code = output['WEBVIEW_DEV_VERSION_CODE']
+    webview_auto_version_code = output['WEBVIEW_AUTO_64_32_VERSION_CODE']
 
-    self.assertEqual(webview_dev_version_code, '484400020')
+    self.assertEqual(webview_auto_version_code, '484400074')
+
+  def testGenerateVersionCodesAndroidWebviewDesktop(self):
+    """Assert it gives correct values for standard/example inputs"""
+    output = GenerateVersionCodes(4844, 0,
+                                  arch='arm64')
+
+    webview_desktop_version_code = output['WEBVIEW_DESKTOP_64_VERSION_CODE']
+
+    self.assertEqual(webview_desktop_version_code, '484400085')
 
   def testGenerateVersionCodesAndroidArchArm(self):
     """Assert it handles different architectures correctly.
@@ -281,6 +290,24 @@ class _VersionTest(unittest.TestCase):
 
     webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
     webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
+
+    self.assertGreater(webview_beta_version_code, webview_stable_version_code)
+
+  def testGenerateVersionCodesAndroidWebviewChannelOrderBeta64bit(self):
+    """Assert 64-bit webview beta channel is higher than stable.
+
+    The channel-specific version codes for standalone webview needs to follow
+    the order stable < beta < dev.
+
+    This allows that if a user opts into beta track, they will always have the
+    beta apk, including any finch experiments targeted at beta users, even when
+    beta and stable channels are otherwise on the same version.
+    """
+    output = GenerateVersionCodes(4844, 0,
+                                  arch='arm64')
+
+    webview_stable_version_code = output['WEBVIEW_64_STABLE_VERSION_CODE']
+    webview_beta_version_code = output['WEBVIEW_64_BETA_VERSION_CODE']
 
     self.assertGreater(webview_beta_version_code, webview_stable_version_code)
 
@@ -1066,6 +1093,55 @@ class _VersionCodeGroupedTest(unittest.TestCase):
     self.assertEqual(abi, 'arm')
     self.assertEqual(is_next_build, False)
 
+  def testWebview_64_32_Translate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000002', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_STABLE')
+    self.assertEqual(abi, 'arm_64_32')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewAutoTranslate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000070', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_AUTO')
+    self.assertEqual(abi, 'arm')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewAuto_64_32_Translate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000072', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_AUTO')
+    self.assertEqual(abi, 'arm_64_32')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewDesktopTranslate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000080', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_DESKTOP')
+    self.assertEqual(abi, 'arm')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewDesktop_64_High_Translate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000084', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_DESKTOP')
+    self.assertEqual(abi, 'arm_64_high')
+    self.assertEqual(is_next_build, False)
 
 if __name__ == '__main__':
   unittest.main()

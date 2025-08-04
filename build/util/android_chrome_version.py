@@ -60,6 +60,8 @@ _PACKAGE_NAMES = {
     'WEBVIEW_STABLE': 0,
     'WEBVIEW_BETA': 10,
     'WEBVIEW_DEV': 20,
+    'WEBVIEW_AUTO': 70,
+    'WEBVIEW_DESKTOP': 80
 }
 """ "Next" builds get +500 on their patch number.
 
@@ -103,6 +105,8 @@ _APKS = {
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '64'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '64'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '64'),
+        ('WEBVIEW_AUTO', 'WEBVIEW_AUTO', '64'),
+        ('WEBVIEW_DESKTOP', 'WEBVIEW_DESKTOP', '64'),
     ],
     'hybrid': [
         ('CHROME', 'CHROME', '64'),
@@ -133,14 +137,21 @@ _APKS = {
         ('TRICHROME_DESKTOP_64', 'TRICHROME_DESKTOP', '64'),
         ('TRICHROME_64_BETA', 'TRICHROME_BETA', '64'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32_64'),
-        ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
-        ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
         ('WEBVIEW_32_STABLE', 'WEBVIEW_STABLE', '32'),
-        ('WEBVIEW_32_BETA', 'WEBVIEW_BETA', '32'),
-        ('WEBVIEW_32_DEV', 'WEBVIEW_DEV', '32'),
         ('WEBVIEW_64_STABLE', 'WEBVIEW_STABLE', '64'),
+        ('WEBVIEW_64_32_STABLE', 'WEBVIEW_STABLE', '64_32'),
+        ('WEBVIEW_64_32_HIGH_STABLE', 'WEBVIEW_STABLE', '64_32_high'),
+        ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
+        ('WEBVIEW_32_BETA', 'WEBVIEW_BETA', '32'),
         ('WEBVIEW_64_BETA', 'WEBVIEW_BETA', '64'),
-        ('WEBVIEW_64_DEV', 'WEBVIEW_DEV', '64'),
+        ('WEBVIEW_64_32_BETA', 'WEBVIEW_BETA', '64_32'),
+        ('WEBVIEW_64_32_HIGH_BETA', 'WEBVIEW_BETA', '64_32_high'),
+        ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
+        ('WEBVIEW_32_DEV', 'WEBVIEW_DEV', '32'),
+        ('WEBVIEW_AUTO_64', 'WEBVIEW_AUTO', '64'),
+        ('WEBVIEW_AUTO_64_32', 'WEBVIEW_AUTO', '64_32'),
+        ('WEBVIEW_AUTO_64_32_HIGH', 'WEBVIEW_AUTO', '64_32_high'),
+        ('WEBVIEW_DESKTOP_64', 'WEBVIEW_DESKTOP', '64'),
     ]
 }
 
