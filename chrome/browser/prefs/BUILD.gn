@@ -107,7 +107,7 @@ source_set("impl") {
     "//components/fingerprinting_protection_filter/common:prefs",
     "//components/history_clusters/core",
     "//components/image_fetcher/core/cache",
-    "//components/invalidation/impl",
+    "//components/invalidation:legacy_topics_cleanup",
     "//components/language/content/browser",
     "//components/language/content/browser/ulp_language_code_locator",
     "//components/language/core/browser",

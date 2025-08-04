@@ -335,7 +335,7 @@ ios_web_view_deps = [
   "//components/image_fetcher/ios",
   "//components/infobars/core",
   "//components/invalidation",
-  "//components/invalidation/impl",
+  "//components/invalidation:legacy_topics_cleanup",
   "//components/keyed_service/core",
   "//components/keyed_service/ios",
   "//components/language/core/browser",

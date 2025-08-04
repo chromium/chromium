@@ -17,8 +17,6 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_listener.h"
-#include "components/invalidation/public/invalidation.h"
-#include "components/invalidation/public/invalidation_util.h"
 
 namespace invalidation {
 
@@ -75,7 +73,7 @@ DirectInvalidation ParseIncomingMessage(const gcm::IncomingMessage& message) {
 // Otherwise, the existing invalidation for the type will be replaced by
 // `invalidation` if and only if `invalidation` has a higher version than
 // `map.at(invalidation.type())`.
-void Upsert(std::map<Topic, DirectInvalidation>& map,
+void Upsert(std::map<std::string, DirectInvalidation>& map,
             const DirectInvalidation& invalidation) {
   const auto it = map.find(invalidation.type());
   if (it == map.end()) {

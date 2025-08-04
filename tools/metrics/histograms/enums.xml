@@ -4450,22 +4450,6 @@ shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//ash/quick_pair/common/pair_failure.h:FastPairPairFailure) -->
 
-<enum name="FCMInvalidationMessageStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Public topic empty"/>
-  <int value="2" label="Private topic empty"/>
-  <int value="3" label="Version empty"/>
-  <int value="4" label="Version invalid"/>
-</enum>
-
-<enum name="FCMInvalidationSubscriptionStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Network failure"/>
-  <int value="2" label="Http failure"/>
-  <int value="3" label="Parsing failure"/>
-  <int value="4" label="Failed"/>
-</enum>
-
 <enum name="FedCmThirdPartyCookiesStatus">
   <int value="0" label="Enabled in settings"/>
   <int value="1" label="Disabled in settings"/>

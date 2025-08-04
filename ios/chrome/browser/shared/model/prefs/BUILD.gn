@@ -50,7 +50,7 @@ source_set("browser_prefs") {
     "//components/handoff",
     "//components/history/core/common",
     "//components/image_fetcher/core/cache",
-    "//components/invalidation/impl",
+    "//components/invalidation:legacy_topics_cleanup",
     "//components/language/core/browser",
     "//components/lens:enterprise_policy",
     "//components/metrics",
