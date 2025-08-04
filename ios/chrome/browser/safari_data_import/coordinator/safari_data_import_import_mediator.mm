@@ -8,6 +8,8 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/service/sync_service.h"
 #import "components/user_data_importer/ios/ios_bookmark_parser.h"
 #import "components/user_data_importer/utility/safari_data_importer.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -61,6 +63,12 @@
   self = [super init];
   if (self) {
     CHECK(faviconLoader);
+    if (syncService) {
+      std::string email = syncService->GetAccountInfo().email;
+      if (!email.empty()) {
+        _email = [NSString stringWithUTF8String:email.c_str()];
+      }
+    }
     _importClient = std::make_unique<IOSSafariDataImportClient>();
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
     _savedPasswordsPresenter->Init();

@@ -213,6 +213,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
       << "No next import stage.";
   int nextImportStageInt =
       static_cast<int>(_containerViewController.importStage) + 1;
+  _containerViewController.email = self.mediator.email;
   _containerViewController.importStage =
       static_cast<SafariDataImportStage>(nextImportStageInt);
 }
@@ -275,7 +276,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
       [self.mediator conflictingPasswords];
   CHECK(passwordConflicts);
   if (passwordConflicts.count == 0) {
-    [self.mediator importItems];
+    /// Continue to import passwords without conflict override.
+    [self.mediator continueToImportPasswords:[NSArray array]];
     return;
   }
   /// Wraps the password conflict view in a navigation controller to display

@@ -36,6 +36,9 @@ class ReadingListModel;
     : NSObject <SafariDataImportPasswordConflictMutator,
                 UIDocumentPickerDelegate>
 
+/// Email address of the user. `nil` if not logged in.
+@property(nonatomic, readonly) NSString* email;
+
 /// Transition handler for import stage. This needs to be set before selecting a
 /// file.
 @property(nonatomic, weak) id<SafariDataImportImportStageTransitionHandler>
