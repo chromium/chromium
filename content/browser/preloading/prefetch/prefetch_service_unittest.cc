@@ -2470,7 +2470,7 @@ TEST_P(PrefetchServiceTest,
                  kServiceWorkerRegisteredCheckDurationBucketSpacing));
 }
 
-TEST_P(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
+TEST_P(PrefetchServiceTest, NotEligibleServiceWorkerNoFetchHandlerRegistered) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -2489,21 +2489,23 @@ TEST_P(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
                    blink::mojom::SpeculationEagerness::kImmediate));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           {.use_prefetch_proxy = true});
-  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
-                      /*use_prefetch_proxy=*/true,
-                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler, 1);
+  ExpectPrefetchNotEligible(
+      histogram_tester,
+      PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler);
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
-  ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
-  ExpectServingMetricsSuccess();
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  ExpectServingMetrics(
+      PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler);
 }
 
 TEST_P(PrefetchServiceTest,
-       EligibleServiceWorkerRegisteredServiceWorkerCheckUKM) {
+       NotEligibleServiceWorkerNoFetchHandlerRegisteredServiceWorkerCheckUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
@@ -2523,7 +2525,7 @@ TEST_P(PrefetchServiceTest,
                    blink::mojom::SpeculationEagerness::kImmediate));
   task_environment()->RunUntilIdle();
 
-  EXPECT_EQ(RequestCount(), 1);
+  EXPECT_EQ(RequestCount(), 0);
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
 
