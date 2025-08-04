@@ -1028,6 +1028,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   Profile* profile1 = GetProfile();
   Profile* profile2 =
       InProcessBrowserTest::CreateIncognitoBrowser()->GetProfile();
+  Profile* profile3 = InProcessBrowserTest::CreateGuestBrowser()->GetProfile();
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
@@ -1037,6 +1038,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       profile1, kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       profile2, kLang, content::LanguageInstallStatus::INSTALLED, "");
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      profile3, kLang, content::LanguageInstallStatus::FAILED, "");
 
   // Only forward the language status received for this profile.
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
@@ -1083,6 +1086,41 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
           })))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kInstalled,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnUpdateLanguageStatus_GuestProfile) {
+  const char kLang[] = "en-au";
+  Profile* profile1 = GetProfile();
+  Profile* profile2 = InProcessBrowserTest::CreateGuestBrowser()->GetProfile();
+  // Assign the guest contents to be the contents for this handler.
+  web_contents_.reset();
+  web_contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(profile2));
+  test_web_ui_->set_web_contents(web_contents_.get());
+  ReadAnythingSidePanelControllerGlue::CreateForWebContents(
+      web_contents_.get(), browser()
+                               ->GetActiveTabInterface()
+                               ->GetTabFeatures()
+                               ->read_anything_side_panel_controller());
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      profile1, kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      profile2, kLang, content::LanguageInstallStatus::INSTALLED, "");
+
+  // Only the status sent on the guest profile should be sent.
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .WillOnce(testing::WithArg<0>(
           testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kInstalled,
