@@ -1,0 +1,13 @@
+{
+  "name": "Theme with missing image variant",
+  "description": "theme_toolbar.png is deliberately missing.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "theme": {
+     "images": {
+        "theme_toolbar": {
+          "100": "images/100_percent/theme_toolbar.png"
+        }
+     }
+  }
+}

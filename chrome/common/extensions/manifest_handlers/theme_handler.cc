@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,9 +43,8 @@ bool IsThemeImageMimeTypeValid(const base::FilePath& relative_path,
   // In case of an image with no file extension, issue a warning and allow it
   // for compatibility with existing themes.
   if (relative_path.Extension().empty()) {
-    warnings->emplace_back(
-        ErrorUtils::FormatErrorMessage(errors::kThemeImageMissingFileExtension,
-                                       relative_path.AsUTF8Unsafe().c_str()));
+    warnings->emplace_back(ErrorUtils::FormatErrorMessage(
+        errors::kThemeImageMissingFileExtension, relative_path.AsUTF8Unsafe()));
     return true;
   }
 
@@ -53,9 +53,8 @@ bool IsThemeImageMimeTypeValid(const base::FilePath& relative_path,
     // Issue a warning and ignore this entry. This is a warning and not a
     // hard-error to preserve both backwards compatibility and potential
     // future-compatibility if mime types change.
-    warnings->emplace_back(
-        ErrorUtils::FormatErrorMessage(errors::kInvalidThemeImageMimeType,
-                                       relative_path.AsUTF8Unsafe().c_str()));
+    warnings->emplace_back(ErrorUtils::FormatErrorMessage(
+        errors::kInvalidThemeImageMimeType, relative_path.AsUTF8Unsafe()));
     return false;
   }
 
@@ -155,8 +154,9 @@ bool LoadTints(const base::Value::Dict& theme_dict,
                std::u16string* error,
                ThemeInfo* theme_info) {
   const base::Value::Dict* tints_dict = theme_dict.FindDict(keys::kThemeTints);
-  if (!tints_dict)
+  if (!tints_dict) {
     return true;
+  }
 
   // Validate that the tints are all reals.
   for (const auto [key, value] : *tints_dict) {
@@ -317,15 +317,27 @@ bool ThemeHandler::Validate(const Extension& extension,
         extensions::ThemeInfo::GetImages(&extension);
     if (images_value) {
       for (const auto [key, value] : *images_value) {
-        const std::string* val = value.GetIfString();
-        if (val) {
-          base::FilePath image_path =
-              extension.path().Append(base::FilePath::FromUTF8Unsafe(*val));
-          if (!base::PathExists(image_path)) {
-            *error =
-                l10n_util::GetStringFUTF8(IDS_EXTENSION_INVALID_IMAGE_PATH,
-                                          image_path.LossyDisplayName());
+        if (value.is_string()) {
+          const std::string& val = value.GetString();
+          base::FilePath image_path = extension.GetResource(val).GetFilePath();
+          if (image_path.empty() || !base::PathExists(image_path)) {
+            *error = l10n_util::GetStringFUTF8(IDS_EXTENSION_INVALID_IMAGE_PATH,
+                                               base::UTF8ToUTF16(val));
             return false;
+          }
+        } else if (value.is_dict()) {
+          for (const auto [scale, path] : value.GetDict()) {
+            if (path.is_string()) {
+              const std::string& val = path.GetString();
+              base::FilePath image_path =
+                  extension.GetResource(val).GetFilePath();
+              if (image_path.empty() || !base::PathExists(image_path)) {
+                // This is a warning and not a hard-error for backwards
+                // compatibility with existing themes.
+                warnings->emplace_back(ErrorUtils::FormatErrorMessage(
+                    errors::kInvalidThemeDictImagePath, key, scale, val));
+              }
+            }
           }
         }
       }

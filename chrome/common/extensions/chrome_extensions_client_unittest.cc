@@ -110,6 +110,24 @@ TEST_F(ChromeExtensionsClientTest, GetBrowserImagePaths) {
   EXPECT_EQ("icon.png", paths.begin()->BaseName().AsUTF8Unsafe());
 }
 
+// Test that theme image variants are returned correctly.
+TEST_F(ChromeExtensionsClientTest, GetBrowserImagePathsThemeHiDpi) {
+  base::FilePath install_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &install_dir));
+  install_dir =
+      install_dir.AppendASCII("extensions").AppendASCII("theme_hidpi");
+
+  std::string error;
+  scoped_refptr<Extension> extension(
+      file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
+                               Extension::NO_FLAGS, &error));
+  ASSERT_TRUE(extension.get());
+
+  std::set<base::FilePath> paths =
+      ExtensionsClient::Get()->GetBrowserImagePaths(extension.get());
+  ASSERT_EQ(8u, paths.size());
+}
+
 // Test that extensions with zero-length action icons will not load.
 TEST_F(ChromeExtensionsClientTest, CheckZeroLengthActionIconFiles) {
   base::FilePath install_dir;

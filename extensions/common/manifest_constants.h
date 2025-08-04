@@ -601,6 +601,8 @@ inline constexpr char16_t kInvalidThemeTints[] =
 inline constexpr char16_t kInvalidThemeTabGroupColorPalette[] =
     u"Invalid value for theme tab group color palette - tab group color "
     u"palette values must be integers.";
+inline constexpr char kInvalidThemeDictImagePath[] =
+    "Invalid path for theme image: entry '*', scale '*', path '*'.";
 inline constexpr char kInvalidTrialTokensNonEmptyList[] =
     "Invalid value for 'trial_tokens'. Must be a non-empty list.";
 inline constexpr char kInvalidTrialTokensValue[] =

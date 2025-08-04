@@ -107,8 +107,9 @@ void ChromeExtensionsClient::FilterHostPermissions(
       // chrome://favicon is the only URL for chrome:// scheme that we
       // want to support. We want to deprecate the "chrome" scheme.
       // We should not add any additional "host" here.
-      if (GURL(chrome::kChromeUIFaviconURL).host() != i->host())
+      if (GURL(chrome::kChromeUIFaviconURL).host() != i->host()) {
         continue;
+      }
       permissions->insert(mojom::APIPermissionID::kFavicon);
     } else {
       new_hosts->AddPattern(*i);
@@ -127,29 +128,31 @@ ChromeExtensionsClient::GetScriptingAllowlist() const {
 }
 
 URLPatternSet ChromeExtensionsClient::GetPermittedChromeSchemeHosts(
-      const Extension* extension,
-      const APIPermissionSet& api_permissions) const {
+    const Extension* extension,
+    const APIPermissionSet& api_permissions) const {
   URLPatternSet hosts;
 
   // Do not allow any chrome-scheme hosts in MV3+ extensions.
-  if (extension->manifest_version() >= 3)
+  if (extension->manifest_version() >= 3) {
     return hosts;
+  }
 
   // Regular extensions are only allowed access to chrome://favicon.
-  hosts.AddPattern(URLPattern(URLPattern::SCHEME_CHROMEUI,
-                              chrome::kChromeUIFaviconURL));
+  hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_CHROMEUI, chrome::kChromeUIFaviconURL));
 
   return hosts;
 }
 
-bool ChromeExtensionsClient::IsScriptableURL(
-    const GURL& url, std::string* error) const {
+bool ChromeExtensionsClient::IsScriptableURL(const GURL& url,
+                                             std::string* error) const {
   // The gallery is special-cased as a restricted URL for scripting to prevent
   // access to special JS bindings we expose to the gallery (and avoid things
   // like extensions removing the "report abuse" link).
   if (extension_urls::IsWebstoreDomain(url)) {
-    if (error)
+    if (error) {
       *error = manifest_errors::kCannotScriptGallery;
+    }
     return false;
   }
   return true;
@@ -189,14 +192,23 @@ std::set<base::FilePath> ChromeExtensionsClient::GetBrowserImagePaths(
   const base::Value::Dict* theme_images = ThemeInfo::GetImages(extension);
   if (theme_images) {
     for (const auto [key, value] : *theme_images) {
-      if (value.is_string())
+      if (value.is_string()) {
         image_paths.insert(base::FilePath::FromUTF8Unsafe(value.GetString()));
+      } else if (value.is_dict()) {
+        for (const auto [scale, path] : value.GetDict()) {
+          if (path.is_string()) {
+            image_paths.insert(
+                base::FilePath::FromUTF8Unsafe(path.GetString()));
+          }
+        }
+      }
     }
   }
 
   const ActionInfo* action = ActionInfo::GetExtensionActionInfo(extension);
-  if (action && !action->default_icon.empty())
+  if (action && !action->default_icon.empty()) {
     action->default_icon.GetPaths(&image_paths);
+  }
 
   return image_paths;
 }
