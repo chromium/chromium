@@ -306,7 +306,8 @@ TEST_F(FPFPageActivationThrottleTest,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   scoped_feature_list_.InitWithFeatures(
       {features::kEnableFingerprintingProtectionFilter},
-      {privacy_sandbox::kActUserBypassUx});
+      {privacy_sandbox::kActUserBypassUx,
+       privacy_sandbox::kFingerprintingProtectionUx});
 
   // Initialize a real throttle to test histograms are emitted as expected.
   mock_nav_handle_->set_url(GURL("http://cool.things.com"));
@@ -342,7 +343,8 @@ TEST_F(
   base::HistogramTester histograms;
   scoped_feature_list_.InitWithFeatures(
       {features::kEnableFingerprintingProtectionFilter,
-       privacy_sandbox::kActUserBypassUx},
+       privacy_sandbox::kActUserBypassUx,
+       privacy_sandbox::kFingerprintingProtectionUx},
       {});
 
   mock_nav_handle_->set_url(GURL("http://cool.things.com"));
@@ -352,9 +354,15 @@ TEST_F(
       ContentSettingsPattern::FromURL(GURL("http://cool.things.com")),
       ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
 
+  // Create TrackingProtectionSettings for incognito mode.
+  auto tracking_protection_settings =
+      std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+          test_support_.prefs(), test_support_.content_settings(),
+          /*management_service=*/nullptr, true);
+
   auto throttle = FingerprintingProtectionPageActivationThrottle(
       *mock_nav_registry_, test_support_.content_settings(),
-      test_support_.tracking_protection_settings(), test_support_.prefs());
+      tracking_protection_settings.get(), test_support_.prefs(), true);
 
   throttle.WillProcessResponse();
 

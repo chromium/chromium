@@ -191,7 +191,9 @@ bool FingerprintingProtectionPageActivationThrottle::
     DoesUrlHaveTrackingProtectionException() const {
   // Check for a tracking protection exception. When UB is not available, also
   // check for a COOKIES exception for the top-level site.
-  if ((!base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
+  if ((!(base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
+         base::FeatureList::IsEnabled(
+             privacy_sandbox::kFingerprintingProtectionUx)) &&
        HasContentSettingsCookieException()) ||
       HasTrackingProtectionException()) {
     ukm::SourceId source_id =
