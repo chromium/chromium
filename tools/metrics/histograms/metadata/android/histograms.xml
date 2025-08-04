@@ -7102,9 +7102,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2"
-    enum="AndroidProcessExitReason" expires_after="2025-10-01">
+    enum="AndroidProcessExitReason" expires_after="2025-12-07">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
@@ -7114,9 +7115,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.BACKGROUND"
-    enum="AndroidProcessExitReason" expires_after="2025-10-01">
+    enum="AndroidProcessExitReason" expires_after="2025-12-07">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
@@ -7127,9 +7129,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.DESTROYED"
-    enum="AndroidProcessExitReason" expires_after="2025-10-01">
+    enum="AndroidProcessExitReason" expires_after="2025-12-07">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
@@ -7140,9 +7143,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.FOREGROUND"
-    enum="AndroidProcessExitReason" expires_after="2025-10-01">
+    enum="AndroidProcessExitReason" expires_after="2025-12-07">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
@@ -7155,6 +7159,7 @@ chromium-metrics-reviews@google.com.
     enum="AndroidProcessExitReason" expires_after="2025-12-07">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
@@ -7164,9 +7169,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2.UNKNOWN"
-    enum="AndroidProcessExitReason" expires_after="2025-10-01">
+    enum="AndroidProcessExitReason" expires_after="2025-12-07">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
     reasons for an application. Records the latest exit reason for the embedding
@@ -8352,6 +8358,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-31">
   <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     For synchronous WebView initialization, this value measures the entire
     duration of running StartupTasksRunner's tasks together without yielding the
@@ -8619,6 +8626,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     For synchronous WebView initialization, this value measures the entire
     duration of running StartupTasksRunner's tasks together without yielding the
