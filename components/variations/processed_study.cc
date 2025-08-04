@@ -16,6 +16,7 @@
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
 #include "entropy_provider.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "variations_layers.h"
 
 namespace variations {
@@ -68,7 +69,8 @@ bool ValidateVersionNumbers(const Study& study) {
 
 // Validates that all experiment names in the study are valid.
 bool ValidateExperimentNames(const Study& study) {
-  std::set<std::string> experiment_names;
+  absl::flat_hash_set<std::string_view> experiment_names;
+  experiment_names.reserve(study.experiment().size());
   for (const auto& experiment : study.experiment()) {
     if (experiment.name().empty()) {
       LogInvalidReason(InvalidStudyReason::kMissingExperimentName);
