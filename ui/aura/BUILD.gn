@@ -199,8 +199,6 @@ static_library("test_support") {
     "test/test_focus_client.h",
     "test/test_screen.cc",
     "test/test_screen.h",
-    "test/test_window_builder.cc",
-    "test/test_window_builder.h",
     "test/test_window_delegate.cc",
     "test/test_window_delegate.h",
     "test/test_window_parenting_client.cc",

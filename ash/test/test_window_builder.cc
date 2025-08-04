@@ -6,7 +6,6 @@
 
 #include "ash/examples/client_controlled_state_util.h"
 #include "ash/shell.h"
-#include "base/functional/callback_helpers.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/test_windows.h"
@@ -55,96 +54,132 @@ CreateBoundsChangeCallback(SignalCallback signal_callback) {
 TestWindowBuilder::TestWindowBuilder() = default;
 
 TestWindowBuilder::TestWindowBuilder(TestWindowBuilder& others)
-    : aura::test::TestWindowBuilder(others),
-      operation_signal_callback_(std::move(others.operation_signal_callback_)) {
+    : parent_(others.parent_),
+      context_(others.context_),
+      delegate_(others.delegate_),
+      window_type_(others.window_type_),
+      layer_type_(others.layer_type_),
+      bounds_(others.bounds_),
+      init_properties_(std::move(others.init_properties_)),
+      window_id_(others.window_id_),
+      window_title_(others.window_title_),
+      show_(others.show_) {
+  DCHECK(!others.built_);
+  others.built_ = true;
 }
 
 TestWindowBuilder::~TestWindowBuilder() = default;
 
 TestWindowBuilder& TestWindowBuilder::SetParent(aura::Window* parent) {
-  aura::test::TestWindowBuilder::SetParent(parent);
+  DCHECK(!built_);
+  DCHECK(!parent_);
+  parent_ = parent;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetWindowType(
     aura::client::WindowType type) {
-  aura::test::TestWindowBuilder::SetWindowType(type);
+  DCHECK(!built_);
+  window_type_ = type;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetWindowId(int id) {
-  aura::test::TestWindowBuilder::SetWindowId(id);
-  return *this;
-}
-
-TestWindowBuilder& TestWindowBuilder::SetBounds(const gfx::Rect& bounds) {
-  aura::test::TestWindowBuilder::SetBounds(bounds);
+  DCHECK(!built_);
+  window_id_ = id;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetWindowTitle(
     const std::u16string& title) {
-  aura::test::TestWindowBuilder::SetWindowTitle(title);
+  DCHECK(!built_);
+  window_title_ = title;
+  return *this;
+}
+
+TestWindowBuilder& TestWindowBuilder::SetBounds(const gfx::Rect& bounds) {
+  DCHECK(!built_);
+  bounds_ = bounds;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetDelegate(
     aura::WindowDelegate* delegate) {
-  aura::test::TestWindowBuilder::SetDelegate(delegate);
+  DCHECK(!delegate_);
+  delegate_ = delegate;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetColorWindowDelegate(SkColor color) {
-  aura::test::TestWindowBuilder::SetColorWindowDelegate(color);
+  DCHECK(!built_);
+  DCHECK(!delegate_);
+  delegate_ = new aura::test::ColorTestWindowDelegate(color);
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetTestWindowDelegate() {
-  aura::test::TestWindowBuilder::SetTestWindowDelegate();
+  DCHECK(!built_);
+  DCHECK(!delegate_);
+  delegate_ = aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::AllowAllWindowStates() {
-  aura::test::TestWindowBuilder::AllowAllWindowStates();
+  DCHECK(!built_);
+  init_properties_.SetProperty(aura::client::kResizeBehaviorKey,
+                               aura::client::kResizeBehaviorCanFullscreen |
+                                   aura::client::kResizeBehaviorCanMaximize |
+                                   aura::client::kResizeBehaviorCanMinimize |
+                                   aura::client::kResizeBehaviorCanResize);
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetShow(bool show) {
-  aura::test::TestWindowBuilder::SetShow(show);
+  DCHECK(!built_);
+  show_ = show;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetClientControlled(
     SignalCallback signal_callback) {
-  DCHECK(!built());
+  DCHECK(!built_);
   operation_signal_callback_ = signal_callback;
   return *this;
 }
 
 std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
-  auto window = CreateWindowInternal();
+  DCHECK(!built_);
+  built_ = true;
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(delegate_, window_type_);
+  window->Init(layer_type_);
+  window->AcquireAllPropertiesFrom(std::move(init_properties_));
+  if (window_id_ != aura::Window::kInitialId)
+    window->SetId(window_id_);
+  if (!window_title_.empty()) {
+    window->SetTitle(window_title_);
+  }
   if (parent_) {
-    if (!bounds().IsEmpty()) {
-      window->SetBounds(bounds());
-    }
+    if (!bounds_.IsEmpty())
+      window->SetBounds(bounds_);
     parent_->AddChild(window.get());
   } else {
-    aura::Window* context = nullptr;
     // Resolve context to find a parent.
-    if (bounds().IsEmpty()) {
-      context = Shell::GetPrimaryRootWindow();
+    if (bounds_.IsEmpty()) {
+      context_ = Shell::GetPrimaryRootWindow();
     } else {
       display::Display display =
-          display::Screen::GetScreen()->GetDisplayMatching(bounds());
+          display::Screen::GetScreen()->GetDisplayMatching(bounds_);
       aura::Window* root = Shell::GetRootWindowForDisplayId(display.id());
-      gfx::Point origin = bounds().origin();
+      gfx::Point origin = bounds_.origin();
       ::wm::ConvertPointFromScreen(root, &origin);
-      context = root;
-      window->SetBounds(gfx::Rect(origin, bounds().size()));
+      context_ = root;
+      if (!bounds_.IsEmpty())
+        window->SetBounds(gfx::Rect(origin, bounds_.size()));
     }
 
-    DCHECK(context);
-    aura::client::ParentWindowWithContext(window.get(), context, bounds(),
+    DCHECK(context_);
+    aura::client::ParentWindowWithContext(window.get(), context_, bounds_,
                                           display::kInvalidDisplayId);
   }
   if (operation_signal_callback_) {
@@ -152,18 +187,16 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
         window.get(), CreateStateChangeCallback(*operation_signal_callback_),
         CreateBoundsChangeCallback(*operation_signal_callback_));
   }
-  if (show()) {
+  if (show_)
     window->Show();
-  }
   return window;
 }
 
 TestWindowBuilder ChildTestWindowBuilder(aura::Window* parent,
                                          const gfx::Rect& bounds,
                                          int window_id) {
-  TestWindowBuilder builder;
-  builder.SetParent(parent).SetBounds(bounds).SetWindowId(window_id);
-  return builder;
+  return TestWindowBuilder().SetParent(parent).SetBounds(bounds).SetWindowId(
+      window_id);
 }
 
 }  // namespace ash
