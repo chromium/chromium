@@ -184,11 +184,16 @@ TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerCompleted) {
   task_environment_.AdvanceClock(base::Seconds(1));
 
   metrics_helper()->RecordReaderDistillerCompleted(
+      ReaderModeAccessPoint::kContextualChip,
       ReaderModeDistillerResult::kPageIsDistillable);
   metrics_helper()->Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kDistillationCompleted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeDistillerResultHistogram),
+      BucketsAre(
+          Bucket(ReaderModeDistillerOutcome::kContextualChipIsDistillable, 1)));
   histogram_tester_.ExpectUniqueTimeSample(kReaderModeDistillerLatencyHistogram,
                                            base::Seconds(1), 1);
   histogram_tester_.ExpectTotalCount(kReaderModeAccessPointHistogram, 1);

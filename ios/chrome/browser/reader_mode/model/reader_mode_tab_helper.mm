@@ -109,11 +109,10 @@ void ReaderModeTabHelper::ActivateReader(ReaderModeAccessPoint access_point) {
   // eligible.
   CHECK(CurrentPageIsEligibleForReaderMode());
   active_ = true;
-  metrics_helper_.RecordReaderDistillerTriggered(access_point);
 
   // If Reader mode is being activated, lazily create the secondary WebState
   // where the content will be rendered and start distillation.
-  CreateReaderModeContent();
+  CreateReaderModeContent(access_point);
 }
 
 void ReaderModeTabHelper::DeactivateReader(
@@ -371,6 +370,7 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
 }
 
 void ReaderModeTabHelper::PageDistillationCompleted(
+    ReaderModeAccessPoint access_point,
     const GURL& page_url,
     const std::string& html,
     const std::vector<DistillerViewerInterface::ImageInfo>& images,
@@ -387,8 +387,9 @@ void ReaderModeTabHelper::PageDistillationCompleted(
 
   bool is_distillable_page = !html.empty();
   metrics_helper_.RecordReaderDistillerCompleted(
-      is_distillable_page ? ReaderModeDistillerResult::kPageIsDistillable
-                          : ReaderModeDistillerResult::kPageIsNotDistillable);
+      access_point, is_distillable_page
+                        ? ReaderModeDistillerResult::kPageIsDistillable
+                        : ReaderModeDistillerResult::kPageIsNotDistillable);
 
   if (IsReaderModeSnackbarEnabled()) {
     // Show a snackbar with the heuristic result, latency and page distillation
@@ -415,7 +416,10 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   }
 }
 
-void ReaderModeTabHelper::CreateReaderModeContent() {
+void ReaderModeTabHelper::CreateReaderModeContent(
+    ReaderModeAccessPoint access_point) {
+  metrics_helper_.RecordReaderDistillerTriggered(access_point);
+
   if (!reader_mode_web_state_) {
     web::WebState::CreateParams create_params = web::WebState::CreateParams(
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
@@ -433,8 +437,8 @@ void ReaderModeTabHelper::CreateReaderModeContent() {
   distiller_viewer_ = std::make_unique<ReaderModeDistillerViewer>(
       reader_mode_web_state_.get(), distiller_service_,
       std::move(distiller_page), web_state_->GetLastCommittedURL(),
-      base::BindRepeating(&ReaderModeTabHelper::PageDistillationCompleted,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ReaderModeTabHelper::PageDistillationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), access_point));
 
   reader_mode_distillation_timer_.Start(
       FROM_HERE, ReaderModeDistillationTimeout(),

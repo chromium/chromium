@@ -61,6 +61,26 @@ ReaderModeTheme ConvertMojomTheme(dom_distiller::mojom::Theme theme) {
   }
 }
 
+// Returns the mapping of access point and distillation result for recording.
+ReaderModeDistillerOutcome GetDistillerOutcome(
+    ReaderModeAccessPoint access_point,
+    ReaderModeDistillerResult result) {
+  switch (access_point) {
+    case ReaderModeAccessPoint::kContextualChip:
+      return result == ReaderModeDistillerResult::kPageIsDistillable
+                 ? ReaderModeDistillerOutcome::kContextualChipIsDistillable
+                 : ReaderModeDistillerOutcome::kContextualChipIsNotDistillable;
+    case ReaderModeAccessPoint::kToolsMenu:
+      return result == ReaderModeDistillerResult::kPageIsDistillable
+                 ? ReaderModeDistillerOutcome::kToolsMenuIsDistillable
+                 : ReaderModeDistillerOutcome::kToolsMenuIsNotDistillable;
+    case ReaderModeAccessPoint::kAIHub:
+      return result == ReaderModeDistillerResult::kPageIsDistillable
+                 ? ReaderModeDistillerOutcome::kAIHubIsDistillable
+                 : ReaderModeDistillerOutcome::kAIHubIsNotDistillable;
+  }
+}
+
 }  // namespace
 
 ReaderModeMetricsHelper::ReaderModeMetricsHelper(
@@ -129,11 +149,14 @@ void ReaderModeMetricsHelper::RecordReaderDistillerTimedOut() {
 }
 
 void ReaderModeMetricsHelper::RecordReaderDistillerCompleted(
+    ReaderModeAccessPoint access_point,
     ReaderModeDistillerResult result) {
   last_reader_mode_state_ = ReaderModeState::kDistillationCompleted;
 
   CHECK(distiller_timer_);
   RecordDistillationTime(result);
+  base::UmaHistogramEnumeration(kReaderModeDistillerResultHistogram,
+                                GetDistillerOutcome(access_point, result));
 }
 
 void ReaderModeMetricsHelper::RecordReaderShown() {

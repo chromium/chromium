@@ -103,6 +103,20 @@ enum class ReaderModeAccessPoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeAccessPoint)
 
+// Recorded for IOS.ReaderMode.Distiller.Result. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeDistillerOutcome)
+enum class ReaderModeDistillerOutcome {
+  kContextualChipIsDistillable = 0,
+  kContextualChipIsNotDistillable = 1,
+  kToolsMenuIsDistillable = 2,
+  kToolsMenuIsNotDistillable = 3,
+  kAIHubIsDistillable = 4,
+  kAIHubIsNotDistillable = 5,
+  kMaxValue = kAIHubIsNotDistillable,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeDistillerOutcome)
+
 // Reasons for which Reader mode can be deactivated.
 enum class ReaderModeDeactivationReason {
   // User deactivated Reader mode using the UI.
@@ -136,6 +150,9 @@ extern const char kReaderModeHeuristicLatencyHistogram[];
 
 // Histogram name for Reader Mode distillation latency.
 extern const char kReaderModeDistillerLatencyHistogram[];
+
+// Histogram name for Reader Mode distillation result.
+extern const char kReaderModeDistillerResultHistogram[];
 
 // Histogram name for Reader Mode theme customization.
 extern const char kReaderModeThemeCustomizationHistogram[];

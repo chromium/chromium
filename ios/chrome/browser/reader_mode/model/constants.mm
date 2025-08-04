@@ -17,6 +17,9 @@ const char kReaderModeHeuristicLatencyHistogram[] =
 const char kReaderModeDistillerLatencyHistogram[] =
     "IOS.ReaderMode.Distiller.Latency";
 
+const char kReaderModeDistillerResultHistogram[] =
+    "IOS.ReaderMode.Distiller.Result";
+
 const char kReaderModeThemeCustomizationHistogram[] = "IOS.ReaderMode.Theme";
 
 const char kReaderModeFontFamilyCustomizationHistogram[] =

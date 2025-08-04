@@ -4548,6 +4548,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReaderMode.Distiller.Result"
+    enum="ReaderModeDistillerOutcome" expires_after="2026-01-25">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the distillation result and access point of the web page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReaderMode.FontFamily" enum="ReaderModeFontFamily"
     expires_after="2025-11-24">
   <owner>fernandex@google.com</owner>
