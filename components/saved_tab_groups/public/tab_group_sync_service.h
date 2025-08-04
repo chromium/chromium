@@ -182,6 +182,12 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                    std::optional<bool> is_pinned,
                                    std::optional<int> new_index) = 0;
 
+  // Update bookmark node id of the tab group.
+  // This is used to connect/disconnect bookmark folder with a saved tab group.
+  virtual void UpdateBookmarkNodeId(
+      const base::Uuid& sync_id,
+      std::optional<base::Uuid> bookmark_node_id) = 0;
+
   // Mutator methods that result in tab metadata mutation.
   virtual void AddTab(const LocalTabGroupID& group_id,
                       const LocalTabID& tab_id,

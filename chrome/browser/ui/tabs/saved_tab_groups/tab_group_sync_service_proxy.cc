@@ -88,6 +88,15 @@ void TabGroupSyncServiceProxy::UpdateGroupPosition(
   }
 }
 
+void TabGroupSyncServiceProxy::UpdateBookmarkNodeId(
+    const base::Uuid& sync_id,
+    std::optional<base::Uuid> bookmark_node_id) {
+  const SavedTabGroup* tab_group = service_->model()->Get(sync_id);
+  if (tab_group) {
+    service_->model()->UpdateBookmarkNodeId(sync_id, bookmark_node_id);
+  }
+}
+
 void TabGroupSyncServiceProxy::AddTab(const LocalTabGroupID& group_id,
                                       const LocalTabID& tab_id,
                                       const std::u16string& title,

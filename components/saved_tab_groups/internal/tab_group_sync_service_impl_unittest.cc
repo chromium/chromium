@@ -2718,6 +2718,24 @@ TEST_F(PinningTabGroupSyncServiceImplTest, UpdateGroupPositionIndex) {
   EXPECT_EQ(2, get_index(group_id_2));
 }
 
+TEST_F(PinningTabGroupSyncServiceImplTest, UpdateBookmarkNodeId) {
+  auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(group.has_value());
+
+  base::Uuid bookmark_node_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_EQ(std::nullopt, group->bookmark_node_id());
+  tab_group_sync_service_->UpdateBookmarkNodeId(group->saved_guid(),
+                                                bookmark_node_id);
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_EQ(bookmark_node_id, group->bookmark_node_id());
+
+  tab_group_sync_service_->UpdateBookmarkNodeId(group->saved_guid(),
+                                                std::nullopt);
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_EQ(std::nullopt, group->bookmark_node_id());
+}
+
 TEST_F(TabGroupSyncServiceImplTest, MetricsOnSignin) {
   base::HistogramTester histograms;
 

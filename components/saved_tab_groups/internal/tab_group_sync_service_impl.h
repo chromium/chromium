@@ -86,6 +86,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                            std::optional<bool> is_pinned,
                            std::optional<int> new_index) override;
 
+  void UpdateBookmarkNodeId(
+      const base::Uuid& sync_id,
+      std::optional<base::Uuid> bookmark_node_id) override;
+
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,
               const std::u16string& title,

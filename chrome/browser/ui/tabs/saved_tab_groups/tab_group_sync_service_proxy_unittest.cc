@@ -266,6 +266,27 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionIndex) {
   EXPECT_EQ(2, get_index(local_id_1));
 }
 
+TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateBookmarkNodeId) {
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  tab_groups::TabGroupId local_id =
+      browser->tab_strip_model()->AddToNewGroup({0});
+
+  auto group = service()->GetGroup(local_id);
+  EXPECT_TRUE(group.has_value());
+
+  base::Uuid bookmark_node_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_EQ(std::nullopt, group->bookmark_node_id());
+  service()->UpdateBookmarkNodeId(group->saved_guid(), bookmark_node_id);
+  group = service()->GetGroup(local_id);
+  EXPECT_EQ(bookmark_node_id, group->bookmark_node_id());
+
+  service()->UpdateBookmarkNodeId(group->saved_guid(), std::nullopt);
+  group = service()->GetGroup(local_id);
+  EXPECT_EQ(std::nullopt, group->bookmark_node_id());
+}
+
 // Verifies that we add tabs to a group at the correct position.
 TEST_P(TabGroupSyncServiceProxyUnitTest, AddTab) {
   Browser* browser = AddBrowser();

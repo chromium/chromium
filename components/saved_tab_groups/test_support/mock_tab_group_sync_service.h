@@ -34,6 +34,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
                std::optional<bool> is_pinned,
                std ::optional<int> new_index));
   MOCK_METHOD(void,
+              UpdateBookmarkNodeId,
+              (const base::Uuid&, std::optional<base::Uuid>));
+  MOCK_METHOD(void,
               AddTab,
               (const LocalTabGroupID&,
                const LocalTabID&,

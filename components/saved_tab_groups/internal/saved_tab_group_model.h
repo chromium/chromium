@@ -265,6 +265,10 @@ class SavedTabGroupModel {
   // Update the archival status and archival timestamp of the local tab group.
   void UpdateArchivalStatus(const base::Uuid& id, bool archivalStatus);
 
+  // Update bookmark node id of the local tab group.
+  void UpdateBookmarkNodeId(const base::Uuid& id,
+                            const std::optional<base::Uuid>& bookmark_node_id);
+
  private:
   // Returns mutable group containing tab with ID `saved_tab_guid`, otherwise
   // returns null.

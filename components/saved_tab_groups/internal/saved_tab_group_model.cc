@@ -1066,6 +1066,18 @@ void SavedTabGroupModel::UpdateArchivalStatus(const base::Uuid& id,
   }
 }
 
+void SavedTabGroupModel::UpdateBookmarkNodeId(
+    const base::Uuid& id,
+    const std::optional<base::Uuid>& bookmark_node_id) {
+  SavedTabGroup* const group = GetMutableGroup(id);
+  CHECK(group);
+  group->SetBookmarkNodeId(bookmark_node_id);
+
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
+  }
+}
+
 void SavedTabGroupModel::HandleTabGroupRemovedFromSync(int index) {
   // If this is a shared group that is transitioning to saved, make the
   // transition complete and that will delete the shared group during the

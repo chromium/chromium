@@ -117,6 +117,17 @@ void FakeTabGroupSyncService::UpdateGroupPosition(
   NotifyObserversOfTabGroupUpdated(group);
 }
 
+void FakeTabGroupSyncService::UpdateBookmarkNodeId(
+    const base::Uuid& sync_id,
+    std::optional<base::Uuid> bookmark_node_id) {
+  std::optional<int> index = GetIndexOf(sync_id);
+  if (index.has_value()) {
+    SavedTabGroup& group = groups_[index.value()];
+    group.SetBookmarkNodeId(bookmark_node_id);
+    NotifyObserversOfTabGroupUpdated(group);
+  }
+}
+
 void FakeTabGroupSyncService::AddTab(const LocalTabGroupID& group_id,
                                      const LocalTabID& tab_id,
                                      const std::u16string& title,

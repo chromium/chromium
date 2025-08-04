@@ -488,6 +488,18 @@ void TabGroupSyncServiceImpl::UpdateGroupPosition(
   }
 }
 
+void TabGroupSyncServiceImpl::UpdateBookmarkNodeId(
+    const base::Uuid& sync_id,
+    std::optional<base::Uuid> bookmark_node_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  VLOG(2) << __func__;
+
+  const SavedTabGroup* tab_group = model_->Get(sync_id);
+  if (tab_group) {
+    model_->UpdateBookmarkNodeId(sync_id, bookmark_node_id);
+  }
+}
+
 void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                                      const LocalTabID& tab_id,
                                      const std::u16string& title,
