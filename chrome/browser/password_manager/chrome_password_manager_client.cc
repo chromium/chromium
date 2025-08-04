@@ -1389,16 +1389,6 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
 #endif
 }
 
-void ChromePasswordManagerClient::InformPasswordChangeServiceOfOtpPresent() {
-  ChromePasswordChangeService* password_change_service =
-      PasswordChangeServiceFactory::GetForProfile(profile_);
-  if (password_change_service &&
-      password_change_service->GetPasswordChangeDelegate(web_contents())) {
-    password_change_service->GetPasswordChangeDelegate(web_contents())
-        ->OnOtpFieldDetected(web_contents());
-  }
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::NavigateToManagePasskeysPage(
     password_manager::ManagePasswordsReferrer referrer) {

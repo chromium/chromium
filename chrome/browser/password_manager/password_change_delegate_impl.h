@@ -11,8 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -38,7 +40,8 @@ class OtpDetectionHelper;
 // This class controls password change process including acceptance of privacy
 // notice, opening of a new tab, navigation to the change password url, password
 // generation and form submission.
-class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
+class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
+                                   password_manager::OtpManager::Observer {
  public:
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
       "PasswordManager.FinalPasswordChangeStatus";
@@ -68,6 +71,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   }
 #endif
 
+  // password_manager::OtpManager::Observer
+  void OnOtpFieldDetected(
+      password_manager::OtpFormManager* form_manager) override;
+
  private:
   // PasswordChangeDelegate Impl
   void StartPasswordChangeFlow() override;
@@ -78,11 +85,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void OpenPasswordChangeTab() override;
   void OpenPasswordDetails() override;
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
-  void OnOtpFieldDetected(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
   void OnPasswordChangeDeclined() override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(PasswordChangeDelegate::Observer* observer) override;
+  void RemoveObserver(PasswordChangeDelegate::Observer* observer) override;
 
   void OnOtpNotFound();
 
@@ -129,7 +135,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   std::unique_ptr<ChangePasswordFormFillingSubmissionHelper>
       submission_verifier_;
 
-  base::ObserverList<Observer, /*check_empty=*/true> observers_;
+  base::ObserverList<PasswordChangeDelegate::Observer, /*check_empty=*/true>
+      observers_;
 
   // The time when the initial dialog was displayed to the user.
   base::Time leak_dialog_display_time_;
@@ -147,6 +154,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   std::unique_ptr<CrossOriginNavigationObserver> navigation_observer_;
 
   base::CallbackListSubscription tab_will_detach_subscription_;
+
+  base::ScopedObservation<password_manager::OtpManager,
+                          password_manager::OtpManager::Observer>
+      otp_observation_{this};
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };

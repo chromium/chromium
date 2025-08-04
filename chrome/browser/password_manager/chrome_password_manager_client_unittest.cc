@@ -2128,17 +2128,12 @@ TEST_F(ChromePasswordManagerClientTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(ChromePasswordManagerClientTest,
-       PasswordChangeDelegateIsNotifiedAboutOTP) {
+TEST_F(ChromePasswordManagerClientTest, OtpFieldsAreDetected) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {password_manager::features::kPasswordFormClientsideClassifier,
        password_manager::features::kApplyClientsideModelPredictionsForOtps},
       /*disabled_features=*/{});
-
-  PasswordChangeDelegateMock mock;
-  ON_CALL(*password_change_service(), GetPasswordChangeDelegate)
-      .WillByDefault(Return(&mock));
 
   NavigateAndCommit(GURL("https://www.foo.com/login.html"));
   ContentAutofillDriver* autofill_driver =
@@ -2159,8 +2154,6 @@ TEST_F(ChromePasswordManagerClientTest,
     ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
   }
 
-  EXPECT_CALL(mock, OnOtpFieldDetected(web_contents()));
-
   // Simulate that the field types have been determined.
   using Observer = autofill::AutofillManager::Observer;
   autofill_driver->GetAutofillManager()
@@ -2172,6 +2165,9 @@ TEST_F(ChromePasswordManagerClientTest,
   autofill_driver->GetAutofillManager().NotifyObservers(
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+
+  password_manager::OtpManager* otp_manager = GetClient()->GetOtpManager();
+  EXPECT_EQ(1u, otp_manager->form_managers().size());
 }
 
 TEST_F(ChromePasswordManagerClientTest,
