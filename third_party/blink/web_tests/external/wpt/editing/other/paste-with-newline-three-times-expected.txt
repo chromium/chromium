@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Pasting three times content with a newline at the end, the insertion caret keeps positioned at the end.
+  assert_equals: expected "end" but got "t\\n\\n"
+Harness: the test ran to completion.
+
