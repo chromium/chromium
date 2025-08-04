@@ -27427,6 +27427,21 @@
             ]
         }
     ],
+    "WebViewStartupTasksExperiment": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Phase3",
+                    "enable_features": [
+                        "WebViewStartupTasksYieldToNative"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewSurfaceControl": [
         {
             "platforms": [
