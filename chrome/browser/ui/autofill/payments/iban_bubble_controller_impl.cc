@@ -374,7 +374,7 @@ IbanBubbleControllerImpl::IbanBubbleControllerImpl(
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents) {}
 
-IbanBubbleType IbanBubbleControllerImpl::GetBubbleType() const {
+IbanBubbleType IbanBubbleControllerImpl::GetIbanBubbleType() const {
   return current_bubble_type_;
 }
 

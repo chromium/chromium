@@ -347,7 +347,7 @@ class IbanBubbleViewFullFormBrowserTest
     if (!iban_bubble_controller) {
       return IbanBubbleType::kInactive;
     }
-    return iban_bubble_controller->GetBubbleType();
+    return iban_bubble_controller->GetIbanBubbleType();
   }
 
   SavePaymentIconView* GetSaveIbanIconView() {

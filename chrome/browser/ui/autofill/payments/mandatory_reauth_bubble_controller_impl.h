@@ -47,7 +47,7 @@ class MandatoryReauthBubbleControllerImpl
 #endif
   AutofillBubbleBase* GetBubbleView() override;
   bool IsIconVisible() override;
-  MandatoryReauthBubbleType GetBubbleType() const override;
+  MandatoryReauthBubbleType GetMandatoryReauthBubbleType() const override;
 
  protected:
   explicit MandatoryReauthBubbleControllerImpl(

@@ -71,7 +71,8 @@ class MandatoryReauthBubbleViewUiTest
   void ReshowBubble() {
     MandatoryReauthBubbleControllerImpl* controller = GetController();
     controller->ReshowBubble();
-    if (controller->GetBubbleType() == MandatoryReauthBubbleType::kOptIn) {
+    if (controller->GetMandatoryReauthBubbleType() ==
+        MandatoryReauthBubbleType::kOptIn) {
       views::test::WidgetVisibleWaiter visible_waiter(
           GetOptInBubbleView()->GetWidget());
       visible_waiter.Wait();
@@ -100,7 +101,7 @@ class MandatoryReauthBubbleViewUiTest
       return nullptr;
     }
 
-    if (controller->GetBubbleType() ==
+    if (controller->GetMandatoryReauthBubbleType() ==
         MandatoryReauthBubbleType::kConfirmation) {
       return static_cast<autofill::MandatoryReauthConfirmationBubbleView*>(
           controller->GetBubbleView());
@@ -202,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest, ShowBubble) {
   ShowBubble();
   EXPECT_TRUE(GetReauthBubble());
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kOptIn);
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer.FirstShow",
@@ -217,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest,
   ClickOnCancelButton(GetReauthBubble());
   EXPECT_FALSE(GetReauthBubble());
   EXPECT_FALSE(IsIconVisible());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kInactive);
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult.FirstShow",
@@ -231,7 +232,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest, ClickOptInOkButton) {
   ClickOnOkButton(GetReauthBubble());
   EXPECT_FALSE(GetReauthBubble());
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kConfirmation);
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult.FirstShow",
@@ -245,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest, ClickOptInCloseButton) {
   ClickOnCloseButton(GetReauthBubble());
   EXPECT_FALSE(GetReauthBubble());
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kOptIn);
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult.FirstShow",
@@ -259,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest, ReshowOptInBubble) {
   ReshowBubble();
   EXPECT_TRUE(GetReauthBubble());
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kOptIn);
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer.Reshow",
@@ -274,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest,
   ReshowBubble();
   EXPECT_TRUE(GetReauthBubble());
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kConfirmation);
   histogram_tester.ExpectBucketCount(
       "Autofill.PaymentMethods.MandatoryReauth.OptInConfirmationBubble",
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest,
   ClickOnOkButton(GetReauthBubble());
   ReshowBubble();
   EXPECT_TRUE(GetReauthBubble());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kConfirmation);
   // The `close_callback` is only invoked when the opt-in bubble is explicitly
   // closed by the user, so it should not be invoked when it transitions between
@@ -297,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest,
   ClickOnCloseButton(GetReauthBubble());
   EXPECT_FALSE(GetReauthBubble());
   EXPECT_FALSE(IsIconVisible());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kInactive);
 }
 
@@ -308,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthBubbleViewUiTest,
   ClickOnOkButton(GetReauthBubble());
   ReshowBubble();
   EXPECT_TRUE(GetReauthBubble());
-  EXPECT_EQ(GetController()->GetBubbleType(),
+  EXPECT_EQ(GetController()->GetMandatoryReauthBubbleType(),
             MandatoryReauthBubbleType::kConfirmation);
   EXPECT_CALL(close_callback, Run).Times(0);
   ClickOnSettingsLink(GetReauthBubble());

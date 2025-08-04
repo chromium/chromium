@@ -207,8 +207,8 @@ bool MandatoryReauthBubbleControllerImpl::IsIconVisible() {
   return current_bubble_type_ != MandatoryReauthBubbleType::kInactive;
 }
 
-MandatoryReauthBubbleType MandatoryReauthBubbleControllerImpl::GetBubbleType()
-    const {
+MandatoryReauthBubbleType
+MandatoryReauthBubbleControllerImpl::GetMandatoryReauthBubbleType() const {
   return current_bubble_type_;
 }
 

@@ -88,7 +88,7 @@ class IbanBubbleControllerImpl
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageSavedIbanExtraButtonClicked() override;
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
-  IbanBubbleType GetBubbleType() const override;
+  IbanBubbleType GetIbanBubbleType() const override;
 
   // SavePaymentIconController:
   std::u16string GetSavePaymentIconTooltipText() const override;
