@@ -1981,6 +1981,30 @@
             ]
         }
     ],
+    "AutofillAiI18n": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAiIgnoreCapabilityCheck",
+                        "AutofillAiIgnoreGeoIp",
+                        "AutofillAiIgnoreLocale",
+                        "AutofillAiIgnoreSignInState",
+                        "AutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph",
+                        "AutofillAiKnownTravelerNumber",
+                        "AutofillAiNationalIdCard",
+                        "AutofillAiRedressNumber"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAiUs": [
         {
             "platforms": [
