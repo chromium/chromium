@@ -28,8 +28,8 @@ namespace {
 // out-of-bounds writes. Behind a flag in case it finds too many issues and is
 // a stability risk, or there's an unexpected performance impact.
 BASE_FEATURE(kPasswordsGrouperHeapIntegrityKillSwitch,
-             "PasswordsGrouperHeapIntegrityKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "PasswordsGrouperHeapIntegrityKillSwitchv2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 using affiliations::FacetBrandingInfo;
 using affiliations::FacetURI;
