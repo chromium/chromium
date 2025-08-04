@@ -23,6 +23,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/plus_addresses/plus_address_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/sharing_message/pref_names.h"
@@ -137,6 +138,7 @@ enum {
   kAutofillWorkMetadata = 89,
   kFacilitatedPaymentsA2AEnabled = 90,
   kFacilitatedPaymentsA2ATriggeredOnce = 91,
+  kFingerprintingProtectionEnabled = 92
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -366,6 +368,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PRIORITY_PREFERENCES,
           PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone}},
+        {prefs::kFingerprintingProtectionEnabled,
+         {syncable_prefs_ids::kFingerprintingProtectionEnabled,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     });
 
 }  // namespace

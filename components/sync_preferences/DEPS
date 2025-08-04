@@ -29,6 +29,7 @@ specific_include_rules = {
     "+components/password_manager",
     "+components/payments",
     "+components/plus_addresses",
+    "+components/privacy_sandbox",
     "+components/safe_browsing",
     "+components/saved_tab_groups/public",
     "+components/search_engines",

@@ -333,7 +333,7 @@ enum {
   kAccessibilityFaceGazeCursorSpeedRight = 100266,
   // kAccessibilityFaceGazeCursorSmoothing = 100267, (deprecated)
   kAccessibilityFaceGazeCursorUseAcceleration = 100268,
-  kFingerprintingProtectionEnabled = 100269,
+  // kFingerprintingProtectionEnabled = 100269, (deprecated)
   kAccessibilityFaceGazeGesturesToMacros = 100270,
   kAccessibilityFaceGazeGesturesToConfidence = 100271,
   kShelfGeminiAppPinRolls = 100272,
@@ -1635,10 +1635,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kIpProtectionEnabled,
      {syncable_prefs_ids::kIpProtectionEnabled, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kFingerprintingProtectionEnabled,
-     {syncable_prefs_ids::kFingerprintingProtectionEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kHttpsFirstModeIncognito,
