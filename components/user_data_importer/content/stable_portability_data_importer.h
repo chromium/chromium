@@ -41,6 +41,10 @@ class StablePortabilityDataImporter {
   // reported count will be -1.
   using ImportCallback = base::OnceCallback<void(int)>;
 
+  // Default batch size when importing history. Different values can be passed
+  // to ImportHistory() for testing purposes.
+  static constexpr size_t kHistoryBatchSize = 1000;
+
   // `history_service`, `bookmark_model`, and `reading_list_model` may be null,
   // but if non-null must outlive this class. `bookmark_parser` must not be
   // null.
@@ -67,7 +71,7 @@ class StablePortabilityDataImporter {
   // number of items successfully imported.
   void ImportHistory(base::File file,
                      ImportCallback history_callback,
-                     const size_t import_batch_size);
+                     const size_t import_batch_size = kHistoryBatchSize);
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
  private:

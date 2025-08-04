@@ -68,13 +68,10 @@ void DataImporterBridge::ImportHistory(
     const base::android::JavaRef<jobject>& j_callback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(j_callback);
   base::File file(owned_fd, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  // TODO(crbug.com/430254294): Hook up to the importer once it supports taking
-  // a base::File.
-  ImportHistoryDone(callback, 0);
-  // importer_->ImportHistory(
-  //     std::move(file),
-  //     base::BindOnce(&DataImporterBridge::ImportHistoryDone,
-  //                    weak_ptr_factory_.GetWeakPtr(), callback));
+  importer_->ImportHistory(
+      std::move(file),
+      base::BindOnce(&DataImporterBridge::ImportHistoryDone,
+                     weak_ptr_factory_.GetWeakPtr(), callback));
 }
 
 void DataImporterBridge::ImportBookmarksDone(
