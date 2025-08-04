@@ -10,13 +10,11 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
-@class PreloadController;
 @protocol PreloadControllerDelegate;
 
 namespace web {
 class WebState;
 }
-class WebStateList;
 class Browser;
 
 // PrerenderService manages a prerendered WebState.

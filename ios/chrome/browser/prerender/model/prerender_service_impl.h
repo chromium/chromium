@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 
 class ProfileIOS;
+@class PreloadController;
 
 // Implementation of PrerenderService.
 class PrerenderServiceImpl : public PrerenderService {
