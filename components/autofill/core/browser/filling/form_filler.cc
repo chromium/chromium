@@ -1202,7 +1202,15 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
             return {value, autofill_field.Type().GetPasswordManagerType()};
           }},
       filling_payload.variant);
-  CHECK_NE(filled_field_type, UNKNOWN_TYPE, base::NotFatalUntil::M143);
+  CHECK(filled_field_type != UNKNOWN_TYPE ||
+            // The skip reasons lump all Autofill AI types together because
+            // there is only a single FillingProduct for Autofill AI. Therefore,
+            // when two Autofill AI FieldTypes of different entities appear in
+            // the form, only the above std::visit() calls detects that the
+            // value is not fillable and returns UNKNOWN_TYPE in that case.
+            std::holds_alternative<AugmentedFillingPayload::EntityPayload>(
+                filling_payload.variant),
+        base::NotFatalUntil::M143);
   return {value_to_fill, filled_field_type, /*value_is_an_override=*/false};
 }
 
