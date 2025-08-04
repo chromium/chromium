@@ -88,11 +88,8 @@ bool ArePerformanceHintsCompatible(
     return true;
   }
   // Check if the adaptation model supports any of the base model's hints.
-  return std::ranges::any_of(
-      adaptation_metadata.supported_performance_hints(), [&](int hint) {
-        return base_spec.supported_performance_hints.Has(
-            static_cast<proto::OnDeviceModelPerformanceHint>(hint));
-      });
+  return base::Contains(adaptation_metadata.supported_performance_hints(),
+                        base_spec.selected_performance_hint);
 }
 
 std::optional<OnDeviceModelAdaptationAvailability>
@@ -246,9 +243,8 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
     proto::OnDeviceBaseModelMetadata model_metadata;
     model_metadata.set_base_model_version(registered_spec_->model_version);
     model_metadata.set_base_model_name(registered_spec_->model_name);
-    *model_metadata.mutable_supported_performance_hints() = {
-        registered_spec_->supported_performance_hints.begin(),
-        registered_spec_->supported_performance_hints.end()};
+    model_metadata.add_supported_performance_hints(
+        registered_spec_->selected_performance_hint);
     model_metadata.SerializeToString(any_metadata.mutable_value());
   }
 

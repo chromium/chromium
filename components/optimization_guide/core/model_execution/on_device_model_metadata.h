@@ -43,12 +43,15 @@ class OnDeviceModelMetadata final {
     return capabilities_;
   }
 
+  proto::OnDeviceModelPerformanceHint performance_hint() const {
+    return model_spec_.selected_performance_hint;
+  }
+
  private:
-  OnDeviceModelMetadata(
-      const base::FilePath& model_path,
-      const std::string& version,
-      const OnDeviceBaseModelSpec& model_spec,
-      std::unique_ptr<proto::OnDeviceModelExecutionConfig> config);
+  OnDeviceModelMetadata(const base::FilePath& model_path,
+                        const std::string& version,
+                        const OnDeviceBaseModelSpec& model_spec,
+                        proto::OnDeviceModelExecutionConfig config);
 
   base::FilePath model_path_;
   std::string version_;

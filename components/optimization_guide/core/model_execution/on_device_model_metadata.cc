@@ -25,13 +25,10 @@ OnDeviceModelMetadata::OnDeviceModelMetadata(
     const base::FilePath& model_path,
     const std::string& version,
     const OnDeviceBaseModelSpec& model_spec,
-    std::unique_ptr<proto::OnDeviceModelExecutionConfig> config)
+    proto::OnDeviceModelExecutionConfig config)
     : model_path_(model_path), version_(version), model_spec_(model_spec) {
-  if (!config) {
-    return;
-  }
-  validation_config_ = std::move(*config->mutable_validation_config());
-  for (int c : config->capabilities()) {
+  validation_config_ = std::move(*config.mutable_validation_config());
+  for (int c : config.capabilities()) {
     switch (c) {
       case proto::OnDeviceModelCapability::
           ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT:
@@ -55,8 +52,12 @@ std::unique_ptr<OnDeviceModelMetadata> OnDeviceModelMetadata::New(
     std::string version,
     const OnDeviceBaseModelSpec& model_spec,
     std::unique_ptr<proto::OnDeviceModelExecutionConfig> config) {
+  if (!config) {
+    // OnDeviceModelExecutionConfig failed to load / parse.
+    return nullptr;
+  }
   return base::WrapUnique(new OnDeviceModelMetadata(
-      model_path, version, model_spec, std::move(config)));
+      model_path, version, model_spec, std::move(*config)));
 }
 
 OnDeviceModelMetadataLoader::OnDeviceModelMetadataLoader(
