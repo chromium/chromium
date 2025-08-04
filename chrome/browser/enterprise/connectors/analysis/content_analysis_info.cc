@@ -75,7 +75,21 @@ void ContentAnalysisInfo::InitializeRequest(
 }
 
 std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
-  return GetActiveContentAreaUser(identity_manager(), tab_url());
+  std::string email = GetActiveContentAreaUser(identity_manager(), tab_url());
+  if (!email.empty()) {
+    return email;
+  }
+
+  if (web_contents()) {
+    web_contents()->GetOutermostWebContents()->ForEachRenderFrameHost(
+        [&email, this](content::RenderFrameHost* rfh) {
+          if (email.empty()) {
+            email = GetActiveFrameUser(identity_manager(), tab_url(),
+                                       rfh->GetLastCommittedURL());
+          }
+        });
+  }
+  return email;
 }
 
 // static
