@@ -237,9 +237,11 @@ void MultiContentsViewMiniToolbar::OnThemeChanged() {
     UpdateFavicon(tab_data.value());
   }
   if (auto* interface = GetTabInterface(web_contents_)) {
-    auto* tab_alert_controller =
-        interface->GetTabFeatures()->tab_alert_controller();
-    OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
+    auto* tab_features = interface->GetTabFeatures();
+    if (tab_features) {
+      auto* tab_alert_controller = tab_features->tab_alert_controller();
+      OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
+    }
   }
 }
 
