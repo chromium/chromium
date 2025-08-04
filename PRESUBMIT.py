@@ -1658,10 +1658,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (),
     ),
     BanRule(
-        r'/\bTRACE_EVENT_ASYNC_',
+        r'/\bTRACE_EVENT(_NESTABLE)?_ASYNC_',
         (
-            'Please use TRACE_EVENT_NESTABLE_ASYNC_.. macros instead',
-            'of TRACE_EVENT_ASYNC_.. (crbug.com/1038710).',
+            'Please use TRACE_EVENT_BEGIN/END/INSTANT macros instead',
+            'of TRACE_EVENT_ASYNC_.. and TRACE_EVENT_NESTABLE_ASYNC_... (crbug.com/432427382).',
         ),
         False,
         (
