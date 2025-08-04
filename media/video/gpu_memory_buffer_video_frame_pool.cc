@@ -789,10 +789,6 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
     bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
-  if (!copy_failed && frame_resource->scoped_mapping) {
-    frame_resource->scoped_mapping.reset();
-  }
-
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "media", "CopyVideoFrameToGpuMemoryBuffer",
       TRACE_ID_WITH_SCOPE("CopyVideoFrameToGpuMemoryBuffer",
@@ -831,9 +827,13 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
       continue;
     }
 
+    if (frame_resource->shared_image) {
+      frame_resource->scoped_mapping = frame_resource->shared_image->Map();
+    }
     worker_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&PoolImpl::CopyVideoFrameToGpuMemoryBuffer,
                                   this, request.video_frame, frame_resource));
+
     break;
   }
 }
@@ -844,13 +844,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
 void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffer(
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
-  bool mapping_succeeded = false;
-
-  scoped_refptr<gpu::ClientSharedImage> shared_image =
-      frame_resource->shared_image;
-  mapping_succeeded = shared_image && (frame_resource->scoped_mapping =
-                                           shared_image->Map()) != nullptr;
-  if (!mapping_succeeded) {
+  CHECK(frame_resource);
+  if (!frame_resource->shared_image || !frame_resource->scoped_mapping) {
     DLOG(ERROR) << "Could not get or map buffer.";
     OnCopiesDone(/*copy_failed=*/true, std::move(video_frame), frame_resource);
     return;
@@ -978,6 +973,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(frame_resource->scoped_mapping);
+  frame_resource->scoped_mapping.reset();
   if (copy_failed) {
     // Drop the resource if there was an error with it. If we're not in
     // shutdown we also need to remove the pool entry for the resource.
