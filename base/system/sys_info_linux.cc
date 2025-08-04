@@ -15,10 +15,10 @@
 #include <algorithm>
 #include <limits>
 #include <sstream>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
-#include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
@@ -42,10 +42,8 @@ uint64_t AmountOfMemory(int pages_name) {
 uint64_t AmountOfPhysicalMemory() {
   return AmountOfMemory(_SC_PHYS_PAGES);
 }
-
-base::LazyInstance<
-    base::internal::LazySysInfoValue<uint64_t, AmountOfPhysicalMemory>>::Leaky
-    g_lazy_physical_memory = LAZY_INSTANCE_INITIALIZER;
+using LazyPhysicalMemory =
+    base::internal::LazySysInfoValue<uint64_t, AmountOfPhysicalMemory>;
 
 }  // namespace
 
@@ -53,7 +51,9 @@ namespace base {
 
 // static
 uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
-  return g_lazy_physical_memory.Get().value();
+  static_assert(std::is_trivially_destructible<LazyPhysicalMemory>::value);
+  static LazyPhysicalMemory physical_memory;
+  return physical_memory.value();
 }
 
 // static

@@ -21,10 +21,10 @@
 
 #include <algorithm>
 #include <iostream>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
-#include "base/lazy_instance.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -62,10 +62,8 @@ uint64_t AmountOfVirtualMemory() {
   }
   return limit.rlim_cur == RLIM_INFINITY ? 0 : limit.rlim_cur;
 }
-
-base::LazyInstance<
-    base::internal::LazySysInfoValue<uint64_t, AmountOfVirtualMemory>>::Leaky
-    g_lazy_virtual_memory = LAZY_INSTANCE_INITIALIZER;
+using LazyVirtualMemory =
+    base::internal::LazySysInfoValue<uint64_t, AmountOfVirtualMemory>;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
@@ -204,7 +202,9 @@ int SysInfo::NumberOfProcessors() {
 
 // static
 uint64_t SysInfo::AmountOfVirtualMemory() {
-  return g_lazy_virtual_memory.Get().value();
+  static_assert(std::is_trivially_destructible<LazyVirtualMemory>::value);
+  static LazyVirtualMemory virtual_memory;
+  return virtual_memory.value();
 }
 
 // static
