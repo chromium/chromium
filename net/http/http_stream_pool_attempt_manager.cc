@@ -1471,8 +1471,9 @@ bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
 
   CHECK(UsingTls());
 
-  // The first attempt should not be blocked.
-  if (tcp_based_attempts_.empty()) {
+  // If there are no non-slow attempts, don't throttle new attempts.
+  CHECK_GE(tcp_based_attempts_.size(), slow_tcp_based_attempt_count_);
+  if (tcp_based_attempts_.size() - slow_tcp_based_attempt_count_ == 0) {
     return false;
   }
 
@@ -1957,6 +1958,8 @@ void HttpStreamPool::AttemptManager::HandleTcpBasedAttemptFailure(
 }
 
 void HttpStreamPool::AttemptManager::OnSpdyThrottleDelayPassed() {
+  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::OnSpdyThrottleDelayPassed",
+                      track_);
   CHECK(!spdy_throttle_delay_passed_);
   spdy_throttle_delay_passed_ = true;
   MaybeAttemptTcpBased();

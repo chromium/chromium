@@ -3406,6 +3406,64 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
 }
 
+// Tests that when an in-flight TCP-based attempt is slow for a destination
+// that supports SPDY, another attempt is triggered (not throttled) if there is
+// no other non-slow attempt.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       DoNotThrottleForSpdyWithOnlySlowTcpBasedAttempts) {
+  constexpr std::string_view kDestination = "https://a.test";
+
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(), true);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination(kDestination).RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  SequencedSocketData data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&data1);
+
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  MockConnectCompleter completer2;
+  SequencedSocketData data2(reads, writes);
+  data2.set_connect_data(MockConnect(&completer2));
+  socket_factory()->AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&ssl2);
+
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v6("2001:db8::1")
+                         .add_v4("192.0.2.1")
+                         .endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  AttemptManager* manager =
+      pool().GetGroupForTesting(requester.GetStreamKey())->attempt_manager();
+  ASSERT_EQ(manager->TcpBasedAttemptCount(), 1u);
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Fast-forward to the connection attempt delay. The in-flight attempt is
+  // treated as slow. Since there is no non-slow attempt, the manager should
+  // not be throttled and start another attempt.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  ASSERT_EQ(manager->TcpBasedAttemptCount(), 2u);
+
+  // Complete the second attempt. The request should finish successfully.
+  completer2.Complete(OK);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectSpdySessionAvailable) {
   Preconnector preconnector("https://a.test");
   CreateFakeSpdySession(preconnector.GetStreamKey());
