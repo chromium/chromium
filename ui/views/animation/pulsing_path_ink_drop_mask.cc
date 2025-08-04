@@ -89,8 +89,7 @@ void PulsingPathInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
   // of cases, and is no worse than what PulsingInkDropMask does.
   SkPath path = path_.makeTransform(
       SkMatrix::MakeRectToRect(initial_rect_, gfx::RectFToSkRect(bounds),
-                               SkMatrix::ScaleToFit::kCenter_ScaleToFit),
-      SkApplyPerspectiveClip::kNo);
+                               SkMatrix::ScaleToFit::kCenter_ScaleToFit));
   recorder.canvas()->DrawPath(path, flags);
 }
 
