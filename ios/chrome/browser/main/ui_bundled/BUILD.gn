@@ -26,8 +26,7 @@ source_set("default_browser_scene_agent") {
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/common/app_group",
   ]
   frameworks = [ "UIKit.framework" ]

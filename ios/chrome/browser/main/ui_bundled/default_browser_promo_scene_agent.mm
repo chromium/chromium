@@ -9,6 +9,7 @@
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/result.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -22,8 +23,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
 @interface DefaultBrowserPromoSceneAgent () <ProfileStateObserver>
@@ -253,12 +253,10 @@
     return NO;
   }
 
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  DCHECK(authenticationService);
-  DCHECK(authenticationService->initialized());
-  return authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  DCHECK(identityManager);
+  return identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 - (BOOL)isEligibleForReaderModeDefaultBrowserPromo {
