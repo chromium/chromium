@@ -24,7 +24,10 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/features.h"
@@ -39,6 +42,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_associated_interfaces.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_sync_methods.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -1216,6 +1220,84 @@ TEST_F(AssociatedInterfaceTest, CloseSerializedAssociatedEndpoints) {
   associated_binder->Bind(another_binder.BindNewEndpointAndPassReceiver());
   another_binder.set_disconnect_handler(loop2.QuitClosure());
   loop2.Run();
+}
+
+class TestSyncImpl : public TestSync {
+ public:
+  void Ping(PingCallback) override { NOTREACHED(); }
+  void Echo(int32_t value, EchoCallback) override { NOTREACHED(); }
+  void AsyncEcho(int32_t, AsyncEchoCallback) override { NOTREACHED(); }
+};
+
+class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSync {
+ public:
+  explicit TestSyncPrimaryImpl(PendingReceiver<TestSyncPrimary> receiver)
+      : receiver_(this, std::move(receiver)), test_sync_receiver_(this) {}
+  ~TestSyncPrimaryImpl() override = default;
+
+  static constexpr int32_t kReceivedPing = 0b01;
+  static constexpr int32_t kSyncCallWasAborted = 0b10;
+
+  void Ping(PingCallback callback) override {
+    result_ |= kReceivedPing;
+    std::move(callback).Run();
+  }
+  void Echo(int32_t value, EchoCallback callback) override {
+    std::move(callback).Run(result_);
+  }
+  void AsyncEcho(int32_t, AsyncEchoCallback) override { NOTREACHED(); }
+
+  void SendRemote(PendingAssociatedRemote<TestSync> remote) override {
+    test_sync_remote_.Bind(std::move(remote));
+    CHECK(!test_sync_receiver_.is_bound());
+  }
+  void SendReceiver(PendingAssociatedReceiver<TestSync> receiver) override {
+    test_sync_receiver_.Bind(std::move(receiver));
+    CHECK(test_sync_remote_.is_bound());
+    {
+      base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync;
+      int reply = -1;
+      bool call_result = test_sync_remote_->Echo(123, &reply);
+      if (!call_result) {
+        result_ |= kSyncCallWasAborted;
+      }
+    }
+  }
+
+ private:
+  Receiver<TestSyncPrimary> receiver_;
+  AssociatedRemote<TestSync> test_sync_remote_;
+  AssociatedReceiver<TestSync> test_sync_receiver_;
+  int32_t result_ = 0;
+};
+
+// Regression test for https://crbug.com/435493653. Verifies that a sync call
+// made on an associated remote is correctly aborted if the receiver endpoint
+// is closed even if other messages are queued on the same message pipe first.
+TEST_F(AssociatedInterfaceTest, TestHangOnDisconnect) {
+  Remote<TestSyncPrimary> primary_remote;
+  base::SequenceBound<TestSyncPrimaryImpl> primary_impl(
+      base::ThreadPool::CreateSequencedTaskRunner({}),
+      primary_remote.BindNewPipeAndPassReceiver());
+
+  TestSyncImpl sync_impl;
+  AssociatedReceiver<TestSync> sync_receiver(&sync_impl);
+  AssociatedRemote<TestSync> sync_remote;
+  primary_remote->SendRemote(sync_receiver.BindNewEndpointAndPassRemote());
+  primary_remote->SendReceiver(sync_remote.BindNewEndpointAndPassReceiver());
+
+  sync_remote->Ping(base::DoNothing());
+  sync_remote.reset();
+
+  sync_receiver.reset();
+
+  base::test::TestFuture<int32_t> result;
+  primary_remote->Echo(0, result.GetCallback());
+  EXPECT_EQ(TestSyncPrimaryImpl::kReceivedPing |
+                TestSyncPrimaryImpl::kSyncCallWasAborted,
+            result.Get());
+
+  primary_impl.SynchronouslyResetForTest();
 }
 
 }  // namespace

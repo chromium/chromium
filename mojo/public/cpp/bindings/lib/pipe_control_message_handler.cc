@@ -29,6 +29,29 @@ bool PipeControlMessageHandler::IsPipeControlMessage(const Message* message) {
   return !IsValidInterfaceId(message->interface_id());
 }
 
+// static
+std::optional<InterfaceId>
+PipeControlMessageHandler::IsPeerAssociatedEndpointClosedEvent(
+    const Message& message) {
+  if (!IsPipeControlMessage(&message)) {
+    return std::nullopt;
+  }
+  if (message.name() != pipe_control::kRunOrClosePipeMessageId) {
+    return std::nullopt;
+  }
+  pipe_control::RunOrClosePipeMessageParamsPtr params_ptr;
+  if (!pipe_control::RunOrClosePipeMessageParams::Deserialize(
+          message.payload(), message.payload_num_bytes(), &params_ptr)) {
+    return std::nullopt;
+  }
+  if (!params_ptr->input->is_peer_associated_endpoint_closed_event()) {
+    return std::nullopt;
+  }
+  const auto& event =
+      params_ptr->input->get_peer_associated_endpoint_closed_event();
+  return event->id;
+}
+
 bool PipeControlMessageHandler::Accept(Message* message) {
   if (!Validate(message))
     return false;
