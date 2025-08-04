@@ -660,6 +660,56 @@ TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
   }
   EXPECT_THAT(results, UnorderedElementsAreArray(matchers));
 }
+
+// Tests parsing a JSON file with a mix of valid and invalid entries. Only
+// valid entries should be imported.
+TEST_F(StablePortabilityDataImporterTest, History_MixedValidAndInvalid) {
+  const char kHistoryJson[] = R"({
+    "metadata": {
+      "data_type": "history_visits"
+    },
+    "history_visits": [
+      {
+        "url": "https://www.google.com/",
+        "title": "Google",
+        "visit_time_unix_epoch_usec": 1674205200000000
+      },
+      {
+        "title": "Invalid Entry, no URL"
+      },
+      {
+        "url": "https://www.chromium.org/",
+        "title": "Chromium",
+        "visit_time_unix_epoch_usec": 1674205260000000
+      }
+    ]
+  })";
+  ImportHistory(kHistoryJson);
+  EXPECT_EQ(GetNumberOfHistoryImported(), 2);
+
+  history::QueryResults query_results = QueryAllHistory();
+  std::vector<history::URLResult> results(query_results.begin(),
+                                          query_results.end());
+
+  history::URLResult expected_row1;
+  expected_row1.set_url(GURL("https://www.google.com/"));
+  expected_row1.set_title(u"Google");
+  expected_row1.set_visit_count(1);
+  expected_row1.set_typed_count(0);
+  expected_row1.set_last_visit(base::Time::UnixEpoch() +
+                               base::Microseconds(1674205200000000));
+
+  history::URLResult expected_row2;
+  expected_row2.set_url(GURL("https://www.chromium.org/"));
+  expected_row2.set_title(u"Chromium");
+  expected_row2.set_visit_count(1);
+  expected_row2.set_typed_count(0);
+  expected_row2.set_last_visit(base::Time::UnixEpoch() +
+                               base::Microseconds(1674205260000000));
+
+  EXPECT_THAT(results, UnorderedElementsAre(URLResultEq(expected_row1),
+                                            URLResultEq(expected_row2)));
+}
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Tests importing invalid files that do not exist.

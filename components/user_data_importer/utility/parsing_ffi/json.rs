@@ -5,8 +5,7 @@
 use crate::ffi;
 use crate::models::Metadata;
 use anyhow::{anyhow, Result};
-use serde::{de, de::Deserializer, de::Error as DeserializerError, Deserialize};
-use serde_json_lenient;
+use serde::{de, de::Deserializer, de::Error as DeserializerError};
 use std::fmt;
 use std::io::{BufReader, Read};
 use zip;
@@ -48,11 +47,11 @@ impl<'a, R: Read> ZipEntryBufReader<'a, R> {
 
 struct ArrayDeserializerSeed<'de, T>(Box<dyn FnMut(T) + 'de>)
 where
-    T: Deserialize<'de>;
+    T: de::DeserializeOwned;
 
 impl<'de, 'a, T> de::DeserializeSeed<'de> for ArrayDeserializerSeed<'de, T>
 where
-    T: Deserialize<'de>,
+    T: de::DeserializeOwned,
 {
     // The return type of the `deserialize` method. This implementation
     // passes elements into `callback` but does not create any new data
@@ -67,7 +66,7 @@ where
 
         impl<'de, T> de::Visitor<'de> for SeqVisitor<'de, T>
         where
-            T: Deserialize<'de>,
+            T: de::DeserializeOwned,
         {
             type Value = ();
 
@@ -79,8 +78,10 @@ where
             where
                 S: de::SeqAccess<'de>,
             {
-                while let Some(t) = seq.next_element::<T>()? {
-                    self.0(t);
+                while let Some(value) = seq.next_element::<serde_json_lenient::Value>()? {
+                    if let Ok(t) = serde_json_lenient::from_value(value) {
+                        self.0(t);
+                    }
                 }
                 Ok(())
             }
@@ -97,15 +98,15 @@ pub fn deserialize_top_level<'de, T, R>(
     metadata_only: bool,
 ) -> Result<()>
 where
-    T: Deserialize<'de> + 'de,
+    T: de::DeserializeOwned + 'de,
     R: std::io::Read,
 {
     const VALID_PARTIAL_DESERIALIZATION: &'static str = "Valid partial deserialization";
 
     struct MapVisitor<'de, T>
     where
-        T: Deserialize<'de>,
-    {
+        T: de::DeserializeOwned,
+     {
         file_type: ffi::FileType,
         callback: Box<dyn FnMut(T) + 'de>,
         metadata_only: bool,
@@ -113,7 +114,7 @@ where
 
     impl<'de, T> de::Visitor<'de> for MapVisitor<'de, T>
     where
-        T: Deserialize<'de> + 'de,
+        T: de::DeserializeOwned + 'de,
     {
         type Value = ();
 
