@@ -163,6 +163,11 @@ BASE_DECLARE_FEATURE(kInterceptBubblesDismissibleByAvatarButton);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kOfferMigrationToDiceUsers);
 
+// When enabled, rolls back the DICe migration for implicitly signed-in users.
+// Overrides `kOfferMigrationToDiceUsers`.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kRollbackDiceMigration);
+
 // The minimum delay after a browser startup before the dialog can be shown.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kOfferMigrationToDiceUsersMinDelay);
