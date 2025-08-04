@@ -2826,9 +2826,6 @@ crbug.com/433565190 external/wpt/css/css-counter-styles/trad-chinese-formal/coun
 
 crbug.com/433687466 external/wpt/webrtc/RTCDataChannel-worker-GC.html [ Failure ]
 
-# [0729/035620.675:FATAL:ird_party\blink\renderer\bindings\modules\v8\v8_digital_credential_creation_options.h:43] DCHECK failed: hasRequests().
-crbug.com/434984251 external/wpt/digital-credentials/create.tentative.https.html [ Crash Timeout ]
-
 # UUID in URL dumped to `*-expected.txt`
 crbug.com/435005743 external/wpt/html/syntax/speculative-parsing/generated/page-load/script-src-event-handler.html [ Failure ]
 
