@@ -374,6 +374,7 @@ TEST(AutofillDataModelUtils, IsValidAffixFormat) {
   EXPECT_TRUE(IsValidAffixFormat(u"-4"));
   EXPECT_TRUE(IsValidAffixFormat(u"-3"));
   EXPECT_TRUE(IsValidAffixFormat(u"0"));
+  EXPECT_TRUE(IsValidAffixFormat(u"0", /*exclude_full_value=*/false));
   EXPECT_TRUE(IsValidAffixFormat(u"3"));
   EXPECT_TRUE(IsValidAffixFormat(u"4"));
   EXPECT_TRUE(IsValidAffixFormat(u"5"));
@@ -387,6 +388,7 @@ TEST(AutofillDataModelUtils, IsValidAffixFormat) {
   EXPECT_FALSE(IsValidAffixFormat(u"-9"));
   EXPECT_FALSE(IsValidAffixFormat(u"-2"));
   EXPECT_FALSE(IsValidAffixFormat(u"-1"));
+  EXPECT_FALSE(IsValidAffixFormat(u"0", /*exclude_full_value=*/true));
   EXPECT_FALSE(IsValidAffixFormat(u"1"));
   EXPECT_FALSE(IsValidAffixFormat(u"2"));
   EXPECT_FALSE(IsValidAffixFormat(u"9"));

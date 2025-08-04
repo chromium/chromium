@@ -237,13 +237,14 @@ std::u16string FormatDate(Date date, std::u16string_view format) {
   return result;
 }
 
-bool IsValidAffixFormat(std::u16string_view format) {
+bool IsValidAffixFormat(std::u16string_view format, bool exclude_full_value) {
   int i;
   return base::StringToInt(format, &i) &&
-         (i == 0 || (std::abs(i) >= base::checked_cast<int>(
-                                        kMinAffixLengthForFormatString) &&
-                     std::abs(i) <= base::checked_cast<int>(
-                                        kMaxAffixLengthForFormatString)));
+         ((i == 0 && !exclude_full_value) ||
+          (std::abs(i) >=
+               base::checked_cast<int>(kMinAffixLengthForFormatString) &&
+           std::abs(i) <=
+               base::checked_cast<int>(kMaxAffixLengthForFormatString)));
 }
 
 std::u16string Expiration2DigitMonthAsString(int expiration_month) {

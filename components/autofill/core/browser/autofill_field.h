@@ -345,14 +345,10 @@ class AutofillField : public FormFieldData {
     kServer = 3,       // Set by an (Autofill) server response.
   };
 
-  // The format of the value expected by the web document. For now, format
-  // strings are only aimed at dates for Autofill AI:
-  //
-  // The alphabet is "YYYY", "YY", "MM", "M", "DD", "D", "/", ".", "-", and " "
-  // (space, U+0020). A format string contains at most one occurrence of "YYYY"
-  // or "YY", at most one of "MM" or "M", at most one of "DD" or "D", and at
-  // most two occurrences of one separator. A separator is "/", ".", "-",
-  // optionally with surrounding spaces, or space itself.
+  // The format of the value expected by the web document. Currently, the
+  // following kinds of format stings are supported:
+  // - Affix format strings (see data_util::IsValidAffixFormat()).
+  // - Date format strings (data_util::IsValidDateFormat()).
   //
   // Only one format string is stored at a time: the one with the
   // highest-ranking `FormatStringSource`.

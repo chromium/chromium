@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
@@ -102,8 +103,12 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     for (const auto& [entity, fields_with_types] :
          entities_with_fields_and_types) {
       for (const auto& [field, attribute_type] : fields_with_types) {
-        ValueAndFormatString value =
+        DCHECK_EQ(entity, attribute_type.entity_type());
+        const FieldType field_type =
+            field->Type().GetAutofillAiTypeAndResolveTagTypes(entity);
+        const ValueAndFormatString value =
             GetValueAndFormatString(*field, attribute_type);
+
         // At the moment, AutofillAI attributes can never save an email. At the
         // same time, in some countries fields that accept either an AutofillAI
         // type or an email address are common. This avoids mistakenly offering
@@ -111,15 +116,26 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         if (value.value.empty() || IsValidEmailAddress(value.value)) {
           continue;
         }
+
+        // Do not import entities that have an attribute whose value is a proper
+        // prefix or suffix.
+        if (IsAffixFormatStringEnabledForType(field_type) &&
+            data_util::IsValidAffixFormat(value.format_string,
+                                          /*exclude_full_value=*/true)) {
+          if (auto it = section_to_entity_types_attributes.find(section);
+              it != section_to_entity_types_attributes.end()) {
+            it->second.erase(entity);
+          }
+          break;
+        }
+
         std::map<AttributeType, AttributeInstance>& entity_attributes =
-            section_to_entity_types_attributes[section]
-                                              [attribute_type.entity_type()];
+            section_to_entity_types_attributes[section][entity];
         auto attribute_it =
             entity_attributes.try_emplace(attribute_type, attribute_type).first;
-        attribute_it->second.SetInfo(
-            field->Type().GetAutofillAiTypeAndResolveTagTypes(entity),
-            value.value, app_locale, value.format_string,
-            VerificationStatus::kObserved);
+        attribute_it->second.SetInfo(field_type, value.value, app_locale,
+                                     value.format_string,
+                                     VerificationStatus::kObserved);
       }
     }
   }

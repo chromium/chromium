@@ -124,7 +124,9 @@ inline constexpr size_t kMaxAffixLengthForFormatString = 8;
 // - u"-N" means the value is a suffix of length `N`;
 // - u"0" means the value is a full value;
 // where `3 <= N <= 8`.
-bool IsValidAffixFormat(std::u16string_view format);
+// Excludes the clause for u"0" if `exclude_full_value == true`.
+bool IsValidAffixFormat(std::u16string_view format,
+                        bool exclude_full_value = false);
 
 // Converts the integer |expiration_month| to std::u16string. Returns a value
 // between ["01"-"12"].

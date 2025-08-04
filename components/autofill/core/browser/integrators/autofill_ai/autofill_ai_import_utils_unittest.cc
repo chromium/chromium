@@ -199,6 +199,41 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromNonDateSelect) {
                                CreateAttribute(kPassportCountry, "US")))));
 }
 
+// Tests that if a field is a proper affix, the entity is not imported.
+TEST_F(AutofillAiImportUtilsTest, DoNotImportAffixes) {
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  fields.push_back(CreateInput(FormControlType::kInputText,
+                               FieldType::NAME_FULL, "Karlsson on the Roof"));
+  fields.push_back(CreateInput(FormControlType::kInputText,
+                               FieldType::PASSPORT_NUMBER, "123"));
+  fields.push_back(CreateInput(FormControlType::kInputText,
+                               FieldType::DRIVERS_LICENSE_NUMBER, "12345678"));
+  ASSERT_THAT(
+      GetPossibleEntitiesFromSubmittedForm(fields, "en-US"),
+      UnorderedElementsAre(
+          Property(&EntityInstance::attributes,
+                   UnorderedElementsAre(
+                       CreateAttribute(kPassportNumber, "123"),
+                       CreateAttribute(kPassportName, "Karlsson on the Roof"))),
+          Property(&EntityInstance::attributes,
+                   UnorderedElementsAre(
+                       CreateAttribute(kDriversLicenseNumber, "12345678"),
+                       CreateAttribute(kDriversLicenseName,
+                                       "Karlsson on the Roof")))));
+
+  fields[1]->set_format_string_unless_overruled(
+      u"3", AutofillField::FormatStringSource::kServer);
+  fields[2]->set_format_string_unless_overruled(
+      u"0", AutofillField::FormatStringSource::kServer);
+  EXPECT_THAT(
+      GetPossibleEntitiesFromSubmittedForm(fields, "en-US"),
+      UnorderedElementsAre(Property(
+          &EntityInstance::attributes,
+          UnorderedElementsAre(
+              CreateAttribute(kDriversLicenseNumber, "12345678"),
+              CreateAttribute(kDriversLicenseName, "Karlsson on the Roof")))));
+}
+
 TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
   using enum AttributeTypeName;
   EntityInstance entity =
