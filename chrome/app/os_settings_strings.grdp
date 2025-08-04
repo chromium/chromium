@@ -4454,6 +4454,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_VIEW_PRINTER_DIALOG_TITLE" desc="Text for the title of the dialog that is used to view a CUPS managed printer's information.">
     View printer
   </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_VIEW_PRINTER_DIALOG_MANAGED_LABEL" desc="A11y text for the managed icon displayed next to the dialog title." is_accessibility_with_no_ui="true">
+    Managed printer
+  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_EDIT_PRINTER_BUTTON" desc="Text for the button which allows the user to save the modification of a CUPS printer.">
     Save
   </message>

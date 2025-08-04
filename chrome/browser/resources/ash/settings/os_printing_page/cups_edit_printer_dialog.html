@@ -3,6 +3,7 @@
   <div slot="dialog-title">
     <iron-icon
       hidden="[[!pendingPrinter_.isManaged]]"
+      aria-label="$i18n{viewPrinterDialogManagedLabel}"
       icon="cr20:domain">
     </iron-icon>
     [[getDialogTitle_(pendingPrinter_.isManaged)]]
