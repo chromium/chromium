@@ -28,6 +28,7 @@ import '../default_browser_page/default_browser_page.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {beforeNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
@@ -148,6 +149,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private languages_?: LanguagesModel;
   // </if>
 
+  private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private topLevelEquivalentRoute_: Route = getTopLevelRoute();
 
   override connectedCallback() {
@@ -166,6 +168,8 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   override async currentRouteChanged(route: Route) {
+    this.pendingViewSwitching_ = new PromiseResolver();
+
     if (routes.ADVANCED && routes.ADVANCED.contains(route)) {
       // Load the lazy module immediately, don't wait for requestIdleCallback()
       // to fire. No-op if it has already fired.
@@ -177,6 +181,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
     if (this.lastRoute_ === effectiveRoute) {
       // Nothing to do.
+      this.pendingViewSwitching_.resolve();
       return;
     }
 
@@ -191,14 +196,23 @@ export class SettingsMainElement extends SettingsMainElementBase {
       if (this.lastRoute_ !== effectiveRoute || !this.isConnected) {
         // A newer currentRouteChanged call happened while awaiting or no longer
         // connected (both can happen in tests). Do nothing.
+        this.pendingViewSwitching_.resolve();
         return;
       }
       sectionElement = this.$.switcher.querySelector(`#${newSection}`);
     }
 
     assert(sectionElement);
-    this.$.switcher.switchView(
+    await this.$.switcher.switchView(
         sectionElement.id, 'no-animation', 'no-animation');
+    this.pendingViewSwitching_.resolve();
+  }
+
+  // Exposed for tests, to allow making visibility assertions about
+  // cr-view-manager views without flaking. Should be called after
+  // currentRouteChanged is called.
+  whenViewSwitchingDone(): Promise<void> {
+    return this.pendingViewSwitching_.promise;
   }
 
   /**

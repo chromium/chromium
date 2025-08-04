@@ -47,6 +47,7 @@ suite('SettingsMain', function() {
 
   setup(function() {
     createSettingsMain();
+    return settingsMain.whenViewSwitchingDone();
   });
 
   test('UpdatesActiveViewWhenRouteChanges', async function() {
@@ -86,7 +87,7 @@ suite('SettingsMain', function() {
 
     for (const {route, pluginTag} of routesToVisit) {
       Router.getInstance().navigateTo(route);
-      await flushTasks();
+      await settingsMain.whenViewSwitchingDone();
       assertActive(pluginTag, route.path);
     }
   });
@@ -174,7 +175,7 @@ suite('SettingsMain', function() {
 
     // Case2: Guest mode.
     createSettingsMain({isGuest: true});
-    await flushTasks();
+    await settingsMain.whenViewSwitchingDone();
     active = settingsMain.$.switcher.querySelector<HTMLElement>(
         '.active[slot=view]');
     assertTrue(!!active);
