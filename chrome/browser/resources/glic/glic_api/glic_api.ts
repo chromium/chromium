@@ -919,6 +919,8 @@ export enum InvocationSource {
   AFTER_SIGN_IN = 10,
   /** User shared a tab. */
   SHARED_TAB = 11,
+  /** From the actor task icon. */
+  ACTOR_TASK_ICON = 12,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -69,6 +70,12 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
   GlicWindowControllerUiTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
+    features_.InitWithFeaturesAndParameters(
+        {{features::kTabstripComboButton, {}},
+         {features::kGlicActor, {}},
+         {features::kGlicActorUi,
+          {{features::kGlicActorUiTaskIconName, "true"}}}},
+        {});
   }
   ~GlicWindowControllerUiTest() override = default;
 
@@ -129,6 +136,8 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
  private:
   std::unique_ptr<GlicController> glic_controller_ =
       std::make_unique<GlicController>();
+
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
@@ -155,6 +164,43 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ButtonTogglesGlicWindow) {
                   InAnyContext(WaitForHide(kGlicViewElementId)),
                   CheckControllerHasWidget(false),
                   PressButton(kGlicButtonElementId),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TaskIconTogglesGlicWindow) {
+  StartTaskAndShowActorTaskIcon();
+  RunTestSequence(ObserveState(test::internal::kFloatyViewState, &host()),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  PressButton(kGlicActorTaskIconElementId),
+                  WaitForState(test::internal::kFloatyViewState,
+                               mojom::CurrentView::kActuation),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  PressButton(kGlicActorTaskIconElementId),
+                  InAnyContext(WaitForHide(kGlicViewElementId)),
+                  CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicWindowControllerUiTest,
+    GlicButtonAndTaskIconButtonTogglesConversationAndActuationView) {
+  StartTaskAndShowActorTaskIcon();
+  RunTestSequence(ObserveState(test::internal::kFloatyViewState, &host()),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  PressButton(kGlicActorTaskIconElementId),
+                  WaitForState(test::internal::kFloatyViewState,
+                               mojom::CurrentView::kActuation),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  PressButton(kGlicButtonElementId),
+                  WaitForState(test::internal::kFloatyViewState,
+                               mojom::CurrentView::kConversation),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                  PressButton(kGlicActorTaskIconElementId),
+                  WaitForState(test::internal::kFloatyViewState,
+                               mojom::CurrentView::kActuation),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }

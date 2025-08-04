@@ -1156,7 +1156,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnViewChanged(mojom::ViewChangedNotificationPtr notification) override {
-    NOTIMPLEMENTED() << " current view: " << notification->current_view;
+    glic_service_->host().OnViewChanged(this, notification->current_view);
   }
 
   // GlicWindowController::StateObserver implementation.

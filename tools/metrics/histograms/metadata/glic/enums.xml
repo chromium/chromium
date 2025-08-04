@@ -255,6 +255,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="From the What's New page"/>
   <int value="10" label="User clicked sign-in and signed in"/>
   <int value="11" label="User shared a tab"/>
+  <int value="12" label="From the actor task icon"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -359,6 +360,10 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="User shared a tab, attached, audio mode."/>
   <int value="47" label="User shared a tab, detached, text mode."/>
   <int value="48" label="User shared a tab, detached, audio mode."/>
+  <int value="49" label="Actor task icon, attached, text mode."/>
+  <int value="50" label="Actor task icon, attached, audio mode."/>
+  <int value="51" label="Actor task icon, detached, text mode."/>
+  <int value="52" label="Actor task icon, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->

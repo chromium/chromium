@@ -51,6 +51,8 @@ class Host {
     // If the glic WebUI is destroyed, the webUI state is returned to
     // kUninitialized.
     virtual void WebUiStateChanged(mojom::WebUiState state) {}
+    // Called when the current view changes in the glic WebUI.
+    virtual void OnViewChanged(mojom::CurrentView view) {}
   };
 
   explicit Host(Profile* profile);
@@ -136,6 +138,15 @@ class Host {
   void NotifyZeroStateSuggestion(mojom::ZeroStateSuggestionsV2Ptr suggestions,
                                  mojom::ZeroStateSuggestionsOptions options);
 
+  // Called when the current view changes in the glic webUI to update the state.
+  void OnViewChanged(GlicWebClientAccess* client, mojom::CurrentView new_view);
+
+  // Sends a ViewChangeRequest to the primary client.
+  void SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request);
+
+  // Returns the current view (conversation or actuation) in the floaty.
+  mojom::CurrentView GetPrimaryCurrentView();
+
  private:
   GlicKeyedService& glic_service();
 
@@ -176,6 +187,9 @@ class Host {
   // a page handlers becomes the primary when it's created, if there exists no
   // other primary page handler.
   raw_ptr<GlicPageHandler> primary_page_handler_ = nullptr;
+
+  // The current view in the primary page handler.
+  mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;
 };
 
 }  // namespace glic

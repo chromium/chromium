@@ -556,8 +556,11 @@ void TabStripActionContainer::OnGlicButtonMouseDown() {
 }
 
 void TabStripActionContainer::OnGlicActorTaskIconClicked() {
-  // TODO(crbug.com/422442409): Call Glic API to open the actuation view on
-  // click.
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab_strip_controller_->GetProfile())
+      ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface(),
+                 /*prevent_close=*/false,
+                 glic::mojom::InvocationSource::kActorTaskIcon);
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

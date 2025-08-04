@@ -272,6 +272,16 @@ class GlicWindowControllerImpl
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
+  // Maybe send a ViewChangeRequest:
+  void MaybeSendConversationViewRequest();
+  void MaybeSendActuationViewRequest();
+
+  // Maybe send a request to change the view.
+  void MaybeSendViewChangeRequest(mojom::InvocationSource source);
+
+  // Check if the invocation source matches the entry point for the given view.
+  bool InvocationSourceMatchesCurrentView(mojom::InvocationSource source);
+
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
