@@ -1938,6 +1938,7 @@
 }
 
 - (void)openMIA {
+  [self.NTPMetricsRecorder recordMIATapped];
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GetUrlForAim(
                                    self.templateURLService,
