@@ -14,6 +14,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-data-view.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -40,10 +41,23 @@ class ScopedPreloadingDeciderObserver
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
       override {}
   void OnPointerDown(const GURL& url) override { on_pointer_down_url_ = url; }
-  void OnPointerHover(const GURL& url) override { on_pointer_hover_url_ = url; }
+  void OnPointerHover(
+      const GURL& url,
+      blink::mojom::SpeculationEagerness target_eagerness) override {
+    on_pointer_hover_url_ = url;
+    on_pointer_hover_target_eagerness_ = target_eagerness;
+  }
+
+  void Reset() {
+    on_pointer_down_url_.reset();
+    on_pointer_hover_url_.reset();
+    on_pointer_hover_target_eagerness_.reset();
+  }
 
   std::optional<GURL> on_pointer_down_url_;
   std::optional<GURL> on_pointer_hover_url_;
+  std::optional<blink::mojom::SpeculationEagerness>
+      on_pointer_hover_target_eagerness_;
 
  private:
   raw_ptr<RenderFrameHostImpl> rfh_;
@@ -60,16 +74,13 @@ TEST_F(AnchorElementInteractionHostImplTest, OnPointerEvents) {
                                            remote.BindNewPipeAndPassReceiver());
 
   ScopedPreloadingDeciderObserver observer(render_frame_host);
-  observer.on_pointer_down_url_.reset();
-  observer.on_pointer_hover_url_.reset();
   const auto pointer_down_url = GURL("www.example.com/page1.html");
   remote->OnPointerDown(pointer_down_url);
   remote.FlushForTesting();
   EXPECT_EQ(pointer_down_url, observer.on_pointer_down_url_);
   EXPECT_FALSE(observer.on_pointer_hover_url_.has_value());
 
-  observer.on_pointer_down_url_.reset();
-  observer.on_pointer_hover_url_.reset();
+  observer.Reset();
   const auto pointer_hover_url = GURL("www.example.com/page2.html");
   remote->OnPointerHoverModerate(
       pointer_hover_url,
@@ -77,6 +88,20 @@ TEST_F(AnchorElementInteractionHostImplTest, OnPointerEvents) {
   remote.FlushForTesting();
   EXPECT_FALSE(observer.on_pointer_down_url_.has_value());
   EXPECT_EQ(pointer_hover_url, observer.on_pointer_hover_url_);
+  EXPECT_TRUE(observer.on_pointer_hover_target_eagerness_.has_value());
+  EXPECT_EQ(observer.on_pointer_hover_target_eagerness_,
+            blink::mojom::SpeculationEagerness::kModerate);
+
+  observer.Reset();
+  remote->OnPointerHoverEager(
+      pointer_hover_url,
+      blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0));
+  remote.FlushForTesting();
+  EXPECT_FALSE(observer.on_pointer_down_url_.has_value());
+  EXPECT_EQ(pointer_hover_url, observer.on_pointer_hover_url_);
+  EXPECT_TRUE(observer.on_pointer_hover_target_eagerness_.has_value());
+  EXPECT_EQ(observer.on_pointer_hover_target_eagerness_,
+            blink::mojom::SpeculationEagerness::kEager);
 }
 
 TEST_F(AnchorElementInteractionHostImplTest, OnViewportHeuristicTriggered) {

@@ -13,6 +13,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-data-view.h"
 
 namespace content {
 
@@ -147,7 +148,10 @@ void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url) {
 void AnchorElementInteractionHostImpl::OnPointerHoverEager(
     const GURL& url,
     blink::mojom::AnchorElementPointerDataPtr mouse_data) {
-  // TODO(https://crbug.com/40287486): pipe this to PreloadingDecider.
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  preloading_decider->OnPointerHover(
+      url, std::move(mouse_data), blink::mojom::SpeculationEagerness::kEager);
 }
 
 void AnchorElementInteractionHostImpl::OnPointerHoverModerate(
@@ -155,7 +159,9 @@ void AnchorElementInteractionHostImpl::OnPointerHoverModerate(
     blink::mojom::AnchorElementPointerDataPtr mouse_data) {
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->OnPointerHover(url, std::move(mouse_data));
+  preloading_decider->OnPointerHover(
+      url, std::move(mouse_data),
+      blink::mojom::SpeculationEagerness::kModerate);
   MaybePrewarmHttpDiskCache(url, render_frame_host());
   MaybeWarmUpServiceWorkerOnPointerHover(url, render_frame_host());
 }
