@@ -161,12 +161,18 @@
   autofillTabHelper->SetSnackbarHandler(
       static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
-  if (IsReaderModeSnackbarEnabled() &&
-      [_commandDispatcher dispatchingForProtocol:@protocol(SnackbarCommands)]) {
-    ReaderModeTabHelper* readerModeTabHelper =
-        ReaderModeTabHelper::FromWebState(webState);
-    readerModeTabHelper->SetSnackbarHandler(
-        HandlerForProtocol(_commandDispatcher, SnackbarCommands));
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(webState);
+
+  if (readerModeTabHelper) {
+    readerModeTabHelper->SetReaderModeHandler(
+        HandlerForProtocol(_commandDispatcher, ReaderModeCommands));
+    if (IsReaderModeSnackbarEnabled() &&
+        [_commandDispatcher
+            dispatchingForProtocol:@protocol(SnackbarCommands)]) {
+      readerModeTabHelper->SetSnackbarHandler(
+          HandlerForProtocol(_commandDispatcher, SnackbarCommands));
+    }
   }
 
   DCHECK(_printCoordinator);
@@ -284,10 +290,13 @@
   autofillTabHelper->SetAutofillHandler(nil);
   autofillTabHelper->SetSnackbarHandler(nil);
 
-  if (IsReaderModeSnackbarEnabled()) {
-    ReaderModeTabHelper* readerModeTabHelper =
-        ReaderModeTabHelper::FromWebState(webState);
-    readerModeTabHelper->SetSnackbarHandler(nil);
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(webState);
+  if (readerModeTabHelper) {
+    readerModeTabHelper->SetReaderModeHandler(nil);
+    if (IsReaderModeSnackbarEnabled()) {
+      readerModeTabHelper->SetSnackbarHandler(nil);
+    }
   }
 
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);

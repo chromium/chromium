@@ -2761,9 +2761,32 @@ enum class ToolbarKind {
   if (!activeWebState) {
     return;
   }
+  BOOL lensOverlayAvailable = IsLensOverlayAvailable(self.profile->GetPrefs());
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(activeWebState);
-  readerModeTabHelper->ActivateReader(accessPoint);
+  auto activateReader =
+      base::BindOnce(&ReaderModeTabHelper::ActivateReader,
+                     readerModeTabHelper->GetWeakPtr(), accessPoint);
+
+  if (lensOverlayAvailable) {
+    LensOverlayTabHelper* lensOverlayTabHelper =
+        LensOverlayTabHelper::FromWebState(activeWebState);
+    BOOL lensOverlayVisible =
+        lensOverlayTabHelper &&
+        lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+    if (lensOverlayVisible) {
+      id<LensOverlayCommands> lensOverlayHandler =
+          HandlerForProtocol(_dispatcher, LensOverlayCommands);
+      // TODO(crbug.com/436171078): add reader mode activation as lens dismiss
+      // reason.
+      [lensOverlayHandler
+          destroyLensUI:YES
+                 reason:lens::LensOverlayDismissalSource::kFindInPageInvoked
+             completion:base::CallbackToBlock(std::move(activateReader))];
+      return;
+    }
+  }
+  std::move(activateReader).Run();
 }
 
 - (void)hideReaderMode {

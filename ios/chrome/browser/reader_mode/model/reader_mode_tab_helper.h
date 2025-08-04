@@ -18,6 +18,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol SnackbarCommands;
+@protocol ReaderModeCommands;
 class FullscreenController;
 
 // Observes changes to the web state to perform reader mode operations.
@@ -90,6 +91,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   void FetchLastCommittedUrlDistillabilityResult(
       base::OnceCallback<void(std::optional<bool>)> callback);
 
+  // Setter and getter for the readerMode handler.
+  void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
+  id<ReaderModeCommands> GetReaderModeHandler() const;
+
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
@@ -119,6 +124,9 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       ReaderModeContentTabHelper* reader_mode_content_tab_helper,
       NSURLRequest* request,
       web::WebStatePolicyDecider::RequestInfo request_info) override;
+
+  // Returns a weak pointer.
+  base::WeakPtr<ReaderModeTabHelper> GetWeakPtr();
 
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
@@ -174,6 +182,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Whether the distillation failed already in the current navigation.
   bool distillation_already_failed_ = false;
+
+  id<ReaderModeCommands> reader_mode_handler_;
 
   // WebState used to render the Reader mode content. Lazily created the first
   // time Reader mode is activated and persists until the tab is closed.

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -29,8 +30,8 @@ void ActivateReaderModeInWebState(base::WeakPtr<web::WebState> web_state) {
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state.get());
   if (reader_mode_tab_helper) {
-    reader_mode_tab_helper->ActivateReader(
-        ReaderModeAccessPoint::kContextualChip);
+    [reader_mode_tab_helper->GetReaderModeHandler()
+        showReaderModeFromAccessPoint:ReaderModeAccessPoint::kContextualChip];
   }
 }
 

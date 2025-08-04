@@ -177,6 +177,15 @@ void ReaderModeTabHelper::FetchLastCommittedUrlDistillabilityResult(
   last_committed_url_eligibility_callbacks_.push_back(std::move(callback));
 }
 
+void ReaderModeTabHelper::SetReaderModeHandler(
+    id<ReaderModeCommands> reader_mode_handler) {
+  reader_mode_handler_ = reader_mode_handler;
+}
+
+id<ReaderModeCommands> ReaderModeTabHelper::GetReaderModeHandler() const {
+  return reader_mode_handler_;
+}
+
 void ReaderModeTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
   snackbar_handler_ = snackbar_handler;
@@ -295,6 +304,10 @@ void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
   }
   params.transition_type = request_info.transition_type;
   web_state_->GetNavigationManager()->LoadURLWithParams(params);
+}
+
+base::WeakPtr<ReaderModeTabHelper> ReaderModeTabHelper::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ReaderModeTabHelper::HandleReadabilityHeuristicResult(
