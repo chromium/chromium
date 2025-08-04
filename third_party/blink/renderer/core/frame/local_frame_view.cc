@@ -2402,7 +2402,7 @@ bool LocalFrameView::RunScrollSnapshotClientSteps() {
   bool re_run_lifecycles = false;
   ForAllNonThrottledLocalFrameViews(
       [&re_run_lifecycles](LocalFrameView& frame_view) {
-        bool valid = frame_view.GetFrame().ValidateScrollSnapshotClients();
+        bool valid = frame_view.GetFrame().UpdateScrollSnapshotClients();
         re_run_lifecycles |= !valid;
       });
   return re_run_lifecycles;
@@ -3580,12 +3580,11 @@ void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
       scrollable_area->ServiceScrollAnimations(
           start_time.since_origin().InSecondsF());
     }
-    // After scroll updates, snapshot scroll state once at top of animation
-    // frame.
-    GetFrame().UpdateScrollSnapshots();
 
-    if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document))
+    GetFrame().UpdateScrollSnapshotClientsForServiceAnimations();
+    if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document)) {
       GetPage()->Animator().SetHasSmilAnimation();
+    }
     document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
   }
 }

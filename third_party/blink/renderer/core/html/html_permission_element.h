@@ -365,8 +365,7 @@ class CORE_EXPORT HTMLPermissionElement
   // ScrollSnapshotClient. It could make sense to bring this in line with other
   // features that deal with snapshotting this state, such as scroll-driven
   // animations, scroll-state container queries, and anchor positioning.
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override { return false; }
 
   // Update and notify CSS pseudo-class changed, which indicates PEPC is
@@ -374,6 +373,11 @@ class CORE_EXPORT HTMLPermissionElement
   // being occluded.
   // Return true if the state has been changed.
   bool NotifyClickingDisablePseudoStateChanged();
+
+  // Wrapper to make this a void function for PostTask().
+  void NotifyClickingDisablePseudoStateChangedTask() {
+    NotifyClickingDisablePseudoStateChanged();
+  }
 
   // Verify whether the element has been registered in browser process.
   bool is_registered_in_browser_process() const {

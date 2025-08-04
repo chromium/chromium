@@ -112,8 +112,7 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
   void Trace(Visitor* v) const final;
 
   // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
   // When a "targeted" scroll occurs, we should consider the selected scroll

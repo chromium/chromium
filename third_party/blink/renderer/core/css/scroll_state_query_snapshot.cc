@@ -20,7 +20,7 @@ ScrollStateQuerySnapshot::ScrollStateQuerySnapshot(Element& container)
     : ScrollSnapshotClient(container.GetDocument().GetFrame()),
       container_(container) {}
 
-bool ScrollStateQuerySnapshot::UpdateScrollState() {
+bool ScrollStateQuerySnapshot::UpdateSnapshot() {
   ContainerStuckPhysical stuck_horizontal = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical = ContainerStuckPhysical::kNo;
   ContainerScrollableFlags scrollable_horizontal =
@@ -115,17 +115,6 @@ bool ScrollStateQuerySnapshot::UpdateScrollState() {
     return true;
   }
   return false;
-}
-
-void ScrollStateQuerySnapshot::UpdateSnapshot() {
-  UpdateScrollState();
-}
-
-bool ScrollStateQuerySnapshot::ValidateSnapshot() {
-  if (UpdateScrollState()) {
-    return false;
-  }
-  return true;
 }
 
 bool ScrollStateQuerySnapshot::ShouldScheduleNextService() {

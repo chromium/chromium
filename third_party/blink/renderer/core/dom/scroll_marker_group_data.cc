@@ -558,19 +558,11 @@ Element* ScrollMarkerGroupData::FindPreviousScrollMarker(
   return nullptr;
 }
 
-bool ScrollMarkerGroupData::UpdateSnapshotInternal() {
+bool ScrollMarkerGroupData::UpdateSnapshot() {
   if (pending_selected_marker_) {
     return SetSelected(pending_selected_marker_);
   }
   return false;
-}
-
-void ScrollMarkerGroupData::UpdateSnapshot() {
-  UpdateSnapshotInternal();
-}
-
-bool ScrollMarkerGroupData::ValidateSnapshot() {
-  return !UpdateSnapshotInternal();
 }
 
 bool ScrollMarkerGroupData::ShouldScheduleNextService() {

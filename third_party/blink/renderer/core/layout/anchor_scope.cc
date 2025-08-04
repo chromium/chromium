@@ -24,7 +24,7 @@ bool IsScopedByElement(const ScopedCSSName& lookup_name,
     // TODO(crbug.com/384523570): We should not be here without a style,
     // but apparently that can happen [1]. This is likely related to poking
     // into a dirty layout tree during scroll snapshotting,
-    // since ValidateSnapshot() is on the stack [1].
+    // since UpdateSnapshot() is on the stack [1].
     //
     // [1] crbug.com/393395576
     return false;

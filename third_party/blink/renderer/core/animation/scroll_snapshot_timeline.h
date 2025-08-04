@@ -174,9 +174,9 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
+  void UpdateSnapshotForServiceAnimations() override;
 
  public:
   // Public for DeferredTimeline::ComputeTimelineState.
@@ -187,6 +187,8 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
                              TimelineState* state) const;
 
  private:
+  bool UpdateSnapshotInternal(bool service_animations);
+
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
 };

@@ -269,27 +269,23 @@ bool AnchorPositionScrollData::IsFallbackPositionValid(
   return true;
 }
 
-void AnchorPositionScrollData::UpdateSnapshot() {
-  ValidateSnapshot();
-}
-
-bool AnchorPositionScrollData::ValidateSnapshot() {
+bool AnchorPositionScrollData::UpdateSnapshot() {
   // If this AnchorPositionScrollData is detached in the previous style recalc,
   // we no longer need to validate it.
   if (!IsActive()) {
-    return true;
+    return false;
   }
 
   SnapshotDiff diff = TakeAndCompareSnapshot(true /* update */);
   switch (diff) {
     case SnapshotDiff::kNone:
-      return true;
+      return false;
     case SnapshotDiff::kOffsetOnly:
       InvalidatePaint();
-      return true;
+      return false;
     case SnapshotDiff::kScrollersOrFallbackPosition:
       InvalidateLayoutAndPaint();
-      return false;
+      return true;
   }
 }
 

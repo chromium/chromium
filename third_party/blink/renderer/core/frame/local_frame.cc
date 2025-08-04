@@ -4046,21 +4046,19 @@ void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {
   scroll_snapshot_clients_.insert(&client);
 }
 
-void LocalFrame::UpdateScrollSnapshots() {
-  // Any calls that update style and layout may create scroll snapshot
-  // clients. As such, we can't iterate over the live clients directly.
-  // See https://crbug.com/421471058 for details.
-  // TODO(xiaochengh): Can we DCHECK that is is done at the beginning of a frame
-  // and is done exactly once?
+void LocalFrame::UpdateScrollSnapshotClientsForServiceAnimations() {
   for (auto& client : CopyClients(scroll_snapshot_clients_)) {
-    client->UpdateSnapshot();
+    client->UpdateSnapshotForServiceAnimations();
   }
 }
 
-bool LocalFrame::ValidateScrollSnapshotClients() {
+bool LocalFrame::UpdateScrollSnapshotClients() {
   bool valid = true;
-  for (auto& client : scroll_snapshot_clients_) {
-    valid &= client->ValidateSnapshot();
+  // Any calls that update style and layout may create scroll snapshot
+  // clients. As such, we can't iterate over the live clients directly.
+  // See https://crbug.com/421471058 for details.
+  for (auto& client : CopyClients(scroll_snapshot_clients_)) {
+    valid &= !client->UpdateSnapshot();
   }
   return valid;
 }

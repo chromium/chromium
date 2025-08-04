@@ -25,7 +25,7 @@ void SnappedQueryScrollSnapshot::InvalidateSnappedTarget(Element* target) {
   }
 }
 
-bool SnappedQueryScrollSnapshot::UpdateSnappedTargets() {
+bool SnappedQueryScrollSnapshot::UpdateSnapshot() {
   bool did_change = false;
 
   Element* snapped_target_x =
@@ -48,17 +48,6 @@ bool SnappedQueryScrollSnapshot::UpdateSnappedTargets() {
     did_change = true;
   }
   return did_change;
-}
-
-void SnappedQueryScrollSnapshot::UpdateSnapshot() {
-  UpdateSnappedTargets();
-}
-
-bool SnappedQueryScrollSnapshot::ValidateSnapshot() {
-  if (UpdateSnappedTargets()) {
-    return false;
-  }
-  return true;
 }
 
 bool SnappedQueryScrollSnapshot::ShouldScheduleNextService() {

@@ -28,15 +28,12 @@ class ScrollButtonPseudoElement : public PseudoElement,
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
 
   // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
   void Trace(Visitor* v) const final;
 
  private:
-  bool UpdateSnapshotInternal();
-
   void HandleButtonActivation();
 
   bool enabled_ = true;

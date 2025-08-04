@@ -1127,11 +1127,7 @@ void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
       TaskType::kDOMManipulation);
 }
 
-void HTMLPermissionElement::UpdateSnapshot() {
-  ValidateSnapshot();
-}
-
-bool HTMLPermissionElement::ValidateSnapshot() {
+bool HTMLPermissionElement::UpdateSnapshot() {
   return NotifyClickingDisablePseudoStateChanged();
 }
 
@@ -1147,10 +1143,10 @@ bool HTMLPermissionElement::NotifyClickingDisablePseudoStateChanged() {
 
   if (pseudo_state_ != new_state) {
     pseudo_state_ = new_state;
-    return false;
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -1469,8 +1465,10 @@ void HTMLPermissionElement::OnIntersectionChanged(
   // TODO(crbug.com/342330035): revisit it when we write spec for <permission>
   // element.
   GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&HTMLPermissionElement::UpdateSnapshot,
-                               WrapWeakPersistent(this)));
+      FROM_HERE,
+      blink::BindOnce(
+          &HTMLPermissionElement::NotifyClickingDisablePseudoStateChangedTask,
+          WrapWeakPersistent(this)));
 }
 
 bool HTMLPermissionElement::IsStyleValid() {
