@@ -12,35 +12,31 @@ load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
 load("./win_sdk.star", "win_sdk")
 
-def __clang_modulemap(ctx, cmd):
-    """Fixes inputs for clang compile actions with modulemap.
+def __add_generated_libcxx_headers(ctx, cmd):
+    """Adds libc++ headers as tool inputs for clang compile actions.
 
-    But this is simplified implementation to parse current modulemap.
-    https://clang.llvm.org/docs/Modules.html#module-map-file
+    This is needed because libc++ headers in the build directory are not always
+    discovered by the precomputed tree and scandeps. It identifies them using
+    `-isystem` flags and `libcxx_headers.gni`.
     """
 
-    inputs = []
+    libcxx_headers = []
+    for line in str(ctx.fs.read("buildtools/third_party/libc++/libcxx_headers.gni")).split("\n"):
+        if "third_party/libc++/src/include" in line:
+            libcxx_headers.append(line.split("src/include/")[1].removesuffix("\","))
+
+    tool_inputs = []
     for arg in cmd.args:
-        module_config = arg.removeprefix("-fmodule-map-file=")
-        if arg == module_config:
+        isystem = arg.removeprefix("-isystem")
+        if arg == isystem or "third_party/libc++/src/include" not in isystem:
             continue
-        module_config = ctx.fs.canonpath(module_config)
-        module_dir = path.dir(module_config)
-        for line in str(ctx.fs.read(module_config)).split("\n"):
-            # Remove one line comment.
-            line = line.split("//")[0]
-
-            # Extract a quoted path if any.
-            quoted_paths = line.split("\"")
-            if len(quoted_paths) > 2:
-                include_path = quoted_paths[1]
-                include_path = path.join(module_dir, include_path)
-                inputs.append(include_path)
-
-    ctx.actions.fix(tool_inputs = cmd.tool_inputs + inputs)
+        isystem = ctx.fs.canonpath(isystem)
+        for header in libcxx_headers:
+            tool_inputs.append(path.join(isystem, header))
+    ctx.actions.fix(tool_inputs = cmd.tool_inputs + tool_inputs)
 
 def __clang_compile_coverage(ctx, cmd):
-    __clang_modulemap(ctx, cmd)
+    __add_generated_libcxx_headers(ctx, cmd)
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
     ctx.actions.fix(args = clang_command)
 
@@ -102,7 +98,7 @@ def __clang_link(ctx, cmd):
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 __handlers = {
-    "clang_modulemap": __clang_modulemap,
+    "add_generated_libcxx_headers": __add_generated_libcxx_headers,
     "clang_compile_coverage": __clang_compile_coverage,
     "clang_link": __clang_link,
 }
@@ -229,7 +225,7 @@ def __rules(ctx):
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
             "exclude_input_patterns": ["*.stamp"],
-            "handler": "clang_modulemap",
+            "handler": "add_generated_libcxx_headers",
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
             "canonicalize_dir": canonicalize_dir,
@@ -269,6 +265,7 @@ def __rules(ctx):
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
             "exclude_input_patterns": ["*.stamp"],
+            "handler": "add_generated_libcxx_headers",
             "remote": True,
             "timeout": "2m",
             "input_root_absolute_path": input_root_absolute_path_for_objc,
