@@ -53,6 +53,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/updater/app/server/win/updater_service_delegate.h"
 #include "chrome/updater/util/win_util.h"
+#include "partition_alloc/page_allocator.h"
 #endif
 
 // Instructions For Windows.
@@ -115,6 +116,9 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
   logging::RegisterAbslAbortHook();
+#if BUILDFLAG(IS_WIN)
+  partition_alloc::SetRetryOnCommitFailure(true);
+#endif
 
   InitializeThreadPool("updater");
   const base::ScopedClosureRunner shutdown_thread_pool(base::BindOnce([] {
