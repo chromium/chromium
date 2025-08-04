@@ -289,4 +289,10 @@ void BrowserTaskQueues::SetOnTaskCompletedHandler(
   }
 }
 
+void BrowserTaskQueues::AddTaskObserver(base::TaskObserver* task_observer) {
+  for (const auto& queue : queue_data_) {
+    queue.task_queue->AddTaskObserver(task_observer);
+  }
+}
+
 }  // namespace content

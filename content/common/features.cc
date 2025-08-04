@@ -296,6 +296,14 @@ BASE_FEATURE(kRemoveRendererProcessLimit,
              "RemoveRendererProcessLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Purge PartitionAlloc's Scheduler-Loop quarantine when the UI thread is done
+// executing a task. This allow purging memory without scanning the stack. See:
+// https://crbug.com/329027914
+BASE_FEATURE(
+    kPartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread,
+    "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",

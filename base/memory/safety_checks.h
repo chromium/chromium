@@ -339,6 +339,16 @@ class BASE_EXPORT ScopedSafetyChecksExclusion {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 };
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+using base::allocator::SchedulerLoopQuarantineScanPolicyUpdater;
+#else
+class SchedulerLoopQuarantineScanPolicyUpdater {
+ public:
+  ALWAYS_INLINE void DisallowScanlessPurge() {}
+  ALWAYS_INLINE void AllowScanlessPurge() {}
+};
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 }  // namespace base
 
 #endif  // BASE_MEMORY_SAFETY_CHECKS_H_

@@ -1214,6 +1214,9 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     // The FeatureList needs to be created before starting the ThreadPool.
     StartBrowserThreadPool();
 
+    BrowserTaskExecutor::
+        InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
+
     // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip
     // initializing it again if it has already been initialized.
     base::PowerMonitor::GetInstance()->Initialize(

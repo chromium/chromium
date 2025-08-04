@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -297,6 +298,13 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
   if (!io_thread->StartWithOptions(std::move(options)))
     LOG(FATAL) << "Failed to start BrowserThread:IO";
   return io_thread;
+}
+
+// static
+void BrowserTaskExecutor::
+    InstallPartitionAllocSchedulerLoopQuarantineTaskObserver() {
+  CHECK_DEREF(Get()->browser_ui_thread_scheduler_.get())
+      .InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
 }
 
 }  // namespace content

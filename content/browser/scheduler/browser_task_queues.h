@@ -173,6 +173,8 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
   scoped_refptr<Handle> GetHandle() { return handle_; }
 
+  void AddTaskObserver(base::TaskObserver* task_observer);
+
  private:
   struct QueueData {
    public:
