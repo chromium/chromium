@@ -26,14 +26,10 @@ class WebState;
 // View that shows a doodle or a search engine logo.
 // TODO(crbug.com/423883582): Need to be removed.
 @property(nonatomic, strong, readonly) UIView* view;
-// Whether or not the logo should be shown. Defaults to
-// SearchEngineLogoState::kLogo.
-// TODO(crbug.com/423883582): Need to be removed: the consumer is supposed to
-// rely on -[<SearchEngineLogoConsumer> searchEngineLogoStateDidChange:] to get
-// the value.
-@property(nonatomic, assign) SearchEngineLogoState logoState;
 
 // Designated initializer.
+// TODO(crbug.com/423883582): Need remove browser parameter and all the service
+// parameters.
 - (instancetype)initWithBrowser:(Browser*)browser
                        webState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
@@ -41,11 +37,6 @@ class WebState;
 
 // Disconnect the instance.
 - (void)disconnect;
-
-// Checks for a new doodle.  Calling this method frequently will result in a
-// query being issued at most once per hour.
-// TODO(crbug.com/423883582): Need to be removed.
-- (void)fetchDoodle;
 
 // Updates the vendor's WebState.
 - (void)setWebState:(web::WebState*)webState;

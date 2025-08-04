@@ -371,7 +371,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                         fakeOmnibox:self.fakeOmnibox
                       andHeaderView:self.headerView];
 
-    [_searchEngineLogoMediator fetchDoodle];
     self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
     if (IsNTPBackgroundCustomizationEnabled()) {
       [self applyBackgroundColors];
@@ -725,15 +724,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                                                self.traitCollection);
 }
 
-// If Google is not the default search engine, hides the logo, doodle and
-// fakebox. Makes them appear if Google is set as default.
-- (void)updateLogoAndFakeboxDisplay {
-  if (_searchEngineLogoMediator.logoState != _searchEngineLogoState) {
-    _searchEngineLogoMediator.logoState = _searchEngineLogoState;
-    [self updateFakeboxDisplay];
-  }
-}
-
 // Ensures the state of the Voice Search button matches whether or not it's
 // enabled. If it's not, disables the button and removes it from the a11y loop
 // for VoiceOver.
@@ -862,20 +852,20 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self.view setNeedsLayout];
   [self.view layoutIfNeeded];
   [self.commandHandler updateForHeaderSizeChange];
+  [self updateFakeboxDisplay];
 }
 
 #pragma mark - NewTabPageHeaderConsumer
 
 - (void)setSearchEngineLogoState:(SearchEngineLogoState)logoState {
   _searchEngineLogoState = logoState;
-  [self updateLogoAndFakeboxDisplay];
+  [self updateFakeboxDisplay];
 }
 
 - (void)setSearchEngineLogoMediator:
     (SearchEngineLogoMediator*)searchEngineLogoMediator {
   _searchEngineLogoMediator = searchEngineLogoMediator;
   _searchEngineLogoMediator.consumer = self;
-  [self updateLogoAndFakeboxDisplay];
 }
 
 - (void)updateLogoColor:(UIColor*)logoTintColor {

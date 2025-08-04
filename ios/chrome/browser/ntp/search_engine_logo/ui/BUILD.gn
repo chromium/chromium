@@ -13,6 +13,7 @@ source_set("ui") {
     "//base",
     "//components/google/core/common",
     "//components/image_fetcher/ios",
+    "//components/omnibox/common",
     "//components/search",
     "//components/search_provider_logos",
     "//ios/chrome/app/strings",

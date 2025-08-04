@@ -21,9 +21,8 @@ class SearchEngineLogoContainerViewTest : public PlatformTest {
   SearchEngineLogoContainerViewTest() {
     search_engine_logo_container_view_ = [[SearchEngineLogoContainerView alloc]
         initWithFrame:CGRectMake(0, 0, 300, 300)];
-    shrunk_google_logo_ =
-        [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"google_logo"]];
-    [search_engine_logo_container_view_ setShrunkLogoView:shrunk_google_logo_];
+    shrunk_google_logo_ = search_engine_logo_container_view_.shrunkLogoView;
+    shrunk_google_logo_.image = [UIImage imageNamed:@"google_logo"];
   }
 
   SearchEngineLogoContainerView* search_engine_logo_container_view() {

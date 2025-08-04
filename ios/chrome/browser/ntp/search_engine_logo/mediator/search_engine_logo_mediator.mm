@@ -10,6 +10,8 @@
 #import "base/task/bind_post_task.h"
 #import "build/branding_buildflags.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
+#import "components/omnibox/common/omnibox_features.h"
+#import "components/search/search.h"
 #import "components/search_provider_logos/logo_observer.h"
 #import "ios/chrome/browser/google/model/google_logo_service.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
@@ -17,6 +19,8 @@
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_container_view.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -32,7 +36,8 @@
 
 #pragma mark - SearchEngineLogoMediator Private Interface
 
-@interface SearchEngineLogoMediator () <SearchEngineLogoContainerViewDelegate>
+@interface SearchEngineLogoMediator () <SearchEngineLogoContainerViewDelegate,
+                                        SearchEngineObserving>
 
 // The container view used to display the Google logo or doodle.
 @property(strong, nonatomic, readonly)
@@ -81,6 +86,13 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   raw_ptr<ProfileIOS> _profile;
   raw_ptr<web::WebState> _webState;
   raw_ptr<Browser> _browser;
+  raw_ptr<TemplateURLService> _templateURLService;
+  // Listen for default search engine changes.
+  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+  // Default search provider. This can be null with some enterprise policy
+  // settings.
+  raw_ptr<const TemplateURL> _defaultSearchProvider;
+  raw_ptr<GoogleLogoService> _logoService;
 
   // Current logo fingerprint.
   std::string _fingerprint;
@@ -93,6 +105,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   GURL _animatedUrl;
 
   std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper> _imageFetcher;
+  SearchEngineLogoState _logoState;
 }
 
 @synthesize containerView = _containerView;
@@ -105,7 +118,12 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     _browser = browser;
     _profile = _browser->GetProfile();
     _webState = webState;
-    _logoState = SearchEngineLogoState::kLogo;
+    _templateURLService =
+        ios::TemplateURLServiceFactory::GetForProfile(_profile);
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
+    _logoService = GoogleLogoServiceFactory::GetForProfile(_profile);
+    [self searchEngineChanged];
   }
   return self;
 }
@@ -114,35 +132,15 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   _profile = nullptr;
   _webState = nullptr;
   _browser = nullptr;
+  _templateURLService = nullptr;
+  _searchEngineObserver.reset();
+  _defaultSearchProvider = nullptr;
+  _logoService = nullptr;
   _imageFetcher.reset();
 }
 
 - (UIView*)view {
   return self.containerView;
-}
-
-- (void)setLogoState:(SearchEngineLogoState)state {
-  if (_logoState == state) {
-    return;
-  }
-  _logoState = state;
-  self.view.hidden = (_logoState == SearchEngineLogoState::kNone);
-}
-
-- (void)fetchDoodle {
-  GoogleLogoService* logoService =
-      GoogleLogoServiceFactory::GetForProfile(_profile);
-  const search_provider_logos::Logo logo = logoService->GetCachedLogo();
-  if (!logo.image.empty()) {
-    [self updateLogo:&logo animate:NO];
-  }
-  search_provider_logos::LogoCallbacks callbacks;
-  __weak __typeof(self) weakSelf = self;
-  callbacks.on_cached_decoded_logo_available =
-      base::BindOnce(&OnLogoAvailable, weakSelf);
-  callbacks.on_fresh_decoded_logo_available =
-      base::BindOnce(&OnLogoAvailable, weakSelf);
-  logoService->GetLogo(std::move(callbacks), false);
 }
 
 - (void)setWebState:(web::WebState*)webState {
@@ -153,7 +151,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   if (usesMonochromeLogo != _usesMonochromeLogo) {
     _usesMonochromeLogo = usesMonochromeLogo;
     if (self.containerView) {
-      self.containerView.shrunkLogoView.image = [self logoImage];
+      self.containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
     }
   }
 }
@@ -166,17 +164,31 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     _containerView =
         [[SearchEngineLogoContainerView alloc] initWithFrame:CGRectZero];
     [_containerView setDelegate:self];
-
-    // Set the accessibility label of the container to the alt text for the
-    // logo.
-    _containerView.isAccessibilityElement = YES;
-    _containerView.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_NEW_TAB_LOGO_ACCESSIBILITY_LABEL);
-
-    _containerView.shrunkLogoView =
-        [[UIImageView alloc] initWithImage:[self logoImage]];
+    if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
+      // Those values are now automatically set when changing default search
+      // engine.
+      // Set the accessibility label of the container to the alt text for the
+      // logo.
+      _containerView.isAccessibilityElement = YES;
+      _containerView.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_NEW_TAB_LOGO_ACCESSIBILITY_LABEL);
+      _containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
+    }
   }
   return _containerView;
+}
+
+- (void)setConsumer:(id<SearchEngineLogoConsumer>)consumer {
+  if (_consumer == consumer) {
+    return;
+  }
+  _consumer = consumer;
+  if (!_consumer) {
+    return;
+  }
+  // The consumer should not be set after disconnect.
+  CHECK(_templateURLService);
+  [self searchEngineChanged];
 }
 
 #pragma mark - SearchEngineLogoContainerViewDelegate
@@ -196,7 +208,55 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   _onClickUrl = url;
 }
 
+#pragma mark - SearchEngineObserving
+
+- (void)searchEngineChanged {
+  _defaultSearchProvider = _templateURLService->GetDefaultSearchProvider();
+  _logoService->SetCachedLogo(nullptr);
+  self.containerView.doodleAltText = nil;
+  if (search::DefaultSearchProviderIsGoogle(_templateURLService)) {
+    _logoState = SearchEngineLogoState::kLogo;
+    // For legacy reason, the Google logo should be displayed with aspect fill.
+    self.containerView.shrunkLogoView.contentMode =
+        UIViewContentModeScaleAspectFill;
+  } else {
+    _logoState = SearchEngineLogoState::kNone;
+  }
+  self.containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
+  if (_defaultSearchProvider) {
+    self.containerView.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_NEW_TAB_SEARCH_ENGINE_LOGO_ACCESSIBILITY_LABEL,
+        _defaultSearchProvider->short_name());
+  } else {
+    self.containerView.accessibilityLabel = nil;
+  }
+  _fingerprint = "";
+  [self.containerView setLogoState:_logoState animated:YES];
+  self.containerView.isAccessibilityElement = YES;
+  if (search::DefaultSearchProviderIsGoogle(_templateURLService) ||
+      (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3) &&
+       _defaultSearchProvider &&
+       (_defaultSearchProvider->doodle_url().is_valid() ||
+        _defaultSearchProvider->logo_url().is_valid()))) {
+    [self fetchLogoOrDoodle];
+  }
+}
+
 #pragma mark - Private
+
+- (void)fetchLogoOrDoodle {
+  const search_provider_logos::Logo logo = _logoService->GetCachedLogo();
+  if (!logo.image.empty()) {
+    [self updateLogo:&logo animate:NO];
+  }
+  search_provider_logos::LogoCallbacks callbacks;
+  __weak __typeof(self) weakSelf = self;
+  callbacks.on_cached_decoded_logo_available =
+      base::BindOnce(&OnLogoAvailable, weakSelf);
+  callbacks.on_fresh_decoded_logo_available =
+      base::BindOnce(&OnLogoAvailable, weakSelf);
+  _logoService->GetLogo(std::move(callbacks), false);
+}
 
 // Handler for taps on the doodle. Navigates the to the doodle's URL.
 - (void)handleDoodleTapped {
@@ -231,8 +291,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
 - (void)updateLogo:(const search_provider_logos::Logo*)logo
            animate:(BOOL)animate {
-  GoogleLogoService* logoService =
-      GoogleLogoServiceFactory::GetForProfile(_profile);
   if (!logo) {
     _fingerprint = "";
     [self.containerView setLogoState:SearchEngineLogoState::kNone
@@ -241,15 +299,20 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return;
   }
 
-  // The -updateLogo call can be noisy. Don't reload the image if the
-  // fingerprint hasn't changed.
-  if (_fingerprint == logo->metadata.fingerprint) {
-    return;
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3) &&
+      logo->metadata.fingerprint != "") {
+    // The -updateLogo call can be noisy. Don't reload the image if the
+    // fingerprint hasn't changed.
+    // TODO(crbug.com/423883582): finger print is empty for 3rd party search
+    // engine logo.
+    if (_fingerprint == logo->metadata.fingerprint) {
+      return;
+    }
+    _fingerprint = logo->metadata.fingerprint;
   }
-  _fingerprint = logo->metadata.fingerprint;
 
   // Cache a valid, non null, logo for other window/tab uses.
-  logoService->SetCachedLogo(logo);
+  _logoService->SetCachedLogo(logo);
 
   // If there is a doodle, remove the accessibility of the container view so the
   // doodle alt text can be read with voice over.
@@ -271,6 +334,17 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     case search_provider_logos::LogoType::INTERACTIVE:
       logoState = SearchEngineLogoState::kDoodle;
       break;
+  }
+  if (logoState == SearchEngineLogoState::kLogo &&
+      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
+    // For 3rd party search engine, the logo needs to fit the image view.
+    self.containerView.shrunkLogoView.contentMode =
+        UIViewContentModeScaleAspectFit;
+    self.containerView.isAccessibilityElement = YES;
+    self.containerView.shrunkLogoView.image = doodle;
+    [self.containerView setLogoState:logoState animated:animate];
+    [self doodleAppearanceAnimationDidFinish:logoState];
+    return;
   }
   __weak __typeof(self) weakSelf = self;
   [self.containerView
@@ -300,7 +374,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
 // Called when the doodle's appearance animation completes.
 - (void)doodleAppearanceAnimationDidFinish:(SearchEngineLogoState)logoState {
-  self.logoState = logoState;
+  _logoState = logoState;
+  self.view.hidden = (_logoState == SearchEngineLogoState::kNone);
   [self.consumer searchEngineLogoStateDidChange:logoState];
 }
 
@@ -338,7 +413,11 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   _imageFetcher.reset();
 }
 
-- (UIImage*)logoImage {
+// Returns the Google logo.
+- (UIImage*)offlineGoogleLogoImage {
+  if (!search::DefaultSearchProviderIsGoogle(_templateURLService)) {
+    return nil;
+  }
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImageSymbolConfiguration* config =
       self.usesMonochromeLogo

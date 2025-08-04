@@ -25,7 +25,7 @@ enum class SearchEngineLogoState;
 @property(nonatomic, readonly, getter=isAnimatingDoodle) BOOL animatingDoodle;
 
 // Shrunk version of the logo that is used.
-@property(nonatomic, strong) UIImageView* shrunkLogoView;
+@property(nonatomic, strong, readonly) UIImageView* shrunkLogoView;
 
 // The alt text for the doodle.  This is used as the doodle view's a11y label.
 @property(nonatomic, copy) NSString* doodleAltText;
