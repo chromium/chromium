@@ -1066,8 +1066,10 @@ void PdfViewWebPlugin::OnDestruct() {
 
 void PdfViewWebPlugin::OnRendererPreferencesUpdated(
     const blink::RendererPreferences& preferences) {
-  // TODO(crbug.com/427242881): Send a message to the PDF extension to disable
-  // page-scrolling keybinds.
+  client_->PostMessage(
+      base::Value::Dict()
+          .Set("type", "rendererPreferencesUpdated")
+          .Set("caretBrowsingEnabled", preferences.caret_browsing_enabled));
   engine_->SetCaretBrowsingEnabled(preferences.caret_browsing_enabled);
 }
 
@@ -3202,8 +3204,7 @@ void PdfViewWebPlugin::ApplyAndObserveRendererPreferences() {
     return;
   }
 
-  engine_->SetCaretBrowsingEnabled(
-      view->GetRendererPreferences().caret_browsing_enabled);
+  OnRendererPreferencesUpdated(view->GetRendererPreferences());
 
   blink::WebViewObserver::Observe(view);
 }

@@ -63,6 +63,7 @@ build_webui_tests("build") {
 
   if (enable_pdf_ink2) {
     files += [
+      "caret_browsing_mode_test.ts",
       "ink2_annotation_brush_mixin_test.ts",
       "ink2_annotation_text_mixin_test.ts",
       "ink2_before_unload_stroke_test.ts",

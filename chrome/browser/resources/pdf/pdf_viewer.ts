@@ -255,6 +255,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor attachments_: Attachment[] = [];
   protected accessor bookmarks_: Bookmark[] = [];
   private accessor canSerializeDocument_: boolean = false;
+  private caretBrowsingEnabled_: boolean = false;
   protected accessor clockwiseRotations_: number = 0;
   protected accessor docLength_: number = 0;
   protected accessor documentHasFocus_: boolean = false;
@@ -462,7 +463,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // Let the viewport handle directional key events.
     if (this.viewport.handleDirectionalKeyEvent(
-            e, this.formFieldFocus_ !== FormFieldFocusType.NONE)) {
+            e, this.formFieldFocus_ !== FormFieldFocusType.NONE,
+            this.caretBrowsingEnabled_)) {
       return;
     }
 
@@ -1072,6 +1074,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case 'navigate':
         const navigateData = data as unknown as NavigateMessageData;
         this.handleNavigate_(navigateData.url, navigateData.disposition);
+        return;
+      case 'rendererPreferencesUpdated':
+        const caretBrowsingEnabledData =
+            data as unknown as {caretBrowsingEnabled: boolean};
+        this.caretBrowsingEnabled_ =
+            caretBrowsingEnabledData.caretBrowsingEnabled;
         return;
       case 'sendKeyEvent':
         const keyEventData = data as unknown as KeyEventData;

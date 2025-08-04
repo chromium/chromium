@@ -1516,10 +1516,13 @@ export class Viewport {
   /**
    * Handle certain directional key events.
    * @param formFieldFocused Whether a form field is currently focused.
+   * @param caretBrowsingEnabled Whether caret browsing mode is currently
+   *     enabled.
    * @return Whether the event was handled.
    */
-  handleDirectionalKeyEvent(e: KeyboardEvent, formFieldFocused: boolean):
-      boolean {
+  handleDirectionalKeyEvent(
+      e: KeyboardEvent, formFieldFocused: boolean,
+      caretBrowsingEnabled: boolean): boolean {
     switch (e.key) {
       case ' ':
         this.pageUpDownSpaceHandler_(e, formFieldFocused);
@@ -1533,10 +1536,20 @@ export class Viewport {
         return true;
       case 'ArrowLeft':
       case 'ArrowRight':
+        if (caretBrowsingEnabled) {
+          // TODO(crbug.com/435623341): Handle directional keys for non-text
+          // pages in caret browsing mode.
+          return true;
+        }
         this.arrowLeftRightHandler_(e, formFieldFocused);
         return true;
       case 'ArrowDown':
       case 'ArrowUp':
+        if (caretBrowsingEnabled) {
+          // TODO(crbug.com/435623341): Handle directional keys for non-text
+          // pages in caret browsing mode.
+          return true;
+        }
         this.arrowUpDownHandler_(e, formFieldFocused);
         return true;
       default:

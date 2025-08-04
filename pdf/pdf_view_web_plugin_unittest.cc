@@ -1845,12 +1845,20 @@ TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
 }
 
 TEST_F(PdfViewWebPluginTest, OnRendererPreferencesUpdated) {
+  auto message = base::Value::Dict()
+                     .Set("type", "rendererPreferencesUpdated")
+                     .Set("caretBrowsingEnabled", false);
+
   EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(false));
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
 
   blink::RendererPreferences prefs;
   plugin_->OnRendererPreferencesUpdated(prefs);
 
+  message.Set("caretBrowsingEnabled", true);
+
   EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(true));
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
 
   prefs.caret_browsing_enabled = true;
   plugin_->OnRendererPreferencesUpdated(prefs);
