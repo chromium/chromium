@@ -184,9 +184,6 @@ public class Fido2CredentialRequest
             case CredManSupport.DISABLED:
                 mode = Barrier.Mode.ONLY_FIDO_2_API;
                 break;
-            case CredManSupport.IF_REQUIRED:
-                mode = Barrier.Mode.ONLY_FIDO_2_API;
-                break;
             case CredManSupport.FULL_UNLESS_INAPPLICABLE:
                 mode = Barrier.Mode.ONLY_CRED_MAN;
                 break;
