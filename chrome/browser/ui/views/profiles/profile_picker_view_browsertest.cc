@@ -158,6 +158,7 @@
 
 using signin::constants::kNoHostedDomainFound;
 using testing::_;
+using testing::Eq;
 
 namespace {
 const SkColor kProfileColor = SK_ColorRED;
@@ -2041,10 +2042,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           other_profile, base::BindRepeating(&BuildMockHatsService)));
 
-  EXPECT_CALL(
-      *hats_service,
-      LaunchDelayedSurvey(
-          kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, _, _, _))
+  // Verify that a HaTS survey is launched when the user switch profile with the
+  // profile picker.
+  std::map<std::string, std::string> expected_string_psd = {
+      {"Channel", "unknown"},
+      {"Chrome Version", version_info::GetVersion().GetString()},
+      {"Number of Chrome Profiles", "2"},
+      {"Number of Google Accounts", "0"},
+      {"Sign-in Status", "Signed Out"}};
+  EXPECT_CALL(*hats_service,
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, _,
+                  _, Eq(expected_string_psd)))
       .Times(2);
 
   // Open the picker.

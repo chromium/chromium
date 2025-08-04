@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,6 +65,7 @@ using autofill::SaveAddressProfileView;
 constexpr char kButton[] = "SignInButton";
 
 using testing::_;
+using testing::Eq;
 using testing::Return;
 
 std::unique_ptr<KeyedService> BuildMockSyncService(
@@ -739,10 +742,18 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // Verify that the HaTS service launches a survey when the user actively
   // dismisses the sign-in promo bubble with the close button.
+  std::map<std::string, std::string> expected_string_psd = {
+      {"Channel", "unknown"},
+      {"Chrome Version", version_info::GetVersion().GetString()},
+      {"Number of Chrome Profiles", "1"},
+      {"Number of Google Accounts", "1"},
+      {"Data type Sign-in Bubble Dismissed", "Address Bubble"},
+      {"Sign-in Status", "Sign-in Pending"}};
+
   EXPECT_CALL(
       *mock_hats_service_,
       LaunchDelayedSurvey(kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
-                          _, _, _));
+                          _, _, Eq(expected_string_psd)));
 
   // Trigger the address save bubble.
   AutofillProfile address = autofill::test::GetFullProfile();

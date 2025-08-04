@@ -86,6 +86,7 @@
 
 using signin::constants::kNoHostedDomainFound;
 using testing::_;
+using testing::Eq;
 using testing::IsEmpty;
 
 namespace {
@@ -651,9 +652,16 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   // Makes sure Chrome is not signed in to trigger the intercept bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurvey(
-                  kHatsSurveyTriggerIdentityDiceWebSigninAccepted, _, _, _));
+  std::map<std::string, std::string> expected_string_psd = {
+      {"Channel", "unknown"},
+      {"Chrome Version", version_info::GetVersion().GetString()},
+      {"Number of Chrome Profiles", "1"},
+      {"Number of Google Accounts", "1"},
+      {"Sign-in Status", "Signed In"}};
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityDiceWebSigninAccepted, _, _,
+                          Eq(expected_string_psd)));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(IsChromeSignedIn());
@@ -670,9 +678,16 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   // Makes sure Chrome is not signed in to trigger the bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurvey(
-                  kHatsSurveyTriggerIdentityDiceWebSigninDeclined, _, _, _));
+  std::map<std::string, std::string> expected_string_psd = {
+      {"Channel", "unknown"},
+      {"Chrome Version", version_info::GetVersion().GetString()},
+      {"Number of Chrome Profiles", "1"},
+      {"Number of Google Accounts", "1"},
+      {"Sign-in Status", "Web Only Signed In"}};
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityDiceWebSigninDeclined, _, _,
+                          expected_string_psd));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kDeclined);
   EXPECT_FALSE(IsChromeSignedIn());

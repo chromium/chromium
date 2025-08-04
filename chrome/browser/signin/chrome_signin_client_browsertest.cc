@@ -5,6 +5,8 @@
 #include "chrome/browser/signin/chrome_signin_client.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -24,6 +26,7 @@
 #include "url/gurl.h"
 
 using testing::_;
+using testing::Eq;
 using testing::Not;
 
 class ChromeSigninClientWithBookmarksInTransportModeBrowserTest
@@ -131,9 +134,17 @@ class ChromeSigninClientHatsSurveyBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
                        HatsSurveyLaunchedOnSignin) {
   // Expect the HaTS service to launch the password bubble sign-in survey.
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurvey(
-                  kHatsSurveyTriggerIdentityPasswordBubbleSignin, _, _, _));
+  // TODO(crbug.com/430925046): Investigate the number of Google Accounts.
+  std::map<std::string, std::string> expected_string_psd = {
+      {"Channel", "unknown"},
+      {"Chrome Version", version_info::GetVersion().GetString()},
+      {"Number of Chrome Profiles", "1"},
+      {"Number of Google Accounts", "0"},
+      {"Sign-in Status", "Signed In"}};
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityPasswordBubbleSignin, _, _,
+                          Eq(expected_string_psd)));
   // Expect that the surveys for other access point will NOT be launched.
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurvey(
@@ -142,12 +153,15 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
 
   // Simulate a user signing in via the password bubble, which should trigger
   // the survey.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
   signin::MakeAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      identity_manager,
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithAccessPoint(signin_metrics::AccessPoint::kPasswordBubble)
           .Build("alice@example.com"));
+  signin::WaitForRefreshTokensLoaded(identity_manager);
 }
 
 // TODO(crbug.com/433498793): Re-enable this flaky test on Windows.
@@ -177,9 +191,15 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
           .Build("alice@example.com"));
 
   // Expect the HaTS service to launch the first run sign-in survey.
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunSignin, _, _, _));
+  std::map<std::string, std::string> expected_string_psd = {
+      {"Channel", "unknown"},
+      {"Chrome Version", version_info::GetVersion().GetString()},
+      {"Number of Chrome Profiles", "1"},
+      {"Number of Google Accounts", "1"},
+      {"Sign-in Status", "Signed In"}};
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunSignin, _,
+                                  _, Eq(expected_string_psd)));
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurvey(Not(kHatsSurveyTriggerIdentityFirstRunSignin),
                                   _, _, _))

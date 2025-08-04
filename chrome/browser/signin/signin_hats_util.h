@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_HATS_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_HATS_UTIL_H_
 
+#include <optional>
 #include <string>
+
+#include "components/signin/public/base/signin_metrics.h"
 
 class Profile;
 
@@ -20,7 +23,10 @@ bool IsFeatureEnabledForSigninHatsTrigger(const std::string& trigger);
 // available. Otherwise, this is a no-op.
 void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
                                       Profile* profile,
-                                      bool defer_if_no_browser = false);
+                                      bool defer_if_no_browser = false,
+                                      std::optional<signin_metrics::AccessPoint>
+                                          access_point_for_data_type_promo =
+                                              std::nullopt);
 }  // namespace signin
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_HATS_UTIL_H_

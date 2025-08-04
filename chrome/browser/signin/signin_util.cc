@@ -350,6 +350,25 @@ SignedInState GetSignedInState(
   return SignedInState::kSignedOut;
 }
 
+std::string SignedInStateToString(SignedInState state) {
+  switch (state) {
+    case SignedInState::kSignedOut:
+      return "Signed Out";
+    case SignedInState::kSignedIn:
+      return "Signed In";
+    case SignedInState::kSyncing:
+      return "Syncing";
+    case SignedInState::kSignInPending:
+      return "Sign-in Pending";
+    case SignedInState::kWebOnlySignedIn:
+      return "Web Only Signed In";
+    case SignedInState::kSyncPaused:
+      return "Sync Paused";
+    default:
+      NOTREACHED();
+  }
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
   if (GetSignedInState(IdentityManagerFactory::GetForProfile(&profile)) !=

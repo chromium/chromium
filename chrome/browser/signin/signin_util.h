@@ -168,6 +168,9 @@ bool IsSigninPending(signin::IdentityManager* identity_manager);
 // Returns the current state of the primary account that is used in Chrome.
 SignedInState GetSignedInState(const signin::IdentityManager* identity_manager);
 
+// Returns a string representation of `SignedInState`.
+std::string SignedInStateToString(SignedInState state);
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Returns if the necessary conditions to show the History Sync Optin screen
 // are met.

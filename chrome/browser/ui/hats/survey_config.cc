@@ -5,6 +5,7 @@
 #include "survey_config.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -495,40 +496,65 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerWallpaperSearch);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  std::vector<std::string> identity_string_psd_fields{
+      "Channel", "Chrome Version", "Number of Chrome Profiles",
+      "Number of Google Accounts", "Sign-in Status"};
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyAddressBubbleSignin,
-      kHatsSurveyTriggerIdentityAddressBubbleSignin);
+      kHatsSurveyTriggerIdentityAddressBubbleSignin, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyDiceWebSigninAccepted,
-      kHatsSurveyTriggerIdentityDiceWebSigninAccepted);
+      kHatsSurveyTriggerIdentityDiceWebSigninAccepted, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyDiceWebSigninDeclined,
-      kHatsSurveyTriggerIdentityDiceWebSigninDeclined);
+      kHatsSurveyTriggerIdentityDiceWebSigninDeclined, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(&switches::kChromeIdentitySurveyFirstRunSignin,
-                              kHatsSurveyTriggerIdentityFirstRunSignin);
+                              kHatsSurveyTriggerIdentityFirstRunSignin,
+                              std::nullopt, std::vector<std::string>{},
+                              identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyPasswordBubbleSignin,
-      kHatsSurveyTriggerIdentityPasswordBubbleSignin);
+      kHatsSurveyTriggerIdentityPasswordBubbleSignin, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyProfileMenuDismissed,
-      kHatsSurveyTriggerIdentityProfileMenuDismissed);
+      kHatsSurveyTriggerIdentityProfileMenuDismissed, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(&switches::kChromeIdentitySurveyProfileMenuSignin,
-                              kHatsSurveyTriggerIdentityProfileMenuSignin);
+                              kHatsSurveyTriggerIdentityProfileMenuSignin,
+                              std::nullopt, std::vector<std::string>{},
+                              identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin,
-      kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin);
+      kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySigninInterceptProfileSeparation,
-      kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation);
+      kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
+  std::vector<std::string> identity_dismissed_signin_bubble_string_psd_fields{
+      "Channel",
+      "Chrome Version",
+      "Number of Chrome Profiles",
+      "Number of Google Accounts",
+      "Data type Sign-in Bubble Dismissed",
+      "Sign-in Status"};
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySigninPromoBubbleDismissed,
-      kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed);
+      kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed, std::nullopt,
+      std::vector<std::string>{},
+      identity_dismissed_signin_bubble_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
-      kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu);
+      kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker,
-      kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker);
+      kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, std::nullopt,
+      std::vector<std::string>{}, identity_string_psd_fields);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
