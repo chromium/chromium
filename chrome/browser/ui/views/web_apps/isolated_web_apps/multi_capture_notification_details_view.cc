@@ -164,12 +164,11 @@ MultiCaptureNotificationDetailsView::MultiCaptureNotificationDetailsView(
   admin_icon->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kBusinessIcon, ui::kColorIcon, 24));
   admin_icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
+  const int vertical_margin =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   admin_icon->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(
-          0, 0,
-          provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL),
-          0));
+      gfx::Insets::TLBR(vertical_margin, 0, vertical_margin, 0));
 
   auto* title_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_MULTI_CAPTURE_DETAILS_DIALOG_HEADING),
@@ -227,6 +226,7 @@ void MultiCaptureNotificationDetailsView::ShowCaptureDetails(
       std::make_unique<MultiCaptureNotificationDetailsView>(
           apps_with_notification, apps_without_notification));
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate->SetShowCloseButton(/*show_close_button=*/false);
 
   views::DialogDelegate::CreateDialogWidget(std::move(delegate),
                                             /*context=*/gfx::NativeWindow(),
