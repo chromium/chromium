@@ -185,9 +185,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // Log metrics.
   void LogUMA() const;
 
-  // Reloads the current page.
-  void OnReloadPageBubbleAccepted();
-
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -244,8 +241,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  base::WeakPtrFactory<ExtensionActionRunner> weak_factory_{this};
 };
 
 }  // namespace extensions

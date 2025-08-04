@@ -22,8 +22,7 @@ class ReloadPageDialogControllerBrowserTest
 
     std::unique_ptr<extensions::ReloadPageDialogController> reload_page_dialog =
         std::make_unique<extensions::ReloadPageDialogController>(
-            browser()->window()->GetNativeWindow(), GetProfile(),
-            base::DoNothing());
+            browser()->tab_strip_model()->GetActiveWebContents(), GetProfile());
     std::vector<const extensions::Extension*> extensions = {extension.get()};
     reload_page_dialog->TriggerShow(extensions);
   }

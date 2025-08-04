@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
@@ -56,12 +57,10 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogOkButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogCancelButtonElementId);
 
 ReloadPageDialogController::ReloadPageDialogController(
-    gfx::NativeWindow parent,
-    content::BrowserContext* browser_context,
-    base::OnceClosure callback)
-    : parent_(parent),
-      browser_context_(browser_context),
-      on_dialog_accepted_(std::move(callback)) {}
+    content::WebContents* web_contents,
+    content::BrowserContext* browser_context)
+    : web_contents_(web_contents), browser_context_(browser_context) {}
+
 ReloadPageDialogController::~ReloadPageDialogController() = default;
 
 void ReloadPageDialogController::TriggerShow(
@@ -110,7 +109,8 @@ void ReloadPageDialogController::TriggerShow(
 void ReloadPageDialogController::Show() {
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(GetTitle(extensions_info_))
-      .AddOkButton(base::BindOnce(std::move(on_dialog_accepted_)),
+      .AddOkButton(base::BindOnce(&ReloadPageDialogController::OnAcceptSelected,
+                                  weak_ptr_factory_.GetWeakPtr()),
                    ui::DialogModel::Button::Params()
                        .SetLabel(l10n_util::GetStringUTF16(
                            IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON))
@@ -143,7 +143,8 @@ void ReloadPageDialogController::Show() {
     extension_ids.push_back(info.id);
   }
 
-  ShowDialog(parent_, extension_ids, dialog_builder.Build());
+  ShowDialog(web_contents_->GetTopLevelNativeWindow(), extension_ids,
+             dialog_builder.Build());
 }
 
 void ReloadPageDialogController::OnExtensionIconLoaded(
@@ -157,6 +158,10 @@ void ReloadPageDialogController::OnExtensionIconLoaded(
   extension_info.icon = icon;
   extensions_info_.push_back(extension_info);
   std::move(done_callback).Run();
+}
+
+void ReloadPageDialogController::OnAcceptSelected() {
+  web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
 }  // namespace extensions

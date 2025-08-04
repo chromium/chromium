@@ -17,6 +17,7 @@
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace extensions {
@@ -37,9 +38,8 @@ class ReloadPageDialogController {
     gfx::Image icon;
   };
 
-  ReloadPageDialogController(gfx::NativeWindow parent,
-                             content::BrowserContext* browser_context,
-                             base::OnceClosure callback);
+  ReloadPageDialogController(content::WebContents* web_contents,
+                             content::BrowserContext* browser_context);
   ~ReloadPageDialogController();
   ReloadPageDialogController(const ReloadPageDialogController&) = delete;
   const ReloadPageDialogController& operator=(
@@ -47,6 +47,11 @@ class ReloadPageDialogController {
 
   // Starts the process of showing the dialog for the given `extensions`.
   void TriggerShow(const std::vector<const Extension*>& extensions);
+
+  // Reloads the active page once the dialog is accepted.
+  // TODO(crbug.com/424012380): Move to a private function once
+  // accept_bubble_for_testing_ is moved here from ExtensionActionRunner.
+  void OnAcceptSelected();
 
  private:
   // Shows the reload page dialog with the extensions information gathered in
@@ -60,15 +65,11 @@ class ReloadPageDialogController {
                              base::OnceClosure done_callback,
                              const gfx::Image& icon);
 
-  gfx::NativeWindow parent_;
+  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
 
   // Information for the extensions to be displayed in the dialog.
   std::vector<ExtensionInfo> extensions_info_;
-
-  // The callback to be run when the user accepts the dialog.
-  // TODO(crbug.com/424012380): move callback from extension action runner.
-  base::OnceClosure on_dialog_accepted_;
 
   base::WeakPtrFactory<ReloadPageDialogController> weak_ptr_factory_{this};
 };
