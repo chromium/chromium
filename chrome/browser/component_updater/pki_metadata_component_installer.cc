@@ -468,12 +468,15 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
   base::Time proto_timestamp = base::Time::UnixEpoch() +
                                base::Seconds(proto->timestamp().seconds()) +
                                base::Nanoseconds(proto->timestamp().nanos());
+
+#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
   // Do not update the pins list with the component data if it's older than the
   // built in list.
   if (proto_timestamp <
       net::TransportSecurityState::GetBuiltInPinsListTimestamp()) {
     return;
   }
+#endif  // BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
 
   network::mojom::PinListPtr pinlist_ptr = network::mojom::PinList::New();
 
