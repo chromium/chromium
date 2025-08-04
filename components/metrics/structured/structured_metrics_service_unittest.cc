@@ -35,6 +35,8 @@ namespace {
 
 using events::v2::test_project_one::TestEventOne;
 using events::v2::test_project_six::TestEventSeven;
+using ::testing::ElementsAre;
+using ::testing::SizeIs;
 
 // The name hash of "TestProjectOne".
 constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
@@ -55,6 +57,21 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   bool IsReadyToRecord() const override { return true; }
 };
 
+class TestMetricsProvider : public metrics::MetricsProvider {
+ public:
+  TestMetricsProvider() = default;
+  ~TestMetricsProvider() override = default;
+
+  void ProvideSystemProfileMetrics(
+      SystemProfileProto* system_profile) override {}
+
+  void ProvideSystemProfileMetricsWithLogCreationTime(
+      base::TimeTicks log_creation_time,
+      SystemProfileProto* system_profile) override {
+    system_profile->add_field_trial()->set_name_id(1);
+    system_profile->add_field_trial()->set_name_id(2);
+  }
+};
 }  // namespace
 
 class StructuredMetricsServiceTest : public testing::Test {
@@ -280,6 +297,27 @@ TEST_F(StructuredMetricsServiceTest, SystemProfileFilled) {
   const SystemProfileProto& system_profile = uma_proto.system_profile();
   EXPECT_EQ(system_profile.channel(), client_.GetChannel());
   EXPECT_EQ(system_profile.app_version(), client_.GetVersionString());
+}
+
+TEST_F(StructuredMetricsServiceTest, MetricsProviderDataInSystemProfile) {
+  Init();
+
+  service().RegisterMetricsProvider(std::make_unique<TestMetricsProvider>());
+
+  EnableRecording();
+  EnableReporting();
+
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+
+  service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+
+  const auto uma_proto = GetPersistedLog();
+  EXPECT_TRUE(uma_proto.has_system_profile());
+  EXPECT_THAT(uma_proto.system_profile().field_trial(), SizeIs(2));
+  EXPECT_EQ(uma_proto.system_profile().field_trial(0).name_id(), 1u);
+  EXPECT_EQ(uma_proto.system_profile().field_trial(1).name_id(), 2u);
 }
 
 TEST_F(StructuredMetricsServiceTest, DoesNotRecordWhenRecordingDisabled) {

@@ -590,6 +590,7 @@ void UkmService::BuildAndStoreLog(
 
   reporting_service_.ukm_log_store()->StoreLog(serialized_log, log_metadata,
                                                reason);
+  log_creation_time_ = base::TimeTicks::Now();
 }
 
 void UkmService::SetInitializationCompleteCallbackForTesting(

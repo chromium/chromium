@@ -1558,5 +1558,8 @@ void ChromeMetricsServiceClient::CreateStructuredMetricsService() {
     structured_metrics_service_ =
         std::make_unique<metrics::structured::StructuredMetricsService>(
             this, local_state, std::move(recorder));
+    structured_metrics_service_->RegisterMetricsProvider(
+        std::make_unique<variations::FieldTrialsProvider>(
+            synthetic_trial_registry_, "StructuredMetrics"));
   }
 }
