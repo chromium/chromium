@@ -81,7 +81,7 @@ class ChromePasswordChangeService
 
   // Checks if user has interacted with the feature and only then general
   // availability.
-  bool ShouldShowEntryInSettings() const;
+  bool UserIsActivePasswordChangeUser() const;
 
  private:
   // PasswordChangeDelegate::Observer impl.

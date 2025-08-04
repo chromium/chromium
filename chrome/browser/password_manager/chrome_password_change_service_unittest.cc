@@ -316,18 +316,18 @@ TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithChangePwdUrlArg) {
 }
 
 TEST_P(ChromePasswordChangeServiceAvailabilityTest,
-       SettingVisibilityWithPrefOff) {
+       UserEnrollmentIntoPasswordChangeServiceyWithPrefOff) {
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled).Times(0);
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .Times(0);
   EXPECT_CALL(settings_service(), IsSettingEnabled).Times(0);
   // Always false because pref is not set.
   EXPECT_FALSE(static_cast<ChromePasswordChangeService*>(change_service())
-                   ->ShouldShowEntryInSettings());
+                   ->UserIsActivePasswordChangeUser());
 }
 
 TEST_P(ChromePasswordChangeServiceAvailabilityTest,
-       SettingVisibilityWithPrefOn) {
+       UserEnrollmentIntoPasswordChangeServiceWithPrefOn) {
   prefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission),
@@ -349,7 +349,7 @@ TEST_P(ChromePasswordChangeServiceAvailabilityTest,
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(static_cast<ChromePasswordChangeService*>(change_service())
-                ->ShouldShowEntryInSettings(),
+                ->UserIsActivePasswordChangeUser(),
             GetParam().expected_outcome());
 }
 

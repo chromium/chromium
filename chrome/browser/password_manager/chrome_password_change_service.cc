@@ -175,11 +175,12 @@ bool ChromePasswordChangeService::IsPasswordChangeSupported(
   return has_change_url;
 }
 
-bool ChromePasswordChangeService::ShouldShowEntryInSettings() const {
+bool ChromePasswordChangeService::UserIsActivePasswordChangeUser() const {
   // The feature becomes enabled when user accepts to change a compromised
   // password.
-  if (GetFeatureState(pref_service_) !=
-      optimization_guide::prefs::FeatureOptInState::kEnabled) {
+  if (!pref_service_ ||
+      (GetFeatureState(pref_service_) !=
+       optimization_guide::prefs::FeatureOptInState::kEnabled)) {
     return false;
   }
   return IsPasswordChangeAvailable();

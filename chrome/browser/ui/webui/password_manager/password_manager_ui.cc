@@ -639,7 +639,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddBoolean("passwordChangeAvailable",
                      PasswordChangeServiceFactory::GetForProfile(profile)
-                         ->ShouldShowEntryInSettings());
+                         ->UserIsActivePasswordChangeUser());
 
   source->AddBoolean(
       "enablePasswordManagerMojoApi",

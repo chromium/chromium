@@ -596,7 +596,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       {"showPasswordChangeControl",
        PasswordChangeServiceFactory::GetForProfile(profile) &&
            PasswordChangeServiceFactory::GetForProfile(profile)
-               ->ShouldShowEntryInSettings()},
+               ->UserIsActivePasswordChangeUser()},
   };
 
   const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(
