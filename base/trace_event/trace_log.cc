@@ -173,6 +173,11 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event) {
       default:
         break;
     }
+    if (trace_event->flags() & TRACE_EVENT_FLAG_HAS_PROCESS_ID) {
+      legacy_event->set_pid_override(
+          trace_event->thread_id().truncate_to_int32_for_display_only());
+      legacy_event->set_tid_override(static_cast<int32_t>(-1));
+    }
   };
 
   auto flags = trace_event->flags();
@@ -198,7 +203,8 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event) {
     }
   }
   if (trace_event->thread_id() != kInvalidThreadId &&
-      trace_event->thread_id() != base::PlatformThread::CurrentId()) {
+      trace_event->thread_id() != base::PlatformThread::CurrentId() &&
+      !(trace_event->flags() & TRACE_EVENT_FLAG_HAS_PROCESS_ID)) {
     PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
         phase, category, trace_event->name(),
         perfetto::ThreadTrack::ForThread(trace_event->thread_id().raw()),
