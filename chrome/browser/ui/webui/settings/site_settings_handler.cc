@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_value_list.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -27,6 +28,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -69,6 +71,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -1126,6 +1129,18 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
       site_settings::ContentSettingsTypeFromGroupName(type);
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(
+          content_type)) {
+    static auto* const type_key = base::debug::AllocateCrashKeyString(
+        "site_settings-handler_type", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(type_key, type);
+    static auto* const url_key = base::debug::AllocateCrashKeyString(
+        "site_settings-handler_url", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(url_key,
+                                   web_ui()->GetWebContents()->GetURL().spec());
+    // Please notify https://crbug.com/435597217 if you see this crash.
+    NOTREACHED() << type << " is not a content setting";
+  }
 
   base::Value::Dict category;
   site_settings::GetContentCategorySetting(map, content_type, &category);
