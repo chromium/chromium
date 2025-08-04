@@ -1643,7 +1643,8 @@ enum class OnAcceptCHFrameReceivedReturnLocation {
   kNoRestart = 4,
   kTooManyRestart = 5,
   kSendingErrorAborted = 6,
-  kMaxValue = kSendingErrorAborted,
+  kDuringExclusiveTask = 7,
+  kMaxValue = kDuringExclusiveTask,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:OnAcceptCHFrameReceivedReturnLocation)
 
@@ -1758,6 +1759,18 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     std::move(callback).Run(net::ERR_TOO_MANY_ACCEPT_CH_RESTARTS);
     RecordOnAcceptCHFrameReceivedReturnLocation(
         OnAcceptCHFrameReceivedReturnLocation::kTooManyRestart);
+    return;
+  }
+
+  if (loader_holder_.HasExclusiveTask()) {
+    // `OnAcceptCHFrameReceived()` is called unexpectedly during another
+    // exclusive task (typically `NavigationLoaderInterceptor`) is running.
+    // Cancel the navigation.
+    // TODO(https://crbug.com/436046316): Investigate why and fix this.
+    OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    std::move(callback).Run(net::ERR_ABORTED);
+    RecordOnAcceptCHFrameReceivedReturnLocation(
+        OnAcceptCHFrameReceivedReturnLocation::kDuringExclusiveTask);
     return;
   }
 

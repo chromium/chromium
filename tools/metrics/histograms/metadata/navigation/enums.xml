@@ -516,6 +516,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kNoRestart"/>
   <int value="5" label="kTooManyRestart"/>
   <int value="6" label="kSendingErrorAborted"/>
+  <int value="7" label="kDuringExclusiveTask"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/loader/navigation_url_loader_impl.cc:OnAcceptCHFrameReceivedReturnLocation) -->
