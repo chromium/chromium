@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -353,11 +354,11 @@ void PaintPreviewClient::CapturePaintPreview(
       params.inner.max_decoded_image_size_bytes;
   document_data.skip_accelerated_content =
       params.inner.skip_accelerated_content;
-  all_document_data_.insert(
+  auto [document_data_it, inserted] = all_document_data_.insert(
       {params.inner.document_guid, std::move(document_data)});
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "paint_preview", "PaintPreviewClient::CapturePaintPreview",
-      TRACE_ID_LOCAL(&all_document_data_[params.inner.document_guid]));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
+                                    "PaintPreviewClient::CapturePaintPreview",
+                                    TRACE_ID_LOCAL(&document_data_it->second));
   CapturePaintPreviewInternal(params.inner, render_frame_host);
 }
 
@@ -369,18 +370,19 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
     return;
   }
 
-  auto it = all_document_data_.find(guid);
-  if (it == all_document_data_.end()) {
+  auto* document_data = base::FindOrNull(all_document_data_, guid);
+  if (!document_data) {
     return;
   }
 
   RecordingParams params(guid);
   params.clip_rect = rect;
   params.is_main_frame = false;
-  params.capture_links = it->second.capture_links;
-  params.max_capture_size = it->second.max_per_capture_size;
-  params.max_decoded_image_size_bytes = it->second.max_decoded_image_size_bytes;
-  params.skip_accelerated_content = it->second.skip_accelerated_content;
+  params.capture_links = document_data->capture_links;
+  params.max_capture_size = document_data->max_per_capture_size;
+  params.max_decoded_image_size_bytes =
+      document_data->max_decoded_image_size_bytes;
+  params.skip_accelerated_content = document_data->skip_accelerated_content;
   CapturePaintPreviewInternal(params, render_subframe_host);
 }
 
@@ -395,18 +397,17 @@ void PaintPreviewClient::RenderFrameDeleted(
 
   bool is_main_frame = render_frame_host->GetParentOrOuterDocument() == nullptr;
   base::UnguessableToken frame_guid = maybe_token.value();
-  auto it = pending_previews_on_subframe_.find(frame_guid);
-  if (it == pending_previews_on_subframe_.end()) {
+  auto* tokens = base::FindOrNull(pending_previews_on_subframe_, frame_guid);
+  if (!tokens) {
     return;
   }
 
-  for (const auto& document_guid : it->second) {
-    auto data_it = all_document_data_.find(document_guid);
-    if (data_it == all_document_data_.end()) {
+  for (const auto& document_guid : *tokens) {
+    auto* document_data = base::FindOrNull(all_document_data_, document_guid);
+    if (!document_data) {
       continue;
     }
 
-    auto* document_data = &data_it->second;
     document_data->awaiting_subframes.erase(frame_guid);
     document_data->finished_subframes.insert(frame_guid);
     document_data->had_error = true;
@@ -442,11 +443,11 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
     return;
   }
 
-  auto it = all_document_data_.find(params.document_guid);
-  if (it == all_document_data_.end()) {
+  auto* document_data =
+      base::FindOrNull(all_document_data_, params.document_guid);
+  if (!document_data) {
     return;
   }
-  auto* document_data = &it->second;
 
   // The embedding token should be in the list of tokens in the tree when
   // capture was started. If this is not the case then the frame may have
@@ -480,12 +481,9 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     mojom::PaintPreviewCaptureParamsPtr capture_params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto it = all_document_data_.find(params.document_guid);
-  if (it == all_document_data_.end()) {
-    return;
-  }
-  auto* document_data = &it->second;
-  if (!document_data->callback) {
+  auto* document_data =
+      base::FindOrNull(all_document_data_, params.document_guid);
+  if (!document_data || !document_data->callback) {
     return;
   }
 
@@ -509,20 +507,15 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
   }
 
   document_data->awaiting_subframes.insert(frame_guid);
-  auto subframe_it = pending_previews_on_subframe_.find(frame_guid);
-  if (subframe_it != pending_previews_on_subframe_.end()) {
-    subframe_it->second.insert(params.document_guid);
-  } else {
-    pending_previews_on_subframe_.insert(std::make_pair(
-        frame_guid,
-        base::flat_set<base::UnguessableToken>({params.document_guid})));
-  }
+  pending_previews_on_subframe_[frame_guid].insert(params.document_guid);
 
-  if (!base::Contains(interface_ptrs_, frame_guid)) {
-    interface_ptrs_.insert(
+  auto interface_it = interface_ptrs_.find(frame_guid);
+  if (interface_it == interface_ptrs_.end()) {
+    interface_it = interface_ptrs_.insert(
+        interface_it,
         {frame_guid, mojo::AssociatedRemote<mojom::PaintPreviewRecorder>()});
     render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-        &interface_ptrs_[frame_guid]);
+        &interface_it->second);
   }
 
   // For the main frame, apply a clip rect if one is provided.
@@ -530,7 +523,7 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     capture_params->clip_rect_is_hint = false;
   }
 
-  interface_ptrs_[frame_guid]->CapturePaintPreview(
+  interface_it->second->CapturePaintPreview(
       std::move(capture_params),
       base::BindOnce(&PaintPreviewClient::OnPaintPreviewCapturedCallback,
                      weak_ptr_factory_.GetWeakPtr(), frame_guid, params,
@@ -555,11 +548,11 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
     status = mojom::PaintPreviewStatus::kCaptureFailed;
   }
 
-  auto it = all_document_data_.find(params.document_guid);
-  if (it == all_document_data_.end()) {
+  auto* document_data =
+      base::FindOrNull(all_document_data_, params.document_guid);
+  if (!document_data) {
     return;
   }
-  auto* document_data = &it->second;
 
   if (status == mojom::PaintPreviewStatus::kOk) {
     document_data->RecordSuccessfulFrame(frame_guid, params.is_main_frame,
@@ -582,15 +575,15 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
 void PaintPreviewClient::MarkFrameAsProcessed(
     base::UnguessableToken guid,
     const base::UnguessableToken& frame_guid) {
-  pending_previews_on_subframe_[frame_guid].erase(guid);
-  if (pending_previews_on_subframe_[frame_guid].empty()) {
+  auto& tokens = pending_previews_on_subframe_[frame_guid];
+  tokens.erase(guid);
+  if (tokens.empty()) {
     interface_ptrs_.erase(frame_guid);
   }
-  auto it = all_document_data_.find(guid);
-  if (it == all_document_data_.end()) {
+  auto* document_data = base::FindOrNull(all_document_data_, guid);
+  if (!document_data) {
     return;
   }
-  auto* document_data = &it->second;
   document_data->finished_subframes.insert(frame_guid);
   document_data->awaiting_subframes.erase(frame_guid);
 }
