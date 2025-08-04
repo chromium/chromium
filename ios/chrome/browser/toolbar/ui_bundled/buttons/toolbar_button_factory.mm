@@ -187,7 +187,11 @@ const CGFloat kDiamondCornerRadius = 13;
     toolsMenuButton.backgroundColor =
         [UIColor colorNamed:kTextfieldBackgroundColor];
     toolsMenuButton.layer.cornerRadius = kDiamondCornerRadius;
-    toolsMenuButton.visibilityMask = ToolbarComponentVisibilityAlways;
+    if (self.visibilityConfiguration.type == ToolbarType::kPrimary) {
+      toolsMenuButton.visibilityMask = ToolbarComponentVisibilityNone;
+    } else {
+      toolsMenuButton.visibilityMask = ToolbarComponentVisibilityAlways;
+    }
   } else {
     toolsMenuButton.visibilityMask =
         self.visibilityConfiguration.toolsMenuButtonVisibility;
