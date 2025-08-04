@@ -348,6 +348,69 @@ TEST_F(GlicMediaContextTest,
   EXPECT_EQ(media_context->GetContext(), "chunk threechunk twochunk one");
 }
 
+TEST_F(GlicMediaContextTest,
+       FinalChunkNoTimestamp_IsInsertedAfterLastFinalChunk) {
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
+
+  // Add initial chunks out of chronological order to ensure insertion is based
+  // on the last *added* final chunk, not the chronologically last one.
+  // `last_insertion_it_` will point to "Final One" after the second call.
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Final Three. ", true,
+      {media::MediaTimestampRange(base::Seconds(2), base::Seconds(3))}));
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Final One. ", true,
+      {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
+
+  // The context should be sorted by time.
+  EXPECT_EQ(context->GetContext(), "Final One. Final Three. ");
+
+  // Add a final chunk without a timestamp. It should be inserted after
+  // "Final One", which was the last final chunk added.
+  context->OnResult(
+      CreateSpeechRecognitionResult("Final Two (no time). ", true));
+
+  // The final context should show the untimed chunk inserted after the last
+  // added final chunk.
+  EXPECT_EQ(context->GetContext(),
+            "Final One. Final Two (no time). Final Three. ");
+}
+
+TEST_F(GlicMediaContextTest, GetTranscriptChunks_ReturnsCorrectChunks) {
+  auto* media_context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
+
+  // Add initial chunks using OnResult. `last_insertion_it_` will point to
+  // "chunk three" after the second call. However, it is not last
+  // chronologically, so the next nonfinal chunk should end up after it but
+  // before "chunk one".
+  media_context->OnResult(CreateSpeechRecognitionResult(
+      "chunk one", true,
+      {media::MediaTimestampRange(base::Seconds(2), base::Seconds(3))}));
+  media_context->OnResult(CreateSpeechRecognitionResult(
+      "chunk three", true,
+      {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
+
+  // Insert a non-final chunk. It should be placed after "chunk three".
+  media_context->OnResult(CreateSpeechRecognitionResult("chunk two", false));
+
+  // Verify GetTranscriptChunks().
+  auto chunks = media_context->GetTranscriptChunks();
+  ASSERT_EQ(chunks.size(), 3u);
+  auto it = chunks.begin();
+  EXPECT_EQ(it->text, "chunk three");
+  ASSERT_TRUE(it->HasMediaTimestamps());
+  EXPECT_EQ(it->GetStartTime(), base::Seconds(0));
+  EXPECT_EQ(it->GetEndTime(), base::Seconds(1));
+  ++it;
+  EXPECT_EQ(it->text, "chunk two");
+  EXPECT_FALSE(it->HasMediaTimestamps());
+  ++it;
+  EXPECT_EQ(it->text, "chunk one");
+  ASSERT_TRUE(it->HasMediaTimestamps());
+  EXPECT_EQ(it->GetStartTime(), base::Seconds(2));
+  EXPECT_EQ(it->GetEndTime(), base::Seconds(3));
+}
+
 TEST_F(GlicMediaContextTest, ContextShouldTruncateLeastRecentlyAdded) {
   auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
 
@@ -363,6 +426,77 @@ TEST_F(GlicMediaContextTest, ContextShouldTruncateLeastRecentlyAdded) {
 
   // The long one should have been evicted.
   EXPECT_EQ(context->GetContext(), "B");
+}
+
+TEST_F(GlicMediaContextTest,
+       NonFinalChunkNoTimestamp_IsInsertedAfterLastFinalChunk) {
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
+
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Final One. ", true,
+      {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Final Two. ", true,
+      {media::MediaTimestampRange(base::Seconds(2), base::Seconds(3))}));
+  EXPECT_EQ(context->GetContext(), "Final One. Final Two. ");
+
+  // Add a non-final chunk without a timestamp. It should be inserted after the
+  // most recently added final chunk ("Final Two").
+  context->OnResult(CreateSpeechRecognitionResult("Non-final. ", false));
+  EXPECT_EQ(context->GetContext(), "Final One. Final Two. Non-final. ");
+
+  // Add another final chunk.
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Final Three. ", true,
+      {media::MediaTimestampRange(base::Seconds(1), base::Seconds(2))}));
+
+  // The previous non-final chunk should be gone, and the context should be
+  // sorted correctly.
+  EXPECT_EQ(context->GetContext(), "Final One. Final Three. Final Two. ");
+
+  // Add another non-final chunk. It should be inserted after "Final Three"
+  // because that was the last one added.
+  context->OnResult(CreateSpeechRecognitionResult("Non-final Two.", false));
+  EXPECT_EQ(context->GetContext(),
+            "Final One. Final Three. Non-final Two.Final Two. ");
+}
+
+TEST_F(GlicMediaContextTest, NonFinalChunkWithTimestamp_ReplacesExisting) {
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
+
+  // Add a non-final chunk with a timestamp.
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Non-final One. ", false,
+      {media::MediaTimestampRange(base::Seconds(10), base::Seconds(11))}));
+  EXPECT_EQ(context->GetContext(), "Non-final One. ");
+
+  // Add another non-final chunk with a different timestamp.
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Non-final Two. ", false,
+      {media::MediaTimestampRange(base::Seconds(20), base::Seconds(21))}));
+
+  // The first non-final chunk should be replaced by the second one.
+  EXPECT_EQ(context->GetContext(), "Non-final Two. ");
+}
+
+TEST_F(GlicMediaContextTest, NonFinalChunkWithTimestamp_UpdatesInPlace) {
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
+
+  // Add a non-final chunk with a timestamp.
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Hello", false,
+      {media::MediaTimestampRange(base::Seconds(10), base::Seconds(11))}));
+  EXPECT_EQ(context->GetContext(), "Hello");
+
+  // Add another non-final chunk with the same timestamp but different text.
+  context->OnResult(CreateSpeechRecognitionResult(
+      "Hello world", false,
+      {media::MediaTimestampRange(base::Seconds(10), base::Seconds(13))}));
+
+  // The chunk should be updated in place.
+  EXPECT_EQ(context->GetContext(), "Hello world");
+  auto chunks = context->GetTranscriptChunks();
+  EXPECT_EQ(chunks.size(), 1u);
 }
 
 }  // namespace glic

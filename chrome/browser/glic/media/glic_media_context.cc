@@ -30,13 +30,6 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
     return false;
   }
 
-  // Nonfinal chunks get stored separately, and have no timing information.  It
-  // will be inserted at the right place in `GetContext`.
-  if (!result.is_final) {
-    most_recent_nonfinal_chunk_ = {result.transcription, {}};
-    return true;
-  }
-
   // Discard results that have multiple media timestamps.  These happen around
   // seeks, but we can't attribute them to the right place in the transcript.
   // Since it's a corner case, just discard.
@@ -47,8 +40,6 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
     timestamp_count =
         result.timing_information->originating_media_timestamps->size();
   }
-  base::UmaHistogramExactLinear("Glic.Media.TimestampRangeCount",
-                                timestamp_count, 10);
 
   if (timestamp_count > 1) {
     // Continue transcribing, but discard this particular result.
@@ -59,8 +50,70 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
         (*result.timing_information->originating_media_timestamps)[0]);
   }
 
-  // Process final result.
   TranscriptChunk new_chunk = {result.transcription, media_timestamp_range};
+
+  if (!result.is_final) {
+    HandleNonFinalResult(std::move(new_chunk));
+  } else {
+    // Record timestamp metric for final result.
+    base::UmaHistogramExactLinear("Glic.Media.TimestampRangeCount",
+                                  timestamp_count, 10);
+    HandleFinalResult(std::move(new_chunk));
+  }
+
+  return true;
+}
+
+void GlicMediaContext::HandleNonFinalResult(TranscriptChunk new_chunk) {
+  // If a non-final chunk already exists, it must be removed before adding the
+  // new one, unless it's being updated in-place.
+  if (nonfinal_chunk_it_ != transcript_chunks_.end()) {
+    // If the new chunk has a timestamp and its start time matches the existing
+    // non-final chunk, we can update it in-place.
+    if (new_chunk.HasMediaTimestamps() &&
+        nonfinal_chunk_it_->HasMediaTimestamps() &&
+        new_chunk.GetStartTime() == nonfinal_chunk_it_->GetStartTime()) {
+      nonfinal_chunk_it_->text = new_chunk.text;
+      nonfinal_chunk_it_->media_timestamp_range =
+          new_chunk.media_timestamp_range;
+      return;
+    }
+    // Otherwise, the old non-final chunk is invalid.
+    transcript_chunks_.erase(nonfinal_chunk_it_);
+    nonfinal_chunk_it_ = transcript_chunks_.end();
+  }
+
+  // Now, insert the new non-final chunk.
+  if (new_chunk.HasMediaTimestamps()) {
+    // Insert in order of its start time.
+    auto insert_pos = std::upper_bound(
+        transcript_chunks_.begin(), transcript_chunks_.end(), new_chunk,
+        [](const TranscriptChunk& a, const TranscriptChunk& b) {
+          return a.GetStartTime() < b.GetStartTime();
+        });
+    nonfinal_chunk_it_ =
+        transcript_chunks_.insert(insert_pos, std::move(new_chunk));
+  } else {
+    // A non-final chunk without a timestamp can't be sorted by time. Instead,
+    // insert it right after the last final chunk.
+    auto insert_pos = last_insertion_it_;
+    if (insert_pos != transcript_chunks_.end()) {
+      ++insert_pos;
+    }
+    nonfinal_chunk_it_ =
+        transcript_chunks_.insert(insert_pos, std::move(new_chunk));
+  }
+}
+
+void GlicMediaContext::HandleFinalResult(TranscriptChunk new_chunk) {
+  if (nonfinal_chunk_it_ != transcript_chunks_.end()) {
+    // A non-final chunk exists and we will remove it so that the new final
+    // chunk can be added in media time order.
+    transcript_chunks_.erase(nonfinal_chunk_it_);
+    nonfinal_chunk_it_ = transcript_chunks_.end();
+  }
+
+  // Process final result.
   new_chunk.sequence_number = next_sequence_number_++;
 
   if (new_chunk.HasMediaTimestamps()) {
@@ -74,12 +127,12 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
     std::optional<std::list<TranscriptChunk>::iterator> insert_pos;
 
     // Optimization: check if we can insert after the last insertion point.
-    if (last_insertion_it_ != final_transcript_chunks_.end()) {
+    if (last_insertion_it_ != transcript_chunks_.end()) {
       if (new_chunk.GetStartTime() >= last_insertion_it_->GetStartTime()) {
         // The new chunk does come after the previous chunk.  Make sure that the
         // next chunk comes after, or there's no next chunk.
         auto next_it = std::next(last_insertion_it_);
-        if (next_it == final_transcript_chunks_.end() ||
+        if (next_it == transcript_chunks_.end() ||
             new_chunk.GetStartTime() < next_it->GetStartTime()) {
           // Insert immediately before this.
           insert_pos = next_it;
@@ -90,36 +143,42 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
     // If the optimization didn't work, find the correct position.
     if (!insert_pos) {
       insert_pos = std::upper_bound(
-          final_transcript_chunks_.begin(), final_transcript_chunks_.end(),
-          new_chunk, [](const TranscriptChunk& a, const TranscriptChunk& b) {
+          transcript_chunks_.begin(), transcript_chunks_.end(), new_chunk,
+          [](const TranscriptChunk& a, const TranscriptChunk& b) {
             return a.GetStartTime() < b.GetStartTime();
           });
     }
     last_insertion_it_ =
-        final_transcript_chunks_.insert(*insert_pos, std::move(new_chunk));
+        transcript_chunks_.insert(*insert_pos, std::move(new_chunk));
   } else {
-    // New chunk has no timing information, just append it.
-    final_transcript_chunks_.push_back(std::move(new_chunk));
-    last_insertion_it_ = std::prev(final_transcript_chunks_.end());
+    // New chunk without a timestamp will be inserted right after the last final
+    // chunk.
+    auto insert_pos = last_insertion_it_;
+    if (insert_pos != transcript_chunks_.end()) {
+      ++insert_pos;
+    }
+    last_insertion_it_ =
+        transcript_chunks_.insert(insert_pos, std::move(new_chunk));
   }
 
-  // Clear the most recent non-final result after a final result is processed.
-  most_recent_nonfinal_chunk_.reset();
+  TrimTranscript();
+}
 
-  // Trim `final_transcript_chunks_` to a reasonable size.
+void GlicMediaContext::TrimTranscript() {
+  // Trim `transcript_chunks_` to a reasonable size.
   constexpr size_t kMaxTranscriptLength = 1000000;
   size_t total_size = 0;
-  for (const auto& chunk : final_transcript_chunks_) {
+  for (const auto& chunk : transcript_chunks_) {
     total_size += chunk.text.length();
   }
 
   while (total_size > kMaxTranscriptLength) {
     auto oldest_chunk_it = std::min_element(
-        final_transcript_chunks_.begin(), final_transcript_chunks_.end(),
+        transcript_chunks_.begin(), transcript_chunks_.end(),
         [](const TranscriptChunk& a, const TranscriptChunk& b) {
           return a.sequence_number < b.sequence_number;
         });
-    if (oldest_chunk_it == final_transcript_chunks_.end()) {
+    if (oldest_chunk_it == transcript_chunks_.end()) {
       // This should not be reached if `total_size` is greater than zero.
       break;
     }
@@ -128,12 +187,10 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
     // start over.  This should be unlikely; unless there's ~one really big
     // chunk, we're not appending after the oldest chunk.
     if (last_insertion_it_ == oldest_chunk_it) {
-      last_insertion_it_ = final_transcript_chunks_.end();
+      last_insertion_it_ = transcript_chunks_.end();
     }
-    final_transcript_chunks_.erase(oldest_chunk_it);
+    transcript_chunks_.erase(oldest_chunk_it);
   }
-
-  return true;
 }
 
 std::string GlicMediaContext::GetContext() const {
@@ -141,36 +198,19 @@ std::string GlicMediaContext::GetContext() const {
     return "";
   }
 
-  // If there are no final chunks, the transcript is either empty or just the
-  // non-final chunk.
-  if (final_transcript_chunks_.empty()) {
-    return most_recent_nonfinal_chunk_ ? most_recent_nonfinal_chunk_->text : "";
-  }
-
   std::vector<std::string_view> pieces;
-  pieces.reserve(final_transcript_chunks_.size() + 1);
-
-  // If `last_insertion_it_` is invalid, it's ambiguous where the non-final
-  // chunk should go, so we omit it.
-  if (last_insertion_it_ == final_transcript_chunks_.end()) {
-    for (const auto& chunk : final_transcript_chunks_) {
-      pieces.push_back(chunk.text);
-    }
-    return base::JoinString(pieces, "");
+  for (const auto& chunk : transcript_chunks_) {
+    pieces.push_back(chunk.text);
   }
-
-  // Otherwise, insert the non-final chunk immediately after the chunk that
-  // `last_insertion_it_` points to.  Assume that it will be the next in-order
-  // chunk, which is usually correct.
-  for (auto it = final_transcript_chunks_.begin();
-       it != final_transcript_chunks_.end(); ++it) {
-    pieces.push_back(it->text);
-    if (it == last_insertion_it_ && most_recent_nonfinal_chunk_) {
-      pieces.push_back(most_recent_nonfinal_chunk_->text);
-    }
-  }
-
   return base::JoinString(pieces, "");
+}
+
+std::list<GlicMediaContext::TranscriptChunk>
+GlicMediaContext::GetTranscriptChunks() const {
+  if (IsExcludedFromTranscript()) {
+    return {};
+  }
+  return transcript_chunks_;
 }
 
 void GlicMediaContext::OnPeerConnectionAdded() {
@@ -192,8 +232,8 @@ bool GlicMediaContext::IsExcludedFromTranscript() const {
 
 void GlicMediaContext::RemoveOverlappingChunks(
     const TranscriptChunk& new_chunk) {
-  auto it = final_transcript_chunks_.begin();
-  while (it != final_transcript_chunks_.end()) {
+  auto it = transcript_chunks_.begin();
+  while (it != transcript_chunks_.end()) {
     if (it->HasMediaTimestamps()) {
       // Existing chunk has timing information, check for overlap.
       if (new_chunk.DoesOverlapWith(*it)) {
@@ -201,10 +241,10 @@ void GlicMediaContext::RemoveOverlappingChunks(
         // hint and search the whole list next time.  This is very rare; it
         // requires the next chunk to overlap with the chunk we just added.
         if (last_insertion_it_ == it) {
-          last_insertion_it_ = final_transcript_chunks_.end();
+          last_insertion_it_ = transcript_chunks_.end();
         }
         // Overlap, erase the current chunk and get the iterator to the next.
-        it = final_transcript_chunks_.erase(it);
+        it = transcript_chunks_.erase(it);
       } else {
         // No overlap, move to the next chunk.
         ++it;

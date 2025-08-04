@@ -12,7 +12,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -214,6 +214,44 @@ TEST_F(GlicMediaIntegrationTest, PeerConnectionPreventsTranscription) {
 
   auto* context = GetContext();
   EXPECT_TRUE(context->is_excluded_from_transcript_for_testing());
+}
+
+TEST_F(GlicMediaIntegrationTest, GetTranscriptsForFrame) {
+  auto* integration = GetIntegration();
+
+  // Send a final transcription with timing information.
+  media::SpeechRecognitionResult timed_result("timed chunk", /*is_final=*/true);
+  timed_result.timing_information = media::TimingInformation();
+  timed_result.timing_information->originating_media_timestamps = {
+      media::MediaTimestampRange(base::Seconds(1), base::Seconds(2))};
+  live_caption_controller()->DispatchTranscription(rfh(), nullptr,
+                                                   timed_result);
+
+  // Send a final transcription without timing information.
+  live_caption_controller()->DispatchTranscription(
+      rfh(), nullptr,
+      media::SpeechRecognitionResult("untimed chunk", /*is_final=*/true));
+
+  // Send a non-final transcription.
+  live_caption_controller()->DispatchTranscription(
+      rfh(), nullptr,
+      media::SpeechRecognitionResult("non-final chunk", /*is_final=*/false));
+
+  // Verify the returned transcripts.
+  auto transcripts = integration->GetTranscriptsForFrame(rfh());
+  ASSERT_EQ(transcripts.size(), 3u);
+
+  // The timed chunk should come first due to sorting.
+  EXPECT_EQ(transcripts[0].text(), "timed chunk");
+  EXPECT_EQ(transcripts[0].start_timestamp_milliseconds(), 1000);
+
+  // The untimed chunk is appended next.
+  EXPECT_EQ(transcripts[1].text(), "untimed chunk");
+  EXPECT_FALSE(transcripts[1].has_start_timestamp_milliseconds());
+
+  // The non-final chunk is appended after the last final chunk.
+  EXPECT_EQ(transcripts[2].text(), "non-final chunk");
+  EXPECT_FALSE(transcripts[2].has_start_timestamp_milliseconds());
 }
 
 }  // namespace glic

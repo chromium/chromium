@@ -28,6 +28,7 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   ~GlicMediaContext() override;
 
   bool OnResult(const media::SpeechRecognitionResult&);
+
   std::string GetContext() const;
 
   void OnPeerConnectionAdded();
@@ -38,7 +39,6 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
 
   DOCUMENT_USER_DATA_KEY_DECL();
 
- private:
   // Represents a chunk of the transcript with associated timing information.
   struct TranscriptChunk {
     TranscriptChunk();
@@ -72,26 +72,45 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
     bool HasMediaTimestamps() const;
   };
 
+  // Returns a copy of the transcript chunks.
+  std::list<TranscriptChunk> GetTranscriptChunks() const;
+
+ private:
   bool IsExcludedFromTranscript() const;
 
-  // Removes any chunks in `final_transcript_chunks_` that overlap with
-  // `new_chunk`.
+  // Handles a non-final speech recognition result by inserting or updating a
+  // temporary non-final chunk in `transcript_chunks_`.
+  void HandleNonFinalResult(TranscriptChunk new_chunk);
+
+  // Handles a final speech recognition result by removing any existing
+  // non-final chunk, inserting the new final chunk in the correct order, and
+  // trimming the transcript.
+  void HandleFinalResult(TranscriptChunk new_chunk);
+
+  // Trims the transcript to a maximum size by removing the oldest chunks until
+  // the total size is within the limit.
+  void TrimTranscript();
+
+  // Removes any chunks in `transcript_chunks_` that overlap with `new_chunk`.
   void RemoveOverlappingChunks(const TranscriptChunk& new_chunk);
 
-  // Stores final transcript chunks in timestamp order.
-  std::list<TranscriptChunk> final_transcript_chunks_;
-  // Stores the most recent non-final transcript chunk.
-  std::optional<TranscriptChunk> most_recent_nonfinal_chunk_;
+  // Stores transcript chunks in timestamp order.
+  std::list<TranscriptChunk> transcript_chunks_;
+
+  // Iterator to the most recent non-final transcript chunk.
+  std::list<TranscriptChunk>::iterator nonfinal_chunk_it_ =
+      transcript_chunks_.end();
+
   mutable bool is_excluded_from_transcript_ = false;
 
   // The next sequence number to assign to a new chunk.
   uint64_t next_sequence_number_ = 0;
 
-  // Iterator to the last inserted chunk, to optimize insertion.  If it is
+  // Iterator to the last inserted final chunk, to optimize insertion. If it is
   // `end()`, then the next insertion will scan the whole list to find the right
   // insertion point.
   std::list<TranscriptChunk>::iterator last_insertion_it_ =
-      final_transcript_chunks_.end();
+      transcript_chunks_.end();
 };
 
 }  // namespace glic

@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
 
 namespace optimization_guide {
 namespace proto {
 class ContentNode;
+class MediaTranscript;
 }  // namespace proto
 }  // namespace optimization_guide
 
@@ -45,6 +45,11 @@ class GlicMediaIntegration {
   virtual void AppendContextForFrame(
       content::RenderFrameHost* rfh,
       optimization_guide::proto::ContentNode* context_root) = 0;
+
+  // Returns the current transcript as a list of `MediaTranscript`s for the
+  // given frame only.
+  virtual std::vector<optimization_guide::proto::MediaTranscript>
+  GetTranscriptsForFrame(content::RenderFrameHost* rfh) = 0;
 
   // Pretend that a peer connection has been added.
   virtual void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) = 0;

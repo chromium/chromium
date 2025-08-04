@@ -15,7 +15,7 @@
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -71,6 +71,8 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   void AppendContextForFrame(
       content::RenderFrameHost* rfh,
       optimization_guide::proto::ContentNode* context_root) override;
+  std::vector<optimization_guide::proto::MediaTranscript>
+  GetTranscriptsForFrame(content::RenderFrameHost* rfh) override;
   void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) override;
 
   void OnContextUpdated(glic::GlicMediaContext* context);
@@ -185,6 +187,36 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
   context_root->mutable_content_attributes()
       ->mutable_text_data()
       ->set_text_content(std::move(result));
+}
+
+std::vector<optimization_guide::proto::MediaTranscript>
+GlicMediaIntegrationImpl::GetTranscriptsForFrame(
+    content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    return {};
+  }
+
+  auto* context = glic::GlicMediaContext::GetForCurrentDocument(rfh);
+  if (!context) {
+    return {};
+  }
+
+  const std::list<glic::GlicMediaContext::TranscriptChunk> trunks =
+      context->GetTranscriptChunks();
+  if (trunks.empty()) {
+    return {};
+  }
+
+  std::vector<optimization_guide::proto::MediaTranscript> transcripts;
+  for (const auto& chunk : trunks) {
+    auto& transcript = transcripts.emplace_back();
+    transcript.set_text(chunk.text);
+    if (chunk.media_timestamp_range) {
+      transcript.set_start_timestamp_milliseconds(
+          chunk.media_timestamp_range->start.InMilliseconds());
+    }
+  }
+  return transcripts;
 }
 
 void GlicMediaIntegrationImpl::OnContextUpdated(

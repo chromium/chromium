@@ -19,16 +19,14 @@ source_set("media") {
   ]
   deps = [
     "//base",
-    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
-    "//components/live_caption:utils",
-    "//content/public/browser",
-  ]
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//components/live_caption",
     "//components/live_caption:constants",
+    "//components/live_caption:utils",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/browser",
   ]
 }
 
@@ -46,7 +44,8 @@ source_set("unit_tests") {
     "//chrome/browser/glic/test_support",
     "//chrome/browser/prefs",
     "//chrome/test:test_support",
-    "//components/optimization_guide/content/browser",
+    "//components/live_caption",
+    "//components/live_caption:constants",
     "//testing/gmock",
     "//testing/gtest",
   ]
