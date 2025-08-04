@@ -229,7 +229,7 @@ void ManagedUserProfileNoticeUI::Initialize(
               ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
               : domain;
       update_data.Set(
-          "valuePropositionTitle",
+          "valuePropTitle",
           manager.empty()
               ? l10n_util::GetStringUTF16(
                     IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE)
