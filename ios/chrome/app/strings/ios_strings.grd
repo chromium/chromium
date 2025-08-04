@@ -5514,8 +5514,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_HISTORY" desc="The detailed text of the 'History' row displayed on Safari import screen displaying the number of history items that will be imported. [iOS only]">
         {count, plural,
-          =1 {{count} history item from Safari private and work profiles}
-          other {{count} history items from Safari private and work profiles}}
+          =1 {{count} history item}
+          other {{count} history items}}
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_NO_DATA" desc="The detailed text of each row displayed on Safari import screen when there is no item of the type to be imported. [iOS only]">
         Nothing to import
