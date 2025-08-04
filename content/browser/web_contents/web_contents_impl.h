@@ -57,7 +57,6 @@
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
-#include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
@@ -546,9 +545,6 @@ class CONTENT_EXPORT WebContentsImpl
                             bool is_subresource) override;
   void GenerateMHTML(const MHTMLGenerationParams& params,
                      base::OnceCallback<void(int64_t)> callback) override;
-  void GenerateMHTMLWithResult(
-      const MHTMLGenerationParams& params,
-      MHTMLGenerationResult::GenerateMHTMLCallback callback) override;
   const std::string& GetContentsMimeType() override;
   blink::RendererPreferences* GetMutableRendererPrefs() override;
   void Close() override;

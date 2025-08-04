@@ -263,8 +263,6 @@ source_set("browser_sources") {
     "media_stream_request.h",
     "message_port_provider.h",
     "mhtml_extra_parts.h",
-    "mhtml_generation_result.cc",
-    "mhtml_generation_result.h",
     "mojo_binder_policy_map.h",
     "mojom_devtools_agent_host_delegate.h",
     "navigation_controller.cc",

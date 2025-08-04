@@ -29,7 +29,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/invalidate_type.h"
-#include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
@@ -1202,18 +1201,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // the callback. See MHTMLGenerationParams for details on generation settings.
   // A resulting |file_size| of -1 represents a failure. Any other value
   // represents the size of the successfully generated file.
-  //
-  // TODO(crbug.com/40606905): GenerateMHTML will eventually be removed
-  // and GenerateMHTMLWithResult will be renamed to GenerateMHTML to replace it.
-  // Both GenerateMHTML and GenerateMHTMLWithResult perform the same operation.
-  // however, GenerateMHTMLWithResult provides a struct as output, that contains
-  // the file size and more.
   virtual void GenerateMHTML(
       const MHTMLGenerationParams& params,
       base::OnceCallback<void(int64_t /* file_size */)> callback) = 0;
-  virtual void GenerateMHTMLWithResult(
-      const MHTMLGenerationParams& params,
-      MHTMLGenerationResult::GenerateMHTMLCallback callback) = 0;
 
   // Returns the MIME type bound to the primary page contents after a primary
   // page navigation.
