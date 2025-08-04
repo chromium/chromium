@@ -48,6 +48,11 @@ ProfileOAuth2TokenService::ProfileOAuth2TokenService(
 }
 
 ProfileOAuth2TokenService::~ProfileOAuth2TokenService() {
+  // Reset the observation before calling Shutdown(). Shutdown() may trigger
+  // immediate delegate destruction, and the delegate's ObserverList destructor
+  // checks that all observers have been removed (DUMP_WILL_BE_CHECK in
+  // base/observer_list.h).
+  token_service_observation_.Reset();
   token_manager_.reset();
   GetDelegate()->Shutdown();
 }
