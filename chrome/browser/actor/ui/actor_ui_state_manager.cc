@@ -239,7 +239,9 @@ void ActorUiStateManager::OnGlicUpdateFloatyState(
     BrowserWindowInterface* bwi) {
   switch (floaty_state) {
     case glic::GlicWindowController::State::kClosed:
-      MaybeShowToast(bwi);
+      if (features::kGlicActorUiToast.Get()) {
+        MaybeShowToast(bwi);
+      }
       break;
     case glic::GlicWindowController::State::kOpen:
     case glic::GlicWindowController::State::kWaitingForGlicToLoad:

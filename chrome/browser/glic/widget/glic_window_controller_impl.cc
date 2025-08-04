@@ -1491,11 +1491,10 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
   state_ = new_state;
 
   // Inform UI components of glic panel open/close.
-  if (features::kGlicActorUiToast.Get()) {
-    Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
-    actor::ActorKeyedService::Get(profile_)
-        ->GetActorUiStateManager()
-        ->OnGlicUpdateFloatyState(state_, last_active_browser);
+  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+  if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
+    actor_keyed_service->GetActorUiStateManager()->OnGlicUpdateFloatyState(
+        state_, last_active_browser);
   }
 
   if (IsWindowOpenAndReady()) {
