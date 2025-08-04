@@ -25,6 +25,8 @@ namespace {
 using ::autofill::test::CreateFieldPrediction;
 using ::autofill::test::EqualsPrediction;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 
 constexpr FieldTypeSet kMLSupportedTypesForTesting = {
     UNKNOWN_TYPE,       NAME_FIRST,
@@ -153,6 +155,93 @@ TEST_F(AutofillFieldTest, GroupsOfHtmlTypes) {
     FieldTypeGroup g2 =
         GroupTypeOfFieldType(HtmlFieldTypeToBestCorrespondingFieldType(t));
     EXPECT_EQ(g1, g2);
+  }
+}
+
+// Tests how server type predictions influence AutofillField::Type().
+TEST_F(AutofillFieldTest, UnionTypesFromServerTypes) {
+  // Returns the AutofillType::GetTypes() computed by AutofillField from server
+  // given `field_types_predicted_by_server`.
+  auto f = [](auto... field_types_predicted_by_server) {
+    AutofillField field;
+    field.set_server_predictions(
+        {CreateFieldPrediction(field_types_predicted_by_server)...});
+    return field.Type().GetTypes();
+  };
+
+  constexpr FieldType kInvalidFieldType =
+      static_cast<FieldType>(15);  // nocheck
+  ASSERT_EQ(ToSafeFieldType(kInvalidFieldType, NO_SERVER_DATA), NO_SERVER_DATA);
+
+  EXPECT_THAT(f(), ElementsAre(UNKNOWN_TYPE));
+
+  // NO_SERVER_DATA is mapped to UNKNOWN_TYPE in
+  // AutofillField::GetComputedPredictionResult();
+  EXPECT_THAT(f(NO_SERVER_DATA), ElementsAre(UNKNOWN_TYPE));
+  EXPECT_THAT(f(kInvalidFieldType), ElementsAre(UNKNOWN_TYPE));
+  EXPECT_THAT(f(UNKNOWN_TYPE), ElementsAre(UNKNOWN_TYPE));
+
+  EXPECT_THAT(f(ADDRESS_HOME_ZIP), ElementsAre(ADDRESS_HOME_ZIP));
+  EXPECT_THAT(f(PASSWORD), ElementsAre(PASSWORD));
+  EXPECT_THAT(f(NAME_FIRST, USERNAME), ElementsAre(NAME_FIRST));
+  EXPECT_THAT(f(USERNAME, NAME_FIRST), ElementsAre(USERNAME));
+
+  {
+    // If kAutofillUnionTypesForAutofillAi is disabled, the Autofill AI
+    // predictions do not affect the overall type.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAutofillUnionTypesForAutofillAi);
+    EXPECT_THAT(f(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY),
+                UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
+    EXPECT_THAT(f(PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_COUNTRY),
+                UnorderedElementsAre(PASSPORT_ISSUING_COUNTRY));
+    EXPECT_THAT(
+        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION, VEHICLE_PLATE_STATE),
+        UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
+    EXPECT_THAT(f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER,
+                  DRIVERS_LICENSE_REGION, VEHICLE_LICENSE_PLATE),
+                UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
+    EXPECT_THAT(
+        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
+          VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
+        UnorderedElementsAre(ADDRESS_HOME_COUNTRY));
+  }
+
+  {
+    // If kAutofillUnionTypesForAutofillAi is enabled, the Autofill AI
+    // predictions are part of the overall type.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
+                                   features::kAutofillUnionTypesForAutofillAi},
+                                  {});
+    EXPECT_THAT(
+        f(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY),
+        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY));
+    EXPECT_THAT(f(PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_COUNTRY),
+                UnorderedElementsAre(PASSPORT_ISSUING_COUNTRY));
+    // Multiple Autofill AI predictions may coexist.
+    EXPECT_THAT(
+        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION, VEHICLE_PLATE_STATE),
+        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_REGION,
+                             VEHICLE_PLATE_STATE));
+    // Conflict resolution: when there are multiple predictions from the same
+    // entities, we take the longest prefix that satisfies the AutofillType
+    // constraints.
+    EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
+                UnorderedElementsAre(NAME_FULL));
+    EXPECT_THAT(
+        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
+          VEHICLE_LICENSE_PLATE),
+        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
+    EXPECT_THAT(
+        f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
+          VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
+        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
+    EXPECT_THAT(
+        f(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_STATE, DRIVERS_LICENSE_NUMBER,
+          DRIVERS_LICENSE_REGION, VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
+        UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
   }
 }
 

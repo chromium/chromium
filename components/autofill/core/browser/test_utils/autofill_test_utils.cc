@@ -1228,7 +1228,8 @@ FieldPrediction CreateFieldPrediction(FieldType type, bool is_override) {
     return CreateFieldPrediction(type, FieldPrediction::SOURCE_UNSPECIFIED);
   }
   return CreateFieldPrediction(
-      type, GroupTypeOfFieldType(type) == FieldTypeGroup::kPasswordField
+      type, ToSafeFieldType(type, NO_SERVER_DATA) == type &&
+                    GroupTypeOfFieldType(type) == FieldTypeGroup::kPasswordField
                 ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
                 : FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
 }

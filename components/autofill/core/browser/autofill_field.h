@@ -448,7 +448,13 @@ class AutofillField : public FormFieldData {
 
  private:
   struct PredictionResult {
+    // The type may be a union type, i.e., hold multiple FieldTypes.
     AutofillType type;
+    // The source of the primary FieldType in `type`: If there are multiple
+    // FieldTypes in `type`, the source only refers to the non-Autofill AI
+    // types.
+    // TODO(crbug.com/432645177): Make the FieldType to which the `source`
+    // applies explicit?
     std::optional<AutofillPredictionSource> source;
   };
 
@@ -456,6 +462,15 @@ class AutofillField : public FormFieldData {
 
   // Whether the heuristics or server predict a credit card field.
   bool IsCreditCardPrediction() const;
+
+  // Creates a union type that contains
+  // - the `primary_field_type` and
+  // - the Autofill AI FieldTypes in the `server_predictions_` (modulo conflict
+  //   resolution).
+  //
+  // A union type is an AutofillType that holds multiple FieldType.
+  // See AutofillType for details.
+  AutofillType MakeAutofillType(FieldType primary_field_type) const;
 
   // Combines the server, heuristic and HTML type based predictions. Doesn't
   // take server overwrites or rationalization into consideration.

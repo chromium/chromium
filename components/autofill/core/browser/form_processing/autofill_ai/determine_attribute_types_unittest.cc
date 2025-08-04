@@ -80,6 +80,8 @@ class DetermineAttributeTypesTest : public testing::Test {
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillUnionTypesForAutofillAi};
 };
 
 // Tests that DetermineAttributeTypes() doesn't crash on empty lists.
