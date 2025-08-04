@@ -20,6 +20,7 @@
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gdbus_fd_list.h"
+#include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 
@@ -57,6 +58,7 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy {
   friend class GnomeDesktopResizer;
   friend class GnomeDisplayInfoLoader;
   friend class GnomeInteractionStrategyFactory;
+  friend class GnomeDesktopDisplayInfoMonitor;
 
   using InitCallback =
       base::OnceCallback<void(base::expected<void, std::string>)>;
@@ -92,6 +94,8 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy {
   std::unique_ptr<GDBusConnectionRef::SignalSubscription> stream_added_signal_
       GUARDED_BY_CONTEXT(sequence_checker_);
   PipewireCaptureStream capture_stream_ GUARDED_BY_CONTEXT(sequence_checker_);
+  GnomeDisplayConfigDBusClient display_config_client_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

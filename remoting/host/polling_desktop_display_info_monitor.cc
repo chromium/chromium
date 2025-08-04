@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/desktop_display_info_monitor.h"
+#include "remoting/host/polling_desktop_display_info_monitor.h"
 
 #include <memory>
 #include <utility>
@@ -30,7 +30,7 @@ constexpr base::TimeDelta kPollingInterval = base::Milliseconds(100);
 
 }  // namespace
 
-DesktopDisplayInfoMonitor::DesktopDisplayInfoMonitor(
+PollingDesktopDisplayInfoMonitor::PollingDesktopDisplayInfoMonitor(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     std::unique_ptr<DesktopDisplayInfoLoader> info_loader)
     : ui_task_runner_(ui_task_runner),
@@ -43,31 +43,30 @@ DesktopDisplayInfoMonitor::DesktopDisplayInfoMonitor(
                      base::Unretained(desktop_display_info_loader_.get())));
 }
 
-DesktopDisplayInfoMonitor::~DesktopDisplayInfoMonitor() {
+PollingDesktopDisplayInfoMonitor::~PollingDesktopDisplayInfoMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ui_task_runner_->DeleteSoon(FROM_HERE,
                               desktop_display_info_loader_.release());
 }
 
-void DesktopDisplayInfoMonitor::Start() {
+void PollingDesktopDisplayInfoMonitor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!timer_running_) {
-    timer_running_ = true;
+  if (!timer_.IsRunning()) {
     timer_.Start(FROM_HERE, kPollingInterval, this,
-                 &DesktopDisplayInfoMonitor::QueryDisplayInfoImpl);
+                 &PollingDesktopDisplayInfoMonitor::QueryDisplayInfoImpl);
   }
 }
 
-void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
+void PollingDesktopDisplayInfoMonitor::QueryDisplayInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!timer_running_) {
+  if (!timer_.IsRunning()) {
     QueryDisplayInfoImpl();
   }
 }
 
-void DesktopDisplayInfoMonitor::AddCallback(
-    DesktopDisplayInfoMonitor::Callback callback) {
+void PollingDesktopDisplayInfoMonitor::AddCallback(
+    PollingDesktopDisplayInfoMonitor::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Adding callbacks is not supported after displays have been loaded.
@@ -76,19 +75,20 @@ void DesktopDisplayInfoMonitor::AddCallback(
   callback_list_.AddUnsafe(std::move(callback));
 }
 
-void DesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
+void PollingDesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!callback_list_.empty()) {
     ui_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&DesktopDisplayInfoLoader::GetCurrentDisplayInfo,
                        base::Unretained(desktop_display_info_loader_.get())),
-        base::BindOnce(&DesktopDisplayInfoMonitor::OnDisplayInfoLoaded,
+        base::BindOnce(&PollingDesktopDisplayInfoMonitor::OnDisplayInfoLoaded,
                        weak_factory_.GetWeakPtr()));
   }
 }
 
-void DesktopDisplayInfoMonitor::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
+void PollingDesktopDisplayInfoMonitor::OnDisplayInfoLoaded(
+    DesktopDisplayInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (callback_list_.empty() || desktop_display_info_ == info) {

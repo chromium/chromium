@@ -34,6 +34,7 @@
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
+#include "remoting/host/polling_desktop_display_info_monitor.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -142,7 +143,7 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
 
 std::unique_ptr<DesktopDisplayInfoMonitor>
 LegacyInteractionStrategy::CreateDisplayInfoMonitor() {
-  return std::make_unique<DesktopDisplayInfoMonitor>(
+  return std::make_unique<PollingDesktopDisplayInfoMonitor>(
       ui_task_runner_, DesktopDisplayInfoLoader::Create());
 }
 

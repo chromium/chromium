@@ -8,7 +8,11 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_DisplayConfig.h"
 #include "third_party/webrtc/modules/portal/scoped_glib.h"
 
 namespace remoting {
@@ -28,6 +32,11 @@ std::string VariantToString(GVariant* variant) {
 }
 
 }  // namespace
+
+GnomeDisplayConfigDBusClient::Subscription::Subscription(
+    std::unique_ptr<GDBusConnectionRef::SignalSubscription> signal_subscription)
+    : signal_subscription_(std::move(signal_subscription)) {}
+GnomeDisplayConfigDBusClient::Subscription::~Subscription() = default;
 
 GnomeDisplayConfigDBusClient::GnomeDisplayConfigDBusClient() {
   weak_ptr_ = weak_factory_.GetWeakPtr();
@@ -52,7 +61,7 @@ void GnomeDisplayConfigDBusClient::Init() {
 void GnomeDisplayConfigDBusClient::GetMonitorsConfig(
     GnomeDisplayConfigDBusClient::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!dbus_connection_) {
+  if (!dbus_connection_.is_initialized()) {
     // The DBus connection is not yet made. When the connection is made,
     // OnDBusGet() will check if there is any pending callback. If so, it
     // will trigger a new call to the DBus GetCurrentState() method.
@@ -73,7 +82,7 @@ void GnomeDisplayConfigDBusClient::ApplyMonitorsConfig(
   ScopedGVariant parameters = config.BuildMonitorsConfigParameters();
   HOST_LOG << "Applying monitors config: " << VariantToString(parameters.get());
   g_dbus_connection_call(
-      dbus_connection_.get(), kDisplayConfigInterfaceName,
+      dbus_connection_.raw(), kDisplayConfigInterfaceName,
       kDisplayConfigObjectPath, kDisplayConfigInterfaceName,
       "ApplyMonitorsConfig", parameters.get(),
       /*reply_type=*/nullptr, G_DBUS_CALL_FLAGS_NO_AUTO_START,
@@ -81,10 +90,26 @@ void GnomeDisplayConfigDBusClient::ApplyMonitorsConfig(
       &GnomeDisplayConfigDBusClient::OnApplyMonitorsConfigReply, this);
 }
 
+std::unique_ptr<GnomeDisplayConfigDBusClient::Subscription>
+GnomeDisplayConfigDBusClient::SubscribeMonitorsChanged(
+    base::RepeatingClosure on_changed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::WrapUnique(new Subscription(
+      dbus_connection_
+          .SignalSubscribe<org_gnome_Mutter_DisplayConfig::MonitorsChanged>(
+              kDisplayConfigInterfaceName, kDisplayConfigObjectPath,
+              base::IgnoreArgs<GVariantRef<"r">>(on_changed))));
+}
+
 void GnomeDisplayConfigDBusClient::FakeDisplayConfigForTest(
     ScopedGVariant config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnDisplayConfigCurrentState(std::move(config));
+}
+
+base::WeakPtr<GnomeDisplayConfigDBusClient>
+GnomeDisplayConfigDBusClient::GetWeakPtr() {
+  return weak_ptr_;
 }
 
 // static
@@ -151,9 +176,9 @@ void GnomeDisplayConfigDBusClient::OnApplyMonitorsConfigReply(
 
 void GnomeDisplayConfigDBusClient::CallDBusGetCurrentState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(dbus_connection_.get());
+  DCHECK(dbus_connection_.is_initialized());
   g_dbus_connection_call(
-      dbus_connection_.get(), kDisplayConfigInterfaceName,
+      dbus_connection_.raw(), kDisplayConfigInterfaceName,
       kDisplayConfigObjectPath, kDisplayConfigInterfaceName, "GetCurrentState",
       /*parameters=*/nullptr,
       /*reply_type=*/nullptr, G_DBUS_CALL_FLAGS_NO_AUTO_START,
@@ -164,7 +189,7 @@ void GnomeDisplayConfigDBusClient::CallDBusGetCurrentState() {
 void GnomeDisplayConfigDBusClient::OnDBusGet(
     ScopedGObject<GDBusConnection> dbus_connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dbus_connection_ = std::move(dbus_connection);
+  dbus_connection_ = GDBusConnectionRef(std::move(dbus_connection));
   HOST_LOG << "Got session D-Bus";
 
   if (pending_callback_) {

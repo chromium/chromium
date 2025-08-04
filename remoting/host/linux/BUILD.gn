@@ -149,10 +149,10 @@ source_set("platform_impls") {
     "ei_sender_session.h",
     "gnome_action_executor.cc",
     "gnome_action_executor.h",
+    "gnome_desktop_display_info_monitor.cc",
+    "gnome_desktop_display_info_monitor.h",
     "gnome_desktop_resizer.cc",
     "gnome_desktop_resizer.h",
-    "gnome_display_info_loader.cc",
-    "gnome_display_info_loader.h",
     "gnome_input_injector.cc",
     "gnome_input_injector.h",
     "gnome_interaction_strategy.cc",
@@ -212,6 +212,7 @@ source_set("x11_display_utils") {
     "x11_display_util.h",
   ]
   deps = [
+    ":utils",
     ":x11",
     "//remoting/base:logging",
     "//remoting/host:display_layout",

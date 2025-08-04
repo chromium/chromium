@@ -43,8 +43,8 @@
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_ScreenCast.h"
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gnome_action_executor.h"
+#include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
 #include "remoting/host/linux/gnome_desktop_resizer.h"
-#include "remoting/host/linux/gnome_display_info_loader.h"
 #include "remoting/host/linux/gnome_input_injector.h"
 #include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_local_input_monitor.h"
@@ -158,12 +158,8 @@ std::unique_ptr<DesktopDisplayInfoMonitor>
 GnomeInteractionStrategy::CreateDisplayInfoMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO: crbug.com/432217140 - Pass in `ui_task_runner_` instead, when
-  // supporting multiple displays. The GNOME DisplayConfig API will be needed
-  // to fetch the layout, and it makes sense to run that on the UI thread.
-  return std::make_unique<DesktopDisplayInfoMonitor>(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      std::make_unique<GnomeDisplayInfoLoader>(weak_ptr_factory_.GetWeakPtr()));
+  return std::make_unique<GnomeDesktopDisplayInfoMonitor>(
+      display_config_client_.GetWeakPtr());
 }
 
 std::unique_ptr<LocalInputMonitor>
@@ -212,12 +208,14 @@ void GnomeInteractionStrategy::OnInitError(std::string_view error_message,
 
 void GnomeInteractionStrategy::Init(
     base::OnceCallback<void(base::expected<void, std::string>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HOST_LOG << "Starting Mutter remote desktop session";
   DCHECK(!init_callback_);
   init_callback_ = std::move(callback);
   GDBusConnectionRef::CreateForSessionBus(
       CheckResultAndContinue(&GnomeInteractionStrategy::OnConnectionCreated,
                              "Failed to connect to D-Bus session bus"));
+  display_config_client_.Init();
 }
 
 void GnomeInteractionStrategy::OnConnectionCreated(
