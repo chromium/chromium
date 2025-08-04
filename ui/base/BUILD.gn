@@ -28,6 +28,8 @@ if (is_android) {
 } else if (is_mac) {
   import("//build/config/mac/rules.gni")
   import("//build/util/branding.gni")
+} else if (is_fuchsia) {
+  import("//build/config/fuchsia/config.gni")
 }
 
 build_ime = !is_ios
@@ -446,6 +448,8 @@ component("base") {
       sources += [ "pointer/pointer_device_ios.cc" ]
     } else if (is_linux || is_chromeos) {
       sources += [ "pointer/pointer_device_linux.cc" ]
+    } else if (is_fuchsia && is_web_engine) {
+      sources += [ "pointer/pointer_device_web_engine.cc" ]
     } else {
       # Empty implementation for all other cases.
       sources += [ "pointer/pointer_device.cc" ]
