@@ -34,6 +34,7 @@ struct AutofillSaveCardUiInfo {
   std::u16string cardholder_name;
   std::u16string expiration_date_month;
   std::u16string expiration_date_year;
+  std::u16string card_cvc;
   // Accessibility description for a card chip containing the card icon, label
   // and sub label.
   std::u16string card_description;

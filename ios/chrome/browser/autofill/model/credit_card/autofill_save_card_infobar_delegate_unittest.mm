@@ -111,7 +111,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Local) {
   EXPECT_TRUE(delegate->UpdateAndAccept(
       /*cardholder_name=*/u"Test User",
       /*expiration_date_month=*/u"04",
-      /*expiration_date_year=*/u"24"));
+      /*expiration_date_year=*/u"24",
+      /*cvc=*/u""));
 
   ASSERT_TRUE(last_user_decision_);
   EXPECT_EQ(
@@ -131,11 +132,13 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Upload) {
   const std::u16string cardholder_name = u"Test User";
   const std::u16string expiration_date_month = u"04";
   const std::u16string expiration_date_year = u"24";
+  const std::u16string card_cvc = u"123";
 
   EXPECT_TRUE(delegate->UpdateAndAccept(
       /*cardholder_name=*/cardholder_name,
       /*expiration_date_month=*/expiration_date_month,
-      /*expiration_date_year=*/expiration_date_year));
+      /*expiration_date_year=*/expiration_date_year,
+      /*cvc=*/card_cvc));
 
   ASSERT_TRUE(last_user_decision_ && last_user_provided_card_details_);
   EXPECT_EQ(
@@ -146,7 +149,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Upload) {
       ::testing::FieldsAre(/*cardholder_name=*/cardholder_name,
                            /*expiration_date_month=*/expiration_date_month,
                            /*expiration_date_year=*/expiration_date_year,
-                           /*cvc=*/u""));
+                           /*cvc=*/card_cvc));
 }
 
 // Tests that CreditCardUploadCompleted() runs

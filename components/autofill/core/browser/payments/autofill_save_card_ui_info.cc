@@ -115,6 +115,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   ui_info.cardholder_name = card.GetRawInfo(CREDIT_CARD_NAME_FULL);
   ui_info.expiration_date_month = card.Expiration2DigitMonthAsString();
   ui_info.expiration_date_year = card.Expiration4DigitYearAsString();
+  ui_info.card_cvc = card.cvc();
   ui_info.card_description = GetCardDescription(
       card.nickname(), card.NetworkForDisplay(), card.LastFourDigits(),
       card.ExpirationDateForDisplay());

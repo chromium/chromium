@@ -331,7 +331,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
   ON_CALL(*delegate_,
           UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
                           base::SysNSStringToUTF16(kValidExpirationMonth),
-                          base::SysNSStringToUTF16(kValidExpirationYear)))
+                          base::SysNSStringToUTF16(kValidExpirationYear),
+                          testing::IsEmpty()))
       .WillByDefault(Return(true));
   SaveCard();
   histogramTester.ExpectBucketCount(
@@ -404,7 +405,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
                               base::SysNSStringToUTF16(kValidExpirationMonth),
-                              base::SysNSStringToUTF16(kValidExpirationYear)));
+                              base::SysNSStringToUTF16(kValidExpirationYear),
+                              testing::IsEmpty()));
   SaveCard();
 
   EXPECT_FALSE(consumer.inLoadingState);
@@ -424,7 +426,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, OnSaveShowLoading) {
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
                               base::SysNSStringToUTF16(kValidExpirationMonth),
-                              base::SysNSStringToUTF16(kValidExpirationYear)));
+                              base::SysNSStringToUTF16(kValidExpirationYear),
+                              testing::IsEmpty()));
   SaveCard();
 
   EXPECT_TRUE(consumer.inLoadingState);

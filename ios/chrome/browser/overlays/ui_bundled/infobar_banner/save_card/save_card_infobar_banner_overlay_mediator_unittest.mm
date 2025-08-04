@@ -117,9 +117,10 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOn) {
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOff) {
   InitInfobar(/*for_upload=*/false);
 
-  EXPECT_CALL(*delegate_, UpdateAndAccept(delegate_->cardholder_name(),
-                                          delegate_->expiration_date_month(),
-                                          delegate_->expiration_date_year()));
+  EXPECT_CALL(*delegate_,
+              UpdateAndAccept(delegate_->cardholder_name(),
+                              delegate_->expiration_date_month(),
+                              delegate_->expiration_date_year(), _));
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }
 
@@ -242,7 +243,7 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, ShowSnackbarForLocalSave) {
   InitInfobar(/*for_upload=*/false);
 
-  EXPECT_CALL(*delegate_, UpdateAndAccept(_, _, _))
+  EXPECT_CALL(*delegate_, UpdateAndAccept(_, _, _, _))
       .WillOnce(testing::Return(true));
 
   // Expected snackbar message content.

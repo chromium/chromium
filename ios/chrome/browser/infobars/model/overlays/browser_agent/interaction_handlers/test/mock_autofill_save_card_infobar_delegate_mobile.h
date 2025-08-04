@@ -36,7 +36,8 @@ class MockAutofillSaveCardInfoBarDelegateMobile
               UpdateAndAccept,
               (std::u16string cardholder_name,
                std::u16string expiration_date_month,
-               std::u16string expiration_date_year),
+               std::u16string expiration_date_year,
+               std::u16string cvc),
               (override));
   MOCK_METHOD(void, OnLegalMessageLinkClicked, (GURL url), (override));
   MOCK_METHOD(void, InfoBarDismissed, (), (override));

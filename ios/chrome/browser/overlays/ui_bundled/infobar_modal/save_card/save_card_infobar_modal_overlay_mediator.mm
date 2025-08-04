@@ -219,7 +219,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 
   infobar->set_accepted(delegate->UpdateAndAccept(
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
-      base::SysNSStringToUTF16(year)));
+      base::SysNSStringToUTF16(year), /*cvc=*/u""));
 
   if (delegate->is_for_upload()) {
     autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(

@@ -68,13 +68,15 @@ bool AutofillSaveCardInfoBarDelegateIOS::ShouldExpire(
 bool AutofillSaveCardInfoBarDelegateIOS::UpdateAndAccept(
     std::u16string cardholder_name,
     std::u16string expiration_date_month,
-    std::u16string expiration_date_year) {
+    std::u16string expiration_date_year,
+    std::u16string cvc) {
   payments::PaymentsAutofillClient::UserProvidedCardDetails
       user_provided_details;
-  user_provided_details.cardholder_name = cardholder_name;
-  user_provided_details.expiration_date_month = expiration_date_month;
-  user_provided_details.expiration_date_year = expiration_date_year;
-  user_provided_details.cvc = u"";
+  user_provided_details.cardholder_name = std::move(cardholder_name);
+  user_provided_details.expiration_date_month =
+      std::move(expiration_date_month);
+  user_provided_details.expiration_date_year = std::move(expiration_date_year);
+  user_provided_details.cvc = std::move(cvc);
   delegate()->OnUiUpdatedAndAccepted(user_provided_details);
   return true;
 }
