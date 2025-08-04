@@ -36,13 +36,6 @@ BASE_FEATURE(kWebViewDisableCHIPS,
              "WebViewDisableCHIPS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disables MSAA and default sharpening when rendering scaled elements. This is
-// often preferable when rendering images/video but can have adverse effects for
-// text on some displays.
-BASE_FEATURE(kWebViewDisableSharpeningAndMSAA,
-             "WebViewDisableSharpeningAndMSAA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables draining the WebView prefetch queue (for prefetches triggered from
 // background thread) during WebView instance initialization and before
 // WebView#loadUrl().
@@ -245,6 +238,13 @@ BASE_FEATURE(kWebViewReportImeInsets,
 // thread.
 BASE_FEATURE(kWebViewShortCircuitShouldInterceptRequest,
              "WebViewShortCircuitShouldInterceptRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, WebView disables MSAA and doesn't auto sharpen mip-mapped
+// textures on very large screen devices (such as TVs). The exact criteria for
+// what qualifies for this can be found in AwGrContextOptionsProvider.java.
+BASE_FEATURE(kWebViewUseRenderingHeuristic,
+             "WebViewUseRenderingHeuristic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, webview chromium initialization uses the startup tasks logic
