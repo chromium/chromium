@@ -2777,11 +2777,9 @@ enum class ToolbarKind {
     if (lensOverlayVisible) {
       id<LensOverlayCommands> lensOverlayHandler =
           HandlerForProtocol(_dispatcher, LensOverlayCommands);
-      // TODO(crbug.com/436171078): add reader mode activation as lens dismiss
-      // reason.
       [lensOverlayHandler
           destroyLensUI:YES
-                 reason:lens::LensOverlayDismissalSource::kFindInPageInvoked
+                 reason:lens::LensOverlayDismissalSource::kReaderModeActivated
              completion:base::CallbackToBlock(std::move(activateReader))];
       return;
     }

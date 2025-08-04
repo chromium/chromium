@@ -129,7 +129,10 @@ enum class LensOverlayDismissalSource {
   // The user tapped the "next" button on the FRE promo. Only used on iOS.
   kFREPromoNextButton = 32,
 
-  kMaxValue = kFREPromoNextButton
+  // The user activated reader mode. Only used on iOS.
+  kReaderModeActivated = 33,
+
+  kMaxValue = kReaderModeActivated
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 
