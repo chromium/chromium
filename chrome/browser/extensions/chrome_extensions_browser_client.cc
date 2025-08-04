@@ -38,6 +38,7 @@
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
+#include "chrome/browser/extensions/chrome_kiosk_delegate.h"
 #include "chrome/browser/extensions/chrome_url_request_util.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -625,6 +626,13 @@ void ChromeExtensionsBrowserClient::GetTabAndWindowIdForWebContents(
     *tab_id = -1;
     *window_id = -1;
   }
+}
+
+KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
+  if (!kiosk_delegate_) {
+    kiosk_delegate_ = std::make_unique<ChromeKioskDelegate>();
+  }
+  return kiosk_delegate_.get();
 }
 
 SafeBrowsingDelegate* ChromeExtensionsBrowserClient::GetSafeBrowsingDelegate() {

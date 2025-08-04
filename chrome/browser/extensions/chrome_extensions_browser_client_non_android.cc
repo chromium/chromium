@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
-#include "chrome/browser/extensions/chrome_kiosk_delegate.h"
 #include "chrome/browser/extensions/chrome_process_manager_delegate.h"
 #include "chrome/browser/extensions/chrome_safe_browsing_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -87,13 +86,6 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
       "", embedder_process_id,
       /*webview_embedder_frame_id=*/IPC::mojom::kRoutingIdNone,
       view_instance_id));
-}
-
-KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
-  if (!kiosk_delegate_) {
-    kiosk_delegate_ = std::make_unique<ChromeKioskDelegate>();
-  }
-  return kiosk_delegate_.get();
 }
 
 void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(

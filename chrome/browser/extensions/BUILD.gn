@@ -230,6 +230,7 @@ source_set("extensions") {
     "chrome_extension_web_contents_observer.h",
     "chrome_extensions_browser_api_provider.cc",
     "chrome_extensions_browser_api_provider.h",
+    "chrome_kiosk_delegate.h",
     "chrome_url_request_util.cc",
     "chrome_url_request_util.h",
     "chrome_zipfile_installer.cc",
@@ -652,6 +653,7 @@ source_set("extensions") {
       "api/messaging/native_messaging_launch_from_native.h",
       "api/messaging/native_process_launcher.cc",
       "api/messaging/native_process_launcher.h",
+      "chrome_kiosk_delegate_non_chromeos.cc",
     ]
     if (is_posix) {
       sources += [ "api/messaging/launch_context_posix.cc" ]
@@ -785,7 +787,6 @@ source_set("extensions") {
       "chrome_app_sorting.h",
       "chrome_extensions_browser_interface_binders.cc",
       "chrome_extensions_browser_interface_binders.h",
-      "chrome_kiosk_delegate.h",
       "chrome_process_manager_delegate.cc",
       "chrome_process_manager_delegate.h",
       "device_permissions_dialog_controller.cc",
@@ -1215,7 +1216,6 @@ source_set("extensions") {
         "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
         "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
         "api/image_writer_private/operation_nonchromeos.cc",
-        "chrome_kiosk_delegate.cc",
         "preinstalled_apps.cc",
         "preinstalled_apps.h",
       ]
