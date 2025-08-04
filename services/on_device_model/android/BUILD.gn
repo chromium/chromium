@@ -57,7 +57,10 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni_headers",
+  ]
 }
 
 android_library("native_java_unittests_java") {
@@ -87,4 +90,8 @@ generate_jni("jni_headers") {
 generate_jni("native_j_unittests_jni_headers") {
   testonly = true
   sources = [ "native_java_unittests/src/org/chromium/on_device_model/OnDeviceModelBridgeNativeUnitTestHelper.java" ]
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  sources = [ "backend_session_impl_android.h" ]
 }

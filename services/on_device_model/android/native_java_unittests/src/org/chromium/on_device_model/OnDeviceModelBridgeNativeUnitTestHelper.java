@@ -26,6 +26,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         // If true, the onComplete callback will be called asynchronously through
         // resumeOnCompleteCallback.
         private boolean mCompleteAsync;
+        private @GenerateResult int mGenerateResult;
         private boolean mNativeDestroyed;
         private long mNativeBackendSession;
         private final ModelExecutionFeature mFeature;
@@ -34,6 +35,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         public MockAiCoreSession(ModelExecutionFeature feature, SessionParams params) {
             mFeature = feature;
             mParams = params;
+            mGenerateResult = GenerateResult.SUCCESS;
         }
 
         @Override
@@ -69,7 +71,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
                 // Safe the native backend session pointer for later.
                 mNativeBackendSession = nativeBackendSession;
             } else {
-                AiCoreSessionJni.get().onComplete(nativeBackendSession);
+                AiCoreSessionJni.get().onComplete(nativeBackendSession, mGenerateResult);
             }
         }
 
@@ -83,7 +85,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
             if (mNativeDestroyed) {
                 return;
             }
-            AiCoreSessionJni.get().onComplete(mNativeBackendSession);
+            AiCoreSessionJni.get().onComplete(mNativeBackendSession, mGenerateResult);
         }
     }
 
@@ -126,6 +128,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     @CalledByNative
     public void resumeOnCompleteCallback() {
         mMockAiCoreSessionFactory.mSession.resumeOnCompleteCallback();
+    }
+
+    @CalledByNative
+    public void setGenerateResult(int generateResult) {
+        mMockAiCoreSessionFactory.mSession.mGenerateResult = generateResult;
     }
 
     @CalledByNative

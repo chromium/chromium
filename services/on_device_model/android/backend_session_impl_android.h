@@ -18,6 +18,17 @@ namespace on_device_model {
 // lifetime will be created when this object is created.
 class BackendSessionImplAndroid : public BackendSession {
  public:
+  // The result of a generate call.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.on_device_model
+  enum class GenerateResult {
+    kSuccess = 0,
+    kUnknownError = 1,
+    kApiNotAvailable = 2,
+    kMaxValue = kApiNotAvailable,
+  };
+
   BackendSessionImplAndroid(
       optimization_guide::proto::ModelExecutionFeature feature,
       on_device_model::mojom::SessionParamsPtr params);
@@ -48,7 +59,7 @@ class BackendSessionImplAndroid : public BackendSession {
   // Called when the response of `Generate` is received from the AiCoreSession.
   void OnResponse(const std::string& response);
   // Called when the response of `Generate` is completed from the AiCoreSession.
-  void OnComplete();
+  void OnComplete(GenerateResult generate_result);
 
  private:
   // The Java counterpart of this object.

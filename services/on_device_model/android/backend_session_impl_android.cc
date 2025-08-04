@@ -14,6 +14,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/on_device_model/android/on_device_model_bridge.h"
@@ -120,13 +121,19 @@ void BackendSessionImplAndroid::OnResponse(const std::string& response) {
   responder_->OnResponse(std::move(chunk));
 }
 
-void BackendSessionImplAndroid::OnComplete() {
+void BackendSessionImplAndroid::OnComplete(GenerateResult generate_result) {
+  base::UmaHistogramEnumeration("OnDeviceModel.Android.GenerateResult",
+                                generate_result);
   responder_->OnComplete(on_device_model::mojom::ResponseSummary::New());
   responder_.reset();
 }
 
-void JNI_AiCoreSession_OnComplete(JNIEnv* env, jlong backend_session) {
-  reinterpret_cast<BackendSessionImplAndroid*>(backend_session)->OnComplete();
+void JNI_AiCoreSession_OnComplete(JNIEnv* env,
+                                  jlong backend_session,
+                                  jint j_generate_result) {
+  reinterpret_cast<BackendSessionImplAndroid*>(backend_session)
+      ->OnComplete(static_cast<BackendSessionImplAndroid::GenerateResult>(
+          j_generate_result));
 }
 
 void JNI_AiCoreSession_OnResponse(

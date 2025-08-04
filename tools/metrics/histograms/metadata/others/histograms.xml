@@ -6457,6 +6457,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OnDeviceModel.Android.GenerateResult"
+    enum="OnDeviceModelAndroidGenerateResult" expires_after="2026-01-28">
+  <owner>cduvall@chromium.org</owner>
+  <owner>xinghuilu@chromium.org</owner>
+  <summary>
+    Records the result of generate on Android. Logged exactly once when a
+    generate request has completed.
+  </summary>
+</histogram>
+
 <histogram name="OnDeviceModel.BenchmarkDuration" units="ms"
     expires_after="2025-12-28">
   <owner>cduvall@chromium.org</owner>

@@ -35,7 +35,7 @@ interface AiCoreSession {
 
     @NativeMethods
     interface Natives {
-        void onComplete(long backendSession);
+        void onComplete(long backendSession, @GenerateResult int result);
 
         void onResponse(long backendSession, String response);
     }

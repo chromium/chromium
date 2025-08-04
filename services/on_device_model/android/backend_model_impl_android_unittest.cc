@@ -6,8 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/android/backend_session_impl_android.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,6 +56,7 @@ class BackendModelImplAndroidTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   raw_ptr<JNIEnv> env_;
   base::android::ScopedJavaGlobalRef<jobject> java_helper_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<BackendModel> model_;
 };
 
@@ -66,7 +69,10 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithDefaultFactory) {
   session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
                     /*on_complete=*/base::DoNothing());
   response_holder.WaitForCompletion();
-  EXPECT_THAT(response_holder.responses(), ElementsAre("AiCore response"));
+  EXPECT_TRUE(response_holder.responses().empty());
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult",
+      BackendSessionImplAndroid::GenerateResult::kApiNotAvailable, 1);
 }
 
 TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
@@ -110,6 +116,31 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
       response_holder.responses(),
       ElementsAre(
           "<system>mock system input<end><user>mock user input<end><model>"));
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult",
+      BackendSessionImplAndroid::GenerateResult::kSuccess, 1);
+}
+
+TEST_F(BackendModelImplAndroidTest, GenerateWithUnknownError) {
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreSessionFactory(
+      env_, java_helper_);
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setGenerateResult(
+      env_, java_helper_,
+      static_cast<int>(
+          BackendSessionImplAndroid::GenerateResult::kUnknownError));
+
+  TestResponseHolder response_holder;
+  session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
+                    /*on_complete=*/base::DoNothing());
+  response_holder.WaitForCompletion();
+  EXPECT_THAT(response_holder.responses(), ElementsAre(""));
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult",
+      BackendSessionImplAndroid::GenerateResult::kUnknownError, 1);
 }
 
 TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
@@ -144,6 +175,9 @@ TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
     response_holder.WaitForCompletion();
     EXPECT_THAT(response_holder.responses(), ElementsAre("mock input"));
   }
+  histogram_tester_.ExpectUniqueSample(
+      "OnDeviceModel.Android.GenerateResult",
+      BackendSessionImplAndroid::GenerateResult::kSuccess, 2);
 }
 
 TEST_F(BackendModelImplAndroidTest, NativeSessionDeletionIsSafe) {

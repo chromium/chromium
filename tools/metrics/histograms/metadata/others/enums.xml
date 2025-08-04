@@ -197,6 +197,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed after retry limit"/>
 </enum>
 
+<enum name="OnDeviceModelAndroidGenerateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UnknownError"/>
+  <int value="2" label="ApiNotAvailable"/>
+</enum>
+
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
   <int value="1" label="System Logs Uploader"/>

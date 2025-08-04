@@ -11,9 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 class AiCoreSessionUpstreamImpl implements AiCoreSession {
     @Override
     public void generate(long nativeBackendSession, Object[] inputPieces) {
-        // TODO(crbug.com/425408635): Return an error instead.
-        AiCoreSessionJni.get().onResponse(nativeBackendSession, "AiCore response");
-        AiCoreSessionJni.get().onComplete(nativeBackendSession);
+        AiCoreSessionJni.get().onComplete(nativeBackendSession, GenerateResult.API_NOT_AVAILABLE);
     }
 
     @Override
