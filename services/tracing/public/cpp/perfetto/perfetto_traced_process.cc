@@ -52,7 +52,7 @@ namespace {
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kWindowsSystemTracingInBrowser,
              "WindowsSystemTracingInBrowser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 PerfettoTracedProcess* g_instance = nullptr;
