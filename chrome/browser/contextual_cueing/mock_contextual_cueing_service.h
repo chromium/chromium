@@ -38,7 +38,7 @@ class MockContextualCueingService : public ContextualCueingService {
                bool,
                std::optional<std::vector<std::string>>,
                GlicSuggestionsCallback));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               GetContextualGlicZeroStateSuggestionsForPinnedTabs,
               (std::vector<content::WebContents*>,
                bool,

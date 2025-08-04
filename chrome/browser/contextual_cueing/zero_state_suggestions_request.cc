@@ -26,6 +26,7 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     const content::WebContents* focused_tab)
     : begin_time_(base::TimeTicks::Now()),
       pending_base_request_(pending_base_request),
+      requested_tabs_(requested_tabs),
       optimization_guide_keyed_service_(optimization_guide_keyed_service) {
   OPTIMIZATION_GUIDE_LOG(
       optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -75,6 +76,12 @@ ZeroStateSuggestionsRequest::~ZeroStateSuggestionsRequest() {
       "request");
 }
 
+// static
+void ZeroStateSuggestionsRequest::Destroy(
+    std::unique_ptr<ZeroStateSuggestionsRequest> request) {
+  // The unique_ptr deletes automatically.
+}
+
 void ZeroStateSuggestionsRequest::AddCallback(
     base::OnceCallback<void(std::vector<std::string>)> callback) {
   // Check if we have cached suggestions if we are in focused tab mode.
@@ -89,6 +96,11 @@ void ZeroStateSuggestionsRequest::AddCallback(
   }
 
   pending_callbacks_.AddUnsafe(std::move(callback));
+}
+
+std::vector<content::WebContents*>
+ZeroStateSuggestionsRequest::GetRequestedTabs() const {
+  return requested_tabs_;
 }
 
 void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(

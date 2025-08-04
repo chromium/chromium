@@ -98,7 +98,26 @@ void GlicZeroStateSuggestionsManager::
   }
 
   if (contextual_cueing_service_) {
-    // Notify host that suggestions are pending.
+    // Debounce if we already have an outstanding request for the same set.
+    std::optional<std::vector<content::WebContents*>>
+        outstanding_pinned_tabs_contents =
+            contextual_cueing_service_->GetOutstandingPinnedTabsContents();
+    if (outstanding_pinned_tabs_contents &&
+        outstanding_pinned_tabs_contents->size() == pinned_tab_data.size()) {
+      // Check if they are the same.
+      bool all_matches = true;
+      for (size_t i = 0; i < pinned_tab_data.size(); i++) {
+        if (outstanding_pinned_tabs_contents->at(i) != pinned_tab_data[i]) {
+          all_matches = false;
+        }
+      }
+      if (all_matches) {
+        return;
+      }
+    }
+
+    // Notify host that suggestions are pending in case there were suggestions
+    // and we are posting an invalid state.
     host_->NotifyZeroStateSuggestion(
         MakePendingSuggestionsPtr(),
         mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
@@ -107,15 +126,24 @@ void GlicZeroStateSuggestionsManager::
     content::WebContents* active_web_contents =
         focused_tab_data.focus() ? focused_tab_data.focus()->GetContents()
                                  : nullptr;
-    contextual_cueing_service_
-        ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-            pinned_tab_data, is_first_run, supported_tools, active_web_contents,
-            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                   OnZeroStateSuggestionsNotify,
-                               GetWeakPtr(), is_first_run, supported_tools),
-                /*returned_suggestions=*/
-                std::vector<std::string>({})));
+    bool suggestions_pending =
+        contextual_cueing_service_
+            ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+                pinned_tab_data, is_first_run, supported_tools,
+                active_web_contents,
+                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                       OnZeroStateSuggestionsNotify,
+                                   GetWeakPtr(), is_first_run, supported_tools),
+                    /*returned_suggestions=*/
+                    std::vector<std::string>({})));
+
+    if (suggestions_pending) {
+      // Notify host that suggestions are pending.
+      host_->NotifyZeroStateSuggestion(
+          MakePendingSuggestionsPtr(),
+          mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
+    }
   }
 }
 

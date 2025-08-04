@@ -40,9 +40,14 @@ class ZeroStateSuggestionsRequest {
 
   ~ZeroStateSuggestionsRequest();
 
+  static void Destroy(std::unique_ptr<ZeroStateSuggestionsRequest>);
+
   // Adds a callback for this pending request that gets invoked when suggestions
   // have been returned.
   void AddCallback(base::OnceCallback<void(std::vector<std::string>)>);
+
+  // Returns the tabs that were requested to get suggestions for.
+  std::vector<content::WebContents*> GetRequestedTabs() const;
 
  private:
   friend class ContextualCueingServiceTestZeroStateSuggestions;
@@ -76,6 +81,9 @@ class ZeroStateSuggestionsRequest {
 
   // Weak pointer to focused tab page data to cache suggestions later.
   base::WeakPtr<ZeroStateSuggestionsPageData> focused_tab_page_data_;
+
+  // The tabs requested to get suggestions for.
+  std::vector<content::WebContents*> requested_tabs_;
 
   // Not owned. Guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;

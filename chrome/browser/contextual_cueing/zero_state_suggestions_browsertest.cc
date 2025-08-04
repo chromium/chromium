@@ -469,10 +469,13 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
   base::test::TestFuture<std::vector<std::string>> future;
 
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
-      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-          {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, initial_web_contents, future.GetCallback());
+  // This is true since we do not know the answer yet.
+  EXPECT_TRUE(
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              {initial_web_contents, web_contents2}, /*is_fre=*/false,
+              /*supported_tools=*/{}, initial_web_contents,
+              future.GetCallback()));
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
@@ -500,10 +503,12 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
   base::test::TestFuture<std::vector<std::string>> future;
 
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
-      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-          {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, initial_web_contents, future.GetCallback());
+  EXPECT_TRUE(
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              {initial_web_contents, web_contents2}, /*is_fre=*/false,
+              /*supported_tools=*/{}, initial_web_contents,
+              future.GetCallback()));
   EXPECT_EQ(3u, future.Get().size());
   EXPECT_EQ("suggestion 1", future.Get()[0]);
   EXPECT_EQ("suggestion 2", future.Get()[1]);
@@ -526,10 +531,11 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   SetUpSuccessfulModelExecution();
 
   base::test::TestFuture<std::vector<std::string>> future;
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
-      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-          {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, nullptr, future.GetCallback());
+  EXPECT_FALSE(
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              {initial_web_contents, web_contents2}, /*is_fre=*/false,
+              /*supported_tools=*/{}, nullptr, future.GetCallback()));
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 
@@ -561,10 +567,12 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
 
   base::test::TestFuture<std::vector<std::string>> future;
 
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
-      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-          {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, initial_web_contents, future.GetCallback());
+  EXPECT_TRUE(
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              {initial_web_contents, web_contents2}, /*is_fre=*/false,
+              /*supported_tools=*/{}, initial_web_contents,
+              future.GetCallback()));
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(3u, future.Get().size());
   EXPECT_EQ("suggestion 1", future.Get()[0]);
