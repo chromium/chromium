@@ -462,6 +462,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   _entrypointContainer.accessibilityLabel =
       base::SysUTF8ToNSString(config->accessibility_label);
+  if (config->accessibility_hint.size() > 0) {
+    _entrypointContainer.accessibilityHint =
+        base::SysUTF8ToNSString(config->accessibility_hint);
+  }
 
   _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
 

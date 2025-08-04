@@ -65,8 +65,12 @@ struct ContextualPanelItemConfiguration {
   std::optional<base::TimeDelta> large_entrypoint_displayed_duration;
 
   // Required. The string the entrypoint's badge button should have for
-  // accessibility.
+  // accessibility label.
   std::string accessibility_label;
+
+  // Optional. The string the entrypoint's badge button should have for
+  // accessibility hint.
+  std::string accessibility_hint;
 
   // Required. The name of the image the UI can show the user if this item is
   // the primary item in the contextual panel.

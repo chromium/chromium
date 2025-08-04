@@ -1739,6 +1739,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW" desc="The What's New title on the new tab page [Length: 10em]">
         What's New
       </message>
+      <message name="IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_HINT" desc="Accessibility hint for the button appearing as the Contextual Panel entry point for Reader mode (appears in the omnibox)">
+        Turn on Reading Mode
+      </message>
       <message name="IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE" desc="Message appearing as the Contextual Panel entry point for Reader mode (appears in the omnibox)">
         Reading mode available
       </message>
