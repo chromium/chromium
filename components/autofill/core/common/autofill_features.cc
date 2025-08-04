@@ -815,6 +815,13 @@ BASE_FEATURE(kAutofillServerUploadMoreData,
              "AutofillServerUploadMoreData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/435646513) - Clean-up after feature lands at 100% Stable.
+// Enables the new experimental server-side signatures for evaluation purposes.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillServerExperimentalSignatures,
+             "AutofillServerExperimentalSignatures",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces the secondary signature with the structural signature for Uploads.
 // For Queries still only the secondary (alternative) signature is used.
 // TODO(crbug.com/431737839): Clean up when roll out finishes successfully.

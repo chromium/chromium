@@ -213,6 +213,39 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
   return request.SerializeAsString() == expected.SerializeAsString();
 }
 
+MATCHER_P(EqualsQueryProto, expected_const, "") {
+  AutofillPageQueryRequest expected = expected_const;
+  AutofillPageQueryRequest request;
+  if (!request.ParseFromString(arg)) {
+    return false;
+  }
+
+  // TODO(crbug.com/430889664): Clearing these fields as they're not currently
+  // used for fetching PWM predictions. When alternative signature is deprecated
+  // in favor of structural signature and three-bit hashes, we should update the
+  // test to check that these fields are set correctly.
+  for (int i = 0; i < request.forms_size(); ++i) {
+    request.mutable_forms(i)->clear_structural_signature();
+    request.mutable_forms(i)->clear_three_bit_hashed_form_metadata();
+    for (int j = 0; j < request.forms(i).fields_size(); ++j) {
+      request.mutable_forms(i)
+          ->mutable_fields(j)
+          ->clear_three_bit_hashed_field_metadata();
+    }
+  }
+  for (int i = 0; i < expected.forms_size(); ++i) {
+    expected.mutable_forms(i)->clear_structural_signature();
+    expected.mutable_forms(i)->clear_three_bit_hashed_form_metadata();
+    for (int j = 0; j < expected.forms(i).fields_size(); ++j) {
+      expected.mutable_forms(i)
+          ->mutable_fields(j)
+          ->clear_three_bit_hashed_field_metadata();
+    }
+  }
+
+  return request.SerializeAsString() == expected.SerializeAsString();
+}
+
 // Verify that a site with password fields will query even in the presence
 // of user defined autocomplete types.
 IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
@@ -236,10 +269,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   query_form->add_fields()->set_signature(2750915947U);
   query_form->add_fields()->set_signature(116843943U);
 
-  std::string expected_query_string;
-  ASSERT_TRUE(query.SerializeToString(&expected_query_string));
-
-  WindowedNetworkObserver query_network_observer(expected_query_string);
+  WindowedNetworkObserver query_network_observer(EqualsQueryProto(query));
   NavigateToUrl("/test.html");
   query_network_observer.Wait();
 }

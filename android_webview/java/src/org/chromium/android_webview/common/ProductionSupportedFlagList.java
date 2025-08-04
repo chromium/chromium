@@ -301,6 +301,11 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_IN_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for India."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_SERVER_EXPERIMENTAL_SIGNATURES,
+                "When enabled, Autofill will send the structural form signature and low-precision"
+                    + " hashes of form and field metadata, and evaluate the accuracy of returned"
+                    + " experimental predictions."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_SUPPORT_LAST_NAME_PREFIX,
                 "When enabled, Autofill uses a custom name hierarchy for parsing last names."),
         Flag.baseFeature(

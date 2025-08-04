@@ -355,11 +355,10 @@ void PopulateRandomizedFieldMetadata(
   }
 }
 
-// Populates the three-bit hashes of the upload contents for form metadata.
-void PopulateThreeBitHashedFormMetadata(const FormStructure& form,
-                                        AutofillUploadContents& upload) {
-  ThreeBitHashedFormMetadata* form_metadata =
-      upload.mutable_three_bit_hashed_form_metadata();
+// Populates the three-bit hashes for a given `form`.
+void PopulateThreeBitHashedFormMetadata(
+    const FormStructure& form,
+    ThreeBitHashedFormMetadata* form_metadata) {
   if (!form.id_attribute().empty()) {
     form_metadata->set_id(StrToHash3Bit(form.id_attribute()));
   }
@@ -377,13 +376,10 @@ void PopulateThreeBitHashedFormMetadata(const FormStructure& form,
   }
 }
 
-// Populates the three-bit hashes of the upload contents for a single field.
+// Populates the three-bit hashes for a single field.
 void PopulateThreeBitHashedFieldMetadata(
     const AutofillField& field,
-    AutofillUploadContents::Field& upload_field) {
-  ThreeBitHashedFieldMetadata* field_metadata =
-      upload_field.mutable_three_bit_hashed_field_metadata();
-
+    ThreeBitHashedFieldMetadata* field_metadata) {
   if (!field.id_attribute().empty()) {
     field_metadata->set_id(StrToHash3Bit(field.id_attribute()));
   }
@@ -497,7 +493,8 @@ void EncodeFormFieldsForUpload(
     }
 
     if (base::FeatureList::IsEnabled(features::kAutofillServerUploadMoreData)) {
-      PopulateThreeBitHashedFieldMetadata(*field, *added_field);
+      PopulateThreeBitHashedFieldMetadata(
+          *field, added_field->mutable_three_bit_hashed_field_metadata());
     }
 
     if (field_options) {
@@ -539,16 +536,25 @@ void EncodeFormForQuery(const FormStructure& form,
   // `form`).
   auto AddFormIf =
       [&](const std::vector<std::unique_ptr<AutofillField>>& fields,
-          FormSignature form, FormSignature alternative_signature,
+          FormSignature form_signature, FormSignature alternative_signature,
           auto necessary_condition) mutable {
-        if (!processed_forms.insert(form).second) {
+        if (!processed_forms.insert(form_signature).second) {
           return;
         }
 
         AutofillPageQueryRequest::Form* query_form = query.add_forms();
-        query_form->set_signature(form.value());
+        query_form->set_signature(form_signature.value());
         query_form->set_alternative_signature(alternative_signature.value());
-        queried_form_signatures.push_back(form);
+
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillServerExperimentalSignatures)) {
+          query_form->set_structural_signature(
+              form.structural_form_signature().value());
+          PopulateThreeBitHashedFormMetadata(
+              form, query_form->mutable_three_bit_hashed_form_metadata());
+        }
+
+        queried_form_signatures.push_back(form_signature);
 
         for (const auto& field : fields) {
           if (IsCheckable(field->check_status()) ||
@@ -559,6 +565,12 @@ void EncodeFormForQuery(const FormStructure& form,
           AutofillPageQueryRequest::Form::Field* added_field =
               query_form->add_fields();
           added_field->set_signature(field->GetFieldSignature().value());
+
+          if (base::FeatureList::IsEnabled(
+                  features::kAutofillServerExperimentalSignatures)) {
+            PopulateThreeBitHashedFieldMetadata(
+                *field, added_field->mutable_three_bit_hashed_field_metadata());
+          }
         }
       };
 
@@ -833,7 +845,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   } else {
     upload.set_secondary_form_signature(
         form.alternative_form_signature().value());
-  };
+  }
   upload.set_autofill_used(false);
   upload.set_data_present(data_present);
   upload.set_has_form_tag(form.is_form_element());
@@ -878,7 +890,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillServerUploadMoreData)) {
-    PopulateThreeBitHashedFormMetadata(form, upload);
+    PopulateThreeBitHashedFormMetadata(
+        form, upload.mutable_three_bit_hashed_form_metadata());
   }
 
   std::vector<AutofillField*> upload_fields(form.fields().size());

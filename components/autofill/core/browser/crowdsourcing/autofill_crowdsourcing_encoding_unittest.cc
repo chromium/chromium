@@ -983,10 +983,23 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                                    SerializesAndDeepEquals(upload_cvc)));
 }
 
-TEST_F(AutofillCrowdsourcingEncoding,
+class AutofillCrowdsourcingEncodingUploadProto
+    : public AutofillCrowdsourcingEncoding,
+      public testing::WithParamInterface<bool> {
+ public:
+  AutofillCrowdsourcingEncodingUploadProto() = default;
+  void SetUp() override {
+    feature_list_.InitWithFeatureState(features::kAutofillServerUploadMoreData,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(AutofillCrowdsourcingEncodingUploadProto,
        EncodeUploadRequest_ThreeBitHashedMetadata) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAutofillServerUploadMoreData);
+  const bool kUploadMoreDataEnabled = GetParam();
 
   FormData form;
   form.set_id_attribute(u"form-id");
@@ -1017,44 +1030,71 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_EQ(1u, uploads.size());
   const AutofillUploadContents& upload = uploads.front();
 
-  // Verify form metadata hashes.
-  ASSERT_TRUE(upload.has_three_bit_hashed_form_metadata());
-  const ThreeBitHashedFormMetadata& form_metadata =
-      upload.three_bit_hashed_form_metadata();
-  EXPECT_EQ(form_metadata.id(), StrToHash3Bit(form.id_attribute()));
-  EXPECT_EQ(form_metadata.name(), StrToHash3Bit(form.name_attribute()));
-  EXPECT_EQ(form_metadata.button_titles_concatenated(),
-            StrToHash3Bit(form.button_titles()[0].first));
+  if (kUploadMoreDataEnabled) {
+    // Verify form metadata hashes.
+    ASSERT_TRUE(upload.has_three_bit_hashed_form_metadata());
+    const ThreeBitHashedFormMetadata& form_metadata =
+        upload.three_bit_hashed_form_metadata();
+    EXPECT_EQ(form_metadata.id(), StrToHash3Bit(form.id_attribute()));
+    EXPECT_EQ(form_metadata.name(), StrToHash3Bit(form.name_attribute()));
+    EXPECT_EQ(form_metadata.button_titles_concatenated(),
+              StrToHash3Bit(form.button_titles()[0].first));
 
-  // Verify field metadata hashes.
-  ASSERT_EQ(upload.field_data_size(), 1);
+    // Verify field metadata hashes.
+    ASSERT_EQ(upload.field_data_size(), 1);
 
-  const ThreeBitHashedFieldMetadata& field_metadata =
-      upload.field_data(0).three_bit_hashed_field_metadata();
-  EXPECT_EQ(field_metadata.id(), StrToHash3Bit(field.id_attribute()));
-  EXPECT_EQ(field_metadata.name(), StrToHash3Bit(field.name_attribute()));
-  EXPECT_EQ(field_metadata.type(),
-            StrToHash3Bit(FormControlTypeToString(field.form_control_type())));
-  EXPECT_EQ(field_metadata.label(), StrToHash3Bit(field.label()));
-  EXPECT_EQ(field_metadata.aria_label(), StrToHash3Bit(field.aria_label()));
-  EXPECT_EQ(field_metadata.aria_description(),
-            StrToHash3Bit(field.aria_description()));
-  EXPECT_EQ(field_metadata.placeholder(), StrToHash3Bit(field.placeholder()));
-  EXPECT_EQ(field_metadata.initial_value(), StrToHash3Bit(field.value()));
-  EXPECT_EQ(field_metadata.autocomplete(),
-            StrToHash3Bit(field.autocomplete_attribute()));
-  EXPECT_EQ(field_metadata.pattern(), StrToHash3Bit(field.pattern()));
+    const ThreeBitHashedFieldMetadata& field_metadata =
+        upload.field_data(0).three_bit_hashed_field_metadata();
+    EXPECT_EQ(field_metadata.id(), StrToHash3Bit(field.id_attribute()));
+    EXPECT_EQ(field_metadata.name(), StrToHash3Bit(field.name_attribute()));
+    EXPECT_EQ(
+        field_metadata.type(),
+        StrToHash3Bit(FormControlTypeToString(field.form_control_type())));
+    EXPECT_EQ(field_metadata.label(), StrToHash3Bit(field.label()));
+    EXPECT_EQ(field_metadata.aria_label(), StrToHash3Bit(field.aria_label()));
+    EXPECT_EQ(field_metadata.aria_description(),
+              StrToHash3Bit(field.aria_description()));
+    EXPECT_EQ(field_metadata.placeholder(), StrToHash3Bit(field.placeholder()));
+    EXPECT_EQ(field_metadata.initial_value(), StrToHash3Bit(field.value()));
+    EXPECT_EQ(field_metadata.autocomplete(),
+              StrToHash3Bit(field.autocomplete_attribute()));
+    EXPECT_EQ(field_metadata.pattern(), StrToHash3Bit(field.pattern()));
+  } else {
+    // Verify form metadata hashes are NOT present.
+    EXPECT_FALSE(upload.has_three_bit_hashed_form_metadata());
+
+    // Verify field metadata hashes are NOT present.
+    ASSERT_EQ(upload.field_data_size(), 1);
+    EXPECT_FALSE(upload.field_data(0).has_three_bit_hashed_field_metadata());
+  }
 }
 
-TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_ThreeBitHashedMetadata_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillServerUploadMoreData);
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillCrowdsourcingEncodingUploadProto,
+                         testing::Bool());
+
+class AutofillCrowdsourcingEncodingQueryProto
+    : public AutofillCrowdsourcingEncoding,
+      public testing::WithParamInterface<bool> {
+ public:
+  AutofillCrowdsourcingEncodingQueryProto() = default;
+  void SetUp() override {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillServerExperimentalSignatures, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(AutofillCrowdsourcingEncodingQueryProto,
+       EncodeAutofillPageQueryRequest_WithExperimentalSignatures) {
+  const bool kExperimentalSignaturesEnabled = GetParam();
 
   FormData form;
   form.set_id_attribute(u"form-id");
   form.set_name_attribute(u"form-name");
-  form.set_action(GURL("http://www.foo.com/submit"));
+  form.set_url(GURL("http://www.foo.com/"));
   form.set_button_titles({std::make_pair(
       u"Submit Button", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
 
@@ -1073,20 +1113,58 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test_api(form).Append(field);
 
   FormStructure form_structure(form);
-  EncodeUploadRequestOptions options;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> forms;
+  forms.push_back(&form_structure);
 
-  std::vector<AutofillUploadContents> uploads =
-      EncodeUploadRequest(form_structure, options);
-  ASSERT_EQ(1u, uploads.size());
-  const AutofillUploadContents& upload = uploads.front();
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest(forms);
 
-  // Verify form metadata hashes are NOT present.
-  EXPECT_FALSE(upload.has_three_bit_hashed_form_metadata());
+  ASSERT_EQ(encoded_query.forms_size(), 1);
+  const auto& query_form = encoded_query.forms(0);
 
-  // Verify field metadata hashes are NOT present.
-  ASSERT_EQ(upload.field_data_size(), 1);
-  EXPECT_FALSE(upload.field_data(0).has_three_bit_hashed_field_metadata());
+  if (kExperimentalSignaturesEnabled) {
+    EXPECT_EQ(query_form.structural_signature(),
+              form_structure.structural_form_signature().value());
+
+    // Verify form metadata hashes.
+    ASSERT_TRUE(query_form.has_three_bit_hashed_form_metadata());
+    const auto& form_metadata = query_form.three_bit_hashed_form_metadata();
+    EXPECT_EQ(form_metadata.id(), StrToHash3Bit(form.id_attribute()));
+    EXPECT_EQ(form_metadata.name(), StrToHash3Bit(form.name_attribute()));
+    EXPECT_EQ(form_metadata.button_titles_concatenated(),
+              StrToHash3Bit(form.button_titles()[0].first));
+
+    // Verify field metadata hashes.
+    ASSERT_EQ(query_form.fields_size(), 1);
+    const auto& query_field = query_form.fields(0);
+    ASSERT_TRUE(query_field.has_three_bit_hashed_field_metadata());
+    const auto& field_metadata = query_field.three_bit_hashed_field_metadata();
+    EXPECT_EQ(field_metadata.id(), StrToHash3Bit(field.id_attribute()));
+    EXPECT_EQ(field_metadata.name(), StrToHash3Bit(field.name_attribute()));
+    EXPECT_EQ(
+        field_metadata.type(),
+        StrToHash3Bit(FormControlTypeToString(field.form_control_type())));
+    EXPECT_EQ(field_metadata.label(), StrToHash3Bit(field.label()));
+    EXPECT_EQ(field_metadata.aria_label(), StrToHash3Bit(field.aria_label()));
+    EXPECT_EQ(field_metadata.aria_description(),
+              StrToHash3Bit(field.aria_description()));
+    EXPECT_EQ(field_metadata.placeholder(), StrToHash3Bit(field.placeholder()));
+    EXPECT_EQ(field_metadata.initial_value(), StrToHash3Bit(field.value()));
+    EXPECT_EQ(field_metadata.autocomplete(),
+              StrToHash3Bit(field.autocomplete_attribute()));
+    EXPECT_EQ(field_metadata.pattern(), StrToHash3Bit(field.pattern()));
+  } else {
+    EXPECT_FALSE(query_form.has_structural_signature());
+    EXPECT_FALSE(query_form.has_three_bit_hashed_form_metadata());
+    ASSERT_EQ(query_form.fields_size(), 1);
+    const auto& query_field = query_form.fields(0);
+    EXPECT_FALSE(query_field.has_three_bit_hashed_field_metadata());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillCrowdsourcingEncodingQueryProto,
+                         testing::Bool());
 
 // Check that we compute the "datapresent" string correctly for the given
 // |available_types|.
