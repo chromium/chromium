@@ -56,6 +56,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
+    r.SECURITY_KEYS.hasMigratedToPlugin = true;
   }
 
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');

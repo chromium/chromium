@@ -55,6 +55,15 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   override containsRoute(route: Route|null): boolean {
     return !route || routes.PRIVACY.contains(route);
   }
+
+  // SettingsViewMixin implementation.
+  getAssociatedControlFor(childViewId: string): HTMLElement {
+    // TODO(crbug.com/424223101): getAssociatedControlFor() can only ever be
+    // called for privacy specific subpages. Remove once the
+    // <settings-basic-page> node intermediate layer is removed.
+    return this.shadowRoot!.querySelector('settings-privacy-page')!
+        .getAssociatedControlFor(childViewId);
+  }
 }
 
 declare global {

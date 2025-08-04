@@ -191,13 +191,14 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private enterMainPage_(oldRoute: Route): Promise<void> {
+          const oldSection = this.getSection(oldRoute.section)!;
+          oldSection.classList.remove('expanded');
+          this.classList.remove('showing-subpage');
+
           if (oldRoute.hasMigratedToPlugin) {
             return Promise.resolve();
           }
 
-          const oldSection = this.getSection(oldRoute.section)!;
-          oldSection.classList.remove('expanded');
-          this.classList.remove('showing-subpage');
           return new Promise((res) => {
             requestAnimationFrame(() => {
               if (Router.getInstance().lastRouteChangeWasPopstate()) {

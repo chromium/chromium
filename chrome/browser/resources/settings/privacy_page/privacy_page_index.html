@@ -40,4 +40,14 @@
     </settings-basic-page>
   </template>
 
+  <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SECURITY_KEYS, currentRoute, inSearchMode)]]">
+      <settings-subpage slot="view" id="securityKeys"
+          data-parent-view-id="old" page-title="$i18n{securityKeysTitle}">
+        <security-keys-subpage></security-keys-subpage>
+      </settings-subpage>
+    </template>
+  </template>
+
 </cr-view-manager>

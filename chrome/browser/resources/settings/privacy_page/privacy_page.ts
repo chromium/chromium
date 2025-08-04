@@ -150,14 +150,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      enableSecurityKeysSubpage_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean('enableSecurityKeysSubpage');
-        },
-      },
-
       // <if expr="is_chromeos">
       enableSmartCardReadersContentSetting_: {
         type: Boolean,
@@ -353,7 +345,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private enablePaymentHandlerContentSetting_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
-  declare private enableSecurityKeysSubpage_: boolean;
   // <if expr="is_chromeos">
   declare private enableSmartCardReadersContentSetting_: boolean;
   // </if>
@@ -569,6 +560,29 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       e: CustomEvent<{deletionConfirmationText: string}>) {
     this.dbdDeletionConfirmationToastLabel_ = e.detail.deletionConfirmationText;
     this.shouldShowDbdDeletionConfirmationToast_ = true;
+  }
+
+  getAssociatedControlFor(childViewId: string): HTMLElement {
+    const ids = [
+      'securityKeys',
+      // TODO(crbug.com/424223101): Add more child view IDs as they
+      // are migrated to the new architecture.
+    ];
+    assert(ids.includes(childViewId));
+
+    let triggerId: string|null = null;
+    switch (childViewId) {
+      case 'securityKeys':
+        triggerId = 'securityLinkRow';
+        break;
+    }
+
+    assert(triggerId);
+
+    const control =
+        this.shadowRoot!.querySelector<HTMLElement>(`#${triggerId}`);
+    assert(control);
+    return control;
   }
 }
 

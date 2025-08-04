@@ -137,15 +137,6 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
-        <template is="dom-if" route-path="/securityKeys">
-          <settings-subpage associated-control="[[$$('#securityLinkRow')]]"
-              page-title="$i18n{securityKeysTitle}">
-            <security-keys-subpage></security-keys-subpage>
-          </settings-subpage>
-        </template>
-      </template>
-
       <template is="dom-if" route-path="/content">
         <settings-subpage
             associated-control="[[$$('#permissionsLinkRow')]]"
