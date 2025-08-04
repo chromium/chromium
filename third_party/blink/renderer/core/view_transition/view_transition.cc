@@ -13,6 +13,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_view_transition_type_set.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
@@ -21,9 +22,11 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
+#include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
@@ -464,6 +467,12 @@ void ViewTransition::ProcessCurrentState() {
         DCHECK(in_main_lifecycle_update_);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kCompositingInputsClean);
+
+        if (UnsupportedCapture()) {
+          SkipTransition(PromiseResponse::kRejectInvalidState);
+          break;
+        }
+
         style_tracker_->AddTransitionElementsFromCSS();
         process_next_state = AdvanceTo(State::kCaptureRequestPending);
         DCHECK(process_next_state);
@@ -600,7 +609,8 @@ void ViewTransition::ProcessCurrentState() {
         break;
 
       case State::kAnimateRequestPending:
-        if (!style_tracker_->Start()) {
+
+        if (UnsupportedCapture() || !style_tracker_->Start()) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
           break;
         }
@@ -1010,6 +1020,36 @@ void ViewTransition::OnRenderingPausedTimeout() {
   ResumeRendering();
   SkipTransition(PromiseResponse::kRejectTimeout);
   AdvanceTo(State::kTimedOut);
+}
+
+bool ViewTransition::UnsupportedCapture() {
+  // TODO(crbug.com/429763389): image masks are not currently supported on the
+  // scoped element. This restriction may be resolved by making the
+  // view-transition's layout object a sibling of the scoped element's
+  // layout object.For now, skip the transition.
+  if (scope_ && scope_ != scope_->GetDocument().documentElement() &&
+      scope_->GetComputedStyle() && scope_->GetComputedStyle()->HasMask()) {
+    LogMessageToConsole(
+        "scoped view-transitions do not currently support mask-image");
+    return true;
+  }
+
+  return false;
+}
+
+void ViewTransition::LogMessageToConsole(const String& message) {
+  if (!scope_) {
+    return;
+  }
+
+  LocalFrame* frame = scope_->GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
+      ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kWarning,
+      message));
 }
 
 void ViewTransition::ResumeRendering() {

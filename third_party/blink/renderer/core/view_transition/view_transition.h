@@ -371,6 +371,12 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void OnRenderingPausedTimeout();
   void ResumeRendering();
 
+  // Returns true if unable to capture the view transition due to unsupported
+  // style or layout.
+  bool UnsupportedCapture();
+
+  void LogMessageToConsole(const String& message);
+
   // Cross-document navigations may span across multiple CompositorFrameSinks if
   // the old/new Documents render to different WebWidgets. This returns false if
   // the navigation triggering the transition is guaranteed to not change the
