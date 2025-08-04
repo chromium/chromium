@@ -18,8 +18,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -432,8 +432,10 @@ class SharedIsolateFactory {
   bool has_initialized_v8_;
 };
 
-base::LazyInstance<SharedIsolateFactory>::Leaky g_isolate_factory =
-    LAZY_INSTANCE_INITIALIZER;
+SharedIsolateFactory& GetSharedIsolateFactory() {
+  static base::NoDestructor<SharedIsolateFactory> isolate_factory;
+  return *isolate_factory;
+}
 
 }  // namespace
 
@@ -886,7 +888,7 @@ int ProxyResolverV8::Create(const scoped_refptr<net::PacFileData>& script_data,
 
   // Try parsing the PAC script.
   std::unique_ptr<Context> context(
-      new Context(g_isolate_factory.Get().GetSharedIsolate()));
+      new Context(GetSharedIsolateFactory().GetSharedIsolate()));
   int rv = context->InitV8(script_data, js_bindings);
   if (rv == net::OK)
     resolver->reset(new ProxyResolverV8(std::move(context)));
@@ -896,7 +898,7 @@ int ProxyResolverV8::Create(const scoped_refptr<net::PacFileData>& script_data,
 // static
 size_t ProxyResolverV8::GetTotalHeapSize() {
   v8::Isolate* isolate =
-      g_isolate_factory.Get().GetSharedIsolateWithoutCreating();
+      GetSharedIsolateFactory().GetSharedIsolateWithoutCreating();
   if (!isolate)
     return 0;
 
@@ -910,7 +912,7 @@ size_t ProxyResolverV8::GetTotalHeapSize() {
 // static
 size_t ProxyResolverV8::GetUsedHeapSize() {
   v8::Isolate* isolate =
-      g_isolate_factory.Get().GetSharedIsolateWithoutCreating();
+      GetSharedIsolateFactory().GetSharedIsolateWithoutCreating();
   if (!isolate)
     return 0;
 

@@ -15,8 +15,8 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -110,15 +110,14 @@ class BlinkInitializer : public blink::Platform {
   ~BlinkInitializer() override = default;
 };
 
-base::LazyInstance<BlinkInitializer>::Leaky g_blink_initializer =
-    LAZY_INSTANCE_INITIALIZER;
-
 class ImageDecoderImplTest : public testing::Test {
  public:
   ImageDecoderImplTest() = default;
   ~ImageDecoderImplTest() override = default;
 
-  void SetUp() override { g_blink_initializer.Get(); }
+  void SetUp() override {
+    static base::NoDestructor<BlinkInitializer> instance;
+  }
 
  protected:
   ImageDecoderImpl* decoder() { return &decoder_; }
