@@ -233,12 +233,21 @@ void HttpCache::ActiveEntry::RestartHeadersPhaseTransactions() {
     RestartHeadersTransaction();
   }
 
-  auto it = done_headers_queue_.begin();
-  while (it != done_headers_queue_.end()) {
-    Transaction* done_headers_transaction = *it;
-    it = done_headers_queue_.erase(it);
-    done_headers_transaction->cache_io_callback().Run(ERR_CACHE_RACE);
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.reserve(done_headers_queue_.size());
+  for (Transaction* transaction : done_headers_queue_) {
+    callbacks.push_back(
+        base::BindOnce(transaction->cache_io_callback(), ERR_CACHE_RACE));
   }
+  done_headers_queue_.clear();
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::vector<base::OnceClosure> callbacks) {
+                       for (base::OnceClosure& callback : callbacks) {
+                         std::move(callback).Run();
+                       }
+                     },
+                     std::move(callbacks)));
 }
 
 void HttpCache::ActiveEntry::RestartHeadersTransaction() {
@@ -1181,12 +1190,18 @@ void HttpCache::DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
     return;
   }
 
-  // Transaction is reading from the entry.
   DCHECK(!entry->HasWriters());
-  auto readers_it = entry->readers().find(transaction);
-  CHECK(readers_it != entry->readers().end());
-  entry->readers().erase(readers_it);
-  ProcessQueuedTransactions(entry);
+
+  // If the `transaction` is reading from the `entry`, remove it from the
+  // `readers`.
+  // Note: The transaction may not have started reading the entry (eg: the
+  // `transaction` is destructed while the IO callback is still in the task
+  // queue.)
+  if (auto readers_it = entry->readers().find(transaction);
+      readers_it != entry->readers().end()) {
+    entry->readers().erase(readers_it);
+    ProcessQueuedTransactions(entry);
+  }
 }
 
 void HttpCache::WritersDoomEntryRestartTransactions(ActiveEntry* entry) {
@@ -1268,9 +1283,20 @@ void HttpCache::ProcessEntryFailure(ActiveEntry* entry) {
   DoomActiveEntry(entry->GetEntry()->GetKey());
 
   // ERR_CACHE_RACE causes the transaction to restart the whole process.
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.reserve(list.size());
   for (Transaction* queued_transaction : list) {
-    queued_transaction->cache_io_callback().Run(ERR_CACHE_RACE);
+    callbacks.push_back(base::BindOnce(queued_transaction->cache_io_callback(),
+                                       ERR_CACHE_RACE));
   }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::vector<base::OnceClosure> callbacks) {
+                       for (base::OnceClosure& callback : callbacks) {
+                         std::move(callback).Run();
+                       }
+                     },
+                     std::move(callbacks)));
 }
 
 void HttpCache::ProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry) {
@@ -1430,7 +1456,8 @@ void HttpCache::RemovePendingTransaction(Transaction* transaction) {
     found = k->get().RemovePendingTransaction(transaction);
   }
 
-  DCHECK(found) << "Pending transaction not found";
+  // Note: `found` may still be false. For example, the `transaction` is
+  // destructed while the IO callback task is still in the task queue.
 }
 
 bool HttpCache::RemovePendingTransactionFromPendingOp(
