@@ -1728,6 +1728,8 @@ component("base") {
       "allocator/partition_alloc_features.h",
       "allocator/partition_alloc_support.cc",
       "allocator/partition_alloc_support.h",
+      "allocator/scheduler_loop_quarantine_config.cc",
+      "allocator/scheduler_loop_quarantine_config.h",
     ]
   }
   if (use_allocator_shim) {
@@ -4271,6 +4273,7 @@ test("base_unittests") {
       # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
       "allocator/partition_alloc_support_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_unittest.cc",
+      "allocator/scheduler_loop_quarantine_config_unittest.cc",
     ]
   }
 

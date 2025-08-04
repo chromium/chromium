@@ -122,12 +122,6 @@ class BASE_EXPORT PartitionAllocSupport {
   static bool ShouldEnablePartitionAllocWithAdvancedChecks(
       const std::string& process_type);
 
-  // Returns quarantine configuration for `process_name` and `branch_type`.
-  static ::partition_alloc::internal::SchedulerLoopQuarantineConfig
-  GetSchedulerLoopQuarantineConfiguration(
-      const std::string& process_type,
-      features::internal::SchedulerLoopQuarantineBranchType branch_type);
-
  private:
   PartitionAllocSupport();
 

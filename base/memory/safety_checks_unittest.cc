@@ -189,56 +189,25 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
       ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(root);
 
   auto* ptr1 = new DefaultChecks();
-  EXPECT_NE(ptr1, nullptr);
+  ASSERT_NE(ptr1, nullptr);
   delete ptr1;
   EXPECT_FALSE(branch.IsQuarantined(ptr1));
 
   auto* ptr2 = new AdvancedChecks();
-  EXPECT_NE(ptr2, nullptr);
+  ASSERT_NE(ptr2, nullptr);
+  memset(ptr2->data, 'A', sizeof(ptr2->data));
   delete ptr2;
   EXPECT_TRUE(branch.IsQuarantined(ptr2));
 
+  // Dereferencing `ptr` is still undefined behavior, but we can say it is
+  // somewhat defined as this test is gated behind
+  // `PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)`.
+  // I believe behavior here is concrete enough to be tested, but it can be
+  // affected by changes in PA. Please disable this test if it flakes.
+  EXPECT_NE(ptr2->data[0], 'A');
+  EXPECT_NE(ptr2->data[15], 'A');
+
   branch.Purge();
-}
-
-TEST(MemorySafetyCheckTest, ZapOnFree) {
-  // The check is performed only if `kPartitionAllocZappingByFreeFlags` is
-  // enabled. `base::ScopedFeatureList` does not work here because the default
-  // `PartitionRoot` is configured before running this test.
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocZappingByFreeFlags)) {
-    return;
-  }
-
-  static_assert(
-      !is_memory_safety_checked<DefaultChecks,
-                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
-  static_assert(
-      is_memory_safety_checked<AdvancedChecks,
-                               MemorySafetyCheck::kSchedulerLoopQuarantine>);
-
-  {
-    // Without kSchedulerLoopQuarantine.
-    auto* ptr = new DefaultChecks();
-    EXPECT_NE(ptr, nullptr);
-    delete ptr;
-    // *ptr is undefined.
-  }
-
-  {
-    // With kSchedulerLoopQuarantine.
-    auto* ptr = new AdvancedChecks();
-    EXPECT_NE(ptr, nullptr);
-    memset(ptr->data, 'A', sizeof(ptr->data));
-    delete ptr;
-
-    // Dereferencing `ptr` is still undefiner behavior, but we can say it is
-    // somewhat defined as this test is gated behind
-    // `PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)`.
-    // I believe behavior here is concrete enough to be tested, but it can be
-    // affected by changes in PA. Please disable this test if it flakes.
-    EXPECT_NE(ptr->data[0], 'A');
-  }
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

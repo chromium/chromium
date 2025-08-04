@@ -78,6 +78,8 @@ struct SchedulerLoopQuarantineConfig {
   bool leak_on_destruction = false;
   bool enable_quarantine = false;
   bool enable_zapping = false;
+  // For informational purposes only.
+  char branch_name[32] = "";
 };
 
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineRoot {

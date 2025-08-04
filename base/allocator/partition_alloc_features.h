@@ -10,6 +10,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
+#include <string>
+
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -37,15 +39,6 @@ enum class PAFeatureEnabledProcesses {
   kAllChildProcesses,
   // Enabled in all processes.
   kAllProcesses,
-};
-
-enum class SchedulerLoopQuarantineBranchType {
-  // The global quarantine branch, shared across threads.
-  kGlobal,
-  // Default configuration for thread-local branches on new threads.
-  kThreadLocalDefault,
-  // Specialized configuration for the main thread of a process.
-  kMain,
 };
 
 }  // namespace internal
@@ -103,17 +96,10 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     PartitionAllocWithAdvancedChecksEnabledProcesses,
     kPartitionAllocWithAdvancedChecksEnabledProcessesParam);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSchedulerLoopQuarantine);
-// Scheduler Loop Quarantine's per-thread capacity in bytes.
+// See "base/allocator/scheduler_loop_quarantine_config.h" for details.
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kPartitionAllocSchedulerLoopQuarantineBranchCapacity);
-// Scheduler Loop Quarantine's capacity for the UI thread in bytes.
-// TODO(https://crbug.com/387470567): Support more thread types.
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity);
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
+    std::string,
+    kPartitionAllocSchedulerLoopQuarantineConfig);
 
 // Eventually zero out most PartitionAlloc memory. This is not meant as a
 // security guarantee, but to increase the compression ratio of PartitionAlloc's

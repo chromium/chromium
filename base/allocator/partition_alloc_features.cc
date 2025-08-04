@@ -139,22 +139,12 @@ constinit const FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>
 BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
              "PartitionAllocSchedulerLoopQuarantine",
              FEATURE_DISABLED_BY_DEFAULT);
-// Scheduler Loop Quarantine's per-branch capacity in bytes.
+// Scheduler Loop Quarantine's config.
 // Note: Do not use the prepared macro as of no need for a local cache.
-constinit const FeatureParam<int>
-    kPartitionAllocSchedulerLoopQuarantineBranchCapacity{
+constinit const FeatureParam<std::string>
+    kPartitionAllocSchedulerLoopQuarantineConfig{
         &kPartitionAllocSchedulerLoopQuarantine,
-        "PartitionAllocSchedulerLoopQuarantineBranchCapacity", 0};
-// Scheduler Loop Quarantine's capacity for the UI thread in bytes.
-BASE_FEATURE_PARAM(int,
-                   kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity,
-                   &kPartitionAllocSchedulerLoopQuarantine,
-                   "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity",
-                   0);
-
-BASE_FEATURE(kPartitionAllocZappingByFreeFlags,
-             "PartitionAllocZappingByFreeFlags",
-             FEATURE_DISABLED_BY_DEFAULT);
+        "PartitionAllocSchedulerLoopQuarantineConfig", "{}"};
 
 BASE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory,
              "PartitionAllocEventuallyZeroFreedMemory",

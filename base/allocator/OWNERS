@@ -4,3 +4,4 @@ wfh@chromium.org
 per-file allocator.gni=file://base/allocator/partition_allocator/OWNERS
 per-file partition_alloc*=file://base/allocator/partition_allocator/OWNERS
 per-file BUILD.gn=file://base/allocator/partition_allocator/OWNERS
+per-file scheduler_loop_quarantine_config*=file://base/allocator/partition_allocator/OWNERS
