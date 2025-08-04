@@ -12,6 +12,7 @@ import androidx.annotation.MainThread;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -71,6 +72,7 @@ public class AccountPickerBottomSheetCoordinator {
     public AccountPickerBottomSheetCoordinator(
             WindowAndroid windowAndroid,
             IdentityManager identityManager,
+            SigninManager signinManager,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -88,6 +90,7 @@ public class AccountPickerBottomSheetCoordinator {
                 new AccountPickerBottomSheetMediator(
                         windowAndroid,
                         identityManager,
+                        signinManager,
                         accountPickerDelegate,
                         this::dismiss,
                         accountPickerBottomSheetStrings,

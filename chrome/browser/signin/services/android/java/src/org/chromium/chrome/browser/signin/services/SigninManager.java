@@ -203,20 +203,6 @@ public interface SigninManager {
 
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or
-     * asynchronously depending on the availability of the result. Implementations may cache the
-     * result to make later invocations for the same account faster. TODO(crbug.com/40646656) Update
-     * API to use CoreAccountInfo instead of email
-     *
-     * @param email An email of the account.
-     * @param callback The callback that will receive true if the account is managed, false
-     *     otherwise.
-     * @deprecated Use the {@link CoreAccountInfo} version below.
-     */
-    @Deprecated
-    void isAccountManaged(String email, Callback<Boolean> callback);
-
-    /**
-     * Verifies if the account is managed. Callback may be called either synchronously or
      * asynchronously depending on the availability of the result.
      *
      * @param accountInfo A CoreAccountInfo representing the account.

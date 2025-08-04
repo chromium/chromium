@@ -616,23 +616,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         }
     }
 
-    /**
-     * Verifies if the account is managed. Callback may be called either synchronously or
-     * asynchronously depending on the availability of the result.
-     *
-     * @param email An email of the account.
-     * @param callback The callback that will receive true if the account is managed, false
-     *     otherwise.
-     * @deprecated Use the {@link CoreAccountInfo} version below.
-     */
-    @Override
-    @Deprecated
-    public void isAccountManaged(String email, final Callback<Boolean> callback) {
-        assert email != null;
-        CoreAccountInfo account = mIdentityManager.findExtendedAccountInfoByEmailAddress(email);
-        isAccountManaged(account, callback);
-    }
-
     @Override
     public void isAccountManaged(
             @Nullable CoreAccountInfo account, final Callback<Boolean> callback) {

@@ -6,14 +6,11 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.content.Context;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
@@ -99,12 +96,9 @@ public class SendTabToSelfCoordinator {
     /** Performs sign-in for the promo shown to signed-out users. */
     private static class SendTabToSelfAccountPickerDelegate implements AccountPickerDelegate {
         private final Runnable mOnSignInCompleteCallback;
-        private final SigninManager mSigninManager;
 
-        public SendTabToSelfAccountPickerDelegate(
-                Runnable onSignInCompleteCallback, SigninManager signinManager) {
+        public SendTabToSelfAccountPickerDelegate(Runnable onSignInCompleteCallback) {
             mOnSignInCompleteCallback = onSignInCompleteCallback;
-            mSigninManager = signinManager;
         }
 
         /** Implements {@link AccountPickerDelegate}. */
@@ -128,39 +122,10 @@ public class SendTabToSelfCoordinator {
 
         /** Implements {@link AccountPickerDelegate}. */
         @Override
-        public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
-            mSigninManager.signin(
-                    accountInfo,
-                    SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
-                    new SigninManager.SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            mOnSignInCompleteCallback.run();
-                        }
-
-                        @Override
-                        public void onSignInAborted() {
-                            mediator.switchToTryAgainView();
-                        }
-                    });
-        }
-
-        /** Implements {@link AccountPickerDelegate}. */
-        @Override
-        public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
-            mSigninManager.isAccountManaged(accountInfo, callback);
-        }
-
-        /** Implements {@link AccountPickerDelegate}. */
-        @Override
-        public void setUserAcceptedAccountManagement(boolean confirmed) {
-            mSigninManager.setUserAcceptedAccountManagement(confirmed);
-        }
-
-        /** Implements {@link AccountPickerDelegate}. */
-        @Override
-        public String extractDomainName(String accountEmail) {
-            return mSigninManager.extractDomainName(accountEmail);
+        public void onSignInComplete(
+                CoreAccountInfo accountInfo,
+                AccountPickerDelegate.SigninStateController controller) {
+            mOnSignInCompleteCallback.run();
         }
     }
 
@@ -222,10 +187,9 @@ public class SendTabToSelfCoordinator {
                     new AccountPickerBottomSheetCoordinator(
                             mWindowAndroid,
                             IdentityServicesProvider.get().getIdentityManager(mProfile),
+                            IdentityServicesProvider.get().getSigninManager(mProfile),
                             mController,
-                            new SendTabToSelfAccountPickerDelegate(
-                                    this::onSignInComplete,
-                                    IdentityServicesProvider.get().getSigninManager(mProfile)),
+                            new SendTabToSelfAccountPickerDelegate(this::onSignInComplete),
                             strings,
                             mDeviceLockActivityLauncher,
                             AccountPickerLaunchMode.DEFAULT,

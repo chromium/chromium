@@ -159,7 +159,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kServerForcedDisable:
     case signin_metrics::ProfileSignout::kAuthenticationFailedWithForceSignin:
     case signin_metrics::ProfileSignout::kSigninNotAllowedOnProfileInit:
-    case signin_metrics::ProfileSignout::kSigninRetriggeredFromWebSignin:
+    case signin_metrics::ProfileSignout::kSigninRetriggered:
     case signin_metrics::ProfileSignout::
         kUserClickedSignoutFromClearBrowsingDataPage:
     case signin_metrics::ProfileSignout::
@@ -293,7 +293,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kIosAccountRemovedFromDeviceAfterRestore,
     signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings,
     signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-    signin_metrics::ProfileSignout::kSigninRetriggeredFromWebSignin,
+    signin_metrics::ProfileSignout::kSigninRetriggered,
     signin_metrics::ProfileSignout::
         kUserClickedSignoutFromUserPolicyNotificationDialog,
     signin_metrics::ProfileSignout::kAccountEmailUpdated,

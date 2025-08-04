@@ -49,6 +49,7 @@ final class SigninBridge {
         AccountPickerBottomSheetCoordinator create(
                 WindowAndroid windowAndroid,
                 IdentityManager identityManager,
+                SigninManager signinManager,
                 BottomSheetController bottomSheetController,
                 AccountPickerDelegate accountPickerDelegate,
                 AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -57,6 +58,7 @@ final class SigninBridge {
             return new AccountPickerBottomSheetCoordinator(
                     windowAndroid,
                     identityManager,
+                    signinManager,
                     bottomSheetController,
                     accountPickerDelegate,
                     accountPickerBottomSheetStrings,
@@ -100,9 +102,8 @@ final class SigninBridge {
             // https://crbug.com/1145031#c5 and https://crbug.com/323424409 for details.
             return;
         }
-        Profile profile = tab.getProfile();
-        SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(profile.getOriginalProfile());
+        Profile profile = tab.getProfile().getOriginalProfile();
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (!signinManager.isSigninAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
@@ -146,6 +147,7 @@ final class SigninBridge {
         factory.create(
                 windowAndroid,
                 signinManager.getIdentityManager(),
+                signinManager,
                 bottomSheetController,
                 new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
                 strings,

@@ -66,8 +66,8 @@ enum class ProfileSignout {
   kUserClickedRevokeSyncConsentSettings = 16,
   // User clicked to signout from the settings page.
   kUserClickedSignoutProfileMenu = 17,
-  // User retriggered signin from the Android web sign-in bottomsheet.
-  kSigninRetriggeredFromWebSignin = 18,
+  // User retriggered signin from the Android sign-in bottomsheet.
+  kSigninRetriggered = 18,
   // User clicked on sign-out from the notification dialog for User Policy. The
   // notification informs the user that from now on user policies may be
   // effective on their browser if they Sync with their managed account. The

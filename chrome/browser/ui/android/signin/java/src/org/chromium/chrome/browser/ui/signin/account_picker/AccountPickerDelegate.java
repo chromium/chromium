@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -14,6 +13,17 @@ import org.chromium.components.signin.base.CoreAccountInfo;
  */
 @NullMarked
 public interface AccountPickerDelegate {
+
+    /** A controller for the state of the sign-in flow, e.g. showing error screens. */
+    interface SigninStateController {
+
+        /** Shows the sign-in flow generic error state. */
+        void showGenericError();
+
+        /** Show the sign-in flow auth error state. */
+        void showAuthError();
+    }
+
     /** Releases resources used by this class. */
     void onAccountPickerDestroy();
 
@@ -30,18 +40,10 @@ public interface AccountPickerDelegate {
      */
     void addAccount();
 
-    /**
-     * Signs in the user with the given accountInfo. The provided mediator can be used to control
-     * the behavior of the bottom sheet in response to failures, etc.
-     */
-    void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator);
+    /** Called when the current signed-in account is signed-out prior to the sign-in operation. */
+    default void onSignoutBeforeSignin() {}
 
-    /** Calls the callback with the result of SigninManager#isAccountManaged(). */
-    void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback);
-
-    /** See SigninManager#setUserAcceptedAccountManagement. */
-    void setUserAcceptedAccountManagement(boolean confirmed);
-
-    /** See SigninManager#extractDomainName. */
-    String extractDomainName(String accountEmail);
+    /** Called when the sign-in finishes successfully. */
+    void onSignInComplete(
+            CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller);
 }

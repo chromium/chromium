@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
@@ -14,7 +13,6 @@ import android.widget.FrameLayout;
 import androidx.activity.ComponentActivity;
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -22,7 +20,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
@@ -41,9 +38,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.widget.Toast;
-
-import java.lang.ref.WeakReference;
 
 /** Responsible of showing the sign-in bottom sheet. */
 @NullMarked
@@ -93,9 +87,10 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
      * @param windowAndroid The window that hosts the sign-in flow.
      * @param activity The {@link ComponentActivity} that hosts the sign-in flow.
      * @param containerView The {@link ViewGroup} that should contain the bottom sheet.
+     * @param windowAndroid The window that hosts the sign-in flow.
+     * @param signinManager The sign-in manager to start the sign-in.
      * @param delegate The delegate for this coordinator.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
-     * @param signinManager The sign-in manager to start the sign-in.
      * @param bottomSheetStrings The object containing the strings shown by the bottom sheet.
      * @param accountPickerLaunchMode Indicate the first bottom sheet view shown to the user.
      * @param signinAccessPoint The entry point for the sign-in.
@@ -167,6 +162,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                 new AccountPickerBottomSheetCoordinator(
                         mWindowAndroid,
                         mSigninManager.getIdentityManager(),
+                        mSigninManager,
                         mBottomSheetController,
                         this,
                         bottomSheetStrings,
@@ -205,54 +201,17 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
 
     /** Implements {@link AccountPickerDelegate}. */
     @Override
-    public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
-        SigninManager.SignInCallback callback =
-                new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        BottomSheetContent content =
-                                mBottomSheetController.getCurrentSheetContent();
-                        if (content != null) {
-                            mBottomSheetController.hideContent(
-                                    content, true, StateChangeReason.INTERACTION_COMPLETE);
-                        }
-                        PostTask.postDelayedTask(
-                                TaskTraits.UI_DEFAULT,
-                                () -> mDelegate.onSignInComplete(),
-                                HISTORY_SYNC_ENTER_ANIMATION_DELAY_MS);
-                    }
-
-                    @Override
-                    public void onSignInAborted() {
-                        mediator.switchToTryAgainView();
-                    }
-                };
-
-        if (mSigninManager.isSigninAllowed()) {
-            mSigninManager.signin(accountInfo, mSigninAccessPoint, callback);
-        } else {
-            makeSigninNotAllowedToast();
+    public void onSignInComplete(
+            CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller) {
+        BottomSheetContent content = mBottomSheetController.getCurrentSheetContent();
+        if (content != null) {
             mBottomSheetController.hideContent(
-                    mBottomSheetController.getCurrentSheetContent(), true);
+                    content, true, StateChangeReason.INTERACTION_COMPLETE);
         }
-    }
-
-    /** Implements {@link AccountPickerDelegate}. */
-    @Override
-    public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
-        mSigninManager.isAccountManaged(accountInfo, callback);
-    }
-
-    /** Implements {@link AccountPickerDelegate}. */
-    @Override
-    public void setUserAcceptedAccountManagement(boolean confirmed) {
-        mSigninManager.setUserAcceptedAccountManagement(confirmed);
-    }
-
-    /** Implements {@link AccountPickerDelegate}. */
-    @Override
-    public String extractDomainName(String accountEmail) {
-        return mSigninManager.extractDomainName(accountEmail);
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                () -> mDelegate.onSignInComplete(),
+                HISTORY_SYNC_ENTER_ANIMATION_DELAY_MS);
     }
 
     /**
@@ -265,21 +224,6 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             mAccountPickerBottomSheetCoordinator.dismiss();
             mAccountPickerBottomSheetCoordinator = null;
         }
-    }
-
-    private void makeSigninNotAllowedToast() {
-        // TODO(crbug.com/41493758): Update the string & UI.
-        WeakReference<Activity> activityReference = mWindowAndroid.getActivity();
-        if (activityReference == null) return;
-
-        Activity activity = activityReference.get();
-        if (activity == null) return;
-
-        Toast.makeText(
-                        activity,
-                        R.string.sign_in_to_chrome_disabled_by_user_summary,
-                        Toast.LENGTH_SHORT)
-                .show();
     }
 
     private void onBottomSheetDismiss(@StateChangeReason int reason) {

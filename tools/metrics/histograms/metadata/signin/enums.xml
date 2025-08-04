@@ -1133,8 +1133,8 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="User clicked signout From profile menu">
     User Clicked Signout in the profile menu.
   </int>
-  <int value="18" label="Retriggered from web signin">
-    User retriggered signin from the Android web sign-in bottomsheet.
+  <int value="18" label="Retriggered from signin bottomsheet">
+    User retriggered signin from the Android sign-in bottomsheet.
   </int>
   <int value="19" label="User clicked signout from user policy notification">
     User clicked on sign-out from the notification dialog for User Policy. The
