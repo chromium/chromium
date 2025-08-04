@@ -16763,44 +16763,6 @@
             ]
         }
     ],
-    "PWANavigationCapturingV2WindowMacLinux": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledSettingOnByDefault20241105",
-                    "params": {
-                        "link_capturing_state": "reimpl_default_on"
-                    },
-                    "enable_features": [
-                        "PwaNavigationCapturing"
-                    ]
-                },
-                {
-                    "name": "EnabledSettingOffByDefault20241105",
-                    "params": {
-                        "link_capturing_state": "reimpl_default_off"
-                    },
-                    "enable_features": [
-                        "PwaNavigationCapturing"
-                    ]
-                },
-                {
-                    "name": "EnabledSettingOnForClientModes",
-                    "params": {
-                        "link_capturing_state": "reimpl_on_via_client_mode"
-                    },
-                    "enable_features": [
-                        "PwaNavigationCapturing"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageActionsMigration": [
         {
             "platforms": [
