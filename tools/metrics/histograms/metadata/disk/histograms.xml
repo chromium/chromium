@@ -33,6 +33,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DiskCache.0.EvictedAge" units="ms" expires_after="2025-12-28">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    The elapsed time since an entry evicted from the HTTP disk cache was last
+    used (or created). Logged once for every entry that is evicted, but only
+    when the value is less than a day.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.EvictedRank" enum="DiskCacheRanking"
+    expires_after="2025-12-28">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    The rank of a single entry evicted from the HTTP disk cache. Logged once for
+    every entry that is evicted.
+  </summary>
+</histogram>
+
 <histogram name="DiskCache.0.TotalIOTimeRead" units="ms"
     expires_after="2025-12-28">
   <owner>jam@chromium.org</owner>
@@ -52,6 +72,20 @@ chromium-metrics-reviews@google.com.
     The total time it takes to perform a write IO operation. This is emitted at
     each cache read, and measures from the IO thread to background thread,
     optionally waiting for the disk write, and back to the IO thread.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.0.TrimmedDeletedRankingEntries" units="count"
+    expires_after="2025-12-28">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    The number of deleted entries trimmed from the cache in a single call to
+    disk_cache::Eviction::TrimDeleted(). Logged one for every call to the method
+    for the HTTP cache when not emptying the cache.
+
+    Since this method will delete at most 20 entries in a single call, a value
+    of 20 may mean it called itself back asynchronously.
   </summary>
 </histogram>
 
