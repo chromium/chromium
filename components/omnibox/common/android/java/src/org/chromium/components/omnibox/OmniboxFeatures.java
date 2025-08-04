@@ -103,7 +103,7 @@ public class OmniboxFeatures {
     public static final CachedFlag sAnimateSuggestionsListAppearance =
             newFlag(
                     OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE,
-                    FeatureState.ENABLED_IN_TEST);
+                    FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(
