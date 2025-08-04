@@ -613,6 +613,7 @@
     "android-fieldtrial-rel": "try/android-fieldtrial-rel/gn-args.json",
     "android-mte-arm64-rel": "try/android-mte-arm64-rel/gn-args.json",
     "android-perfetto-rel": "try/android-perfetto-rel/gn-args.json",
+    "android-structured-test-ids-16-x64-rel-fyi": "try/android-structured-test-ids-16-x64-rel-fyi/gn-args.json",
     "android-webview-10-x86-rel-tests": "try/android-webview-10-x86-rel-tests/gn-args.json",
     "android-webview-12-x64-dbg": "try/android-webview-12-x64-dbg/gn-args.json",
     "android-webview-13-x64-dbg": "try/android-webview-13-x64-dbg/gn-args.json",

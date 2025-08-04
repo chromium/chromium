@@ -4,6 +4,7 @@ ci/linux-archive-rel
 ci/linux-presubmit
 ci/win-presubmit
 try/3pp-windows-amd64-packager
+try/android-structured-test-ids-16-x64-rel-fyi
 try/gn-args-verifier
 try/linux-clobber-rel
 try/mega-cq-launcher
