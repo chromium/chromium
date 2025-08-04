@@ -34,6 +34,13 @@ class FakeContentRuleListManager : public ContentRuleListManager {
   // Returns the key of the last rule list that was removed.
   const std::string& last_remove_key() const { return last_remove_key_; }
 
+  // Clears the last recorded update and remove keys and JSON.
+  void Clear() {
+    last_update_key_.clear();
+    last_update_json_.clear();
+    last_remove_key_.clear();
+  }
+
   // Invokes the stored completion callback with the given `error`.
   // A nil `error` simulates a successful operation.
   void InvokeCompletionCallback(NSError* error);

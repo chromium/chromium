@@ -304,14 +304,13 @@ class IpProtectionCoreHostTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::StubInstallAttributes> install_attributes_;
 #endif
   std::unique_ptr<policy::ManagementService> management_service_;
-
-  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
   std::unique_ptr<IpProtectionCoreHost> core_host_;
   // quiche::BlindSignAuthInterface owned and used by the sequence bound

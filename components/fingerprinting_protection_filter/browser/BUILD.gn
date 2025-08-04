@@ -4,6 +4,28 @@
 
 import("//build/config/features.gni")
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/sync_preferences:test_support",
+  ]
+  deps = [
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/fingerprinting_protection_filter/common:prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+  ]
+  if (use_blink) {
+    public_deps += [ ":browser" ]
+  }
+}
+
 # For this component iOS is explicitly not supported.
 if (use_blink) {
   source_set("browser") {
@@ -50,24 +72,6 @@ if (use_blink) {
       "//services/metrics/public/cpp:metrics_cpp",
       "//third_party/blink/public:blink",
       "//url",
-    ]
-  }
-
-  source_set("test_support") {
-    testonly = true
-    sources = [
-      "test_support.cc",
-      "test_support.h",
-    ]
-    public_deps = [
-      ":browser",
-      "//base",
-      "//components/sync_preferences:test_support",
-    ]
-    deps = [
-      "//components/content_settings/core/browser",
-      "//components/fingerprinting_protection_filter/common:prefs",
-      "//components/privacy_sandbox:tracking_protection_settings",
     ]
   }
 

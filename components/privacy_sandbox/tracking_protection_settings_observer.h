@@ -33,6 +33,9 @@ class TrackingProtectionSettingsObserver {
 
   // For observation of tracking protection experiment status.
   virtual void OnTrackingProtection3pcdChanged() {}
+
+  // For observation of tracking protection exceptions.
+  virtual void OnTrackingProtectionExceptionsChanged() {}
 };
 
 }  // namespace privacy_sandbox
