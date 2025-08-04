@@ -333,7 +333,7 @@ if (use_fuzzing_engine_with_lpm) {
       "//third_party/libprotobuf-mutator",
     ]
   }
-  fuzzer_test("create_trials_from_seed_fuzzer_v2") {
+  fuzzer_test("create_trials_from_seed_v2_fuzzer") {
     sources = [ "fuzzers/create_trials_from_seed_fuzzer_v2.cc" ]
     deps = [
       ":test_cases_proto",

@@ -45,6 +45,29 @@ import("//testing/test.gni")
 # config (.options file) file would be generated or modified in root output
 # dir (next to test).
 template("fuzzer_test") {
+  _additional_configs = []
+  if (defined(invoker.additional_configs)) {
+    _additional_configs = invoker.additional_configs
+  }
+
+  # This ensures that the target name is suffixed by `_fuzzer` if
+  # "//testing/libfuzzer:no_clusterfuzz" cannot be found in
+  # `additional_configs`.
+  # This statement is a bit tricky. Basically:
+  # 1. We first check whether additional_configs contains
+  # "//testing/libfuzzer:no_clusterfuzz". To do that, we simply use
+  # `filter_include` and use "//testing/libfuzzer:no_clusterfuzz" as the
+  # pattern for an exact match. If the list isn't empty, that means that the
+  # configuration was added. Otherwise, we'll use this fuzzer on ClusterFuzz
+  # and we must check whether the fuzzer name ends with `_fuzzer` (2.).
+  # 2. We use `filter_exclude` with `*_fuzzer` as a pattern and check that
+  # against `target_name`. If the list is empty, that means the fuzzer matches
+  # the pattern correctly. Note that we can't use `label_matches` here because
+  # it only accepts wildcard as a suffix.
+  assert(filter_include(_additional_configs,
+                        [ "//testing/libfuzzer:no_clusterfuzz" ]) != [] ||
+             filter_exclude([ target_name ], [ "*_fuzzer" ]) == [],
+         "$target_name name must be suffixed by `_fuzzer`")
   _high_end_job_required = false
   if (defined(invoker.high_end_job_required) && invoker.high_end_job_required) {
     # Target should run in pure release mode, i.e. no debug and no dchecks.
@@ -325,9 +348,7 @@ template("fuzzer_test") {
       data = test_data
       testonly = true
 
-      if (defined(invoker.additional_configs)) {
-        configs += invoker.additional_configs
-      }
+      configs += _additional_configs
       configs += [ "//testing/libfuzzer:fuzzer_test_config" ]
 
       # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
