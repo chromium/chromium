@@ -157,8 +157,7 @@ GetMerchantTrustMetadataWithoutSummary() {
 
 }  // namespace
 
-// TODO(crbug.com/392934324): Add 1-QWAC test cases.
-// TODO(crbug.com/392934325): Add 2-QWAC test cases.
+// TODO(crbug.com/436274241): Add 1-QWAC and 2-QWAC test cases.
 class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewDialogBrowserTest() {
