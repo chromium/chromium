@@ -141,8 +141,8 @@ std::optional<SkBitmap> IconManagerReadIconForSize(
   }
   std::optional<SkBitmap> result = std::nullopt;
   base::RunLoop run_loop;
-  icon_manager.ReadIcons(
-      app_id, IconPurpose::ANY, {size_px},
+  icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
+      app_id, {size_px}, IconPurpose::ANY,
       base::BindLambdaForTesting(
           [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
             CHECK(base::Contains(icon_bitmaps, size_px));

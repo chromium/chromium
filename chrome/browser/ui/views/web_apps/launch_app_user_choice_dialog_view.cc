@@ -128,9 +128,10 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
         icon_label_spacing));
 
-    provider->icon_manager().ReadIcons(
-        app_id_, IconPurpose::ANY,
+    provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+        app_id_,
         provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id_),
+        IconPurpose::ANY,
         base::BindOnce(&LaunchAppUserChoiceDialogView::OnIconsRead,
                        weak_ptr_factory_.GetWeakPtr()));
     icon_image_view_ =

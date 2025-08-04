@@ -352,9 +352,10 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
 
     base::test::TestFuture<std::map<web_app::SquareSizePx, SkBitmap>>
         read_icons_future;
-    web_app_provider->icon_manager().ReadIcons(
-        app_id, web_app::IconPurpose::ANY, icon_sizes_in_px,
-        read_icons_future.GetCallback());
+    web_app_provider->icon_manager()
+        .ReadTrustedIconsWithFallbackToManifestIcons(
+            app_id, icon_sizes_in_px, web_app::IconPurpose::ANY,
+            read_icons_future.GetCallback());
     auto icon_bitmaps = read_icons_future.Take();
     for (auto [scale, size_px] : scale_to_size_in_px) {
       output_image_skia.AddRepresentation(

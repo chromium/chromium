@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -107,18 +108,21 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
 
   using ReadIconsCallback =
       base::OnceCallback<void(std::map<SquareSizePx, SkBitmap> icon_bitmaps)>;
-  // Reads specified icon bitmaps for an app and |purpose|. Returns empty map in
-  // |callback| if IO error.
-  void ReadIcons(const webapps::AppId& app_id,
-                 IconPurpose purpose,
-                 const SortedSizesPx& icon_sizes,
-                 ReadIconsCallback callback);
+
+  // Reads specified icon bitmaps for an app and |purpose|. These icons are
+  // downloaded directly from the manifest and are not always surfaced to the
+  // end user, which is why they are untrusted. Returns empty map in |callback|
+  // if IO error.
+  void ReadUntrustedIcons(const webapps::AppId& app_id,
+                          IconPurpose purpose,
+                          const SortedSizesPx& icon_sizes,
+                          ReadIconsCallback callback);
 
   // Reads the bitmaps for the trusted icon for an app of sizes specified in
   // `icon_sizes`. Returns empty map in `callback` if an IO error happens.
   // The `purpose_for_fallback` information is used as a fallback to read the
   // icon bitmaps obtained from the manifest, mimicking the behavior of
-  // ReadIcons().
+  // ReadUntrustedIcons().
   void ReadTrustedIconsWithFallbackToManifestIcons(
       const webapps::AppId& app_id,
       const SortedSizesPx& icon_sizes,
@@ -209,6 +213,8 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   // See ui/base/resource/resource_scale_factor.h. Returns null image in
   // `callback` if no icons found for all supported UI scale factors (matches
   // only bigger icons, no upscaling).
+  // TODO(crbug.com/427566193): Rename here and callsites that this might be
+  // untrusted.
   void ReadFavicons(const webapps::AppId& app_id,
                     IconPurpose purpose,
                     ReadImageSkiaCallback callback);

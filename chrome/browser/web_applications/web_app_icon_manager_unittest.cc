@@ -294,7 +294,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {
   {
     base::RunLoop run_loop;
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, sizes_px,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -335,7 +335,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MaskableOnly) {
   {
     base::RunLoop run_loop;
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MASKABLE, sizes_px,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -377,7 +377,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MonochromeOnly) {
   {
     base::RunLoop run_loop;
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MONOCHROME, sizes_px,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -417,7 +417,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
   {
     base::RunLoop run_loop;
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, sizes_px,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -440,7 +440,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
   {
     base::RunLoop run_loop;
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MASKABLE, sizes_px,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -487,7 +487,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
   {
     base::RunLoop run_loop;
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, sizes_px_any,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -511,7 +511,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
   {
     base::RunLoop run_loop;
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MONOCHROME, sizes_px_monochrome,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -1005,7 +1005,12 @@ TEST_F(WebAppIconManagerTest, WriteTrustedAndManifestIconsBoth) {
   gfx::test::AreBitmapsEqual(any_bitmap2, disk_icons[icon_size::k128]);
 }
 
-TEST_F(WebAppIconManagerTest, WriteAndReadTrustedIcons) {
+class WebAppIconManagerTrustedIconReadTest : public WebAppIconManagerTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
+};
+
+TEST_F(WebAppIconManagerTrustedIconReadTest, WriteAndReadTrustedIcons) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1060,7 +1065,8 @@ TEST_F(WebAppIconManagerTest, WriteAndReadTrustedIcons) {
               gfx::test::EqualsBitmap(any_bitmap2));
 }
 
-TEST_F(WebAppIconManagerTest, ReadTrustedIconsFallbackToManifest) {
+TEST_F(WebAppIconManagerTrustedIconReadTest,
+       ReadTrustedIconsFallbackToManifest) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1103,7 +1109,8 @@ TEST_F(WebAppIconManagerTest, ReadTrustedIconsFallbackToManifest) {
               gfx::test::EqualsBitmap(any_trusted_bitmap2));
 }
 
-TEST_F(WebAppIconManagerTest, TrustedIconsOfSizeNotFoundNoFallback) {
+TEST_F(WebAppIconManagerTrustedIconReadTest,
+       TrustedIconsOfSizeNotFoundNoFallback) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1354,7 +1361,7 @@ TEST_F(WebAppIconManagerTest, ReadIconsFailed) {
   // Request existing icon size which doesn't exist on disk.
   base::RunLoop run_loop;
 
-  icon_manager().ReadIcons(
+  icon_manager().ReadUntrustedIcons(
       app_id, IconPurpose::ANY, icon_sizes_px,
       base::BindLambdaForTesting(
           [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
@@ -1387,7 +1394,7 @@ TEST_F(WebAppIconManagerTest, FindExact) {
 
     EXPECT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {20}));
 
-    icon_manager().ReadIcons(
+    icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, {20},
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {

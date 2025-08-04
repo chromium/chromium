@@ -493,9 +493,9 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
   CHECK(provider);
 
-  provider->icon_manager().ReadIcons(
-      app_id, IconPurpose::ANY,
-      provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id),
+  provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+      app_id, provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id),
+      IconPurpose::ANY,
       base::BindOnce(&WebAppUiManagerImpl::OnIconsReadForUninstall,
                      weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,
                      parent_window, std::move(parent_window_tracker),

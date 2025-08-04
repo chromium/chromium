@@ -328,12 +328,13 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
   webapps::AppId app_id = InstallDiyAppForCurrentUrl();
 
   base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> future;
-  WebAppProvider::GetForTest(profile())->icon_manager().ReadIcons(
+  WebAppProvider::GetForTest(profile())->icon_manager().ReadUntrustedIcons(
       app_id, IconPurpose::ANY, {icon_size::k128}, future.GetCallback());
 
   std::map<SquareSizePx, SkBitmap> icon_bitmaps = future.Get();
-  DCHECK(base::Contains(icon_bitmaps, icon_size::k128));
-  SkBitmap bitmap = std::move(icon_bitmaps.at(icon_size::k128));
+  auto icon_it = icon_bitmaps.find(icon_size::k128);
+  ASSERT_TRUE(icon_it != icon_bitmaps.end());
+  SkBitmap bitmap = icon_it->second;
 
   // The letter for https://example.com should be the first letter of the host,
   // which is "E".

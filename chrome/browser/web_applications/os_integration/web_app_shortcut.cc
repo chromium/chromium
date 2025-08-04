@@ -297,8 +297,8 @@ void PopulateFaviconPurposeForShortcutInfo(
           .Then(std::move(callback));
 
   if (!icon_sizes_in_px.empty()) {
-    icon_manager.ReadIcons(
-        app->app_id(), purpose, icon_sizes_in_px,
+    icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
+        app->app_id(), icon_sizes_in_px, purpose,
         base::BindOnce(&PackageIconsIntoImageFamily,
                        /*allow_empty=*/purpose != IconPurpose::ANY)
             .Then(std::move(populate_and_return_shortcut_info)));

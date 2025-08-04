@@ -65,7 +65,8 @@ gfx::ImageSkia WebAppIconTestHelper::GenerateWebAppIcon(
     apps::ScaleToSize scale_to_size_in_px,
     bool skip_icon_effects) {
   base::test::TestFuture<std::map<web_app::SquareSizePx, SkBitmap>> future;
-  icon_manager().ReadIcons(app_id, purpose, sizes_px, future.GetCallback());
+  icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+      app_id, sizes_px, purpose, future.GetCallback());
   auto icon_bitmaps = future.Take();
 
   gfx::ImageSkia output_image_skia;

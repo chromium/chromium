@@ -44,7 +44,10 @@ class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
                                              const SortedSizesPx& sizes_px) {
     std::map<SquareSizePx, SkBitmap> result;
     base::RunLoop run_loop;
-    provider().icon_manager().ReadIcons(
+    // TODO(crbug.com/427566193): Hook up to using
+    // ReadTrustedIconsWithFallbackToManifestIcons() if InstallFromInfoJob needs
+    // to use trusted icons.
+    provider().icon_manager().ReadUntrustedIcons(
         app_id, purpose, sizes_px,
         base::BindLambdaForTesting(
             [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {

@@ -1163,8 +1163,8 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
   EXPECT_EQ(registrar.GetAppEffectiveDisplayMode(app_id), display_mode);
 
   base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> icons_future;
-  provider()->icon_manager().ReadIcons(
-      app_id, IconPurpose::ANY, {icon_size::k256}, icons_future.GetCallback());
+  provider()->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+      app_id, {icon_size::k256}, IconPurpose::ANY, icons_future.GetCallback());
   ASSERT_TRUE(icons_future.Wait());
   std::map<SquareSizePx, SkBitmap> bitmaps = icons_future.Get();
   EXPECT_THAT(bitmaps[icon_size::k256],

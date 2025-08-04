@@ -182,14 +182,15 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
 
     // We can use this to test if icons of a specific size do not exist in the
     // DB. This is to ensure we do not trigger the same condition as a DCHECK
-    // inside WebAppIconManager when calling ReadIcons().
+    // inside WebAppIconManager when calling
+    // ReadTrustedIconsWithFallbackToManifestIcons().
     if (!icon_manager.HasIcons(app_id, IconPurpose::ANY, sizes_px)) {
       app_to_icons_data_[app_id] = icon_bitmaps;
       return;
     }
 
-    icon_manager.ReadIcons(app_id, IconPurpose::ANY, sizes_px,
-                           future.GetCallback());
+    icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
+        app_id, sizes_px, IconPurpose::ANY, future.GetCallback());
     app_to_icons_data_[app_id] = future.Take();
   }
 

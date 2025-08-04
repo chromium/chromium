@@ -124,8 +124,10 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
   };
   IconState CheckIconState(Profile* profile, const webapps::AppId& app_id) {
     base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> icons_future;
-    fake_providers_[profile]->icon_manager().ReadIcons(
-        app_id, IconPurpose::ANY, {256}, icons_future.GetCallback());
+    fake_providers_[profile]
+        ->icon_manager()
+        .ReadTrustedIconsWithFallbackToManifestIcons(
+            app_id, {256}, IconPurpose::ANY, icons_future.GetCallback());
     return {
         .is_generated = fake_providers_[profile]
                             ->registrar_unsafe()

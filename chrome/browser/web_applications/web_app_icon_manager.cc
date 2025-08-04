@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/extend.h"
@@ -1121,10 +1122,10 @@ bool WebAppIconManager::HasSmallestIcon(
   return FindIconMatchBigger(app_id, purposes, min_size).has_value();
 }
 
-void WebAppIconManager::ReadIcons(const webapps::AppId& app_id,
-                                  IconPurpose purpose,
-                                  const SortedSizesPx& icon_sizes,
-                                  ReadIconsCallback callback) {
+void WebAppIconManager::ReadUntrustedIcons(const webapps::AppId& app_id,
+                                           IconPurpose purpose,
+                                           const SortedSizesPx& icon_sizes,
+                                           ReadIconsCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadIcons");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -1155,6 +1156,14 @@ void WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons(
 
   if (!provider_->registrar_unsafe().GetAppById(app_id)) {
     std::move(callback).Run(std::map<SquareSizePx, SkBitmap>());
+    return;
+  }
+
+  // If the trusted icon usage is not enabled in the web applications system,
+  // fallback to using the API to read manifest icons.
+  if (!base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+    ReadUntrustedIcons(app_id, purpose_for_fallback, icon_sizes,
+                       std::move(callback));
     return;
   }
 
@@ -1449,9 +1458,13 @@ void WebAppIconManager::ReadFavicons(const webapps::AppId& app_id,
     }
   }
 
-  ReadIcons(app_id, purpose, ui_scale_factors_px_sizes,
-            base::BindOnce(&WebAppIconManager::OnReadFavicons, GetWeakPtr(),
-                           std::move(callback)));
+  // Favicons aren't shown on security sensitive surfaces, and sometimes
+  // monochrome icons are needed (like for the home tab favicon), which is not
+  // available as part of the trusted icons storage. As such, reading from the
+  // untrusted icons is fine here.
+  ReadUntrustedIcons(app_id, purpose, ui_scale_factors_px_sizes,
+                     base::BindOnce(&WebAppIconManager::OnReadFavicons,
+                                    GetWeakPtr(), std::move(callback)));
 }
 
 void WebAppIconManager::OnReadFavicons(
