@@ -6,9 +6,13 @@
 
 #include <string>
 
+#include "base/test/test_reg_util_win.h"
 #include "base/win/windows_types.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
+#include "chrome/install_static/test/scoped_install_details.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,6 +65,28 @@ TEST(AppBoundEncryptionOverrides, Function) {
 
   SetOverridesForTesting(nullptr);
 }
+
+using AppBoundEncryptionTest = ::testing::TestWithParam<bool>;
+
+TEST_P(AppBoundEncryptionTest, FSLogixRoaming) {
+  registry_util::RegistryOverrideManager overrides;
+  ASSERT_NO_FATAL_FAILURE(overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
+  if (GetParam()) {
+    EXPECT_EQ(ERROR_SUCCESS,
+              base::win::RegKey{}.Create(HKEY_LOCAL_MACHINE,
+                                         L"SOFTWARE\\FSLogix", KEY_WRITE));
+  }
+  install_static::ScopedInstallDetails fake_system_install(
+      /*system_level=*/true);
+  chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
+  TestingPrefServiceSimple prefs;
+
+  EXPECT_EQ(GetParam() ? SupportLevel::kDisabledByRoamingWindowsProfile
+                       : SupportLevel::kSupported,
+            GetAppBoundEncryptionSupportLevel(&prefs));
+}
+
+INSTANTIATE_TEST_SUITE_P(, AppBoundEncryptionTest, ::testing::Bool());
 
 }  // namespace
 
