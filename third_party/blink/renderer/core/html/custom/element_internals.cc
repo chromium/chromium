@@ -189,11 +189,14 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
         "first argument are true.");
     return;
   }
-  if (anchor && !Target().IsShadowIncludingAncestorOf(*anchor)) {
+
+  if (!anchor) {
+    anchor = &Target();
+  } else if (!Target().IsShadowIncludingInclusiveAncestorOf(*anchor)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
-        "The Element argument should be a shadow-including descendant of the "
-        "target element.");
+        "The Element argument should be a shadow-including inclusive "
+        "descendant of the target element.");
     return;
   }
 
