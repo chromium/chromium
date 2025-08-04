@@ -7922,13 +7922,6 @@ crbug.com/1462462 http/tests/history/replacestate-post-to-get-2.html [ Failure P
 external/wpt/resource-timing/tentative/script-initiated.html [ Failure Timeout ]
 external/wpt/resource-timing/tentative/stylesheet-initiated.html [ Failure Timeout ]
 
-# Until ServiceWorkerStaticRouterTimingInfo is unflagged, the tests run in virtual tests.
-crbug.com/1371756 [ Debug ] external/wpt/service-workers/service-worker/tentative/static-router/* [ Failure ]
-crbug.com/1371756 [ Release ] external/wpt/service-workers/service-worker/tentative/static-router/* [ Failure ]
-crbug.com/1371756 virtual/static-routing-api/external/wpt/service-workers/service-worker/tentative/static-router/* [ Pass ]
-crbug.com/1371756 http/tests/inspector-protocol/service-worker/tentative/static-router/* [ Failure ]
-crbug.com/1371756 virtual/static-routing-api/http/tests/inspector-protocol/service-worker/tentative/static-router/* [ Pass ]
-
 # Sheriff 2023-07-13
 crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
 
