@@ -183,7 +183,7 @@ class CONTENT_EXPORT PrerenderHost {
   static bool AreHttpRequestHeadersCompatible(
       const std::string& potential_activation_headers_str,
 #if BUILDFLAG(IS_ANDROID)
-      const std::string& potential_activation_additional_headers_str,
+      const net::HttpRequestHeaders& potential_activation_additional_headers,
 #endif  // BUILDFLAG(IS_ANDROID)
       const std::string& prerender_headers_str,
       PreloadingTriggerType trigger_type,
