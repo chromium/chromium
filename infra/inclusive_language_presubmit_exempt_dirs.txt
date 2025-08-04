@@ -217,7 +217,6 @@ infra/config/subprojects/chrome
 infra/config/subprojects/webrtc/consoles
 ios/build/bots/scripts
 ios/chrome/browser/reader_mode/model/resources
-ios/chrome/test/earl_grey
 ios/chrome/test/wpt/tools
 media/audio/alsa
 media/audio/android
