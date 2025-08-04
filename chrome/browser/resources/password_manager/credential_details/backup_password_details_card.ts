@@ -138,11 +138,11 @@ export class BackupPasswordDetailsCardElement extends
     return this.i18n('passwordLabel');
   }
 
-  private getAriaLabelForPasswordCard_(): string {
+  private getAriaLabelForBackupPasswordCard_(): string {
     return this.password.username ?
         this.i18n(
-            'passwordDetailsCardAriaLabel', this.getCredentialTypeString_(),
-            this.password.username) :
+            'backupPasswordDetailsCardAriaLabel',
+            this.getCredentialTypeString_(), this.password.username) :
         this.getCredentialTypeString_();
   }
 
