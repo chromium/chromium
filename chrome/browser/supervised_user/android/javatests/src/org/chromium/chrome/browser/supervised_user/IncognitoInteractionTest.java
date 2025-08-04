@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -70,7 +69,6 @@ public class IncognitoInteractionTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER})
-    @DisabledTest(message = "crbug.com/435745623")
     public void incognitoTabsClosedWhenBrowserContentFilteringIsEnabledWithoutAccount()
             throws Exception {
         Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
@@ -98,7 +96,6 @@ public class IncognitoInteractionTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER})
-    @DisabledTest(message = "crbug.com/435745623")
     public void incognitoTabsClosedWhenBrowserContentFilteringIsEnabledWithAccount()
             throws Exception {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -127,7 +124,6 @@ public class IncognitoInteractionTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER})
-    @DisabledTest(message = "crbug.com/435745623")
     public void incognitoTabsClosedWhenSearchContentFilteringIsEnabledWithAccount()
             throws Exception {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
