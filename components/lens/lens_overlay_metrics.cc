@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -46,6 +47,8 @@ std::string InvocationSourceToString(
       return "AIHub";
     case LensOverlayInvocationSource::kFREPromo:
       return "FREPromo";
+    case LensOverlayInvocationSource::kContentAreaContextMenuText:
+      return "ContentAreaContextMenuText";
   }
 }
 
@@ -409,6 +412,11 @@ void RecordTimeToFirstInteraction(
       break;
     case lens::LensOverlayInvocationSource::kHomeworkActionChip:
       event.SetHomeworkActionChip(time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
+      // Not recorded since the text context menu entry point results in a
+      // search without the user having to interact with the overlay. Time to
+      // first interaction in this case is essentially zero.
       break;
   }
   event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))

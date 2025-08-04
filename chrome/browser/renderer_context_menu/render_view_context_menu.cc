@@ -3460,6 +3460,12 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR: {
       RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_WEB_FOR);
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+      if (ShouldOpenTextQueryInLens()) {
+        OpenTextQueryInLens();
+        break;
+      }
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
       [[fallthrough]];
     }
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
@@ -3642,6 +3648,15 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
 bool RenderViewContextMenu::IsUntrustedNetworkDisabled() const {
   return GetRenderFrameHost() &&
          GetRenderFrameHost()->IsUntrustedNetworkDisabled();
+}
+
+bool RenderViewContextMenu::ShouldOpenTextQueryInLens() const {
+  return lens::features::
+             IsLensOverlayTextSelectionContextMenuEntrypointEnabled() &&
+         GetBrowser()
+             ->GetFeatures()
+             .lens_overlay_entry_point_controller()
+             ->IsEnabled();
 }
 
 // Controller functions --------------------------------------------------------
@@ -4737,6 +4752,20 @@ void RenderViewContextMenu::PluginActionAt(
   if (execute_plugin_action_callback_) {
     std::move(execute_plugin_action_callback_).Run(plugin_rfh, plugin_action);
   }
+}
+
+void RenderViewContextMenu::OpenTextQueryInLens() {
+  auto* const controller =
+      LensSearchController::FromTabWebContents(source_web_contents_);
+  CHECK(controller);
+  controller->IssueContextualSearchRequestWithQuery(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuText,
+      base::UTF16ToUTF8(params_.selection_text),
+      /*additional_query_parameters=*/{},
+      // TODO(crbug.com/432490312): Match type here is likely not ideal.
+      // Investigate removing match type from this function.
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false);
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {
