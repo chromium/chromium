@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -45,11 +46,8 @@ class TranslateURLFetcher {
     max_retry_on_5xx_ = count;
   }
 
-  const std::string& extra_request_header() {
-    return extra_request_header_;
-  }
-  void set_extra_request_header(const std::string& header) {
-    extra_request_header_ = header;
+  void set_extra_request_header(const net::HttpRequestHeaders& header) {
+    extra_request_header_.MergeFrom(header);
   }
 
   // Requests to |url|. |callback| will be invoked when the function returns
@@ -85,7 +83,7 @@ class TranslateURLFetcher {
   int max_retry_on_5xx_;
 
   // An extra HTTP request header
-  std::string extra_request_header_;
+  net::HttpRequestHeaders extra_request_header_;
 };
 
 }  // namespace translate

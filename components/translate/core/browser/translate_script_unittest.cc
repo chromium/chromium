@@ -101,7 +101,8 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
             last_resource_request.credentials_mode);
 
   std::string expected_extra_headers =
-      base::StringPrintf("%s\r\n\r\n", TranslateScript::kRequestHeader);
+      base::StringPrintf("%s: %s\r\n\r\n", TranslateScript::kRequestHeaderName,
+                         TranslateScript::kRequestHeaderValue);
   net::HttpRequestHeaders extra_headers = last_resource_request.headers;
   EXPECT_EQ(expected_extra_headers, extra_headers.ToString());
 
