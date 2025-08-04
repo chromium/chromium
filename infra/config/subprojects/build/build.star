@@ -118,7 +118,7 @@ def cq_build_perf_builder(description_html, **kwargs):
             "scandeps_server": True,
         }
     return ci.builder(
-        description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
+        description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>.",
         siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
@@ -131,7 +131,7 @@ def ci_build_perf_builder(description_html, **kwargs):
     if not "siso_configs" in kwargs:
         kwargs["siso_configs"] = ["builder", "remote-link"]
     return ci.builder(
-        description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
+        description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>.",
         siso_remote_jobs = siso.remote_jobs.DEFAULT,
         siso_project = siso.project.DEFAULT_TRUSTED,
         **kwargs
@@ -575,7 +575,7 @@ def developer_build_perf_builder(description_html, reclient_jobs = None, **kwarg
         },
     }
     return ci.builder(
-        description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
+        description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>.",
         executable = "recipe:chrome_build/build_perf_developer",
         # developer build usually interactive and not-batch build.
         siso_disable_batch_mode = True,
@@ -769,7 +769,7 @@ This builder measures build performance for iOS developer builds, by simulating 
 # Experimental builder set up to track local CPU time for Chromium build. b/333389736
 ci.builder(
     name = "linux-build-perf-no-rbe",
-    description_html = "Monitoring CPU time to build `chrome` target locally without remote executions",
+    description_html = "Monitoring CPU time to build `chrome` target locally without remote executions.<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>.",
     executable = "recipe:chrome_build/build_perf_without_rbe",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
