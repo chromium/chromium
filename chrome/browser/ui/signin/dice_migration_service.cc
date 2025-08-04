@@ -467,14 +467,19 @@ void DiceMigrationService::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       CHECK_EQ(primary_account_info_, event.GetPreviousState().primary_account);
       StopTimerOrCloseDialog(DialogCloseReason::kPrimaryAccountChanged);
-      break;
+      return;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       CHECK_EQ(primary_account_info_, event.GetPreviousState().primary_account);
       StopTimerOrCloseDialog(DialogCloseReason::kPrimaryAccountCleared);
-      break;
+      return;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       CHECK_EQ(primary_account_info_, event.GetCurrentState().primary_account);
       break;
+  }
+  // If the user turns sync on, stop the timer or close the dialog.
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    StopTimerOrCloseDialog(DialogCloseReason::kSyncTurnedOn);
   }
 }
 
@@ -533,6 +538,10 @@ void DiceMigrationService::StopTimerOrCloseDialog(
       case DialogCloseReason::kPrimaryAccountCleared:
         LogDialogNotShownReason(
             DiceMigrationService::DialogNotShownReason::kPrimaryAccountCleared);
+        break;
+      case DialogCloseReason::kSyncTurnedOn:
+        LogDialogNotShownReason(
+            DiceMigrationService::DialogNotShownReason::kSyncTurnedOn);
         break;
       case DialogCloseReason::kServiceDestroyed:
         LogDialogNotShownReason(

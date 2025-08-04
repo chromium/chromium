@@ -312,12 +312,10 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetDiceMigrationService()->GetDialogWidgetForTesting();
   ASSERT_TRUE(dialog_widget);
 
-  // Turn sync on.
-  GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .account_id,
-      signin::ConsentLevel::kSync);
+  // Set the explicit sign-in pref to true. This should make the user
+  // ineligible for the migration. The dialog is still shown but it's okay since
+  // this is a test-only scenario and should not happen in production.
+  GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
 
   views::test::WidgetDestroyedWaiter waiter(dialog_widget);
   // Simulate clicking on the accept button.
@@ -326,10 +324,10 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   waiter.Wait();
 
   EXPECT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
-  // The explicit sign-in pref is not set because a syncing user is not
-  // eligible.
-  EXPECT_EQ(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin), false);
-  EXPECT_TRUE(IsImplicitlySignedIn());
+  // The prefs are not updated.
+  EXPECT_EQ(GetPrefs()->GetBoolean(
+                prefs::kPrefsThemesSearchEnginesAccountStorageEnabled),
+            false);
 
   histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, false, 1);
 }
@@ -747,6 +745,52 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       kDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kPrimaryAccountChanged, 1);
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      StopTimerIfSyncTurnedOn) {
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+
+  // Turn sync on.
+  GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .account_id,
+      signin::ConsentLevel::kSync);
+
+  // The timer is stopped.
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kSyncTurnedOn, 1);
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      CloseDialogIfSyncTurnedOn) {
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Turn sync on.
+  GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .account_id,
+      signin::ConsentLevel::kSync);
+  waiter.Wait();
+
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  histogram_tester_.ExpectUniqueSample(
+      kDialogCloseReasonHistogram,
+      DiceMigrationService::DialogCloseReason::kSyncTurnedOn, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,

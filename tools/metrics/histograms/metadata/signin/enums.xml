@@ -389,8 +389,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Esc key pressed"/>
   <int value="5" label="Primary account cleared"/>
   <int value="6" label="Primary account changed"/>
-  <int value="7" label="Avatar button clicked"/>
-  <int value="8" label="Service destroyed"/>
+  <int value="7" label="Sync turned on"/>
+  <int value="8" label="Avatar button clicked"/>
+  <int value="9" label="Service destroyed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/signin/dice_migration_service.h:DialogCloseReason) -->
@@ -405,9 +406,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Error fetching account managed status"/>
   <int value="5" label="Primary account changed"/>
   <int value="6" label="Primary account cleared"/>
-  <int value="7" label="Browser instance unavailable"/>
-  <int value="8" label="Avatar button unavailable"/>
-  <int value="9" label="Service destroyed"/>
+  <int value="7" label="Sync turned on"/>
+  <int value="8" label="Browser instance unavailable"/>
+  <int value="9" label="Avatar button unavailable"/>
+  <int value="10" label="Service destroyed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/signin/dice_migration_service.h:DialogNotShownReason) -->
