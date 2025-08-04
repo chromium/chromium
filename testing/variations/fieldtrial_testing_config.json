@@ -12255,6 +12255,21 @@
             ]
         }
     ],
+    "IOSAutofillDedupeFormSubmission": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillDedupeFormSubmission"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillFormSubmissionEventsInCaptureMode": [
         {
             "platforms": [
