@@ -46,7 +46,6 @@
 
 namespace blink {
 
-class AudioNodeOutput;
 class V8AutomationRate;
 
 // AudioParam class represents web-exposed AudioParam interface.

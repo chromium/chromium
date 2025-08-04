@@ -28,8 +28,6 @@
 
 namespace blink {
 
-class AudioNodeOutput;
-
 // AudioParamHandler is an actual implementation of web-exposed AudioParam
 // interface. Each of AudioParam object creates and owns an AudioParamHandler,
 // and it is responsible for all of AudioParam tasks. An AudioParamHandler

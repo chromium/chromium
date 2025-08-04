@@ -19,11 +19,6 @@ namespace blink {
 
 class AudioNodeInput;
 class AudioWorkletProcessor;
-class BaseAudioContext;
-class CrossThreadAudioParamInfo;
-class ExceptionState;
-class MessagePort;
-class ScriptState;
 
 class AudioWorkletHandler final : public AudioHandler {
  public:

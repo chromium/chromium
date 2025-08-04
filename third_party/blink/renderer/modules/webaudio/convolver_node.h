@@ -38,8 +38,6 @@ namespace blink {
 class AudioBuffer;
 class ConvolverOptions;
 class ExceptionState;
-class Reverb;
-class SharedAudioBuffer;
 
 class MODULES_EXPORT ConvolverNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();

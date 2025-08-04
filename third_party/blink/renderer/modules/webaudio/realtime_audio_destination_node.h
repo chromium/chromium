@@ -26,9 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_REALTIME_AUDIO_DESTINATION_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_REALTIME_AUDIO_DESTINATION_NODE_H_
 
-#include <atomic>
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
@@ -42,7 +39,6 @@
 namespace blink {
 
 class AudioContext;
-class ExceptionState;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 

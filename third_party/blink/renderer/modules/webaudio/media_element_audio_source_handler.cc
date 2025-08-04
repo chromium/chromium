@@ -162,8 +162,8 @@ void MediaElementAudioSourceHandler::PrintCorsMessage(const String& message) {
   if (Context()->GetExecutionContext()) {
     Context()->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kSecurity,
-            mojom::ConsoleMessageLevel::kInfo,
+            mojom::blink::ConsoleMessageSource::kSecurity,
+            mojom::blink::ConsoleMessageLevel::kInfo,
             StrCat({"MediaElementAudioSource outputs zeroes due to CORS access "
                     "restrictions for ",
                     message})));

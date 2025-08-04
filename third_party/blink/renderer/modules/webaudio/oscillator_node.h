@@ -40,7 +40,6 @@ class BaseAudioContext;
 class ExceptionState;
 class OscillatorOptions;
 class PeriodicWave;
-class PeriodicWaveImpl;
 class V8OscillatorType;
 
 // OscillatorNode is an audio generator of periodic waveforms.
