@@ -209,12 +209,21 @@ void ThrottleManager::MaybeCreateAndAddNavigationThrottles(
   }
 }
 
-// Pull the AsyncDocumentSubresourceFilter and its associated
-// mojom::ActivationState out of the activation state computing throttle. Store
-// it for later filtering of child frame navigations.
+// Pull the mojom::ActivationState out of the activation state computing
+// throttle and send it to any FingerprintingProtectionAgent on the Renderer.
 void ThrottleManager::ReadyToCommitInFrameNavigation(
     content::NavigationHandle* navigation_handle) {
-  std::ignore = ActivationStateForNextCommittedLoad(navigation_handle);
+  content::RenderFrameHost* frame_host =
+      navigation_handle->GetRenderFrameHost();
+
+  subresource_filter::mojom::ActivationState activation_state =
+      ActivationStateForNextCommittedLoad(navigation_handle);
+
+  mojo::AssociatedRemote<mojom::FingerprintingProtectionAgent> agent;
+
+  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
+
+  agent->ActivateForNextCommittedLoad(activation_state.Clone());
 }
 
 void ThrottleManager::DidFinishInFrameNavigation(
@@ -450,11 +459,6 @@ ThrottleManager::ActivationStateForNextCommittedLoad(
 
 void ThrottleManager::DidDisallowFirstSubresource() {
   MaybeNotifyOnBlockedResource(receivers_.GetCurrentTargetFrame());
-}
-
-void ThrottleManager::CheckActivation(CheckActivationCallback callback) {
-  std::move(callback).Run(
-      subresource_filter::mojom::ActivationState::New(page_activation_state_));
 }
 
 void ThrottleManager::SetDocumentLoadStatistics(

@@ -4,40 +4,31 @@
 
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
 
-#include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/types/optional_ref.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
-#include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/shared/common/utils.h"
-#include "components/subresource_filter/core/common/document_subresource_filter.h"
-#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/public/renderer/render_thread.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "url/gurl.h"
 
 namespace fingerprinting_protection_filter {
@@ -76,11 +67,9 @@ bool RendererAgent::HasValidOpener() {
          render_frame()->GetWebFrame()->Opener()->IsWebLocalFrame();
 }
 
-RendererAgent::RendererAgent(content::RenderFrame* render_frame,
-                             UnverifiedRulesetDealer* ruleset_dealer)
+RendererAgent::RendererAgent(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
-      content::RenderFrameObserverTracker<RendererAgent>(render_frame),
-      ruleset_dealer_(ruleset_dealer) {}
+      content::RenderFrameObserverTracker<RendererAgent>(render_frame) {}
 
 RendererAgent::~RendererAgent() = default;
 
@@ -113,81 +102,74 @@ RendererAgent::GetInheritedActivationState() {
       render_frame_origin.IsSameOriginWith(inherited_origin)) {
     auto* agent = RendererAgent::Get(content::RenderFrame::FromWebFrame(
         frame_to_inherit_from->ToWebLocalFrame()));
-    if (agent) {
-      return agent->filter_ ? agent->filter_->activation_state()
-                            : subresource_filter::mojom::ActivationState();
+    if (agent && agent->activation_state_to_inherit_.has_value()) {
+      return agent->activation_state_to_inherit_.value();
     }
   }
   return std::nullopt;
 }
 
-void RendererAgent::RequestActivationState() {
-  CHECK(pending_activation_);
-  activation_state_ = subresource_filter::mojom::ActivationState();
-  // We will be notified of activation with a callback if there is a valid
-  // `FingerprintingProtectionHost` on the browser.
-  auto* fp_host = GetFingerprintingProtectionHost();
-  if (fp_host) {
-    fp_host->CheckActivation(base::BindOnce(
-        &RendererAgent::OnActivationComputed, base::Unretained(this)));
-  }
-}
-
 void RendererAgent::Initialize() {
   current_document_url_ = GetMainDocumentUrl();
   pending_activation_ = true;
+
+  // Null in unit tests.
+  if (render_frame()) {
+    render_frame()
+        ->GetAssociatedInterfaceRegistry()
+        ->AddInterface<mojom::FingerprintingProtectionAgent>(
+            base::BindRepeating(
+                &RendererAgent::OnFingerprintingProtectionAgentRequest,
+                base::Unretained(this)));
+  }
+
   if (!IsTopLevelMainFrame() || HasValidOpener()) {
     // Attempt to inherit activation only for child frames or main frames that
     // are opened from another page.
     std::optional<subresource_filter::mojom::ActivationState> inherited_state =
         GetInheritedActivationState();
     if (inherited_state.has_value()) {
-      activation_state_ = inherited_state.value();
+      activation_state_for_next_document_ = inherited_state.value();
       pending_activation_ = false;
-      MaybeCreateNewFilter();
+      MaybeSendActivationToThrottles();
     }
-  }
-
-  if (pending_activation_) {
-    RequestActivationState();
   }
 }
 
 void RendererAgent::DidCreateNewDocument() {
   GURL new_document_url = GetMainDocumentUrl();
 
-  // A new browser-side host is created for each new page (i.e. new document in
-  // a root frame) so we have to reset the remote so we re-bind on the next
-  // message.
   if (IsTopLevelMainFrame()) {
+    // A new browser-side host is created for each new page (i.e. new document
+    // in a root frame) so we have to reset the remote so we re-bind on the next
+    // message.
     fingerprinting_protection_host_.reset();
     notified_disallow_ = false;
-    auto new_origin = url::Origin::Create(new_document_url);
-    auto current_origin = url::Origin::Create(current_document_url_);
-    // Updating the state should always happen. Since the renderer won't know if
-    // a user bypass exception happened or not, we need to always check with the
-    // browser to keep a consistent activation state.
-    filter_.reset();
-    Initialize();
   }
   current_document_url_ = new_document_url;
+  auto inherited_activation_state = GetInheritedActivationState();
+  activation_state_for_next_document_ =
+      inherited_activation_state.has_value()
+          ? inherited_activation_state.value()
+          : activation_state_for_next_document_;
+  pending_activation_ = false;
+
+  MaybeSendActivationToThrottles();
 }
 
 void RendererAgent::DidFailProvisionalLoad() {
-  if (IsTopLevelMainFrame()) {
-    // Request new activation since a navigation did not commit. This may or may
-    // or not result in creating a new document, particularly for downloads.
-    activation_state_ = subresource_filter::mojom::ActivationState();
-    Initialize();
-  }
+  // Reset activation in preparation for receiving a new signal from the browser
+  // since a navigation did not commit. This may or may or not result in
+  // creating a new document, particularly for downloads.
+  activation_state_for_next_document_ =
+      subresource_filter::mojom::ActivationState();
+  pending_activation_ = true;
 }
 
 void RendererAgent::DidFinishLoad() {
-  if (!filter_) {
-    return;
-  }
-  const auto& statistics = filter_->statistics();
-  SendDocumentLoadStatistics(statistics);
+  SendDocumentLoadStatistics(aggregated_document_statistics_);
+  aggregated_document_statistics_ =
+      subresource_filter::mojom::DocumentLoadStatistics();
 }
 
 void RendererAgent::OnDestruct() {
@@ -197,8 +179,49 @@ void RendererAgent::OnDestruct() {
   delete this;
 }
 
-void RendererAgent::OnSubresourceDisallowed() {
+RendererAgent::OnSubresourceEvaluatedCallback
+RendererAgent::GetOnSubresourceCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::BindPostTaskToCurrentDefault(base::BindRepeating(
+      &RendererAgent::OnSubresourceEvaluated, weak_factory_.GetWeakPtr()));
+}
+
+void RendererAgent::OnSubresourceEvaluated(
+    const GURL& url,
+    const std::optional<std::string>& devtools_request_id,
+    bool subresource_disallowed,
+    const subresource_filter::mojom::DocumentLoadStatistics& statistics) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (subresource_disallowed) {
+    OnSubresourceDisallowed(url, devtools_request_id);
+  }
+  OnSubresourceEvaluatedImpl(statistics);
+}
+
+void RendererAgent::OnSubresourceEvaluatedImpl(
+    const subresource_filter::mojom::DocumentLoadStatistics& statistics) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Note: Chances of overflow are negligible.
+  aggregated_document_statistics_.num_loads_total += statistics.num_loads_total;
+  aggregated_document_statistics_.num_loads_evaluated +=
+      statistics.num_loads_evaluated;
+  aggregated_document_statistics_.num_loads_matching_rules +=
+      statistics.num_loads_matching_rules;
+  aggregated_document_statistics_.num_loads_disallowed +=
+      statistics.num_loads_disallowed;
+
+  aggregated_document_statistics_.evaluation_total_wall_duration +=
+      statistics.evaluation_total_wall_duration;
+  aggregated_document_statistics_.evaluation_total_cpu_duration +=
+      statistics.evaluation_total_cpu_duration;
+}
+
+void RendererAgent::OnSubresourceDisallowed(
+    const GURL& url,
+    const std::optional<std::string>& devtools_request_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  render_frame()->GetWebFrame()->AddUserReidentificationIssue(
+      devtools_request_id, url);
   if (!notified_disallow_) {
     notified_disallow_ = true;
 
@@ -211,49 +234,45 @@ void RendererAgent::OnSubresourceDisallowed() {
   }
 }
 
-void RendererAgent::OnActivationComputed(
+void RendererAgent::ActivateForNextCommittedLoad(
     subresource_filter::mojom::ActivationStatePtr activation_state) {
+  activation_state_for_next_document_ = *activation_state;
+  pending_activation_ = false;
+}
+
+void RendererAgent::SendActivationToAllPendingThrottles() {
+  for (auto& activation_computed_callback : activation_computed_callbacks_) {
+    std::move(activation_computed_callback)
+        .Run(activation_state_to_inherit_.has_value()
+                 ? activation_state_to_inherit_.value()
+                 : activation_state_for_next_document_,
+             GetOnSubresourceCallback(), current_document_url_);
+  }
+  activation_computed_callbacks_.clear();
+}
+
+void RendererAgent::AddActivationComputedCallback(
+    ActivationComputedCallback activation_computed_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pending_activation_) {
+    // The call to this function arrives asynchronously so the `RendererAgent`'s
+    // various possible internal states of tracking activation need to be
+    // considered. If `DidCreateNewDocument` has not yet been called since
+    // getting activation from the browser, activation_state_for_next_document_
+    // is the most up-to-date activation state.
+    std::move(activation_computed_callback)
+        .Run(activation_state_to_inherit_.has_value()
+                 ? activation_state_to_inherit_.value()
+                 : activation_state_for_next_document_,
+             GetOnSubresourceCallback(), current_document_url_);
+
     return;
   }
 
-  activation_state_ = *activation_state;
-  pending_activation_ = false;
-
-  MaybeCreateNewFilter();
-
-  for (auto& callback : pending_activation_callbacks_) {
-    std::move(callback).Run(activation_state_);
-  }
-  pending_activation_callbacks_.clear();
-}
-
-void RendererAgent::GetActivationState(ActivationCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pending_activation_) {
-    std::move(callback).Run(activation_state_);
-  } else {
-    pending_activation_callbacks_.emplace_back(std::move(callback));
-  }
-}
-
-void RendererAgent::CheckURL(const GURL& url,
-                             std::optional<std::string> devtools_request_id,
-                             url_pattern_index::proto::ElementType element_type,
-                             FilterCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  subresource_filter::LoadPolicy load_policy =
-      subresource_filter::LoadPolicy::ALLOW;
-  if (filter_) {
-    load_policy = filter_->GetLoadPolicy(url, element_type);
-  }
-
-  if (load_policy == subresource_filter::LoadPolicy::DISALLOW) {
-    // Report a DevTools Inspector issue for disallowed subresource loads.
-    render_frame()->GetWebFrame()->AddUserReidentificationIssue(
-        devtools_request_id, url);
-  }
-  std::move(callback).Run(load_policy);
+  // If activation state has not yet arrived from the browser, we keep track of
+  // the throttle to notify it of activation later.
+  activation_computed_callbacks_.push_back(
+      std::move(activation_computed_callback));
 }
 
 mojom::FingerprintingProtectionHost*
@@ -266,7 +285,7 @@ RendererAgent::GetFingerprintingProtectionHost() {
     // before the host disconnects. This handler will not be called if the
     // host is reset due to a new document being created on the same frame.
     fingerprinting_protection_host_.set_disconnect_handler(base::BindOnce(
-        &RendererAgent::OnActivationComputed, base::Unretained(this),
+        &RendererAgent::ActivateForNextCommittedLoad, base::Unretained(this),
         subresource_filter::mojom::ActivationState::New()));
   }
   return fingerprinting_protection_host_.is_bound()
@@ -274,74 +293,29 @@ RendererAgent::GetFingerprintingProtectionHost() {
              : nullptr;
 }
 
-void RendererAgent::SetFilter(
-    std::unique_ptr<subresource_filter::DocumentSubresourceFilter> filter) {
-  filter_ = std::move(filter);
+void RendererAgent::OnFingerprintingProtectionAgentRequest(
+    mojo::PendingAssociatedReceiver<mojom::FingerprintingProtectionAgent>
+        receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
 }
 
-void RendererAgent::MaybeCreateNewFilter() {
-  if (pending_activation_ || !ruleset_dealer_) {
+void RendererAgent::MaybeSendActivationToThrottles() {
+  if (pending_activation_ || current_document_url_ == GURL()) {
+    // There is either no activation or no valid document to filter.
     return;
   }
 
-  if (current_document_url_ == GURL()) {
-    // There is no valid document to filter.
-    return;
-  }
-
-  const bool should_record_histograms =
-      !IsTopLevelMainFrame() || current_document_url_.SchemeIsHTTPOrHTTPS() ||
-      current_document_url_.IsAboutBlank() ||
-      current_document_url_.SchemeIsFile();
-  if (should_record_histograms) {
-    RecordHistogramsOnFilterCreation(activation_state_);
-  }
-
-  // Note: Even if there is a memory mapping failure for the ruleset, the
-  // ruleset dealer can still have ruleset file(s) to read from,. Hence, the
-  // relevant histogram(s) are still emitted prior.
-  scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset =
-      ruleset_dealer_->GetRuleset();
-  if (!ruleset) {
-    return;
-  }
-
-  if (activation_state_.activation_level ==
-          subresource_filter::mojom::ActivationLevel::kDisabled ||
-      !ruleset_dealer_->IsRulesetFileAvailable()) {
-    return;
-  }
-
-  url::Origin origin = url::Origin::Create(current_document_url_);
-  SetFilter(std::make_unique<subresource_filter::DocumentSubresourceFilter>(
-      std::move(origin), activation_state_, std::move(ruleset),
-      kFingerprintingProtectionRulesetConfig.uma_tag));
+  activation_state_to_inherit_ = activation_state_for_next_document_;
+  SendActivationToAllPendingThrottles();
+  activation_state_for_next_document_ =
+      subresource_filter::mojom::ActivationState();
 }
 
 void RendererAgent::SendDocumentLoadStatistics(
     const subresource_filter::mojom::DocumentLoadStatistics& statistics) {
   GetFingerprintingProtectionHost()->SetDocumentLoadStatistics(
       statistics.Clone());
-}
-
-// Record histograms when a new document is created, in particular when the
-// current document is an interesting root frame document (e.g. a filter child,
-// a file URL, http/https scheme).
-void RendererAgent::RecordHistogramsOnFilterCreation(
-    const subresource_filter::mojom::ActivationState& activation_state) {
-  subresource_filter::mojom::ActivationLevel activation_level =
-      activation_state.activation_level;
-
-  if (IsTopLevelMainFrame()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName,
-        ruleset_dealer_->IsRulesetFileAvailable());
-  }
-  if (activation_level !=
-      subresource_filter::mojom::ActivationLevel::kDisabled) {
-    UMA_HISTOGRAM_BOOLEAN(DocumentLoadRulesetIsAvailableHistogramName,
-                          ruleset_dealer_->IsRulesetFileAvailable());
-  }
 }
 
 }  // namespace fingerprinting_protection_filter

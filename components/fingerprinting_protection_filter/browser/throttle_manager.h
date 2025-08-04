@@ -274,7 +274,6 @@ class ThrottleManager : public base::SupportsUserData::Data,
 
   // mojom::FingerprintingProtectionHost:
   void DidDisallowFirstSubresource() override;
-  void CheckActivation(CheckActivationCallback callback) override;
 
   void SetDocumentLoadStatistics(
       subresource_filter::mojom::DocumentLoadStatisticsPtr statistics) override;

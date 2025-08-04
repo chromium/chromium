@@ -71,6 +71,7 @@ class UnverifiedRulesetDealer;
 }  // namespace fingerprinting_protection_filter
 
 namespace subresource_filter {
+class MemoryMappedRuleset;
 class UnverifiedRulesetDealer;
 }
 
@@ -226,6 +227,8 @@ class ChromeContentRendererClient
       override;
 
   bool IsContentBasedFingerprintingProtectionEnabled();
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset>
+  GetFingerprintingProtectionRuleset();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   static blink::WebPlugin* CreatePlugin(
@@ -279,6 +282,8 @@ class ChromeContentRendererClient
       subresource_filter_ruleset_dealer_;
   std::unique_ptr<fingerprinting_protection_filter::UnverifiedRulesetDealer>
       fingerprinting_protection_ruleset_dealer_;
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset>
+      fingerprinting_protection_ruleset_;
   // Copied from `blink::web_prefs::WebPreferences` whenever a new top-level
   // main frame is created.
   bool content_based_fingerprinting_protection_enabled_ = false;

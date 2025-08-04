@@ -22,7 +22,6 @@ if (use_blink) {
       "//components/subresource_filter/content/shared/renderer",
       "//components/subresource_filter/core/common",
       "//components/subresource_filter/core/mojom",
-      "//components/url_pattern_index/proto:url_pattern_index",
       "//content/public/renderer",
       "//mojo/public/cpp/bindings",
       "//services/network/public/mojom",
@@ -46,8 +45,8 @@ if (use_blink) {
     ]
     public_deps = [
       ":renderer",
+      "//base",
       "//components/fingerprinting_protection_filter/mojom",
-      "//components/subresource_filter/core/common",
       "//components/subresource_filter/core/mojom",
       "//testing/gmock",
       "//url",

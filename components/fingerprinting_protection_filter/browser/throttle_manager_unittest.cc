@@ -46,6 +46,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
 namespace subresource_filter {
@@ -80,13 +81,28 @@ enum PageActivationNotificationTiming {
   WILL_PROCESS_RESPONSE,
 };
 
-class FakeRendererAgent {
+class FakeRendererAgent : public mojom::FingerprintingProtectionAgent {
  public:
   explicit FakeRendererAgent(content::WebContents* web_contents) {
     ThrottleManager::BindReceiver(
         remote_.BindNewEndpointAndPassDedicatedReceiver(),
         &web_contents->GetPrimaryPage().GetMainDocument());
-    RequestActivation();
+  }
+
+  ~FakeRendererAgent() override = default;
+
+  void OnFingerprintingProtectionAgentReceiver(
+      mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.reset();
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<mojom::FingerprintingProtectionAgent>(
+            std::move(handle)));
+  }
+
+  // mojom::FingerprintingProtectionAgent:
+  void ActivateForNextCommittedLoad(
+      subresource_filter::mojom::ActivationStatePtr activation_state) override {
+    last_activation_ = std::move(activation_state);
   }
 
   std::optional<bool> LastActivated() {
@@ -99,18 +115,10 @@ class FakeRendererAgent {
   }
 
  private:
-  void RequestActivation() {
-    remote_->CheckActivation(base::BindOnce(
-        &FakeRendererAgent::OnActivationComputed, base::Unretained(this)));
-  }
-
-  void OnActivationComputed(
-      subresource_filter::mojom::ActivationStatePtr activation_state) {
-    last_activation_ = std::move(activation_state);
-  }
-
-  mojo::AssociatedRemote<mojom::FingerprintingProtectionHost> remote_;
   subresource_filter::mojom::ActivationStatePtr last_activation_;
+  mojo::AssociatedRemote<mojom::FingerprintingProtectionHost> remote_;
+  mojo::AssociatedReceiver<mojom::FingerprintingProtectionAgent> receiver_{
+      this};
 };
 
 // Simple throttle that sends page-level activation to the manager for a
@@ -398,6 +406,11 @@ class ThrottleManagerTest
   void CreateAgentForHost(content::RenderFrameHost* host) {
     auto new_agent = std::make_unique<FakeRendererAgent>(
         RenderViewHostTestHarness::web_contents());
+    host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        mojom::FingerprintingProtectionAgent::Name_,
+        base::BindRepeating(
+            &FakeRendererAgent::OnFingerprintingProtectionAgentReceiver,
+            base::Unretained(new_agent.get())));
     agent_map_[host] = std::move(new_agent);
   }
 

@@ -9,23 +9,26 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
+#include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/renderer/render_frame.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "url/gurl.h"
 
-namespace fingerprinting_protection_filter {
+namespace subresource_filter {
+class DocumentSubresourceFilter;
+class MemoryMappedRuleset;
+}  // namespace subresource_filter
 
-class RendererAgent;
+namespace fingerprinting_protection_filter {
 
 // `RendererURLLoaderThrottle` is used in renderer processes to check if URLs
 // match the Fingerprinting Protection ruleset. It defers response processing
@@ -36,9 +39,19 @@ class RendererAgent;
 // per `RenderFrame`).
 class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
+  // Should only be used by unit tests to inject a RendererAgent* in the
+  // absence of a RendererFrame to retrieve it from.
+  static std::unique_ptr<RendererURLLoaderThrottle> CreateForTesting(
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+      scoped_refptr<const subresource_filter::MemoryMappedRuleset>
+          filtering_ruleset,
+      base::OnceCallback<RendererAgent*()> renderer_agent_getter);
+
   RendererURLLoaderThrottle(
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-      const blink::LocalFrameToken& local_frame_token);
+      const blink::LocalFrameToken& local_frame_token,
+      scoped_refptr<const subresource_filter::MemoryMappedRuleset>
+          filtering_ruleset);
 
   RendererURLLoaderThrottle(const RendererURLLoaderThrottle&) = delete;
   RendererURLLoaderThrottle& operator=(const RendererURLLoaderThrottle&) =
@@ -52,25 +65,19 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
       const GURL& url,
       network::mojom::RequestDestination request_destination);
 
-  // Callback to notify throttles of their associated `RendererAgent`.
-  // Should be passed to a task runner on the main thread.
-  void OnRendererAgentLocated(base::WeakPtr<RendererAgent> renderer_agent);
-
-  // Callback to notify throttles of page-level activation (i.e. whether to
-  // attempt filtering or simply resume the request). Should be passed to
-  // a `RendererAgent` associated with the same `RenderFrame` as the throttle.
+  // Callback to notify throttles of the activation state to apply when
+  // deciding whether to apply filtering to their subresource URL. Should be
+  // passed to a `RendererAgent` associated with the same `RenderFrame` as the
+  // throttle.
   void OnActivationComputed(
-      const subresource_filter::mojom::ActivationState& activation_state);
-
-  // Callback to notify throttles of the policy to apply to a URL that has been
-  // checked against the filtering ruleset. Should be passed to a
-  // `RendererAgent` associated with the same `RenderFrame` as the throttle.
-  void OnLoadPolicyCalculated(subresource_filter::LoadPolicy load_policy);
+      subresource_filter::mojom::ActivationState activation_state,
+      RendererAgent::OnSubresourceEvaluatedCallback
+          on_subresource_evaluated_callback,
+      const GURL& current_document_url);
 
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
-
   void WillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
@@ -78,44 +85,37 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
       std::vector<std::string>* to_be_removed_headers,
       net::HttpRequestHeaders* modified_headers,
       net::HttpRequestHeaders* modified_cors_exempt_headers) override;
-
   const char* NameForLoggingWillProcessResponse() override;
 
   base::WeakPtr<RendererURLLoaderThrottle> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
+  std::optional<subresource_filter::mojom::ActivationLevel>
+  GetCurrentActivation() {
+    if (activation_state_.has_value()) {
+      return activation_state_->activation_level;
+    }
+    return std::nullopt;
+  }
+
  protected:
   // This function is protected virtual to allow mocking in tests.
   virtual bool ShouldAllowRequest();
 
-  GURL GetCurrentURL() { return current_url_; }
-
-  subresource_filter::mojom::ActivationLevel GetCurrentActivation() {
-    if (activation_state_.has_value()) {
-      return activation_state_.value().activation_level;
-    }
-    return subresource_filter::mojom::ActivationLevel::kDisabled;
-  }
-
-  // Only to be used to inject an agent in unittests in the absence of a
-  // frame.
-  void SetRendererAgentForTesting(base::WeakPtr<RendererAgent> renderer_agent) {
-    // Since we don't have a `RenderFrame` and can't set the agent the normal
-    // way, we need to pretend we are waiting for it for resource loads to be
-    // deferred until activation arrives.
-    waiting_for_agent_ = true;
-    renderer_agent_ = renderer_agent;
-  }
+  GURL current_url() { return current_url_; }
 
   // The `LoadPolicy` returned by the ruleset check, if any.
   std::optional<subresource_filter::LoadPolicy> load_policy_;
 
  private:
-  // Checks whether filtering is activated or not, and if so, whether the URL
-  // for the current resource request matches a filtering rule. Cancels the
-  // request if there is a match, or resumes it otherwise.
-  void CheckCurrentResourceRequest();
+  // Constructor that allows injecting a RendererAgent in unit tests where
+  // there is no RenderFrame to retrieve it from.
+  RendererURLLoaderThrottle(
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+      scoped_refptr<const subresource_filter::MemoryMappedRuleset>
+          filtering_ruleset,
+      base::OnceCallback<RendererAgent*()> renderer_agent_getter);
 
   // Utility function used in the blink::URLLoaderThrottle implementation to
   // defer a resource request if we are still waiting for activation to be
@@ -123,14 +123,20 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
   void ProcessRequestStep(const GURL& latest_url, bool* defer);
 
   // Whether we are still waiting for the `RendererAgent` that this throttle's
-  // request corresponds to to be retrieved.
-  bool waiting_for_agent_ = true;
+  // request corresponds to get the activation state for the URL we are
+  // checking.
+  bool activation_computed_ = false;
 
-  // Lives on a different thread, as `RendererAgent` instances are owned by
-  // `ChromeContentRendererClient`. Must be dereferenced on the main thread.
-  base::WeakPtr<RendererAgent> renderer_agent_;
+  // Callback used to notify the RendererAgent that a subresource has been
+  // evaluated. The callback runs on the main thread.
+  RendererAgent::OnSubresourceEvaluatedCallback
+      on_subresource_evaluated_callback_;
 
+  // The URL of the document within which the current subresource load request
+  // originated. Set via callback by the `RendererAgent`.
+  GURL current_document_url_;
 
+  // The URL for the subresource that this throttle may or may not defer.
   GURL current_url_;
   network::mojom::RequestDestination request_destination_;
   std::optional<std::string> devtools_request_id_;
@@ -142,6 +148,17 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
+
+  // A pointer to the ruleset to use for filtering if activation is enabled.
+  // Throttles should not be created if a ruleset is not available, so this
+  // should always be a valid pointer.
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset>
+      filtering_ruleset_;
+  // Will be conditionally initialized once the activation state is retrieved
+  // from the `RendererAgent`.
+  std::unique_ptr<subresource_filter::DocumentSubresourceFilter> filter_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RendererURLLoaderThrottle> weak_factory_{this};
 };

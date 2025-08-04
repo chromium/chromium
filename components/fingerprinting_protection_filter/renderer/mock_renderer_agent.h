@@ -5,16 +5,19 @@
 #ifndef COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_RENDERER_MOCK_RENDERER_AGENT_H_
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_RENDERER_MOCK_RENDERER_AGENT_H_
 
-#include <memory>
 #include <optional>
+#include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
-#include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
-#include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
+
+namespace content {
+class RenderFrame;
+}
 
 namespace fingerprinting_protection_filter {
 
@@ -30,9 +33,7 @@ namespace fingerprinting_protection_filter {
 // browsertests.
 class MockRendererAgent : public RendererAgent {
  public:
-  explicit MockRendererAgent(UnverifiedRulesetDealer* ruleset_dealer,
-                             bool is_top_level_main_frame,
-                             bool has_valid_opener);
+  explicit MockRendererAgent();
 
   MockRendererAgent(const MockRendererAgent&) = delete;
   MockRendererAgent& operator=(const MockRendererAgent&) = delete;
@@ -40,40 +41,40 @@ class MockRendererAgent : public RendererAgent {
   ~MockRendererAgent() override;
 
   MOCK_METHOD0(GetMainDocumentUrl, GURL());
+  MOCK_METHOD0(IsTopLevelMainFrame, bool());
+  MOCK_METHOD0(HasValidOpener, bool());
   MOCK_METHOD0(GetInheritedActivationState,
                std::optional<subresource_filter::mojom::ActivationState>());
-  MOCK_METHOD0(RequestActivationState, void());
-  MOCK_METHOD0(OnSetFilterCalled, void());
-  MOCK_METHOD0(OnSubresourceDisallowed, void());
-
-  bool IsTopLevelMainFrame() override { return is_top_level_main_frame_; }
-
-  bool HasValidOpener() override { return has_valid_opener_; }
+  MOCK_METHOD2(OnSubresourceDisallowed,
+               void(const GURL&, const std::optional<std::string>&));
 
   mojom::FingerprintingProtectionHost* GetFingerprintingProtectionHost()
       override {
-    return nullptr;
+    return fingerprinting_protection_host_;
   }
 
-  void SetFilter(std::unique_ptr<subresource_filter::DocumentSubresourceFilter>
-                     filter) override;
-
-  subresource_filter::DocumentSubresourceFilter* filter() {
-    return last_injected_filter_.get();
+  void SetFingerprintingProtectionHost(
+      mojom::FingerprintingProtectionHost* host) {
+    fingerprinting_protection_host_ = host;
   }
 
-  subresource_filter::mojom::ActivationState activation_state() {
-    return activation_state_;
+  const subresource_filter::mojom::ActivationState&
+  activation_state_for_next_document() const {
+    return activation_state_for_next_document_;
   }
 
-  using RendererAgent::OnActivationComputed;
+  const std::optional<subresource_filter::mojom::ActivationState>&
+  activation_state_to_inherit() const {
+    return activation_state_to_inherit_;
+  }
+
+  const subresource_filter::mojom::DocumentLoadStatistics&
+  aggregated_document_statistics() const {
+    return aggregated_document_statistics_;
+  }
 
  private:
-  const bool is_top_level_main_frame_;
-  const bool has_valid_opener_;
-
-  std::unique_ptr<subresource_filter::DocumentSubresourceFilter>
-      last_injected_filter_;
+  raw_ptr<mojom::FingerprintingProtectionHost> fingerprinting_protection_host_;
 };
 
 }  // namespace fingerprinting_protection_filter

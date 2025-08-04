@@ -26,6 +26,10 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace subresource_filter {
+class MemoryMappedRuleset;
+}
+
 class ChromeContentRendererClient;
 
 // Instances must be constructed on the render main thread, and then used and
@@ -86,6 +90,13 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
   std::unique_ptr<extensions::ExtensionThrottleManager>
       extension_throttle_manager_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // This ruleset object is created on the main thread and then passed to
+  // throttles that run on background threads. We keep a reference to it here to
+  // ensure the last reference to it is destroyed on the sequence where it was
+  // created.
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset>
+      fingerprinting_protection_ruleset_;
 
   // Set only when `this` was created on the main thread, or cloned from a
   // provider which was created on the main thread.

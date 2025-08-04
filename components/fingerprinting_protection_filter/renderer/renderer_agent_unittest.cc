@@ -2,633 +2,491 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
-
-#include <memory>
-#include <string_view>
+#include <optional>
 #include <utility>
 
-#include "base/files/file.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "base/functional/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
+#include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/fingerprinting_protection_filter/renderer/mock_renderer_agent.h"
-#include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
-#include "components/subresource_filter/content/shared/renderer/filter_utils.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
-#include "components/subresource_filter/core/common/load_policy.h"
-#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
-#include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_url_request.h"
 #include "url/gurl.h"
 
 namespace fingerprinting_protection_filter {
 
-namespace {
+using subresource_filter::mojom::ActivationLevel;
 using ::testing::_;
+using ::testing::Return;
 
-constexpr const char kTestFirstURL[] = "http://example.com/alpha";
-constexpr const char kTestSecondURL[] = "http://example.com/beta";
-constexpr const char kTestFirstURLPathSuffix[] = "alpha";
-constexpr const char kTestSecondURLPathSuffix[] = "beta";
-constexpr const char kTestBothURLsPathSuffix[] = "a";
+subresource_filter::mojom::ActivationState GetDisabledState() {
+  subresource_filter::mojom::ActivationState activation_state;
+  activation_state.activation_level = ActivationLevel::kDisabled;
+  return activation_state;
+}
 
-constexpr const char kSubresourceLoadEvaluationWallDurationHistogram[] =
-    "FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration";
-constexpr const char kSubresourceLoadEvaluationCPUDurationHistogram[] =
-    "FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration";
+subresource_filter::mojom::ActivationState GetEnabledState() {
+  subresource_filter::mojom::ActivationState activation_state;
+  activation_state.activation_level = ActivationLevel::kEnabled;
+  return activation_state;
+}
 
-}  // namespace
+// A test class that takes the place of a real `RendererURLLoaderThrottle` and
+// only implements the necessary endpoints to communicate with a
+// `RendererAgent`.
+class FakeURLLoaderThrottle {
+ public:
+  FakeURLLoaderThrottle() = default;
+  ~FakeURLLoaderThrottle() = default;
+
+  void OnActivationComputed(
+      subresource_filter::mojom::ActivationState activation_state,
+      RendererAgent::OnSubresourceEvaluatedCallback
+          on_subresource_evaluated_callback,
+      const GURL& current_document_url) {
+    subresource_callback_ = std::move(on_subresource_evaluated_callback);
+    activation_state_ = activation_state;
+  }
+
+  RendererAgent::ActivationComputedCallback GetActivationComputedCallback() {
+    // Safe to use unretained because this object will live on the same
+    // sequence as the agent and is for testing only.
+    return base::BindRepeating(&FakeURLLoaderThrottle::OnActivationComputed,
+                               base::Unretained(this));
+  }
+
+  const std::optional<subresource_filter::mojom::ActivationState>&
+  GetActivationState() const {
+    return activation_state_;
+  }
+
+  void RunSubresourceEvaluatedCallback(
+      bool subresource_disallowed,
+      const subresource_filter::mojom::DocumentLoadStatistics& statistics) {
+    std::move(subresource_callback_)
+        .Run(GURL("https://example.com"), "devtools_id", subresource_disallowed,
+             statistics);
+  }
+
+ private:
+  std::optional<subresource_filter::mojom::ActivationState> activation_state_;
+  RendererAgent::OnSubresourceEvaluatedCallback subresource_callback_;
+};
+
+class FakeFingerprintingProtectionHost
+    : public mojom::FingerprintingProtectionHost {
+ public:
+  FakeFingerprintingProtectionHost() = default;
+  ~FakeFingerprintingProtectionHost() override = default;
+
+  MOCK_METHOD0(DidDisallowFirstSubresource, void());
+
+  void SetDocumentLoadStatistics(
+      subresource_filter::mojom::DocumentLoadStatisticsPtr statistics)
+      override {
+    statistics_ = std::move(statistics);
+  }
+
+  const subresource_filter::mojom::DocumentLoadStatisticsPtr&
+  GetDocumentLoadStatistics() {
+    return statistics_;
+  }
+
+ private:
+  subresource_filter::mojom::DocumentLoadStatisticsPtr statistics_;
+};
 
 class RendererAgentTest : public ::testing::Test {
  public:
-  RendererAgentTest() = default;
-
-  RendererAgentTest(const RendererAgentTest&) = delete;
-  RendererAgentTest& operator=(const RendererAgentTest&) = delete;
+  RendererAgentTest() {
+    agent_.SetFingerprintingProtectionHost(
+        static_cast<mojom::FingerprintingProtectionHost*>(&host_));
+  }
 
   ~RendererAgentTest() override = default;
 
  protected:
-  void SetUp() override {
-    ResetAgent(/*is_top_level_main_frame=*/true, /*has_valid_opener=*/false);
-  }
+  MockRendererAgent& agent() { return agent_; }
 
-  void ResetAgent(bool is_top_level_main_frame,
-                  bool has_valid_opener,
-                  std::optional<subresource_filter::mojom::ActivationState>
-                      inherited_activation = std::nullopt) {
-    ResetAgentWithoutInitialize(is_top_level_main_frame, has_valid_opener);
-    if (inherited_activation.has_value()) {
-      ON_CALL(*agent(), GetInheritedActivationState())
-          .WillByDefault(testing::Return(inherited_activation));
-    }
-
-    if (!is_top_level_main_frame || has_valid_opener) {
-      // Eligible to inherit activation.
-      EXPECT_CALL(*agent(), GetInheritedActivationState());
-      if (inherited_activation.has_value() &&
-          inherited_activation.value().activation_level !=
-              subresource_filter::mojom::ActivationLevel::kDisabled) {
-        EXPECT_CALL(*agent(), OnSetFilterCalled());
-      } else {
-        // No activation to inherit.
-        EXPECT_CALL(*agent(), RequestActivationState());
-      }
-    } else {
-      // Ineligible to inherit activation.
-      EXPECT_CALL(*agent(), RequestActivationState());
-    }
-    agent_->Initialize();
-    ::testing::Mock::VerifyAndClearExpectations(&*agent_);
-  }
-
-  // This creates the `agent_` but does not initialize it, so that tests can
-  // inject gmock expectations against the `agent_` to verify or change the
-  // behaviour of the initialize step.
-  void ResetAgentWithoutInitialize(bool is_top_level_main_frame,
-                                   bool has_valid_opener) {
-    agent_ = std::make_unique<::testing::StrictMock<MockRendererAgent>>(
-        &ruleset_dealer_, is_top_level_main_frame, has_valid_opener);
-    // Initialize() will see about:blank.
-    EXPECT_CALL(*agent(), GetMainDocumentUrl())
-        .WillRepeatedly(testing::Return(GURL("about:blank")));
-    // Future document loads default to example.com.
-    ON_CALL(*agent(), GetMainDocumentUrl())
-        .WillByDefault(testing::Return(GURL("http://example.com/")));
-  }
-
-  void SetTestRulesetToDisallowURLsWithPathSuffix(std::string_view suffix) {
-    subresource_filter::testing::TestRulesetPair test_ruleset_pair;
-    ASSERT_NO_FATAL_FAILURE(
-        test_ruleset_creator_.CreateRulesetToDisallowURLsWithPathSuffix(
-            suffix, &test_ruleset_pair));
-    ruleset_dealer_.SetRulesetFile(
-        subresource_filter::testing::TestRuleset::Open(
-            test_ruleset_pair.indexed));
-  }
-
-  void StartLoadWithoutSettingActivationState() {
-    agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
-    agent_as_rfo()->ReadyToCommitNavigation(nullptr);
-    agent_as_rfo()->DidCreateNewDocument();
-  }
-
-  void PerformSameDocumentNavigationWithoutSettingActivationLevel() {
-    agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
-    agent_as_rfo()->ReadyToCommitNavigation(nullptr);
-    // No DidCreateNewDocument, since same document navigations by definition
-    // don't create a new document.
-    // No DidFinishLoad is called in this case.
-  }
-
-  void StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel level) {
-    subresource_filter::mojom::ActivationState state;
-    state.activation_level = level;
-    StartLoadAndSetActivationState(state);
-  }
-
-  void StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationState state) {
-    agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
-    agent_as_rfo()->ReadyToCommitNavigation(nullptr);
-    agent()->OnActivationComputed(state.Clone());
-    agent_as_rfo()->DidCreateNewDocument();
-  }
-
-  void FinishLoad() { agent_as_rfo()->DidFinishLoad(); }
-
-  void ExpectFilterGetsInjected() {
-    EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(::testing::AtLeast(0));
-    EXPECT_CALL(*agent(), OnSetFilterCalled());
-  }
-
-  void ExpectNoFilterGetsInjected() {
-    EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(::testing::AtLeast(0));
-    EXPECT_CALL(*agent(), OnSetFilterCalled()).Times(0);
-  }
-
-  void ExpectNoSignalAboutSubresourceDisallowed() {
-    EXPECT_CALL(*agent(), OnSubresourceDisallowed()).Times(0);
-  }
-
-  void ExpectLoadPolicy(std::string_view url_spec,
-                        subresource_filter::LoadPolicy expected_policy) {
-    blink::WebURL url = GURL(url_spec);
-    network::mojom::RequestDestination request_destination =
-        network::mojom::RequestDestination::kImage;
-    subresource_filter::LoadPolicy actual_policy =
-        agent()->filter()->GetLoadPolicy(
-            url, subresource_filter::ToElementType(request_destination));
-    EXPECT_EQ(expected_policy, actual_policy);
-
-    // If the load policy indicated the load was filtered, simulate a filtered
-    // load callback.
-    if (actual_policy == subresource_filter::LoadPolicy::DISALLOW) {
-      agent()->OnSubresourceDisallowed();
-    }
-  }
-
-  MockRendererAgent* agent() { return agent_.get(); }
-  content::RenderFrameObserver* agent_as_rfo() {
-    return static_cast<content::RenderFrameObserver*>(agent_.get());
-  }
-
- private:
-  base::test::TaskEnvironment message_loop_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  subresource_filter::testing::TestRulesetCreator test_ruleset_creator_;
-  UnverifiedRulesetDealer ruleset_dealer_;
-
-  std::unique_ptr<MockRendererAgent> agent_;
+  base::test::TaskEnvironment task_environment_;
+  FakeFingerprintingProtectionHost host_;
+  MockRendererAgent agent_;
 };
 
-TEST_F(RendererAgentTest, RulesetUnset_RulesetNotAvailable) {
-  base::HistogramTester histogram_tester;
-  // Do not set ruleset.
-  ExpectNoFilterGetsInjected();
-  // The agent should request activation state when the document changes to
-  // "about:blank" even though no state will be available.
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadWithoutSettingActivationState();
-  FinishLoad();
+TEST_F(RendererAgentTest, ActivateForNextCommittedLoad) {
+  // Set up the agent to observe a main frame with no inheritable activation.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillOnce(Return(GURL()))
+      .WillRepeatedly(Return(GURL("https://example.com")));
 
-  histogram_tester.ExpectTotalCount(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 0);
-  histogram_tester.ExpectTotalCount(DocumentLoadRulesetIsAvailableHistogramName,
-                                    0);
+  // There should still be no activation after initialization as the agent waits
+  // for a signal from the browser.
+  agent().Initialize();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
+
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
+
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 }
 
-TEST_F(RendererAgentTest, DisabledByDefault_NoFilterIsInjected) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
-  ExpectNoFilterGetsInjected();
-  // The agent should request activation state when the document changes to
-  // "about:blank" even though no state will be available.
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadWithoutSettingActivationState();
+TEST_F(RendererAgentTest, DidCreateNewDocument_SavesActivation) {
+  // Set up the agent to observe a main frame.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillOnce(Return(GURL()))
+      .WillRepeatedly(Return(GURL("https://example.com")));
 
-  histogram_tester.ExpectTotalCount(DocumentLoadRulesetIsAvailableHistogramName,
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 0);
+  agent().Initialize();
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
 
-  // Metrics are emitted upon OnActivationComputed callback.
-  subresource_filter::mojom::ActivationStatePtr state =
-      subresource_filter::mojom::ActivationState::New();
-  state->activation_level =
-      subresource_filter::mojom::ActivationLevel::kDisabled;
-  agent()->OnActivationComputed(std::move(state));
-  FinishLoad();
-
-  histogram_tester.ExpectTotalCount(DocumentLoadRulesetIsAvailableHistogramName,
-                                    0);
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
+  // The enabled activation should be saved while
+  // `activation_state_for_next_document` is reset.
+  agent().DidCreateNewDocument();
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
 }
 
-TEST_F(RendererAgentTest, MmapFailure_FailsToInjectFilter) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
-  subresource_filter::MemoryMappedRuleset::SetMemoryMapFailuresForTesting(true);
-  ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(agent()));
+TEST_F(RendererAgentTest, DidFailProvisionalLoad_ResetsActivation) {
+  // Set up the agent to observe a main frame.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl()).WillOnce(Return(GURL()));
 
-  // Even if there is a memory mapping failure for the ruleset, the ruleset
-  // dealer can still have ruleset file(s) to read from.
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
+  agent().Initialize();
 
-  subresource_filter::MemoryMappedRuleset::SetMemoryMapFailuresForTesting(
-      false);
-  ResetAgent(/*is_top_level_main_frame=*/true, /*has_valid_opener=*/false);
-  ExpectFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 2);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 2);
+  agent().DidFailProvisionalLoad();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 }
 
-TEST_F(RendererAgentTest, Disabled_NoFilterIsInjected) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
-  ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kDisabled);
-  FinishLoad();
+TEST_F(RendererAgentTest, ChildFrame_InheritsActivation) {
+  // Set up the agent to observe a child frame.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
 
-  histogram_tester.ExpectTotalCount(DocumentLoadRulesetIsAvailableHistogramName,
-                                    0);
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
+  EXPECT_CALL(agent(), GetInheritedActivationState)
+      .WillRepeatedly(Return(GetEnabledState()));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillRepeatedly(Return(GURL("https://example.com")));
+
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
+
+  // The agent will attempt to inherit activation upon initialization.
+  agent().Initialize();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
+
+  // Reset the activation state to disabled.
+  agent().ActivateForNextCommittedLoad(GetDisabledState().Clone());
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
+
+  // The agent will again attempt to inherit activation when a new document is
+  // created, which should override the previous state not obtained through
+  // inheritance.
+  agent().DidCreateNewDocument();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
 }
 
-TEST_F(RendererAgentTest, EnabledButRulesetUnavailable_NoFilterIsInjected) {
-  base::HistogramTester histogram_tester;
-  ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
-  FinishLoad();
-
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 0, 1);
-}
-
-// Never inject a filter for root frame about:blank loads, even though we do for
-// child frame loads.
-TEST_F(RendererAgentTest, EmptyDocumentLoad_NoFilterIsInjected) {
-  base::HistogramTester histogram_tester;
-  ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
-  FinishLoad();
-
-  histogram_tester.ExpectTotalCount(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1);
-  histogram_tester.ExpectTotalCount(DocumentLoadRulesetIsAvailableHistogramName,
-                                    1);
-}
-
-TEST_F(RendererAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
-
-  ExpectFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
-
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
-
-  ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
-  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
-  FinishLoad();
-
-  // In-page navigation should not count as a new load.
-  ExpectNoFilterGetsInjected();
-  ExpectNoSignalAboutSubresourceDisallowed();
-  PerformSameDocumentNavigationWithoutSettingActivationLevel();
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
-  ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
-  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
-
-  ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadWithoutSettingActivationState();
-  FinishLoad();
-
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
-}
-
-TEST_F(RendererAgentTest, Enabled_ActivationIsInheritedWhenAvailable) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
-  subresource_filter::mojom::ActivationState inherited_activation;
-  inherited_activation.activation_level =
-      subresource_filter::mojom::ActivationLevel::kEnabled;
-  // Activation should only be inherited for child frames or main frames with a
-  // valid opener.
-  ResetAgent(/*is_top_level_main_frame=*/false, /*has_valid_opener=*/true,
-             inherited_activation);
-
-  EXPECT_CALL(*agent(), GetMainDocumentUrl());
-  StartLoadWithoutSettingActivationState();
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
-
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
-
-  ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
-  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
-  FinishLoad();
-
-  // Not a main frame load.
-  histogram_tester.ExpectTotalCount(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
-}
-
-TEST_F(RendererAgentTest, Enabled_NewRulesetIsPickedUpAtNextLoad) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
-  ExpectFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
-
-  // Set the new ruleset just after the deadline for being used for the current
-  // load, to exercises doing filtering based on obseleted rulesets.
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestSecondURLPathSuffix));
-
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
-
-  ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
-  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
-  FinishLoad();
-
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
-
-  ExpectFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
-
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
-
-  ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::ALLOW);
-  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::DISALLOW);
-  FinishLoad();
-
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 2);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 2);
-}
-
-// Make sure that the activation decision does not outlive a failed main frame
-// provisional load (Document/Page change) and affect the second load.
-TEST_F(
-    RendererAgentTest,
-    Enabled_FilteringNoLongerActiveAfterMainFrameProvisionalLoadIsCancelled) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
-  EXPECT_CALL(*agent(), OnSetFilterCalled());
-  // The mocked function `GetMainDocumentUrl` will be called several times in
-  // the stack of `DidCreateNewDocument`.
-  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(2);
-  // The agent should request activation state since the newly-started load is
-  // cross-origin (about:blank vs. example.com).
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadWithoutSettingActivationState();
-  subresource_filter::mojom::ActivationStatePtr state =
-      subresource_filter::mojom::ActivationState::New();
-  state->activation_level =
-      subresource_filter::mojom::ActivationLevel::kEnabled;
-  state->measure_performance = true;
-  agent()->OnActivationComputed(std::move(state));
-  // The activation state should have been set to Enabled.
-  EXPECT_EQ(agent()->activation_state().activation_level,
-            subresource_filter::mojom::ActivationLevel::kEnabled);
-
-  // The activation state should be reset on a failed provisional load and
-  // immediately re-requested.
-  EXPECT_CALL(*agent(), RequestActivationState());
-  EXPECT_CALL(*agent(), GetMainDocumentUrl());
-  agent_as_rfo()->DidFailProvisionalLoad();
-
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
-}
-
-// Make sure that the activation decision is always refreshed when a new
-// document is created, regardless of whether the origin is the same as the
-// previous or not.
+// This can happen for about:blank or chrome://.
 TEST_F(RendererAgentTest,
-       Enabled_SameOriginNavigationAlwaysRequestsActivationState) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
+       DidCreateNewDocument_IgnoresActivationForInvalidDocument) {
+  // Set up the agent to observe a main frame.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl()).WillRepeatedly(Return(GURL()));
 
-  // We want to simulate a refresh to ensure the activation state is updated,
-  // regardless of the origin.
-  ON_CALL(*agent(), GetMainDocumentUrl())
-      .WillByDefault(testing::Return(GURL("http://example.com/")));
+  agent().Initialize();
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
 
-  EXPECT_CALL(*agent(), OnSetFilterCalled());
-  // The mocked function `GetMainDocumentUrl` will be called several times in
-  // the stack of `DidCreateNewDocument`.
-  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(2);
-  // Request new activation state, which will be kEnabled.
-  EXPECT_CALL(*agent(), RequestActivationState()).Times(1);
-  StartLoadWithoutSettingActivationState();
-  subresource_filter::mojom::ActivationStatePtr state =
-      subresource_filter::mojom::ActivationState::New();
-  state->activation_level =
-      subresource_filter::mojom::ActivationLevel::kEnabled;
-  state->measure_performance = true;
-  agent()->OnActivationComputed(std::move(state));
-  EXPECT_EQ(agent()->activation_state().activation_level,
-            subresource_filter::mojom::ActivationLevel::kEnabled);
+  // Since the document is not valid, `activation_state_to_inherit` won't be
+  // updated and `activation_state_for_next_document` won't be reset.
+  agent().DidCreateNewDocument();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-  // Now navigate to example.com a second time like a refresh.
-  EXPECT_CALL(*agent(), RequestActivationState()).Times(1);
-  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(2);
-  StartLoadWithoutSettingActivationState();
-
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
+  FakeURLLoaderThrottle throttle;
+  agent().AddActivationComputedCallback(
+      throttle.GetActivationComputedCallback());
+  // Throttles will receive the activation state from the browser.
+  EXPECT_EQ(throttle.GetActivationState(), GetEnabledState());
 }
 
-// A failed provisional load in a subframe should not reset activation state
-// because subframes should always have the same state as the main frame.
+// This can happen if the main frame is about:blank or chrome://
 TEST_F(RendererAgentTest,
-       Enabled_FilteringStillActiveAfterSubframeProvisionalLoadIsCancelled) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
+       ChildFrame_DoesNotInheritNavigationFromInvalidParent) {
+  // Set up the agent to observe a child frame.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
 
-  // Simulate an agent for a subframe.
-  ResetAgent(/*is_top_level_main_frame=*/false, /*has_valid_opener=*/true);
+  // GetInheritedActivationState returns std::nullopt when the main frame isn't
+  // valid, see DidCreateNewDocument_IgnoresActivationForInvalidDocument.
+  EXPECT_CALL(agent(), GetInheritedActivationState)
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl()).WillRepeatedly(Return(GURL()));
 
-  EXPECT_CALL(*agent(), OnSetFilterCalled());
-  agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
-  agent_as_rfo()->ReadyToCommitNavigation(nullptr);
-  subresource_filter::mojom::ActivationStatePtr state =
-      subresource_filter::mojom::ActivationState::New();
-  state->activation_level =
-      subresource_filter::mojom::ActivationLevel::kEnabled;
-  state->measure_performance = true;
-  agent()->OnActivationComputed(std::move(state));
-  agent_as_rfo()->DidFailProvisionalLoad();
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-  // The activation state should still be Enabled.
-  EXPECT_EQ(agent()->activation_state().activation_level,
-            subresource_filter::mojom::ActivationLevel::kEnabled);
+  // The agent won't inherit the state upon initialization.
+  agent().Initialize();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-  // Expect no samples for main frame histogram because we didn't load a main
-  // frame.
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 0, 0);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
-}
+  // Set the activation state to enabled from the browser.
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-TEST_F(RendererAgentTest, DryRun_ResourcesAreEvaluatedButNotFiltered) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
-  ExpectFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kDryRun);
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
+  // Since the document is not valid, `activation_state_to_inherit` won't be
+  // updated and `activation_state_for_next_document` won't be reset.
+  agent().DidCreateNewDocument();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-  // In dry-run mode, loads to the first URL should be differentiated from URLs
-  // that don't match the filter but still be allowed to proceed.
-  ExpectLoadPolicy(kTestFirstURL,
-                   subresource_filter::LoadPolicy::WOULD_DISALLOW);
-  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
-  FinishLoad();
-
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
+  FakeURLLoaderThrottle throttle;
+  agent().AddActivationComputedCallback(
+      throttle.GetActivationComputedCallback());
+  // Throttles will receive the activation state from the browser.
+  EXPECT_EQ(throttle.GetActivationState(), GetEnabledState());
 }
 
 TEST_F(RendererAgentTest,
-       FailedInitialLoad_FilterInjectedOnInitialDocumentCreation) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
+       ChildFrame_StillInheritsActivationAfterFailedProvisionalLoad) {
+  // Set up the agent to observe a child frame.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
 
-  ResetAgent(/*is_top_level_main_frame=*/false, /*has_valid_opener=*/false);
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(GetEnabledState()));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillRepeatedly(Return(GURL("https://example.com")));
 
-  ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), OnSetFilterCalled());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-  ExpectNoFilterGetsInjected();
-  agent_as_rfo()->DidFailProvisionalLoad();
+  // The agent will attempt to inherit activation upon initialization.
+  agent().Initialize();
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
 
-  // Not a main frame load.
-  histogram_tester.ExpectTotalCount(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
+  // A failed provisional load should reset the next document activation state
+  // but keep the current document state the same.
+  agent().DidFailProvisionalLoad();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
+
+  // The inherited state should still be used after a new document is created.
+  agent().DidCreateNewDocument();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
 }
 
-TEST_F(RendererAgentTest,
-       FailedInitialMainFrameLoad_FilterInjectedOnInitialDocumentCreation) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
+TEST_F(RendererAgentTest, MainFrameWithOpener_InheritsActivation) {
+  // Set up the agent to observe a main frame opened from another page.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(true));
 
-  ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState()).Times(2);
-  EXPECT_CALL(*agent(), OnSetFilterCalled());
-  StartLoadAndSetActivationState(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
+  subresource_filter::mojom::ActivationState inherited_activation_state;
+  inherited_activation_state.activation_level = ActivationLevel::kEnabled;
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(inherited_activation_state));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillRepeatedly(Return(GURL("https://example.com")));
 
-  ExpectNoFilterGetsInjected();
-  agent_as_rfo()->DidFailProvisionalLoad();
+  EXPECT_EQ(agent().activation_state_to_inherit(), std::nullopt);
 
-  histogram_tester.ExpectUniqueSample(
-      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
+  // The agent will attempt to inherit activation upon initialization.
+  agent().Initialize();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
+
+  // Reset the activation state to disabled.
+  subresource_filter::mojom::ActivationState disabled_state;
+  agent().ActivateForNextCommittedLoad(disabled_state.Clone());
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
+
+  // The agent will again attempt to inherit activation when a new document is
+  // created, which should override the previous state not obtained through
+  // inheritance.
+  agent().DidCreateNewDocument();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  EXPECT_EQ(agent().activation_state_to_inherit(), GetEnabledState());
 }
 
-TEST_F(RendererAgentTest,
-       Enabled_FilteringIsInEffectForOneLoad_PerformanceMeasurementsRecorded) {
-  base::HistogramTester histogram_tester;
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
+TEST_F(RendererAgentTest, NotifiesThrottlesOfActivation_Sync) {
+  // Set up the agent to observe a main frame with no inheritable activation.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillOnce(Return(GURL()))
+      .WillRepeatedly(Return(GURL("https://example.com")));
 
-  ExpectFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
-  subresource_filter::mojom::ActivationState activation_state;
-  activation_state.activation_level =
-      subresource_filter::mojom::ActivationLevel::kEnabled;
-  activation_state.measure_performance = true;
-  StartLoadAndSetActivationState(activation_state);
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
+  agent().Initialize();
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
+  ASSERT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+  agent().DidCreateNewDocument();
 
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
+  // A throttle arrives after the agent has already received activation. The
+  // agent should immediately notify the throttle.
+  FakeURLLoaderThrottle throttle;
+  agent().AddActivationComputedCallback(
+      throttle.GetActivationComputedCallback());
+  EXPECT_EQ(throttle.GetActivationState(), GetEnabledState());
+}
 
-  ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
-  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
-  FinishLoad();
+TEST_F(RendererAgentTest, NotifiesThrottlesOfActivation_Async) {
+  // Set up the agent to observe a main frame with no inheritable activation.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillOnce(Return(GURL()))
+      .WillRepeatedly(Return(GURL("https://example.com")));
 
-  histogram_tester.ExpectTotalCount(
-      kSubresourceLoadEvaluationWallDurationHistogram, 2);
-  histogram_tester.ExpectTotalCount(
-      kSubresourceLoadEvaluationCPUDurationHistogram, 2);
+  agent().Initialize();
+
+  // Two throttles arrive before the agent receives activation.
+  FakeURLLoaderThrottle throttle, throttle2;
+  agent().AddActivationComputedCallback(
+      throttle.GetActivationComputedCallback());
+  agent().AddActivationComputedCallback(
+      throttle2.GetActivationComputedCallback());
+  EXPECT_EQ(throttle.GetActivationState(), std::nullopt);
+  EXPECT_EQ(throttle2.GetActivationState(), std::nullopt);
+
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
+  ASSERT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+  agent().DidCreateNewDocument();
+
+  // All throttles should now be notified of activation.
+  EXPECT_EQ(throttle.GetActivationState(), GetEnabledState());
+  EXPECT_EQ(throttle2.GetActivationState(), GetEnabledState());
+}
+
+TEST_F(RendererAgentTest, NotificationsOnFrameReused) {
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillOnce(Return(GURL()))
+      .WillRepeatedly(Return(GURL("https://example.com")));
+
+  agent().Initialize();
+
+  // A regular page is loaded.
+  agent().ActivateForNextCommittedLoad(GetDisabledState().Clone());
+  ASSERT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+  agent().DidCreateNewDocument();
+  ASSERT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+
+  // The frame is going to be reused so a new activation is sent by the
+  // browser.
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
+  ASSERT_EQ(agent().activation_state_for_next_document(), GetEnabledState());
+
+  // A new throttle is added from the previous document. It will use the old
+  // state because the document hasn't been updated yet.
+  FakeURLLoaderThrottle old_document_throttle;
+  agent().AddActivationComputedCallback(
+      old_document_throttle.GetActivationComputedCallback());
+  EXPECT_EQ(old_document_throttle.GetActivationState(), GetDisabledState());
+
+  agent().DidCreateNewDocument();
+  EXPECT_EQ(agent().activation_state_for_next_document(), GetDisabledState());
+
+  FakeURLLoaderThrottle new_document_throttle;
+  agent().AddActivationComputedCallback(
+      new_document_throttle.GetActivationComputedCallback());
+  EXPECT_EQ(new_document_throttle.GetActivationState(), GetEnabledState());
+}
+
+TEST_F(RendererAgentTest, NotifiesRemoteHostOfSubresourcesEvaluated) {
+  // Set up the agent to observe a main frame with no inheritable activation.
+  EXPECT_CALL(agent(), IsTopLevelMainFrame()).WillRepeatedly(Return(true));
+  EXPECT_CALL(agent(), HasValidOpener()).WillRepeatedly(Return(false));
+  EXPECT_CALL(agent(), GetInheritedActivationState())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(agent(), GetMainDocumentUrl())
+      .WillOnce(Return(GURL()))
+      .WillRepeatedly(Return(GURL("https://example.com")));
+
+  agent().Initialize();
+
+  // Two throttles arrive before the agent receives activation.
+  FakeURLLoaderThrottle throttle, throttle2;
+  agent().AddActivationComputedCallback(
+      throttle.GetActivationComputedCallback());
+  agent().AddActivationComputedCallback(
+      throttle2.GetActivationComputedCallback());
+
+  agent().ActivateForNextCommittedLoad(GetEnabledState().Clone());
+  agent().DidCreateNewDocument();
+
+  // All throttles should now be notified of activation.
+  EXPECT_EQ(throttle.GetActivationState(), GetEnabledState());
+  EXPECT_EQ(throttle2.GetActivationState(), GetEnabledState());
+
+  subresource_filter::mojom::DocumentLoadStatistics individual_statistics(
+      /*num_loads_total=*/2, /*num_loads_evaluated=*/2,
+      /*num_loads_matching_rules=*/1, /*num_loads_disallowed=*/1,
+      /*evaluation_total_wall_duration=*/
+      base::TimeDelta(base::Microseconds(100)),
+      /*evaluation_total_cpu_duration=*/
+      base::TimeDelta(base::Microseconds(100)));
+
+  // Simulate throttles notifying the agent of subresources evaluated.
+  EXPECT_CALL(agent(), OnSubresourceDisallowed(_, _)).Times(2);
+  throttle.RunSubresourceEvaluatedCallback(/*subresource_disallowed=*/true,
+                                           individual_statistics);
+  throttle2.RunSubresourceEvaluatedCallback(/*subresource_disallowed=*/true,
+                                            individual_statistics);
+
+  // The agent should aggregate statistics from each throttle and report these
+  // to the remote host once the document load completes.
+  subresource_filter::mojom::DocumentLoadStatistics aggregate_statistics(
+      /*num_loads_total=*/4, /*num_loads_evaluated=*/4,
+      /*num_loads_matching_rules=*/2, /*num_loads_disallowed=*/2,
+      /*evaluation_total_wall_duration=*/
+      base::TimeDelta(base::Microseconds(200)),
+      /*evaluation_total_cpu_duration=*/
+      base::TimeDelta(base::Microseconds(200)));
+  EXPECT_TRUE(base::test::RunUntil([this, aggregate_statistics]() {
+    return agent().aggregated_document_statistics() == aggregate_statistics;
+  }));
+  // We don't send statistics until the page finishes loading.
+  EXPECT_TRUE(host_.GetDocumentLoadStatistics().is_null());
+
+  agent().DidFinishLoad();
+  EXPECT_TRUE(base::test::RunUntil([this, aggregate_statistics]() {
+    return *host_.GetDocumentLoadStatistics() == aggregate_statistics;
+  }));
 }
 
 }  // namespace fingerprinting_protection_filter

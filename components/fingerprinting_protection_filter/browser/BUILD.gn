@@ -48,6 +48,7 @@ if (use_blink) {
       "//components/variations",
       "//net",
       "//services/metrics/public/cpp:metrics_cpp",
+      "//third_party/blink/public:blink",
       "//url",
     ]
   }

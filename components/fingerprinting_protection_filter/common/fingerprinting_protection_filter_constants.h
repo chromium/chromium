@@ -30,13 +30,6 @@ const char ActivationDecisionHistogramName[] =
 const char ActivationLevelHistogramName[] =
     "FingerprintingProtection.PageLoad.ActivationLevel";
 
-const char MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName[] =
-    "FingerprintingProtection.MainFrameLoad."
-    "RulesetIsAvailableAnyActivationLevel";
-
-const char DocumentLoadRulesetIsAvailableHistogramName[] =
-    "FingerprintingProtection.DocumentLoad.RulesetIsAvailable";
-
 const char RefreshCountHistogramName[] =
     "FingerprintingProtection.WebContentsObserver.RefreshCount";
 
