@@ -4534,7 +4534,7 @@ enum WebFeature {
   kClipboardCustomFormatWrite = 5228,
   kClipboardSvgRead = 5229,
   kClipboardSvgWrite = 5230,
-  kVarFallbackValidation = 5231,
+  kOBSOLETE_VarFallbackValidation = 5231,
   kLocaleInfoObsoletedGetters = 5232,
   kInjectionMitigatedContextSubFrame = 5233,
   kInjectionMitigatedContextMainFrame = 5234,

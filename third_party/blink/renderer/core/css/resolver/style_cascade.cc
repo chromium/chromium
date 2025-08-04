@@ -1504,15 +1504,9 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // https://drafts.csswg.org/css-variables/#cycles
   TokenSequence fallback;
   bool has_fallback = false;
-  // Note: has_comma may be `true` even for fallbacks which contain
-  // invalid var(). This is needed for syntax validation of fallbacks for
-  // registered custom properties.
-  // TODO(crbug.com/372475301): Remove this, if possible.
-  bool has_comma = false;
   bool fallback_caused_cycle = false;  // For use-counting.
   if (!RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled() &&
       ConsumeComma(stream)) {
-    has_comma = true;
     stream.ConsumeWhitespace();
     // Note that we can enter this function while in a cycle.
     bool in_cycle_before = resolver.InCycle();
@@ -1621,18 +1615,6 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
       // TODO(crbug.com/397690639): Ignore cycles in unused fallbacks.
       CountUse(WebFeature::kCSSVarFallbackCycle);
     }
-    return false;
-  }
-
-  // The fallback must match the syntax of the referenced custom
-  // property, even if the fallback isn't used.
-  //
-  // TODO(crbug.com/372475301): Remove this, if possible.
-  //
-  // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
-  if (!RuntimeEnabledFeatures::CSSTypeAgnosticVarFallbackEnabled() &&
-      has_comma && !ValidateFallback(property, fallback.OriginalText())) {
-    CountUse(WebFeature::kVarFallbackValidation);
     return false;
   }
 

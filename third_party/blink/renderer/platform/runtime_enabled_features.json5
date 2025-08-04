@@ -1565,9 +1565,6 @@
       // Ignore cycles in unused var()/attr() fallbacks.
       name: "CSSShortCircuitVarAttr",
       status: "stable",
-      // The CSSShortCircuitVarAttr branch assumes that fallbacks
-      // are type-agnostic.
-      depends_on: ["CSSTypeAgnosticVarFallback"],
     },
     {
       // sibling-index() and sibling-count()
@@ -1633,12 +1630,6 @@
       //
       // [1] https://drafts.csswg.org/css-scoping-1/#shadow-names
       name: "CSSTreeScopedTimelines",
-    },
-    {
-      // The var() fallback does not validate against the type
-      // of the custom property being referenced.
-      name: "CSSTypeAgnosticVarFallback",
-      status: "stable",
     },
     {
       name: "CSSTypedArithmetic",
