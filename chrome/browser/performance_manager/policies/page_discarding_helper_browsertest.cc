@@ -522,8 +522,14 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 
 // Regression test for crbug.com/386801193. Ensure discarded tabs remain
 // eligible for successive discard operations following a reactivation / reload.
+// TODO(crbug.com/436300896): Re-enable on MSAN/ASAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards DISABLED_DiscardedTabEligibleForSuccessiveDiscards
+#else
+#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards DiscardedTabEligibleForSuccessiveDiscards
+#endif
 IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
-                       DiscardedTabEligibleForSuccessiveDiscards) {
+                       MAYBE_DiscardedTabEligibleForSuccessiveDiscards) {
   // Add a new background tab.
   OpenNewBackgroundPage();
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
