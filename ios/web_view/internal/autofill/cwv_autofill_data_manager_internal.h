@@ -7,6 +7,10 @@
 
 #import "ios/web_view/public/cwv_autofill_data_manager.h"
 
+namespace affiliations {
+class AffiliationService;
+}  // namespace affiliations
+
 namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
