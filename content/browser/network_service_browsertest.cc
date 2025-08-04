@@ -742,7 +742,6 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
       EXPECT_GT(size_or_error, 0);
     }
     return loader->NetError();
-    ;
   }
 };
 
