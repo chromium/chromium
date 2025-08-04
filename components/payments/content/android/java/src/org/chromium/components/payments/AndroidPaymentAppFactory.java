@@ -10,10 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 
 import java.util.HashMap;
@@ -23,8 +20,6 @@ import java.util.Map;
 /** Looks up installed third party Android payment apps. */
 @NullMarked
 public class AndroidPaymentAppFactory implements PaymentAppFactoryInterface {
-    private static @Nullable PackageManagerDelegate sPackageManagerDelegateForTest;
-
     // PaymentAppFactoryInterface implementation.
     @Override
     public void create(PaymentAppFactoryDelegate delegate) {
@@ -45,10 +40,7 @@ public class AndroidPaymentAppFactory implements PaymentAppFactoryInterface {
      * @return True if there are Android payment apps on device.
      */
     public static boolean hasAndroidPaymentApps() {
-        PackageManagerDelegate packageManagerDelegate =
-                sPackageManagerDelegateForTest == null
-                        ? new PackageManagerDelegate()
-                        : sPackageManagerDelegateForTest;
+        PackageManagerDelegate packageManagerDelegate = new PackageManagerDelegate();
         // Note that all Android payment apps must support org.chromium.intent.action.PAY action
         // without additional data to be detected.
         Intent payIntent = new Intent(WebPaymentIntentHelper.ACTION_PAY);
@@ -79,13 +71,5 @@ public class AndroidPaymentAppFactory implements PaymentAppFactoryInterface {
         }
 
         return paymentAppsInfo;
-    }
-
-    /**
-     * @param delegate The package manager delegate to use in testing.
-     */
-    @VisibleForTesting
-    public static void setPackageManagerDelegateForTest(PackageManagerDelegate delegate) {
-        sPackageManagerDelegateForTest = delegate;
     }
 }
