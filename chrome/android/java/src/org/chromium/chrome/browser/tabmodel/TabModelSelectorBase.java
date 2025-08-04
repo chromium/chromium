@@ -316,8 +316,9 @@ public abstract class TabModelSelectorBase
         }
 
         if (getModels().isEmpty()) {
-            // Tab may be destroyed here via Tab#destroy(). It is skipped for now
-            // to examine its potential side effect on crbug.com/325558929.
+            if (!tab.isDestroyed()) {
+                tab.destroy();
+            }
             return true;
         } else {
             assert false
