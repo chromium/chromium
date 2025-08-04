@@ -4931,6 +4931,16 @@ targets.bundle(
             ],
         ),
         targets.bundle(
+            targets = "ios_passing_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPHONE_14_26_0",
+            ],
+        ),
+        targets.bundle(
             targets = "ios_passing_eg2_tests",
             mixins = [
                 "xcodebuild_sim_runner",
@@ -5444,7 +5454,6 @@ targets.bundle(
     name = "ios_failing_eg2_cq_tests",
     targets = [
         "ios_chrome_integration_eg2tests_module",
-        "ios_web_shell_eg2tests_module",
     ],
     per_test_modifications = {
         "ios_chrome_integration_eg2tests_module": [
@@ -5529,6 +5538,13 @@ targets.bundle(
                 "SIM_IPHONE_15_PRO_MAX_18_2",
             ],
         ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_passing_eg2_cq_tests",
+    targets = [
+        "ios_web_shell_eg2tests_module",
     ],
 )
 
