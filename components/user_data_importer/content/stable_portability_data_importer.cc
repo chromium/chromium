@@ -22,6 +22,37 @@
 
 namespace user_data_importer {
 
+namespace {
+
+std::string_view RustStringToStringView(const rust::String& rust_string) {
+  return std::string_view(rust_string.data(), rust_string.length());
+}
+
+std::u16string RustStringToUTF16(const rust::String& rust_string) {
+  return base::UTF8ToUTF16(RustStringToStringView(rust_string));
+}
+
+std::optional<history::URLRow> ConvertToURLRow(
+    const user_data_importer::StablePortabilityHistoryEntry& history_entry) {
+  GURL gurl(RustStringToStringView(history_entry.url));
+  if (!gurl.is_valid()) {
+    return std::nullopt;
+  }
+
+  history::URLRow url_row(gurl);
+  url_row.set_title(RustStringToUTF16(history_entry.title));
+  url_row.set_visit_count(history_entry.visit_count);
+
+  url_row.set_last_visit(
+      base::Time::UnixEpoch() +
+      base::Microseconds(history_entry.visit_time_unix_epoch_usec));
+  url_row.set_typed_count(history_entry.typed_count);
+
+  return url_row;
+}
+
+}  // namespace
+
 StablePortabilityDataImporter::RustHistoryCallbackForStablePortabilityFormat::
     RustHistoryCallbackForStablePortabilityFormat(
         TransferHistoryCallback transfer_history_callback,
@@ -52,6 +83,29 @@ void StablePortabilityDataImporter::
     std::move(done_callback_).Run(-1);
   }
 }
+
+StablePortabilityDataImporter::BackgroundWorker::BackgroundWorker(
+    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
+    : bookmark_parser_(std::move(bookmark_parser)) {}
+
+StablePortabilityDataImporter::BackgroundWorker::~BackgroundWorker() = default;
+
+void StablePortabilityDataImporter::BackgroundWorker::ParseBookmarks(
+    base::File file,
+    BookmarkParser::BookmarkParsingCallback bookmarks_callback) {
+  bookmark_parser_->Parse(std::move(file), std::move(bookmarks_callback));
+}
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+void StablePortabilityDataImporter::BackgroundWorker::ParseHistory(
+    base::File file,
+    std::unique_ptr<RustHistoryCallbackForStablePortabilityFormat> callback,
+    size_t import_batch_size) {
+  int owned_raw_fd = file.TakePlatformFile();
+  user_data_importer::parse_stable_portability_history(
+      owned_raw_fd, std::move(callback), import_batch_size);
+}
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 StablePortabilityDataImporter::StablePortabilityDataImporter(
     history::HistoryService* history_service,
@@ -97,31 +151,6 @@ void StablePortabilityDataImporter::ImportBookmarks(
                 std::move(bookmarks_parser_callback_on_thread));
 }
 
-void StablePortabilityDataImporter::OnBookmarksParsed(
-    ImportCallback bookmarks_callback,
-    BookmarkParser::BookmarkParsingResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!bookmark_model_) {
-    PostCallback(std::move(bookmarks_callback), -1);
-    return;
-  }
-
-  ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
-                   [this, &bookmarks_callback](auto) {
-                     // TODO(crbug.com/414604427): Log error to UMA.
-                     PostCallback(std::move(bookmarks_callback), -1);
-                   });
-
-  // Add the parsed bookmarks to the user's storage.
-  size_t imported_count = ::user_data_importer::ImportBookmarks(
-      bookmark_model_, std::move(value.bookmarks),
-      l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER));
-
-  PostCallback(std::move(bookmarks_callback), imported_count);
-}
-
 void StablePortabilityDataImporter::ImportReadingList(
     base::File file,
     ImportCallback reading_list_callback) {
@@ -146,77 +175,6 @@ void StablePortabilityDataImporter::ImportReadingList(
   background_worker_.AsyncCall(&BackgroundWorker::ParseBookmarks)
       .WithArgs(std::move(file),
                 std::move(reading_list_parser_callback_on_thread));
-}
-
-void StablePortabilityDataImporter::OnReadingListParsed(
-    ImportCallback reading_list_callback,
-    BookmarkParser::BookmarkParsingResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!reading_list_model_) {
-    PostCallback(std::move(reading_list_callback), -1);
-    return;
-  }
-
-  ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
-                   [this, &reading_list_callback](auto) {
-                     // TODO(crbug.com/414604427): Log error to UMA.
-                     PostCallback(std::move(reading_list_callback), -1);
-                   });
-
-  // Add the parsed reading list entries to the user's storage.
-  size_t imported_count = ::user_data_importer::ImportReadingList(
-      reading_list_model_, std::move(value.bookmarks));
-
-  PostCallback(std::move(reading_list_callback), imported_count);
-}
-
-std::string_view RustStringToStringView(const rust::String& rust_string) {
-  return std::string_view(rust_string.data(), rust_string.length());
-}
-
-std::u16string RustStringToUTF16(const rust::String& rust_string) {
-  return base::UTF8ToUTF16(RustStringToStringView(rust_string));
-}
-
-std::optional<history::URLRow> ConvertToURLRow(
-    const user_data_importer::StablePortabilityHistoryEntry& history_entry) {
-  GURL gurl(RustStringToStringView(history_entry.url));
-  if (!gurl.is_valid()) {
-    return std::nullopt;
-  }
-
-  history::URLRow url_row(gurl);
-  url_row.set_title(RustStringToUTF16(history_entry.title));
-  url_row.set_visit_count(history_entry.visit_count);
-
-  url_row.set_last_visit(
-      base::Time::UnixEpoch() +
-      base::Microseconds(history_entry.visit_time_unix_epoch_usec));
-  url_row.set_typed_count(history_entry.typed_count);
-
-  return url_row;
-}
-
-void StablePortabilityDataImporter::TransferHistoryEntries(
-    std::vector<StablePortabilityHistoryEntry> history_entries) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  history::URLRows url_rows;
-  url_rows.reserve(history_entries.size());
-  for (StablePortabilityHistoryEntry history_entry : history_entries) {
-    std::optional<history::URLRow> opt_row = ConvertToURLRow(history_entry);
-    if (opt_row) {
-      url_rows.push_back(std::move(opt_row.value()));
-    }
-  }
-
-  if (!url_rows.empty()) {
-    history_service_->AddPagesWithDetails(
-        url_rows, history::SOURCE_OS_MIGRATION_IMPORTED);
-  }
 }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -247,32 +205,78 @@ void StablePortabilityDataImporter::ImportHistory(
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
+void StablePortabilityDataImporter::TransferHistoryEntries(
+    std::vector<StablePortabilityHistoryEntry> history_entries) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  history::URLRows url_rows;
+  url_rows.reserve(history_entries.size());
+  for (const auto& history_entry : history_entries) {
+    std::optional<history::URLRow> opt_row = ConvertToURLRow(history_entry);
+    if (opt_row) {
+      url_rows.push_back(std::move(opt_row.value()));
+    }
+  }
+
+  if (!url_rows.empty()) {
+    history_service_->AddPagesWithDetails(
+        url_rows, history::SOURCE_OS_MIGRATION_IMPORTED);
+  }
+}
+
+void StablePortabilityDataImporter::OnBookmarksParsed(
+    ImportCallback bookmarks_callback,
+    BookmarkParser::BookmarkParsingResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!bookmark_model_) {
+    PostCallback(std::move(bookmarks_callback), -1);
+    return;
+  }
+
+  ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
+                   [this, &bookmarks_callback](auto) {
+                     // TODO(crbug.com/414604427): Log error to UMA.
+                     PostCallback(std::move(bookmarks_callback), -1);
+                   });
+
+  // Add the parsed bookmarks to the user's storage.
+  size_t imported_count = ::user_data_importer::ImportBookmarks(
+      bookmark_model_, std::move(value.bookmarks),
+      l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER));
+
+  PostCallback(std::move(bookmarks_callback), imported_count);
+}
+
+void StablePortabilityDataImporter::OnReadingListParsed(
+    ImportCallback reading_list_callback,
+    BookmarkParser::BookmarkParsingResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!reading_list_model_) {
+    PostCallback(std::move(reading_list_callback), -1);
+    return;
+  }
+
+  ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
+                   [this, &reading_list_callback](auto) {
+                     // TODO(crbug.com/414604427): Log error to UMA.
+                     PostCallback(std::move(reading_list_callback), -1);
+                   });
+
+  // Add the parsed reading list entries to the user's storage.
+  size_t imported_count = ::user_data_importer::ImportReadingList(
+      reading_list_model_, std::move(value.bookmarks));
+
+  PostCallback(std::move(reading_list_callback), imported_count);
+}
+
 void StablePortabilityDataImporter::PostCallback(auto callback, auto results) {
   origin_sequence_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
 }
-
-StablePortabilityDataImporter::BackgroundWorker::BackgroundWorker(
-    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
-    : bookmark_parser_(std::move(bookmark_parser)) {}
-
-StablePortabilityDataImporter::BackgroundWorker::~BackgroundWorker() = default;
-
-void StablePortabilityDataImporter::BackgroundWorker::ParseBookmarks(
-    base::File file,
-    BookmarkParser::BookmarkParsingCallback bookmarks_callback) {
-  bookmark_parser_->Parse(std::move(file), std::move(bookmarks_callback));
-}
-
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-void StablePortabilityDataImporter::BackgroundWorker::ParseHistory(
-    base::File file,
-    std::unique_ptr<RustHistoryCallbackForStablePortabilityFormat> callback,
-    size_t import_batch_size) {
-  int owned_raw_fd = file.TakePlatformFile();
-  user_data_importer::parse_stable_portability_history(
-      owned_raw_fd, std::move(callback), import_batch_size);
-}
-#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace user_data_importer
