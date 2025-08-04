@@ -22,7 +22,8 @@ ReadingListAdder::~ReadingListAdder() {}
 void ReadingListAdder::AddUrlToReadingListModel(ReadingListModel* model) {
   model->AddOrReplaceEntry(url_to_add_, title_to_add_,
                            reading_list::ADDED_VIA_EXTENSION,
-                           base::TimeDelta());
+                           /*estimated_read_time=*/std::nullopt,
+                           /*creation_time=*/std::nullopt);
   std::move(completion_).Run();
 }
 

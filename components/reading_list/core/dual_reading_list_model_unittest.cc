@@ -1083,7 +1083,8 @@ TEST_F(DualReadingListModelTest, AddEntryWhenSignedOut) {
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1110,7 +1111,8 @@ TEST_F(DualReadingListModelTest, AddEntryWhenSignedInSyncDisabled) {
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1137,7 +1139,8 @@ TEST_F(DualReadingListModelTest, AddEntryWhenSyncEnabled) {
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1166,7 +1169,8 @@ TEST_F(DualReadingListModelTest, AddExistingEntryWhenSignedOut) {
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1199,7 +1203,8 @@ TEST_F(DualReadingListModelTest,
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1235,7 +1240,8 @@ TEST_F(DualReadingListModelTest,
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1269,7 +1275,8 @@ TEST_F(DualReadingListModelTest,
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1299,7 +1306,8 @@ TEST_F(DualReadingListModelTest, AddExistingEntryWhenSyncEnabled) {
 
   scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
@@ -1394,7 +1402,8 @@ TEST_F(DualReadingListModelTest, AddEntryFromTheLocalModel) {
 
   dual_model_->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
@@ -1417,7 +1426,8 @@ TEST_F(DualReadingListModelTest, AddExistingEntryFromTheLocalModel) {
 
   dual_model_->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
@@ -2223,7 +2233,8 @@ TEST_F(DualReadingListModelTest, TestTrimmingTitle) {
   std::string title = "\n  This\ttitle \n contains new     line \n characters ";
   dual_model_->AddOrReplaceEntry(kUrl, title,
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
   scoped_refptr<const ReadingListEntry> entry =
       dual_model_->GetEntryByURL(kUrl);
   EXPECT_EQ(entry->Title(), "This title contains new line characters");
@@ -2813,7 +2824,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -2839,7 +2851,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -2865,7 +2878,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -2901,7 +2915,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -2937,7 +2952,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -2975,7 +2991,8 @@ TEST_F(
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3013,7 +3030,8 @@ TEST_F(
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3052,7 +3070,8 @@ TEST_F(
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3091,7 +3110,8 @@ TEST_F(
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3131,7 +3151,8 @@ TEST_F(
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3172,7 +3193,8 @@ TEST_F(
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3209,7 +3231,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3246,7 +3269,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->AddOrReplaceEntry(kUrl, "entry_title",
                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                 /*estimated_read_time=*/base::TimeDelta());
+                                 /*estimated_read_time=*/std::nullopt,
+                                 /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3363,7 +3387,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3393,7 +3418,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3424,7 +3450,8 @@ TEST_F(DualReadingListModelTest,
 
   dual_model_->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));

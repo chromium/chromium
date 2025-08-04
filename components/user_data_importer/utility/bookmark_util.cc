@@ -134,7 +134,7 @@ size_t ImportReadingList(ReadingListModel* reading_list_model,
     reading_list_model->AddOrReplaceEntry(
         reading_list_entry.url, base::UTF16ToUTF8(reading_list_entry.title),
         reading_list::ADDED_VIA_IMPORT,
-        /*estimated_read_time=*/base::TimeDelta());
+        /*estimated_read_time=*/std::nullopt, reading_list_entry.creation_time);
     ++imported_count;
   }
 

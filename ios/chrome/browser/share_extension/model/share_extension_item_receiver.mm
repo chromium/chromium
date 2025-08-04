@@ -319,9 +319,10 @@ bool IsReceivedItemValid(GURL entryGURL,
   switch (type) {
     case app_group::READING_LIST_ITEM: {
       LogHistogramReceivedItem(READINGLIST_ENTRY);
-      _readingListModel->AddOrReplaceEntry(
-          entryURL, entryTitle, reading_list::ADDED_VIA_EXTENSION,
-          /*estimated_read_time=*/base::TimeDelta());
+      _readingListModel->AddOrReplaceEntry(entryURL, entryTitle,
+                                           reading_list::ADDED_VIA_EXTENSION,
+                                           /*estimated_read_time=*/std::nullopt,
+                                           /*creation_time=*/std::nullopt);
       break;
     }
     case app_group::BOOKMARK_ITEM: {

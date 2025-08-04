@@ -101,7 +101,8 @@ class ConnectionTypeOverrider {
   model->AddOrReplaceEntry(net::GURLWithNSURL(url),
                            base::SysNSStringToUTF8(title),
                            reading_list::ADDED_VIA_CURRENT_APP,
-                           /*estimated_read_time=*/base::TimeDelta());
+                           /*estimated_read_time=*/std::nullopt,
+                           /*creation_time=*/std::nullopt);
   if (read) {
     model->SetReadStatusIfExists(net::GURLWithNSURL(url), true);
   }

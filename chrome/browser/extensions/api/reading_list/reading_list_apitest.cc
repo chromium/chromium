@@ -42,7 +42,9 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
       ReadingListModelFactory::GetForBrowserContext(profile());
   reading_list_model->AddOrReplaceEntry(
       GURL("https://www.example.com"), "example of title",
-      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+      reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   ASSERT_TRUE(base::Contains(event_observer.events(),
                              api::reading_list::OnEntryAdded::kEventName));
@@ -63,7 +65,9 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
       ReadingListModelFactory::GetForBrowserContext(incognito_profile);
   incognito_reading_list_model->AddOrReplaceEntry(
       GURL("https://www.example.com"), "example of title",
-      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+      reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   ASSERT_TRUE(base::Contains(event_observer.events(),
                              api::reading_list::OnEntryAdded::kEventName));

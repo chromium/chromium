@@ -115,10 +115,12 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
 
     model()->AddOrReplaceEntry(GURL(kTabUrl1), kTabName1,
                                reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
-                               /*estimated_read_time=*/base::TimeDelta());
+                               /*estimated_read_time=*/std::nullopt,
+                               /*creation_time=*/std::nullopt);
     model()->AddOrReplaceEntry(GURL(kTabUrl3), kTabName3,
                                reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
-                               /*estimated_read_time=*/base::TimeDelta());
+                               /*estimated_read_time=*/std::nullopt,
+                               /*creation_time=*/std::nullopt);
   }
 
   void TearDown() override {
@@ -377,7 +379,8 @@ TEST_F(TestReadingListPageHandlerTest, OpenURLAndReadd) {
             reading_list::mojom::CurrentPageActionButtonState::kAdd);
   model()->AddOrReplaceEntry(GURL(kTabUrl3), kTabName3,
                              reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   // Expect CurrentPageActionButtonState to be mark as read, due to the current
   // tab being unread on the reading list.

@@ -92,6 +92,24 @@ MATCHER_P4(IsUrlBookmarkWithinTimeRange, title, url, min_time, max_time, "") {
   return true;
 }
 
+MATCHER_P3(IsReadingListEntry, title, url, creation_time, "") {
+  if (arg->Title() != title) {
+    *result_listener << "which has title " << arg->Title();
+    return false;
+  }
+  if (arg->URL() != url) {
+    *result_listener << "which has url " << arg->URL();
+    return false;
+  }
+  base::Time actual_creation_time =
+      base::Time::UnixEpoch() + base::Microseconds(arg->CreationTime());
+  if (actual_creation_time != creation_time) {
+    *result_listener << "which has creation time " << actual_creation_time;
+    return false;
+  }
+  return true;
+}
+
 MATCHER_P4(IsReadingListEntryWithinTimeRange,
            title,
            url,
@@ -446,22 +464,19 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList) {
     entries.push_back(GetReadingListModel().GetEntryByURL(gurl).get());
   }
 
-  EXPECT_THAT(entries,
-              UnorderedElementsAre(
-                  // TODO(crbug.com/431203204): Implement actually importing the
-                  // creation time. Then the expectation should become
-                  // `base::Time::FromSecondsSinceUnixEpoch(904914000)`.
-                  IsReadingListEntryWithinTimeRange(
-                      "Google", GURL("https://www.google.com/"),
-                      import_start_time, import_end_time),
-                  IsReadingListEntryWithinTimeRange(
-                      "The Beach Boys",
-                      GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"),
-                      import_start_time, import_end_time),
-                  IsReadingListEntryWithinTimeRange(
-                      "Brian Wilson",
-                      GURL("https://en.wikipedia.org/wiki/Brian_Wilson"),
-                      import_start_time, import_end_time)));
+  EXPECT_THAT(
+      entries,
+      UnorderedElementsAre(
+          IsReadingListEntry("Google", GURL("https://www.google.com/"),
+                             base::Time::FromSecondsSinceUnixEpoch(904914000)),
+          IsReadingListEntryWithinTimeRange(
+              "The Beach Boys",
+              GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"),
+              import_start_time, import_end_time),
+          IsReadingListEntryWithinTimeRange(
+              "Brian Wilson",
+              GURL("https://en.wikipedia.org/wiki/Brian_Wilson"),
+              import_start_time, import_end_time)));
 }
 
 // Tests parsing an HTML with several not valid formats. The parser should still

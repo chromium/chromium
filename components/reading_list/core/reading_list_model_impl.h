@@ -71,7 +71,8 @@ class ReadingListModelImpl : public ReadingListModel {
       const GURL& url,
       const std::string& title,
       reading_list::EntrySource source,
-      base::TimeDelta estimated_read_time) override;
+      std::optional<base::TimeDelta> estimated_read_time,
+      std::optional<base::Time> creation_time) override;
   void RemoveEntryByURL(const GURL& url,
                         const base::Location& location) override;
   void SetReadStatusIfExists(const GURL& url, bool read) override;

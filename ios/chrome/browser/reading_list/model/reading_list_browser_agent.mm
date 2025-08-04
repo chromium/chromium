@@ -188,7 +188,8 @@ void ReadingListBrowserAgent::AddURLToReadingListwithTitle(const GURL& url,
       ReadingListModelFactory::GetForProfile(browser_->GetProfile());
   reading_model->AddOrReplaceEntry(url, base::SysNSStringToUTF8(title),
                                    reading_list::ADDED_VIA_CURRENT_APP,
-                                   /*estimated_read_time=*/base::TimeDelta());
+                                   /*estimated_read_time=*/std::nullopt,
+                                   /*creation_time=*/std::nullopt);
 }
 
 MDCSnackbarMessageAction*

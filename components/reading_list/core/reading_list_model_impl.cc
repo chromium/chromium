@@ -350,7 +350,8 @@ const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
     const GURL& url,
     const std::string& title,
     reading_list::EntrySource source,
-    base::TimeDelta estimated_read_time) {
+    std::optional<base::TimeDelta> estimated_read_time,
+    std::optional<base::Time> creation_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
   DCHECK(IsUrlSupported(url));
@@ -364,10 +365,10 @@ const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
 
   std::string trimmed_title = TrimTitle(title);
 
-  auto entry =
-      base::MakeRefCounted<ReadingListEntry>(url, trimmed_title, clock_->Now());
-  if (!estimated_read_time.is_zero()) {
-    entry->SetEstimatedReadTime(estimated_read_time);
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      url, trimmed_title, creation_time.value_or(clock_->Now()));
+  if (estimated_read_time.has_value()) {
+    entry->SetEstimatedReadTime(*estimated_read_time);
   }
 
   AddEntry(std::move(entry), source);

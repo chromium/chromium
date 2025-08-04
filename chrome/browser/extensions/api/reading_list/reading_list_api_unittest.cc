@@ -51,7 +51,7 @@ void AddReadingListEntry(ReadingListModel* reading_list_model,
                          bool has_been_read) {
   reading_list_model->AddOrReplaceEntry(
       url, title, reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
-      base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt, /*creation_time=*/std::nullopt);
   reading_list_model->SetReadStatusIfExists(url, has_been_read);
 }
 

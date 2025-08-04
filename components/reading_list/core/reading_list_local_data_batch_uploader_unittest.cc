@@ -97,11 +97,13 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, DescriptionHasOnlyLocalData) {
   LoadModel();
   dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       GURL("https://local.com"), "local", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   dual_reading_list_model()->GetAccountModelIfSyncing()->AddOrReplaceEntry(
       GURL("https://account.com"), "account",
       reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   ReadingListLocalDataBatchUploader uploader(dual_reading_list_model());
   base::test::TestFuture<syncer::LocalDataDescription> description;
 
@@ -128,11 +130,13 @@ TEST_F(ReadingListLocalDataBatchUploaderTest,
   LoadModel();
   dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       GURL("https://local.com"), "local", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   dual_reading_list_model()->GetAccountModelIfSyncing()->AddOrReplaceEntry(
       GURL("https://account.com"), "account",
       reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   ReadingListLocalDataBatchUploader uploader(dual_reading_list_model());
   base::test::TestFuture<syncer::LocalDataDescription> description;
 
@@ -169,11 +173,13 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, MigrationUploadsLocalData) {
   LoadModel();
   dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       GURL("https://local.com"), "local", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   dual_reading_list_model()->GetAccountModelIfSyncing()->AddOrReplaceEntry(
       GURL("https://account.com"), "account",
       reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   ReadingListLocalDataBatchUploader uploader(dual_reading_list_model());
 
   uploader.TriggerLocalDataMigration();
@@ -192,14 +198,17 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, OnlySelectedItemsGetUploaded) {
   LoadModel();
   dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       GURL("https://local1.com"), "local1", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   dual_reading_list_model()->GetLocalOrSyncableModel()->AddOrReplaceEntry(
       GURL("https://local2.com"), "local2", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   dual_reading_list_model()->GetAccountModelIfSyncing()->AddOrReplaceEntry(
       GURL("https://account.com"), "account",
       reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   ReadingListLocalDataBatchUploader uploader(dual_reading_list_model());
 
   ASSERT_EQ(dual_reading_list_model()->GetStorageStateForURLForTesting(

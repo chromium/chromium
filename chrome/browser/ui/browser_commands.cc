@@ -1656,7 +1656,8 @@ void MoveTabsToReadLater(Browser* browser,
     }
     model->AddOrReplaceEntry(url, base::UTF16ToUTF8(title),
                              reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
     BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingListDiscoveryFeature);
     base::UmaHistogramEnumeration(

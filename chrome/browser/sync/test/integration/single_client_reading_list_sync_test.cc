@@ -254,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kLocalUrl("http://local_url.com/");
   model()->AddOrReplaceEntry(kLocalUrl, "local_title",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   ASSERT_THAT(model()->size(), Eq(1ul));
 
@@ -264,7 +265,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kAccountUrl("http://account_url.com/");
   model()->AddOrReplaceEntry(kAccountUrl, "account_title",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   ASSERT_THAT(model()->size(), Eq(2ul));
 
@@ -358,11 +360,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   model()->AddOrReplaceEntry(kCommonUrl, "common_title",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
   const GURL kLocalUrl("http://local_url.com/");
   model()->AddOrReplaceEntry(kLocalUrl, "local_title",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   ASSERT_THAT(model()->size(), Eq(2ul));
 
@@ -416,12 +420,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kUrlA("http://url_a.com/");
   model()->AddOrReplaceEntry(kUrlA, "title_a",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   const GURL kUrlB("http://url_b.com/");
   model()->AddOrReplaceEntry(kUrlB, "title_b",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
 
@@ -746,12 +752,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kUrlA("http://url_a.com/");
   model()->AddOrReplaceEntry(kUrlA, "title_a",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   const GURL kUrlB("http://url_b.com/");
   model()->AddOrReplaceEntry(kUrlB, "title_b",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
 
@@ -784,12 +792,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kUrlA("http://url_a.com/");
   model()->AddOrReplaceEntry(kUrlA, "title_a",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   const GURL kUrlB("http://url_b.com/");
   model()->AddOrReplaceEntry(kUrlB, "title_b",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
 
@@ -816,12 +826,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kUrlA("http://url_a.com/");
   model()->AddOrReplaceEntry(kUrlA, "title_a",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   const GURL kUrlB("http://url_b.com/");
   model()->AddOrReplaceEntry(kUrlB, "title_b",
                              reading_list::ADDED_VIA_CURRENT_APP,
-                             /*estimated_read_time=*/base::TimeDelta());
+                             /*estimated_read_time=*/std::nullopt,
+                             /*creation_time=*/std::nullopt);
 
   ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
 

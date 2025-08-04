@@ -179,7 +179,8 @@ TEST_F(ReadingListSpotlightManagerTest, testAddEntry) {
 
   model_->AddOrReplaceEntry(GURL(kTestURL3), kTestTitle3,
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   // We expect that we call indexSearchableItems spotlight api when adding a new
   // entry in reading list.

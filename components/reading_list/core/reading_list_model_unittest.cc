@@ -394,10 +394,14 @@ TEST_F(ReadingListModelTest, AddEntry) {
 
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
       url, "\n  \tsample Test ", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   EXPECT_EQ(url, entry.URL());
   EXPECT_EQ("sample Test", entry.Title());
+  EXPECT_EQ(base::TimeDelta(), entry.EstimatedReadTime());
+  EXPECT_EQ(clock_.Now(),
+            base::Time::UnixEpoch() + base::Microseconds(entry.CreationTime()));
 
   EXPECT_EQ(1, storage_saved_);
   EXPECT_EQ(0, storage_removed_);
@@ -412,13 +416,42 @@ TEST_F(ReadingListModelTest, AddEntry) {
   EXPECT_EQ("sample Test", other_entry->Title());
 }
 
+TEST_F(ReadingListModelTest, AddEntryWithOptionalParams) {
+  const GURL url("http://example.com");
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillAddEntry(model_.get(), HasUrl(url)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(model_.get(), url,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  const base::TimeDelta estimated_read_time = base::Minutes(3);
+  const base::Time creation_time = base::Time::UnixEpoch() + base::Hours(11);
+  const ReadingListEntry& entry = model_->AddOrReplaceEntry(
+      url, "\n  \tsample Test ", reading_list::ADDED_VIA_CURRENT_APP,
+      estimated_read_time, creation_time);
+
+  EXPECT_EQ(url, entry.URL());
+  EXPECT_EQ("sample Test", entry.Title());
+  EXPECT_EQ(estimated_read_time, entry.EstimatedReadTime());
+  EXPECT_EQ(creation_time,
+            base::Time::UnixEpoch() + base::Microseconds(entry.CreationTime()));
+}
+
 // Tests adding an entry that already exists.
 TEST_F(ReadingListModelTest, AddExistingEntry) {
   const GURL url("http://example.com");
   const std::string title = "\n  \tsample Test ";
 
   model_->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   ClearCounts();
 
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
@@ -436,7 +469,8 @@ TEST_F(ReadingListModelTest, AddExistingEntry) {
 
   const ReadingListEntry& entry =
       model_->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
-                                /*estimated_read_time=*/base::TimeDelta());
+                                /*estimated_read_time=*/std::nullopt,
+                                /*creation_time=*/std::nullopt);
   EXPECT_EQ(url, entry.URL());
   EXPECT_EQ("sample Test", entry.Title());
 
@@ -484,7 +518,8 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
   const GURL url("http://example.com");
 
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
   int64_t size = 50;
@@ -534,7 +569,8 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
 TEST_F(ReadingListModelTest, RemoveEntryByUrlWhenUnread) {
   const GURL url("http://example.com");
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   ClearCounts();
   ASSERT_NE(model_->GetEntryByURL(url), nullptr);
   ASSERT_EQ(1ul, UnreadSize());
@@ -558,7 +594,8 @@ TEST_F(ReadingListModelTest, RemoveEntryByUrlWhenUnread) {
 TEST_F(ReadingListModelTest, RemoveEntryByUrlWhenRead) {
   const GURL url("http://example.com");
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   model_->SetReadStatusIfExists(url, true);
   ClearCounts();
   ASSERT_NE(model_->GetEntryByURL(url), nullptr);
@@ -585,7 +622,8 @@ TEST_F(ReadingListModelTest, RemoveSyncEntryByUrlWhenUnread) {
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = model_->BeginBatchUpdates();
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   ClearCounts();
   ASSERT_NE(model_->GetEntryByURL(url), nullptr);
   ASSERT_EQ(1ul, UnreadSize());
@@ -611,7 +649,8 @@ TEST_F(ReadingListModelTest, RemoveSyncEntryByUrlWhenRead) {
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = model_->BeginBatchUpdates();
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   model_->SetReadStatusIfExists(url, true);
   ClearCounts();
   ASSERT_NE(model_->GetEntryByURL(url), nullptr);
@@ -636,7 +675,8 @@ TEST_F(ReadingListModelTest, RemoveSyncEntryByUrlWhenRead) {
 TEST_F(ReadingListModelTest, ReadEntry) {
   const GURL url("http://example.com");
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
@@ -664,7 +704,8 @@ TEST_F(ReadingListModelTest, EntryFromURL) {
   std::string entry1_title = "foo bar qux";
   model_->AddOrReplaceEntry(url1, entry1_title,
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   // Check call with nullptr |read| parameter.
   scoped_refptr<const ReadingListEntry> entry1 = model_->GetEntryByURL(url1);
@@ -689,7 +730,8 @@ TEST_F(ReadingListModelTest, EntryFromURL) {
 TEST_F(ReadingListModelTest, UnreadEntry) {
   const GURL url("http://example.com");
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   model_->SetReadStatusIfExists(url, true);
   ClearCounts();
   ASSERT_EQ(0ul, UnreadSize());
@@ -769,7 +811,8 @@ TEST_F(ReadingListModelTest, UpdateEntryTitle) {
   const GURL url("http://example.com");
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
       url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
@@ -786,7 +829,8 @@ TEST_F(ReadingListModelTest, UpdateEntryDistilledState) {
   const GURL url("http://example.com");
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
       url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
@@ -803,7 +847,8 @@ TEST_F(ReadingListModelTest, UpdateDistilledInfo) {
   const GURL url("http://example.com");
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
       url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
 
   testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
@@ -829,7 +874,8 @@ TEST_F(ReadingListModelTest, UpdateDistilledInfo) {
 TEST_F(ReadingListModelTest, UpdateReadEntryTitle) {
   const GURL url("http://example.com");
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   model_->SetReadStatusIfExists(url, true);
   scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   ClearCounts();
@@ -848,7 +894,8 @@ TEST_F(ReadingListModelTest, UpdateReadEntryTitle) {
 TEST_F(ReadingListModelTest, UpdateReadEntryState) {
   const GURL url("http://example.com");
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   model_->SetReadStatusIfExists(url, true);
   scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   ClearCounts();
@@ -867,7 +914,8 @@ TEST_F(ReadingListModelTest, UpdateReadEntryState) {
 TEST_F(ReadingListModelTest, UpdateReadDistilledInfo) {
   const GURL url("http://example.com");
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   model_->SetReadStatusIfExists(url, true);
   scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   ClearCounts();
@@ -897,7 +945,8 @@ TEST_F(ReadingListModelTest, TestTrimmingTitle) {
   const GURL url("http://example.com");
   std::string title = "\n  This\ttitle \n contains new     line \n characters ";
   model_->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
   model_->SetReadStatusIfExists(url, true);
   scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   EXPECT_EQ(entry->Title(), "This title contains new line characters");

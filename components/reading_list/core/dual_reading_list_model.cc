@@ -238,7 +238,8 @@ const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
     const GURL& url,
     const std::string& title,
     reading_list::EntrySource source,
-    base::TimeDelta estimated_read_time) {
+    std::optional<base::TimeDelta> estimated_read_time,
+    std::optional<base::Time> creation_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
   DCHECK(IsUrlSupported(url));
@@ -252,13 +253,13 @@ const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
 
   if (account_model_->IsTrackingSyncMetadata()) {
     const ReadingListEntry& entry = account_model_->AddOrReplaceEntry(
-        url, title, source, estimated_read_time);
+        url, title, source, estimated_read_time, creation_time);
     DCHECK(!GetAccountWhereEntryIsSavedTo(url).empty());
     return entry;
   }
 
   const ReadingListEntry& entry = local_or_syncable_model_->AddOrReplaceEntry(
-      url, title, source, estimated_read_time);
+      url, title, source, estimated_read_time, creation_time);
   DCHECK(!local_or_syncable_model_->IsTrackingSyncMetadata() ||
          !GetAccountWhereEntryIsSavedTo(url).empty());
   return entry;
