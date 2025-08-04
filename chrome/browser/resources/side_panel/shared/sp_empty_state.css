@@ -26,18 +26,18 @@ picture {
 
 #heading {
   color: var(--sp-empty-state-heading-color, var(--cr-primary-text-color));
-  font-size: 16px;
+  font-size: var(--sp-empty-state-heading-font-size, 16px);
   font-weight: 500;
-  line-height: 24px;
+  line-height: var(--sp-empty-state-heading-line-height, 24px);
   margin-block-end: 8px;
   max-width: 259px;
 }
 
 #body {
   color: var(--sp-empty-state-body-color, var(--cr-secondary-text-color));
-  font-size: 13px;
+  font-size: var(--sp-empty-state-body-font-size, 13px);
   font-weight: 400;
-  line-height: 20px;
+  line-height: var(--sp-empty-state-body-line-height, 20px);
   margin-block-end: 12px;
   max-width: 229px;
 }

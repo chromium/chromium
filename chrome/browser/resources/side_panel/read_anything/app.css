@@ -118,6 +118,12 @@
 #appFlexParent sp-empty-state {
   display: flex;
   margin: 0 auto 16px auto;
+  font-family: var(--font-family);
+  --sp-empty-state-heading-font-size: calc(var(--font-size) * 1.2);
+  --sp-empty-state-body-font-size: var(--font-size);
+
+  --sp-empty-state-heading-line-height: var(--line-height);
+  --sp-empty-state-body-line-height: var(--line-height);
 }
 
 #appFlexParent ::selection {
