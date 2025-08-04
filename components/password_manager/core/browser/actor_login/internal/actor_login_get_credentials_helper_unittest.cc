@@ -108,7 +108,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFiltersByDomain) {
   EXPECT_EQ(future.Get().value()[0].username, u"foo_username");
   EXPECT_EQ(future.Get().value()[0].type, kPassword);
   EXPECT_EQ(future.Get().value()[0].source_site_or_app, u"https://foo.com/");
-  EXPECT_FALSE(future.Get().value()[0].immediatelyAvailableToLogin);
+  // This is a temporary default value, to be used until searching for
+  // the signin form is implemented.
+  EXPECT_TRUE(future.Get().value()[0].immediatelyAvailableToLogin);
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFromAllStores) {

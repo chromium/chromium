@@ -27,7 +27,7 @@ Credential PasswordFormToCredential(
   credential.source_site_or_app =
       base::UTF8ToUTF16(form.url.GetWithEmptyPath().spec());
   // TODO(crbug.com/427171031): Use PasswordManager to set the real value here.
-  credential.immediatelyAvailableToLogin = false;
+  credential.immediatelyAvailableToLogin = true;
   return credential;
 }
 
