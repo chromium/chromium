@@ -334,17 +334,20 @@ public final class ChromePreferenceKeys {
 
     public static final String HOMEPAGE_LOCATION_POLICY_GURL = "Chrome.Policy.HomepageLocationGurl";
 
-    public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_MANAGED =
-            "Chrome.Policy.HomepageIsNewTabPageManaged";
-    public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE =
-            "Chrome.Policy.HomepageIsNewTabPageValue";
-
     /**
      * Stores the state of the ShowHomeButton policy.
      *
      * @see org.chromium.components.browser_ui.settings.ManagedPreferencesUtils.BooleanPolicyState
      */
     public static final String SHOW_HOME_BUTTON_POLICY_STATE = "Chrome.Policy.ShowHomeButtonState";
+
+    /**
+     * Stores the combined state of the homepage location and HomepageIsNewTabPage policies.
+     *
+     * @see org.chromium.components.browser_ui.settings.ManagedPreferencesUtils.BooleanPolicyState
+     */
+    public static final String HOMEPAGE_SELECTION_POLICY_STATE =
+            "Chrome.Policy.HomepageSelectionPolicyState";
 
     /** Used for get image descriptions feature, track "Just once"/"Don't ask again" choice. */
     public static final String IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT =
@@ -1062,8 +1065,7 @@ public final class ChromePreferenceKeys {
                 HOMEPAGE_LOCATION_POLICY_GURL,
                 HOMEPAGE_USE_CHROME_NTP,
                 HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
-                HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_MANAGED,
-                HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE,
+                HOMEPAGE_SELECTION_POLICY_STATE,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
