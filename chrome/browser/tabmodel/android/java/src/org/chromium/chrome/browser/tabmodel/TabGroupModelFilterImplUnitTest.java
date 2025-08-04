@@ -1341,6 +1341,38 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    public void mergeListOfTabsToGroup_GroupToTabInOrder() {
+        List<Tab> expectedTabModel =
+                new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab2, mTab3));
+
+        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToMerge, mTab1, /* indexInGroup= */ null, false);
+
+        verify(mTabGroupModelFilterObserver)
+                .willMergeTabToGroup(mTab1, TAB1_ROOT_ID, TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver)
+                .willMergeTabToGroup(mTab2, TAB1_ROOT_ID, TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver)
+                .willMergeTabToGroup(mTab3, TAB1_ROOT_ID, TAB2_TAB_GROUP_ID);
+        // No moveTab events as tabs are in order.
+        verify(mTabGroupModelFilterObserver)
+                .didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
+        verify(mTabGroupModelFilterObserver)
+                .didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
+        verify(mTabGroupModelFilterObserver)
+                .didMergeTabToGroup(mTab3, /* isDestinationTab= */ false);
+        assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+
+        assertThat(mTab1.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
+        assertThat(mTab2.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
+        assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
+        assertThat(mTab1.getRootId(), equalTo(TAB1_ROOT_ID));
+        assertThat(mTab2.getRootId(), equalTo(TAB1_ROOT_ID));
+        assertThat(mTab3.getRootId(), equalTo(TAB1_ROOT_ID));
+    }
+
+    @Test
     public void mergeListOfTabsToGroup_AllBackward_ToBack() {
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab2, mTab3, mTab5, mTab6, mTab1, mTab4));

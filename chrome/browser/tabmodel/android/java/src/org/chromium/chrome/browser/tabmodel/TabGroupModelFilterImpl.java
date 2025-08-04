@@ -512,6 +512,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 observer.willMergeTabToGroup(tab, destinationRootId, destinationTabGroupId);
             }
 
+            // Skip the destination tab if it somehow got added.
+            if (tab.getId() == destinationTab.getId()) continue;
+
             int currentIndex = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
             assert currentIndex != TabModel.INVALID_TAB_INDEX;
 
@@ -529,13 +532,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 adjustedDestinationIndexInTabModel--;
             }
 
-            // If tab is already where it should be, skip it.
-            if (tab.getTabGroupId() != null
-                    && tab.getTabGroupId().equals(destinationTabGroupId)
-                    && currentIndex == adjustedDestinationIndexInTabModel) {
-                destinationIndexInTabModel++;
-                continue;
-            }
+            // While the tab might already be in the right position with the right tab group ID we
+            // cannot skip it as TabListMediator expects updates for it and we need to repair its
+            // root ID to the destination root ID.
 
             mergedTabs.add(tab);
             originalIndexes.add(currentIndex);
