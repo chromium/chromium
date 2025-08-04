@@ -1003,8 +1003,12 @@ impl HelpTemplate<'_, '_> {
 
         let mut short_als = a
             .get_visible_short_flag_aliases()
-            .map(|a| format!("{ctx_val}-{a}{ctx_val:#}"))
+            .map(|s| format!("{ctx_val}-{s}{ctx_val:#}"))
             .collect::<Vec<_>>();
+        let long_als = a
+            .get_visible_long_flag_aliases()
+            .map(|s| format!("{ctx_val}--{s}{ctx_val:#}"));
+        short_als.extend(long_als);
         let als = a
             .get_visible_aliases()
             .map(|s| format!("{ctx_val}{s}{ctx_val:#}"));
@@ -1018,6 +1022,10 @@ impl HelpTemplate<'_, '_> {
             debug!(
                 "HelpTemplate::spec_vals: Found short flag aliases...{:?}",
                 a.get_all_short_flag_aliases().collect::<Vec<_>>()
+            );
+            debug!(
+                "HelpTemplate::spec_vals: Found long flag aliases...{:?}",
+                a.get_all_long_flag_aliases().collect::<Vec<_>>()
             );
             spec_vals.push(format!("{ctx}[aliases: {ctx:#}{all_als}{ctx}]{ctx:#}"));
         }
