@@ -47,6 +47,14 @@ blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertModelExecutionError(
 // static
 int64_t AIUtils::NormalizeModelDownloadProgress(int64_t bytes_so_far,
                                                 int64_t total_bytes) {
+  // If `bytes_so_far` is zero, we should have downloaded zero bytes
+  // out of zero meaning we're at 100%. So set it to
+  // `kNormalizedDownloadProgressMax` to avoid dividing by zero.
+  if (total_bytes == 0) {
+    CHECK_EQ(bytes_so_far, 0);
+    return AIUtils::kNormalizedDownloadProgressMax;
+  }
+
   double raw_progress_fraction =
       bytes_so_far / static_cast<double>(total_bytes);
 

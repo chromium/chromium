@@ -11,7 +11,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/types/id_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
@@ -46,7 +45,10 @@ class AIModelDownloadProgressManager {
    private:
     friend AIModelDownloadProgressManager;
 
-    using EventCallback = base::RepeatingCallback<void(Component&)>;
+    using EventCallback =
+        base::RepeatingCallback<void(Component& component,
+                                     bool just_determined,
+                                     int64_t downloaded_bytes_delta)>;
 
     // Only call if `determined_bytes()` is true.
     int64_t downloaded_bytes() const {
@@ -77,6 +79,10 @@ class AIModelDownloadProgressManager {
 
     std::optional<int64_t> downloaded_bytes_;
     std::optional<int64_t> total_bytes_;
+
+    std::optional<int64_t> last_downloaded_bytes_;
+
+    bool last_determined_bytes_ = false;
 
     // Called anytime `SetDownloadedBytes()` or `SetTotalBytes()` is called.
     EventCallback event_callback_;
@@ -115,12 +121,16 @@ class AIModelDownloadProgressManager {
     Reporter(const Reporter&) = delete;
     Reporter& operator=(const Reporter&) = delete;
 
-    void OnEvent(Component& component);
+    void OnEvent(Component& component,
+                 bool just_determined,
+                 int64_t downloaded_bytes_delta);
 
    private:
     void OnRemoteDisconnect();
-    void ProcessEvent(const Component& component);
-    int64_t GetDownloadedBytes();
+    void ProcessEvent(const Component& component,
+                      bool just_determined,
+                      int64_t downloaded_bytes_delta);
+    bool ReadyToReport();
 
     // `manager_` owns `this`.
     base::raw_ref<AIModelDownloadProgressManager> manager_;
@@ -130,22 +140,14 @@ class AIModelDownloadProgressManager {
     // The components we're reporting the progress for.
     base::flat_set<std::unique_ptr<Component>> components_;
 
-    // Map of the components to their observed downloaded bytes. Also serves as
-    // a way to keep track of what components we've observed the total bytes of.
-    //
-    // `raw_ptr` safe since `this` owns the `Component` in `components_` and
-    // `components_` and all its members outlive `observed_downloaded_bytes_`.
-    std::map<raw_ptr<const Component>, int64_t> observed_downloaded_bytes_;
+    // The number of components whose bytes have been determined.
+    int determined_components_ = 0;
+
+    // Sum of all observed components' downloaded_bytes.
+    int64_t components_downloaded_bytes_ = 0;
 
     // Sum of all observed components' total_bytes.
     int64_t components_total_bytes_ = 0;
-
-    // The bytes already downloaded before we determined the `total_bytes_`.
-    int64_t already_downloaded_bytes_ = 0;
-
-    // True if we know the total bytes of the components we'll be watching.
-    // Meaning we can start reporting.
-    bool ready_to_report_ = false;
 
     int last_reported_progress_ = 0;
     base::TimeTicks last_progress_time_;
