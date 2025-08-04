@@ -81,6 +81,9 @@ void IOSChromeDefaultBrowserMetricsProvider::ProvideCurrentSessionData(
     case metrics::MetricsLogUploader::MetricServiceType::DWA:
       // `this` should never be instantiated with this service type.
       NOTREACHED();
+    case metrics::MetricsLogUploader::MetricServiceType::PRIVATE_METRICS:
+      // `this` should never be instantiated with this service type.
+      NOTREACHED();
   }
   NOTREACHED();
 }

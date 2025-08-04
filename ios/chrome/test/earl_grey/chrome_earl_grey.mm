@@ -1375,10 +1375,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUKMEnabled];
 }
 
-- (BOOL)isDWAEnabled {
-  return [ChromeEarlGreyAppInterface isDWAEnabled];
-}
-
 - (BOOL)isTestFeatureEnabled {
   return [ChromeEarlGreyAppInterface isTestFeatureEnabled];
 }

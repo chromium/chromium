@@ -16,6 +16,10 @@ namespace metrics::dwa {
 
 BASE_FEATURE(kDwaFeature, "DwaFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateMetricsFeature,
+             "PrivateMetricsFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 // Populates |dwa_event|.field_trials with the field trial/group name hashes
@@ -137,7 +141,7 @@ DwaRecorder::~DwaRecorder() = default;
 
 void DwaRecorder::EnableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  recorder_enabled_ = base::FeatureList::IsEnabled(kDwaFeature);
+  recorder_enabled_ = IsDwaOrPrivateMetricsFeatureEnabled();
 }
 
 void DwaRecorder::DisableRecording() {
@@ -193,6 +197,12 @@ std::vector<::dwa::DeidentifiedWebAnalyticsEvent> DwaRecorder::TakeDwaEvents() {
 const std::vector<metrics::dwa::mojom::DwaEntryPtr>&
 DwaRecorder::GetEntriesForTesting() const {
   return entries_;
+}
+
+// static
+bool DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kDwaFeature) ||
+         base::FeatureList::IsEnabled(kPrivateMetricsFeature);
 }
 
 }  // namespace metrics::dwa

@@ -28,6 +28,11 @@ namespace metrics::dwa {
 // Enables DWA recording.
 COMPONENT_EXPORT(DWA_RECORDER) BASE_DECLARE_FEATURE(kDwaFeature);
 
+// Enables Private Metrics reporting. This flag enables the flow for reporting
+// `PrivateMetricReport` protocol buffer as described in
+// go/chrome-trusted-private-metrics and go/etld-plus-one-metrics.
+COMPONENT_EXPORT(DWA_RECORDER) BASE_DECLARE_FEATURE(kPrivateMetricsFeature);
+
 class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
  public:
   DwaRecorder();
@@ -64,6 +69,9 @@ class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
   // Returns a vector to internal list of DwaEntryPtr for testing.
   const std::vector<metrics::dwa::mojom::DwaEntryPtr>& GetEntriesForTesting()
       const;
+
+  // Returns true if either DwaFeature or PrivateMetricsFeature is enabled.
+  static bool IsDwaOrPrivateMetricsFeatureEnabled();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

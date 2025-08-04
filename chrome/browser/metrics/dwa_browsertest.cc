@@ -54,8 +54,9 @@ class DwaBrowserTest : public SyncTest {
   DwaBrowserTest() : SyncTest(SINGLE_CLIENT) {
     // Explicitly enable DWA and disable metrics reporting. Disabling metrics
     // reporting should affect only UMA--not DWA.
-    scoped_feature_list_.InitWithFeatures({dwa::kDwaFeature},
-                                          {internal::kMetricsReportingFeature});
+    scoped_feature_list_.InitWithFeatures(
+        {dwa::kDwaFeature, dwa::kPrivateMetricsFeature},
+        {internal::kMetricsReportingFeature});
   }
 
   DwaBrowserTest(const DwaBrowserTest&) = delete;

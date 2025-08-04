@@ -529,9 +529,6 @@ enum class TipsNotificationType;
 // Returns YES if kTestFeature is enabled.
 + (BOOL)isTestFeatureEnabled;
 
-// Returns YES if DWA feature is enabled.
-+ (BOOL)isDWAEnabled [[nodiscard]];
-
 // Returns YES if DemographicMetricsReporting feature is enabled.
 + (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
 

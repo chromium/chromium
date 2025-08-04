@@ -39,6 +39,7 @@ class MetricsLogUploader {
     UKM,
     STRUCTURED_METRICS,
     DWA,
+    PRIVATE_METRICS,
   };
 
   virtual ~MetricsLogUploader() = default;

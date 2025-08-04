@@ -12,6 +12,7 @@
 #include "components/metrics/dwa/dwa_pref_names.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -40,6 +41,9 @@ class DwaServiceTest : public testing::Test {
   void TearDown() override { DwaRecorder::Get()->Purge(); }
 
   int GetPersistedLogCount() {
+    if (base::FeatureList::IsEnabled(kPrivateMetricsFeature)) {
+      return prefs_.GetList(private_metrics::prefs::kUnsentLogStoreName).size();
+    }
     return prefs_.GetList(prefs::kUnsentLogStoreName).size();
   }
 

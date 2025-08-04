@@ -37,6 +37,9 @@ rather than the code.
       <message name="IDS_DWA_SERVER_URL" translateable="false">
           -
       </message>
+      <message name="IDS_PRIVATE_METRICS_SERVER_URL" translateable="false">
+          -
+      </message>
     </messages>
   </release>
 </grit>

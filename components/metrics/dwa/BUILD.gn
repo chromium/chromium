@@ -18,6 +18,8 @@ component("dwa_recorder") {
 # TODO(crbug.com/433729993): Build dwa static library under private_metrics static library.
 static_library("dwa") {
   sources = [
+    "//components/metrics/private_metrics/private_metrics_pref_names.cc",
+    "//components/metrics/private_metrics/private_metrics_pref_names.h",
     "//components/metrics/private_metrics/private_metrics_reporting_service.cc",
     "//components/metrics/private_metrics/private_metrics_reporting_service.h",
     "//components/metrics/private_metrics/private_metrics_unsent_log_store_metrics.cc",

@@ -84,6 +84,7 @@
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/install_date_provider.h"
@@ -732,7 +733,7 @@ void ChromeMetricsServiceClient::Initialize() {
     RegisterUKMProviders();
   }
 
-  if (base::FeatureList::IsEnabled(metrics::dwa::kDwaFeature)) {
+  if (metrics::dwa::DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled()) {
     dwa_service_ =
         std::make_unique<metrics::dwa::DwaService>(this, local_state);
   }

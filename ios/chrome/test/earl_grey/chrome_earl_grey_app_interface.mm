@@ -1187,10 +1187,6 @@ NSString* SerializedValue(const base::Value* value) {
   return base::FeatureList::IsEnabled(ukm::kUkmFeature);
 }
 
-+ (BOOL)isDWAEnabled {
-  return base::FeatureList::IsEnabled(metrics::dwa::kDwaFeature);
-}
-
 + (BOOL)isTestFeatureEnabled {
   return base::FeatureList::IsEnabled(kTestFeature);
 }

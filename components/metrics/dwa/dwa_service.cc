@@ -140,7 +140,11 @@ void DwaService::Flush(metrics::MetricsLogsEventManager::CreateReason reason) {
     return;
   }
 
-  BuildDwaReportAndStoreLog(reason);
+  if (base::FeatureList::IsEnabled(kPrivateMetricsFeature)) {
+    BuildPrivateMetricReportAndStoreLog(reason);
+  } else {
+    BuildDwaReportAndStoreLog(reason);
+  }
   reporting_service_.unsent_log_store()->TrimAndPersistUnsentLogs(true);
 }
 
@@ -314,8 +318,13 @@ std::vector<uint64_t> DwaService::BuildKAnonymityBuckets(
 void DwaService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reporting_service_.unsent_log_store()->has_unsent_logs()) {
-    BuildDwaReportAndStoreLog(
-        metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+    if (base::FeatureList::IsEnabled(dwa::kPrivateMetricsFeature)) {
+      BuildPrivateMetricReportAndStoreLog(
+          metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+    } else {
+      BuildDwaReportAndStoreLog(
+          metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+    }
   }
   reporting_service_.Start();
   scheduler_->RotationFinished();
