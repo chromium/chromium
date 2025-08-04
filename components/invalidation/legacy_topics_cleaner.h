@@ -23,8 +23,8 @@ class PerUserTopicSubscriptionManager;
 
 // Cleanup class to unsubscribe from unused legacy invalidation topics stored
 // in local state.
-// TODO(crbug.com/434619290): Keep it running for a year to ensure cleanup was triggered.
-// Added in Aug 2025.
+// TODO(crbug.com/434619290): Keep it running for a year to ensure cleanup was
+// triggered. Added in Aug 2025.
 class LegacyTopicsCleaner {
  public:
   LegacyTopicsCleaner(
