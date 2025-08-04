@@ -58,7 +58,10 @@ TEST_F(ASPasskeyCredentialIdentity_CredentialTest, create) {
               privateKey:StringToData("privateKey")
                encrypted:StringToData("encrypted")
             creationTime:kJan1st2024
-            lastUsedTime:kJan1st2024];
+            lastUsedTime:kJan1st2024
+                  hidden:NO
+              hiddenTime:kJan1st2024
+            editedByUser:NO];
     ASPasskeyCredentialIdentity* credentialIdentity =
         [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
 

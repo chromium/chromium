@@ -45,7 +45,10 @@
                      privateKey:(NSData*)privateKey
                       encrypted:(NSData*)encrypted
                    creationTime:(int64_t)creationTime
-                   lastUsedTime:(int64_t)lastUsedTime NS_DESIGNATED_INITIALIZER;
+                   lastUsedTime:(int64_t)lastUsedTime
+                         hidden:(BOOL)hidden
+                     hiddenTime:(int64_t)hiddenTime
+                   editedByUser:(BOOL)editedByUser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -28,6 +28,9 @@ NSString* const kACPrivateKeyKey = @"privateKey";
 NSString* const kACEncryptedKey = @"encrypted";
 NSString* const kACCreationTimeKey = @"creationTime";
 NSString* const kACLastUsedTimeKey = @"lastUsedTime";
+NSString* const kACHiddenKey = @"hidden";
+NSString* const kACHiddenTimeKey = @"hiddenTime";
+NSString* const kACEditedByUserKey = @"editedByUser";
 
 // Returns whether the strings are the same (including if both are nil) or if
 // both strings have the same contents.
@@ -75,6 +78,9 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 @synthesize encrypted = _encrypted;
 @synthesize creationTime = _creationTime;
 @synthesize lastUsedTime = _lastUsedTime;
+@synthesize hidden = _hidden;
+@synthesize hiddenTime = _hiddenTime;
+@synthesize editedByUser = _editedByUser;
 
 - (instancetype)initWithFavicon:(NSString*)favicon
                      credential:(id<Credential>)credential {
@@ -92,7 +98,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                       privateKey:credential.privateKey
                        encrypted:credential.encrypted
                     creationTime:credential.creationTime
-                    lastUsedTime:credential.lastUsedTime];
+                    lastUsedTime:credential.lastUsedTime
+                          hidden:credential.hidden
+                      hiddenTime:credential.hiddenTime
+                    editedByUser:credential.editedByUser];
   } else {
     // Use the password initializer
     self = [self initWithFavicon:credential.favicon
@@ -144,7 +153,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                      privateKey:(NSData*)privateKey
                       encrypted:(NSData*)encrypted
                    creationTime:(int64_t)creationTime
-                   lastUsedTime:(int64_t)lastUsedTime {
+                   lastUsedTime:(int64_t)lastUsedTime
+                         hidden:(BOOL)hidden
+                     hiddenTime:(int64_t)hiddenTime
+                   editedByUser:(BOOL)editedByUser {
   CHECK(credentialId.length > 0);
   self = [super init];
   if (self) {
@@ -161,6 +173,9 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     _encrypted = encrypted;
     _creationTime = creationTime;
     _lastUsedTime = lastUsedTime;
+    _hidden = hidden;
+    _hiddenTime = hiddenTime;
+    _editedByUser = editedByUser;
   }
   return self;
 }
@@ -218,7 +233,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
            dataAreEqual(self.privateKey, otherCredential.privateKey) &&
            dataAreEqual(self.encrypted, otherCredential.encrypted) &&
            self.creationTime == otherCredential.creationTime &&
-           self.lastUsedTime == otherCredential.lastUsedTime;
+           self.lastUsedTime == otherCredential.lastUsedTime &&
+           self.hidden == otherCredential.hidden &&
+           self.hiddenTime == otherCredential.hiddenTime &&
+           self.editedByUser == otherCredential.editedByUser;
   }
 }
 
@@ -249,6 +267,9 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     [coder encodeObject:self.encrypted forKey:kACEncryptedKey];
     [coder encodeInt64:self.creationTime forKey:kACCreationTimeKey];
     [coder encodeInt64:self.lastUsedTime forKey:kACLastUsedTimeKey];
+    [coder encodeBool:self.hidden forKey:kACHiddenKey];
+    [coder encodeInt64:self.hiddenTime forKey:kACHiddenTimeKey];
+    [coder encodeBool:self.editedByUser forKey:kACEditedByUserKey];
   } else {
     [coder encodeObject:self.password forKey:kACPasswordKey];
     [coder encodeInt64:self.rank forKey:kACRankKey];
@@ -276,7 +297,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
               privateKey:[coder decodeNSDataForKey:kACPrivateKeyKey]
                encrypted:[coder decodeNSDataForKey:kACEncryptedKey]
             creationTime:[coder decodeInt64ForKey:kACCreationTimeKey]
-            lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]];
+            lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]
+                  hidden:[coder decodeBoolForKey:kACHiddenKey]
+              hiddenTime:[coder decodeInt64ForKey:kACHiddenTimeKey]
+            editedByUser:[coder decodeBoolForKey:kACEditedByUserKey]];
 
   } else {
     // Use the password initializer

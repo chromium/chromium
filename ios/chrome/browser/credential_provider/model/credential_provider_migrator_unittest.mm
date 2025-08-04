@@ -64,7 +64,10 @@ ArchivableCredential* TestPasskeyCredential(bool valid = true) {
             privateKey:StringToData("privateKey")
              encrypted:StringToData("encrypted")
           creationTime:kJan1st2024
-          lastUsedTime:kJan1st2024];
+          lastUsedTime:kJan1st2024
+                hidden:NO
+            hiddenTime:kJan1st2024
+          editedByUser:NO];
 }
 
 class CredentialProviderMigratorTest : public PlatformTest {

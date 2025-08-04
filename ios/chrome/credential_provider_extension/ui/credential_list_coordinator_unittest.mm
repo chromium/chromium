@@ -51,7 +51,10 @@ ArchivableCredential* TestPasskeyCredential() {
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
 }
 
 }  // namespace

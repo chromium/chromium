@@ -44,7 +44,10 @@ ArchivableCredential* TestPasskeyCredential() {
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
 }
 
 // Tests that an ArchivableCredential can be created.
@@ -83,7 +86,10 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
                                          privateKey:StringToData("test")
                                           encrypted:nil
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 
@@ -100,7 +106,10 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
                                          privateKey:nil
                                           encrypted:StringToData("test")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 }
@@ -190,6 +199,9 @@ TEST_F(ArchivableCredentialTest, retrievePasskeyData) {
   EXPECT_NSEQ(credential.privateKey, unarchivedCredential.privateKey);
   EXPECT_NSEQ(credential.encrypted, unarchivedCredential.encrypted);
   EXPECT_EQ(credential.creationTime, unarchivedCredential.creationTime);
+  EXPECT_EQ(credential.hidden, unarchivedCredential.hidden);
+  EXPECT_EQ(credential.hiddenTime, unarchivedCredential.hiddenTime);
+  EXPECT_EQ(credential.editedByUser, unarchivedCredential.editedByUser);
 }
 
 // Tests ArchivableCredential equality.
@@ -246,7 +258,10 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
             privateKey:StringToData("other_privateKey")
              encrypted:StringToData("other_encrypted")
           creationTime:kJan1st2024 + 10
-          lastUsedTime:kJan1st2024 + 10];
+          lastUsedTime:kJan1st2024 + 10
+                hidden:NO
+            hiddenTime:kJan1st2024 + 10
+          editedByUser:NO];
   EXPECT_NSNE(credential, credentialSameIdentifier);
 
   ArchivableCredential* credentialDiferentIdentifier =
@@ -262,7 +277,10 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
   EXPECT_NSNE(credential, credentialDiferentIdentifier);
 
   EXPECT_NSNE(credential, nil);

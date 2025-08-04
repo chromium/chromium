@@ -40,7 +40,10 @@ ArchivableCredential* TestPasskeyCredential() {
             privateKey:StringToData("privateKey1")
              encrypted:StringToData("encrypted1")
           creationTime:kJan1st2024
-          lastUsedTime:kJan1st2024];
+          lastUsedTime:kJan1st2024
+                hidden:NO
+            hiddenTime:kJan1st2024
+          editedByUser:NO];
 }
 
 ArchivableCredential* TestPasskeyCredential2() {
@@ -57,7 +60,10 @@ ArchivableCredential* TestPasskeyCredential2() {
             privateKey:StringToData("privateKey2")
              encrypted:StringToData("encrypted2")
           creationTime:kJan1st2024 + 1
-          lastUsedTime:kJan1st2024 + 1];
+          lastUsedTime:kJan1st2024 + 1
+                hidden:NO
+            hiddenTime:kJan1st2024 + 1
+          editedByUser:NO];
 }
 
 ArchivableCredential* TestPasswordCredential() {

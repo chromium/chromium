@@ -44,7 +44,10 @@ ArchivableCredential* TestPasskeyCredential() {
             privateKey:StringToData("privateKey")
              encrypted:StringToData("encrypted")
           creationTime:SecondsToMilliseconds(kJan1st2024)
-          lastUsedTime:SecondsToMicroseconds(kJan1st2024)];
+          lastUsedTime:SecondsToMicroseconds(kJan1st2024)
+                hidden:NO
+            hiddenTime:SecondsToMilliseconds(kJan1st2024)
+          editedByUser:NO];
 }
 
 // Checks that de text and detail text of the given `cell` are as expected.
