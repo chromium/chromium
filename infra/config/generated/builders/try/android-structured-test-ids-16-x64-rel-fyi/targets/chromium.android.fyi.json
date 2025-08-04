@@ -477,47 +477,6 @@
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
       }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
-        ],
-        "description": "Run with android_36_google_apis_x64",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "chrome_junit_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_36_google_apis_x64",
-              "path": ".android_emulator/android_36_google_apis_x64"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_36_google_apis_x64"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_junit_tests",
-        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
-      }
     ]
   }
 }

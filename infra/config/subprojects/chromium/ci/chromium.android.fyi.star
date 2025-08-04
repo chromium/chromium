@@ -1382,7 +1382,6 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "android_specific_chromium_gtests",
-            "chrome_junit_tests",
         ],
         mixins = [
             targets.mixin(
