@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 

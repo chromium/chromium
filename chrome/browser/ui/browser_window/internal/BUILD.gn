@@ -46,6 +46,7 @@ source_set("internal") {
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/sync",
+      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/browser/ui/toasts",

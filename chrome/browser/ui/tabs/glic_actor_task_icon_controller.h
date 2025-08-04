@@ -7,13 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #endif
 
 class BrowserWindowInterface;
+class TabStripActionContainer;
 
 namespace tabs {
 class GlicActorTaskIconController {

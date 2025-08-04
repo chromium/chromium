@@ -1087,12 +1087,6 @@ static_library("ui") {
       "singleton_tabs.h",
       "tab_modal_confirm_dialog_delegate.cc",
       "tab_modal_confirm_dialog_delegate.h",
-      "tabs/glic_actor_task_icon_controller.cc",
-      "tabs/glic_actor_task_icon_controller.h",
-      "tabs/glic_nudge_controller.cc",
-      "tabs/glic_nudge_controller.h",
-      "tabs/glic_nudge_delegate.cc",
-      "tabs/glic_nudge_delegate.h",
       "tabs/organization/logging_util.cc",
       "tabs/organization/logging_util.h",
       "tabs/organization/metrics.cc",
@@ -1500,6 +1494,8 @@ static_library("ui") {
       "//chrome/browser/ui/shared_highlighting",
       "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tab_sharing:impl",
+      "//chrome/browser/ui/tabs:glic",
+      "//chrome/browser/ui/tabs:glic_impl",
       "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/translate:impl",
@@ -1824,6 +1820,10 @@ static_library("ui") {
       # TODO(crbug.com/432421124): Remove when the following headers aren't included
       # or get componentized: c/b/ui/browser_dialogs.h, browser_navigation.h, browser.h.
       "//chrome/browser/ui/sync:impl",
+
+      # TODO(crbug.com/): Remove this circular dependency when
+      # c/b/ui/views/tabs/tab_strip_action_container.h gets componentized.
+      "//chrome/browser/ui/tabs:glic_impl",
     ]
 
     if (is_mac) {
