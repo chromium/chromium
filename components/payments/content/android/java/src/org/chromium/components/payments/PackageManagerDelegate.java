@@ -59,7 +59,7 @@ public class PackageManagerDelegate {
      * returned.
      *
      * @param uid The uid of an installed application.
-     * @return The package information of installed appliacations with the input uid, or null if no
+     * @return The package information of installed applications with the input uid, or null if no
      *     matching applications are found.
      */
     @SuppressLint("PackageManagerGetSignatures")
@@ -93,7 +93,7 @@ public class PackageManagerDelegate {
 
     /**
      * Retrieves the list of activities that can respond to the given intent. And returns the
-     * activites' meta data in ResolveInfo.
+     * activities' meta data in ResolveInfo.
      *
      * @param intent The intent to query.
      * @return The list of activities that can respond to the intent.
