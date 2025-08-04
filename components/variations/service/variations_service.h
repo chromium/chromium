@@ -369,7 +369,7 @@ class VariationsService
   void NotifyObservers(const SeedSimulationResult& result);
 
   // Called by SimpleURLLoader when |pending_seed_request_| load completes.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Retry the fetch over HTTP, called by OnSimpleLoaderComplete when a request
   // fails. Returns true is the fetch was successfully started, this does not
