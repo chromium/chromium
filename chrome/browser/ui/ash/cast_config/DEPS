@@ -13,6 +13,5 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/media/router",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ui_features.h",
   "+chrome/common",
 ]

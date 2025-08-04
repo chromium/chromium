@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/bruschetta",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/plugin_vm",

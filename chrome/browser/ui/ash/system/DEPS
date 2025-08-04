@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/accessibility",
-  "+chrome/browser/ash/eol",
   "+chrome/browser/ash/login/help_app_launcher.h",
   "+chrome/browser/ash/login/lock",
   "+chrome/browser/ash/login/login_manager_test.h",
@@ -20,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/system_web_apps/apps/personalization_app",
   "+chrome/browser/chromeos/extensions/vpn_provider",
@@ -44,7 +42,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/browser/ui/webui/ash/set_time",
   "+chrome/browser/upgrade_detector",
-  "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/test",
 ]
