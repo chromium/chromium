@@ -564,7 +564,9 @@ size_t HttpStreamPool::AttemptManager::PendingPreconnectCount() const {
   // socket count is less than or equal to the active stream socket count.
   // This behavior is for compatibility with the non-HEv3 code path. See
   // TransportClientSocketPool::RequestSockets().
-  if (num_streams <= group_->ActiveStreamSocketCount()) {
+  CHECK_GE(group_->ActiveStreamSocketCount(), slow_tcp_based_attempt_count_);
+  if (num_streams <=
+      group_->ActiveStreamSocketCount() - slow_tcp_based_attempt_count_) {
     return 0;
   }
   return PendingCountInternal(num_streams);
@@ -1355,7 +1357,17 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
 }
 
 bool HttpStreamPool::AttemptManager::IsTcpBasedAttemptReady() {
-  switch (CanAttemptConnection()) {
+  CanAttemptResult can_attempt = CanAttemptConnection();
+  // TODO(crbug.com/383606724): Consider removing these trace and net log event
+  // once we figure out better endpoint selection algorithm.
+  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::IsTcpBasedAttemptReady",
+                      track_, "can_attempt", can_attempt);
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_CAN_ATTEMPT_TCP, [&] {
+        return base::Value::Dict().Set("can_attempt",
+                                       static_cast<int>(can_attempt));
+      });
+  switch (can_attempt) {
     case CanAttemptResult::kAttempt:
       // If we ignore stream limits and the pool's limit has already reached,
       // try to close as much as possible.

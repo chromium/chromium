@@ -1662,6 +1662,14 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_BOUND)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_COMPLETED)
 
+// Emitted when an HttpStreamPool::AttemptManager checks whether it can attempt
+// a TCP based connection. The event parameter is:
+//  {
+//     "can_attempt": <The reason why AttemptManager can or cannot make an
+//                     attempt>,
+//  }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_CAN_ATTEMPT_TCP)
+
 // Marks the start/end of a HttpStreamPool::AttemptManager::QuicAttempt.
 // For the BEGIN phase, the following parameters are attached:
 //   {

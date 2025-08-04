@@ -3425,6 +3425,35 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectActiveStreamsAvailable) {
   ASSERT_EQ(group.attempt_manager(), nullptr);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectSlow) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+
+  Preconnector preconnector("http://a.test");
+
+  // First attempt stalls forever.
+  SequencedSocketData data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&data1);
+  // Second attempt succeeds.
+  SequencedSocketData data2;
+  data2.set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(&data2);
+
+  int rv = preconnector.Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v6("2001:db8::1")
+                         .add_v4("192.0.2.1")
+                         .endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  preconnector.WaitForResult();
+  EXPECT_THAT(*preconnector.result(), IsOk());
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectFail) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();
