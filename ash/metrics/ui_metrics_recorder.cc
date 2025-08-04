@@ -98,12 +98,6 @@ void UiMetricsRecorder::ReportEventLatency(
       UMA_HISTOGRAM_CUSTOM_TIMES("Ash.EventLatency.Core.TotalLatency",
                                  latency.total_latency, base::Milliseconds(1),
                                  kMaxLatency, 100);
-
-      if (latency.total_latency < kMaxLatency) {
-        UMA_HISTOGRAM_CUSTOM_TIMES(
-            "Ash.EventLatency.Core.NoOverflow.TotalLatency",
-            latency.total_latency, base::Milliseconds(1), kMaxLatency, 100);
-      }
     }
 
     if (latency.event_type != EventType::kGestureLongPress &&
