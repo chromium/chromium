@@ -642,7 +642,15 @@ const AtomicString& GetFallbackFamily(
       DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane1, ("code2001"));
       return kPlane1;
     }
-    case 2:
+    case 2: {
+      // Extension I (category IX) is part of Plane 2: U+2EBF0–U+2EE5F. As per
+      // GB18030-2022, these characters must be rendered using simsun-extg
+      // because simsun-extg supports these newer and extended ideographs.
+      if (character >= 0x2EBF0 && character <= 0x2EE5F) {
+        DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2exti,
+                                        ("simsun-extg"));
+        return kPlane2exti;
+      }
       // Use a Traditional Chinese ExtB font if in Traditional Chinese locale.
       // Otherwise, use a Simplified Chinese ExtB font. Windows Japanese
       // fonts do support a small subset of ExtB (that are included in JIS X
@@ -656,6 +664,15 @@ const AtomicString& GetFallbackFamily(
       DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2zhs,
                                       ("simsun-extb"));
       return kPlane2zhs;
+    }
+    case 3:
+      // Plane 3 includes Extension G (category GX): U+30000–U+3134F and
+      // Extension H (category HX): U+31350–U+323AF. Both are required by
+      // GB18030-2022 and must be rendered using simsun-extg because simsun-extg
+      // supports these newer and extended ideographs.
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane3extgh,
+                                      ("simsun-extg"));
+      return kPlane3extgh;
   }
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kLastResort,
