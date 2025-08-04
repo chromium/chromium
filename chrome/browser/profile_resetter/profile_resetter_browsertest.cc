@@ -196,7 +196,13 @@ class PinnedTabsResetTest : public InProcessBrowserTest,
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PinnedTabsResetTest, ResetPinnedTabs) {
+// TODO(434716727): The test is flaky on Mac machines.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResetPinnedTabs DISABLED_ResetPinnedTabs
+#else
+#define MAYBE_ResetPinnedTabs ResetPinnedTabs
+#endif
+IN_PROC_BROWSER_TEST_F(PinnedTabsResetTest, MAYBE_ResetPinnedTabs) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   const GURL kTestURLs[] = {GURL("https://example.com/0"),
                             GURL("https://example.com/1"),
