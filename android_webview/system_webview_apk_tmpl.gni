@@ -43,11 +43,16 @@ template("system_webview_apk_or_module_tmpl") {
     assert(_include_32_bit_webview || _include_64_bit_webview)
   }
 
+  # is_64_bit_browser: controls the bitness of the renderer process, and the
+  # bitness of the nonembedded service processes. It doesn't control the browser
+  # process bitness because browser process bitness needs to match app process.
+  _is_64_bit_browser =
+      android_64bit_target_cpu && defined(invoker.is_64_bit_browser) &&
+      invoker.is_64_bit_browser
   if (_is_trichrome) {
-    _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
     _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
   } else {
-    _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+    _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
   }
 
   if (defined(invoker.version_code)) {
@@ -66,11 +71,12 @@ template("system_webview_apk_or_module_tmpl") {
   }
   _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
   _android_manifest_target_name = "${target_name}__android_manifest"
+
   jinja_template(_android_manifest_target_name) {
     input = "//android_webview/nonembedded/java/AndroidManifest.xml"
     output = _android_manifest
     _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
-                    (!_is_trichrome || !_is_64_bit_browser)
+                    !_is_64_bit_browser
     variables = [
       "force_32_bit=$_force_32_bit",
       "manifest_package=$_manifest_package",

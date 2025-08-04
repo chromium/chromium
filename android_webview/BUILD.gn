@@ -88,6 +88,10 @@ if (_is_default_toolchain) {
   if (!android_64bit_target_cpu || defined(android_app_secondary_abi)) {
     standalone_system_webview_apk_tmpl(_main_system_webview_apk_target) {
       apk_name = "SystemWebView"
+      if (android_64bit_target_cpu) {
+        is_64_bit_browser = false
+        include_64_bit_webview = true
+      }
     }
   }
 
@@ -99,6 +103,7 @@ if (_is_default_toolchain) {
 
     # Don't include any code to speed up compilation. This is used only for the
     # resources allowlist.
+    is_64_bit_browser = false
     include_32_bit_webview = false
     include_64_bit_webview = false
     omit_dex = true
@@ -131,6 +136,10 @@ if (_is_default_toolchain) {
         _main_system_webview_base_bundle_module_target) {
       target_type = "android_app_bundle_module"
       is_base_module = true
+      if (android_64bit_target_cpu) {
+        is_64_bit_browser = false
+        include_64_bit_webview = true
+      }
 
       if (enable_manifest_verification) {
         expected_android_manifest = "expectations/$_main_system_webview_bundle_target.AndroidManifest.expected"
@@ -147,6 +156,7 @@ if (_is_default_toolchain) {
   if (android_64bit_target_cpu) {
     standalone_system_webview_apk_tmpl("system_webview_64_apk") {
       apk_name = "SystemWebView64"
+      is_64_bit_browser = true
       include_32_bit_webview = false
       include_64_bit_webview = true
     }
@@ -154,6 +164,7 @@ if (_is_default_toolchain) {
     standalone_system_webview_apk_tmpl("system_webview_64_base_bundle_module") {
       target_type = "android_app_bundle_module"
       is_base_module = true
+      is_64_bit_browser = true
       include_32_bit_webview = false
       if (enable_manifest_verification) {
         expected_android_manifest =
@@ -172,6 +183,7 @@ if (_is_default_toolchain) {
       # single configuration.
       standalone_system_webview_apk_tmpl("system_webview_32_apk") {
         apk_name = "SystemWebView32"
+        is_64_bit_browser = false
         include_64_bit_webview = false
       }
 
@@ -180,6 +192,7 @@ if (_is_default_toolchain) {
         target_type = "android_app_bundle_module"
         include_64_bit_webview = false
         is_base_module = true
+        is_64_bit_browser = false
         if (enable_manifest_verification) {
           expected_android_manifest =
               "expectations/system_webview_32_bundle.AndroidManifest.expected"
@@ -190,6 +203,33 @@ if (_is_default_toolchain) {
         base_module_target = ":system_webview_32_base_bundle_module"
         bundle_name = "SystemWebView32"
         include_64_bit_webview = false
+      }
+
+      # 64_32 targets for standalone
+      template("system_webview_64_32_tmpl") {
+        standalone_system_webview_apk_tmpl(target_name) {
+          forward_variables_from(invoker, "*")
+          is_64_bit_browser = true
+          include_32_bit_webview = true
+          include_64_bit_webview = true
+        }
+      }
+
+      system_webview_64_32_tmpl("system_webview_64_32_apk") {
+        apk_name = "SystemWebView6432"
+      }
+
+      system_webview_64_32_tmpl("system_webview_64_32_base_bundle_module") {
+        target_type = "android_app_bundle_module"
+        is_base_module = true
+        if (enable_manifest_verification) {
+          expected_android_manifest = "expectations/system_webview_64_32_bundle.AndroidManifest.expected"
+        }
+      }
+
+      system_webview_bundle("system_webview_64_32_bundle") {
+        base_module_target = ":system_webview_64_32_base_bundle_module"
+        bundle_name = "SystemWebView6432"
       }
     }
   }

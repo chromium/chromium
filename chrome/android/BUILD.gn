@@ -3585,6 +3585,7 @@ if (_is_default_toolchain &&
         ":trichrome_library_64_apk_validate_android_manifest",
         "//android_webview:system_webview_32_64_base_bundle_module_validate_android_manifest",
         "//android_webview:system_webview_32_base_bundle_module_validate_android_manifest",
+        "//android_webview:system_webview_64_32_base_bundle_module_validate_android_manifest",
         "//android_webview:system_webview_64_base_bundle_module_validate_android_manifest",
         "//android_webview:trichrome_webview_32_64_base_bundle_module_validate_android_manifest",
         "//android_webview:trichrome_webview_32_base_bundle_module_validate_android_manifest",
