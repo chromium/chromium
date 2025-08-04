@@ -1399,14 +1399,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_CHECK_PASSWORDS_ERROR" desc="Text to display when the password check has an unknown error.">
         Chrome can’t check your passwords
       </message>
-      <message name="IDS_SAFETY_CHECK_PASSWORDS_ERROR_OFFLINE" desc="Text to display when the password check has an unknown error.">
-        Offline. Chrome can’t check your passwords.
-      </message>
       <message name="IDS_SAFETY_CHECK_PASSWORDS_ERROR_SIGNED_OUT" desc="Text to display when the password check is unable to run because the usere is signed out.">
         Sign in to your Google account to check your passwords
-      </message>
-      <message name="IDS_SAFETY_CHECK_PASSWORDS_ERROR_QUOTA_LIMIT" desc="Text to display when the password check hits the daily quota limit.">
-        Chrome couldn’t check all passwords
       </message>
       <message name="IDS_SAFETY_CHECK_PASSWORDS_UPDATE_PLAY_SERVICES" desc="Text to display when the password check is unable to run because Google Play services version is not supported.">
         Update Google Play services to check your passwords

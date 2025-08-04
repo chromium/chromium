@@ -7,11 +7,9 @@ package org.chromium.chrome.browser.safety_check;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
-import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckNativeException;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -42,10 +40,7 @@ class PasswordsCheckPreferenceProperties {
         PasswordsState.CHECKING,
         PasswordsState.SAFE,
         PasswordsState.COMPROMISED_EXIST,
-        PasswordsState.OFFLINE,
         PasswordsState.NO_PASSWORDS,
-        PasswordsState.SIGNED_OUT,
-        PasswordsState.QUOTA_LIMIT,
         PasswordsState.ERROR,
         PasswordsState.BACKEND_VERSION_NOT_SUPPORTED
     })
@@ -55,33 +50,9 @@ class PasswordsCheckPreferenceProperties {
         int CHECKING = 1;
         int SAFE = 2;
         int COMPROMISED_EXIST = 3;
-        int OFFLINE = 4;
-        int NO_PASSWORDS = 5;
-        int SIGNED_OUT = 6;
-        int QUOTA_LIMIT = 7;
-        int ERROR = 8;
-        int BACKEND_VERSION_NOT_SUPPORTED = 9;
-    }
-
-    static @PasswordsState int passwordsStatefromErrorState(@PasswordCheckUIStatus int state) {
-        switch (state) {
-            case PasswordCheckUIStatus.ERROR_OFFLINE:
-                return PasswordsState.OFFLINE;
-            case PasswordCheckUIStatus.ERROR_NO_PASSWORDS:
-                return PasswordsState.NO_PASSWORDS;
-            case PasswordCheckUIStatus.ERROR_SIGNED_OUT:
-                return PasswordsState.SIGNED_OUT;
-            case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT:
-            case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT_ACCOUNT_CHECK:
-                return PasswordsState.QUOTA_LIMIT;
-            case PasswordCheckUIStatus.CANCELED:
-            case PasswordCheckUIStatus.ERROR_UNKNOWN:
-                return PasswordsState.ERROR;
-            default:
-                assert false : "Unknown PasswordCheckUIStatus value.";
-        }
-        // Never reached.
-        return PasswordsState.UNCHECKED;
+        int NO_PASSWORDS = 4;
+        int ERROR = 5;
+        int BACKEND_VERSION_NOT_SUPPORTED = 6;
     }
 
     static @PasswordsState int passwordsStateFromPasswordCheckResult(
@@ -92,10 +63,6 @@ class PasswordsCheckPreferenceProperties {
                     && ((PasswordCheckBackendException) error).errorCode
                             == CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) {
                 return PasswordsState.BACKEND_VERSION_NOT_SUPPORTED;
-            }
-            if (error instanceof PasswordCheckNativeException) {
-                return passwordsStatefromErrorState(
-                        ((PasswordCheckNativeException) error).errorCode);
             }
             return PasswordsState.ERROR;
         }
@@ -140,14 +107,8 @@ class PasswordsCheckPreferenceProperties {
                 return PasswordsStatus.SAFE;
             case PasswordsState.COMPROMISED_EXIST:
                 return PasswordsStatus.COMPROMISED_EXIST;
-            case PasswordsState.OFFLINE:
-                return PasswordsStatus.OFFLINE;
             case PasswordsState.NO_PASSWORDS:
                 return PasswordsStatus.NO_PASSWORDS;
-            case PasswordsState.SIGNED_OUT:
-                return PasswordsStatus.SIGNED_OUT;
-            case PasswordsState.QUOTA_LIMIT:
-                return PasswordsStatus.QUOTA_LIMIT;
             case PasswordsState.ERROR:
                 return PasswordsStatus.ERROR;
             default:

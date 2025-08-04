@@ -32,7 +32,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,7 +46,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
-import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -69,23 +67,16 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_check_wrapper.FakePasswordCheckControllerFactory;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStorageType;
-import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckNativeException;
 import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -128,7 +119,6 @@ public class SafetyCheckMediatorTest {
     @Mock private SafetyCheckBridge.Natives mSafetyCheckBridge;
     @Mock private Profile mProfile;
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
-    @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
@@ -177,22 +167,12 @@ public class SafetyCheckMediatorTest {
 
     private void setUpPasswordCheckToReturnNoPasswords(
             @PasswordStorageType int passwordStorageType) {
-        if (mUseGmsApi) {
-            mPasswordCheckControllerFactory
-                    .getLastCreatedController()
-                    .setPasswordCheckResult(
-                            passwordStorageType,
-                            new PasswordCheckResult(
-                                    /* totalPasswordsCount= */ 0, /* breachedCount= */ 00));
-        } else {
-            PasswordCheckNativeException noPasswordsError =
-                    new PasswordCheckNativeException(
-                            "Test exception", PasswordCheckUIStatus.ERROR_NO_PASSWORDS);
-            mPasswordCheckControllerFactory
-                    .getLastCreatedController()
-                    .setPasswordCheckResult(
-                            passwordStorageType, new PasswordCheckResult(noPasswordsError));
-        }
+        mPasswordCheckControllerFactory
+                .getLastCreatedController()
+                .setPasswordCheckResult(
+                        passwordStorageType,
+                        new PasswordCheckResult(
+                                /* totalPasswordsCount= */ 0, /* breachedCount= */ 00));
     }
 
     private void setUpPasswordCheckToReturnResult(
@@ -228,13 +208,11 @@ public class SafetyCheckMediatorTest {
     private SafetyCheckMediator createSafetyCheckMediator(
             PropertyModel passwordCheckAccountModel, PropertyModel passwordCheckLocalModel) {
         return new SafetyCheckMediator(
-                mProfile,
                 mSafetyCheckModel,
                 passwordCheckAccountModel,
                 passwordCheckLocalModel,
                 mUpdatesDelegate,
                 new SafetyCheckBridge(mProfile),
-                mSigninLauncher,
                 mSyncService,
                 mPrefService,
                 mHandler,
@@ -722,23 +700,6 @@ public class SafetyCheckMediatorTest {
     }
 
     @Test
-    public void testPasswordsInitialLoadUserSignedOut() {
-        // Order: initial state is user signed out -> should display signed out error.
-        mMediator.setInitialState();
-        setUpPasswordCheckToReturnError(
-                PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckNativeException(
-                        "Test signed out error", PasswordCheckUIStatus.ERROR_SIGNED_OUT));
-
-        assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckModel.get(PASSWORDS_STATE));
-        // The results of the previous check should be ignored.
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.SIGNED_OUT));
-    }
-
-    @Test
     public void testPasswordCheckFinishedAfterDestroy() {
         mMediator.performSafetyCheck();
 
@@ -750,33 +711,6 @@ public class SafetyCheckMediatorTest {
 
         // After calling destroy() on mediator, the model is not expected to change any more.
         assertEquals(stateBeforeDestroy, mPasswordCheckModel.get(PASSWORDS_STATE));
-    }
-
-    @Test
-    public void testClickListenerStartsSignInFlowWhenUserSignedOut() {
-        mMediator.setInitialState();
-        setUpPasswordCheckToReturnError(
-                PasswordStorageType.ACCOUNT_STORAGE,
-                new PasswordCheckNativeException(
-                        "Test signed out error", PasswordCheckUIStatus.ERROR_SIGNED_OUT));
-        assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckModel.get(PASSWORDS_STATE));
-
-        click(getPasswordsClickListener(mPasswordCheckModel));
-
-        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
-                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        verify(mSigninLauncher)
-                .createBottomSheetSigninIntentOrShowError(
-                        any(),
-                        eq(mProfile),
-                        configCaptor.capture(),
-                        eq(SigninAccessPoint.SAFETY_CHECK));
-        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
-        assertEquals(
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
-        assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
-        assertNull(config.selectedCoreAccountId);
     }
 
     @Test

@@ -3438,7 +3438,6 @@ static_library("browser") {
       "//chrome/browser/partnerbookmarks:android",
       "//chrome/browser/partnerbookmarks:android_impl",
       "//chrome/browser/partnercustomizations:jni_headers",
-      "//chrome/browser/password_check/android:password_check_enums_srcjar",
       "//chrome/browser/password_edit_dialog/android",
       "//chrome/browser/password_manager/android:password_manager_android",
       "//chrome/browser/policy/android",

@@ -119,10 +119,8 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create(
                     (SafetyCheckSettingsFragment) fragment,
-                    mProfile,
                     new SafetyCheckUpdatesDelegateImpl(),
                     new SafetyCheckBridge(mProfile),
-                    SigninAndHistorySyncActivityLauncherImpl.get(),
                     mModalDialogManagerSupplier,
                     SyncServiceFactory.getForProfile(mProfile),
                     UserPrefs.get(mProfile),

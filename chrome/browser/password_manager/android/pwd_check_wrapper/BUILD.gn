@@ -10,14 +10,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/GmsCorePasswordCheckController.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckController.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckControllerFactory.java",
-    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckNativeException.java",
   ]
 
   deps = [
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_manager/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
@@ -57,7 +55,6 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/password_manager/android:test_support_java",

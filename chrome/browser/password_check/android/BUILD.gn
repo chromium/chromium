@@ -4,17 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-java_cpp_enum("password_check_enums_srcjar") {
-  sources = [ "password_check_ui_status.h" ]
-}
-
-# Wrap the java_cpp_enum in android_library so it can be used by both
-# chrome_java and modules.
-android_library("password_check_java_enums") {
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-  srcjar_deps = [ ":password_check_enums_srcjar" ]
-}
-
 android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/password_check_header_red.xml",
