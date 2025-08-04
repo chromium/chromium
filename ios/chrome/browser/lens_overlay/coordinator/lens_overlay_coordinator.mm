@@ -869,8 +869,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)lensOverlayResultsPagePresenter:
             (LensOverlayResultsPagePresenter*)presenter
           updateVerticalOcclusionOffset:(CGFloat)offsetNeeded {
-  UIWindow* sceneWindow = self.browser->GetSceneState().window;
-  CGFloat topOffset = kTopHeaderPadding + sceneWindow.safeAreaInsets.top;
+  CGFloat topOffset =
+      kTopHeaderPadding + _containerViewController.view.safeAreaInsets.top;
   [_selectionViewController
       setOcclusionInsets:UIEdgeInsetsMake(topOffset, 0, offsetNeeded, 0)
               reposition:YES
