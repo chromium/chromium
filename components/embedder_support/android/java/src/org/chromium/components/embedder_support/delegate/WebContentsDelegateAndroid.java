@@ -9,9 +9,9 @@ import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -220,12 +220,14 @@ public class WebContentsDelegateAndroid {
     public void didBackForwardTransitionAnimationChange() {}
 
     @CalledByNative
-    private boolean maybeCopyContentAreaAsBitmap(long nativeCallback) {
-        return maybeCopyContentAreaAsBitmap(
-                (bitmap) -> {
-                    WebContentsDelegateAndroidJni.get()
-                            .maybeCopyContentAreaAsBitmapOutcome(nativeCallback, bitmap);
-                });
+    private boolean maybeCopyContentAreaAsBitmap(JniOnceCallback<@Nullable Bitmap> callback) {
+        boolean result = maybeCopyContentAreaAsBitmap((Callback<@Nullable Bitmap>) callback);
+        if (!result) {
+            // If the method returns false, the callback won't be called, so we need to destroy it
+            // to prevent memory leaks and match the previous behavior of no callback.
+            callback.destroy();
+        }
+        return result;
     }
 
     /**
@@ -305,9 +307,4 @@ public class WebContentsDelegateAndroid {
      */
     @CalledByNative
     public void didChangeCloseSignalInterceptStatus() {}
-
-    @NativeMethods
-    public interface Natives {
-        void maybeCopyContentAreaAsBitmapOutcome(long callbackPtr, @Nullable Bitmap bitmap);
-    }
 }

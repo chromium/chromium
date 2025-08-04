@@ -8,7 +8,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
@@ -557,14 +559,30 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
     return false;
   }
   base::TimeTicks start_time = base::TimeTicks::Now();
-  std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> wrapped_callback =
-      std::make_unique<base::OnceCallback<void(const SkBitmap&)>>(
-          std::move(callback));
+  // Convert the C++ callback to a JNI callback using ToJniCallback.
+  auto wrapped_callback = base::BindOnce(
+      [](base::OnceCallback<void(const SkBitmap&)> callback,
+         const base::android::JavaParamRef<jobject>& bitmap) {
+        TRACE_EVENT("content",
+                    "WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap::"
+                    "Callback");
+        if (bitmap.is_null()) {
+          // Failed because of Out of Memory Error.
+          // Pass in an empty bitmap, rather than null in this case.
+          std::move(callback).Run(SkBitmap());
+        } else {
+          gfx::JavaBitmap java_bitmap_lock(bitmap);
+          SkBitmap skbitmap =
+              gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+          skbitmap.setImmutable();
+          CHECK(!skbitmap.drawsNothing());
+          std::move(callback).Run(skbitmap);
+        }
+      },
+      std::move(callback));
   if (Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsBitmap(
-          env, obj, reinterpret_cast<jlong>(wrapped_callback.get()))) {
-    // Ownership of callback has been transferred to java side and will be
-    // transferred back in |MaybeCopyContentAreaAsBitmapOutcome|.
-    wrapped_callback.release();
+          env, obj,
+          base::android::ToJniCallback(env, std::move(wrapped_callback)))) {
     base::UmaHistogramTimes("Android.MaybeCopyContentAreaAsBitmap.Time",
                             base::TimeTicks::Now() - start_time);
     return true;
@@ -656,29 +674,6 @@ void WebContentsDelegateAndroid::ContentsZoomChange(bool zoom_in) {
     return;
   }
   Java_WebContentsDelegateAndroid_contentsZoomChange(env, obj, zoom_in);
-}
-
-void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(
-    JNIEnv* env,
-    jlong callback_ptr,
-    const base::android::JavaParamRef<jobject>& bitmap) {
-  TRACE_EVENT(
-      "content",
-      "JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome");
-  std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> callback(
-      reinterpret_cast<base::OnceCallback<void(const SkBitmap&)>*>(
-          callback_ptr));
-  if (bitmap.is_null()) {
-    // Failed because of Out of Memory Error.
-    // Pass in an empty bitmap, rather than null in this case.
-    std::move(*callback).Run(SkBitmap());
-  } else {
-    gfx::JavaBitmap java_bitmap_lock(bitmap);
-    SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
-    skbitmap.setImmutable();
-    CHECK(!skbitmap.drawsNothing());
-    std::move(*callback).Run(skbitmap);
-  }
 }
 
 }  // namespace web_contents_delegate_android
