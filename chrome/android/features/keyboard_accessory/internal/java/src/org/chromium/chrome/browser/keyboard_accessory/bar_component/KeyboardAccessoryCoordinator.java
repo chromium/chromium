@@ -11,13 +11,17 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -31,10 +35,12 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
@@ -362,5 +368,85 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     @Override
     public void removeObserver(KeyboardAccessoryVisualStateProvider.Observer observer) {
         mMediator.removeObserver(observer);
+    }
+
+    /**
+     * This provides an alternative to the SimpleEdgeToEdgePadAdjuster that doesn't clear the bottom
+     * inset / bottom padding when the browser controls are showing, which is needed for bottom
+     * components that aren't part of the bottom browser controls.
+     */
+    // TODO(crbug.com/435453719): Clean up after use cases are no longer needed.
+    @SuppressWarnings({"UnusedMethod", "UnusedNestedClass"})
+    private static class EdgeToEdgePadObserver
+            implements EdgeToEdgeSupplier.ChangeObserver, Destroyable {
+        private final View mViewToPad;
+        private final int mDefaultBottomPadding;
+        private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+        private final ObservableSupplier<Integer> mKeyboardInsetSupplier;
+        private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+        private final Callback<EdgeToEdgeController> mControllerChangedCallback =
+                this::updateEdgeToEdgeController;
+        private final Callback<Integer> mKeyboardInsetChangedCallback =
+                this::onKeyboardInsetChanged;
+
+        private boolean mIsDrawingToEdge;
+
+        EdgeToEdgePadObserver(
+                View view,
+                ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+                ObservableSupplier<Integer> keyboardInsetSupplier) {
+            mViewToPad = view;
+            mDefaultBottomPadding = mViewToPad.getPaddingBottom();
+            mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+            mEdgeToEdgeControllerSupplier.addObserver(mControllerChangedCallback);
+            mKeyboardInsetSupplier = keyboardInsetSupplier;
+            mKeyboardInsetSupplier.addObserver(mKeyboardInsetChangedCallback);
+        }
+
+        @Override
+        public void onToEdgeChange(
+                int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
+            mIsDrawingToEdge = isDrawingToEdge;
+            overrideBottomInset(bottomInset);
+        }
+
+        private void onKeyboardInsetChanged(int keyboardInset) {
+            overrideBottomInset(
+                    mEdgeToEdgeController != null ? mEdgeToEdgeController.getBottomInsetPx() : 0);
+        }
+
+        private void overrideBottomInset(int bottomInset) {
+            // Set bottom padding to 0 if not drawing to edge, or if the keyboard is showing.
+            int additionalBottomPadding =
+                    (!mIsDrawingToEdge || mKeyboardInsetSupplier.get() > 0) ? 0 : bottomInset;
+            mViewToPad.setPadding(
+                    mViewToPad.getPaddingLeft(),
+                    mViewToPad.getPaddingTop(),
+                    mViewToPad.getPaddingRight(),
+                    mDefaultBottomPadding + additionalBottomPadding);
+        }
+
+        @Override
+        public void destroy() {
+            // Reset the bottom insets for the view.
+            overrideBottomInset(0);
+
+            updateEdgeToEdgeController(null);
+            if (mEdgeToEdgeControllerSupplier != null) {
+                mEdgeToEdgeControllerSupplier.removeObserver(mControllerChangedCallback);
+            }
+            mKeyboardInsetSupplier.removeObserver(mKeyboardInsetChangedCallback);
+        }
+
+        private void updateEdgeToEdgeController(@Nullable EdgeToEdgeController newController) {
+            if (mEdgeToEdgeController != null) {
+                mEdgeToEdgeController.unregisterObserver(this);
+            }
+            mEdgeToEdgeController = newController;
+            if (mEdgeToEdgeController != null) {
+                mEdgeToEdgeController.registerObserver(this);
+                overrideBottomInset(mEdgeToEdgeController.getBottomInsetPx());
+            }
+        }
     }
 }
