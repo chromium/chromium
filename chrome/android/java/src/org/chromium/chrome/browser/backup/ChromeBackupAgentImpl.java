@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
@@ -738,12 +737,18 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     SigninManager signinManager =
-                            IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
-                    assertNonNull(signinManager);
-                    final AccountManagerFacade accountManagerFacade =
-                            AccountManagerFacadeProvider.getInstance();
+                            assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+                    IdentityManager identityManager =
+                            assertNonNull(
+                                    IdentityServicesProvider.get().getIdentityManager(profile));
+                    if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                        // This may happen if the user is supervised as they will be signed in via
+                        // {@link SigninChecker}.
+                        callback.onSignInAborted();
+                        return;
+                    }
 
                     Callback<Boolean> accountManagedCallback =
                             (isManaged) -> {
@@ -761,22 +766,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                         });
                             };
 
-                    AccountManagerFacade.ChildAccountStatusListener listener =
-                            (isChild, unused) -> {
-                                if (isChild) {
-                                    // TODO(crbug.com/40835324):
-                                    // Pre-AllowSyncOffForChildAccounts, the backup sign-in for
-                                    // child accounts would happen in SigninChecker anyways.
-                                    // Maybe it should be handled by this  class once the
-                                    // feature launches.
-                                    callback.onSignInAborted();
-                                    return;
-                                }
-                                signinManager.isAccountManaged(accountInfo, accountManagedCallback);
-                            };
-
-                    AccountUtils.checkIsSubjectToParentalControls(
-                            accountManagerFacade, getAccounts(), listener);
+                    signinManager.isAccountManaged(accountInfo, accountManagedCallback);
                 });
     }
 
