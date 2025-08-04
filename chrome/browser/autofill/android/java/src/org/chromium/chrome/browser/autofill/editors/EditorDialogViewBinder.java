@@ -23,6 +23,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.ICON;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
@@ -34,9 +37,11 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALI
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -144,9 +149,18 @@ public class EditorDialogViewBinder {
         }
     }
 
-    static void bindNonEditableTextView(PropertyModel model, TextView view, PropertyKey key) {
+    static void bindNonEditableTextView(PropertyModel model, View view, PropertyKey key) {
         if (key == TEXT) {
-            view.setText(model.get(TEXT));
+            TextView textView = view.findViewById(R.id.non_editable_textview);
+            textView.setText(model.get(TEXT));
+        } else if (key == ICON) {
+            ImageView iconView = view.findViewById(R.id.icon);
+            iconView.setImageResource(model.get(ICON));
+            iconView.setVisibility(View.VISIBLE);
+        } else if (key == CLICK_RUNNABLE) {
+            view.setOnClickListener(v -> model.get(CLICK_RUNNABLE).run());
+        } else if (key == CONTENT_DESCRIPTION) {
+            view.setContentDescription(model.get(CONTENT_DESCRIPTION));
         } else {
             assert false : "Unhandled update to property:" + key;
         }

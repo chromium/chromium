@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -97,6 +98,23 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
                     if (sObserverForTest != null) {
                         sObserverForTest.onEditorReadyToEdit();
+                    }
+                }
+
+                @Override
+                public void onExternalEdit(AutofillProfile profile) {
+                    switch (profile.getRecordType()) {
+                        case RecordType.ACCOUNT_HOME:
+                            CustomTabActivity.showInfoPage(
+                                    getActivity(), GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL);
+                            break;
+                        case RecordType.ACCOUNT_WORK:
+                            CustomTabActivity.showInfoPage(
+                                    getActivity(), GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL);
+                            break;
+                        case RecordType.ACCOUNT:
+                        case RecordType.LOCAL_OR_SYNCABLE:
+                            break;
                     }
                 }
             };

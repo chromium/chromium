@@ -496,10 +496,9 @@ public class EditorDialogView extends AlwaysDismissedDialog
                                     .inflate(
                                             R.layout.autofill_editor_dialog_non_editable_textview,
                                             null);
-                    TextView textView = textLayout.findViewById(R.id.non_editable_textview);
                     PropertyModelChangeProcessor.create(
                             editorItem.model,
-                            textView,
+                            textLayout,
                             EditorDialogViewBinder::bindNonEditableTextView);
                     childView = textLayout;
                     break;

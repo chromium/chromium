@@ -38,6 +38,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.ICON;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
@@ -1265,13 +1268,13 @@ public class AddressEditorTest {
         assertEquals(false, editorModel.get(SHOW_BUTTONS));
 
         ListModel<EditorItem> model = editorModel.get(EDITOR_FIELDS);
-        assertEquals(2, model.size());
+        assertEquals(3, model.size());
 
-        EditorItem editorItem = model.get(0);
-        assertEquals(NON_EDITABLE_TEXT, editorItem.type);
-        assertEquals(true, editorItem.isFullLine);
+        EditorItem descriptionItem = model.get(0);
+        assertEquals(NON_EDITABLE_TEXT, descriptionItem.type);
+        assertEquals(true, descriptionItem.isFullLine);
 
-        assertEquals("Profile description", editorItem.model.get(TEXT));
+        assertEquals("Profile description", descriptionItem.model.get(TEXT));
 
         final String deleteTitle =
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
@@ -1288,5 +1291,20 @@ public class AddressEditorTest {
                 mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
         validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
         validateRecordTypeNotice(mAddressEditor.getEditorModelForTesting(), recordTypeNotice);
+
+        EditorItem linkItem = model.get(2);
+        assertEquals(NON_EDITABLE_TEXT, linkItem.type);
+        assertEquals(true, linkItem.isFullLine);
+
+        assertEquals(
+                mActivity.getString(R.string.autofill_edit_address_label),
+                linkItem.model.get(TEXT));
+        assertEquals(R.drawable.autofill_external_link, linkItem.model.get(ICON));
+        assertEquals(
+                mActivity.getString(R.string.autofill_edit_address_label_content_description),
+                linkItem.model.get(CONTENT_DESCRIPTION));
+        linkItem.model.get(CLICK_RUNNABLE).run();
+
+        verify(mDelegate, times(1)).onExternalEdit(homeProfile);
     }
 }

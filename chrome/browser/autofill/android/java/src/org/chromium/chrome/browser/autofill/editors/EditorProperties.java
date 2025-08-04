@@ -179,8 +179,15 @@ public class EditorProperties {
     public static class NonEditableTextProperties {
         public static final ReadableObjectPropertyKey<String> TEXT =
                 new ReadableObjectPropertyKey<>("text");
+        public static final ReadableObjectPropertyKey<Runnable> CLICK_RUNNABLE =
+                new ReadableObjectPropertyKey<>("click_runnable");
+        public static final ReadableIntPropertyKey ICON = new ReadableIntPropertyKey("icon");
+        public static final ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION =
+                new ReadableObjectPropertyKey<>("content_description");
 
-        public static final PropertyKey[] NON_EDITABLE_TEXT_ALL_KEYS = {TEXT};
+        public static final PropertyKey[] NON_EDITABLE_TEXT_ALL_KEYS = {
+            TEXT, CLICK_RUNNABLE, ICON, CONTENT_DESCRIPTION
+        };
     }
 
     /** Properties specific for the notice fields. */

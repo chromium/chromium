@@ -425,6 +425,12 @@
     Delete address
   </message>
   <if expr="is_android">
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_LABEL" desc="Title for the entry in the address editor with an external link icon which redirects to the edit page." formatter_data="android_java">
+      Edit
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_LABEL_CONTENT_DESCRIPTION" desc="Accessibility label for the entry in the address editor with an external link icon which redirects to the edit page." formatter_data="android_java">
+      Edit, opens a new window
+    </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
       Enter <ph name="FIELD">$1<ex>ZIP code</ex></ph>
     </message>

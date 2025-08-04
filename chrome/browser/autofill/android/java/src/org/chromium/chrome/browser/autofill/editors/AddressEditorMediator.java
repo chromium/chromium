@@ -30,6 +30,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Item
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.ICON;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.NON_EDITABLE_TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
@@ -345,16 +348,30 @@ class AddressEditorMediator {
     /** Build a special list of items to display for non-editable Home & Work profiles. */
     private ListModel<EditorItem> buildHomeAndWorkItemsList() {
         ListModel<EditorItem> editorFields = new ListModel<>();
-        PropertyModel model =
+        PropertyModel descriptionModel =
                 new PropertyModel.Builder(NON_EDITABLE_TEXT_ALL_KEYS)
                         .with(
                                 TEXT,
                                 mPersonalDataManager.getProfileDescriptionForEditor(
                                         mProfileToEdit.getGUID()))
                         .build();
-        editorFields.add(new EditorItem(NON_EDITABLE_TEXT, model, /* isFullLine= */ true));
+        editorFields.add(
+                new EditorItem(NON_EDITABLE_TEXT, descriptionModel, /* isFullLine= */ true));
 
         maybeAddRecordTypeNotice(editorFields);
+
+        PropertyModel model =
+                new PropertyModel.Builder(NON_EDITABLE_TEXT_ALL_KEYS)
+                        .with(TEXT, mContext.getString(R.string.autofill_edit_address_label))
+                        .with(ICON, R.drawable.autofill_external_link)
+                        .with(CLICK_RUNNABLE, () -> mDelegate.onExternalEdit(mProfileToEdit))
+                        .with(
+                                CONTENT_DESCRIPTION,
+                                mContext.getString(
+                                        R.string.autofill_edit_address_label_content_description))
+                        .build();
+        editorFields.add(new EditorItem(NON_EDITABLE_TEXT, model, /* isFullLine= */ true));
+
         return editorFields;
     }
 
