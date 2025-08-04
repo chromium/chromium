@@ -351,6 +351,13 @@ void FocusFakebox() {
 // Tests that Search Copied Text menu button is shown with text in the clipboard
 // and is starting a search.
 - (void)testOmniboxMenuPasteTextToSearch {
+// TODO(crbug.com/435377733): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (iOS26_OR_ABOVE()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   FocusFakebox();
   NSString* textToSearch = @"TextToCopy";
   // Copy text in clipboard.

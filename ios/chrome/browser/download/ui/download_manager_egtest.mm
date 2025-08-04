@@ -451,12 +451,26 @@ using download::WaitForOpenPDFButton;
 
 // Tests that filename label and "Open in Downloads" button are showing.
 - (void)testVisibleFileNameAndOpenInDownloads {
+// TODO(crbug.com/432003647): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (iOS26_OR_ABOVE()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   [_helper testVisibleFileNameAndOpenInDownloads];
 }
 
 // Tests that "Open in..." works if the download ended while waiting in a
 // different tab which also contains a download task.
 - (void)testSwitchTabsAndOpenInDownloads {
+  // TODO(crbug.com/432003077): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (iOS26_OR_ABOVE()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   [_helper testSwitchTabsAndOpenInDownloads];
 }
 
