@@ -447,7 +447,7 @@ void SaveFileManager::UpdateSaveProgress(SaveItemId save_item_id,
     DCHECK(save_file->InProgress());
 
     download::DownloadInterruptReason reason =
-        save_file->AppendDataToFile(data.data(), data.size());
+        save_file->AppendDataToFile(base::as_byte_span(data));
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&SaveFileManager::OnUpdateSaveProgress, this,

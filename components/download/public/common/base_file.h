@@ -121,7 +121,6 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   // indicating the result of the operation. Works only if |is_sparse_file| is
   // false.
   DownloadInterruptReason AppendDataToFile(base::span<const uint8_t> data);
-  DownloadInterruptReason AppendDataToFile(const char* data, size_t data_len);
 
   // Write a new chunk of data to the file. Returns a DownloadInterruptReason
   // indicating the result of the operation.

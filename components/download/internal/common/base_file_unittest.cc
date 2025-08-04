@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -34,14 +35,10 @@
 namespace download {
 namespace {
 
-const char kTestData1[] = "Let's write some data to the file!\n";
-const char kTestData2[] = "Writing more data.\n";
-const char kTestData3[] = "Final line.";
-const char kTestData4[] = "supercalifragilisticexpialidocious";
-const int kTestDataLength1 = std::size(kTestData1) - 1;
-const int kTestDataLength2 = std::size(kTestData2) - 1;
-const int kTestDataLength3 = std::size(kTestData3) - 1;
-const int kTestDataLength4 = std::size(kTestData4) - 1;
+const std::string_view kTestData1 = "Let's write some data to the file!\n";
+const std::string_view kTestData2 = "Writing more data.\n";
+const std::string_view kTestData3 = "Final line.";
+const std::string_view kTestData4 = "supercalifragilisticexpialidocious";
 int64_t kTestDataBytesWasted = 0;
 
 // SHA-256 hash of kTestData1 (excluding terminating NUL).
@@ -105,10 +102,10 @@ class BaseFileTest : public testing::Test {
     return result == DOWNLOAD_INTERRUPT_REASON_NONE;
   }
 
-  bool AppendDataToFile(const std::string& data) {
+  bool AppendDataToFile(std::string_view data) {
     EXPECT_EQ(expect_in_progress_, base_file_->in_progress());
     DownloadInterruptReason result =
-        base_file_->AppendDataToFile(data.data(), data.size());
+        base_file_->AppendDataToFile(base::as_byte_span(data));
     if (result == DOWNLOAD_INTERRUPT_REASON_NONE)
       EXPECT_TRUE(expect_in_progress_) << " result = " << result;
 
@@ -123,7 +120,7 @@ class BaseFileTest : public testing::Test {
     return result == DOWNLOAD_INTERRUPT_REASON_NONE;
   }
 
-  void set_expected_data(const std::string& data) { expected_data_ = data; }
+  void set_expected_data(std::string_view data) { expected_data_ = data; }
 
   // Helper functions.
   // Create a file.  Returns the complete file path.
@@ -140,7 +137,7 @@ class BaseFileTest : public testing::Test {
     EXPECT_NE(base::FilePath::StringType(), file_name.value());
 
     EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
-              file.AppendDataToFile(kTestData4, kTestDataLength4));
+              file.AppendDataToFile(base::as_byte_span(kTestData4)));
 
     // Keep the file from getting deleted when existing_file_name is deleted.
     file.Detach();
@@ -160,7 +157,7 @@ class BaseFileTest : public testing::Test {
 #else
     EXPECT_EQ(reason, DOWNLOAD_INTERRUPT_REASON_NONE);
     // Write something into it.
-    duplicate_file.AppendDataToFile(kTestData4, kTestDataLength4);
+    duplicate_file.AppendDataToFile(base::as_byte_span(kTestData4));
 #endif  // BUILDFLAG(IS_WIN)
 
     // Detach the file so it isn't deleted on destruction of |duplicate_file|.
@@ -318,9 +315,8 @@ TEST_F(BaseFileTest, MultipleWritesInterruptedWithHash) {
                                    base::File(), base_file_->bytes_so_far(),
                                    std::string(), std::move(hash_state), false,
                                    &kTestDataBytesWasted));
-  std::string data(kTestData3);
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
-            second_file.AppendDataToFile(data.data(), data.size()));
+            second_file.AppendDataToFile(base::as_byte_span(kTestData3)));
   ExpectHashValue(kHashOfTestData1To3, second_file.Finish());
 }
 
@@ -499,7 +495,7 @@ TEST_F(BaseFileTest, AppendToBaseFile) {
   ASSERT_EQ(
       DOWNLOAD_INTERRUPT_REASON_NONE,
       base_file_->Initialize(existing_file_name, base::FilePath(), base::File(),
-                             kTestDataLength4, std::string(),
+                             kTestData4.size(), std::string(),
                              std::unique_ptr<crypto::SecureHash>(), false,
                              &kTestDataBytesWasted));
 
@@ -563,7 +559,7 @@ TEST_F(BaseFileTest, ExistingBaseFileKnownHash) {
                           std::end(kHashOfTestData1));
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
             base_file_->Initialize(file_path, base::FilePath(), base::File(),
-                                   kTestDataLength1, hash_so_far,
+                                   kTestData1.size(), hash_so_far,
                                    std::unique_ptr<crypto::SecureHash>(), false,
                                    &kTestDataBytesWasted));
   set_expected_data(kTestData1);
@@ -580,7 +576,7 @@ TEST_F(BaseFileTest, ExistingBaseFileUnknownHash) {
 
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
             base_file_->Initialize(file_path, base::FilePath(), base::File(),
-                                   kTestDataLength1, std::string(),
+                                   kTestData1.size(), std::string(),
                                    std::unique_ptr<crypto::SecureHash>(), false,
                                    &kTestDataBytesWasted));
   set_expected_data(kTestData1);
@@ -598,7 +594,7 @@ TEST_F(BaseFileTest, ExistingBaseFileIncorrectHash) {
                           std::end(kHashOfTestData1));
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
             base_file_->Initialize(file_path, base::FilePath(), base::File(),
-                                   kTestDataLength2, hash_so_far,
+                                   kTestData2.size(), hash_so_far,
                                    std::unique_ptr<crypto::SecureHash>(), false,
                                    &kTestDataBytesWasted));
   set_expected_error(download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH);
@@ -663,7 +659,7 @@ TEST_F(BaseFileTest, ExistingBaseFileTooShort) {
 
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT,
             base_file_->Initialize(file_path, base::FilePath(), base::File(),
-                                   kTestDataLength1 + 1, std::string(),
+                                   kTestData1.size() + 1, std::string(),
                                    std::unique_ptr<crypto::SecureHash>(), false,
                                    &kTestDataBytesWasted));
   set_expected_error(download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT);
@@ -681,7 +677,7 @@ TEST_F(BaseFileTest, ExistingBaseFileKnownHashTooLong) {
                           std::end(kHashOfTestData1));
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
             base_file_->Initialize(file_path, base::FilePath(), base::File(),
-                                   kTestDataLength1, hash_so_far,
+                                   kTestData1.size(), hash_so_far,
                                    std::unique_ptr<crypto::SecureHash>(), false,
                                    &kTestDataBytesWasted));
   set_expected_data(kTestData1);  // Our starting position.
@@ -701,7 +697,7 @@ TEST_F(BaseFileTest, ExistingBaseFileUnknownHashTooLong) {
 
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
             base_file_->Initialize(file_path, base::FilePath(), base::File(),
-                                   kTestDataLength1, std::string(),
+                                   kTestData1.size(), std::string(),
                                    std::unique_ptr<crypto::SecureHash>(), false,
                                    &kTestDataBytesWasted));
   set_expected_data(kTestData1);
@@ -778,19 +774,19 @@ TEST_F(BaseFileTest, NoDoubleDeleteAfterCancel) {
 // Test that writing data to a sparse file works.
 TEST_F(BaseFileTest, WriteDataToSparseFile) {
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("existing");
-  std::string contents = kTestData1;
-  ASSERT_TRUE(base::WriteFile(file_path, contents));
+  ASSERT_TRUE(base::WriteFile(file_path, kTestData1));
 
   base_file_->Initialize(file_path, base::FilePath(), base::File(),
-                         kTestDataLength1, std::string(),
+                         kTestData1.size(), std::string(),
                          std::unique_ptr<crypto::SecureHash>(), true,
                          &kTestDataBytesWasted);
   // This will create a hole in the file.
-  base_file_->WriteDataToFile(kTestDataLength1 + kTestDataLength2, kTestData3,
-                              kTestDataLength3);
+  base_file_->WriteDataToFile(kTestData1.size() + kTestData2.size(),
+                              base::as_byte_span(kTestData3));
   // This should fill the hole.
-  base_file_->WriteDataToFile(kTestDataLength1, kTestData2, kTestDataLength2);
-  set_expected_data(contents + kTestData2 + kTestData3);
+  base_file_->WriteDataToFile(kTestData1.size(),
+                              base::as_byte_span(kTestData2));
+  set_expected_data(base::JoinString({kTestData1, kTestData2, kTestData3}, ""));
   ExpectHashValue(kHashOfTestData1To3, base_file_->Finish());
 }
 
@@ -802,15 +798,15 @@ TEST_F(BaseFileTest, ValidateDataInFile) {
   ASSERT_TRUE(base_file_->ValidateDataInFile(0, "Let's", 5));
   ASSERT_TRUE(base_file_->ValidateDataInFile(1, "et's ", 5));
   ASSERT_TRUE(base_file_->ValidateDataInFile(
-      0, "Let's write some data to the file!\n", kTestDataLength1));
-  ASSERT_TRUE(base_file_->ValidateDataInFile(kTestDataLength1 - 1, "\n", 1));
-  ASSERT_FALSE(base_file_->ValidateDataInFile(kTestDataLength1, "\n", 1));
-  ASSERT_FALSE(base_file_->ValidateDataInFile(kTestDataLength1 - 1, "y\n", 2));
+      0, "Let's write some data to the file!\n", kTestData1.size()));
+  ASSERT_TRUE(base_file_->ValidateDataInFile(kTestData1.size() - 1, "\n", 1));
+  ASSERT_FALSE(base_file_->ValidateDataInFile(kTestData1.size(), "\n", 1));
+  ASSERT_FALSE(base_file_->ValidateDataInFile(kTestData1.size() - 1, "y\n", 2));
   ASSERT_FALSE(base_file_->ValidateDataInFile(0, "et's ", 5));
   ASSERT_FALSE(base_file_->ValidateDataInFile(
-      0, "Let's write some data to the file1\n", kTestDataLength1));
+      0, "Let's write some data to the file1\n", kTestData1.size()));
   ASSERT_FALSE(base_file_->ValidateDataInFile(
-      0, "Let's write some data to the file1!\n", kTestDataLength1 + 1));
+      0, "Let's write some data to the file1!\n", kTestData1.size() + 1));
 
   base_file_->Finish();
 }

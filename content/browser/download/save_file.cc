@@ -40,9 +40,9 @@ download::DownloadInterruptReason SaveFile::Initialize() {
   return reason;
 }
 
-download::DownloadInterruptReason SaveFile::AppendDataToFile(const char* data,
-                                                             size_t data_len) {
-  return file_.AppendDataToFile(data, data_len);
+download::DownloadInterruptReason SaveFile::AppendDataToFile(
+    base::span<const uint8_t> data) {
+  return file_.AppendDataToFile(data);
 }
 
 download::DownloadInterruptReason SaveFile::Rename(
