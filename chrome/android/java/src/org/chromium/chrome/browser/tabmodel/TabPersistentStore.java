@@ -462,6 +462,8 @@ public class TabPersistentStore {
             // it looked when the SaveListTask was first created.
             if (mSaveListTask != null) mSaveListTask.cancel(true);
             try {
+                RecordHistogram.recordBooleanHistogram(
+                        "Tabs.Metadata.SyncSave." + mClientTag, true);
                 saveListToFile(extractTabMetadata());
             } catch (IOException e) {
                 Log.w(TAG, "Error while saving tabs state; will attempt to continue...", e);
@@ -1487,6 +1489,7 @@ public class TabPersistentStore {
         @Override
         protected Void doInBackground() {
             if (mMetadata == null || isCancelled()) return null;
+            RecordHistogram.recordBooleanHistogram("Tabs.Metadata.SyncSave." + mClientTag, false);
             saveListToFile(mMetadata);
             return null;
         }

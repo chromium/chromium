@@ -2413,6 +2413,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.Metadata.SyncSave.{TabModelSelectorType}" units="count"
+    expires_after="2026-08-01">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records whether the metadata save was performed synchronously
+    (only the UI thread) or asynchronous (on a background thread). Also useful
+    because it captures the total number of metadata saves.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.MissingWebStateStorageFileOnSessionRestore"
     enum="Boolean" expires_after="2026-03-20">
   <owner>justincohen@google.com</owner>
