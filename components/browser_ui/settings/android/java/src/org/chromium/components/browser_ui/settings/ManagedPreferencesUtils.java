@@ -438,23 +438,29 @@ public class ManagedPreferencesUtils {
 
     /**
      * Hides the summary view for a preference.
+     *
      * @param view The view corresponding to the preference.
      */
     private static void hideSummaryView(View view) {
-        TextView summaryView = view.findViewById(android.R.id.summary);
-        summaryView.setVisibility(View.GONE);
+        @Nullable TextView summaryView = view.findViewById(android.R.id.summary);
+        if (summaryView != null) {
+            summaryView.setVisibility(View.GONE);
+        }
     }
 
     /**
      * Sets the text to be shown in the summary view for a preference, and makes the summary view
      * visible.
+     *
      * @param summary The text to show in the {@code summary} view.
      * @param view The view corresponding to the preference.
      */
     private static void showSummaryViewWithText(@Nullable CharSequence summary, View view) {
-        TextView summaryView = view.findViewById(android.R.id.summary);
-        summaryView.setText(summary);
-        summaryView.setVisibility(View.VISIBLE);
+        @Nullable TextView summaryView = view.findViewById(android.R.id.summary);
+        if (summaryView != null) {
+            summaryView.setText(summary);
+            summaryView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
