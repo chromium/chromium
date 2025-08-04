@@ -13101,6 +13101,21 @@
             ]
         }
     ],
+    "IOSShareExtensionMIM": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kShareExtensionForMultiprofile"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [
