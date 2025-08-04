@@ -46,9 +46,8 @@ class SESSIONS_EXPORT CommandStorageManager {
   // Identifies the type of session service this is. This is used by the
   // backend to determine the name of the files.
   // TODO(sky): this enum is purely for legacy reasons, and should be replaced
-  // with consumers building the path (similar to weblayer). Remove in
-  // approximately a year (1/2022), when we shouldn't need to worry too much
-  // about migrating older data.
+  // with consumers building the path. Remove in approximately a year (1/2022),
+  // when we shouldn't need to worry too much about migrating older data.
   enum SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
 
   // Creates a new CommandStorageManager. After creation you need to invoke

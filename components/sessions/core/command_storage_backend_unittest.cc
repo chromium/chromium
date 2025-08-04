@@ -677,11 +677,6 @@ TEST_F(CommandStorageBackendTest, GetSessionFiles) {
   EXPECT_EQ("Session_124", paths.begin()->BaseName().MaybeAsASCII());
 }
 
-TEST_F(CommandStorageBackendTest, TimestampSeparatorIsAscii) {
-  // Code in WebLayer relies on the timestamp separator being ascii.
-  ASSERT_TRUE(!base::FilePath(kTimestampSeparator).MaybeAsASCII().empty());
-}
-
 TEST_F(CommandStorageBackendTest, GetSessionFilesAreSortedByReverseTimestamp) {
   ASSERT_TRUE(
       base::WriteFile(file_path().DirName().AppendASCII("Session_130"), ""));
