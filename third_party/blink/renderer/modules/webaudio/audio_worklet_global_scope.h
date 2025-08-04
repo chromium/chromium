@@ -92,11 +92,13 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
 
   void SetCurrentFrame(size_t current_frame);
   void SetSampleRate(float sample_rate);
+  void SetRenderQuantumSize(uint32_t render_quantum_size);
 
   // IDL
   uint64_t currentFrame() const { return current_frame_; }
   double currentTime() const;
   float sampleRate() const { return sample_rate_; }
+  uint32_t renderQuantumSize() const { return render_quantum_size_; }
 
   void Trace(Visitor*) const override;
 
@@ -128,6 +130,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
 
   size_t current_frame_ = 0;
   float sample_rate_ = 0.0f;
+  uint32_t render_quantum_size_ = 128;
 
   // Default initialized to generate a distinct token for this worklet.
   const AudioWorkletToken token_;

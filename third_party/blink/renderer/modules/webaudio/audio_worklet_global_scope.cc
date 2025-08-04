@@ -287,6 +287,11 @@ void AudioWorkletGlobalScope::SetSampleRate(float sample_rate) {
   sample_rate_ = sample_rate;
 }
 
+void AudioWorkletGlobalScope::SetRenderQuantumSize(
+    uint32_t render_quantum_size) {
+  render_quantum_size_ = render_quantum_size;
+}
+
 double AudioWorkletGlobalScope::currentTime() const {
   return sample_rate_ > 0.0 ? current_frame_ / static_cast<double>(sample_rate_)
                             : 0.0;

@@ -121,6 +121,9 @@ class MODULES_EXPORT BaseAudioContext
   double currentTime() const { return destination_handler_->CurrentTime(); }
   AudioListener* listener() { return listener_.Get(); }
   V8AudioContextState state() const;
+  uint32_t renderQuantumSize() const {
+    return deferred_task_handler_->RenderQuantumFrames();
+  }
   AudioWorklet* audioWorklet() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
   AnalyserNode* createAnalyser(ExceptionState&);
