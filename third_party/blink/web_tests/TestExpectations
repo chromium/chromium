@@ -3714,7 +3714,6 @@ crbug.com/379779806 [ Mac14 ] external/wpt/webcodecs/videoFrame-createImageBitma
 crbug.com/379779806 [ Mac15 ] external/wpt/webcodecs/videoFrame-createImageBitmap.https.any.worker.html [ Timeout ]
 crbug.com/379779778 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/plugins-and-mimetypes.html [ Crash Timeout ]
 crbug.com/379768238 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Timeout ]
-crbug.com/379768238 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Crash Timeout ]
 crbug.com/379768238 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-invalid_integrity_header.tentative.html [ Crash Timeout ]
 crbug.com/379768238 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-parse_error.tentative.html [ Crash Timeout ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-answer.html [ Timeout ]
@@ -9261,9 +9260,6 @@ crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-creat
 # Gardener 2024-11-14
 crbug.com/379003897 [ Win11 ] external/wpt/css/css-anchor-position/anchor-parse-valid.html [ Failure Pass ]
 
-# Gardener 2024-11-15
-crbug.com/359319433 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
-
 # Gardener 2024-11-18
 crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
 crbug.com/377815400 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?high-6.2 [ Pass Timeout ]
@@ -9658,3 +9654,4 @@ crbug.com/40253082 [ Mac14 ] virtual/controls-refresh-hc/fast/forms/color-scheme
 
 # Gardener 2025-08-04
 crbug.com/436140064 [ Win ] images/png-crbug423310049.html [ Failure ]
+crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Crash Timeout ]
