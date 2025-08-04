@@ -1876,6 +1876,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
                         mBackPressManager,
                         mEdgeToEdgeControllerSupplier,
+                        getInsetObserver(),
                         findViewById(R.id.keyboard_accessory_sheet_stub),
                         findViewById(R.id.keyboard_accessory_stub));
     }

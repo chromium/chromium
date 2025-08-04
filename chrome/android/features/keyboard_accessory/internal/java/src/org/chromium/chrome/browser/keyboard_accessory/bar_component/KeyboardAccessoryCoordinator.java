@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -45,6 +46,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,6 +64,8 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     private final KeyboardAccessoryButtonGroupCoordinator mButtonGroup;
     private final PropertyModel mModel;
     private KeyboardAccessoryView mView;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private EdgeToEdgePadObserver mEdgeToEdgePadObserver;
 
     /**
      * The interface to notify consumers about keyboard accessories visibility. E.g: the animation
@@ -133,12 +137,16 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      *     visibility changes.
      * @param sheetVisibilityDelegate A {@link AccessorySheetCoordinator.SheetVisibilityDelegate}
      *     for delegating the sheet visibility changes.
+     * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
+     * @param insetObserver An {@link InsetObserver}.
      * @param barStub A {@link AsyncViewStub} for the accessory bar layout.
      */
     public KeyboardAccessoryCoordinator(
             Profile profile,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            InsetObserver insetObserver,
             AsyncViewStub barStub) {
         this(
                 barStub.getContext(),
@@ -146,6 +154,8 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
                 new KeyboardAccessoryButtonGroupCoordinator(),
                 barVisibilityDelegate,
                 sheetVisibilityDelegate,
+                edgeToEdgeControllerSupplier,
+                insetObserver,
                 AsyncViewProvider.of(barStub, R.id.keyboard_accessory));
     }
 
@@ -155,6 +165,8 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      * @param context The {@link Context} associated with the current UI context.
      * @param profile The {@link Profile} associated with the data.
      * @param viewProvider A provider for the accessory.
+     * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
+     * @param insetObserver An {@link InsetObserver}.
      */
     @VisibleForTesting
     public KeyboardAccessoryCoordinator(
@@ -163,9 +175,12 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             KeyboardAccessoryButtonGroupCoordinator buttonGroup,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            InsetObserver insetObserver,
             ViewProvider<KeyboardAccessoryView> viewProvider) {
         mButtonGroup = buttonGroup;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         mMediator =
                 new KeyboardAccessoryMediator(
@@ -186,12 +201,25 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
                                             context,
                                             AutofillImageFetcherFactory.getForProfile(profile))));
                     mView.setFeatureEngagementTracker(TrackerFactory.getTrackerForProfile(profile));
+                    mEdgeToEdgePadObserver =
+                            new EdgeToEdgePadObserver(
+                                    mView,
+                                    mEdgeToEdgeControllerSupplier,
+                                    insetObserver.getSupplierForKeyboardInset());
                 });
 
         mButtonGroup.setTabObserver(mMediator);
         LazyConstructionPropertyMcp.create(
                 mModel, VISIBLE, viewProvider, KeyboardAccessoryViewBinder::bind);
         KeyboardAccessoryMetricsRecorder.registerKeyboardAccessoryModelMetricsObserver(mModel);
+    }
+
+    @SuppressWarnings("NullAway")
+    public void destroy() {
+        if (mEdgeToEdgePadObserver != null) {
+            mEdgeToEdgePadObserver.destroy();
+            mEdgeToEdgePadObserver = null;
+        }
     }
 
     @VisibleForTesting
@@ -376,7 +404,6 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      * components that aren't part of the bottom browser controls.
      */
     // TODO(crbug.com/435453719): Clean up after use cases are no longer needed.
-    @SuppressWarnings({"UnusedMethod", "UnusedNestedClass"})
     private static class EdgeToEdgePadObserver
             implements EdgeToEdgeSupplier.ChangeObserver, Destroyable {
         private final View mViewToPad;

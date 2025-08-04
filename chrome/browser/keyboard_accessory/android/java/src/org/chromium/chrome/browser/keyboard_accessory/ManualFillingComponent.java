@@ -26,6 +26,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -108,6 +109,7 @@ public interface ManualFillingComponent extends BackPressHandler {
      * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param backPressManager A {@link BackPressManager} to register {@link BackPressHandler}.
      * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
+     * @param insetObserver An {@link InsetObserver}.
      * @param barStub The {@link AsyncViewStub} used to inflate the keyboard accessory bar.
      */
     void initialize(
@@ -117,7 +119,8 @@ public interface ManualFillingComponent extends BackPressHandler {
             BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            InsetObserver insetObserver,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub);
 

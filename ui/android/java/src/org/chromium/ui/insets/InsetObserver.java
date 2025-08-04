@@ -235,6 +235,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mSystemGestureInsets = new Rect();
         mObservers = new ObserverList<>();
         mKeyboardInsetSupplier = new KeyboardInsetObservableSupplier();
+        mKeyboardInsetSupplier.set(mKeyboardInset);
         addObserver(mKeyboardInsetSupplier);
         mWindowInsetsAnimationProxyCallback =
                 new WindowInsetsAnimationCompat.Callback(

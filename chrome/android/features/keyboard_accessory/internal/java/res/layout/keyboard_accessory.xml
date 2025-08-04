@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:scrollbars="none"
     android:visibility="gone"
     android:orientation="vertical"
-    android:layout_height="@dimen/keyboard_accessory_height_with_shadow"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:paddingEnd="0dp"
     android:clickable="true"
@@ -32,7 +32,7 @@ found in the LICENSE file.
         android:id="@+id/accessory_bar_contents"
         android:layout_width="match_parent"
         android:minHeight="@dimen/keyboard_accessory_height"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/keyboard_accessory_height"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
         android:background="@macro/default_bg_color">

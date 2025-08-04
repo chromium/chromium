@@ -40,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.AutofillProfilePayload;
@@ -65,6 +67,7 @@ import org.chromium.components.autofill.FillingProductBridgeJni;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -91,6 +94,8 @@ public class KeyboardAccessoryControllerTest {
     @Mock private AutofillDelegate mMockAutofillDelegate;
     @Mock private Profile mMockProfile;
     @Mock private PersonalDataManager mMockPersonalDataManager;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private InsetObserver mInsetObserver;
     @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
 
     private final KeyboardAccessoryData.Tab mTestTab =
@@ -99,12 +104,15 @@ public class KeyboardAccessoryControllerTest {
     private KeyboardAccessoryCoordinator mCoordinator;
     private PropertyModel mModel;
     private KeyboardAccessoryMediator mMediator;
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     @Before
     public void setUp() {
         when(mMockButtonGroup.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
         FillingProductBridgeJni.setInstanceForTesting(mMockFillingProductBridgeJni);
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
+        mEdgeToEdgeControllerSupplier = new ObservableSupplierImpl<>(mEdgeToEdgeController);
+
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
                         ContextUtils.getApplicationContext(),
@@ -112,6 +120,8 @@ public class KeyboardAccessoryControllerTest {
                         mMockButtonGroup,
                         mMockBarVisibilityDelegate,
                         mMockSheetVisibilityDelegate,
+                        mEdgeToEdgeControllerSupplier,
+                        mInsetObserver,
                         new FakeViewProvider<>(mMockView));
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();

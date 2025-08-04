@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -41,6 +42,7 @@ import java.util.function.BooleanSupplier;
 class ManualFillingCoordinator implements ManualFillingComponent {
     private final ManualFillingMediator mMediator = new ManualFillingMediator();
     private final ObserverList<Observer> mObserverList = new ObserverList<>();
+    private KeyboardAccessoryCoordinator mKeyboardAccessoryCoordinator;
 
     public ManualFillingCoordinator() {}
 
@@ -52,7 +54,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            InsetObserver insetObserver,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub) {
         Context context = windowAndroid.getContext().get();
@@ -64,9 +67,17 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         barStub.setShouldInflateOnBackgroundThread(true);
         sheetStub.setShouldInflateOnBackgroundThread(true);
+        mKeyboardAccessoryCoordinator =
+                new KeyboardAccessoryCoordinator(
+                        profile,
+                        mMediator,
+                        mMediator,
+                        edgeToEdgeControllerSupplier,
+                        insetObserver,
+                        barStub);
         initialize(
                 windowAndroid,
-                new KeyboardAccessoryCoordinator(profile, mMediator, mMediator, barStub),
+                mKeyboardAccessoryCoordinator,
                 new AccessorySheetCoordinator(sheetStub, mMediator),
                 sheetController,
                 isContextualSearchOpened,
@@ -103,6 +114,9 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     public void destroy() {
         for (Observer observer : mObserverList) observer.onDestroy();
         mMediator.destroy();
+        if (mKeyboardAccessoryCoordinator != null) {
+            mKeyboardAccessoryCoordinator.destroy();
+        }
     }
 
     @Override
