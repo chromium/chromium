@@ -26,7 +26,7 @@ const CGFloat kContainerSubstractredStroke = 2;
 const CGFloat kPlusXlabelFontSize = 9;
 
 // horizontal inner margin in for the `_plusXLabel`.
-const CGFloat kPlusXlabelContainerHorizontalInnerMargin = 6;
+const CGFloat kPlusXlabelContainerHorizontalInnerMargin = 3;
 
 // Alpha value of the non-avatar view background color.
 const CGFloat kNonAvatarContainerBackgroundAlpha = 0.2;
