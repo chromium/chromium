@@ -120,6 +120,6 @@ namespace sidePanel {
 
     // Returns the side panel's current layout.
     // |callback|: Called with a $(ref:PanelLayout) containing the side value.
-    [nodoc] static void getLayout(PanelLayoutCallback callback);
+    static void getLayout(PanelLayoutCallback callback);
   };
 };
