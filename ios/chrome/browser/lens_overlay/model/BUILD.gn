@@ -22,7 +22,7 @@ source_set("model") {
     "//base",
     "//components/google/core/common",
     "//ios/chrome/browser/fullscreen/ui_bundled",
-    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

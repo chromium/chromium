@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
 #import "ios/chrome/browser/main_content/ui_bundled/web_scroll_view_main_content_ui_forwarder.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -984,9 +983,7 @@ const CGFloat kTopDynamicIslandInset = 24;
   // gamepads to work. (Ref: crbug.com/325307469)
   web::WebState* activeWebState = self.currentWebState;
   if (activeWebState && !GetFirstResponder()) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(activeWebState);
-    if (!NTPHelper || !NTPHelper->IsActive()) {
+    if (!IsVisibleURLNewTabPage(activeWebState)) {
       [activeWebState->GetWebViewProxy() becomeFirstResponder];
     }
   }
@@ -1937,11 +1934,11 @@ const CGFloat kTopDynamicIslandInset = 24;
 
 #pragma mark - Helpers
 
-- (UIEdgeInsets)snapshotEdgeInsetsForNTPHelper:(NewTabPageTabHelper*)NTPHelper {
+- (UIEdgeInsets)snapshotEdgeInsetsForWebState:(web::WebState*)webState {
   UIEdgeInsets maxViewportInsets =
       self.fullscreenController->GetMaxViewportInsets();
 
-  if (NTPHelper && NTPHelper->IsActive()) {
+  if (IsVisibleURLNewTabPage(webState)) {
     // If the NTP is active, then it's used as the base view for snapshotting.
     // When the tab strip is visible, or for the incognito NTP, the NTP is laid
     // out between the toolbars, so it should not be inset while snapshotting.
@@ -2398,12 +2395,11 @@ const CGFloat kTopDynamicIslandInset = 24;
   }
 }
 
-- (void)switchToTabAnimationPosition:(SwitchToTabAnimationPosition)position
-                   snapshotTabHelper:(SnapshotTabHelper*)snapshotTabHelper
-                  willAddPlaceholder:(BOOL)willAddPlaceholder
-                 newTabPageTabHelper:(NewTabPageTabHelper*)NTPHelper
-                     topToolbarImage:(UIImage*)topToolbarImage
-                  bottomToolbarImage:(UIImage*)bottomToolbarImage {
+- (void)switchToTabWithWebState:(web::WebState*)webState
+              animationPosition:(SwitchToTabAnimationPosition)position
+             willAddPlaceholder:(BOOL)willAddPlaceholder
+                topToolbarImage:(UIImage*)topToolbarImage
+             bottomToolbarImage:(UIImage*)bottomToolbarImage {
   if (CanShowTabStrip(self)) {
     return;
   }
@@ -2413,11 +2409,12 @@ const CGFloat kTopDynamicIslandInset = 24;
 
   SwipeView* swipeView = [[SwipeView alloc]
       initWithFrame:self.contentArea.frame
-          topMargin:[self snapshotEdgeInsetsForNTPHelper:NTPHelper].top];
+          topMargin:[self snapshotEdgeInsetsForWebState:webState].top];
 
   [swipeView setTopToolbarImage:topToolbarImage];
   [swipeView setBottomToolbarImage:bottomToolbarImage];
 
+  auto* snapshotTabHelper = SnapshotTabHelper::FromWebState(webState);
   snapshotTabHelper->RetrieveColorSnapshot(^(UIImage* image) {
     willAddPlaceholder ? [swipeView setImage:nil] : [swipeView setImage:image];
   });

@@ -40,10 +40,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   bool ShouldShowStartSurface() const;
   void SetShowStartSurface(bool show_start_surface);
 
-  // Returns true when the current web_state is an NTP and the underlying
-  // controllers have been created.
-  bool IsActive() const;
-
   // Saves the NTP state for when users navigate back to it.
   void SetNTPState(NewTabPageState* ntpState);
 
@@ -52,6 +48,8 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
  private:
   friend class web::WebStateUserData<NewTabPageTabHelper>;
+  // For access to IsActive(...) method.
+  friend bool IsVisibleURLNewTabPage(web::WebState*);
 
   explicit NewTabPageTabHelper(web::WebState* web_state);
 
@@ -67,6 +65,12 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // Enable or disable the tab helper.
   void SetActive(bool active);
+
+  // Returns true when the current web_state is an NTP and the underlying
+  // controllers have been created. Should not be accessed directly instead
+  // use the helper function IsVisibleURLNewTabPage(...) which handles the
+  // case where the WebState is unrealized and the tab helper not created.
+  bool IsActive() const;
 
   // Used to present and dismiss the NTP.
   __weak id<NewTabPageTabHelperDelegate> delegate_ = nil;

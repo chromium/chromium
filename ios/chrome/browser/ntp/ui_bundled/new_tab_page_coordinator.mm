@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -323,7 +324,7 @@
 
   self.webState = self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(self.webState);
-  DCHECK(NewTabPageTabHelper::FromWebState(self.webState)->IsActive());
+  DCHECK(IsVisibleURLNewTabPage(self.webState));
 
   // Start observing SceneState changes.
   SceneState* sceneState = self.browser->GetSceneState();
@@ -475,9 +476,7 @@
 - (void)stopIfNeeded {
   WebStateList* webStateList = self.browser->GetWebStateList();
   for (int i = 0; i < webStateList->count(); i++) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webStateList->GetWebStateAt(i));
-    if (NTPHelper && NTPHelper->IsActive()) {
+    if (IsVisibleURLNewTabPage(webStateList->GetWebStateAt(i))) {
       return;
     }
   }
@@ -486,12 +485,7 @@
 }
 
 - (BOOL)isNTPActiveForCurrentWebState {
-  if (!self.webState) {
-    return NO;
-  }
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  return NTPHelper && NTPHelper->IsActive();
+  return IsVisibleURLNewTabPage(self.webState);
 }
 
 - (BOOL)isScrolledToTop {

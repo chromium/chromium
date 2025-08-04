@@ -26,7 +26,7 @@ source_set("model") {
     "//components/strings:components_strings_grit",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/fullscreen/ui_bundled",
-    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",

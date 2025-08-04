@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/tab_groups",
     "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

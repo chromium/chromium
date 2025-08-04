@@ -50,7 +50,7 @@ source_set("model") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
-    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

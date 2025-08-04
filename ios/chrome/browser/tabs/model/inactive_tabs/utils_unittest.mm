@@ -12,6 +12,7 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -386,7 +387,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
   NewTabPageTabHelper* ntp_helper =
       NewTabPageTabHelper::FromWebState(fake_web_state.get());
   ntp_helper->SetDelegate(delegate);
-  ASSERT_TRUE(ntp_helper->IsActive());
+  ASSERT_TRUE(IsVisibleURLNewTabPage(fake_web_state.get()));
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();

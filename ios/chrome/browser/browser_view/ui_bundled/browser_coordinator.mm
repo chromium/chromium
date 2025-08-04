@@ -143,6 +143,7 @@
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -858,8 +859,7 @@ enum class ToolbarKind {
     // cannot assert that it has not been started.
     web::WebState* webState =
         self.browser->GetWebStateList()->GetActiveWebState();
-    if (webState && NewTabPageTabHelper::FromWebState(webState)->IsActive() &&
-        !self.NTPCoordinator.started) {
+    if (IsVisibleURLNewTabPage(webState) && !self.NTPCoordinator.started) {
       // Avoid Voiceover focus to be stollen if the BrowserViewController is not
       // the top view.
       BOOL ntpIsTopView = !self.viewController.presentedViewController;
@@ -4049,8 +4049,7 @@ enum class ToolbarKind {
   UIEdgeInsets maxViewportInsets =
       _fullscreenController->GetMaxViewportInsets();
 
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (NTPHelper && NTPHelper->IsActive()) {
+  if (IsVisibleURLNewTabPage(webState)) {
     const BOOL canShowTabStrip = CanShowTabStrip(self.viewController);
     const BOOL isSplitToolbarMode = IsSplitToolbarMode(self.viewController);
     // If the NTP is active, then it's used as the base view for snapshotting.
@@ -4188,8 +4187,7 @@ enum class ToolbarKind {
   if (!webState) {
     return nil;
   }
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (NTPHelper && NTPHelper->IsActive()) {
+  if (IsVisibleURLNewTabPage(webState)) {
     // If NTPCoordinator is not started yet, fall back to using the
     // webState's view. `_NTPCoordinator.started` should be true in most cases
     // but it can be false when the app will be terminated or the browser data

@@ -10,7 +10,7 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -207,8 +207,7 @@
 /// Updates the state variables and toolbars with `webState`.
 - (void)updateForWebState:(web::WebState*)webState {
   [self.delegate updateToolbar];
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  _isNTP = NTPHelper && NTPHelper->IsActive();
+  _isNTP = IsVisibleURLNewTabPage(webState);
   if (IsBottomOmniboxAvailable()) {
     if (_shouldCheckSafariSwitcherOnFRE) {
       [self checkSafariSwitcherOnFRE];

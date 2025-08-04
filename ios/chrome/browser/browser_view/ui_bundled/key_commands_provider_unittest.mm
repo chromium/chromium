@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -429,7 +430,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ActionsInHttpPage) {
   ntp_helper->SetDelegate(delegate);
 
   // Ensure that the actions are not available when the tab is a NTP.
-  ASSERT_TRUE(ntp_helper->IsActive());
+  ASSERT_TRUE(IsVisibleURLNewTabPage(fake_web_state.get()));
   ASSERT_FALSE(url.SchemeIsHTTPOrHTTPS());
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));

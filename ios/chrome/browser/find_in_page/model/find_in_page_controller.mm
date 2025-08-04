@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -98,9 +98,11 @@ NSString* gSearchTerm;
 }
 
 - (BOOL)canFindInPage {
-  NewTabPageTabHelper* ntpHelper = NewTabPageTabHelper::FromWebState(_webState);
-  BOOL isNTPActive = ntpHelper->IsActive();
-  return !isNTPActive && _findInPageManager->CanSearchContent();
+  // There is nothing to search on New Tab Page.
+  if (IsVisibleURLNewTabPage(_webState)) {
+    return NO;
+  }
+  return _findInPageManager->CanSearchContent();
 }
 
 - (void)saveSearchTerm {
