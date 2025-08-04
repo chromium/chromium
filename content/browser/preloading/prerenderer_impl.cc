@@ -604,10 +604,10 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
         conservative, trigger_type, "Conservative");
     RecordReceivedPrerendersPerPrimaryPageChangedCount(moderate, trigger_type,
                                                        "Moderate");
-    // `kEager` is treated as `kImmediate` here for historical reasons.
-    // TODO(crbug.com/40287486): Create new metrics to separate them.
-    RecordReceivedPrerendersPerPrimaryPageChangedCount(
-        eager + immediate, trigger_type, "Immediate");
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(eager, trigger_type,
+                                                       "Eager2");
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(immediate, trigger_type,
+                                                       "Immediate2");
   }
 }
 
