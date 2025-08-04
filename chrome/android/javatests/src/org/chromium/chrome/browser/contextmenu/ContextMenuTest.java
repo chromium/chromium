@@ -149,6 +149,13 @@ public class ContextMenuTest {
 
     private static final String TEST_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
+    // LINT.IfChange(PageScaleFactor)
+    // The initial-scale defined in the test html file meta. The setUp function
+    // will check that the page scale factor has been updated to this value.
+    // This ensures the long press/ right click is simulated at the correct
+    // coordinates of the specified element. See crbug.com/432281754.
+    private static final float PAGE_SCALE_FACTOR = 1.0f;
+    // LINT.ThenChange(//chrome/test/data/android/contextmenu/context_menu_test.html:PageScaleFactor)
 
     private EmbeddedTestServer mTestServer;
     private String mTestUrl;
@@ -221,6 +228,8 @@ public class ContextMenuTest {
         sDownloadTestRule.loadUrl(mTestUrl);
         Tab tab = sDownloadTestRule.getActivityTab();
         CriteriaHelper.pollUiThread(() -> tab.isUserInteractable() && !tab.isLoading());
+        sDownloadTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
+
         setupLensChipDelegate();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
         DataProtectionBridgeJni.setInstanceForTesting(mDataProtectionBridgeMock);
