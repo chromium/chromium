@@ -21,8 +21,8 @@
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -89,7 +89,7 @@ char* PKCS11PasswordFunc(PK11SlotInfo* slot, PRBool retry, void* arg) {
 // singleton.
 class NSPRInitSingleton {
  private:
-  friend struct base::LazyInstanceTraitsBase<NSPRInitSingleton>;
+  friend class base::NoDestructor<NSPRInitSingleton>;
 
   NSPRInitSingleton() { PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 0); }
 
@@ -99,8 +99,10 @@ class NSPRInitSingleton {
   ~NSPRInitSingleton() = delete;
 };
 
-base::LazyInstance<NSPRInitSingleton>::Leaky g_nspr_singleton =
-    LAZY_INSTANCE_INITIALIZER;
+NSPRInitSingleton& GetNSPRInitSingleton() {
+  static base::NoDestructor<NSPRInitSingleton> instance;
+  return *instance;
+}
 
 // Force a crash with error info on NSS_NoDB_Init failure.
 void CrashOnNSSInitFailure() {
@@ -178,7 +180,7 @@ class NSSInitSingleton {
   }
 
  private:
-  friend struct base::LazyInstanceTraitsBase<NSSInitSingleton>;
+  friend class base::NoDestructor<NSSInitSingleton>;
 
   NSSInitSingleton() {
     // Initializing NSS causes us to do blocking IO.
@@ -276,25 +278,28 @@ class NSSInitSingleton {
   base::Lock slot_map_lock_;
 };
 
-base::LazyInstance<NSSInitSingleton>::Leaky g_nss_singleton =
-    LAZY_INSTANCE_INITIALIZER;
+NSSInitSingleton& GetNSSInitSingleton() {
+  static base::NoDestructor<NSSInitSingleton> instance;
+  return *instance;
+}
+
 }  // namespace
 
 ScopedPK11Slot OpenSoftwareNSSDB(const base::FilePath& path,
                                  const std::string& description) {
-  return g_nss_singleton.Get().OpenSoftwareNSSDB(path, description);
+  return GetNSSInitSingleton().OpenSoftwareNSSDB(path, description);
 }
 
 SECStatus CloseSoftwareNSSDB(PK11SlotInfo* slot) {
-  return g_nss_singleton.Get().CloseSoftwareNSSDB(slot);
+  return GetNSSInitSingleton().CloseSoftwareNSSDB(slot);
 }
 
 void EnsureNSPRInit() {
-  g_nspr_singleton.Get();
+  GetNSPRInitSingleton();
 }
 
 void EnsureNSSInit() {
-  g_nss_singleton.Get();
+  GetNSSInitSingleton();
 }
 
 bool CheckNSSVersion(const char* version) {
