@@ -430,9 +430,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     request->set_require_metadata_verdict(true);
     // If the file is encrypted, let the service know that the file is
     // encrypted.
-    if (result == Result::FILE_ENCRYPTED &&
-        base::FeatureList::IsEnabled(
-            enterprise_connectors::kEnableEncryptedFileUpload)) {
+    if (result == Result::FILE_ENCRYPTED) {
       request->set_is_content_encrypted(true);
     }
   }
