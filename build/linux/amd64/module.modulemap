@@ -1,0 +1,85 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sysroot_limits [system] [extern_c] {
+  header "../debian_bullseye_amd64-sysroot/usr/include/features.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/linux/limits.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/stdc-predef.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/long-double.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/wordsize.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/gnu/stubs-64.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/gnu/stubs.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/cdefs.h"
+}
+
+module sysroot [system] [extern_c] {
+  header "../debian_bullseye_amd64-sysroot/usr/include/alloca.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/asm-generic/errno-base.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/asm-generic/errno.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/endian.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/linux/errno.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/locale.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/nl_types.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/pthread.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/setjmp.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/signal.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/stdc-predef.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/stdlib.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/stdio.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/strings.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/time.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/unistd.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/asm/errno.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/gnu/stubs.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/select.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/types.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/ucontext.h"
+  // Needs to be textual due to missing include of stddef.h in pthread.h
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/sched.h"
+  // Allow files such as sys/types.h to re-export size_t
+  export *
+}
+
+// The following are all textual because they are the subject of include_next
+// from a non-textual module.
+// eg. usr/include/errno.h is included by std_errno_h
+module sysroot_ctype [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/ctype.h"
+}
+
+module sysroot_errno [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/errno.h"
+}
+
+module sysroot_fenv [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/fenv.h"
+}
+
+module sysroot_math [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/math.h"
+}
+
+module sysroot_inttypes [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/inttypes.h"
+}
+
+module sysroot_string [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/string.h"
+}
+
+module sysroot_stdatomic [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/stdatomic.h"
+}
+
+module sysroot_stdint [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/stdint.h"
+}
+
+module sysroot_uchar [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/uchar.h"
+}
+
+module sysroot_wctype [system] [extern_c] {
+  textual header "../debian_bullseye_amd64-sysroot/usr/include/wctype.h"
+}

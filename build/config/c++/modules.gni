@@ -14,14 +14,10 @@ if (is_mac) {
   sdk_path = mac_sdk_path
 }
 
-# module_platform contains the canonical name of a platform used for modules.
-# If modules are not enabled, this will always be empty.
-# It is generally ${current_os}-${current-cpu} (eg. linux-x64).
-# However, if the modulemaps / BUILD.gn files are equivalent, it may be deduped.
-# For example, chromeos is treated as linux.
-module_platform = ""
 if (use_clang_modules) {
-  if (is_apple) {
+  if (is_linux || is_chromeos) {
+    sysroot_modulemap = "//build/linux/amd64/module.modulemap"
+  } else if (is_apple) {
     sysroot_modulemaps = [
       "$sdk_path/usr/include/DarwinBasic.modulemap",
       "$sdk_path/usr/include/DarwinFoundation.modulemap",
@@ -29,13 +25,6 @@ if (use_clang_modules) {
     ]
   } else if (is_android) {
     sysroot_modulemap = "//build/android/amd64/module.modulemap"
-  } else {
-    module_platform = "${current_os}-${current_cpu}"
-    if (current_os == "chromeos") {
-      # ChromeOS uses the linux sysroot.
-      module_platform = "linux-${current_cpu}"
-    }
-    sysroot_modulemap = "//build/modules/${module_platform}/module.modulemap"
   }
 
   if (defined(sysroot_modulemap)) {
