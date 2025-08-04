@@ -226,8 +226,10 @@ extern NSString* const kYoutubeBundleID;
 // all profiles. Empty if last operation was a sign-out.
 extern NSString* const kPrimaryAccount;
 
-// Key in storage indicating if Chrome is likely the default browser.
+// Key used to store whether Chrome is likely the default browser.
 extern NSString* const kChromeLikelyDefaultBrowser;
+// Key used to store the timestamp when the default browser status was updated.
+extern NSString* const kChromeLikelyDefaultBrowserUpdateTimestamp;
 
 // Conversion helpers between keys and OpenExtensionOutcome.
 NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome);

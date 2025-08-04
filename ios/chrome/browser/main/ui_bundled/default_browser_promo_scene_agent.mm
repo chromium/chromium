@@ -271,6 +271,9 @@
 
   [sharedDefaults setBool:IsChromeLikelyDefaultBrowser()
                    forKey:app_group::kChromeLikelyDefaultBrowser];
+  [sharedDefaults
+      setObject:[NSDate date]
+         forKey:app_group::kChromeLikelyDefaultBrowserUpdateTimestamp];
 }
 
 - (BOOL)isSignedIn {
