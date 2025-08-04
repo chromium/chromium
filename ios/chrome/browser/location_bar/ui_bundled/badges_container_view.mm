@@ -9,6 +9,20 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+namespace {
+
+// Sets `view.hidden` to `hidden` if necessary. This helper is useful to address
+// a bug where the number of times `.hidden` is set in a view accumulates if it
+// is presented inside of a stack view. As a result, setting `.hidden = YES`
+// twice does not have the same effect as only settings it once.
+void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
+  if (view.hidden != hidden) {
+    view.hidden = hidden;
+  }
+}
+
+}  // namespace
+
 @implementation LocationBarBadgesContainerView {
   UIStackView* _containerStackView;
 
@@ -108,7 +122,7 @@
   _incognitoBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
   _incognitoBadgeView.isAccessibilityElement = NO;
   [_containerStackView insertArrangedSubview:_incognitoBadgeView atIndex:0];
-  _incognitoBadgeView.hidden = YES;
+  SetViewHiddenIfNecessary(_incognitoBadgeView, YES);
 
   [NSLayoutConstraint activateConstraints:@[
     [_incognitoBadgeView.heightAnchor
@@ -124,7 +138,7 @@
   _badgeView.translatesAutoresizingMaskIntoConstraints = NO;
   _badgeView.isAccessibilityElement = NO;
   [_containerStackView addArrangedSubview:_badgeView];
-  _badgeView.hidden = YES;
+  SetViewHiddenIfNecessary(_badgeView, YES);
 
   [NSLayoutConstraint activateConstraints:@[
     [_badgeView.heightAnchor
@@ -143,7 +157,7 @@
   _contextualPanelEntrypointView = contextualPanelEntrypointView;
   _contextualPanelEntrypointView.translatesAutoresizingMaskIntoConstraints = NO;
   _contextualPanelEntrypointView.isAccessibilityElement = NO;
-  _contextualPanelEntrypointView.hidden = YES;
+  SetViewHiddenIfNecessary(_contextualPanelEntrypointView, YES);
   // The Contextual Panel entrypoint view should be first in its containing
   // stackview, regardless of when it was added.
   [_containerStackView insertArrangedSubview:_contextualPanelEntrypointView
@@ -165,7 +179,7 @@
   _readerModeChipView = readerModeChipView;
   _readerModeChipView.translatesAutoresizingMaskIntoConstraints = NO;
   _readerModeChipView.isAccessibilityElement = NO;
-  _readerModeChipView.hidden = YES;
+  SetViewHiddenIfNecessary(_readerModeChipView, YES);
   // Reading Mode chip should be shown to the right of the incognito badge
   // view.
   int index = _incognitoBadgeView ? 1 : 0;
@@ -192,7 +206,7 @@
   _placeholderView = placeholderView;
   if (_placeholderView) {
     _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-    _placeholderView.hidden = YES;
+    SetViewHiddenIfNecessary(_placeholderView, YES);
     [_containerStackView addArrangedSubview:_placeholderView];
     [NSLayoutConstraint activateConstraints:@[
       [_placeholderView.heightAnchor
@@ -206,16 +220,18 @@
 
 // Updates the hidden state of the views.
 - (void)updateViewsVisibility {
-  self.readerModeChipView.hidden = !_readerModeChipShouldBeVisible;
-  self.incognitoBadgeView.hidden = !_incognitoBadgeViewShouldBeVisible;
-  self.badgeView.hidden =
-      !_badgeViewShouldBeVisible || _readerModeChipShouldBeVisible;
+  SetViewHiddenIfNecessary(self.readerModeChipView,
+                           !_readerModeChipShouldBeVisible);
+  SetViewHiddenIfNecessary(self.incognitoBadgeView,
+                           !_incognitoBadgeViewShouldBeVisible);
+  SetViewHiddenIfNecessary(self.badgeView, !_badgeViewShouldBeVisible ||
+                                               _readerModeChipShouldBeVisible);
   if (IsDiamondPrototypeEnabled()) {
-    self.badgeView.hidden = YES;
+    SetViewHiddenIfNecessary(self.badgeView, YES);
   }
-  self.contextualPanelEntrypointView.hidden =
-      !_contextualPanelEntrypointShouldBeVisible ||
-      _readerModeChipShouldBeVisible;
+  SetViewHiddenIfNecessary(self.contextualPanelEntrypointView,
+                           !_contextualPanelEntrypointShouldBeVisible ||
+                               _readerModeChipShouldBeVisible);
 
   BOOL placeholderHidden =
       (self.contextualPanelEntrypointView &&
@@ -230,7 +246,7 @@
                               (self.badgeView && self.badgeView.hidden);
     placeholderHidden = !placeholderVisible;
     if (placeholderVisible) {
-      self.contextualPanelEntrypointView.hidden = YES;
+      SetViewHiddenIfNecessary(self.contextualPanelEntrypointView, YES);
     }
   }
 
@@ -238,7 +254,7 @@
     return;
   }
 
-  _placeholderView.hidden = placeholderHidden;
+  SetViewHiddenIfNecessary(_placeholderView, placeholderHidden);
 
   // Records why the placeholder view is hidden. These are not mutually
   // exclusive, price tracking will take precedence over messages.
