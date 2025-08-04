@@ -778,7 +778,6 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-        '--experimental-tbmv3-metrics',
     ])
 
     with open(os.path.join(self.output_dir,
@@ -829,7 +828,6 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-        '--experimental-tbmv3-metrics',
     ])
 
     with open(os.path.join(self.output_dir,
@@ -891,7 +889,6 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-        '--experimental-tbmv3-metrics',
         '--extra-metric',
         'tbmv3:dummy_metric',
     ])
@@ -934,7 +931,6 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-        '--experimental-tbmv3-metrics',
     ])
 
     with open(os.path.join(self.output_dir,
