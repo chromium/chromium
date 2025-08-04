@@ -28,12 +28,14 @@ build_webui("build") {
     "$target_gen_dir/icons/resources.grdp",
     "$target_gen_dir/modules/v2/authentication/icons/resources.grdp",
     "$target_gen_dir/modules/v2/calendar/icons/resources.grdp",
+    "$target_gen_dir/modules/v2/tab_groups/icons/resources.grdp",
   ]
 
   extra_grdp_deps = [
     "icons:build_grdp",
     "modules/v2/authentication/icons:build_grdp",
     "modules/v2/calendar/icons:build_grdp",
+    "modules/v2/tab_groups/icons:build_grdp",
   ]
 
   if (optimize_webui) {

@@ -84,14 +84,27 @@ a:focus-visible {
   flex-direction: column;
   justify-content: flex-end;
   padding: 40px 22px 0 22px;
+  overflow: hidden;
 }
 
-#imagePlaceholder {
+.zero-tab-groups-image {
+  display: none;
   width: 236px;
   height: 93px;
   flex-shrink: 0;
-  /* TODO(crbug.com/432533358) Add illustration. */
-  background-color: cornflowerblue;
+  transform: translateY(4px);
+}
+
+@media (prefers-color-scheme: light) {
+  #zeroTabGroupsImageLight {
+    display: block;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #zeroTabGroupsImageDark {
+    display: block;
+  }
 }
 
 #zeroTabGroupsContentContainer {
