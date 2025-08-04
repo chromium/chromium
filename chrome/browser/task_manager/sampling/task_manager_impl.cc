@@ -52,8 +52,7 @@ namespace task_manager {
 
 namespace {
 
-base::LazyInstance<TaskManagerImpl>::Leaky lazy_task_manager_instance =
-    LAZY_INSTANCE_INITIALIZER;
+bool g_instance_created = false;
 
 TaskId ComputeRootTaskId(const Task* task) {
   CHECK(task);
@@ -112,6 +111,8 @@ TaskManagerImpl::TaskManagerImpl()
   task_providers_.push_back(std::make_unique<VmProcessTaskProvider>());
   arc_shared_sampler_ = std::make_unique<ArcSharedSampler>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  g_instance_created = true;
 }
 
 TaskManagerImpl::~TaskManagerImpl() {
@@ -122,7 +123,8 @@ TaskManagerImpl::~TaskManagerImpl() {
 TaskManagerImpl* TaskManagerImpl::GetInstance() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  return lazy_task_manager_instance.Pointer();
+  static base::NoDestructor<TaskManagerImpl> instance;
+  return instance.get();
 }
 
 bool TaskManagerImpl::IsCreated() {
@@ -130,7 +132,7 @@ bool TaskManagerImpl::IsCreated() {
   if (g_browser_process) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
-  return lazy_task_manager_instance.IsCreated();
+  return g_instance_created;
 }
 
 void TaskManagerImpl::ActivateTask(TaskId task_id) {

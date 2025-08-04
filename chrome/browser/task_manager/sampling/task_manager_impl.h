@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
@@ -117,7 +117,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   using PidToTaskGroupMap =
       base::flat_map<base::ProcessId, std::unique_ptr<TaskGroup>>;
 
-  friend struct base::LazyInstanceTraitsBase<TaskManagerImpl>;
+  friend class base::NoDestructor<TaskManagerImpl>;
 
   TaskManagerImpl();
 
