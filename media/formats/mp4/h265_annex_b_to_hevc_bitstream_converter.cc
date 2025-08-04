@@ -4,6 +4,7 @@
 
 #include "media/formats/mp4/h265_annex_b_to_hevc_bitstream_converter.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
@@ -78,9 +79,10 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
           return MP4Status::Codes::kInvalidSPS;
 
         id2sps_.insert_or_assign(
-            sps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+            sps_id, blob(nalu.data.get(),
+                         (UNSAFE_TODO(nalu.data +
+                                      base::checked_cast<size_t>(nalu.size)))
+                             .get()));
         sps_to_include.insert(sps_id);
         if (auto* sps = parser_.GetSPS(sps_id)) {
           vps_to_include.insert(sps->sps_video_parameter_set_id);
@@ -99,9 +101,10 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
           return MP4Status::Codes::kInvalidVPS;
 
         id2vps_.insert_or_assign(
-            vps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+            vps_id, blob(nalu.data.get(),
+                         (UNSAFE_TODO(nalu.data +
+                                      base::checked_cast<size_t>(nalu.size)))
+                             .get()));
         vps_to_include.insert(vps_id);
         config_changed = true;
         break;
@@ -117,9 +120,10 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
           return MP4Status::Codes::kInvalidPPS;
 
         id2pps_.insert_or_assign(
-            pps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+            pps_id, blob(nalu.data.get(),
+                         (UNSAFE_TODO(nalu.data +
+                                      base::checked_cast<size_t>(nalu.size)))
+                             .get()));
         pps_to_include.insert(pps_id);
         if (auto* pps = parser_.GetPPS(pps_id))
           sps_to_include.insert(pps->pps_seq_parameter_set_id);

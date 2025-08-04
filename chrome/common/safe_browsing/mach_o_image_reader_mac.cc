@@ -44,7 +44,7 @@ class ByteSlice {
   const T* GetPointerAt(size_t at) {
     if (!RangeCheck(at, sizeof(T)))
       return nullptr;
-    return reinterpret_cast<const T*>((data_ + at).get());
+    return UNSAFE_TODO(reinterpret_cast<const T*>((data_ + at).get()));
   }
 
   // Copies data from an offset to a buffer.

@@ -372,11 +372,11 @@ TEST_F(VisitedLinkTest, Delete) {
 
   // Deleting 14 should move the next value up one slot (we do not specify an
   // order).
-  EXPECT_EQ(kFingerprint3, writer_->hash_table_[0]);
+  EXPECT_EQ(kFingerprint3, UNSAFE_TODO(writer_->hash_table_[0]));
   writer_->DeleteFingerprint(kFingerprint3, false);
   const VisitedLinkCommon::Fingerprint kZeroFingerprint = 0;
-  EXPECT_EQ(kZeroFingerprint, writer_->hash_table_[1]);
-  EXPECT_NE(kZeroFingerprint, writer_->hash_table_[0]);
+  EXPECT_EQ(kZeroFingerprint, UNSAFE_TODO(writer_->hash_table_[1]));
+  EXPECT_NE(kZeroFingerprint, UNSAFE_TODO(writer_->hash_table_[0]));
 
   // Deleting the other four should leave the table empty.
   writer_->DeleteFingerprint(kFingerprint0, false);
@@ -386,7 +386,7 @@ TEST_F(VisitedLinkTest, Delete) {
 
   EXPECT_EQ(0, writer_->used_items_);
   for (int i = 0; i < kInitialSize; i++) {
-    EXPECT_EQ(kZeroFingerprint, writer_->hash_table_[i])
+    EXPECT_EQ(kZeroFingerprint, UNSAFE_TODO(writer_->hash_table_[i]))
         << "Hash table has values in it.";
   }
 }
@@ -1005,10 +1005,10 @@ TEST_F(PartitionedVisitedLinkTest, DeleteWithCollisions) {
   // Deleting 14 should move the next value up one slot (we do not specify an
   // order).
   const VisitedLinkCommon::Fingerprint kZeroFingerprint = 0;
-  EXPECT_EQ(kFingerprint3, partitioned_writer_->hash_table_[0]);
+  EXPECT_EQ(kFingerprint3, UNSAFE_TODO(partitioned_writer_->hash_table_[0]));
   partitioned_writer_->DeleteFingerprint(kFingerprint3);
-  EXPECT_EQ(kZeroFingerprint, partitioned_writer_->hash_table_[1]);
-  EXPECT_NE(kZeroFingerprint, partitioned_writer_->hash_table_[0]);
+  EXPECT_EQ(kZeroFingerprint, UNSAFE_TODO(partitioned_writer_->hash_table_[1]));
+  EXPECT_NE(kZeroFingerprint, UNSAFE_TODO(partitioned_writer_->hash_table_[0]));
 
   // Deleting the other four should leave the table empty.
   partitioned_writer_->DeleteFingerprint(kFingerprint0);
@@ -1018,7 +1018,8 @@ TEST_F(PartitionedVisitedLinkTest, DeleteWithCollisions) {
 
   EXPECT_EQ(0, partitioned_writer_->used_items_);
   for (int i = 0; i < kInitialSize; i++) {
-    EXPECT_EQ(kZeroFingerprint, partitioned_writer_->hash_table_[i])
+    EXPECT_EQ(kZeroFingerprint,
+              UNSAFE_TODO(partitioned_writer_->hash_table_[i]))
         << "Hash table has values in it.";
   }
 }

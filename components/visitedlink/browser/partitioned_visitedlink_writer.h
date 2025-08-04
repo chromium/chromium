@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/visitedlink/common/visitedlink_common.h"
 #include "components/visitedlink/core/visited_link.h"
@@ -331,7 +332,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
 inline void PartitionedVisitedLinkWriter::DebugValidate() {
   int32_t used_count = 0;
   for (int32_t i = 0; i < table_length_; i++) {
-    if (hash_table_[i]) {
+    if (UNSAFE_TODO(hash_table_[i])) {
       used_count++;
     }
   }

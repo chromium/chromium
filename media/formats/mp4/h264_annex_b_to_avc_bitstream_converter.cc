@@ -4,6 +4,7 @@
 
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
@@ -72,9 +73,10 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
           return MP4Status::Codes::kInvalidSPS;
 
         id2sps_.insert_or_assign(
-            sps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+            sps_id, blob(nalu.data.get(),
+                         (UNSAFE_TODO(nalu.data +
+                                      base::checked_cast<size_t>(nalu.size)))
+                             .get()));
         id2sps_ext_.erase(sps_id);
         sps_to_include.insert(sps_id);
         config_changed = true;
@@ -89,9 +91,10 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
         }
 
         id2sps_ext_.insert_or_assign(
-            sps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+            sps_id, blob(nalu.data.get(),
+                         (UNSAFE_TODO(nalu.data +
+                                      base::checked_cast<size_t>(nalu.size)))
+                             .get()));
         config_changed = true;
         break;
       }
@@ -103,9 +106,10 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
           return MP4Status::Codes::kInvalidPPS;
 
         id2pps_.insert_or_assign(
-            pps_id,
-            blob(nalu.data.get(),
-                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
+            pps_id, blob(nalu.data.get(),
+                         (UNSAFE_TODO(nalu.data +
+                                      base::checked_cast<size_t>(nalu.size)))
+                             .get()));
         pps_to_include.insert(pps_id);
         if (auto* pps = parser_.GetPPS(pps_id))
           sps_to_include.insert(pps->seq_parameter_set_id);
