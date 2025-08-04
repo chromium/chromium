@@ -97,6 +97,10 @@ class SavedTabGroup {
     return shared_attribution_;
   }
 
+  const std::optional<base::Uuid>& bookmark_node_id() const {
+    return bookmark_node_id_;
+  }
+
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
   bool is_transitioning_to_shared() const {
@@ -156,6 +160,7 @@ class SavedTabGroup {
   SavedTabGroup& SetArchivalTime(std::optional<base::Time> archival_time);
   SavedTabGroup& SetPosition(size_t position);
   SavedTabGroup& SetPinned(bool pinned);
+  SavedTabGroup& SetBookmarkNodeId(std::optional<base::Uuid> bookmark_node_id);
   SavedTabGroup& SetCollaborationId(
       std::optional<CollaborationId> collaboration_id);
   SavedTabGroup& SetSharedGroupStatus(SharedGroupStatus shared_group_status);
@@ -367,6 +372,10 @@ class SavedTabGroup {
 
   // Whether to show/disable a shared tab group is known from this status.
   SharedGroupStatus shared_group_status_ = SharedGroupStatus::kEnabled;
+
+  // The ID of the bookmark node this group is associated with, if any.
+  // Only used in saved tab group, not shared tab group.
+  std::optional<base::Uuid> bookmark_node_id_;
 };
 
 }  // namespace tab_groups

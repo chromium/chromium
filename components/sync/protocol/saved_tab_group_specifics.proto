@@ -56,6 +56,10 @@ message SavedTabGroup {
   optional int64 pinned_position = 4;
 
   reserved 5;
+
+  // The guid of a bookmark node. This is used for associating a bookmark
+  // folder with a tab group by bookmarks tab group conversion.
+  optional string bookmark_node_id = 6;
 }
 
 // Sync protocol datatype extension for saved tab group tabs. SavedTabGroupTab

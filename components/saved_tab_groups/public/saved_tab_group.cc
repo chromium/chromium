@@ -226,6 +226,12 @@ SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetBookmarkNodeId(
+    std::optional<base::Uuid> bookmark_node_id) {
+  bookmark_node_id_ = bookmark_node_id;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::SetCollaborationId(
     std::optional<CollaborationId> collaboration_id) {
   collaboration_id_ = std::move(collaboration_id);

@@ -437,6 +437,7 @@ SavedTabGroupSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     tab_group->clear_title();
     tab_group->clear_color();
     tab_group->clear_pinned_position();
+    tab_group->clear_bookmark_node_id();
 
     if (tab_group->ByteSizeLong() == 0) {
       trimmed_specifics.clear_group();
