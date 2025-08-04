@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // Initially, the indicator should not be visible.
   std::vector<tabs::TabAlert> initial_alerts = GetTabAlertStatesForTab(tab);
   EXPECT_EQ(std::find(initial_alerts.begin(), initial_alerts.end(),
-                      tabs::TabAlert::GLIC_ACCESSING),
+                      tabs::TabAlert::ACTOR_ACCESSING),
             initial_alerts.end());
 
   // Start acting on the tab.
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
       GetTabAlertStatesForTab(tab);
   EXPECT_NE(
       std::find(alerts_during_actuation.begin(), alerts_during_actuation.end(),
-                tabs::TabAlert::GLIC_ACCESSING),
+                tabs::TabAlert::ACTOR_ACCESSING),
       alerts_during_actuation.end());
 
   TestFuture<void> future;
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // The indicator should be hidden again.
   std::vector<tabs::TabAlert> final_alerts = GetTabAlertStatesForTab(tab);
   EXPECT_EQ(std::find(final_alerts.begin(), final_alerts.end(),
-                      tabs::TabAlert::GLIC_ACCESSING),
+                      tabs::TabAlert::ACTOR_ACCESSING),
             final_alerts.end());
 }
 #else   // !BUILDFLAG(ENABLE_GLIC)
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // Initially, the indicator should not be visible.
   std::vector<tabs::TabAlert> initial_alerts = GetTabAlertStatesForTab(tab);
   EXPECT_EQ(std::find(initial_alerts.begin(), initial_alerts.end(),
-                      tabs::TabAlert::GLIC_ACCESSING),
+                      tabs::TabAlert::ACTOR_ACCESSING),
             initial_alerts.end());
 
   // Start acting on the tab.
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
       GetTabAlertStatesForTab(tab);
   EXPECT_EQ(
       std::find(alerts_during_actuation.begin(), alerts_during_actuation.end(),
-                tabs::TabAlert::GLIC_ACCESSING),
+                tabs::TabAlert::ACTOR_ACCESSING),
       alerts_during_actuation.end());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
   // Initially, the indicator should not be visible.
   std::vector<tabs::TabAlert> initial_alerts = GetTabAlertStatesForTab(tab);
   EXPECT_EQ(std::find(initial_alerts.begin(), initial_alerts.end(),
-                      tabs::TabAlert::GLIC_ACCESSING),
+                      tabs::TabAlert::ACTOR_ACCESSING),
             initial_alerts.end());
 
   // Start acting on the tab.
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
       GetTabAlertStatesForTab(tab);
   EXPECT_EQ(
       std::find(alerts_during_actuation.begin(), alerts_during_actuation.end(),
-                tabs::TabAlert::GLIC_ACCESSING),
+                tabs::TabAlert::ACTOR_ACCESSING),
       alerts_during_actuation.end());
 }
 

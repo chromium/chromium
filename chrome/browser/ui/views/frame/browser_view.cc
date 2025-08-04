@@ -4087,6 +4087,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
         title =
             l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_VR_PRESENTING, title);
         break;
+      case tabs::TabAlert::ACTOR_ACCESSING:
       case tabs::TabAlert::GLIC_ACCESSING:
 #if BUILDFLAG(ENABLE_GLIC)
         title =

@@ -33,6 +33,7 @@ ui::ColorId GetAlertIndicatorColor(TabAlert state,
     case tabs::TabAlert::PIP_PLAYING:
     case tabs::TabAlert::GLIC_ACCESSING:
     case tabs::TabAlert::GLIC_SHARING:
+    case tabs::TabAlert::ACTOR_ACCESSING:
       group = 1;
       break;
     case tabs::TabAlert::AUDIO_PLAYING:
@@ -92,6 +93,7 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
       return vector_icons::kPictureInPictureAltIcon;
     case TabAlert::VR_PRESENTING_IN_HEADSET:
       return vector_icons::kCardboardIcon;
+    case TabAlert::ACTOR_ACCESSING:
     case TabAlert::GLIC_ACCESSING:
     case TabAlert::GLIC_SHARING:
 #if BUILDFLAG(ENABLE_GLIC)

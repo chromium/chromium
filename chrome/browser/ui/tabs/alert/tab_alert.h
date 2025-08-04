@@ -25,6 +25,7 @@ enum class TabAlert {
   VIDEO_RECORDING,           // Video [only] being recorded, consumed by tab.
   GLIC_ACCESSING,            // Glic is accessing the tab's contents.
   GLIC_SHARING,              // The tab's contents are shared with glic.
+  ACTOR_ACCESSING,           // Actor is accessing the tab's contents.
 };
 // Any changes to the TabAlert enum needs to be updated in CompareAlerts as
 // well.
