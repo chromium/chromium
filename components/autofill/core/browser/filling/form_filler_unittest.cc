@@ -1549,8 +1549,10 @@ TEST_F(FormFillerTest, FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
 }
 
 TEST_F(FormFillerTest, FillPassportEntity) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAiWithDataSchema);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
+                                 features::kAutofillUnionTypesForAutofillAi},
+                                {});
   FormData form = test::GetFormData({.fields = {
                                          // Passport number:
                                          {.role = UNKNOWN_TYPE},

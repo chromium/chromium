@@ -113,7 +113,10 @@ TEST(AutofillTypeTest, TestConstraints) {
   EXPECT_FALSE(tc({NAME_FIRST, NAME_LAST}));
   EXPECT_FALSE(tc({NAME_FIRST, NAME_FULL}));
   EXPECT_FALSE(tc({CREDIT_CARD_NUMBER, CREDIT_CARD_NAME_FULL}));
-  EXPECT_FALSE(tc({NAME_FULL, PASSPORT_NUMBER}));
+  {
+    EXPECT_EQ(tc({NAME_FULL, PASSPORT_NUMBER}),
+              !base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes));
+  }
   EXPECT_FALSE(tc({EMAIL_ADDRESS, LOYALTY_MEMBERSHIP_ID}));
   EXPECT_FALSE(tc({USERNAME, PASSWORD}));
   EXPECT_FALSE(tc({PHONE_HOME_WHOLE_NUMBER, PASSWORD}));
@@ -228,6 +231,8 @@ TEST(AutofillTypeTest, SurprisingMappings_UpdateDocumentationIfThisTestFails) {
   //   `bool has_autofill_ai_type = !t.GetAutofillAiTypes().empty()`
   //   `bool has_autofill_ai_group = t.GetGroups().contains(kAutofillAi)`
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kAutofillAiNoTagTypes);
     AutofillType t = AutofillType(NAME_FIRST);
     EXPECT_THAT(t.GetAutofillAiTypes(), Not(IsEmpty()));
     EXPECT_THAT(t.GetGroups(), Not(Contains(FieldTypeGroup::kAutofillAi)));
@@ -308,23 +313,29 @@ TEST(AutofillTypeTest, GetAddressType) {
 // AttributeTypes, i.e., name types. See DetermineAttributeTypes() for more on
 // the Autofill AI's concept of "dynamic type assignment".
 TEST(AutofillTypeTest, GetAutofillAiType) {
-  EntityType kPassport = EntityType(EntityTypeName::kPassport);
-  EXPECT_EQ(AutofillType(PASSPORT_NUMBER).GetAutofillAiType(kPassport),
-            PASSPORT_NUMBER);
-  EXPECT_EQ(AutofillType(NAME_FIRST).GetAutofillAiType(kPassport), NAME_FIRST);
-  EXPECT_EQ(AutofillType({NAME_FIRST, USERNAME}).GetAutofillAiType(kPassport),
-            NAME_FIRST);
+  constexpr EntityType kPassport = EntityType(EntityTypeName::kPassport);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kAutofillAiNoTagTypes);
+    EXPECT_EQ(AutofillType(PASSPORT_NUMBER).GetAutofillAiType(kPassport),
+              PASSPORT_NUMBER);
+    EXPECT_EQ(AutofillType(NAME_FIRST).GetAutofillAiType(kPassport),
+              NAME_FIRST);
+    EXPECT_EQ(AutofillType({NAME_FIRST, USERNAME}).GetAutofillAiType(kPassport),
+              NAME_FIRST);
 
-  // Test that `*_TAG` types are ignored.
-  EXPECT_EQ(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiType(kPassport),
-            UNKNOWN_TYPE);
-  EXPECT_EQ(AutofillType({NAME_FIRST, PASSPORT_NAME_TAG})
-                .GetAutofillAiType(kPassport),
-            NAME_FIRST);
-  EXPECT_THAT(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiTypes(), IsEmpty());
-  EXPECT_THAT(
-      AutofillType({NAME_FIRST, PASSPORT_NAME_TAG}).GetAutofillAiTypes(),
-      ElementsAre(NAME_FIRST));
+    // Test that `*_TAG` types are ignored.
+    EXPECT_EQ(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiType(kPassport),
+              UNKNOWN_TYPE);
+    EXPECT_EQ(AutofillType({NAME_FIRST, PASSPORT_NAME_TAG})
+                  .GetAutofillAiType(kPassport),
+              NAME_FIRST);
+    EXPECT_THAT(AutofillType(PASSPORT_NAME_TAG).GetAutofillAiTypes(),
+                IsEmpty());
+    EXPECT_THAT(
+        AutofillType({NAME_FIRST, PASSPORT_NAME_TAG}).GetAutofillAiTypes(),
+        ElementsAre(NAME_FIRST));
+  }
 
   {
     base::test::ScopedFeatureList feature_list;

@@ -228,8 +228,13 @@ TEST_F(AutofillFieldTest, UnionTypesFromServerTypes) {
     // Conflict resolution: when there are multiple predictions from the same
     // entities, we take the longest prefix that satisfies the AutofillType
     // constraints.
-    EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
-                UnorderedElementsAre(NAME_FULL));
+    if (base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
+      EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
+                  UnorderedElementsAre(NAME_FULL));
+    } else {
+      EXPECT_THAT(f(NAME_FULL, DRIVERS_LICENSE_NUMBER),
+                  UnorderedElementsAre(NAME_FULL, DRIVERS_LICENSE_NUMBER));
+    }
     EXPECT_THAT(
         f(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_REGION,
           VEHICLE_LICENSE_PLATE),

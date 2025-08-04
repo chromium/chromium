@@ -7157,6 +7157,12 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
 class BrowserAutofillManagerTest_AutofillAi
     : public BrowserAutofillManagerTest {
  public:
+  BrowserAutofillManagerTest_AutofillAi() {
+    feature_list_.InitWithFeatures({features::kAutofillAiWithDataSchema,
+                                    features::kAutofillUnionTypesForAutofillAi},
+                                   {});
+  }
+
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
@@ -7244,8 +7250,7 @@ class BrowserAutofillManagerTest_AutofillAi
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList feature_list_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   FormData passport_form_;
@@ -7492,10 +7497,12 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel, CacheResultUsed) {
   // Check that we set predictions on the form.
   const FormStructure* const fs = manager().FindCachedFormById(form_id);
   ASSERT_TRUE(fs);
-  EXPECT_THAT(fs->field(0)->Type().GetAutofillAiTypes(),
-              ElementsAre(NAME_FIRST));
-  EXPECT_THAT(fs->field(1)->Type().GetAutofillAiTypes(),
-              ElementsAre(NAME_LAST));
+  if (base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
+    EXPECT_THAT(fs->field(0)->Type().GetAutofillAiTypes(),
+                ElementsAre(NAME_FIRST));
+    EXPECT_THAT(fs->field(1)->Type().GetAutofillAiTypes(),
+                ElementsAre(NAME_LAST));
+  }
   EXPECT_THAT(fs->field(2)->Type().GetAutofillAiTypes(),
               ElementsAre(PASSPORT_NUMBER));
   EXPECT_THAT(fs->field(3)->Type().GetAutofillAiTypes(),
