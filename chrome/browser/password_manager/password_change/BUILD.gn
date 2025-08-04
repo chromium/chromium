@@ -6,6 +6,8 @@ import("//build/config/features.gni")
 
 source_set("password_change") {
   sources = [
+    "annotated_page_content_capturer.cc",
+    "annotated_page_content_capturer.h",
     "button_click_helper.cc",
     "button_click_helper.h",
     "change_password_form_filling_submission_helper.cc",

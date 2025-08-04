@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -78,15 +79,7 @@ class PasswordChangeSubmissionVerifierTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  std::unique_ptr<PasswordChangeSubmissionVerifier> CreateVerifier(
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-          capture_annotated_page_content) {
-    auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-        web_contents(), logs_uploader_.get());
-    verifier->set_annotated_page_callback(
-        std::move(capture_annotated_page_content));
-    return verifier;
-  }
+  ModelQualityLogsUploader* logs_uploader() { return logs_uploader_.get(); }
 
   MockOptimizationGuideKeyedService* optimization_service() {
     return static_cast<MockOptimizationGuideKeyedService*>(
@@ -100,18 +93,17 @@ class PasswordChangeSubmissionVerifierTest
 TEST_F(PasswordChangeSubmissionVerifierTest, Succeeded) {
   base::HistogramTester histogram_tester;
 
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  auto verifier = CreateVerifier(capture_annotated_page_content.Get());
+  auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
+      web_contents(), logs_uploader());
 
   base::test::TestFuture<bool> completion_future;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
   verifier->CheckSubmissionOutcome(completion_future.GetCallback());
+
+  EXPECT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_TRUE(completion_future.Get());
   histogram_tester.ExpectTotalCount(
@@ -121,18 +113,17 @@ TEST_F(PasswordChangeSubmissionVerifierTest, Succeeded) {
 }
 
 TEST_F(PasswordChangeSubmissionVerifierTest, Failed) {
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  auto verifier = CreateVerifier(capture_annotated_page_content.Get());
+  auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
+      web_contents(), logs_uploader());
 
   base::test::TestFuture<bool> completion_future;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(Invoke(&PostResponse<false>)));
   verifier->CheckSubmissionOutcome(completion_future.GetCallback());
+
+  EXPECT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_FALSE(completion_future.Get());
 }
@@ -144,14 +135,15 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
 
-  auto verifier = CreateVerifier(capture_annotated_page_content.Get());
+  auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
+      web_contents(), logs_uploader());
 
   base::test::TestFuture<bool> completion_future;
-
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(std::nullopt));
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
   verifier->CheckSubmissionOutcome(completion_future.GetCallback());
+
+  EXPECT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(std::nullopt);
 
   EXPECT_FALSE(completion_future.Get());
   histogram_tester.ExpectUniqueSample(

@@ -16,10 +16,12 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/password_manager/core/browser/password_form.h"
 
+class AnnotatedPageContentCapturer;
+class ModelQualityLogsUploader;
+
 namespace content {
 class WebContents;
 }
-class ModelQualityLogsUploader;
 
 // Helper class which verifies whether password change was successful or not.
 class PasswordChangeSubmissionVerifier {
@@ -57,11 +59,7 @@ class PasswordChangeSubmissionVerifier {
   void CheckSubmissionOutcome(FormSubmissionResultCallback callback);
 
 #if defined(UNIT_TEST)
-  void set_annotated_page_callback(
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-          callback) {
-    capture_annotated_page_content_ = std::move(callback);
-  }
+  AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
 #endif
 
  private:
@@ -74,10 +72,10 @@ class PasswordChangeSubmissionVerifier {
       std::unique_ptr<
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
+  void OnPageLoadCompleted();
 
   const raw_ptr<content::WebContents> web_contents_;
-  base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-      capture_annotated_page_content_;
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
   FormSubmissionResultCallback callback_;
   raw_ptr<ModelQualityLogsUploader> logs_uploader_;
 

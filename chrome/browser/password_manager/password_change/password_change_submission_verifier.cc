@@ -9,6 +9,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -122,10 +123,6 @@ PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
     content::WebContents* web_contents,
     ModelQualityLogsUploader* logs_uploader)
     : web_contents_(web_contents),
-      capture_annotated_page_content_(
-          base::BindOnce(&optimization_guide::GetAIPageContent,
-                         web_contents,
-                         GetAIPageContentOptions())),
       logs_uploader_(logs_uploader) {}
 
 PasswordChangeSubmissionVerifier::~PasswordChangeSubmissionVerifier() = default;
@@ -135,8 +132,9 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionOutcome(
   CHECK(web_contents_);
   callback_ = std::move(callback);
 
-  std::move(capture_annotated_page_content_)
-      .Run(base::BindOnce(
+  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+      web_contents_, GetAIPageContentOptions(),
+      base::BindOnce(
           &PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful,
           weak_ptr_factory_.GetWeakPtr()));
 }

@@ -21,6 +21,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
@@ -295,21 +296,17 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
       .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
                       RunOnceCallback<1>(/*success=*/true)));
   run_loop.Run();
+  verifier->OnPasswordFormSubmission(web_contents());
 
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
-  ASSERT_TRUE(verifier->submission_verifier());
-  verifier->submission_verifier()->set_annotated_page_callback(
-      capture_annotated_page_content.Get());
-
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(
           WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
-  verifier->OnPasswordFormSubmission(web_contents());
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_TRUE(completion_future.Get());
   histogram_tester.ExpectTotalCount(
@@ -349,21 +346,17 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
       .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
                       RunOnceCallback<1>(/*success=*/true)));
   run_loop.Run();
+  verifier->OnPasswordFormSubmission(web_contents());
 
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
-  ASSERT_TRUE(verifier->submission_verifier());
-  verifier->submission_verifier()->set_annotated_page_callback(
-      capture_annotated_page_content.Get());
-
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(
           WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
-  verifier->OnPasswordFormSubmission(web_contents());
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_TRUE(completion_future.Get());
   histogram_tester.ExpectTotalCount(
@@ -513,19 +506,17 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
                       RunOnceCallback<1>(/*success=*/true)));
   run_loop.Run();
 
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
-  ASSERT_TRUE(verifier->submission_verifier());
-  verifier->submission_verifier()->set_annotated_page_callback(
-      capture_annotated_page_content.Get());
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(
           WithArg<3>(Invoke(&PostResponseForSubmissionVerification<false>)));
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_FALSE(completion_future.Get());
@@ -590,12 +581,8 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
                       RunOnceCallback<1>(/*success=*/true)));
   run_loop.Run();
 
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ASSERT_TRUE(verifier->submission_verifier());
-  verifier->submission_verifier()->set_annotated_page_callback(
-      capture_annotated_page_content.Get());
+  EXPECT_FALSE(verifier->submission_verifier()->capturer());
 
   // Verify submission isn't verified for `kSubmissionWaitingTimeout` seconds.
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
@@ -603,13 +590,17 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
       ChangePasswordFormFillingSubmissionHelper::kSubmissionWaitingTimeout);
   testing::Mock::VerifyAndClearExpectations(optimization_service());
 
-  // Now verification should be triggered on timeout.
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
+
+  // Verification should be triggered on timeout.
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(
           WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_TRUE(completion_future.Wait());
   EXPECT_TRUE(completion_future.Take());
@@ -679,19 +670,18 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
       .WillOnce(RunOnceCallback<1>(/*success=*/true));
   std::move(callback).Run(CreateFilledTestPasswordFormData());
 
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
-  ASSERT_TRUE(verifier->submission_verifier());
-  verifier->submission_verifier()->set_annotated_page_callback(
-      capture_annotated_page_content.Get());
+  // Submission detected after filling.
+  verifier->OnPasswordFormSubmission(web_contents());
+
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(
           WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
-  verifier->OnPasswordFormSubmission(web_contents());
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_TRUE(completion_future.Get());
 }
@@ -712,20 +702,19 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
                       RunOnceCallback<1>(/*success=*/true)));
   run_loop.Run();
 
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
+
   // Verify that `ExecuteModel` is called once.
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
-  ASSERT_TRUE(verifier->submission_verifier());
-  verifier->submission_verifier()->set_annotated_page_callback(
-      capture_annotated_page_content.Get());
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .Times(1)
       .WillOnce(
           WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+
   verifier->OnPasswordFormSubmission(web_contents());
   verifier->OnPasswordFormSubmission(web_contents());
   verifier->OnPasswordFormSubmission(web_contents());
@@ -803,15 +792,16 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   // Sets up clicking on the Submit button using MES to find the button.
   // Expects MES to be called for checking if the submission was successful.
   verifier->click_helper()->SimulateClickResult(true);
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
+
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(
           WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
-  ASSERT_TRUE(verifier->submission_verifier());
-  verifier->submission_verifier()->set_annotated_page_callback(
-      capture_annotated_page_content.Get());
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   // Simulates successful form submission detection.
   verifier->OnPasswordFormSubmission(web_contents());
