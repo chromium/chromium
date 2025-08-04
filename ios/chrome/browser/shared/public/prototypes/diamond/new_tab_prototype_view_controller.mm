@@ -144,6 +144,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _omniboxContainer = [[UIView alloc] init];
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxContainer.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
+  _omniboxContainer.layer.shadowColor =
+      [UIColor colorNamed:kSolidBlackColor].CGColor;
+  _omniboxContainer.layer.shadowOffset = CGSizeMake(0, 5);
+  _omniboxContainer.layer.shadowOpacity = 0.2;
+  _omniboxContainer.layer.shadowRadius = 5;
   _omniboxContainer.layer.cornerRadius = kOmniboxContainerHeight / 2.0;
   [self.view addSubview:_omniboxContainer];
 
