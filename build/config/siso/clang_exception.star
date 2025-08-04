@@ -78,6 +78,15 @@ def __step_config(ctx, step_config, use_windows_worker = None):
             ],
             "timeout": "4m",
         },
+        {
+            "name": "slow_scandeps",
+            "action_outs": [
+                # keep-sorted start
+                "./obj/chrome/browser/prefs/impl/browser_prefs.o",
+                # keep-sorted end
+            ],
+            "timeout": "4m",
+        },
     ]
 
     # Check if the build target is Windows.
