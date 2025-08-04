@@ -82,7 +82,7 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
                                 kColorToolbarButtonIconInactive);
   UpdateButtonVisibility();
   split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
-      browser->tab_strip_model(),
+      browser_->tab_strip_model(),
       SplitTabMenuModel::MenuSource::kToolbarButton);
   browser->tab_strip_model()->AddObserver(this);
 }

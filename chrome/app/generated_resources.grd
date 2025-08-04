@@ -11687,6 +11687,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" translateable="false" desc="The label for a menu item that swaps the bottom view in the active split with the selected tab.">
           Swap with bottom view
         </message>
+        <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" translateable="false" desc="The label for a menu item that opens a dialog to send feedback.">
+          Send feedback
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PIN_SPLIT_TAB_TOGGLE" translateable="false" desc="In title case: pins the split tabs button to the toolbar when toggled on.">
@@ -11730,6 +11733,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the bottom view in the active split with the selected tab.">
           Swap with Bottom View
+        </message>
+        <message name="IDS_SPLIT_TAB_SEND_FEEDBACK" translateable="false" desc="The label for a menu item that opens a dialog to send feedback.">
+          Send Feedback
         </message>
       </if>
 

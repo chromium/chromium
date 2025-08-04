@@ -47,7 +47,8 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
     kCloseStartTab,
     kCloseEndTab,
     kExitSplit,
-    kMaxValue = kExitSplit,
+    kSendFeedback,
+    kMaxValue = kSendFeedback,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitViewMenuEntry)
 
@@ -77,6 +78,7 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
       split_tabs::SplitTabActiveLocation active_split_tab_location) const;
   split_tabs::SplitTabLayout GetSplitLayout() const;
   void CloseTabAtIndex(int index);
+  void SendFeedback();
 
   raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
 
