@@ -231,7 +231,7 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
 void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
-  DVLOG(3) << __func__ << " pts=" << buffer->timestamp().InMilliseconds();
+  DVLOG(3) << __func__ << " buffer=" << buffer->AsHumanReadableString();
 
   if (has_error_) {
     task_runner_->PostTask(
