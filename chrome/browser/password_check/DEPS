@@ -1,4 +1,0 @@
-include_rules = [
-   "+chrome/browser/settings",
-   "+components/favicon/android",
-]

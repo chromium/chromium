@@ -25,12 +25,6 @@ class PasswordCheckupLauncherHelper {
 
   virtual ~PasswordCheckupLauncherHelper() = 0;
 
-  // Launch the bulk password check in passwords.google.com
-  virtual void LaunchCheckupOnlineWithWindowAndroid(
-      JNIEnv* env,
-      std::string& checkupUrl,
-      const base::android::JavaRef<jobject>& windowAndroid) = 0;
-
   // Launch the bulk password check on device.
   // If the user is syncing passwords, |account_email| is the email of the
   // account syncing passwords. |account_email| is an empty string if the user
@@ -43,13 +37,6 @@ class PasswordCheckupLauncherHelper {
       ui::WindowAndroid* windowAndroid,
       password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer,
       std::string account_email) = 0;
-
-  // Launch the bulk password check in passwords.google.com using an activity
-  // rather than a WindowAndroid
-  virtual void LaunchCheckupOnlineWithActivity(
-      JNIEnv* env,
-      std::string& checkupUrl,
-      const base::android::JavaRef<jobject>& activity) = 0;
 
   // Opens the old safety check UI in Chrome Settings.
   virtual void LaunchSafetyCheck(JNIEnv* env,

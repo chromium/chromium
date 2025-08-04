@@ -710,78 +710,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_SUMMARY" desc="Summary for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.
       </message>
-      <message name="IDS_PASSWORDS_CHECK_TITLE" desc="Title for the check passwords button which allows to check whether the user's passwords have been compromised.">
-        Check passwords
-      </message>
-      <message name="IDS_SECTION_SAVED_PASSWORDS_EXCEPTIONS" desc="Header for the list of websites for which user selected to never save passwords. [CHAR_LIMIT=32]">
-        Never saved
-      </message>
-      <message name="IDS_PASSWORD_EDIT_HINT" desc="Small hint on the editing screens that advises users to store the same password as they use on the currently edited site.">
-        Make sure the password you are saving matches your password for <ph name="SITE">%1$s<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_EDIT_DELETION_DIALOG_BODY" desc="Text explaining the user that deleting the credential that they are viewing will not remove their account on the reaspective website.">
-        Deleting this password will not delete your account on <ph name="SITE">%1$s<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_PASSWORD_CHECK_DELETE_CREDENTIAL_DIALOG_BODY" desc="The body of a prompt to confirm that the user intends to delete the stored password.">
-        Deleting this password will not delete your account on <ph name="SITE">%1$s<ex>example.com</ex></ph>. Change your password or delete your account on <ph name="SITE">%1$s<ex>example.com</ex></ph> to keep it safe from others.
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_EDIT_DELETE_CREDENTIAL_DIALOG_TITLE" desc="The title of a prompt to confirm that the user intends to delete the stored password.">
-        Delete password?
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_EDIT_DELETE_CREDENTIAL_DIALOG_CONFIRM" desc="The caption the button confirming that the user intends to delete the stored password.">
-        Delete password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_TITLE" desc='Title of the overview screen for a saved password.'>
-        Saved password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_SITE_TITLE" desc='Title preceding the identification of the site where the stored password comes from.'>
-        Site
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_USERNAME_TITLE" desc='Title preceding username of the account where the stored password comes from.'>
-        Username
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_PASSWORD" desc='Title preceding password on password entry viewer.'>
-        Password
-      </message>
-      <message name="IDS_PASSWORD_VIA_FEDERATION" desc="Text for federated credential's value.">
-        with <ph name="PROVIDER">%1$s<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_COPY_STORED_USERNAME" desc='Content description for the button that copies the stored username.'>
-        Copy username
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_COPY_STORED_PASSWORD" desc='Content description for the button that copies the stored password.'>
-        Copy password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_SHOW_STORED_PASSWORD" desc='Content description for the button that allows users to view the stored password upon reauthentication.'>
-        Show password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_DELETE_STORED_PASSWORD_ACTION_TITLE" desc='Title for button on action bar that deletes the stored password.'>
-        Delete password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_EDIT_STORED_PASSWORD_ACTION_TITLE" desc='Title for button on action bar that edits the stored password.'>
-        Edit password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_HIDE_STORED_PASSWORD" desc="A tooltip on a button that hides the saved password that is being shown.">
-        Hide password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_DELETE_STORED_PASSWORD" desc='Content description for the button that allows users to delete the stored password.'>
-        Delete stored password
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_USERNAME_COPIED_INTO_CLIPBOARD" desc='Text that announces to the user that the username of a saved account has been copied into clipboard.'>
-        Username copied
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_PASSWORD_COPIED_INTO_CLIPBOARD" desc='Text that announces to the user that the password of a saved account has been copied into clipboard.'>
-        Password copied
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEW_SET_SCREEN_LOCK" desc='Text prompting user to set up screen lock on their device in order to view passwords'>
-        To view passwords, first set a screen lock on your device
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_COPY_SET_SCREEN_LOCK" desc='Text prompting user to set up screen lock on their device in order to copy passwords'>
-        To copy passwords, first set a screen lock on your device
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_EDIT_DUPLICATE_USERNAME_ERROR" desc='Error text displayed when the user changes the username in the editor to another username that they already saved for the same site.'>
-        You already saved this username for this site
-      </message>
       <message name="IDS_PASSWORD_ENTRY_EDIT_EMPTY_PASSWORD_ERROR" desc='Error text displayed when the user has left the password field empty in the credential editor.'>
         Enter password
       </message>
@@ -866,17 +794,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_ACK_GROUPED_CRED_SHEET_CLOSED" desc="The accessibility string announced after closing the bottom sheet verifying that user wants to use the password saved for another web site or app grouped with the current web site.">
         Password suggestion is closed.
-      </message>
-
-      <!-- Lock Screen Fragment -->
-      <message name="IDS_LOCKSCREEN_DESCRIPTION_COPY" desc="When a user attempts to copy a password for a particular website into clipboard in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
-        Unlock to copy your password
-      </message>
-      <message name="IDS_LOCKSCREEN_DESCRIPTION_VIEW" desc="When a user attempts to view a password for a particular website in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
-        Unlock to view your password
-      </message>
-      <message name="IDS_LOCKSCREEN_DESCRIPTION_EDIT" desc="When a user attempts to edit a password for a particular website in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
-        Unlock to edit your password
       </message>
 
       <!-- Homepage preferences -->

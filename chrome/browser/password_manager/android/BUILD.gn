@@ -189,10 +189,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordsPreference.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.password_manager"
@@ -302,8 +299,6 @@ robolectric_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchDispatcherBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridgeTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragmentTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManagerTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/tests/utils/FakePasswordCheckupClientHelperTest.java",
   ]
 

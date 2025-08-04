@@ -22,9 +22,7 @@ found in the LICENSE file.
     <string name="help_context_sad_tab">mobile_awsnap</string>
     <string name="help_context_clear_browsing_data">clear_browsing_data</string>
     <string name="help_context_sync_and_services">syncgoogleservices</string>
-    <string name="help_context_passwords">passwords</string>
     <string name="help_context_password_leak_detection">leak_detection_android</string>
-    <string name="help_context_check_passwords">check_passwords</string>
     <string name="help_context_safe_browsing">safebrowsing_android</string>
     <!-- TODO(peconn): Add help section. -->
     <!-- <string name="help_context_suggestions">mobile_content_suggestions</string> -->

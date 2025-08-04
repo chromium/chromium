@@ -47,8 +47,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
-import org.chromium.chrome.browser.password_check.PasswordCheck;
-import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
@@ -134,7 +132,6 @@ public class SafetyCheckMediatorTest {
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
-    @Mock private PasswordCheck mPasswordCheck;
     // TODO(crbug.com/40854050): Use existing fake instead of mocking
     @Mock private PasswordCheckupClientHelper mPasswordCheckupHelper;
     @Mock private CredentialManagerLauncher mCredentialManagerLauncher;
@@ -291,8 +288,6 @@ public class SafetyCheckMediatorTest {
                     .thenReturn(mCredentialManagerLauncher);
             CredentialManagerLauncherFactory.setFactoryForTesting(
                     mockCredentialManagerLauncherFactory);
-        } else {
-            PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         }
         mMediator =
                 createSafetyCheckMediator(mPasswordCheckModel, /* passwordCheckLocalModel= */ null);
