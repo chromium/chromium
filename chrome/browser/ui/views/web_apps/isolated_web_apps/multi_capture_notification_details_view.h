@@ -7,9 +7,14 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace multi_capture {
 
@@ -21,23 +26,31 @@ class MultiCaptureNotificationDetailsView : public views::View {
   METADATA_HEADER(MultiCaptureNotificationDetailsView, views::View)
 
  public:
+  struct AppInfo {
+    AppInfo(const std::string& name, const gfx::ImageSkia& icon);
+    ~AppInfo();
+
+    std::string name;
+    gfx::ImageSkia icon;
+  };
+
   MultiCaptureNotificationDetailsView(
-      const std::vector<std::string>& app_names_with_notification,
-      const std::vector<std::string>& app_names_without_notification);
+      const std::vector<AppInfo>& apps_with_notification,
+      const std::vector<AppInfo>& apps_without_notification);
   ~MultiCaptureNotificationDetailsView() override;
 
   static void ShowCaptureDetails(
-      const std::vector<std::string>& app_names_with_notification,
-      const std::vector<std::string>& app_names_without_notification);
+      const std::vector<AppInfo>& app_names_with_notification,
+      const std::vector<AppInfo>& app_names_without_notification);
 
  private:
   void ShowAppListAllWithNotification(
-      const std::vector<std::string>& app_names_with_notification);
+      const std::vector<AppInfo>& app_names_with_notification);
   void ShowAppListNoneWithNotification(
-      const std::vector<std::string>& app_names_without_notification);
+      const std::vector<AppInfo>& app_names_without_notification);
   void ShowAppListsWitMixedhNotifications(
-      const std::vector<std::string>& app_names_with_notification,
-      const std::vector<std::string>& app_names_without_notification);
+      const std::vector<AppInfo>& app_names_with_notification,
+      const std::vector<AppInfo>& app_names_without_notification);
   void CloseWidget();
 
   base::WeakPtrFactory<MultiCaptureNotificationDetailsView> weak_ptr_factory_{

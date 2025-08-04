@@ -25,6 +25,10 @@
 
 class PrefService;
 
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
+
 namespace web_app {
 class IwaKeyDistributionInfoProvider;
 class WebAppProvider;
@@ -58,6 +62,7 @@ class MultiCaptureDataService : public KeyedService,
       const;
   const std::map<webapps::AppId, std::string>&
   GetCaptureAppsWithoutNotification() const;
+  gfx::ImageSkia GetAppIcon(const webapps::AppId& app_id) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -84,6 +89,7 @@ class MultiCaptureDataService : public KeyedService,
 
   void Init();
   void LoadData();
+  void OnIconReceived(const webapps::AppId& app_id, gfx::ImageSkia icon);
   bool MaybeAddAppToCaptureAppLists(const webapps::AppId& app_id);
 
   const raw_ref<web_app::IwaKeyDistributionInfoProvider> info_provider_;
@@ -97,6 +103,7 @@ class MultiCaptureDataService : public KeyedService,
 
   std::map<webapps::AppId, std::string> capture_apps_with_notification_;
   std::map<webapps::AppId, std::string> capture_apps_without_notification_;
+  std::map<webapps::AppId, gfx::ImageSkia> app_icons_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

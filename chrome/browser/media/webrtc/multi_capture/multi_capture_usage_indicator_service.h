@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -92,6 +93,13 @@ class MultiCaptureUsageIndicatorService
   void ShowActiveMultiCaptureNotifications(const AllowListedAppNames& apps);
 
   void RefreshNotifications();
+
+  std::vector<MultiCaptureNotificationDetailsView::AppInfo>
+  GetAllCaptureWithNotificationApps(
+      const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps) const;
+  std::vector<MultiCaptureNotificationDetailsView::AppInfo>
+  GetAllCaptureWithoutNotificationApps(
+      const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps) const;
 
   // As the keyed service is bound to the profile / browser context and the
   // web app provider keyed service is listed as dependency for this service,

@@ -12,6 +12,7 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -53,6 +54,14 @@ MultiCaptureDataService::GetCaptureAppsWithoutNotification() const {
   return capture_apps_without_notification_;
 }
 
+gfx::ImageSkia MultiCaptureDataService::GetAppIcon(
+    const webapps::AppId& app_id) const {
+  if (app_icons_.contains(app_id)) {
+    return app_icons_.at(app_id);
+  }
+  return gfx::ImageSkia();
+}
+
 void MultiCaptureDataService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 
@@ -74,6 +83,10 @@ void MultiCaptureDataService::OnWebAppInstalled(const webapps::AppId& app_id) {
 void MultiCaptureDataService::OnWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
+  if (app_icons_.contains(app_id)) {
+    app_icons_.erase(app_id);
+  }
+
   if (capture_apps_with_notification_.contains(app_id)) {
     capture_apps_with_notification_.erase(app_id);
     observers_.Notify(&Observer::MultiCaptureDataChanged);
@@ -132,6 +145,11 @@ void MultiCaptureDataService::LoadData() {
       continue;
     }
 
+    provider_->icon_manager().ReadFavicons(
+        *app_id, web_app::IconPurpose::ANY,
+        base::BindOnce(&MultiCaptureDataService::OnIconReceived,
+                       weak_ptr_factory_.GetWeakPtr(), *app_id));
+
     const bool can_skip_active_notification = base::Contains(
         app_without_notification_bundle_ids_, allowlisted_app_url.host());
     const std::string app_name = registrar.GetAppShortName(*app_id);
@@ -151,6 +169,11 @@ void MultiCaptureDataService::LoadData() {
     CHECK_IS_TEST();
   }
   is_initialized_ = true;
+}
+
+void MultiCaptureDataService::OnIconReceived(const webapps::AppId& app_id,
+                                             gfx::ImageSkia icon) {
+  app_icons_[app_id] = std::move(icon);
 }
 
 bool MultiCaptureDataService::MaybeAddAppToCaptureAppLists(
@@ -175,6 +198,11 @@ bool MultiCaptureDataService::MaybeAddAppToCaptureAppLists(
   if (!capture_allowed_by_policy) {
     return false;
   }
+
+  provider_->icon_manager().ReadFavicons(
+      app_id, web_app::IconPurpose::ANY,
+      base::BindOnce(&MultiCaptureDataService::OnIconReceived,
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
 
   if (app_without_notification_bundle_ids_.contains(bundle_id)) {
     capture_apps_without_notification_[app_id] =
