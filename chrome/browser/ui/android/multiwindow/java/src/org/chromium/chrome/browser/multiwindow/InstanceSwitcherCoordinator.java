@@ -733,7 +733,6 @@ public class InstanceSwitcherCoordinator {
                 v -> {
                     String newTitle = Objects.toString(editText.getText(), "").trim();
                     if (!TextUtils.isEmpty(newTitle)) {
-                        mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
                         ModelList list =
                                 mIsInactiveListShowing ? mInactiveModelList : mActiveModelList;
                         for (ListItem listItem : list) {
@@ -744,6 +743,7 @@ public class InstanceSwitcherCoordinator {
                             }
                         }
                         dialog.dismiss();
+                        mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
                     } else {
                         textInputLayout.setError(
                                 mContext.getString(

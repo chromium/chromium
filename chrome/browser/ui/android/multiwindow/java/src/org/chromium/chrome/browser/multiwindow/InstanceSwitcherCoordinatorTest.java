@@ -949,7 +949,6 @@ public class InstanceSwitcherCoordinatorTest {
                 .perform(click());
 
         // Check that the "Name this window" dialog is shown.
-        Thread.sleep(5000);
         onView(withText(R.string.instance_switcher_name_window_confirm_header))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
@@ -961,8 +960,6 @@ public class InstanceSwitcherCoordinatorTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()))
                 .perform(click());
-
-        Thread.sleep(5000);
 
         // Check that the instance title is updated in the list.
         onView(withId(R.id.active_instance_list))
@@ -1069,14 +1066,17 @@ public class InstanceSwitcherCoordinatorTest {
                 .perform(click());
 
         // Check that the "Name this window" dialog is shown.
-        Thread.sleep(500);
         onView(withText(R.string.instance_switcher_name_window_confirm_header))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
 
         // Click the cancel button.
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
-        Thread.sleep(500);
+
+        // Check that the "Name this window" dialog is dismissed.
+        onView(withText(R.string.instance_switcher_header))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
 
         // Check that the rename callback was not called.
         assertEquals(0, renameCallbackHelper.getCallCount());
