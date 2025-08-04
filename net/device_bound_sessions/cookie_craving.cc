@@ -393,11 +393,27 @@ bool CookieCraving::ShouldIncludeForRequest(
   // conditions too.
   base::Time now = base::Time::Now();
   CookieInclusionStatus status;
+  std::string domain = Domain();
+  // This fix is needed because non-IP address __Host- prefix cookies are
+  // considered invalid if they pass through a domain, but Domain() is defined
+  // even for __Host- prefix cookies. This fix is very limited in scope for now
+  // (only __Host- prefix cookies).
+  // TODO(crbug.com/435221694): re-implement the way we call into
+  // `AnnotateAndMoveUserBlockedCookies` so that it is not possible for a
+  // validation to fail in this method. Some ideas:
+  //  1) Can we create a canonical cookie in the `CookieCraving` constructor
+  //     with the original inputs?
+  //  2) Can we refactor `AnnotateAndMoveUserBlockedCookies` to input a
+  //     `CookieBase` instead?
+  if (!request->url().HostIsIPAddress() &&
+      cookie_util::GetCookiePrefix(Name()) == COOKIE_PREFIX_HOST) {
+    domain = "";
+  }
   std::unique_ptr<CanonicalCookie> canonical_cookie =
       CanonicalCookie::CreateSanitizedCookie(
-          request->url(), Name(), /*value=*/"", Domain(), Path(),
-          CreationDate(), now + base::Days(1), now, IsSecure(), IsHttpOnly(),
-          SameSite(), COOKIE_PRIORITY_DEFAULT, PartitionKey(), &status);
+          request->url(), Name(), /*value=*/"", domain, Path(), CreationDate(),
+          now + base::Days(1), now, IsSecure(), IsHttpOnly(), SameSite(),
+          COOKIE_PRIORITY_DEFAULT, PartitionKey(), &status);
   CookieAccessResultList included_cravings;
   included_cravings.emplace_back(std::move(*canonical_cookie));
   CookieAccessResultList excluded_cravings;

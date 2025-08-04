@@ -689,6 +689,27 @@ TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
+TEST_F(SessionTest, DeferredHostCookie) {
+  auto params = CreateValidParams();
+  std::vector<SessionParams::Credential> cookie_credentials(
+      {SessionParams::Credential{"__Host-test_cookie",
+                                 "Secure; HttpOnly; Path=/"}});
+  params.credentials = std::move(cookie_credentials);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(is_deferred);
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
+}
+
 TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   // Unless include site is specified, only same origin will be
   // matched even if the spec adds an include for a different
