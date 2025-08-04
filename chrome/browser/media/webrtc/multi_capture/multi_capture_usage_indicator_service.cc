@@ -409,6 +409,9 @@ void MultiCaptureUsageIndicatorService::RefreshNotifications() {
   if (apps.future_capture_notification_apps.empty() &&
       apps.future_capture_no_notification_apps.empty() &&
       apps.current_capture_notification_apps.empty()) {
+    notification_display_service_->Close(
+        NotificationHandler::Type::TRANSIENT,
+        kPrivacyIndicatorsMultiCaptureLoginNotificationId);
     return;
   }
 
