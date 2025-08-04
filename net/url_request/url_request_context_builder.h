@@ -133,6 +133,9 @@ class NET_EXPORT URLRequestContextBuilder {
     // The cache path (when type is DISK).
     base::FilePath path;
 
+    // The path for persisting the NoVarySearchCache.
+    base::FilePath no_vary_search_path;
+
     // A factory to broker file operations. This is needed for network process
     // sandboxing in some platforms.
     scoped_refptr<disk_cache::BackendFileOperationsFactory>

@@ -592,9 +592,11 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           http_cache_params_.path, http_cache_params_.max_size,
           http_cache_params_.reset_cache);
       if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch) &&
-          features::kHttpCacheNoVarySearchPersistenceEnabled.Get()) {
+          features::kHttpCacheNoVarySearchPersistenceEnabled.Get() &&
+          !http_cache_params_.no_vary_search_path.empty()) {
+        CHECK(!http_cache_params_.path.empty());
         file_operations = NoVarySearchCacheStorageFileOperations::Create(
-            http_cache_params_.path);
+            http_cache_params_.no_vary_search_path, http_cache_params_.path);
       }
     } else {
       http_cache_backend =

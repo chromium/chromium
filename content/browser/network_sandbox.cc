@@ -262,6 +262,68 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
 #endif  // BUILDFLAG(IS_WIN)
 }
 
+// Logs the system error code to UMA. The name of the histogram will be
+// `histogram_base_name` suffixed with either ".Windows" or ".Posix" depending
+// on the platform (Fuchsia counts as "Posix" here because it uses `errno`).
+// Both variants must be added to "histograms.xml":
+//
+// ```
+// <histogram name="NetworkService.****Error.Posix"
+//     enum="PopularOSErrno" expires_after="">
+//   <owner></owner>
+//   <owner></owner>
+//   <summary>
+//     The system error code ...
+//
+//     Logged when ...
+//
+//     Only logged for non-Windows platforms.
+//   </summary>
+// </histogram>
+//
+// <histogram name="NetworkService.****Error.Windows"
+//     enum="WinGetLastError" expires_after="">
+//   <owner></owner>
+//   <owner></owner>
+//   <summary>
+//     The system error code ...
+//
+//     Logged when ...
+//
+//     Only logged on Windows.
+//   </summary>
+// </histogram>
+// ```
+void LogSystemErrorCode(std::string_view histogram_base_name) {
+  std::string_view suffix = ".Posix";
+  if constexpr (BUILDFLAG(IS_WIN)) {
+    suffix = ".Windows";
+  }
+  base::UmaHistogramSparse(base::StrCat({histogram_base_name, suffix}),
+                           logging::GetLastSystemErrorCode());
+}
+
+// Creates the directory `path`, which must not be std::nullopt, and then grants
+// sandbox access in line with `sandbox_params`. If an error occurs it is logged
+// using `directory_name_for_logging` as the name to use to describe the
+// directory.
+void CreateAndGrantAccessLoggingError(
+    const SandboxParameters& sandbox_params,
+    network::TransferableDirectory& path,
+    std::string_view directory_name_for_histogram) {
+  // The path must exist for the cache ACL to be set. Create if needed.
+  if (base::CreateDirectory(path.path())) {
+    if (!MaybeGrantAccessToDataPath(sandbox_params, &path)) {
+      PLOG(ERROR) << "Failed to grant sandbox access to "
+                  << directory_name_for_histogram << " directory "
+                  << path.path();
+      LogSystemErrorCode(
+          base::StrCat({"NetworkService.GrantAccessToDataPathError.",
+                        directory_name_for_histogram}));
+    }
+  }
+}
+
 // See the description in the header file.
 //
 // This process has a few stages:
@@ -323,22 +385,23 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
                     << params->file_paths->http_cache_directory->path();
       }
     }
+
+    // This is only used if disk caching is enabled.
+    if (params->file_paths->no_vary_search_directory) {
+      SCOPED_UMA_HISTOGRAM_TIMER(
+          "NetworkService.TimeToGrantNoVarySearchAccess");
+      CreateAndGrantAccessLoggingError(
+          sandbox_params, params->file_paths->no_vary_search_directory.value(),
+          "NoVarySearch");
+    }
   }
   if (params->file_paths->shared_dictionary_directory &&
       params->shared_dictionary_enabled) {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "NetworkService.TimeToGrantSharedDictionaryAccess");
-    // The path must exist for the cache ACL to be set. Create if needed.
-    if (base::CreateDirectory(
-            params->file_paths->shared_dictionary_directory->path())) {
-      if (!MaybeGrantAccessToDataPath(
-              sandbox_params,
-              &*params->file_paths->shared_dictionary_directory)) {
-        PLOG(ERROR) << "Failed to grant sandbox access to shared dictionary "
-                       "directory "
-                    << params->file_paths->shared_dictionary_directory->path();
-      }
-    }
+    CreateAndGrantAccessLoggingError(
+        sandbox_params, params->file_paths->shared_dictionary_directory.value(),
+        "SharedDictionary");
   }
 
   // No data directory, so rest of the files and databases are in memory.

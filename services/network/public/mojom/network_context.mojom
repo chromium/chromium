@@ -216,6 +216,12 @@ struct NetworkContextFilePaths {
   // If null and the cache is enabled, an in-memory database is used.
   TransferableDirectory? http_cache_directory;
 
+  // Points to the directory used for persisting the No-Vary-Search cache for
+  // the HTTP cache. Ignored if the cache is disabled or `http_cache_directory`
+  // is null. If left null, will be set to a subdirectory of
+  // `http_cache_directory` automatically by the network service.
+  TransferableDirectory? no_vary_search_directory;
+
   // Points to a path that contains all the network service files and databases
   // as listed below. If this network context is running inside a sandboxed
   // network service, then this path should contain no other sensitive data

@@ -667,25 +667,22 @@ chromium-metrics-reviews@google.com.
     These errors should be rare and harmless.
   </summary>
   <token key="Directory">
+    <variant name="Dedicated" summary="dedicated"/>
     <variant name="NoVarySearch" summary="no-vary-search"/>
     <variant name="Parent" summary="parent"/>
   </token>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.DirectoryCreateError.{Directory}"
+<histogram name="HttpCache.NoVarySearch.DirectoryCreateError.Dedicated"
     enum="PlatformFileError" expires_after="2026-01-11">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
-    The filesystem error from a failed attempt to create the {Directory}
-    directory by net::NoVarySearchCacheStorage. This is logged any time creating
-    the directory fails. The directory is only created when opening a profile
-    when the directory doesn't already exist.
+    The filesystem error from a failed attempt to create the
+    Cache/No_Vary_Search directory by net::NoVarySearchCacheStorage. This is
+    logged any time creating the directory fails. The directory is only created
+    when opening a profile when the directory doesn't already exist.
   </summary>
-  <token key="Directory">
-    <variant name="NoVarySearch" summary="no-vary-search"/>
-    <variant name="Parent" summary="parent"/>
-  </token>
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.DirectoryCreateResult.{Directory}"
@@ -743,38 +740,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.InitDeleteError.{File}"
+<histogram name="HttpCache.NoVarySearch.InitDeleteError.{Directory}.{File}"
     enum="PlatformFileError" expires_after="2026-01-11">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The filesystem error from a failed attempt to delete the {File} file from
-    the old location by net::NoVarySearchCacheStorage. This is logged when the
-    {File} file is found to exist in both the old and new locations, and
-    deleting it from the old location fails. This can only happen when opening
-    the cache directory on creation of an on-the-record NetworkContext.
+    the {Directory} directory by net::NoVarySearchCacheStorage. This is logged
+    when the {File} file is found to exist in both the old and new locations,
+    and deleting it from the old location fails. This can only happen when
+    opening the cache directory on creation of an on-the-record NetworkContext.
 
     Unless the quantity is very large these errors are harmless.
   </summary>
+  <token key="Directory">
+    <variant name="NoVarySearch" summary="no-vary-search"/>
+    <variant name="Parent" summary="parent"/>
+  </token>
   <token key="File">
     <variant name="Journal" summary="journal.baj"/>
     <variant name="Snapshot" summary="snapshot.baf"/>
   </token>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.InitRenameError.{File}"
+<histogram name="HttpCache.NoVarySearch.InitRenameError.{Directory}.{File}"
     enum="PlatformFileError" expires_after="2026-01-11">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The filesystem error from a failed attempt to rename the {File} file from
-    the old location to the new location by net::NoVarySearchCacheStorage. This
-    is logged when the {File} file is only found in the old location, and moving
-    it from the old location fails. This can only happen when opening the cache
-    directory on creation of an on-the-record NetworkContext.
+    the {Directory} directory to the new location by
+    net::NoVarySearchCacheStorage. This is logged when the {File} file is only
+    found in the old location, and moving it from the old location fails. This
+    can only happen when opening the cache directory on creation of an
+    on-the-record NetworkContext.
 
     Unless the quantity is very large these errors are harmless.
   </summary>
+  <token key="Directory">
+    <variant name="NoVarySearch" summary="no-vary-search"/>
+    <variant name="Parent" summary="parent"/>
+  </token>
   <token key="File">
     <variant name="Journal" summary="journal.baj"/>
     <variant name="Snapshot" summary="snapshot.baf"/>
@@ -836,6 +842,20 @@ chromium-metrics-reviews@google.com.
 
     After an error, persistence is abandoned, and so this will be logged at most
     once per NetworkContext created.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.LegacySubdirectoryDeleteError"
+    enum="PlatformFileError" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to delete the legacy
+    &quot;no-vary-search&quot; directory within &quot;Cache/Cache_Data&quot;.
+    This is logged when the deletion fails, which can only happen during
+    initialization of an on-the-record NetworkContext.
+
+    Unless the volume is very large these errors are harmless.
   </summary>
 </histogram>
 
@@ -925,13 +945,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.RenameOrDeleteResult.{File}"
+<histogram
+    name="HttpCache.NoVarySearch.RenameOrDeleteResult.{Directory}.{File}"
     enum="NoVarySearchRenameOrDeleteResult" expires_after="2026-01-11">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
-    The result from checking for and possibly moving {File} from the old
-    location to the new location.
+    The result from checking for and possibly moving {File} from the {Directory}
+    directory to a new location.
 
     This is logged when an on-the-record NetworkContext is created.
 
@@ -944,6 +965,10 @@ chromium-metrics-reviews@google.com.
     user's disk but is otherwise harmless. See
     HttpCache.NoVarySearch.InitDeleteError.* for the actual filesystem error.
   </summary>
+  <token key="Directory">
+    <variant name="NoVarySearch" summary="no-vary-search"/>
+    <variant name="Parent" summary="parent"/>
+  </token>
   <token key="File">
     <variant name="Journal" summary="journal.baj"/>
     <variant name="Snapshot" summary="snapshot.baf"/>

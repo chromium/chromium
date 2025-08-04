@@ -928,6 +928,14 @@ void CreateNetworkContextInNetworkService(
 
   if (params->http_cache_enabled && params->file_paths &&
       params->file_paths->http_cache_directory) {
+    if (!params->file_paths->no_vary_search_directory.has_value()) {
+      static constexpr base::FilePath::CharType kNoVarySearchDirectoryName[] =
+          FILE_PATH_LITERAL("No_Vary_Search");
+
+      params->file_paths->no_vary_search_directory =
+          params->file_paths->http_cache_directory->path().Append(
+              kNoVarySearchDirectoryName);
+    }
     params->file_paths->http_cache_directory =
         params->file_paths->http_cache_directory->path().Append(
             kCacheDataDirectoryName);

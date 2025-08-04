@@ -33,7 +33,9 @@ namespace net {
 // these interfaces, so calls will be devirtualized and may be inlined.
 class NET_EXPORT NoVarySearchCacheStorageFileOperations {
  public:
-  static constexpr char kNoVarySearchDirName[] = "no-vary-search";
+  // TODO(https://crbug.com/433551601): Remove this once the rate of migrations
+  // drops to zero.
+  static constexpr char kLegacyNoVarySearchDirName[] = "no-vary-search";
 
   // Result of a call to Load().
   struct NET_EXPORT LoadResult {
@@ -70,10 +72,15 @@ class NET_EXPORT NoVarySearchCacheStorageFileOperations {
   };
 
   // Creates a NoVarySearchCacheStorageFileOperations object that accesses the
-  // real file system. All filenames will be treated as relative to a
-  // subdirectory of `path` named `kNoVarySearchDirName`.
+  // real file system. All filenames will be treated as relative to
+  // `dedicated_path`. If there are existing persisted files inside
+  // `legacy_path` they will be moved to `dedicated_path` during the call to
+  // Init().
+  // TODO(https://crbug.com/433551601): Remove `legacy_path` once the rate of
+  // migrations drops to zero.
   static std::unique_ptr<NoVarySearchCacheStorageFileOperations> Create(
-      const base::FilePath& path);
+      const base::FilePath& dedicated_path,
+      const base::FilePath& legacy_path);
 
   NoVarySearchCacheStorageFileOperations(
       const NoVarySearchCacheStorageFileOperations&) = delete;
