@@ -325,7 +325,10 @@ source_set("wayland") {
       "host/org_gnome_mutter_idle_monitor.cc",
       "host/org_gnome_mutter_idle_monitor.h",
     ]
-    deps += [ "//dbus" ]
+    deps += [
+      "//components/dbus",
+      "//dbus",
+    ]
   }
 
   if (use_wayland_gbm) {
