@@ -200,7 +200,7 @@ def __step_config(ctx, step_config):
     rust_inputs = [
         "build/action_helpers.py",
         "build/gn_helpers.py",
-        "build/rust/rustc_wrapper.py",
+        "build/rust/gni_impl/rustc_wrapper.py",
     ] + rust_toolchain
     rust_indirect_inputs = {
         "includes": [
@@ -272,7 +272,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "rust/run_build_script",
-            "command_prefix": "python3 ../../build/rust/run_build_script.py",
+            "command_prefix": "python3 ../../build/rust/gni_impl/run_build_script.py",
             "inputs": [
                 "third_party/rust-toolchain:toolchain",
                 "third_party/rust:rustlib",
@@ -297,7 +297,7 @@ def __step_config(ctx, step_config):
             # rust/bindgen fails remotely when *.d does not exist.
             # TODO(b/356496947): need to run scandeps?
             "name": "rust/bindgen",
-            "command_prefix": "python3 ../../build/rust/run_bindgen.py",
+            "command_prefix": "python3 ../../build/rust/gni_impl/run_bindgen.py",
             "inputs": rust_toolchain + clang_inputs,
             "remote": False,
             "timeout": "2m",

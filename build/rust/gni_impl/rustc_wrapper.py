@@ -15,7 +15,7 @@ import re
 # Set up path to be able to import action_helpers.
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
-                 os.pardir, 'build'))
+                 os.pardir, os.pardir, 'build'))
 import action_helpers
 
 # This script wraps rustc for (currently) these reasons:
@@ -55,7 +55,7 @@ import action_helpers
 # in an RSP file. Unfortunately, they are space-separated variables
 # but Rust requires a newline-separated input. This script duly makes
 # the adjustment. This works around a gn issue:
-# TODO(https://bugs.chromium.org/p/gn/issues/detail?id=249): fix this
+# TODO(https://crbug.com/gn/42440152): fix this
 #
 # WORKAROUND WINDOWS BUGS:
 #

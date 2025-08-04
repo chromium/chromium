@@ -258,7 +258,7 @@ template("single_apple_toolchain") {
       rustc_bin = "$rust_sysroot_relative/bin/rustc"
       rustc = "$rust_compiler_prefix${rustc_bin}"
       rustc_wrapper =
-          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
 
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"

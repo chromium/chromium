@@ -13,7 +13,7 @@ import sys
 # Set up path to be able to import action_helpers
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
-                 os.pardir, 'build'))
+                 os.pardir, os.pardir, 'build'))
 import action_helpers
 
 

@@ -21,11 +21,11 @@ import action_helpers
 
 
 # TODO(https://crbug.com/435437947): Deduplicate the following pieces which
-# also appear in `//build/rust/run_build_script.py`:
+# also appear in `//build/rust/gni_impl/run_build_script.py`:
 # * `--rust-prefix` and `--target` args
-# * `rustc_name` (note that `build/rust/rustc_wrapper.py` gets `--rustc` with
-#   the full path so it doesn't need to worry about the `.exe` suffix;  maybe
-#   this aspect can also be unified somehow)
+# * `rustc_name` (note that `build/rust/gni_impl/rustc_wrapper.py` gets `--rustc`
+#   with the full path so it doesn't need to worry about the `.exe` suffix;
+#   maybe this aspect can also be unified somehow)
 # * `host_triple`
 # * Parts of `get_cfg_args` below duplicate some parts of
 #   `set_cargo_cfg_target_env_variables` from `run_build_script.py`

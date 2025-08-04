@@ -680,7 +680,7 @@ template("single_gcc_toolchain") {
       rustc_bin = "$rust_sysroot_relative/bin/rustc"
       rustc = "$rust_compiler_prefix${rustc_bin}"
       rustc_wrapper =
-          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
 
       # RSP manipulation due to https://bugs.chromium.org/p/gn/issues/detail?id=249
       tool("rust_staticlib") {

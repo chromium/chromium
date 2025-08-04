@@ -311,7 +311,7 @@ template("cargo_crate") {
       if (defined(invoker.allow_unsafe)) {
         allow_unsafe = invoker.allow_unsafe
       }
-      configs += [ "//build/rust/cargo_crate:allow_all_warnings" ]
+      configs += [ "//build/rust/gni_impl:allow_all_warnings" ]
 
       if (!defined(build_native_rust_unit_tests)) {
         build_native_rust_unit_tests = _crate_type != "proc-macro"
@@ -411,7 +411,7 @@ template("cargo_crate") {
     action("${_build_script_name}_write_rustflags") {
       _rustflags_txt = "$_build_script_env_out_dir/rustflags.txt"
       outputs = [ _rustflags_txt ]
-      script = rebase_path("//build/rust/write_rustflags.py")
+      script = rebase_path("//build/rust/gni_impl/write_rustflags.py")
       args = [
         "--output",
         rebase_path(_rustflags_txt, root_build_dir),
@@ -430,7 +430,7 @@ template("cargo_crate") {
 
     # Extra targets required to make build script work
     action("${_build_script_name}_output") {
-      script = rebase_path("//build/rust/run_build_script.py")
+      script = rebase_path("//build/rust/gni_impl/run_build_script.py")
       _write_rustflags_outputs =
           get_target_outputs(":${_build_script_name}_write_rustflags")
       _rustflags_txt = _write_rustflags_outputs[0]

@@ -177,7 +177,7 @@ To fix the error:
   script targets end with the suffix `_build_script`. For example:
   ```
   [13627/84339] RUST(BIN) clang_x64_for_rust_host_build_tools/compiler_builtins_compiler_builtins_vunknown_build_script
-  python3 ../../build/rust/rustc_wrapper.py --rustc=../../third_party/rust-toolchain/bin/rustc --depfi...(too long)
+  python3 ../../build/rust/gni_impl/rustc_wrapper.py --rustc=../../third_party/rust-toolchain/bin/rustc --depfi...(too long)
   ERROR: file not in GN sources: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.123/configure.rs
   ```
 * Determine if the missing file should go in `sources` or `inputs`.

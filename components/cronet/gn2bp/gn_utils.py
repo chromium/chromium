@@ -552,7 +552,7 @@ class GnParser:
           raise ValueError(
               f"Unexpected android_sdk_dep: {android_sdk_dep} for target {target.name}"
           )
-    elif target.script == "//build/rust/run_bindgen.py":
+    elif target.script == "//build/rust/gni_impl/run_bindgen.py":
       # rust_bindgen is a supported module in Soong but GN depend on actions
       # so we need to copy the action fields (sources, outputs and args) in
       # order to correctly generate the `rust_bindgen` module.

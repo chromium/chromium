@@ -24,6 +24,7 @@ RS_BINDINGS_FROM_CC_EXE_PATH = os.path.join(RUST_TOOLCHAIN_DIR, "bin",
 
 
 def format_cmdline(args):
+
   def quote_arg(x):
     if ' ' not in x: return x
     x = x.replace('"', '\\"')

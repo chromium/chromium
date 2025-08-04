@@ -338,7 +338,7 @@ template("msvc_toolchain") {
       rust_sysroot_relative = rebase_path(rust_sysroot, root_build_dir)
       rustc = "$rust_sysroot_relative/bin/rustc"
       rustc_wrapper =
-          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
       rustc_windows_args = " -Clinker=$link$rust_linkflags $rustc_common_args"
 
       tool("rust_staticlib") {

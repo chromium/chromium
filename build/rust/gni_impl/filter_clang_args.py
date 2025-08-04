@@ -14,6 +14,7 @@ This function filters them out.
 
 
 def filter_clang_args(clangargs):
+
   def do_filter(args):
     i = 0
     while i < len(args):

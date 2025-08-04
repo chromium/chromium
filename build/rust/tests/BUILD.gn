@@ -43,7 +43,7 @@ group("deps") {
       # TODO(crbug.com/40226863): Enable the additional target below
       # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
       # meantime see the instructions in
-      # `//build/rust/run_rs_bindings_from_cc.py`.
+      # `//build/rust/gni_impl/run_rs_bindings_from_cc.py`.
       #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
     ]
 
@@ -94,7 +94,7 @@ group("deps") {
         # TODO(crbug.com/40226863): Enable the additional target below
         # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
         # meantime see the instructions in
-        # `//build/rust/run_rs_bindings_from_cc.py`.
+        # `//build/rust/gni_impl/run_rs_bindings_from_cc.py`.
         #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
 
