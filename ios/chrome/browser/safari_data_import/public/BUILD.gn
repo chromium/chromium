@@ -23,3 +23,12 @@ source_set("utils") {
   ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("ui_utils") {
+  sources = [
+    "ui_utils.h",
+    "ui_utils.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/util" ]
+  frameworks = [ "UIKit.framework" ]
+}
