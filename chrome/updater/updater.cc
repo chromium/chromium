@@ -112,14 +112,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   InitializeCrashReporting(updater_scope);
 
-  // Make the process more resilient to memory allocation issues.
-  base::EnableTerminationOnHeapCorruption();
-  base::EnableTerminationOnOutOfMemory();
-  logging::RegisterAbslAbortHook();
-#if BUILDFLAG(IS_WIN)
-  partition_alloc::SetRetryOnCommitFailure(true);
-#endif
-
   InitializeThreadPool("updater");
   const base::ScopedClosureRunner shutdown_thread_pool(base::BindOnce([] {
     // For the updater, it is important to join all threads before `UpdaterMain`
@@ -303,8 +295,16 @@ void EnableLoggingByDefault() {
 int UpdaterMain(int argc, const char* const* argv) {
 #if BUILDFLAG(IS_WIN)
   CHECK(EnableSecureDllLoading());
-  EnableProcessHeapMetadataProtection();
 #endif
+
+  // Make the process more resilient to memory allocation issues.
+#if BUILDFLAG(IS_WIN)
+  EnableProcessHeapMetadataProtection();
+  partition_alloc::SetRetryOnCommitFailure(true);
+#endif
+  base::EnableTerminationOnHeapCorruption();
+  base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
 
   base::PlatformThread::SetName("UpdaterMain");
   base::AtExitManager exit_manager;
