@@ -214,7 +214,9 @@ V8ScriptValueSerializer::V8ScriptValueSerializer(ScriptState* script_state,
       transferables_(options.transferables),
       blob_info_array_(options.blob_info),
       wasm_policy_(options.wasm_policy),
-      for_storage_(options.for_storage == SerializedScriptValue::kForStorage) {}
+      for_storage_(options.for_storage == SerializedScriptValue::kForStorage),
+      skip_wrapped_objects_(options.script_wrappable_policy ==
+                            Options::kOmitWrappedObjects) {}
 
 scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
     v8::Local<v8::Value> value,
@@ -901,6 +903,10 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> object) {
   DCHECK_EQ(isolate, script_state_->GetIsolate());
+
+  if (skip_wrapped_objects_) {
+    return v8::Just(true);
+  }
   ExceptionState exception_state(isolate);
 
   if (!V8DOMWrapper::IsWrapper(isolate, object)) {

@@ -171,6 +171,12 @@ class CORE_EXPORT SerializedScriptValue
       kBlockedInNonSecureContext  // Block transfer or serialization.
     };
 
+    // Whether to serialize or skip a ScriptWrappable if the object is a
+    // wrapper.
+    enum ScriptWrappablePolicy {
+      kSerializeWrappedObjects,
+      kOmitWrappedObjects,
+    };
     SerializeOptions() = default;
     explicit SerializeOptions(StoragePolicy for_storage)
         : for_storage(for_storage) {}
@@ -179,6 +185,7 @@ class CORE_EXPORT SerializedScriptValue
     WebBlobInfoArray* blob_info = nullptr;
     WasmSerializationPolicy wasm_policy = kTransfer;
     StoragePolicy for_storage = kNotForStorage;
+    ScriptWrappablePolicy script_wrappable_policy = kSerializeWrappedObjects;
   };
   static scoped_refptr<SerializedScriptValue> Serialize(v8::Isolate*,
                                                         v8::Local<v8::Value>,
@@ -211,6 +218,9 @@ class CORE_EXPORT SerializedScriptValue
    public:
     MessagePortArray* message_ports = nullptr;
     const WebBlobInfoArray* blob_info = nullptr;
+    // Slow mode is intended to mitigate possible timing attacks on v8 string
+    // table.
+    bool slow_mode = false;
   };
   v8::Local<v8::Value> Deserialize(v8::Isolate* isolate) {
     return Deserialize(isolate, DeserializeOptions());

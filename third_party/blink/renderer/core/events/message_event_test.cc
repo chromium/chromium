@@ -87,6 +87,7 @@ TEST_F(MessageEventTest, AccountForArrayBufferMemory) {
 
   GCedMessagePortArray* ports = MakeGarbageCollected<GCedMessagePortArray>(0);
   MessageEvent::Create(ports, serialized_script_value, /* origin=*/{},
+                       MessageEvent::kMessageIsSameOrigin,
                        /* last_event_id=*/{}, /* source=*/nullptr);
 
   int64_t size_with_event = V8ExternalMemoryAccounterBase::

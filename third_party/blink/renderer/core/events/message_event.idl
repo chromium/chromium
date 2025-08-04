@@ -32,7 +32,10 @@
 ] interface MessageEvent : Event {
     [RaisesException] constructor(DOMString type, optional MessageEventInit eventInitDict = {});
     [CachedAttribute=IsDataDirty, CallWith=ScriptState] readonly attribute any data;
-    readonly attribute DOMString origin;
+    // We need to differentiate between JS access and internal access to the origin
+    // property due to additional safety measures applied when data is accessed without
+    // script testing origin first.
+    [ImplementedAs=originForBindings] readonly attribute DOMString origin;
     readonly attribute DOMString lastEventId;
     // TODO(bashi): |source| should be of type MessageEventSource.
     readonly attribute EventTarget? source;

@@ -176,6 +176,7 @@ void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
       message.message->CanDeserializeIn(context)) {
     event = MessageEvent::Create(nullptr, std::move(message.message),
                                  context->GetSecurityOrigin()->ToString(),
+                                 MessageEvent::kMessageIsSameOrigin,
                                  /* last_event_id=*/{}, /* source=*/nullptr);
   } else {
     event = MessageEvent::CreateError(context->GetSecurityOrigin()->ToString());

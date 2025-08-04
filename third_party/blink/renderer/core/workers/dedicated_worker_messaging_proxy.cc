@@ -283,6 +283,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
   if (message.message->CanDeserializeIn(GetExecutionContext())) {
     MessageEvent* event =
         MessageEvent::Create(ports, std::move(message.message), /* origin=*/{},
+                             MessageEvent::kMessageIsSameOrigin,
                              /* last_event_id=*/{}, /* source=*/nullptr);
     event->SetTraceId(message.trace_id);
     TRACE_EVENT(

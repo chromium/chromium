@@ -835,6 +835,7 @@ void ServiceWorkerContainer::DispatchMessageEvent(
         msg.message->CanDeserializeIn(context)) {
       event = MessageEvent::Create(ports, std::move(msg.message),
                                    context->GetSecurityOrigin()->ToString(),
+                                   MessageEvent::kMessageIsSameOrigin,
                                    String() /* lastEventId */, service_worker);
     } else {
       event = MessageEvent::CreateError(

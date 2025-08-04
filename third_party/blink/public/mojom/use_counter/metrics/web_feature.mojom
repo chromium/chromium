@@ -4933,6 +4933,7 @@ enum WebFeature {
   kWebAppManifestDescriptionLocalized = 5622,
   kWebAppManifestIconsLocalized = 5623,
   kHTMLControlledFrameElement = 5624,
+  kSlowDeserialization = 5625,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

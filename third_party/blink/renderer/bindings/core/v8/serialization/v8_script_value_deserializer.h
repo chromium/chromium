@@ -125,10 +125,12 @@ class CORE_EXPORT V8ScriptValueDeserializer
       v8::Isolate*,
       uint32_t) override;
   const v8::SharedValueConveyor* GetSharedValueConveyor(v8::Isolate*) override;
+  void MaskDeserializationTimings(v8::Local<v8::Object> value);
 
   ScriptState* script_state_;
   UnpackedSerializedScriptValue* unpacked_value_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;
+  const bool slow_mode_ = false;
   v8::ValueDeserializer deserializer_;
 
   // Message ports which were transferred in.
