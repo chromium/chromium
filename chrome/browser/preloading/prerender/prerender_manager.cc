@@ -256,10 +256,8 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
       /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      // TODO(https://crbug.com/406378765): Consider enabling rendering
-      // warm-ups when we support process reuse.
-      /*should_warm_up_compositor=*/false,
-      /*should_prepare_paint_tree=*/false,
+      /*should_warm_up_compositor=*/true,
+      /*should_prepare_paint_tree=*/true,
       content::PreloadingHoldbackStatus::kUnspecified,
       content::PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
