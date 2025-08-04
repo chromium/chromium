@@ -17,8 +17,6 @@ use crate::json::STREAM_BUFFER_SIZE;
 #[cfg(target_family = "unix")]
 use crate::models::StablePortabilityHistoryJSONEntry;
 #[cfg(target_family = "unix")]
-use anyhow::Result;
-#[cfg(target_family = "unix")]
 use std::fs;
 #[cfg(target_family = "unix")]
 use std::io::BufReader;
@@ -138,7 +136,7 @@ pub fn parse_stable_portability_history(
     history_size_threshold: usize,
 ) {
     let mut history = CxxVector::<ffi::StablePortabilityHistoryEntry>::new();
-    let result = (|| -> Result<()> {
+    let result = (|| -> Result<(), String> {
         let stream_reader = BufReader::with_capacity(STREAM_BUFFER_SIZE, file);
         json::deserialize_top_level::<StablePortabilityHistoryJSONEntry, std::fs::File>(
             stream_reader,
