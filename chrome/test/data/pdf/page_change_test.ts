@@ -7,6 +7,8 @@ import {FormFieldFocusType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgi
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
+import {getCurrentPage} from './test_util.js';
+
 function getViewer(): PdfViewerElement {
   return document.body.querySelector('pdf-viewer')!;
 }
@@ -21,10 +23,6 @@ function resetDocument() {
   const viewer = getViewer();
   viewer.viewport.goToPage(0);
   simulateFormFocusChange(FormFieldFocusType.NONE);
-}
-
-function getCurrentPage(): number {
-  return getViewer().viewport.getMostVisiblePage();
 }
 
 function getAllPossibleKeyModifiers(): ModifiersParam[] {

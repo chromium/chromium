@@ -491,6 +491,15 @@ export function enterFullscreenWithUserGesture(): Promise<void> {
   });
 }
 
+/**
+ * @returns The most visible page.
+ */
+export function getCurrentPage(): number {
+  const viewer = document.body.querySelector('pdf-viewer');
+  assert(viewer);
+  return viewer.viewport.getMostVisiblePage();
+}
+
 // <if expr="enable_pdf_ink2">
 /**
  * Convenience function to start stroking, and then modify some Ink stroke

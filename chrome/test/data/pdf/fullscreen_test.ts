@@ -9,7 +9,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createWheelEvent, ensureFullscreen, enterFullscreenWithUserGesture} from './test_util.js';
+import {createWheelEvent, ensureFullscreen, enterFullscreenWithUserGesture, getCurrentPage} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const scroller = viewer.$.scroller;
@@ -63,52 +63,52 @@ const tests = [
   },
   async function testWheelEventUpdatesPage() {
     await ensureFullscreen();
-    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(0, getCurrentPage());
 
     const content = viewer.$.content;
 
     // Simulate scrolling towards the bottom.
     content.dispatchEvent(
         createWheelEvent(40, {clientX: 0, clientY: 0}, false));
-    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(1, getCurrentPage());
 
     // Simulate scrolling towards the top.
     content.dispatchEvent(
         createWheelEvent(-40, {clientX: 0, clientY: 0}, false));
-    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(0, getCurrentPage());
 
     chrome.test.succeed();
   },
   async function testKeysUpdatePage() {
     await ensureFullscreen();
-    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(0, getCurrentPage());
 
     // Test arrow keys.
     keyDownOn(viewer, 0, [], 'ArrowDown');
-    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(1, getCurrentPage());
 
     keyDownOn(viewer, 0, [], 'ArrowUp');
-    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(0, getCurrentPage());
 
     keyDownOn(viewer, 0, [], 'ArrowRight');
-    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(1, getCurrentPage());
 
     keyDownOn(viewer, 0, [], 'ArrowLeft');
-    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(0, getCurrentPage());
 
     // Test Space key.
     keyDownOn(viewer, 0, [], ' ');
-    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(1, getCurrentPage());
 
     keyDownOn(viewer, 0, 'shift', ' ');
-    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(0, getCurrentPage());
 
     // Test PageUp/PageDown keys.
     keyDownOn(viewer, 0, [], 'PageDown');
-    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(1, getCurrentPage());
 
     keyDownOn(viewer, 0, [], 'PageUp');
-    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+    chrome.test.assertEq(0, getCurrentPage());
 
     chrome.test.succeed();
   },
