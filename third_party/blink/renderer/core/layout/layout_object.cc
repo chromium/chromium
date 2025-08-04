@@ -576,11 +576,14 @@ void LayoutObject::SetIsInsideMulticolIncludingDescendants(
   NOT_DESTROYED();
   LayoutObject* next;
   for (LayoutObject* object = this; object; object = next) {
-    if (inside_multicol == object->IsInsideMulticol()) {
-      // No change needed. Skip the subtree.
+    bool was_inside_multicol = object->IsInsideMulticol();
+    object->SetIsInsideMulticol(inside_multicol);
+    if (inside_multicol == was_inside_multicol ||
+        object->IsMulticolContainer()) {
+      // Not changed, or nested multicol (in which case the truth is still in
+      // there). Skip the subtree.
       next = object->NextInPreOrderAfterChildren(this);
     } else {
-      object->SetIsInsideMulticol(inside_multicol);
       next = object->NextInPreOrder(this);
     }
   }
