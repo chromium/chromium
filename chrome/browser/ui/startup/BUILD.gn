@@ -5,6 +5,8 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 # Allow browser tests that startup with --gcpw-signin flag only on
 # non-Google Chrome builds.
@@ -92,5 +94,191 @@ source_set("startup") {
       ":buildflags",
       "//google_apis",
     ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "bad_flags_prompt.cc",
+    "bidding_and_auction_consented_debugging_infobar_delegate.cc",
+    "test_third_party_cookie_phaseout_infobar_delegate.cc",
+  ]
+  deps = [
+    ":startup",
+    "//base",
+    "//base:base_static",
+    "//cc/base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/devtools",
+    "//chrome/browser/infobars",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/ui/profiles",
+    "//chrome/browser/webauthn",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//components/autofill/core/common",
+    "//components/history_clusters/core",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/media_router/common/providers/cast/certificate",
+    "//components/network_session_configurator/common",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/startup_metric_utils",
+    "//components/translate/core/common",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/public/common",
+    "//google_apis",
+    "//gpu/config",
+    "//media",
+    "//media:media_buildflags",
+    "//sandbox/policy",
+    "//services/network/public/cpp:flags_and_switches",
+    "//services/webnn:webnn_switches",
+    "//third_party/blink/public:runtime_features_for_public",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (!is_android) {
+    sources += [
+      "automation_infobar_delegate.cc",
+      "google_api_keys_infobar_delegate.cc",
+      "infobar_utils.cc",
+      "launch_mode_recorder.cc",
+      "obsolete_system_infobar_delegate.cc",
+      "startup_browser_creator.cc",
+      "startup_browser_creator_impl.cc",
+      "startup_tab_provider.cc",
+    ]
+    deps += [
+      ":startup_tab",
+      "//apps",
+      "//base:i18n",
+      "//build:branding_buildflags",
+      "//build:buildflag_header_h",
+      "//chrome/browser:global_features",
+      "//chrome/browser:shell_integration",
+      "//chrome/browser/actor",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/extensions",
+      "//chrome/browser/headless",
+      "//chrome/browser/headless:command_processor",
+      "//chrome/browser/prefs",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/privacy_sandbox:headers",
+      "//chrome/browser/privacy_sandbox/notice:desktop_entrypoint_handlers_helper",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/search",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/startup/default_browser_prompt",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/web_applications",
+      "//chrome/common",
+      "//chrome/common:buildflags",
+      "//chrome/common:version_header",
+      "//chrome/common/extensions",
+      "//chrome/installer/util:with_no_strings",
+      "//components/custom_handlers",
+      "//components/google/core/common",
+      "//components/headless/policy",
+      "//components/keep_alive_registry",
+      "//components/privacy_sandbox:features",
+      "//components/search_engines",
+      "//components/services/app_service/public/cpp:app_types",
+      "//components/strings:components_strings",
+      "//components/url_formatter",
+      "//extensions/browser",
+      "//net",
+      "//printing/buildflags",
+      "//services/device/public/cpp/hid",
+    ]
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/app_mode",
+        "//chrome/browser/ash/app_restore",
+        "//chrome/browser/ash/floating_workspace",
+        "//chrome/browser/ash/floating_workspace:utils",
+        "//chrome/browser/ash/profiles",
+        "//chromeos/ash/components/browser_context_helper",
+        "//chromeos/ash/components/cryptohome",
+        "//components/user_manager",
+      ]
+    }
+    if (is_win || is_mac) {
+      deps += [ "//chrome/browser/ui/pdf/infobar" ]
+    }
+    if (is_win) {
+      deps +=
+          [ "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar" ]
+    }
+    if (is_win && is_chrome_branded) {
+      deps += [ "//chrome/browser/win/installer_downloader:controller" ]
+    }
+    if (enable_rlz) {
+      deps += [ "//components/rlz" ]
+    }
+  }
+
+  if (toolkit_views) {
+    deps += [ "//ui/views" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common" ]
+  }
+
+  if (is_chrome_for_testing) {
+    sources += [ "chrome_for_testing_infobar_delegate.cc" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "web_app_startup_utils.cc" ]
+    deps += [
+      "//chrome/browser/lifetime:termination_notification",
+      "//components/webapps/common",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "first_run_service.cc",
+      "web_app_info_recorder_utils.cc",
+    ]
+    deps += [ "//chrome/browser/ui/web_applications" ]
+  }
+
+  if (is_win) {
+    assert(toolkit_views)
+    assert(use_aura)
+
+    sources += [
+      "credential_provider_signin_dialog_win.cc",
+      "credential_provider_signin_info_fetcher_win.cc",
+    ]
+    deps += [ "//chrome/credential_provider/common:common_constants" ]
   }
 }

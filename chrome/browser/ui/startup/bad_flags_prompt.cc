@@ -34,13 +34,11 @@
 #include "components/translate/core/common/translate_switches.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "extensions/common/switches.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "sandbox/policy/switches.h"
-#include "services/device/public/cpp/hid/hid_switches.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,6 +56,11 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
 #include "chrome/browser/actor/actor_switches.h"
+#include "services/device/public/cpp/hid/hid_switches.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/switches.h"
 #endif
 
 namespace {
@@ -144,8 +147,10 @@ const char* const kBadFlags[] = {
     switches::kWebNNOrtEpLibraryPathForTesting,
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
     // A flag to bypass the WebHID blocklist for testing purposes.
     switches::kDisableHidBlocklist,
+#endif
 
     // This flag tells Chrome to automatically install an Isolated Web App in
     // developer mode. The flag should contain the path to an unsigned Web
