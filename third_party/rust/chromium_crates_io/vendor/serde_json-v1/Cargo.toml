@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56"
 name = "serde_json"
-version = "1.0.141"
+version = "1.0.142"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
