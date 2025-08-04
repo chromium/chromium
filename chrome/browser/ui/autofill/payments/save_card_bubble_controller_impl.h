@@ -145,7 +145,7 @@ class SaveCardBubbleControllerImpl
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   const LegalMessageLines& GetLegalMessageLines() const override;
   bool IsUploadSave() const override;
-  BubbleType GetBubbleType() const override;
+  PaymentsBubbleType GetPaymentsBubbleType() const override;
   bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override;
   void HideSaveCardBubble() override;
 
@@ -202,7 +202,7 @@ class SaveCardBubbleControllerImpl
 
   // The type of bubble that is either currently being shown or would
   // be shown when the save card icon is clicked.
-  BubbleType current_bubble_type_ = BubbleType::INACTIVE;
+  PaymentsBubbleType current_bubble_type_ = PaymentsBubbleType::INACTIVE;
 
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt or the CVC upload offer-to-save prompt

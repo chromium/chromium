@@ -83,11 +83,13 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
 void SaveCardOfferBubbleViews::Init() {
   SaveCardBubbleViews::Init();
 
-  if (controller() &&
-      (controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE ||
-       controller()->GetBubbleType() == BubbleType::UPLOAD_IN_PROGRESS)) {
+  if (controller() && (controller()->GetPaymentsBubbleType() ==
+                           PaymentsBubbleType::UPLOAD_SAVE ||
+                       controller()->GetPaymentsBubbleType() ==
+                           PaymentsBubbleType::UPLOAD_IN_PROGRESS)) {
     loading_row_ = AddChildView(CreateLoadingRow());
-    if (controller()->GetBubbleType() == BubbleType::UPLOAD_IN_PROGRESS) {
+    if (controller()->GetPaymentsBubbleType() ==
+        PaymentsBubbleType::UPLOAD_IN_PROGRESS) {
       ShowThrobber();
     }
   }
@@ -96,8 +98,8 @@ void SaveCardOfferBubbleViews::Init() {
 }
 
 bool SaveCardOfferBubbleViews::Accept() {
-  bool show_throbber =
-      controller() && controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE;
+  bool show_throbber = controller() && controller()->GetPaymentsBubbleType() ==
+                                           PaymentsBubbleType::UPLOAD_SAVE;
 
   if (show_throbber) {
     ShowThrobber();
@@ -170,14 +172,14 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
 void SaveCardOfferBubbleViews::AddedToWidget() {
   SaveCardBubbleViews::AddedToWidget();
   int lottie_resource_id;
-  switch (controller()->GetBubbleType()) {
-    case BubbleType::UPLOAD_SAVE:
-    case BubbleType::UPLOAD_IN_PROGRESS:
-    case BubbleType::UPLOAD_COMPLETED:
+  switch (controller()->GetPaymentsBubbleType()) {
+    case PaymentsBubbleType::UPLOAD_SAVE:
+    case PaymentsBubbleType::UPLOAD_IN_PROGRESS:
+    case PaymentsBubbleType::UPLOAD_COMPLETED:
       lottie_resource_id = IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE;
       break;
-    case BubbleType::LOCAL_CVC_SAVE:
-    case BubbleType::UPLOAD_CVC_SAVE:
+    case PaymentsBubbleType::LOCAL_CVC_SAVE:
+    case PaymentsBubbleType::UPLOAD_CVC_SAVE:
       lottie_resource_id = IDR_AUTOFILL_SAVE_SECURITY_CODE_LOTTIE;
       break;
     default:

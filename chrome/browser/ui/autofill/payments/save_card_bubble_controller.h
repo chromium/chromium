@@ -23,7 +23,7 @@ class Profile;
 namespace autofill {
 
 class CreditCard;
-enum class BubbleType;
+enum class PaymentsBubbleType;
 
 // Interface that exposes controller functionality to save card bubbles.
 class SaveCardBubbleController {
@@ -101,7 +101,7 @@ class SaveCardBubbleController {
   // Returns true iff is showing or has showed bubble for upload save.
   virtual bool IsUploadSave() const = 0;
   // Returns the current state of the bubble.
-  virtual BubbleType GetBubbleType() const = 0;
+  virtual PaymentsBubbleType GetPaymentsBubbleType() const = 0;
   // Returns true if the user is signed in and sync transport is active for
   // Wallet data, without having turned on sync-the-feature.
   virtual bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const = 0;

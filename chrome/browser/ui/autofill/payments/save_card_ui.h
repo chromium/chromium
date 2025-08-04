@@ -8,7 +8,7 @@
 namespace autofill {
 
 // The type of save card bubble to show.
-enum class BubbleType {
+enum class PaymentsBubbleType {
   // Save prompt when the user is saving locally.
   LOCAL_SAVE,
 
