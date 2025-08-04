@@ -36,11 +36,7 @@ import {getTemplate} from './other_google_data_dialog.html.js';
 export interface SettingsOtherGoogleDataDialogElement {
   $: {
     dialog: CrDialogElement,
-    googleSearchHistoryLink: CrLinkRowElement,
     passwordManagerLink: CrLinkRowElement,
-    myActivityLink: CrLinkRowElement,
-    nonGoogleSearchHistoryLink: HTMLElement,
-    geminiAppsActivityLink: CrLinkRowElement,
   };
 }
 
@@ -160,25 +156,6 @@ export class SettingsOtherGoogleDataDialogElement extends
     return isSignedIn(this.syncStatus_) &&
         loadTimeData.getBoolean('showGlicSettings') &&
         loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1');
-  }
-
-  private getMyActivityLinkCssClass_() {
-    // TODO (crbug.com/432676120) Make CSS class assignment more robust.
-    if (!this.isGoogleDse_ || this.shouldShowGeminiAppsActivityLink_()) {
-      return 'middle-link-row';
-    }
-    return 'last-link-row';
-  }
-
-  private getGeminiAppsActivityLinkCssClass_() {
-    return this.isGoogleDse_ ? 'last-link-row' : 'middle-link-row';
-  }
-
-  private getPasswordsLinkCssClass_() {
-    if (this.isGoogleDse_ && !isSignedIn(this.syncStatus_)) {
-      return 'only-link-row';
-    }
-    return 'first-link-row';
   }
 }
 
