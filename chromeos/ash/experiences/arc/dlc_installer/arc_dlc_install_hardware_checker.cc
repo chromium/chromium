@@ -32,11 +32,10 @@ constexpr int64_t kMinMemorySizeInKiB = 4LL * 1024LL * 1024LL;
 // Minimum required storage to enable the arcvm: 32 GB in bytes.
 constexpr int64_t kMinStorageSizeInBytes = 32LL * 1024LL * 1024LL * 1024LL;
 
-// It takes hundreds of milliseconds to wait for the hardware
-// information to be ready, so set the timeout to five seconds (100 ms * 50)
-// as a safe interval.
-constexpr int64_t kMaxRetries = 50;
-constexpr base::TimeDelta kHardwareInfoReadyRetryInterval =
+// It takes hundreds of milliseconds to wait for the storage information to be
+// ready. Poll for it until a timeout is reached, using a linear backoff for
+// retries.
+constexpr base::TimeDelta kStorageInfoReadyRetryBaseInterval =
     base::Milliseconds(100);
 
 constexpr auto kSupportGpuIds = base::MakeFixedFlatSet<std::string_view>(
@@ -70,6 +69,11 @@ constexpr auto kSupportGpuIds = base::MakeFixedFlatSet<std::string_view>(
 ArcDlcInstallHardwareChecker::ArcDlcInstallHardwareChecker() = default;
 ArcDlcInstallHardwareChecker::~ArcDlcInstallHardwareChecker() = default;
 
+void ArcDlcInstallHardwareChecker::SetStorageInfoReadyTimeoutForTesting(
+    base::TimeDelta timeout) {
+  storage_info_ready_timeout_ = timeout;
+}
+
 void ArcDlcInstallHardwareChecker::IsCompatible(
     base::OnceCallback<void(bool)> callback) {
   if (!probe_service_ || !probe_service_.is_connected()) {
@@ -84,20 +88,24 @@ void ArcDlcInstallHardwareChecker::IsCompatible(
       {mojom::ProbeCategoryEnum::kNonRemovableBlockDevices},
       base::BindOnce(
           &ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+          weak_factory_.GetWeakPtr(), /*start_time=*/base::TimeTicks::Now(),
+          /*retry_count=*/1, std::move(callback)));
 }
 
 void ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices(
+    base::TimeTicks start_time,
+    int retry_count,
     base::OnceCallback<void(bool)> callback,
     mojom::TelemetryInfoPtr info_ptr) {
+  const bool has_block_device_result =
+      !info_ptr.is_null() && info_ptr->block_device_result;
   // Successfully obtained block device information.
-  if (!info_ptr.is_null() && info_ptr->block_device_result &&
+  if (has_block_device_result &&
       info_ptr->block_device_result->which() ==
           ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
               kBlockDeviceInfo) {
     if (retry_timer_.IsRunning()) {
       retry_timer_.Stop();
-      retry_count_ = 0;
     }
     base::UmaHistogramBoolean("Arc.RevenHardwareChecker.Timeout", false);
     // Request telemetry information from the cros_healthd service.
@@ -111,32 +119,41 @@ void ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices(
   }
 
   // Timeout to obtain block device information.
-  if (retry_count_ > kMaxRetries) {
+  if (base::TimeTicks::Now() > start_time + storage_info_ready_timeout_) {
+    LOG(ERROR) << "Timed out waiting for block device info after "
+               << storage_info_ready_timeout_ << ".";
+    if (has_block_device_result &&
+        info_ptr->block_device_result->which() ==
+            ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
+                kError) {
+      LOG(ERROR) << "cros_healthd: Error getting block device info: "
+                 << info_ptr->block_device_result->get_error()->msg;
+    }
     base::UmaHistogramBoolean("Arc.RevenHardwareChecker.Timeout", true);
-    LOG(ERROR)
-        << "Did not wait for hardware information to be ready before timeout";
     std::move(callback).Run(false);
     retry_timer_.Stop();
-    retry_count_ = 0;
     return;
   }
 
-  // Retry to obtain the block device information.
-  retry_count_++;
+  // Schedule the next retry with a linear backoff.
   retry_timer_.Start(
-      FROM_HERE, kHardwareInfoReadyRetryInterval,
+      FROM_HERE, kStorageInfoReadyRetryBaseInterval * retry_count,
       base::BindOnce(
           &ArcDlcInstallHardwareChecker::OnRetryNonRemovableBlockDevicesCheck,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+          weak_factory_.GetWeakPtr(), start_time, retry_count + 1,
+          std::move(callback)));
 }
 
 void ArcDlcInstallHardwareChecker::OnRetryNonRemovableBlockDevicesCheck(
+    base::TimeTicks start_time,
+    int retry_count,
     base::OnceCallback<void(bool)> callback) {
   probe_service_->ProbeTelemetryInfo(
       {mojom::ProbeCategoryEnum::kNonRemovableBlockDevices},
       base::BindOnce(
           &ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+          weak_factory_.GetWeakPtr(), start_time, retry_count,
+          std::move(callback)));
 }
 
 void ArcDlcInstallHardwareChecker::OnDisconnect() {

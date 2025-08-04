@@ -23,6 +23,9 @@ class ArcDlcInstallHardwareChecker {
   // be reported through the provided callback.
   virtual void IsCompatible(base::OnceCallback<void(bool)> callback);
 
+  // Sets custom timeout for testing purposes.
+  void SetStorageInfoReadyTimeoutForTesting(base::TimeDelta timeout);
+
  private:
   // Callback invoked when the CrosHealthd service disconnects.
   void OnDisconnect();
@@ -30,11 +33,15 @@ class ArcDlcInstallHardwareChecker {
   // Checks for non-removable block devices and calls a provided
   // callback function when they are ready.
   void OnCheckNonRemovableBlockDevices(
+      base::TimeTicks start_time,
+      int retry_count,
       base::OnceCallback<void(bool)> callback,
       ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   // Retries the check for non-removable block devices.
   void OnRetryNonRemovableBlockDevicesCheck(
+      base::TimeTicks start_time,
+      int retry_count,
       base::OnceCallback<void(bool)> callback);
 
   // Callback invoked when telemetry information is received from CrosHealthd.
@@ -70,12 +77,12 @@ class ArcDlcInstallHardwareChecker {
   mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;
 
-  // Counter for the number of retry attempts made when checking for
-  // non-removable block devices.
-  int retry_count_ = 0;
-
   // One-shot timer for retrying checks on non-removable block devices.
   base::OneShotTimer retry_timer_;
+
+  // Timeout for checking storage information readiness.
+  // This can be modified for testing.
+  base::TimeDelta storage_info_ready_timeout_ = base::Seconds(10);
 
   // Weak pointer factory for safely handling callbacks
   base::WeakPtrFactory<ArcDlcInstallHardwareChecker> weak_factory_{this};

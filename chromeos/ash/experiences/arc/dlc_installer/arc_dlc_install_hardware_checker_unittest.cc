@@ -214,6 +214,7 @@ TEST_F(ArcDlcInstallHardwareCheckerTest, AllHardwareRequirementMet) {
 }
 
 TEST_F(ArcDlcInstallHardwareCheckerTest, BlockDeviceCheckErrorAfterRetries) {
+  checker_.SetStorageInfoReadyTimeoutForTesting(base::Milliseconds(100));
   auto info = ash::cros_healthd::mojom::TelemetryInfo::New();
   info->block_device_result = CreateErrorStorageTag();
   SetFakeTelemetryInfoResponse(std::move(info));
