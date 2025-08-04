@@ -225,6 +225,10 @@ class SearchEngineChoiceService : public KeyedService {
 
   void ProcessPendingChoiceScreenDisplayState();
 
+  bool IsChoiceRenewalNeeded(
+      const ChoiceCompletionMetadata& completion_metadata,
+      bool include_previous_just_in_time_detection);
+
   ChoiceStatus EvaluateSearchProviderChoice(
       const TemplateURLService& template_url_service);
 

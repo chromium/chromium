@@ -163,8 +163,9 @@ enum class SearchEngineChoiceWipeReason {
   // kDeviceRestored = 5, // Deprecated
   kInvalidMetadata = 6,
   kMissingDefaultSearchEngine = 7,
+  kChoiceRemadeAfterImport = 8,
 
-  kMaxValue = kMissingDefaultSearchEngine,
+  kMaxValue = kChoiceRemadeAfterImport,
 };
 
 // Exposed for testing.

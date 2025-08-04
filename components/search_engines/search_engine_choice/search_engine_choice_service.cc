@@ -93,11 +93,6 @@ SearchEngineType GetDefaultSearchEngineType(
                                : SEARCH_ENGINE_OTHER;
 }
 
-// Returns true if all search engine choice prefs are set.
-bool IsSearchEngineChoiceCompleted(const PrefService& prefs) {
-  return GetChoiceCompletionMetadata(prefs).has_value();
-}
-
 void MarkSearchEngineChoiceCompleted(PrefService& prefs) {
   SetChoiceCompletionMetadata(prefs, ChoiceCompletionMetadata{
                                          .timestamp = base::Time::Now(),
@@ -284,6 +279,19 @@ void SearchEngineChoiceService::Init() {
       maybe_wipe_reason.has_value()) {
     WipeSearchEngineChoicePrefs(*profile_prefs_, maybe_wipe_reason.value());
   }
+
+  if (auto completion_metadata = GetChoiceCompletionMetadata(*profile_prefs_);
+      completion_metadata.has_value() &&
+      IsChoiceRenewalNeeded(
+          completion_metadata.value(),
+          /* include_previous_just_in_time_detection= */ false)) {
+    // Set this flag that will ensure we can keep considering the choice as
+    // imported in future sessions using the Just-in-time detection mode.
+    profile_prefs_->SetInt64(
+        prefs::kDefaultSearchProviderChoiceInvalidationTimestamp,
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  }
+
   RecordChoiceScreenCompletionDate(*profile_prefs_);
 }
 
@@ -451,14 +459,40 @@ void SearchEngineChoiceService::RecordChoiceMade(
     TemplateURLService* template_url_service) {
   CHECK_NE(choice_location, ChoiceMadeLocation::kOther);
 
-  ClearSearchEngineChoiceInvalidation(*profile_prefs_);
-
-  if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion()) {
-    return;
+  // TODO(https://crbug.com/435638443): Add regression test to check that
+  // choices made after restore detection are properly recorded.
+  // Tri-bool, `nullopt` means there is no choice to keep nor wipe.
+  std::optional<bool> should_keep_existing_choice_record = std::nullopt;
+  if (auto completion_metadata = GetChoiceCompletionMetadata(*profile_prefs_);
+      completion_metadata.has_value()) {
+    if (IsChoiceRenewalNeeded(
+            completion_metadata.value(),
+            /* include_previous_just_in_time_detection= */ true)) {
+      // Clear sentinel data associated with the previous choice being renewed.
+      should_keep_existing_choice_record = false;
+    } else {
+      // Don't modify the prefs if they were already set.
+      should_keep_existing_choice_record = true;
+    }
   }
 
-  // Don't modify the prefs if they were already set.
-  if (IsSearchEngineChoiceCompleted(*profile_prefs_)) {
+  // Note: this needs be done AFTER `IsChoiceRenewalNeeded()` is called, as it
+  // is part of that logic.
+  ClearSearchEngineChoiceInvalidation(*profile_prefs_);
+
+  if (should_keep_existing_choice_record.has_value()) {
+    if (should_keep_existing_choice_record.value()) {
+      return;
+    }
+
+    WipeSearchEngineChoicePrefs(
+        *profile_prefs_,
+        SearchEngineChoiceWipeReason::kChoiceRemadeAfterImport);
+  }
+
+  // TODO(crbug.com/435658363): Include the program when updating the choice
+  // records.
+  if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion()) {
     return;
   }
 
@@ -568,17 +602,6 @@ SearchEngineChoiceService::CheckPrefsForWipeReason() {
     return SearchEngineChoiceWipeReason::kCommandLineFlag;
   }
 
-  if (base::FeatureList::IsEnabled(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
-      client_->DoesChoicePredateDeviceRestore(completion_metadata.value())) {
-    if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get() ||
-        client_->IsDeviceRestoreDetectedInCurrentSession()) {
-      profile_prefs_->SetInt64(
-          prefs::kDefaultSearchProviderChoiceInvalidationTimestamp,
-          base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
-    }
-  }
-
   if (ShouldRepromptFromFeatureParams(
           completion_metadata->version,
           regional_capabilities_service_->GetCountryId().GetRestricted(
@@ -634,46 +657,52 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
                                       /*is_from_cached_state=*/true);
 }
 
+bool SearchEngineChoiceService::IsChoiceRenewalNeeded(
+    const ChoiceCompletionMetadata& completion_metadata,
+    bool include_previous_just_in_time_detection) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
+    // Feature disabled, don't detect imported choices.
+    return false;
+  }
+  if (!client_->DoesChoicePredateDeviceRestore(completion_metadata)) {
+    // The current choice happened on this device, it's not imported.
+    return false;
+  }
+
+  // TODO(crbug.com/423883723): Introduce program-specific logic.
+
+  if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get()) {
+    // Retroactive detection is activated, report the choice as imported.
+    return true;
+  }
+
+  if (client_->IsDeviceRestoreDetectedInCurrentSession()) {
+    // Restore was detected in this session, report the choice as imported for
+    // the "just-in-time" mode.
+    return true;
+  }
+
+  if (include_previous_just_in_time_detection &&
+      IsSearchEngineChoiceInvalid(*profile_prefs_)) {
+    // We're doing just-in-time invalidation, and observed the restore. The
+    // user however did not yet make a new choice since then, so the current
+    // one is still the imported one.
+    return true;
+  }
+
+  return false;
+}
+
 SearchEngineChoiceService::ChoiceStatus
 SearchEngineChoiceService::EvaluateSearchProviderChoice(
     const TemplateURLService& template_url_service) {
-  auto IsChoiceImported = [&](const ChoiceCompletionMetadata&
-                                  completion_metadata) {
-    if (!base::FeatureList::IsEnabled(
-            switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
-      // Feature disabled, don't detect imported choices.
-      return false;
-    }
-    if (!client_->DoesChoicePredateDeviceRestore(completion_metadata)) {
-      // The current choice happened on this device, it's not imported.
-      return false;
-    }
-
-    if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get()) {
-      // Retroactive detection is activated, report the choice as imported.
-      return true;
-    }
-
-    if (client_->IsDeviceRestoreDetectedInCurrentSession()) {
-      // Restore was detected in this session, report the choice as imported for
-      // the "just-in-time" mode.
-      return true;
-    }
-
-    if (IsSearchEngineChoiceInvalid(*profile_prefs_)) {
-      // We're doing just-in-time invalidation, and observed the restore. The
-      // user however did not yet make a new choice since then, so the current
-      // one is still the imported one.
-      return true;
-    }
-
-    return false;
-  };
-
   bool has_imported_choice = false;
   if (auto completion_metadata = GetChoiceCompletionMetadata(*profile_prefs_);
       completion_metadata.has_value()) {
-    if (IsChoiceImported(completion_metadata.value())) {
+    if (IsChoiceRenewalNeeded(
+            completion_metadata.value(),
+            /* include_previous_just_in_time_detection= */ true)) {
       // Check other properties of the current choice, whether it was imported
       // might affect the overall status later down the line.
       has_imported_choice = true;

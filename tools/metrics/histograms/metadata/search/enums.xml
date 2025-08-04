@@ -469,6 +469,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Device restore (iOS only)"/>
   <int value="6" label="Invalid choice metadata: Other"/>
   <int value="7" label="Missing default search engine"/>
+  <int value="8" label="Choice remade after import"/>
 </enum>
 
 <!-- LINT.IfChange(SearchPolicyConflictType) -->
