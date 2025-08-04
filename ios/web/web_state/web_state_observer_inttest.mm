@@ -1260,6 +1260,13 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedSchemeNavigation) {
 // Tests failed navigation because URL with a space is not supported by
 // WKWebView (crbug.com/934379).
 TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
+// TODO(crbug.com/432002521): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
+
   GURL url("http:// .test");
 
   // Perform a navigation to url with unsupported url, which will fail.

@@ -541,6 +541,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // and one is removed, then after a sign-out and a new sign-in with the Reading
 // List sign-in promo with the same account, the removed item is not visible.
 - (void)testRemoveItemAfterSignInThenRefreshSignin {
+  // TODO(crbug.com/436165941): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (iOS26_OR_ABOVE()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];

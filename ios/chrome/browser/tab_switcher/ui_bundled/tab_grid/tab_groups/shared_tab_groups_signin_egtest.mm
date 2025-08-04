@@ -186,6 +186,13 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks sharing a group without being synced.
 - (void)testShareGroupNotSynced {
+  // TODO(crbug.com/436164455): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (iOS26_OR_ABOVE()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
 
