@@ -497,6 +497,9 @@ bool SharedContextState::InitializeGanesh(
   GrContextOptions options = GetDefaultGrContextOptions();
 
   options.fAllowMSAAOnNewIntel = !gles2::MSAAIsSlow(workarounds);
+  // Limit MSAA sample counts to 4 on Intel Android devices for performance.
+  if(workarounds.msaa_is_slow && !workarounds.msaa_is_slow_2)
+    options.fInternalMultisampleCount = 4;
   options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
   options.fPersistentCache = cache;
   options.fShaderErrorHandler = this;

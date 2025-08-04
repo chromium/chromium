@@ -2861,7 +2861,7 @@
       "os": {
         "type": "android"
       },
-      "gl_vendor": "Intel.*",
+      "gl_vendor": ".*Intel.*",
       "intel_gpu_generation": {
         "op": "<",
         "value": "11"
