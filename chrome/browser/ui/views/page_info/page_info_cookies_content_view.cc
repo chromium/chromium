@@ -496,21 +496,11 @@ void PageInfoCookiesContentView::SetRwsCookiesInfo(
     InitRwsButton(rws_info->is_managed);
     rws_button_->SetVisible(true);
 
-    const std::u16string rws_button_title = l10n_util::GetStringUTF16(
-        base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi)
-            ? IDS_PAGE_INFO_RWS_V2_BUTTON_TITLE
-            : IDS_PAGE_INFO_RWS_BUTTON_TITLE);
-    const std::u16string rws_button_subtitle = l10n_util::GetStringFUTF16(
-        base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi)
-            ? IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE
-            : IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE,
-        rws_info->owner_name);
-
     // Update the text displaying the name of RWS owner.
-    rws_button_->SetTitleText(rws_button_title);
-    rws_button_->SetSubtitleText(rws_button_subtitle);
+    rws_button_->SetTitleText(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TITLE));
+    rws_button_->SetSubtitleText(l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE, rws_info->owner_name));
   } else if (rws_button_) {
     rws_button_->SetVisible(false);
   }
@@ -541,11 +531,8 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
               : ui::ImageModel()));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
-  rws_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi)
-          ? IDS_PAGE_INFO_RWS_V2_BUTTON_TOOLTIP
-          : IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP));
+  rws_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP));
   rws_button_->SetTitleTextStyleAndColor(views::style::STYLE_BODY_3_MEDIUM,
                                          kColorPageInfoForeground);
   rws_button_->SetSubtitleTextStyleAndColor(views::style::STYLE_BODY_4,
