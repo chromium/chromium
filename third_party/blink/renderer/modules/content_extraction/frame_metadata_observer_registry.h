@@ -56,6 +56,7 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
 
  private:
   class DomContentLoadedListener;
+  class MetaTagsMutationObserver;
   friend class DomContentLoadedListener;
 
   void Bind(mojo::PendingReceiver<mojom::blink::FrameMetadataObserverRegistry>
@@ -87,6 +88,7 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
   HashMap<uint32_t, bool> has_sent_metatags_;
 
   Member<DomContentLoadedListener> dom_content_loaded_observer_;
+  Member<MetaTagsMutationObserver> meta_tags_mutation_observer_;
 };
 
 }  // namespace blink

@@ -74,7 +74,11 @@ void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
   if (!metadata) {
     return;
   }
-  frame_metadata_cache_[render_frame_host] = std::move(metadata);
+  if (metadata->frame_metadata.empty()) {
+    frame_metadata_cache_.erase(render_frame_host);
+  } else {
+    frame_metadata_cache_[render_frame_host] = std::move(metadata);
+  }
 
   if (!on_meta_tags_changed_callback_) {
     return;

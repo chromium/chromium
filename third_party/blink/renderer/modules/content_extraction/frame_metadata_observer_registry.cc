@@ -6,8 +6,11 @@
 
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer.h"
+#include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -16,6 +19,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/content_extraction/paid_content.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -53,6 +57,43 @@ void CollectMetaTagsFromFrame(LocalFrame* frame,
 }
 
 }  // namespace
+
+class FrameMetadataObserverRegistry::MetaTagsMutationObserver final
+    : public MutationObserver::Delegate {
+ public:
+  explicit MetaTagsMutationObserver(FrameMetadataObserverRegistry* registry)
+      : registry_(registry), observer_(MutationObserver::Create(this)) {}
+
+  void Observe(Node* target) {
+    MutationObserverInit* init = MutationObserverInit::Create();
+    init->setChildList(true);
+    init->setAttributes(true);
+    init->setAttributeFilter(Vector<String>{"name", "content"});
+    init->setSubtree(true);
+    DummyExceptionStateForTesting exception_state;
+    observer_->observe(target, init, exception_state);
+    DCHECK(!exception_state.HadException());
+  }
+
+  ExecutionContext* GetExecutionContext() const override {
+    return registry_->GetSupplementable()->GetExecutionContext();
+  }
+
+  void Deliver(const HeapVector<Member<MutationRecord>>&,
+               MutationObserver&) override {
+    registry_->OnMetaTagsChanged();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(registry_);
+    visitor->Trace(observer_);
+    MutationObserver::Delegate::Trace(visitor);
+  }
+
+ private:
+  Member<FrameMetadataObserverRegistry> registry_;
+  Member<MutationObserver> observer_;
+};
 
 // static
 const char FrameMetadataObserverRegistry::kSupplementName[] =
@@ -109,6 +150,7 @@ void FrameMetadataObserverRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(paid_content_metadata_observers_);
   visitor->Trace(metatags_observers_);
   visitor->Trace(metatags_observer_names_);
+  visitor->Trace(meta_tags_mutation_observer_);
 }
 
 class FrameMetadataObserverRegistry::DomContentLoadedListener final
@@ -175,6 +217,14 @@ void FrameMetadataObserverRegistry::OnDomContentLoaded() {
         event_type_names::kDOMContentLoaded, dom_content_loaded_observer_.Get(),
         false);
     dom_content_loaded_observer_ = nullptr;
+  }
+
+  if (!metatags_observers_.empty() && !meta_tags_mutation_observer_) {
+    meta_tags_mutation_observer_ =
+        MakeGarbageCollected<MetaTagsMutationObserver>(this);
+    if (auto* head = GetSupplementable()->head()) {
+      meta_tags_mutation_observer_->Observe(head);
+    }
   }
 }
 

@@ -138,9 +138,12 @@ class FrameMetadataObserverBrowserTest
   void OnMetaTagsChanged(blink::mojom::PageMetadataPtr page_metadata) override {
     on_meta_tags_changed_called_ = true;
     page_metadata_ = std::move(page_metadata);
+    metadata_callback_waiter_.SetValue(true);
   }
 
   bool was_meta_tags_changed_called() { return on_meta_tags_changed_called_; }
+
+  void ClearMetaTagsChanged() { on_meta_tags_changed_called_ = false; }
   blink::mojom::PageMetadataPtr& page_metadata() { return page_metadata_; }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
@@ -156,6 +159,7 @@ class FrameMetadataObserverBrowserTest
   }
 
  protected:
+  base::test::TestFuture<bool> metadata_callback_waiter_;
   bool on_paid_content_changed_called_ = false;
   bool on_meta_tags_changed_called_ = false;
 
@@ -241,10 +245,78 @@ IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, NoMetaTags) {
 
   const std::vector<std::string> names = {"author", "subject"};
   AddMetaTagsObserver(names);
-
   WaitForPageLoadedAndIPCs();
 
   EXPECT_FALSE(was_meta_tags_changed_called());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, MetaTagsUpdated) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+
+  const std::vector<std::string> names = {"author", "subject"};
+  AddMetaTagsObserver(names);
+  ASSERT_TRUE(metadata_callback_waiter_.Wait());
+
+  // Verify initial state.
+  VerifyAuthorMetaTag();
+
+  // Modify an existing tag.
+  metadata_callback_waiter_.Clear();
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "document.querySelector('meta[name=\"author\"]').setAttribute('content', "
+      "'Val');"));
+  ASSERT_TRUE(metadata_callback_waiter_.Wait());
+  {
+    EXPECT_TRUE(was_meta_tags_changed_called());
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Val");
+  }
+
+  // Add a new tag.
+  metadata_callback_waiter_.Clear();
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "var meta = document.createElement('meta'); meta.name = 'subject'; "
+      "meta.content = 'testing'; document.head.appendChild(meta);"));
+  ASSERT_TRUE(metadata_callback_waiter_.Wait());
+  {
+    EXPECT_TRUE(was_meta_tags_changed_called());
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 2u);
+    bool author_found = false;
+    bool subject_found = false;
+    for (const auto& tag : metadata->frame_metadata[0]->meta_tags) {
+      if (tag->name == "author") {
+        author_found = true;
+        EXPECT_EQ(tag->content, "Val");
+      } else if (tag->name == "subject") {
+        subject_found = true;
+        EXPECT_EQ(tag->content, "testing");
+      }
+    }
+    EXPECT_TRUE(author_found);
+    EXPECT_TRUE(subject_found);
+  }
+
+  // Remove a tag.
+  metadata_callback_waiter_.Clear();
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "document.querySelector('meta[name=\"author\"]').remove();"));
+  ASSERT_TRUE(metadata_callback_waiter_.Wait());
+  {
+    EXPECT_TRUE(was_meta_tags_changed_called());
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "subject");
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "testing");
+  }
 }
 
 }  // namespace

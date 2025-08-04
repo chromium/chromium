@@ -186,6 +186,97 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   EXPECT_EQ(remote_meta_tags_frames, 3);
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
+                       MetaTagsUpdated) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+  CreateObserver();
+
+  WaitForPageLoadedAndIPCs();
+  ASSERT_TRUE(callback_waiter_.Wait());
+  // ASSERT_TRUE(callback_called());
+
+  // Verify initial state.
+  {
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Gary");
+  }
+
+  // Modify an existing tag.
+  callback_waiter_.Clear();
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "document.querySelector('meta[name=\"author\"]').setAttribute('content', "
+      "'Val');"));
+  ASSERT_TRUE(callback_waiter_.Get());
+  {
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Val");
+  }
+
+  // Add a new tag.
+  callback_waiter_.Clear();
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "var meta = document.createElement('meta'); meta.name = 'subject'; "
+      "meta.content = 'testing'; document.head.appendChild(meta);"));
+  ASSERT_TRUE(callback_waiter_.Get());
+  {
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 2u);
+    // Order is not guaranteed.
+    EXPECT_TRUE(
+        (metadata->frame_metadata[0]->meta_tags[0]->name == "author" &&
+         metadata->frame_metadata[0]->meta_tags[1]->name == "subject") ||
+        (metadata->frame_metadata[0]->meta_tags[0]->name == "subject" &&
+         metadata->frame_metadata[0]->meta_tags[1]->name == "author"));
+  }
+
+  // Remove a tag.
+  callback_waiter_.Clear();
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "document.querySelector('meta[name=\"author\"]').remove();"));
+  ASSERT_TRUE(callback_waiter_.Get());
+  {
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "subject");
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "testing");
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
+                       MetaTagsAreRemoved) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+  CreateObserver();
+  ASSERT_TRUE(callback_waiter_.Wait());
+
+  blink::mojom::PageMetadataPtr& metadata = page_metadata();
+  EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+  EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+
+  callback_waiter_.Clear();
+
+  // Now, remove the meta tag.
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      "document.querySelector('meta[name=\"author\"]').remove();"));
+
+  // The observer should be notified of the change.
+  ASSERT_TRUE(callback_waiter_.Wait());
+
+  // The metadata should now be empty.
+  EXPECT_EQ(page_metadata()->frame_metadata.size(), 0u);
+}
+
 }  // namespace
 
 }  // namespace optimization_guide
