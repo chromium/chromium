@@ -2402,9 +2402,6 @@ extern const char kTpcdHeuristicsGrantsDescription[];
 extern const char kTpcdMetadataGrantsName[];
 extern const char kTpcdMetadataGrantsDescription[];
 
-extern const char kActFeaturesName[];
-extern const char kActFeaturesDescription[];
-
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
