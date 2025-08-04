@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/fileapi/recent_arc_media_source.h"
 
 #include <memory>
@@ -404,8 +399,8 @@ TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
 
   auto doc_source = std::make_unique<RecentArcMediaSource>(
       profile_.get(), arc::kDocumentsRootId);
-  std::vector<RecentFile> results[reps];
-  base::OneShotTimer timers[reps];
+  std::vector<std::vector<RecentFile>> results(reps);
+  std::vector<base::OneShotTimer> timers(reps);
 
   // Prepare timers; timers are stopping searches at 250ms + 100ms * call_id.
   // Whenever a source is stopped, the code just collects its partial results
