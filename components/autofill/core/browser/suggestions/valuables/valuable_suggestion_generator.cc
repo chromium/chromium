@@ -9,6 +9,7 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -32,11 +33,11 @@ Suggestion::LetterMonochromeIcon CreateFallbackSuggestionIcon(
 
 Suggestion CreateUndoOrClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
-  std::u16string value =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
   // TODO(crbug.com/40266549): iOS still uses Clear Form logic, replace with
   // Undo.
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM),
+      SuggestionType::kUndoOrClear);
   suggestion.icon = Suggestion::Icon::kClear;
 #else
   std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
@@ -109,6 +110,7 @@ std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
     base::span<const LoyaltyCard> loyalty_cards,
     const ValuablesDataManager& valuables_manager) {
   std::vector<Suggestion> suggestions;
+  suggestions.reserve(loyalty_cards.size());
   for (const LoyaltyCard& loyalty_card : loyalty_cards) {
     suggestions.push_back(
         CreateLoyaltyCardSuggestion(loyalty_card, valuables_manager));
@@ -207,7 +209,6 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
   std::vector<Suggestion> loyalty_card_suggestions =
       CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
   email_suggestions.insert(
-
       email_suggestions.end(),
       std::make_move_iterator(loyalty_card_suggestions.begin()),
       std::make_move_iterator(loyalty_card_suggestions.end()));
@@ -247,7 +248,6 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     email_suggestions.insert(email_suggestions.end() - 1,
                              Suggestion(SuggestionType::kSeparator));
   }
-
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

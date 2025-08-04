@@ -7,14 +7,15 @@
 
 #include <vector>
 
-#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
-#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace autofill {
 
-// Generates loyalty card suggestions for given `origin`. Loyalty cards are
+class ValuablesDataManager;
+
+// Generates loyalty card suggestions for a given `url`. Loyalty cards are
 // extracted from the `valuables_manager`.
 std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
     const ValuablesDataManager& valuables_manager,
@@ -27,5 +28,7 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     const GURL& url,
     bool trigger_field_is_autofilled,
     std::vector<Suggestion>& email_suggestions);
+
 }  // namespace autofill
+
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_VALUABLES_VALUABLE_SUGGESTION_GENERATOR_H_
