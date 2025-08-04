@@ -231,10 +231,26 @@ void LogValuePatternsMetric(const FormData& form) {
 // `trigger_field_type`. This might not be the definitive product used because
 // for example the product could not yield any suggestion and we'd fallback to
 // another product.
-FillingProduct GetPreferredSuggestionFillingProduct(
-    FieldType trigger_field_type) {
-  FillingProduct filling_product = GetFillingProductFromFieldTypeGroup(
-      GroupTypeOfFieldType(trigger_field_type));
+FillingProduct GetPreferredSuggestionFillingProduct(AutofillType trigger_type) {
+  const FieldType field_type = [&] {
+    if (FieldType ft = trigger_type.GetCreditCardType(); ft != UNKNOWN_TYPE) {
+      return ft;
+    }
+    if (FieldType ft = trigger_type.GetAddressType(); ft != UNKNOWN_TYPE) {
+      return ft;
+    }
+    if (FieldType ft = trigger_type.GetLoyaltyCardType(); ft != UNKNOWN_TYPE) {
+      return ft;
+    }
+    if (FieldType ft = trigger_type.GetIdentityCredentialType();
+        ft != UNKNOWN_TYPE) {
+      return ft;
+    }
+    FieldTypeSet fts = trigger_type.GetTypes();
+    return !fts.empty() ? *fts.begin() : UNKNOWN_TYPE;
+  }();
+  const FillingProduct filling_product =
+      GetFillingProductFromFieldTypeGroup(GroupTypeOfFieldType(field_type));
   // Autofill suggestions fallbacks to autocomplete if no product could be
   // inferred from the suggestion context.
   return filling_product == FillingProduct::kNone
@@ -1080,9 +1096,10 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     }
   }
 
-  context.filling_product = GetPreferredSuggestionFillingProduct(
-      got_autofillable_form ? autofill_field->Type().GetStorableType()
-                            : UNKNOWN_TYPE);
+  if (got_autofillable_form) {
+    context.filling_product =
+        GetPreferredSuggestionFillingProduct(autofill_field->Type());
+  }
 
   // If this is a mixed content form, we show a warning message and don't offer
   // autofill. The warning is shown even if there are no autofill suggestions
