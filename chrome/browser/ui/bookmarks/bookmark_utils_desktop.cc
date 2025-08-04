@@ -260,6 +260,67 @@ void GetURLsAndFoldersForOpenTabs(
   }
   GetURLsAndFoldersForTabEntries(folder_data, tab_entries, groups_by_index);
 }
+
+// Open a folder of bookmarks as tabs.
+void DoOpen(Browser* browser,
+            std::vector<UrlAndId> url_and_ids_to_open,
+            WindowOpenDisposition initial_disposition,
+            std::optional<std::u16string> folder_title,
+            bool add_to_split,
+            page_load_metrics::NavigationHandleUserData::InitiatorLocation
+                navigation_type,
+            std::optional<BookmarkLaunchAction> launch_action,
+            chrome::MessageBoxResult result) {
+  if (result != chrome::MESSAGE_BOX_RESULT_YES) {
+    return;
+  }
+  const auto opened_web_contents = OpenAllHelper(
+      browser, std::move(url_and_ids_to_open), initial_disposition,
+      navigation_type, std::move(launch_action));
+  if (add_to_split && opened_web_contents.size() == 1) {
+    TabStripModel* model = browser->tab_strip_model();
+    auto* const single_web_contents = *(opened_web_contents.begin());
+    const int opened_web_contents_index =
+        model->GetIndexOfWebContents(single_web_contents);
+    model->AddToNewSplit(
+        {opened_web_contents_index}, split_tabs::SplitTabVisualData(),
+        split_tabs::SplitTabCreatedSource::kBookmarkContextMenu);
+  } else if (folder_title.has_value()) {
+    TabStripModel* model = browser->tab_strip_model();
+
+    // Figure out which tabs we actually opened in this browser that
+    // aren't already in groups.
+    std::vector<int> tab_indices;
+    for (int i = 0; i < model->count(); ++i) {
+      if (base::Contains(opened_web_contents, model->GetWebContentsAt(i)) &&
+          !model->GetTabGroupForTab(i).has_value()) {
+        tab_indices.push_back(i);
+      }
+    }
+
+    if (tab_indices.empty()) {
+      return;
+    }
+
+    std::optional<tab_groups::TabGroupId> new_group_id =
+        model->AddToNewGroup(tab_indices);
+    if (!new_group_id.has_value()) {
+      return;
+    }
+
+    // Use the bookmark folder's title as the group's title.
+    TabGroup* group = model->group_model()->GetTabGroup(new_group_id.value());
+    const tab_groups::TabGroupVisualData* current_visual_data =
+        group->visual_data();
+    tab_groups::TabGroupVisualData new_visual_data(
+        folder_title.value(), current_visual_data->color(),
+        current_visual_data->is_collapsed());
+    model->ChangeTabGroupVisuals(group->id(), new_visual_data);
+
+    model->OpenTabGroupEditor(new_group_id.value());
+  }
+}
+
 }  // namespace
 
 void OpenAllIfAllowed(
@@ -273,70 +334,11 @@ void OpenAllIfAllowed(
     std::optional<BookmarkLaunchAction> launch_action) {
   std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
       nodes, initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
-  auto do_open =
-      [](Browser* browser, std::vector<UrlAndId> url_and_ids_to_open,
-         WindowOpenDisposition initial_disposition,
-         std::optional<std::u16string> folder_title, bool add_to_split,
-         page_load_metrics::NavigationHandleUserData::InitiatorLocation
-             navigation_type,
-         std::optional<BookmarkLaunchAction> launch_action,
-         chrome::MessageBoxResult result) {
-        if (result != chrome::MESSAGE_BOX_RESULT_YES) {
-          return;
-        }
-        const auto opened_web_contents = OpenAllHelper(
-            browser, std::move(url_and_ids_to_open), initial_disposition,
-            navigation_type, std::move(launch_action));
-        if (add_to_split && opened_web_contents.size() == 1) {
-          TabStripModel* model = browser->tab_strip_model();
-          auto* const single_web_contents = *(opened_web_contents.begin());
-          const int opened_web_contents_index =
-              model->GetIndexOfWebContents(single_web_contents);
-          model->AddToNewSplit(
-              {opened_web_contents_index}, split_tabs::SplitTabVisualData(),
-              split_tabs::SplitTabCreatedSource::kBookmarkContextMenu);
-        } else if (folder_title.has_value()) {
-          TabStripModel* model = browser->tab_strip_model();
-
-          // Figure out which tabs we actually opened in this browser that
-          // aren't already in groups.
-          std::vector<int> tab_indices;
-          for (int i = 0; i < model->count(); ++i) {
-            if (base::Contains(opened_web_contents,
-                               model->GetWebContentsAt(i)) &&
-                !model->GetTabGroupForTab(i).has_value()) {
-              tab_indices.push_back(i);
-            }
-          }
-
-          if (tab_indices.empty()) {
-            return;
-          }
-
-          std::optional<tab_groups::TabGroupId> new_group_id =
-              model->AddToNewGroup(tab_indices);
-          if (!new_group_id.has_value()) {
-            return;
-          }
-
-          // Use the bookmark folder's title as the group's title.
-          TabGroup* group =
-              model->group_model()->GetTabGroup(new_group_id.value());
-          const tab_groups::TabGroupVisualData* current_visual_data =
-              group->visual_data();
-          tab_groups::TabGroupVisualData new_visual_data(
-              folder_title.value(), current_visual_data->color(),
-              current_visual_data->is_collapsed());
-          model->ChangeTabGroupVisuals(group->id(), new_visual_data);
-
-          model->OpenTabGroupEditor(new_group_id.value());
-        }
-      };
 
   // Skip the prompt if there are few bookmarks.
   size_t child_count = url_and_ids.size();
   if (child_count < bookmarks::kNumBookmarkUrlsBeforePrompting) {
-    do_open(
+    DoOpen(
         browser, std::move(url_and_ids), initial_disposition,
         context == bookmarks::OpenAllBookmarksContext::kInGroup
             ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
@@ -357,7 +359,7 @@ void OpenAllIfAllowed(
       l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
                                  base::NumberToString16(child_count)),
       base::BindOnce(
-          do_open, browser, std::move(url_and_ids), initial_disposition,
+          DoOpen, browser, std::move(url_and_ids), initial_disposition,
           context == bookmarks::OpenAllBookmarksContext::kInGroup
               ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
               : std::nullopt,
