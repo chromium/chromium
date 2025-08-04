@@ -2455,6 +2455,14 @@ BASE_FEATURE_PARAM(std::string,
                    "allowed_urls",
                    "");
 
+// If true, the browser reports crashes via `DumpWithoutCrashing()` when theare
+// was a header mismatch.
+BASE_FEATURE_PARAM(bool,
+                   kServiceWorkerSyntheticResponseReportInconsistentHeader,
+                   &kServiceWorkerSyntheticResponse,
+                   "report_inconsistent_header",
+                   false);
+
 // 'Mode' parameter for blink::features::kSoftNavigationHeuristics.
 const base::FeatureParam<SoftNavigationHeuristicsMode>::Option
     kSoftNavigationHeuristicsModes[] = {

@@ -5,7 +5,9 @@
 #include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 
 #include <cstddef>
+#include <numeric>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -17,6 +19,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
@@ -68,6 +71,57 @@ void RecordReloadReason(SyntheticResponseReloadReason reason) {
                                 reason);
 }
 
+bool ShouldReportInconsistentHeader() {
+  static const bool report_inconsistent_header(
+      blink::features::kServiceWorkerSyntheticResponseReportInconsistentHeader
+          .Get());
+  return report_inconsistent_header;
+}
+
+void MaybeReportHeaderInconsistency(
+    const base::flat_map<std::string, std::multiset<std::string>>&
+        incoming_headers,
+    const base::flat_map<std::string, std::multiset<std::string>>&
+        stored_headers) {
+  if (!ShouldReportInconsistentHeader()) {
+    return;
+  }
+  auto to_string = [&](const std::multiset<std::string>& values) {
+    return std::accumulate(std::begin(values), std::end(values), std::string{},
+                           [](const std::string& a, const std::string& b) {
+                             return a.empty() ? b : a + ',' + b;
+                           });
+  };
+  for (const auto& item : stored_headers) {
+    if (!incoming_headers.contains(item.first)) {
+      // The header doesn't exist.
+      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "NoHeader", item.first);
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
+    if (incoming_headers.at(item.first) != item.second) {
+      // The header value is wrong.
+      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "WrongHeader",
+                                 item.first);
+      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "IncomingValue",
+                                 to_string(incoming_headers.at(item.first)));
+      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "StoredValue",
+                                 to_string(item.second));
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
+  }
+  for (const auto& item : incoming_headers) {
+    if (!stored_headers.contains(item.first)) {
+      // Unexpected header exists.
+      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "NotExpectedHeader",
+                                 item.first);
+      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "NotExpectedValue",
+                                 to_string(item.second));
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+}
 }  // namespace
 
 namespace content {
@@ -367,7 +421,12 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
   auto incoming_headers = collect_significant_headers(*headers);
   auto stored_headers = collect_significant_headers(*response_head->headers);
 
-  return incoming_headers == stored_headers;
+  bool result = incoming_headers == stored_headers;
+  if (!result) {
+    MaybeReportHeaderInconsistency(incoming_headers, stored_headers);
+  }
+
+  return result;
 }
 
 void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
