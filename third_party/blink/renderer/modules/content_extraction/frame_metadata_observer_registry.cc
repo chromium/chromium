@@ -29,27 +29,27 @@ void CollectMetaTagsFromFrame(LocalFrame* frame,
     return;
   }
 
-    auto* local_frame = To<LocalFrame>(frame);
-    Document* document = local_frame->GetDocument();
-    if (document && document->head()) {
-      Vector<mojom::blink::MetaTagPtr> found_tags;
-      for (HTMLMetaElement& meta :
-           Traversal<HTMLMetaElement>::ChildrenOf(*document->head())) {
-        const String& name = meta.GetName();
-        if (names_to_find.Contains(name)) {
-          auto meta_tag = mojom::blink::MetaTag::New();
-          meta_tag->name = name;
-          meta_tag->content = meta.Content();
-          found_tags.push_back(std::move(meta_tag));
-        }
-      }
-      if (!found_tags.empty()) {
-        auto frame_metadata = mojom::blink::FrameMetadata::New();
-        frame_metadata->url = document->Url();
-        frame_metadata->meta_tags = std::move(found_tags);
-        page_metadata.frame_metadata.push_back(std::move(frame_metadata));
+  auto* local_frame = To<LocalFrame>(frame);
+  Document* document = local_frame->GetDocument();
+  if (document && document->head()) {
+    Vector<mojom::blink::MetaTagPtr> found_tags;
+    for (HTMLMetaElement& meta :
+         Traversal<HTMLMetaElement>::ChildrenOf(*document->head())) {
+      const String& name = meta.GetName();
+      if (names_to_find.Contains(name)) {
+        auto meta_tag = mojom::blink::MetaTag::New();
+        meta_tag->name = name;
+        meta_tag->content = meta.Content();
+        found_tags.push_back(std::move(meta_tag));
       }
     }
+    if (!found_tags.empty()) {
+      auto frame_metadata = mojom::blink::FrameMetadata::New();
+      frame_metadata->url = document->Url();
+      frame_metadata->meta_tags = std::move(found_tags);
+      page_metadata.frame_metadata.push_back(std::move(frame_metadata));
+    }
+  }
 }
 
 }  // namespace
@@ -162,6 +162,7 @@ void FrameMetadataObserverRegistry::AddMetaTagsObserver(
       GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
 
   metatags_observer_names_.Set(remote_id.value(), HeapVector<String>(names));
+  has_sent_metatags_.Set(remote_id.value(), false);
   ListenForDomContentLoaded();
 }
 
@@ -185,6 +186,10 @@ void FrameMetadataObserverRegistry::OnPaidContentMetadataChanged() {
   bool paid_content_exists =
       paid_content.QueryPaidElements(*GetSupplementable());
 
+  if (!paid_content_exists) {
+    return;
+  }
+
   // TODO(gklassen): Add a MutationObserver to monitor for changes during
   // the lifetime of the page.
 
@@ -204,16 +209,27 @@ void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
   }
 
   for (auto& it : metatags_observer_names_) {
+    const mojo::RemoteSetElementId remote_id(it.key);
     auto page_metadata = mojom::blink::PageMetadata::New();
     CollectMetaTagsFromFrame(current_frame, it.value, *page_metadata);
-    metatags_observers_.Get(mojo::RemoteSetElementId(it.key))
-        ->OnMetaTagsChanged(std::move(page_metadata));
+
+    const bool has_metatags = !page_metadata->frame_metadata.empty();
+    DCHECK(has_sent_metatags_.Contains(remote_id.value()));
+    const bool has_sent_metatags_before =
+        has_sent_metatags_.at(remote_id.value());
+
+    if (has_metatags || has_sent_metatags_before) {
+      metatags_observers_.Get(remote_id)->OnMetaTagsChanged(
+          std::move(page_metadata));
+      has_sent_metatags_.Set(remote_id.value(), has_metatags);
+    }
   }
 }
 
 void FrameMetadataObserverRegistry::DisconnectHandler(
     mojo::RemoteSetElementId id) {
   metatags_observer_names_.erase(id.value());
+  has_sent_metatags_.erase(id.value());
 }
 
 }  // namespace blink

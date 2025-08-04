@@ -23,6 +23,10 @@ specific_include_rules = {
     "+content/shell",
     "+components/network_session_configurator/common/network_switches.h",
   ],
+  "page_content_metadata_observer_browsertest\.cc": [
+    "+content/shell",
+    "+components/network_session_configurator/common/network_switches.h",
+  ],
   "page_content_proto_util_unittest\.cc": [
     "+third_party/skia/include/core/SkColor.h",
   ],

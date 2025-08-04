@@ -10,6 +10,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("browser") {
   sources = [
+    "page_content_metadata_observer.cc",
+    "page_content_metadata_observer.h",
     "page_content_proto_provider.cc",
     "page_content_proto_provider.h",
     "page_content_proto_util.cc",

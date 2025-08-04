@@ -1,0 +1,191 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
+
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
+#include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
+#include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
+#include "ui/display/display_switches.h"
+#include "url/gurl.h"
+
+namespace optimization_guide {
+
+namespace {
+
+base::FilePath GetTestDataDir() {
+  return base::FilePath{
+      FILE_PATH_LITERAL("components/test/data/optimization_guide")};
+}
+
+class PageContentMetadataObserverBrowserTest
+    : public content::ContentBrowserTest {
+ public:
+  PageContentMetadataObserverBrowserTest() = default;
+  ~PageContentMetadataObserverBrowserTest() override = default;
+
+  content::WebContents* GetWebContents() { return shell()->web_contents(); }
+
+  void SetUpOnMainThread() override {
+    content::ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->AddDefaultHandlers(GetTestDataDir());
+    content::SetupCrossSiteRedirector(https_server_.get());
+
+    ASSERT_TRUE(https_server_->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    content::ContentBrowserTest::SetUpCommandLine(command_line);
+
+    // HTTPS server only serves a valid cert for localhost, so this is needed
+    // to load pages from other hosts without an error.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1.0");
+  }
+
+  bool LoadPage(GURL url) {
+    callback_waiter_.Clear();
+    return content::NavigateToURL(GetWebContents(), url);
+  }
+
+  const std::vector<std::string> names_ = {"author", "subject"};
+
+  void CreateObserver() {
+    PageContentMetadataObserver::GetOrCreateForWebContents(GetWebContents(),
+                                                           names_);
+    PageContentMetadataObserver::FromWebContents(GetWebContents())
+        ->SetOnMetaTagsChangedCallback(base::BindRepeating(
+            &PageContentMetadataObserverBrowserTest::OnMetaTagsChanged,
+            base::Unretained(this)));
+  }
+
+  void OnMetaTagsChanged(content::RenderFrameHost* rfh,
+                         const blink::mojom::PageMetadata& page_metadata) {
+    page_metadata_ = page_metadata.Clone();
+    // This may be called multiple times in some tests, but TestFuture handles
+    // this gracefully.
+    callback_waiter_.SetValue(true);
+  }
+
+  bool ProcessPendingIPC() {
+    // Execute a script to ensure all pending IPCs from the renderer have been
+    // processed. By the time this returns, the meta tags callback would have
+    // been called if it was going to be.
+    return content::ExecJs(GetWebContents(), "void(0);");
+  }
+
+  void WaitForPageLoadedAndIPCs() {
+    // Wait for the page and all subframes to load. This is important for tests
+    // with cross-origin iframes.
+    content::WaitForLoadStop(GetWebContents());
+    ProcessPendingIPC();
+  }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+  blink::mojom::PageMetadataPtr& page_metadata() { return page_metadata_; }
+
+  base::test::TestFuture<bool> callback_waiter_;
+
+ private:
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
+  blink::mojom::PageMetadataPtr page_metadata_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
+                       MetaTagsAreObserved) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+  CreateObserver();
+  ASSERT_TRUE(callback_waiter_.Wait());
+
+  blink::mojom::PageMetadataPtr& metadata = page_metadata();
+  EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+  EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+  EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
+  EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Gary");
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest, NoMetaTags) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/simple.html")));
+  CreateObserver();
+
+  WaitForPageLoadedAndIPCs();
+
+  EXPECT_FALSE(callback_waiter_.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
+                       MetaTagsAreObservedInMultipleFrames) {
+  ASSERT_TRUE(LoadPage(
+      https_server()->GetURL("a.com", "/meta_tags_in_multiple_frames.html")));
+  CreateObserver();
+
+  // Wait until we have received metadata from all frames. The callback will be
+  // called multiple times, once for each frame that has meta tags.
+  while (true) {
+    ASSERT_TRUE(callback_waiter_.Wait());
+    if (page_metadata()->frame_metadata.size() == 5) {
+      break;
+    }
+    callback_waiter_.Clear();
+  }
+
+  // Verify that the meta tags were observed in all frames that have them.
+  blink::mojom::PageMetadataPtr& metadata = page_metadata();
+  EXPECT_EQ(metadata->frame_metadata.size(), 5u);
+
+  // Main frame.
+  EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+  EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
+  EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "George");
+
+  // The remaining 4 frames with meta tags can appear in any order.  There are
+  // 3 remote frames and 1 local frame.
+  int local_meta_tags_frames = 0;
+  int remote_meta_tags_frames = 0;
+
+  GURL local_meta_tags_url = https_server()->GetURL("a.com", "/meta_tags.html");
+  GURL remote_meta_tags_url_b =
+      https_server()->GetURL("b.com", "/meta_tags.html");
+  GURL remote_meta_tags_url_c =
+      https_server()->GetURL("c.com", "/meta_tags.html");
+
+  for (size_t i = 1; i < metadata->frame_metadata.size(); ++i) {
+    const auto& frame_info = metadata->frame_metadata[i];
+    ASSERT_EQ(frame_info->meta_tags.size(), 1u);
+    EXPECT_EQ(frame_info->meta_tags[0]->name, "author");
+    EXPECT_EQ(frame_info->meta_tags[0]->content, "Gary");
+
+    if (frame_info->url == local_meta_tags_url) {
+      local_meta_tags_frames++;
+    } else if (frame_info->url == remote_meta_tags_url_b ||
+               frame_info->url == remote_meta_tags_url_c) {
+      remote_meta_tags_frames++;
+    }
+  }
+
+  EXPECT_EQ(local_meta_tags_frames, 1);
+  EXPECT_EQ(remote_meta_tags_frames, 3);
+}
+
+}  // namespace
+
+}  // namespace optimization_guide

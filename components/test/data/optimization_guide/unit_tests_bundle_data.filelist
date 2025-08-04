@@ -27,6 +27,7 @@
 //components/test/data/optimization_guide/media_data/video.webm
 //components/test/data/optimization_guide/media_data/video_in_iframe.html
 //components/test/data/optimization_guide/meta_tags.html
+//components/test/data/optimization_guide/meta_tags_in_multiple_frames.html
 //components/test/data/optimization_guide/page_topics_128_model.tflite
 //components/test/data/optimization_guide/paid_content.html
 //components/test/data/optimization_guide/paragraph.html
