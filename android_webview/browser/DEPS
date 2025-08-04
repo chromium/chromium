@@ -73,6 +73,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
 
+  "+media/audio/audio_features.h", # For audio command line switches.
   "+media/base/android",
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/buildflags.h",

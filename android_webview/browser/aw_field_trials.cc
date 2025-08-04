@@ -22,6 +22,7 @@
 #include "components/viz/common/features.h"
 #include "content/public/common/content_features.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/features.h"
 #include "net/base/features.h"
@@ -292,4 +293,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Document Picture-in-Picture API is not supported on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kDocumentPictureInPictureAPI);
+
+  // AAudio per-stream device selection is not supported on WebView.
+  aw_feature_overrides.DisableFeature(
+      features::kAAudioPerStreamDeviceSelection);
 }
