@@ -12,6 +12,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
@@ -144,6 +145,7 @@ MultiCaptureUsageIndicatorService::MultiCaptureUsageIndicatorService(
   CHECK(notification_display_service_);
 
   data_service_observer_.Observe(data_service_);
+  notification_service_observer_.Observe(notification_display_service_);
 }
 
 MultiCaptureUsageIndicatorService::~MultiCaptureUsageIndicatorService() =
@@ -155,9 +157,12 @@ MultiCaptureUsageIndicatorService::Create(
     web_app::WebAppProvider* provider,
     NotificationDisplayService* notification_display_service,
     MultiCaptureDataService* data_service) {
-  auto service = base::WrapUnique(new MultiCaptureUsageIndicatorService(
+  if (!prefs || !provider || !notification_display_service || !data_service) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
+  return base::WrapUnique(new MultiCaptureUsageIndicatorService(
       prefs, provider, notification_display_service, data_service));
-  return service;
 }
 
 void MultiCaptureUsageIndicatorService::MultiCaptureStarted(
@@ -194,6 +199,17 @@ void MultiCaptureUsageIndicatorService::MultiCaptureDataChanged() {
 
 void MultiCaptureUsageIndicatorService::MultiCaptureDataServiceDestroyed() {
   data_service_observer_.Reset();
+}
+
+void MultiCaptureUsageIndicatorService::OnNotificationDisplayed(
+    const message_center::Notification& notification,
+    const NotificationCommon::Metadata* const metadata) {}
+void MultiCaptureUsageIndicatorService::OnNotificationClosed(
+    const std::string& notification_id) {}
+void MultiCaptureUsageIndicatorService::OnNotificationDisplayServiceDestroyed(
+    NotificationDisplayService* service) {
+  notification_service_observer_.Reset();
+  notification_display_service_ = nullptr;
 }
 
 message_center::Notification

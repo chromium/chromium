@@ -39,6 +39,10 @@ MultiCaptureDataService::~MultiCaptureDataService() {
 std::unique_ptr<MultiCaptureDataService> MultiCaptureDataService::Create(
     web_app::WebAppProvider* provider,
     PrefService* prefs) {
+  if (!provider || !prefs) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
   auto service = base::WrapUnique(new MultiCaptureDataService(provider, prefs));
   service->Init();
   return service;
