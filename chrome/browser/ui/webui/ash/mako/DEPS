@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ui/views/bubble",
   "+chrome/browser/ui/webui/ash/lobster",
   "+chrome/browser/ui/webui/top_chrome",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test",

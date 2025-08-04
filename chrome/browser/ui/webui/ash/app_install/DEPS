@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/ui/webui/sanitized_image_source.h",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/grit",

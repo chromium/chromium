@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/enterprise/data_controls",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
 ]
