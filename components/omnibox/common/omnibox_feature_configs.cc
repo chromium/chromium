@@ -53,6 +53,12 @@ AiModeEchoMatch::AiModeEchoMatch() {
       base::FeatureParam<bool>(&kAiModeEchoMatch, "DoNotDedupeAimSuggestions",
                                do_not_dedupe_aim_suggestions)
           .Get();
+
+  do_not_show_historic_aim_suggestions =
+      base::FeatureParam<bool>(&kAiModeEchoMatch,
+                               "DoNotShowHistoricAimSuggestions",
+                               do_not_show_historic_aim_suggestions)
+          .Get();
 }
 
 BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,

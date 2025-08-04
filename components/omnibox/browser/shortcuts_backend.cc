@@ -32,6 +32,7 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "ui/base/page_transition_types.h"
@@ -346,6 +347,16 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   if (match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER)
     return;
 
+  // The shortcut DB doesn't store enough info to distinguish between search
+  // suggestion types. Resurfacing a AI mode usage with a traditional search
+  // shortcut match would be surprising. Repeated AI mode matches are probably
+  // uncommon anyways.
+  if (omnibox_feature_configs::AiModeEchoMatch::Get()
+          .do_not_show_historic_aim_suggestions &&
+      match.IsSearchAimSuggestion()) {
+    return;
+  }
+
   const std::u16string text_trimmed_lowercase(
       base::i18n::ToLower(text_trimmed));
   const base::Time now(base::Time::Now());
@@ -415,7 +426,7 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
   AutocompleteMatch temp;
 
   // TODO(crbug.com/410023142): Remove `CreateShortcutSearchSuggestion()` and
-  // stop storing match classifications.
+  //   stop storing match classifications.
   // Note: `search_terms_args` might not be populated for all search types
   // (e.g., VOICE_SUGGEST, CLIPBOARD_TEXT, CLIPBOARD_IMAGE).
   if (AutocompleteMatch::IsSearchType(match.type) && match.search_terms_args) {
