@@ -1659,7 +1659,7 @@ MouseWheelPhaseHandler* RenderWidgetHostViewMac::GetMouseWheelPhaseHandler() {
 void RenderWidgetHostViewMac::ShowSharePicker(
     const std::string& title,
     const std::string& text,
-    const std::string& url,
+    const GURL& url,
     const std::vector<std::string>& file_paths,
     blink::mojom::ShareService::ShareCallback callback) {
   ns_view_->ShowSharingServicePicker(title, text, url, file_paths,

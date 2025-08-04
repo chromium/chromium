@@ -17,6 +17,7 @@ import "ui/events/mojom/event.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 import "ui/gfx/range/mojom/range.mojom";
+import "url/mojom/url.mojom";
 
 // Interface that lets the browser process hide/close a popup menu in a
 // remote cocoa process, for menus displayed by DisplayPopupMenu().
@@ -119,7 +120,7 @@ interface RenderWidgetHostNSView {
   // returning the result of that action.
   ShowSharingServicePicker(string title,
                            string text,
-                           string url,
+                           url.mojom.Url url,
                            array<string> file_paths)
     => (blink.mojom.ShareError error);
 

@@ -85,7 +85,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   void ShowSharingServicePicker(
       const std::string& title,
       const std::string& text,
-      const std::string& url,
+      const GURL& url,
       const std::vector<std::string>& file_paths,
       ShowSharingServicePickerCallback callback) override;
   void Destroy() override;

@@ -498,7 +498,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void ShowSharePicker(
       const std::string& title,
       const std::string& text,
-      const std::string& url,
+      const GURL& url,
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) override;
 
