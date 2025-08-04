@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_export_view_controller.h"
 
 #import "base/i18n/rtl.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -99,6 +100,7 @@ NSDictionary<NSString*, NSString*>* GetTextProvider() {
   /// Sets up the safari data import item.
   self.animationName = GetAnimationName(/*dark_mode=*/NO);
   self.animationNameDarkMode = GetAnimationName(/*dark_mode=*/YES);
+  self.animationBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
   self.underTitleView = GetInstructionsView();
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_SAFARI_IMPORT_EXPORT_BUTTON_GO_TO_SETTINGS);

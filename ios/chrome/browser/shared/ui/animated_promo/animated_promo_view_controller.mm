@@ -95,6 +95,8 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   }
   [self configureAlertScreen];
   [self layoutAlertScreen];
+  // Set up UI with current trait first.
+  [self updateUIOnTraitChange];
 
   NSArray<UITrait>* traits = TraitCollectionSetForTraits(
       @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
