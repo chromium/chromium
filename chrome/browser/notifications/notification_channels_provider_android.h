@@ -49,9 +49,10 @@ struct NotificationChannel {
 };
 
 // This class provides notification content settings from system notification
-// channels on Android O+. This provider takes precedence over pref-provided
-// content settings, but defers to supervised user and policy settings - see
-// ordering of the ProviderType enum values in HostContentSettingsMap.
+// channels that per-origin notification permissions states are mapped to since
+// Android Oreo. This provider takes precedence over pref-provided content
+// settings, but defers to supervised user and policy settings - see ordering of
+// the ProviderType enum values in HostContentSettingsMap.
 //
 // PartitionKey is ignored by this provider because the content settings should
 // apply across partitions.
@@ -72,9 +73,6 @@ class NotificationChannelsProviderAndroid
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  // Whether this class listens to all notification channel changes.
-  static bool IsListeningToNotificationChannelChanges();
 
   explicit NotificationChannelsProviderAndroid(PrefService* pref_service);
   NotificationChannelsProviderAndroid(

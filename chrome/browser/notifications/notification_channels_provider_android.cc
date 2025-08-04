@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
@@ -40,7 +39,6 @@
 #include "chrome/browser/notifications/jni_headers/NotificationSettingsBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::BuildInfo;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
@@ -252,13 +250,6 @@ void NotificationChannelsProviderAndroid::RegisterProfilePrefs(
                                 false);
 }
 
-// static
-bool NotificationChannelsProviderAndroid::
-    IsListeningToNotificationChannelChanges() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_P;
-}
-
 NotificationChannel::NotificationChannel(const std::string& id,
                                          const std::string& origin,
                                          const base::Time& timestamp,
@@ -458,18 +449,11 @@ NotificationChannelsProviderAndroid::GetRuleIterator(
     }
   }
 
+  // Since Android P, Chrome listens to blocked state changes for all
+  // notification channels, thus the returned RuleIterator is up-to-date.
   std::vector<NotificationChannel> channels;
   for (const auto& channel : origin_channel_map) {
     channels.push_back(channel.second);
-  }
-
-  // On Android P+, Chrome listens to blocked state changes for all notification
-  // channels. Thus the returned RuleIterator is up-to-date. However, for
-  // devices below P, the RuleIterator might not contain up-to-date information
-  // if user has just modified notification settings. As a result, schedule an
-  // channel update to inform all observers if something has changed.
-  if (!IsListeningToNotificationChannelChanges()) {
-    provider->EnsureUpdatedSettings(base::DoNothing());
   }
 
   return channels.empty()

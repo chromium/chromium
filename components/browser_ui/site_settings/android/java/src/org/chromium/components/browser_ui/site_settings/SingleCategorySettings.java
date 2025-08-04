@@ -626,11 +626,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 websitePreference.setFragment(SingleWebsiteSettings.class.getName());
                 websitePreference.putSiteAddressIntoExtras(
                         SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    && mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
-                // In  Android O+, users can manage Notification channels through App Info. If this
-                // is the case we send the user directly to Android Settings to modify the
-                // Notification exception.
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
+                // Per-origin notification permission state is mapped to Android notification
+                // channels since Android O, send the user directly to Android Settings to modify
+                // the state.
                 getSiteSettingsDelegate()
                         .getChannelIdForOrigin(
                                 websitePreference.site().getAddress().getOrigin(),

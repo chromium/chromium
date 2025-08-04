@@ -169,11 +169,8 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
   void SetChannelStatus(const std::string& origin,
                         NotificationChannelStatus status) {
     fake_bridge_->SetChannelStatus(origin, status);
-    if (NotificationChannelsProviderAndroid::
-            IsListeningToNotificationChannelChanges()) {
-      channels_provider_->OnChannelStateChanged(
-          fake_bridge_->GetChannelForOrigin(origin).value());
-    }
+    channels_provider_->OnChannelStateChanged(
+        fake_bridge_->GetChannelForOrigin(origin).value());
   }
 
   ContentSettingsPattern GetTestPattern() {
@@ -523,14 +520,6 @@ TEST_F(NotificationChannelsProviderAndroidTest,
                                       ContentSettingsType::NOTIFICATIONS))
       .Times(1);
 
-  // On pre-P devices, the content setting change only happens after
-  // GetRuleIterator() is called.
-  if (!NotificationChannelsProviderAndroid::
-          IsListeningToNotificationChannelChanges()) {
-    channels_provider_->GetRuleIterator(
-        ContentSettingsType::NOTIFICATIONS, false /* off_the_record */,
-        content_settings::PartitionKey::GetDefaultForTesting());
-  }
   content::RunAllTasksUntilIdle();
 
   // Observer should be notified when a new website setting is added.
@@ -1118,11 +1107,6 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 TEST_F(NotificationChannelsProviderAndroidTest,
        OnChannelStateChanged_InTheMiddleOfSetWebsiteSetting) {
   InitChannelsProvider();
-
-  if (!NotificationChannelsProviderAndroid::
-          IsListeningToNotificationChannelChanges()) {
-    return;
-  }
 
   content_settings::MockObserver mock_observer;
   channels_provider_->AddObserver(&mock_observer);
