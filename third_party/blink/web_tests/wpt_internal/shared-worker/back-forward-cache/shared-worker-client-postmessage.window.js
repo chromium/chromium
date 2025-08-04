@@ -28,12 +28,12 @@ promise_test(async t => {
   }, [workerScriptUrl]);
 
   await prepareForBFCache(rc1);
-  const rc1_navigated_away = await rc1.navigateToNew();
-  await assertSimplestScriptRuns(rc1_navigated_away);
+  const rc2 = await rc1.navigateToNew();
+  await assertSimplestScriptRuns(rc2);
 
-  const rc_trigger = await rcHelper.addWindow(
+  const rcTrigger = await rcHelper.addWindow(
       /*config=*/ {}, /*options=*/ {features: 'noopener'});
-  await rc_trigger.executeScript((workerUrl) => {
+  await rcTrigger.executeScript((workerUrl) => {
     return new Promise((resolve) => {
       const triggerWorker = new SharedWorker(workerUrl);
       triggerWorker.port.onmessage = (e) => {
@@ -44,7 +44,7 @@ promise_test(async t => {
     });
   }, [workerScriptUrl]);
 
-  await rc1_navigated_away.historyBack();
+  await rc2.historyBack();
 
   await assertNotRestoredFromBFCache(
       rc1, ['sharedworker-message'], ['sharedworker']);

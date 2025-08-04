@@ -4472,7 +4472,8 @@
     "platforms": ["Mac", "Win", "Linux"],
     "bases": [
       "wpt_internal/shared-worker/back-forward-cache/shared-worker-allows-bfcache.window.js",
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-evict-on-message.window.js"
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage-transferred-port.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage.window.js"
     ],
     "exclusive_tests": "ALL",
     "args": [
