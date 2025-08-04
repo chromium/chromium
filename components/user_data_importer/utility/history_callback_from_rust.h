@@ -26,6 +26,9 @@ class HistoryCallbackFromRust {
       std::unique_ptr<std::vector<HistoryType>> history_entries,
       bool completed) = 0;
 
+  // Called from Rust to signal that parsing has failed.
+  virtual void Fail() = 0;
+
   virtual ~HistoryCallbackFromRust() = default;
 
   // This type is non-copyable and non-movable.

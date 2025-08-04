@@ -98,7 +98,7 @@ class StablePortabilityDataImporter {
         bool completed) override;
 
     // Calls `done_callback_` with 0 to signal that parsing has failed.
-    void Fail();
+    void Fail() override;
 
    private:
     TransferHistoryCallback transfer_history_callback_;

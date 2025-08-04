@@ -27,6 +27,7 @@ use std::io::BufReader;
 // batching.
 pub trait HistoryCallback<T: cxx::vector::VectorElement> {
     fn import_entries(self: Pin<&mut Self>, entries: UniquePtr<CxxVector<T>>, completed: bool);
+    fn fail(self: Pin<&mut Self>);
 }
 
 impl HistoryCallback<ffi::SafariHistoryEntry> for ffi::SafariHistoryCallbackFromRust {
@@ -36,6 +37,10 @@ impl HistoryCallback<ffi::SafariHistoryEntry> for ffi::SafariHistoryCallbackFrom
         completed: bool,
     ) {
         self.ImportSafariHistoryEntries(entries, completed);
+    }
+
+    fn fail(self: Pin<&mut Self>) {
+        self.Fail();
     }
 }
 
@@ -48,6 +53,10 @@ impl HistoryCallback<ffi::StablePortabilityHistoryEntry>
         completed: bool,
     ) {
         self.ImportStablePortabilityHistoryEntries(entries, completed);
+    }
+
+    fn fail(self: Pin<&mut Self>) {
+        self.Fail();
     }
 }
 
@@ -92,10 +101,10 @@ pub fn parse_safari_history(
     history_size_threshold: usize,
 ) {
     let mut history = CxxVector::<ffi::SafariHistoryEntry>::new();
-    archive.fold_files((), |(), file, outpath| {
+    let result = archive.fold_files(true, |acc, file, outpath| {
         if has_extension(outpath, ffi::FileType::SafariHistory) {
             let stream_reader = ZipEntryBufReader::new(file);
-            let _ = json::deserialize_top_level::<SafariHistoryJSONEntry, _>(
+            let result = json::deserialize_top_level::<SafariHistoryJSONEntry, _>(
                 stream_reader.inner,
                 ffi::FileType::SafariHistory,
                 |history_item| {
@@ -108,9 +117,16 @@ pub fn parse_safari_history(
                 },
                 /* metadata_only= */ false,
             );
+            return acc && result.is_ok();
         }
+        acc
     });
-    history_callback.as_mut().unwrap().import_entries(history, /* completed= */ true);
+
+    if result {
+        history_callback.as_mut().unwrap().import_entries(history, /* completed= */ true);
+    } else {
+        history_callback.as_mut().unwrap().fail();
+    }
 }
 
 // Attempts to parse a file in the stable portability history format. Returns
@@ -120,7 +136,7 @@ pub fn parse_stable_portability_history(
     file: fs::File,
     mut history_callback: UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
     history_size_threshold: usize,
-) -> bool {
+) {
     let mut history = CxxVector::<ffi::StablePortabilityHistoryEntry>::new();
     let result = (|| -> Result<()> {
         let stream_reader = BufReader::with_capacity(STREAM_BUFFER_SIZE, file);
@@ -138,9 +154,13 @@ pub fn parse_stable_portability_history(
             /* metadata_only= */ false,
         )
     })();
-    // Send final batch if any, and completion signal.
-    history_callback.as_mut().unwrap().import_entries(history, true);
-    return result.is_ok();
+    if result.is_ok() {
+        // Send final batch if any, and completion signal.
+        history_callback.as_mut().unwrap().import_entries(history, true);
+    } else {
+        // Signal failure.
+        history_callback.as_mut().unwrap().fail();
+    }
 }
 
 // Returns whether the file used by the stream reader is a history file.

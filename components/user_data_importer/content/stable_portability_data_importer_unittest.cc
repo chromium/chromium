@@ -597,6 +597,7 @@ TEST_F(StablePortabilityDataImporterTest, History_Basic) {
 }
 
 // Tests parsing an invalid JSON file.
+// TODO(crbug.com/435652239): Fully cover test plan.
 TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
   const char kHistoryJson[] = R"({
     "metadata": {
@@ -608,8 +609,7 @@ TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
         "title": "Google",
   })";  // Invalid JSON, missing closing brackets.
   ImportHistory(kHistoryJson);
-  // TODO(crbug.com/435386347): The result should be "-1" to indicate the error.
-  EXPECT_EQ(GetNumberOfHistoryImported(), 0);
+  EXPECT_EQ(GetNumberOfHistoryImported(), -1);
 }
 
 // Tests parsing a valid JSON file with no history entries.

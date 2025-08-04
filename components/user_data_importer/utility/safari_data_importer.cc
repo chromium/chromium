@@ -180,7 +180,7 @@ class RustHistoryCallback final
   }
 
   // Calls `done_callback_` with 0 to signal that parsing has failed.
-  void Fail() { std::move(done_closure_).Run(); }
+  void Fail() override { std::move(done_closure_).Run(); }
 
  private:
   ParseHistoryCallback parse_history_callback_;

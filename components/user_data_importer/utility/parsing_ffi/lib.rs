@@ -67,6 +67,7 @@ mod ffi {
             history_entries: UniquePtr<CxxVector<SafariHistoryEntry>>,
             completed: bool,
         );
+        fn Fail(self: Pin<&mut SafariHistoryCallbackFromRust>);
 
         type StablePortabilityHistoryCallbackFromRust;
         #[cxx_name = "ImportHistoryEntries"]
@@ -75,6 +76,7 @@ mod ffi {
             history_entries: UniquePtr<CxxVector<StablePortabilityHistoryEntry>>,
             completed: bool,
         );
+        fn Fail(self: Pin<&mut StablePortabilityHistoryCallbackFromRust>);
     }
 
     extern "Rust" {
@@ -105,7 +107,7 @@ mod ffi {
             owned_fd: i32,
             history_callback: UniquePtr<StablePortabilityHistoryCallbackFromRust>,
             history_size_threshold: usize,
-        ) -> bool;
+        );
     }
 }
 
@@ -121,7 +123,7 @@ unsafe fn parse_stable_portability_history(
     owned_fd: i32,
     history_callback: cxx::UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
     history_size_threshold: usize,
-) -> bool {
+) {
     // SAFETY: Safety requirements are propagated from our caller.
     let file = unsafe { fs::File::from_raw_fd(owned_fd) };
     history::parse_stable_portability_history(file, history_callback, history_size_threshold)
@@ -133,7 +135,7 @@ fn parse_stable_portability_history(
     owned_fd: i32,
     history_callback: cxx::UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
     history_size_threshold: usize,
-) -> bool {
+) {
     unreachable!("This function should not be used on non-POSIX")
 }
 
