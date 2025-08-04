@@ -264,7 +264,7 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
 }
 
 base::expected<bool, chromeos::MagicBoostState::Error>
-MagicBoostStateAsh::IsMagicBoostAvailableExpected() const {
+MagicBoostStateAsh::IsUserEligibleForGenAIFeaturesExpected() const {
   std::optional<bool> availability = mahi_availability::IsMahiAvailable();
   if (!availability.has_value()) {
     return base::unexpected(chromeos::MagicBoostState::Error::kUninitialized);
@@ -273,9 +273,9 @@ MagicBoostStateAsh::IsMagicBoostAvailableExpected() const {
 }
 
 void MagicBoostStateAsh::OnRefreshTokensReady() {
-  ASSIGN_OR_RETURN(bool available, IsMagicBoostAvailableExpected(),
+  ASSIGN_OR_RETURN(bool available, IsUserEligibleForGenAIFeaturesExpected(),
                    [](auto) {});
-  UpdateMagicBoostAvailable(available);
+  UpdateUserEligibleForGenAIFeatures(available);
 }
 
 void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {

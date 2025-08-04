@@ -26,7 +26,7 @@ class FakeMagicBoostState : public chromeos::MagicBoostState {
 
  protected:
   base::expected<bool, chromeos::MagicBoostState::Error>
-  IsMagicBoostAvailableExpected() const override;
+  IsUserEligibleForGenAIFeaturesExpected() const override;
 };
 
 }  // namespace test

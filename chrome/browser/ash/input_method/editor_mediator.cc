@@ -280,7 +280,7 @@ void EditorMediator::HandleTrigger(
 
 void EditorMediator::ShowNotice(
     EditorNoticeTransitionAction transition_action) {
-  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+  if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
     ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
         /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
         /*action=*/

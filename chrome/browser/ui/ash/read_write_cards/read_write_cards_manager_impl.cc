@@ -159,7 +159,7 @@ ReadWriteCardsManagerImpl::GetControllers(
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   bool should_show_hmr_card = true;
   if (magic_boost_card_controller_ &&
-      magic_boost_state->IsMagicBoostAvailable()) {
+      magic_boost_state->IsUserEligibleForGenAIFeatures()) {
     should_show_hmr_card = magic_boost_state->ShouldShowHmrCard();
 
     // Ensure the disclaimer view is closed before moving to the next step
@@ -210,7 +210,7 @@ ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
     const content::ContextMenuParams& params,
     const editor_menu::EditorMenuCardContext& editor_menu_card_context) {
   if (!magic_boost_card_controller_ ||
-      !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+      !chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
     return std::nullopt;
   }
 

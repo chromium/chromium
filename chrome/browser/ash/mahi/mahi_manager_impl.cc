@@ -116,7 +116,7 @@ class OnConsentStateUpdateClosureRunner
                                     base::OnceClosure on_declined_closure)
       : on_approved_closure_(std::move(on_approved_closure)),
         on_declined_closure_(std::move(on_declined_closure)) {
-    CHECK(chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
+    CHECK(chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
     magic_boost_state_observation_.Observe(chromeos::MagicBoostState::Get());
   }
 
@@ -210,7 +210,7 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
 // Returns true if the Mahi feature has been approved to be used.
 bool IsMahiApproved() {
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  CHECK(magic_boost_state->IsMagicBoostAvailable())
+  CHECK(magic_boost_state->IsUserEligibleForGenAIFeatures())
       << "GenAI feature surfaced to non-eligible user.";
   return magic_boost_state->hmr_consent_status() ==
          chromeos::HMRConsentStatus::kApproved;
@@ -778,7 +778,7 @@ void MahiManagerImpl::MaybeObserveHistoryService() {
 
 void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
-  CHECK(chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
+  CHECK(chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
 
   // Cache the display id before moving `context_menu_request`.
   const int64_t display_id = context_menu_request->display_id;

@@ -87,7 +87,7 @@ void MakoBubbleCoordinator::LoadEditorUI(
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   url = net::AppendOrReplaceQueryParameter(
       url, kOrcaMagicBoostParamKey,
-      magic_boost_state && magic_boost_state->IsMagicBoostAvailable()
+      magic_boost_state && magic_boost_state->IsUserEligibleForGenAIFeatures()
           ? "true"
           : "false");
 

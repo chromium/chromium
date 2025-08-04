@@ -186,9 +186,9 @@ void QuickAnswersState::RemoveObserver(QuickAnswersStateObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void QuickAnswersState::OnMagicBoostAvailableUpdated(bool available) {
-  // MagicBoost's availability check includes an async operation. It can return
-  // false for a short period even if a user/device is eligible.
+void QuickAnswersState::OnUserEligibleForGenAIFeaturesUpdated(bool eligible) {
+  // Gen-AI features' eligibility check includes an async operation. It can
+  // return false for a short period even if a user/device is eligible.
   MaybeNotifyFeatureTypeChanged();
 }
 
@@ -251,7 +251,7 @@ QuickAnswersState::GetFeatureTypeExpected() const {
     return base::unexpected(QuickAnswersState::Error::kUninitialized);
   }
 
-  return magic_boost_state->magic_boost_available()
+  return magic_boost_state->is_user_eligible_for_genai_features()
       .transform([](bool available) {
         if (available) {
           return QuickAnswersState::FeatureType::kHmr;

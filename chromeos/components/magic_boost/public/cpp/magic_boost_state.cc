@@ -62,8 +62,8 @@ bool MagicBoostState::ShouldShowHmrCard() {
   return true;
 }
 
-bool MagicBoostState::IsMagicBoostAvailable() {
-  if (!magic_boost_available_.has_value()) {
+bool MagicBoostState::IsUserEligibleForGenAIFeatures() {
+  if (!is_user_eligible_for_genai_features_.has_value()) {
     // If the value is not loaded yet, try loading it now as it might be
     // available now. To determine eligibility, extended account info is
     // required, which is loaded as an async operation. We read the value after
@@ -77,25 +77,28 @@ bool MagicBoostState::IsMagicBoostAvailable() {
     // method is called from a client side code.
     //
     // See crbug.com/429501088 for details.
-    magic_boost_available_ = IsMagicBoostAvailableExpected();
-    if (magic_boost_available_.has_value()) {
-      UpdateMagicBoostAvailable(magic_boost_available_.value());
+    is_user_eligible_for_genai_features_ =
+        IsUserEligibleForGenAIFeaturesExpected();
+    if (is_user_eligible_for_genai_features_.has_value()) {
+      UpdateUserEligibleForGenAIFeatures(
+          is_user_eligible_for_genai_features_.value());
     }
   }
 
   // Returns false if value is not available for fail-safe.
-  return magic_boost_available_.value_or(false);
+  return is_user_eligible_for_genai_features_.value_or(false);
 }
 
-void MagicBoostState::UpdateMagicBoostAvailable(bool available) {
-  if (magic_boost_available_ == available) {
+void MagicBoostState::UpdateUserEligibleForGenAIFeatures(bool eligible) {
+  if (is_user_eligible_for_genai_features_ == eligible) {
     return;
   }
 
-  magic_boost_available_ = available;
+  is_user_eligible_for_genai_features_ = eligible;
 
   for (auto& observer : observers_) {
-    observer.OnMagicBoostAvailableUpdated(magic_boost_available_.value());
+    observer.OnUserEligibleForGenAIFeaturesUpdated(
+        is_user_eligible_for_genai_features_.value());
   }
 }
 

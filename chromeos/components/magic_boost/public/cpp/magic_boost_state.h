@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // A checked observer which receives MagicBoost state changes.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnMagicBoostAvailableUpdated(bool available) {}
+    virtual void OnUserEligibleForGenAIFeaturesUpdated(bool eligible) {}
     virtual void OnMagicBoostEnabledUpdated(bool enabled) {}
     virtual void OnHMREnabledUpdated(bool enabled) {}
     virtual void OnHMRConsentStatusUpdated(HMRConsentStatus status) {}
@@ -111,12 +111,12 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // is approved or pending).
   bool ShouldShowHmrCard();
 
-  // `IsMagicBoostAvailable` tries reading availability value again if it's not
-  // set yet. See crbug.com/429501088 for details.
-  bool IsMagicBoostAvailable();
+  // `IsUserEligibleForGenAIFeature` tries reading eligibility value again if
+  // it's not set yet. See crbug.com/429501088 for details.
+  bool IsUserEligibleForGenAIFeatures();
 
-  base::expected<bool, Error> magic_boost_available() const {
-    return magic_boost_available_;
+  base::expected<bool, Error> is_user_eligible_for_genai_features() const {
+    return is_user_eligible_for_genai_features_;
   }
 
   base::expected<bool, Error> magic_boost_enabled() const {
@@ -134,23 +134,23 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   }
 
  protected:
-  void UpdateMagicBoostAvailable(bool available);
+  void UpdateUserEligibleForGenAIFeatures(bool eligible);
   void UpdateMagicBoostEnabled(bool enabled);
   void UpdateHMREnabled(bool enabled);
   void UpdateHMRConsentStatus(HMRConsentStatus status);
   void UpdateHMRConsentWindowDismissCount(int32_t count);
 
-  // Returns availability of Magic Boost. Returns `Error::kUninitialized` if a
-  // dependent service is not initialized yet.
+  // Returns eligibility of gen-AI features. Returns `Error::kUninitialized` if
+  // a dependent service is not initialized yet.
   virtual base::expected<bool, chromeos::MagicBoostState::Error>
-  IsMagicBoostAvailableExpected() const = 0;
+  IsUserEligibleForGenAIFeaturesExpected() const = 0;
 
  private:
   void NotifyOnIsDeleting();
 
   // Use `base::expected` instead of `std::optional` to avoid implicit bool
   // conversion: https://abseil.io/tips/141.
-  base::expected<bool, Error> magic_boost_available_ =
+  base::expected<bool, Error> is_user_eligible_for_genai_features_ =
       base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> magic_boost_enabled_ =
       base::unexpected(Error::kUninitialized);

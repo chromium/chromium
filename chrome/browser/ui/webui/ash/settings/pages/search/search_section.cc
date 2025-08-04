@@ -60,8 +60,9 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
   chromeos::MagicBoostState* magic_boost_state =
       chromeos::MagicBoostState::Get();
 
-  bool hmr_needs_notice_banner = magic_boost_state->IsMagicBoostAvailable() &&
-                                 magic_boost_state->CanShowNoticeBannerForHMR();
+  bool hmr_needs_notice_banner =
+      magic_boost_state->IsUserEligibleForGenAIFeatures() &&
+      magic_boost_state->CanShowNoticeBannerForHMR();
 
   bool hmw_needs_notice_banner = false;
 
@@ -299,15 +300,14 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
 
   bool is_magic_boost_feature_enabled =
-      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() ||
+      chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures() ||
       IsLobsterSettingsToggleVisible(profile()) ||
       IsOrcaSettingsToggleVisible(profile());
 
   // Updates magic boost search tags each time when the load time data is added,
   // instead of a one-off update in the constructor, to avoid the unreliable
-  // value of chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() during
-  // the user login.
-  // See crbug.com/379281461 for more details.
+  // value of chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()
+  // during the user login. See crbug.com/379281461 for more details.
   UpdateMagicBoostSearchTags(is_magic_boost_feature_enabled);
 
   html_source->AddBoolean("isMagicBoostFeatureEnabled",

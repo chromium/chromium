@@ -67,7 +67,7 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
 
  protected:
   base::expected<bool, chromeos::MagicBoostState::Error>
-  IsMagicBoostAvailableExpected() const override;
+  IsUserEligibleForGenAIFeaturesExpected() const override;
 
  private:
   friend class MagicBoostStateAshTest;

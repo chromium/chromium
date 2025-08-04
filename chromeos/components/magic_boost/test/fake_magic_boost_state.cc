@@ -32,7 +32,7 @@ void FakeMagicBoostState::AsyncWriteHMREnabled(bool enabled) {
 }
 
 void FakeMagicBoostState::SetAvailability(bool available) {
-  UpdateMagicBoostAvailable(available);
+  UpdateUserEligibleForGenAIFeatures(available);
 }
 
 void FakeMagicBoostState::SetMagicBoostEnabled(bool enabled) {
@@ -40,7 +40,7 @@ void FakeMagicBoostState::SetMagicBoostEnabled(bool enabled) {
 }
 
 base::expected<bool, chromeos::MagicBoostState::Error>
-FakeMagicBoostState::IsMagicBoostAvailableExpected() const {
+FakeMagicBoostState::IsUserEligibleForGenAIFeaturesExpected() const {
   // Availability needs to be set explicitly via `SetAvailability` for this
   // fake.
   return base::unexpected(chromeos::MagicBoostState::Error::kUninitialized);
