@@ -3088,9 +3088,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         Bundle savedInstanceState = getSavedInstanceState();
         Intent intent = getIntent();
-        // TODO(crbug.com/433789957): A new helper function should be created to consolidate this,
-        // with form factors being checked.
-        if (ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             boolean hasIncognitoExtra =
                     intent != null
                             && (intent.getBooleanExtra(
