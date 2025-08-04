@@ -11,10 +11,12 @@ class CountryId;
 
 namespace regional_capabilities {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.regional_capabilities
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: RegionalProgram
 enum class Program {
+  kDefault = 0,
   kTaiyaki,
   kWaffle,
-  kDefault,
 };
 
 // Describes how search engines should be listed.
