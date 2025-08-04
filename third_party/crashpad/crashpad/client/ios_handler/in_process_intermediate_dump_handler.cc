@@ -1118,7 +1118,9 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
         WriteProperty(
             writer, IntermediateDumpKey::kSize, &segment_vm_read_ptr->vmsize);
         slide = address - segment_vm_read_ptr->vmaddr;
-      } else if (strcmp(segment_vm_read_ptr->segname, SEG_DATA) == 0) {
+      } else if (strcmp(segment_vm_read_ptr->segname, SEG_DATA) == 0 ||
+                 // dyld puts __crash_info in __DATA_DIRTY.
+                 strcmp(segment_vm_read_ptr->segname, "__DATA_DIRTY") == 0) {
         WriteDataSegmentAnnotations(writer, segment_vm_read_ptr, slide);
       }
     } else if (command_vm_read_ptr->cmd == LC_ID_DYLIB) {
