@@ -220,6 +220,10 @@ bool ContentRendererClient::IsEncoderSupportedVideoType(
   return ::media::IsDefaultEncoderSupportedVideoType(type);
 }
 
+bool ContentRendererClient::ShouldSuppressAudioTracks() {
+  return false;
+}
+
 media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {
   return nullptr;
 }

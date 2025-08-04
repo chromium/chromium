@@ -40,6 +40,7 @@ class RenderMediaClient : public media::MediaClient {
   bool IsDecoderSupportedVideoType(const media::VideoType& type) final;
   bool IsEncoderSupportedVideoType(const media::VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec) final;
+  bool ShouldSuppressAudioTracks() final;
   std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       media::AudioParameters audio_parameters) final;

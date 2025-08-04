@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_renderer.h"
+#include "media/base/media_client.h"
 #include "media/base/media_log.h"
 #include "media/base/media_resource.h"
 #include "media/base/media_switches.h"
@@ -401,7 +402,9 @@ void RendererImpl::InitializeAudioRenderer() {
   DemuxerStream* audio_stream =
       media_resource_->GetFirstStream(DemuxerStream::AUDIO);
 
-  if (!audio_stream) {
+  MediaClient* media_client = GetMediaClient();
+  if (!audio_stream ||
+      (media_client && media_client->ShouldSuppressAudioTracks())) {
     audio_renderer_.reset();
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&RendererImpl::OnAudioRendererInitializeDone,

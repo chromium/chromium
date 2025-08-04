@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,6 +24,11 @@ class CommandLine;
 }  // namespace base
 
 namespace headless {
+
+namespace features {
+// Enables virtual time, which allows for deterministic time control.
+HEADLESS_EXPORT BASE_DECLARE_FEATURE(kVirtualTime);
+}  // namespace features
 
 class HeadlessBrowserImpl;
 

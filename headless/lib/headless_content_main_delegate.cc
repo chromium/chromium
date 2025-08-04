@@ -88,6 +88,10 @@
 namespace headless {
 
 namespace features {
+// In addition to the switches below, this feature also suppresses audio
+// decoding and rendering. Audio plays in real time and does not respect virtual
+// time, and video tracks are kept in sync with audio. For virtual time to work
+// with video playback, audio must be suppressed.
 BASE_FEATURE(kVirtualTime, "VirtualTime", base::FEATURE_DISABLED_BY_DEFAULT);
 }
 

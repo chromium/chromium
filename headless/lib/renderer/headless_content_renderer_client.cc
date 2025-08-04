@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "content/public/common/web_identity.h"
 #include "content/public/renderer/render_thread.h"
+#include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/switches.h"
 #include "media/base/video_codecs.h"
 #include "printing/buildflags/buildflags.h"
@@ -118,6 +119,10 @@ bool HeadlessContentRendererClient::IsDecoderSupportedVideoType(
   // Besides being _allowed_, the codec actually has to be _supported_.
   return allowed_by_flags &&
          ContentRendererClient::IsDecoderSupportedVideoType(type);
+}
+
+bool HeadlessContentRendererClient::ShouldSuppressAudioTracks() {
+  return base::FeatureList::IsEnabled(headless::features::kVirtualTime);
 }
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>

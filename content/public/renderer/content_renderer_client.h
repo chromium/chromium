@@ -315,6 +315,20 @@ class CONTENT_EXPORT ContentRendererClient {
   // Return true if the bitstream format |codec| is supported by the audio sink.
   virtual bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec);
 
+  // For content embedders, this provides a way to control media time
+  // synchronization.
+  //
+  // This is particularly useful for headless clients (e.g., for automated
+  // testing or server-side rendering) which need video playback to follow a
+  // "virtual clock" for deterministic output, rather than the system's
+  // real-time clock.
+  //
+  // By default, video is synced to the audio track's real-time clock. Returning
+  // `true` from this method decouples the video from this real-time constraint,
+  // allowing it to follow virtual time. When suppressed, audio will be neither
+  // decoded nor rendered.
+  virtual bool ShouldSuppressAudioTracks();
+
   // Returns custom allocator if exists, else nullptr
   // Allocator will live as long as ContentRendererClient.
   virtual media::ExternalMemoryAllocator* GetMediaAllocator();

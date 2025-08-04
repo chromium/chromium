@@ -872,6 +872,7 @@ class MockMediaClient : public media::MediaClient {
   MOCK_METHOD1(IsDecoderSupportedVideoType, bool(const media::VideoType& type));
   MOCK_METHOD1(IsEncoderSupportedVideoType, bool(const media::VideoType& type));
   MOCK_METHOD1(IsSupportedBitstreamAudioCodec, bool(media::AudioCodec codec));
+  MOCK_METHOD0(ShouldSuppressAudioTracks, bool());
   MOCK_METHOD1(GetAudioRendererAlgorithmParameters,
                std::optional<::media::AudioRendererAlgorithmParameters>(
                    media::AudioParameters audio_parameters));

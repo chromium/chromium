@@ -194,6 +194,7 @@ class TestMediaClient : public MediaClient {
   bool IsDecoderSupportedVideoType(const VideoType& type) final;
   bool IsEncoderSupportedVideoType(const VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(AudioCodec codec) final;
+  bool ShouldSuppressAudioTracks() final;
   ExternalMemoryAllocator* GetMediaAllocator() final;
 
   // Helper function to disable "kExternal" key system support so that we can
@@ -243,6 +244,10 @@ bool TestMediaClient::IsEncoderSupportedVideoType(const VideoType& type) {
 }
 
 bool TestMediaClient::IsSupportedBitstreamAudioCodec(AudioCodec codec) {
+  return false;
+}
+
+bool TestMediaClient::ShouldSuppressAudioTracks() {
   return false;
 }
 
