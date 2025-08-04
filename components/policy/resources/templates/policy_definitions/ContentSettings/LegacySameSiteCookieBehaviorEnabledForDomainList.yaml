@@ -15,8 +15,6 @@ deprecated: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - bingler@chromium.org
 - file://net/cookies/OWNERS

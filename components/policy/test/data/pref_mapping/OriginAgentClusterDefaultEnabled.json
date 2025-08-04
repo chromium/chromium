@@ -4,7 +4,6 @@
       "win",
       "linux",
       "mac",
-      "android",
       "chromeos",
       "fuchsia"
     ],
