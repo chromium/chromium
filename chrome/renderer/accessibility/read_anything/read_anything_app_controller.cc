@@ -559,7 +559,7 @@ void ReadAnythingAppController::OnStringAttributeChanged(
   if (features::IsReadAnythingImagesViaAlgorithmEnabled() &&
       attr == ax::mojom::StringAttribute::kUrl &&
       rm_node->GetRole() == ax::mojom::Role::kImage) {
-    RequestImageDataUrl(node->id());
+    RequestImageData(node->id());
   }
 }
 
@@ -1193,7 +1193,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("movePositionToPreviousGranularity",
                  &ReadAnythingAppController::MovePositionToPreviousGranularity)
       .SetMethod("requestImageData",
-                 &ReadAnythingAppController::RequestImageDataUrl)
+                 &ReadAnythingAppController::RequestImageData)
       .SetMethod("getImageBitmap", &ReadAnythingAppController::GetImageBitmap)
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
@@ -1587,9 +1587,9 @@ std::vector<std::string> ReadAnythingAppController::GetAllFonts() const {
   return ::GetSupportedFonts({});
 }
 
-void ReadAnythingAppController::RequestImageDataUrl(
-    ui::AXNodeID node_id) const {
+void ReadAnythingAppController::RequestImageData(ui::AXNodeID node_id) const {
   if (features::IsReadAnythingImagesViaAlgorithmEnabled()) {
+    DUMP_WILL_BE_CHECK(model_.GetAXNode(node_id));
     auto target_tree_id = model_.active_tree_id();
     CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
     page_handler_->OnImageDataRequested(target_tree_id, node_id);
@@ -1669,13 +1669,6 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
   }
   // If there wasn't an image, return undefined.
   return v8::Undefined(isolate);
-}
-
-std::string ReadAnythingAppController::GetImageDataUrl(
-    ui::AXNodeID node_id) const {
-  ui::AXNode* node = model_.GetAXNode(node_id);
-  CHECK(node);
-  return a11y::GetImageDataUrl(node);
 }
 
 const std::string ReadAnythingAppController::GetDisplayNameForLocale(

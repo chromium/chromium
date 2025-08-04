@@ -175,12 +175,6 @@ std::string GetAltText(const ui::AXNode* ax_node) {
   return alt_text;
 }
 
-std::string GetImageDataUrl(const ui::AXNode* ax_node) {
-  std::string url =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
-  return url;
-}
-
 std::u16string GetTextContent(const ui::AXNode* ax_node,
                               bool is_docs,
                               bool is_pdf) {

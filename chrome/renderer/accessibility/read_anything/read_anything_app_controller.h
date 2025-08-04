@@ -255,8 +255,7 @@ class ReadAnythingAppController
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts();
-  void RequestImageDataUrl(ui::AXNodeID node_id) const;
-  std::string GetImageDataUrl(ui::AXNodeID node_id) const;
+  void RequestImageData(ui::AXNodeID node_id) const;
   v8::Local<v8::Value> GetImageBitmap(ui::AXNodeID node_id);
   void OnIsSpeechActiveChanged(bool is_speech_active);
   void OnIsAudioCurrentlyPlayingChanged(bool is_audio_currently_playing);

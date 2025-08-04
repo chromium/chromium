@@ -1044,39 +1044,6 @@ TEST_F(ReadAnythingAppControllerTest, GetAltText_Unset) {
   EXPECT_EQ("", controller().GetAltText(2));
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetImageDataUrl) {
-  std::string img = "img";
-  std::string img_data =
-      "data:image/"
-      "png;base64,"
-      "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAADElEQVQImWNgoBMAAABpAAFE"
-      "I8ARAAAAAElFTkSuQmCC";
-  ui::AXNodeData img_node;
-  img_node.id = 2;
-  img_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, img);
-  img_node.AddStringAttribute(ax::mojom::StringAttribute::kImageDataUrl,
-                              img_data);
-
-  SendUpdateWithNodes({std::move(img_node)});
-
-  controller().OnAXTreeDistilled(tree_id_, {});
-  EXPECT_EQ(img, controller().GetHtmlTag(2));
-  EXPECT_EQ(img_data, controller().GetImageDataUrl(2));
-}
-
-TEST_F(ReadAnythingAppControllerTest, GetImageDataUrl_Unset) {
-  std::string img = "img";
-  ui::AXNodeData img_node;
-  img_node.id = 2;
-  img_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, img);
-
-  SendUpdateWithNodes({std::move(img_node)});
-
-  controller().OnAXTreeDistilled(tree_id_, {});
-  EXPECT_EQ(img, controller().GetHtmlTag(2));
-  EXPECT_EQ("", controller().GetImageDataUrl(2));
-}
-
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Hello");
   ui::AXNodeData node2 = test::ExplicitlyEmptyTextNode(/* id= */ 3);
@@ -1985,7 +1952,7 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageDataUrl) {
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
       std::move(languages_enabled_in_pref), highlight_granularity);
-  controller().RequestImageDataUrl(ax_node_id);
+  controller().RequestImageData(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
