@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+enum class ToolbarType;
+
 @protocol ToolbarHeightDelegate <NSObject>
 
 /// Primary and secondary toolbars collapsed and expanded size have changed.
@@ -20,6 +22,10 @@
 /// Secondary toolbar is removed from the keyboard, reset to default
 /// constraints.
 - (void)secondaryToolbarRemovedFromKeyboard;
+
+/// Called when the toolbar type changed.
+/// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+- (void)diamondToolbarTypeChanged:(ToolbarType)type;
 
 @end
 

@@ -11,6 +11,10 @@
 // containing the controls displayed only on specific size classes.
 @interface SecondaryToolbarCoordinator : AdaptiveToolbarCoordinator
 
+// Whether this toolbar is used and positioned like the primary toolbar.
+// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+@property(nonatomic, assign) BOOL usedAsPrimaryToolbar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_SECONDARY_TOOLBAR_COORDINATOR_H_

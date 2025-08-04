@@ -79,6 +79,14 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Setters
+
+// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+- (void)setUsedAsPrimaryToolbar:(BOOL)usedAsPrimaryToolbar {
+  _usedAsPrimaryToolbar = usedAsPrimaryToolbar;
+  self.view.usedAsPrimaryToolbar = usedAsPrimaryToolbar;
+}
+
 #pragma mark - AdaptiveToolbarViewController
 
 - (void)collapsedToolbarButtonTapped {

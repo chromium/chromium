@@ -371,14 +371,15 @@
 #pragma mark ToolbarHeightProviding
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
+  if (IsDiamondPrototypeEnabled() &&
+      _omniboxPosition == ToolbarType::kPrimary) {
+    return kDiamondCollapsedToolbarHeight;
+  }
+
   if (_omniboxPosition == ToolbarType::kSecondary) {
     // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
     return 1.0;
-  }
-
-  if (IsDiamondPrototypeEnabled()) {
-    return kDiamondCollapsedToolbarHeight;
   }
 
   return ToolbarCollapsedHeight(
@@ -387,7 +388,7 @@
 
 - (CGFloat)expandedPrimaryToolbarHeight {
   if (IsDiamondPrototypeEnabled() &&
-      _omniboxPosition != ToolbarType::kSecondary) {
+      _omniboxPosition == ToolbarType::kPrimary) {
     return kDiamondToolbarHeight;
   }
 
@@ -635,13 +636,21 @@
   OmniboxPositionBrowserAgent* positionBrowserAgent =
       OmniboxPositionBrowserAgent::FromBrowser(self.browser);
   switch (toolbarType) {
-    case ToolbarType::kPrimary:
-      [self.primaryToolbarCoordinator
-          setLocationBarViewController:self.locationBarCoordinator
-                                           .locationBarViewController];
-      [self.secondaryToolbarCoordinator setLocationBarViewController:nil];
+    case ToolbarType::kPrimary: {
+      if (IsDiamondPrototypeEnabled()) {
+        [self.secondaryToolbarCoordinator
+            setLocationBarViewController:self.locationBarCoordinator
+                                             .locationBarViewController];
+        [self.primaryToolbarCoordinator setLocationBarViewController:nil];
+      } else {
+        [self.primaryToolbarCoordinator
+            setLocationBarViewController:self.locationBarCoordinator
+                                             .locationBarViewController];
+        [self.secondaryToolbarCoordinator setLocationBarViewController:nil];
+      }
       positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(false);
       break;
+    }
     case ToolbarType::kSecondary:
       [self.secondaryToolbarCoordinator
           setLocationBarViewController:self.locationBarCoordinator
@@ -649,6 +658,11 @@
       [self.primaryToolbarCoordinator setLocationBarViewController:nil];
       positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(true);
       break;
+  }
+  if (IsDiamondPrototypeEnabled()) {
+    [self.toolbarHeightDelegate diamondToolbarTypeChanged:toolbarType];
+    self.secondaryToolbarCoordinator.usedAsPrimaryToolbar =
+        toolbarType == ToolbarType::kPrimary;
   }
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }

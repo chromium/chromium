@@ -109,6 +109,10 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
   // Stack view for the location bar in Diamond.
   UIStackView* _diamondLocationBarStackView;
+
+  // TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+  NSArray<NSLayoutConstraint*>* _diamondToolbarTopConstraints;
+  NSArray<NSLayoutConstraint*>* _diamondToolbarBottomConstraints;
 }
 
 @synthesize allButtons = _allButtons;
@@ -309,9 +313,14 @@ UIView* SecondaryToolbarLocationBarContainerView(
     [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight]
         .active = YES;
     [contentView addSubview:_progressBar];
-    AddSameConstraintsToSides(
-        self, _progressBar,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    if (IsDiamondPrototypeEnabled()) {
+      AddSameConstraintsToSides(self, _progressBar,
+                                LayoutSides::kLeading | LayoutSides::kTrailing);
+    } else {
+      AddSameConstraintsToSides(
+          self, _progressBar,
+          LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    }
 
     // LocationBarView constraints.
     if (self.locationBarView) {
@@ -328,6 +337,27 @@ UIView* SecondaryToolbarLocationBarContainerView(
         constraintEqualToAnchor:locationBarContainer.bottomAnchor
                        constant:kBottomAdaptiveLocationBarBottomMargin];
 
+    if (IsDiamondPrototypeEnabled()) {
+      _diamondToolbarTopConstraints = @[
+        [_progressBar.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+        [self.separator.topAnchor constraintEqualToAnchor:self.bottomAnchor],
+        [self.locationBarContainer.bottomAnchor
+            constraintEqualToAnchor:self.bottomAnchor
+                           constant:-kBottomAdaptiveLocationBarBottomMargin],
+        [self.buttonStackView.centerYAnchor
+            constraintEqualToAnchor:self.locationBarContainer.centerYAnchor],
+      ];
+      _diamondToolbarBottomConstraints = @[
+        [_progressBar.topAnchor constraintEqualToAnchor:self.topAnchor],
+        [self.separator.bottomAnchor constraintEqualToAnchor:self.topAnchor],
+        [self.locationBarContainer.topAnchor
+            constraintEqualToAnchor:self.topAnchor
+                           constant:kBottomAdaptiveLocationBarBottomMargin],
+        [self.buttonStackView.centerYAnchor
+            constraintEqualToAnchor:self.locationBarContainer.centerYAnchor],
+      ];
+      [self setUsedAsPrimaryToolbar:self.usedAsPrimaryToolbar];
+    }
     _buttonStackViewNoOmniboxConstraint = [self.buttonStackView.topAnchor
         constraintEqualToAnchor:self.topAnchor
                        constant:kBottomButtonsTopMargin];
@@ -407,11 +437,27 @@ UIView* SecondaryToolbarLocationBarContainerView(
       [self.separator.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
       [self.separator.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
-      [self.separator.bottomAnchor constraintEqualToAnchor:self.topAnchor],
       [self.separator.heightAnchor
           constraintEqualToConstant:ui::AlignValueToUpperPixel(
                                         kToolbarSeparatorHeight)],
     ]];
+  }
+}
+
+#pragma mark - Setters
+
+// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+- (void)setUsedAsPrimaryToolbar:(BOOL)usedAsPrimaryToolbar {
+  CHECK(IsDiamondPrototypeEnabled());
+  _usedAsPrimaryToolbar = usedAsPrimaryToolbar;
+  if (usedAsPrimaryToolbar) {
+    self.locationBarTopConstraint.active = NO;
+    [NSLayoutConstraint deactivateConstraints:_diamondToolbarBottomConstraints];
+    [NSLayoutConstraint activateConstraints:_diamondToolbarTopConstraints];
+  } else {
+    self.locationBarTopConstraint.active = YES;
+    [NSLayoutConstraint deactivateConstraints:_diamondToolbarTopConstraints];
+    [NSLayoutConstraint activateConstraints:_diamondToolbarBottomConstraints];
   }
 }
 

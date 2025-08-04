@@ -244,6 +244,11 @@ const CGFloat kTopDynamicIslandInset = 24;
 
   // Whether the find bar is currently visible.
   BOOL _findBarVisible;
+
+  // TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+  ToolbarType _diamondToolbarType;
+  NSArray<NSLayoutConstraint*>* _diamondToolbarTopConstraints;
+  NSArray<NSLayoutConstraint*>* _diamondToolbarBottomConstraints;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -1371,9 +1376,14 @@ const CGFloat kTopDynamicIslandInset = 24;
   // The bottom toolbar can be constraint to the keyboard in some cases.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
   self.secondaryToolbarHeightConstraint.active = YES;
-  AddSameConstraintsToSides(
-      self.view, toolbarView,
-      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+  if (IsDiamondPrototypeEnabled()) {
+    AddSameConstraintsToSides(self.view, toolbarView,
+                              LayoutSides::kLeading | LayoutSides::kTrailing);
+  } else {
+    AddSameConstraintsToSides(
+        self.view, toolbarView,
+        LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+  }
 }
 
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
@@ -1467,9 +1477,28 @@ const CGFloat kTopDynamicIslandInset = 24;
     // its top.
     UIView* secondaryToolbarView =
         self.toolbarCoordinator.secondaryToolbarViewController.view;
-    [contentAreaGuide.bottomAnchor
-        constraintEqualToAnchor:secondaryToolbarView.topAnchor]
-        .active = YES;
+
+    if (IsDiamondPrototypeEnabled()) {
+      _diamondToolbarTopConstraints = @[
+        [secondaryToolbarView.topAnchor
+            constraintEqualToAnchor:primaryToolbarView.topAnchor],
+        [secondaryToolbarView.bottomAnchor
+            constraintEqualToAnchor:primaryToolbarView.bottomAnchor],
+        [contentAreaGuide.bottomAnchor
+            constraintEqualToAnchor:self.view.bottomAnchor],
+      ];
+      _diamondToolbarBottomConstraints = @[
+        [secondaryToolbarView.bottomAnchor
+            constraintEqualToAnchor:self.view.bottomAnchor],
+        [contentAreaGuide.bottomAnchor
+            constraintEqualToAnchor:secondaryToolbarView.topAnchor],
+      ];
+      [self diamondToolbarTypeChanged:_diamondToolbarType];
+    } else {
+      [contentAreaGuide.bottomAnchor
+          constraintEqualToAnchor:secondaryToolbarView.topAnchor]
+          .active = YES;
+    }
 
     AddSameConstraintsToSides(self.view, contentAreaGuide, contentSides);
 
@@ -2781,6 +2810,23 @@ const CGFloat kTopDynamicIslandInset = 24;
   // Return to required priority, otherwise UIKeyboardLayoutGuide would set the
   // toolbar minimum height to the bottom safe area.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
+}
+
+- (void)diamondToolbarTypeChanged:(ToolbarType)type {
+  CHECK(IsDiamondPrototypeEnabled());
+  _diamondToolbarType = type;
+  switch (type) {
+    case ToolbarType::kPrimary:
+      [NSLayoutConstraint
+          deactivateConstraints:_diamondToolbarBottomConstraints];
+      [NSLayoutConstraint activateConstraints:_diamondToolbarTopConstraints];
+      break;
+
+    case ToolbarType::kSecondary:
+      [NSLayoutConstraint deactivateConstraints:_diamondToolbarTopConstraints];
+      [NSLayoutConstraint activateConstraints:_diamondToolbarBottomConstraints];
+      break;
+  }
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)

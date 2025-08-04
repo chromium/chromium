@@ -26,6 +26,10 @@
 // above the keyboard.
 @property(nonatomic, strong) NSLayoutConstraint* locationBarKeyboardConstraint;
 
+// Whether this toolbar is used and positioned like the primary toolbar.
+// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+@property(nonatomic, assign) BOOL usedAsPrimaryToolbar;
+
 // Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory
     NS_DESIGNATED_INITIALIZER;
