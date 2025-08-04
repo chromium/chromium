@@ -1536,6 +1536,26 @@ public class IntentHandler {
     }
 
     /**
+     * Creates an Intent that will launch a new ChromeTabbedActivity window on the new tab page. The
+     * Intent will be trusted and therefore able to launch Incognito windows.
+     *
+     * @param context A {@link Context} to access class and package information.
+     * @param incognito Whether incognito or regular window should be opened.
+     * @return The {@link Intent} to launch.
+     */
+    public static Intent createTrustedOpenNewWindowIntent(Context context, boolean incognito) {
+        Intent newIntent = new Intent();
+        newIntent.setClass(context, ChromeLauncherActivity.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        newIntent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+        newIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, incognito);
+        IntentUtils.addTrustedIntentExtras(newIntent);
+
+        return newIntent;
+    }
+
+    /**
      * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
      * foreground.
      *

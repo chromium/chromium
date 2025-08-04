@@ -428,15 +428,32 @@ public class IntentHandlerRobolectricTest {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
 
-        Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        Assert.assertEquals(intent.getData(), Uri.parse(UrlConstants.NTP_URL));
-        Assert.assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
-        Assert.assertTrue(IntentHandler.wasIntentSenderChrome(intent));
-        Assert.assertTrue(
-                intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(intent.getData(), Uri.parse(UrlConstants.NTP_URL));
+        assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertTrue(IntentHandler.wasIntentSenderChrome(intent));
+        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
 
         intent = IntentHandler.createTrustedOpenNewTabIntent(context, false);
         assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testCreateTrustedOpenNewWindowIntent() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent = IntentHandler.createTrustedOpenNewWindowIntent(context, true);
+
+        assertEquals(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
+                intent.getFlags());
+        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
+        assertTrue(IntentHandler.wasIntentSenderChrome(intent));
+        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+
+        intent = IntentHandler.createTrustedOpenNewWindowIntent(context, false);
+        assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true));
     }
 
     /** Test that IntentHandler#shouldIgnoreIntent() returns false for Webapp launch intents. */
@@ -482,6 +499,8 @@ public class IntentHandlerRobolectricTest {
     public void testShouldIgnoreIncognitoIntent_trusted() {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
+        assertFalse(IntentHandler.shouldIgnoreIntent(intent, null));
+        intent = IntentHandler.createTrustedOpenNewWindowIntent(context, true);
         assertFalse(IntentHandler.shouldIgnoreIntent(intent, null));
     }
 
