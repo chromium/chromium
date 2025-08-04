@@ -14,12 +14,10 @@ include_rules = [
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/policy/affiliation",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/reporting",
   "+chrome/browser/policy",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/browser.h",
   "+chrome/common",
   "+chrome/test",
 ]

@@ -12,7 +12,6 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/ash/notifications",
-  "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/extension_tab_util.h",
@@ -21,7 +20,6 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_navigator_params.h",
-  "+chrome/browser/ui/lacros/window_utility.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/common",
 ]
