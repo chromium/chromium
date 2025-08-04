@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
-#include "crypto/keypair.h"
 #include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
@@ -70,7 +69,7 @@ class NearbyShareDecryptedPublicCertificate {
       base::Time not_before,
       base::Time not_after,
       base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key,
-      crypto::keypair::PublicKey public_key,
+      std::vector<uint8_t> public_key,
       std::vector<uint8_t> id,
       nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
       bool for_self_share);
@@ -85,8 +84,9 @@ class NearbyShareDecryptedPublicCertificate {
   // Also, used to generate an authentication token hash.
   std::array<uint8_t, kNearbyShareNumBytesSecretKey> secret_key_;
 
-  // An EC P-256 key used for verification.
-  crypto::keypair::PublicKey public_key_;
+  // A P-256 public key used for verification. The bytes comprise a DER-encoded
+  // ASN.1 SubjectPublicKeyInfo from the X.509 specification (RFC 5280).
+  std::vector<uint8_t> public_key_;
 
   // An ID for the certificate, most likely generated from the secret key.
   std::vector<uint8_t> id_;

@@ -14,16 +14,17 @@
 #include "crypto/aead.h"
 #include "crypto/aes_ctr.h"
 #include "crypto/hmac.h"
-#include "crypto/sign.h"
+#include "crypto/signature_verifier.h"
 
 namespace {
 
 bool IsDataValid(base::Time not_before,
                  base::Time not_after,
+                 base::span<const uint8_t> public_key,
                  base::span<const uint8_t> id,
                  base::span<const uint8_t> encrypted_metadata,
                  base::span<const uint8_t> metadata_encryption_key_tag) {
-  return not_before < not_after &&
+  return not_before < not_after && !public_key.empty() &&
          id.size() == kNearbyShareNumBytesCertificateId &&
          !encrypted_metadata.empty() &&
          metadata_encryption_key_tag.size() ==
@@ -93,12 +94,8 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
       public_certificate.start_time().seconds());
   base::Time not_after = base::Time::FromSecondsSinceUnixEpoch(
       public_certificate.end_time().seconds());
-
-  auto public_key = crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
-      base::as_byte_span(public_certificate.public_key()));
-  if (!public_key || !public_key->IsEc()) {
-    return std::nullopt;
-  }
+  std::vector<uint8_t> public_key(public_certificate.public_key().begin(),
+                                  public_certificate.public_key().end());
 
   auto secret_key = base::as_byte_span(public_certificate.secret_key())
                         .to_fixed_extent<kNearbyShareNumBytesSecretKey>();
@@ -115,7 +112,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
       public_certificate.metadata_encryption_key_tag().begin(),
       public_certificate.metadata_encryption_key_tag().end());
 
-  if (!IsDataValid(not_before, not_after, id, encrypted_metadata,
+  if (!IsDataValid(not_before, not_after, public_key, id, encrypted_metadata,
                    metadata_encryption_key_tag)) {
     return std::nullopt;
   }
@@ -157,7 +154,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
   }
 
   return NearbyShareDecryptedPublicCertificate(
-      not_before, not_after, *secret_key, *public_key, std::move(id),
+      not_before, not_after, *secret_key, std::move(public_key), std::move(id),
       std::move(unencrypted_metadata), public_certificate.for_self_share());
 }
 
@@ -165,7 +162,7 @@ NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     base::Time not_before,
     base::Time not_after,
     base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key,
-    crypto::keypair::PublicKey public_key,
+    std::vector<uint8_t> public_key,
     std::vector<uint8_t> id,
     nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
     bool for_self_share)
@@ -179,8 +176,7 @@ NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
 }
 
 NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
-    const NearbyShareDecryptedPublicCertificate& other)
-    : public_key_(other.public_key_) {
+    const NearbyShareDecryptedPublicCertificate& other) {
   *this = other;
 }
 
@@ -206,14 +202,24 @@ NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
 NearbyShareDecryptedPublicCertificate&
 NearbyShareDecryptedPublicCertificate::operator=(
     NearbyShareDecryptedPublicCertificate&&) = default;
+
 NearbyShareDecryptedPublicCertificate::
     ~NearbyShareDecryptedPublicCertificate() = default;
 
 bool NearbyShareDecryptedPublicCertificate::VerifySignature(
     base::span<const uint8_t> payload,
     base::span<const uint8_t> signature) const {
-  return crypto::sign::Verify(crypto::sign::ECDSA_SHA256, public_key_, payload,
-                              signature);
+  crypto::SignatureVerifier verifier;
+  if (!verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256, signature,
+                           public_key_)) {
+    CD_LOG(ERROR, Feature::NS)
+        << "Verification failed: Initialization unsuccessful.";
+    return false;
+  }
+
+  verifier.VerifyUpdate(payload);
+
+  return verifier.VerifyFinal();
 }
 
 std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>

@@ -24,18 +24,6 @@ const nearby_share::mojom::Visibility kTestPublicCertificateVisibility =
 
 }  // namespace
 
-TEST(NearbyShareDecryptedPublicCertificateTest, InvalidCertDoesNotConstruct) {
-  // Public key has invalid SubjectPublicKeyInfo format.
-  nearby::sharing::proto::PublicCertificate proto_cert =
-      GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
-  proto_cert.set_public_key("invalid public key");
-
-  std::optional<NearbyShareDecryptedPublicCertificate> cert =
-      NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
-          proto_cert, GetNearbyShareTestEncryptedMetadataKey());
-  ASSERT_FALSE(cert);
-}
-
 TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt) {
   nearby::sharing::proto::PublicCertificate proto_cert =
       GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
@@ -96,6 +84,20 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Verify) {
           GetNearbyShareTestEncryptedMetadataKey());
   EXPECT_TRUE(cert->VerifySignature(GetNearbyShareTestPayloadToSign(),
                                     GetNearbyShareTestSampleSignature()));
+}
+
+TEST(NearbyShareDecryptedPublicCertificateTest, Verify_InitFailure) {
+  // Public key has invalid SubjectPublicKeyInfo format.
+  nearby::sharing::proto::PublicCertificate proto_cert =
+      GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
+  proto_cert.set_public_key("invalid public key");
+
+  std::optional<NearbyShareDecryptedPublicCertificate> cert =
+      NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
+          proto_cert, GetNearbyShareTestEncryptedMetadataKey());
+  ASSERT_TRUE(cert);
+  EXPECT_FALSE(cert->VerifySignature(GetNearbyShareTestPayloadToSign(),
+                                     GetNearbyShareTestSampleSignature()));
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, Verify_WrongSignature) {
