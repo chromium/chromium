@@ -513,7 +513,7 @@ int HttpProxyConnectJob::DoTransportConnect() {
     // Skip making a new connection if we have an existing HTTP/2 session.
     if (params_->tunnel() &&
         common_connect_job_params()->spdy_session_pool->FindAvailableSession(
-            CreateSpdySessionKey(), /*enable_ip_based_pooling=*/false,
+            CreateSpdySessionKey(), /*enable_ip_based_pooling_for_h2=*/false,
             /*is_websocket=*/false, net_log())) {
       next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
       return OK;
@@ -678,7 +678,7 @@ int HttpProxyConnectJob::DoSpdyProxyCreateStream() {
   SpdySessionKey key = CreateSpdySessionKey();
   base::WeakPtr<SpdySession> spdy_session =
       common_connect_job_params()->spdy_session_pool->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ false,
+          key, /* enable_ip_based_pooling_for_h2 = */ false,
           /* is_websocket = */ false, net_log());
   // It's possible that a session to the proxy has recently been created
   if (spdy_session) {

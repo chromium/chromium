@@ -52,7 +52,7 @@ TEST(HttpStreamRequestTest, SetPriority) {
       factory, &request_delegate, session.get(), &job_factory, request_info,
       /*is_preconnect=*/false,
       /*is_websocket=*/false,
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true,
       /*delay_main_job_with_available_spdy_session=*/true,
       /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());

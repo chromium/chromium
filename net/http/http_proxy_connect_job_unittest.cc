@@ -1300,7 +1300,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
                          /*disable_cert_verification_network_fetches=*/true),
-          /* enable_ip_based_pooling = */ false,
+          /* enable_ip_based_pooling_for_h2 = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
   EXPECT_FALSE(
       common_connect_job_params_->spdy_session_pool->FindAvailableSession(
@@ -1309,7 +1309,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                          /*disable_cert_verification_network_fetches=*/true),
-          /* enable_ip_based_pooling = */ false,
+          /* enable_ip_based_pooling_for_h2 = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
 }
 
@@ -1386,7 +1386,7 @@ TEST_P(HttpProxyConnectJobTest, SpdyInadequateTransportSecurity) {
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
                          /*disable_cert_verification_network_fetches=*/true),
-          /*enable_ip_based_pooling=*/false,
+          /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }
 
@@ -1435,7 +1435,7 @@ TEST_P(HttpProxyConnectJobTest, SpdyValidAlps) {
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
                          /*disable_cert_verification_network_fetches=*/true),
-          /*enable_ip_based_pooling=*/false,
+          /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }
 
@@ -1472,7 +1472,7 @@ TEST_P(HttpProxyConnectJobTest, SpdyInvalidAlpsCheckEnabled) {
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
                          /*disable_cert_verification_network_fetches=*/true),
-          /*enable_ip_based_pooling=*/false,
+          /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }
 
@@ -1517,7 +1517,7 @@ TEST_P(HttpProxyConnectJobTest, SpdyInvalidAlpsCheckDisabled) {
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
                          /*disable_cert_verification_network_fetches=*/true),
-          /*enable_ip_based_pooling=*/false,
+          /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }
 

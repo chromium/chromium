@@ -464,7 +464,11 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // Enable pooling to a SpdySession with matching IP and certificate
   // even if the SpdySessionKey is different.
-  bool enable_ip_based_pooling_ = true;
+  // While QUIC also has a notion of IP based pooling / connection aliasing,
+  // this field does not affect QUIC. `enable_alternative_services_` is always
+  // set to false when this field is, which disables QUIC. If that ever changes,
+  // this field should probably be wired up to QUIC sessions as well.
+  bool enable_ip_based_pooling_for_h2_ = true;
 
   // Enable using alternative services for the request.
   bool enable_alternative_services_ = true;

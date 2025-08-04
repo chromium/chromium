@@ -477,7 +477,7 @@ class SpdyNetworkTransactionTest
     HttpNetworkSession* session = helper.session();
     base::WeakPtr<SpdySession> spdy_session =
         session->spdy_session_pool()->FindAvailableSession(
-            key, /* enable_ip_based_pooling = */ true,
+            key, /* enable_ip_based_pooling_for_h2 = */ true,
             /* is_websocket = */ false, log_);
     ASSERT_TRUE(spdy_session);
     EXPECT_EQ(0u, num_active_streams(spdy_session));
@@ -2551,8 +2551,8 @@ TEST_P(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
       /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session1 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key1, true /* enable_ip_based_pooling */, false /* is_websocket */,
-          NetLogWithSource());
+          key1, true /* enable_ip_based_pooling_for_h2 */,
+          false /* is_websocket */, NetLogWithSource());
   ASSERT_TRUE(session1);
 
   // The second request uses a second connection.
@@ -2614,8 +2614,8 @@ TEST_P(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
                       /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key2, true /* enable_ip_based_pooling */, false /* is_websocket */,
-          NetLogWithSource());
+          key2, true /* enable_ip_based_pooling_for_h2 */,
+          false /* is_websocket */, NetLogWithSource());
   ASSERT_TRUE(session2);
   ASSERT_TRUE(session1);
   EXPECT_NE(session1.get(), session2.get());
@@ -2657,7 +2657,7 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingSessionClosedBeforeUse) {
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key1, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
 
   // The second request uses a second connection.
@@ -2706,8 +2706,8 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingSessionClosedBeforeUse) {
                       /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session1 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key2, true /* enable_ip_based_pooling */, false /* is_websocket */,
-          NetLogWithSource());
+          key2, true /* enable_ip_based_pooling_for_h2 */,
+          false /* is_websocket */, NetLogWithSource());
   ASSERT_TRUE(session1);
   EXPECT_EQ(key1, session1->spdy_session_key());
   // Remove the session before the second request can try to use it.
@@ -2730,8 +2730,8 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingSessionClosedBeforeUse) {
   // Inspect the new session.
   base::WeakPtr<SpdySession> session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key2, true /* enable_ip_based_pooling */, false /* is_websocket */,
-          NetLogWithSource());
+          key2, true /* enable_ip_based_pooling_for_h2 */,
+          false /* is_websocket */, NetLogWithSource());
   ASSERT_TRUE(session2);
   EXPECT_EQ(key2, session2->spdy_session_key());
   helper.VerifyDataConsumed();
@@ -2772,7 +2772,7 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/true);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false,
       NetLogWithSource()));
 
   // There should be no session with the same key, except with
@@ -2783,7 +2783,7 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_FALSE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false,
       NetLogWithSource()));
 
   // Set up and run a second transaction without
@@ -2831,11 +2831,11 @@ TEST_P(SpdyNetworkTransactionTest,
   // There should now be two sessions, with different values of
   // `disable_cert_verification_network_fetches`.
   auto session1 = helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false,
       NetLogWithSource());
   EXPECT_TRUE(session1);
   auto session2 = helper.session()->spdy_session_pool()->FindAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false,
       NetLogWithSource());
   EXPECT_TRUE(session2);
   // Make sure the sessions are distinct.
@@ -2926,7 +2926,7 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingMultipleSocketTags) {
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key1, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
 
   // Set on-demand mode for the next two requests.
@@ -3079,7 +3079,7 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
                       SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key1, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_EQ(
       dns_aliases,
@@ -3114,14 +3114,14 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
 
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
   EXPECT_FALSE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key1, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_TRUE(helper.session()
                   ->spdy_session_pool()
                   ->GetDnsAliasesForSessionKey(key1)
                   .empty());
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key2, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key2, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_EQ(
       dns_aliases,
@@ -3230,7 +3230,7 @@ TEST_P(SpdyNetworkTransactionTest,
                       SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key1, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_EQ(
       dns_aliases1,
@@ -3261,7 +3261,7 @@ TEST_P(SpdyNetworkTransactionTest,
 
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key2, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key2, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_EQ(
       dns_aliases2,
@@ -3307,14 +3307,14 @@ TEST_P(SpdyNetworkTransactionTest,
 
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
   EXPECT_FALSE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key2, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key2, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_TRUE(helper.session()
                   ->spdy_session_pool()
                   ->GetDnsAliasesForSessionKey(key2)
                   .empty());
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key3, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key3, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_EQ(
       dns_aliases2,
@@ -3356,14 +3356,14 @@ TEST_P(SpdyNetworkTransactionTest,
 
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
   EXPECT_FALSE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key1, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key1, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_TRUE(helper.session()
                   ->spdy_session_pool()
                   ->GetDnsAliasesForSessionKey(key1)
                   .empty());
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
-      key4, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key4, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
   EXPECT_EQ(
       dns_aliases1,
@@ -4257,14 +4257,15 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
                      /*disable_cert_verification_network_fetches=*/false);
-  EXPECT_TRUE(
-      spdy_session_pool->HasAvailableSession(key,
-                                             /*enable_ip_based_pooling=*/true,
-                                             /*is_websocket=*/false));
+  EXPECT_TRUE(spdy_session_pool->HasAvailableSession(
+      key,
+      /*enable_ip_based_pooling_for_h2=*/true,
+      /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session =
-      spdy_session_pool->FindAvailableSession(key,
-                                              /*enable_ip_based_pooling=*/true,
-                                              /*is_websocket=*/false, log_);
+      spdy_session_pool->FindAvailableSession(
+          key,
+          /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, log_);
   EXPECT_TRUE(spdy_session);
 
   // Start second transaction.
@@ -4296,12 +4297,12 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
   EXPECT_EQ("hello!", response_data);
 
   // Graceful GOAWAY was received, SpdySession should be unavailable.
-  EXPECT_FALSE(
-      spdy_session_pool->HasAvailableSession(key,
-                                             /*enable_ip_based_pooling=*/true,
-                                             /*is_websocket=*/false));
+  EXPECT_FALSE(spdy_session_pool->HasAvailableSession(
+      key,
+      /*enable_ip_based_pooling_for_h2=*/true,
+      /*is_websocket=*/false));
   spdy_session = spdy_session_pool->FindAvailableSession(
-      key, /* enable_ip_based_pooling = */ true,
+      key, /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ false, log_);
   EXPECT_FALSE(spdy_session);
 
@@ -7043,7 +7044,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOpensNewConnection) {
                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
+          key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, log_);
   ASSERT_TRUE(spdy_session);
   EXPECT_FALSE(spdy_session->support_websocket());
@@ -7192,7 +7193,7 @@ TEST_P(SpdyNetworkTransactionTest,
 
   base::WeakPtr<SpdySession> spdy_session =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
+          key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, log_);
   ASSERT_TRUE(spdy_session);
   EXPECT_FALSE(spdy_session->support_websocket());
@@ -7272,7 +7273,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOverHTTP2) {
                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
+          key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ true, log_);
   ASSERT_TRUE(spdy_session);
   EXPECT_TRUE(spdy_session->support_websocket());
@@ -7466,7 +7467,7 @@ TEST_P(SpdyNetworkTransactionTest,
 
   base::WeakPtr<SpdySession> spdy_session =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
+          key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, log_);
   ASSERT_TRUE(spdy_session);
   EXPECT_FALSE(spdy_session->support_websocket());
@@ -7580,10 +7581,10 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session1 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key1, /* enable_ip_based_pooling = */ true,
+          key1, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, log_);
   ASSERT_TRUE(spdy_session1);
   EXPECT_TRUE(spdy_session1->support_websocket());
@@ -7598,12 +7599,12 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/true));
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/true));
   EXPECT_FALSE(helper.session()->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key1, /* enable_ip_based_pooling = */ true,
+          key1, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ true, log_);
   ASSERT_TRUE(spdy_session2);
   EXPECT_EQ(spdy_session1.get(), spdy_session2.get());
@@ -7745,7 +7746,7 @@ TEST_P(SpdyNetworkTransactionTest,
                       /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session1 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key1, /* enable_ip_based_pooling = */ true,
+          key1, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, log_);
   ASSERT_TRUE(spdy_session1);
   EXPECT_TRUE(spdy_session1->support_websocket());
@@ -7762,7 +7763,7 @@ TEST_P(SpdyNetworkTransactionTest,
                       /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key1, /* enable_ip_based_pooling = */ true,
+          key1, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ true, log_);
   ASSERT_TRUE(spdy_session2);
   EXPECT_EQ(spdy_session1.get(), spdy_session2.get());
@@ -7910,7 +7911,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketHttp11Required) {
                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
+          key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ true, log_);
   ASSERT_TRUE(spdy_session);
   EXPECT_TRUE(spdy_session->support_websocket());
@@ -8134,7 +8135,7 @@ TEST_P(SpdyNetworkTransactionTest, SecureWebSocketOverH2OverH2Proxy) {
       /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session =
       helper.session()->spdy_session_pool()->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
+          key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ true, log_);
   ASSERT_TRUE(spdy_session);
   EXPECT_TRUE(spdy_session->support_websocket());

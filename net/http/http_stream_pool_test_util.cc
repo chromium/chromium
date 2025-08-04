@@ -441,7 +441,7 @@ TestJobDelegate::allowed_bad_certs() const {
   return allowed_bad_certs_;
 }
 
-bool TestJobDelegate::enable_ip_based_pooling() const {
+bool TestJobDelegate::enable_ip_based_pooling_for_h2() const {
   return true;
 }
 

@@ -221,7 +221,8 @@ void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
               cert_and_status.cert->subject().GetDisplayName());
         }
         dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
-        dict.Set("enable_ip_based_pooling", job->enable_ip_based_pooling());
+        dict.Set("enable_ip_based_pooling_for_h2",
+                 job->enable_ip_based_pooling_for_h2());
         dict.Set("enable_alternative_services",
                  job->enable_alternative_services());
         dict.Set("quic_version",
@@ -975,7 +976,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
            static_cast<int>(tcp_based_attempts_.size()));
   dict.Set("num_slow_attempts",
            static_cast<int>(slow_tcp_based_attempt_count_));
-  dict.Set("enable_ip_based_pooling", IsIpBasedPoolingEnabled());
+  dict.Set("enable_ip_based_pooling_for_h2", IsIpBasedPoolingEnabledForH2());
   dict.Set("enable_alternative_services", IsAlternativeServiceEnabled());
   dict.Set("quic_attempt_alive", !!quic_attempt_);
   if (quic_attempt_result_.has_value()) {
@@ -1020,7 +1021,7 @@ void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
     limit_ignoring_jobs_.emplace(job);
   }
 
-  if (!job->enable_ip_based_pooling()) {
+  if (!job->enable_ip_based_pooling_for_h2()) {
     ip_based_pooling_disabling_jobs_.emplace(job);
   }
 
@@ -1204,7 +1205,8 @@ QuicChromiumClientSession* HttpStreamPool::AttemptManager::
 
 base::WeakPtr<SpdySession> HttpStreamPool::AttemptManager::
     CanUseExistingSpdySessionAfterEndpointChanges() {
-  if (!IsIpBasedPoolingEnabled() || !UsingTls() || !CanUseTcpBasedProtocols()) {
+  if (!IsIpBasedPoolingEnabledForH2() || !UsingTls() ||
+      !CanUseTcpBasedProtocols()) {
     return nullptr;
   }
 
@@ -1215,7 +1217,8 @@ base::WeakPtr<SpdySession> HttpStreamPool::AttemptManager::
 
   if (HasAvailableSpdySession()) {
     base::WeakPtr<SpdySession> spdy_session = pool()->FindAvailableSpdySession(
-        stream_key(), spdy_session_key(), IsIpBasedPoolingEnabled(), net_log());
+        stream_key(), spdy_session_key(), IsIpBasedPoolingEnabledForH2(),
+        net_log());
     CHECK(spdy_session);
     CHECK(spdy_session->IsAvailable());
     return spdy_session;
@@ -1432,7 +1435,7 @@ bool HttpStreamPool::AttemptManager::ShouldRespectLimits() const {
   return limit_ignoring_jobs_.empty();
 }
 
-bool HttpStreamPool::AttemptManager::IsIpBasedPoolingEnabled() const {
+bool HttpStreamPool::AttemptManager::IsIpBasedPoolingEnabledForH2() const {
   return ip_based_pooling_disabling_jobs_.empty();
 }
 
@@ -1684,7 +1687,8 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 
 bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
   return spdy_session_pool()->HasAvailableSession(
-      spdy_session_key(), IsIpBasedPoolingEnabled(), /*is_websocket=*/false);
+      spdy_session_key(), IsIpBasedPoolingEnabledForH2(),
+      /*is_websocket=*/false);
 }
 
 void HttpStreamPool::AttemptManager::MaybeStartDraining() {

@@ -1097,7 +1097,7 @@ int HttpNetworkTransaction::DoCreateStream() {
   // IP based pooling is only disabled on a retry after 421 Misdirected Request
   // is received. Alternative Services are also disabled in this case (though
   // they can also be disabled when retrying after a QUIC error).
-  if (!enable_ip_based_pooling_) {
+  if (!enable_ip_based_pooling_for_h2_) {
     DCHECK(!enable_alternative_services_);
   }
 
@@ -1111,11 +1111,13 @@ int HttpNetworkTransaction::DoCreateStream() {
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
             *request_, priority_, /*allowed_bad_certs=*/observed_bad_certs_,
             this, websocket_handshake_stream_base_create_helper_,
-            enable_ip_based_pooling_, enable_alternative_services_, net_log_);
+            enable_ip_based_pooling_for_h2_, enable_alternative_services_,
+            net_log_);
   } else {
     stream_request_ = session_->http_stream_factory()->RequestStream(
         *request_, priority_, /*allowed_bad_certs=*/observed_bad_certs_, this,
-        enable_ip_based_pooling_, enable_alternative_services_, net_log_);
+        enable_ip_based_pooling_for_h2_, enable_alternative_services_,
+        net_log_);
   }
   DCHECK(stream_request_.get());
   return ERR_IO_PENDING;
@@ -1686,14 +1688,14 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
       request_->upload_data_stream &&
       request_->upload_data_stream->has_null_source();
   if (response_.headers->response_code() == 421 &&
-      (enable_ip_based_pooling_ || enable_alternative_services_) &&
+      (enable_ip_based_pooling_for_h2_ || enable_alternative_services_) &&
       !has_body_with_null_source) {
 #if BUILDFLAG(ENABLE_REPORTING)
     GenerateNetworkErrorLoggingReport(OK);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
     // Retry the request with both IP based pooling and Alternative Services
     // disabled.
-    enable_ip_based_pooling_ = false;
+    enable_ip_based_pooling_for_h2_ = false;
     enable_alternative_services_ = false;
     net_log_.AddEvent(
         NetLogEventType::HTTP_TRANSACTION_RESTART_MISDIRECTED_REQUEST);

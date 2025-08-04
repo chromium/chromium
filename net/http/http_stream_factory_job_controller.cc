@@ -147,7 +147,7 @@ HttpStreamFactory::JobController::JobController(
     const HttpRequestInfo& http_request_info,
     bool is_preconnect,
     bool is_websocket,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool enable_alternative_services,
     bool delay_main_job_with_available_spdy_session,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs)
@@ -157,7 +157,7 @@ HttpStreamFactory::JobController::JobController(
       delegate_(delegate),
       is_preconnect_(is_preconnect),
       is_websocket_(is_websocket),
-      enable_ip_based_pooling_(enable_ip_based_pooling),
+      enable_ip_based_pooling_for_h2_(enable_ip_based_pooling_for_h2),
       enable_alternative_services_(enable_alternative_services),
       delay_main_job_with_available_spdy_session_(
           delay_main_job_with_available_spdy_session),
@@ -901,9 +901,10 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     std::unique_ptr<Job> preconnect_job = job_factory_->CreateJob(
         this, dns_alpn_h3_job_enabled ? PRECONNECT_DNS_ALPN_H3 : PRECONNECT,
         session_, request_info_, IDLE, proxy_info_, allowed_bad_certs_,
-        destination, origin_url_, is_websocket_, enable_ip_based_pooling_,
-        net_log_.net_log(), NextProto::kProtoUnknown,
-        quic::ParsedQuicVersion::Unsupported(), management_config_);
+        destination, origin_url_, is_websocket_,
+        enable_ip_based_pooling_for_h2_, net_log_.net_log(),
+        NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported(),
+        management_config_);
     // When there is an valid alternative service info, and `preconnect_job`
     // has no existing QUIC session, create a job for the alternative service.
     if (alternative_service_info_.protocol() != NextProto::kProtoUnknown &&
@@ -919,7 +920,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       main_job_ = job_factory_->CreateJob(
           this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
           allowed_bad_certs_, std::move(alternative_destination), origin_url_,
-          is_websocket_, enable_ip_based_pooling_, session_->net_log(),
+          is_websocket_, enable_ip_based_pooling_for_h2_, session_->net_log(),
           alternative_service_info_.protocol(), quic_version,
           management_config_);
     } else {
@@ -929,7 +930,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         preconnect_backup_job_ = job_factory_->CreateJob(
             this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
             allowed_bad_certs_, std::move(destination), origin_url_,
-            is_websocket_, enable_ip_based_pooling_, net_log_.net_log(),
+            is_websocket_, enable_ip_based_pooling_for_h2_, net_log_.net_log(),
             NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported(),
             management_config_);
       }
@@ -940,8 +941,9 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   main_job_ = job_factory_->CreateJob(
       this, MAIN, session_, request_info_, priority_, proxy_info_,
       allowed_bad_certs_, std::move(destination), origin_url_, is_websocket_,
-      enable_ip_based_pooling_, net_log_.net_log(), NextProto::kProtoUnknown,
-      quic::ParsedQuicVersion::Unsupported(), management_config_);
+      enable_ip_based_pooling_for_h2_, net_log_.net_log(),
+      NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported(),
+      management_config_);
 
   // Alternative Service can only be set for HTTPS requests while Alternative
   // Proxy is set for HTTP requests.
@@ -968,7 +970,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     alternative_job_ = job_factory_->CreateJob(
         this, ALTERNATIVE, session_, request_info_, priority_, proxy_info_,
         allowed_bad_certs_, std::move(alternative_destination), origin_url_,
-        is_websocket_, enable_ip_based_pooling_, net_log_.net_log(),
+        is_websocket_, enable_ip_based_pooling_for_h2_, net_log_.net_log(),
         alternative_service_info_.protocol(), quic_version, management_config_);
   }
 
@@ -979,7 +981,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     dns_alpn_h3_job_ = job_factory_->CreateJob(
         this, DNS_ALPN_H3, session_, request_info_, priority_, proxy_info_,
         allowed_bad_certs_, std::move(dns_alpn_h3_destination), origin_url_,
-        is_websocket_, enable_ip_based_pooling_, net_log_.net_log(),
+        is_websocket_, enable_ip_based_pooling_for_h2_, net_log_.net_log(),
         NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported(),
         management_config_);
   }
@@ -1542,7 +1544,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
   session_->http_stream_pool()->HandleStreamRequest(
       std::exchange(request_, nullptr), std::exchange(delegate_, nullptr),
       std::move(pool_request_info), priority_, allowed_bad_certs_,
-      enable_ip_based_pooling_, enable_alternative_services_);
+      enable_ip_based_pooling_for_h2_, enable_alternative_services_);
 
   // Delete `this` later as this method is called while running DoLoop().
   TaskRunner(priority_)->PostTask(

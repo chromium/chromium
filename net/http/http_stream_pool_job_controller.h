@@ -44,7 +44,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
                 HttpStreamPoolRequestInfo request_info,
                 RequestPriority priority,
                 std::vector<SSLConfig::CertAndStatus> allowed_bad_certs,
-                bool enable_ip_based_pooling,
+                bool enable_ip_based_pooling_for_h2,
                 bool enable_alternative_services);
 
   JobController(const JobController&) = delete;
@@ -65,7 +65,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   RespectLimits respect_limits() const override;
   const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
       const override;
-  bool enable_ip_based_pooling() const override;
+  bool enable_ip_based_pooling_for_h2() const override;
   bool enable_alternative_services() const override;
   NextProtoSet allowed_alpns() const override;
   const ProxyInfo& proxy_info() const override;
@@ -181,7 +181,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   const raw_ptr<HttpStreamPool> pool_;
   RequestPriority priority_;
   const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
-  const bool enable_ip_based_pooling_;
+  const bool enable_ip_based_pooling_for_h2_;
   const bool enable_alternative_services_;
   const RespectLimits respect_limits_;
   NextProtoSet allowed_alpns_;

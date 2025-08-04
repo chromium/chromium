@@ -98,7 +98,7 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
     const SpdySessionKey& key,
     const CommonConnectJobParams* common_connect_job_params) {
   EXPECT_FALSE(http_session->spdy_session_pool()->FindAvailableSession(
-      key, true /* enable_ip_based_pooling */, false /* is_websocket */,
+      key, true /* enable_ip_based_pooling_for_h2 */, false /* is_websocket */,
       NetLogWithSource()));
 
   auto transport_params = base::MakeRefCounted<TransportSocketParams>(

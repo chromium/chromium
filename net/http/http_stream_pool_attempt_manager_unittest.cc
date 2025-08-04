@@ -232,8 +232,9 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
-  StreamRequester& set_enable_ip_based_pooling(bool enable_ip_based_pooling) {
-    enable_ip_based_pooling_ = enable_ip_based_pooling;
+  StreamRequester& set_enable_ip_based_pooling_for_h2(
+      bool enable_ip_based_pooling_for_h2) {
+    enable_ip_based_pooling_for_h2_ = enable_ip_based_pooling_for_h2;
     return *this;
   }
 
@@ -300,7 +301,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
             NetLogWithSource::Make(
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
-        priority_, allowed_bad_certs_, enable_ip_based_pooling_,
+        priority_, allowed_bad_certs_, enable_ip_based_pooling_for_h2_,
         enable_alternative_services_);
     Group* group = pool.GetGroupForTesting(stream_key);
     AttemptManager* attempt_manager =
@@ -422,7 +423,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
 
-  bool enable_ip_based_pooling_ = true;
+  bool enable_ip_based_pooling_for_h2_ = true;
   bool enable_alternative_services_ = true;
   NextProtoSet allowed_alpns_ = NextProtoSet::All();
   int load_flags_ = 0;
@@ -547,7 +548,7 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     Group& group = pool().GetOrCreateGroupForTesting(stream_key);
     CHECK(!spdy_session_pool()->HasAvailableSession(
         group.spdy_session_key(),
-        /*enable_ip_based_pooling=*/true,
+        /*enable_ip_based_pooling_for_h2=*/true,
         /*is_websocket=*/false));
     auto socket = FakeStreamSocket::CreateForSpdy();
     socket->set_peer_addr(peer_addr);
@@ -2450,7 +2451,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SSLConfigForServersChanged) {
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyAvailableSession) {
   StreamRequester requester;
   requester.set_destination("https://a.test")
-      .set_enable_ip_based_pooling(false);
+      .set_enable_ip_based_pooling_for_h2(false);
 
   CreateFakeSpdySession(requester.GetStreamKey());
   requester.RequestStream(pool());
@@ -2502,7 +2503,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
     ssls.emplace_back(std::move(ssl));
 
     auto requester = std::make_unique<StreamRequester>(stream_key);
-    requester->set_enable_ip_based_pooling(false).RequestStream(pool());
+    requester->set_enable_ip_based_pooling_for_h2(false).RequestStream(pool());
     requesters.emplace_back(std::move(requester));
   }
 
@@ -2574,7 +2575,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DoNotUseSpdySessionForHttpRequest) {
   EXPECT_THAT(requester_https.result(), Optional(IsOk()));
   EXPECT_EQ(requester_https.negotiated_protocol(), NextProto::kProtoHTTP2);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.CalculateSpdySessionKey(), /*enable_ip_based_pooling=*/true,
+      stream_key.CalculateSpdySessionKey(),
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*is_websocket=*/false));
 
   // Request a stream for http (not https). The second request should use
@@ -2609,7 +2611,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CloseIdleSpdySessionWhenPoolStalled) {
       StreamKeyBuilder().set_destination(kDestinationA).Build();
   CreateFakeSpdySession(stream_key_a);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key_a.CalculateSpdySessionKey(), /*enable_ip_based_pooling=*/true,
+      stream_key_a.CalculateSpdySessionKey(),
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*is_websocket=*/false));
 
   resolver()
@@ -2632,10 +2635,11 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CloseIdleSpdySessionWhenPoolStalled) {
   EXPECT_EQ(requester_b.negotiated_protocol(), NextProto::kProtoHTTP2);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
       requester_b.GetStreamKey().CalculateSpdySessionKey(),
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*is_websocket=*/false));
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
-      stream_key_a.CalculateSpdySessionKey(), /*enable_ip_based_pooling=*/true,
+      stream_key_a.CalculateSpdySessionKey(),
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*is_websocket=*/false));
 }
 
@@ -2897,7 +2901,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // The session was already closed so it's not available.
   ASSERT_FALSE(spdy_session_pool()->FindAvailableSession(
       requester_b.GetStreamKey().CalculateSpdySessionKey(),
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*is_websocket=*/false, NetLogWithSource()));
 }
 
@@ -3012,7 +3016,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionDisabled) {
 
   StreamRequester requester_b;
   requester_b.set_destination("https://example.test")
-      .set_enable_ip_based_pooling(false)
+      .set_enable_ip_based_pooling_for_h2(false)
       .RequestStream(pool());
 
   endpoint_request
@@ -3050,7 +3054,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester2;
   requester2.set_destination("https://example.test")
-      .set_enable_ip_based_pooling(false)
+      .set_enable_ip_based_pooling_for_h2(false)
       .RequestStream(pool());
   requester2.WaitForResult();
   EXPECT_THAT(requester2.result(), Optional(IsError(ERR_FAILED)));
@@ -3066,7 +3070,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester3;
   requester3.set_destination("https://example.test")
-      .set_enable_ip_based_pooling(true)
+      .set_enable_ip_based_pooling_for_h2(true)
       .RequestStream(pool());
   requester3.WaitForResult();
   EXPECT_THAT(requester3.result(), Optional(IsOk()));
@@ -3558,7 +3562,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleStreamsHttp2) {
   EXPECT_THAT(preconnector.result(), Optional(IsOk()));
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.CalculateSpdySessionKey(), /*enable_ip_based_pooling=*/true,
+      stream_key.CalculateSpdySessionKey(),
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*is_websocket=*/false));
 }
 
@@ -3601,7 +3606,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectRequireHttp1) {
   EXPECT_THAT(preconnector.result(), Optional(IsOk()));
   ASSERT_EQ(group.IdleStreamSocketCount(), 2u);
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
-      stream_key.CalculateSpdySessionKey(), /*enable_ip_based_pooling=*/true,
+      stream_key.CalculateSpdySessionKey(),
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*is_websocket=*/false));
 }
 
@@ -5341,7 +5347,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicMatchingIpSessionDisabled) {
 
   StreamRequester requester;
   requester.set_destination(kDefaultDestination)
-      .set_enable_ip_based_pooling(false)
+      .set_enable_ip_based_pooling_for_h2(false)
       .RequestStream(pool());
   requester.WaitForResult();
 

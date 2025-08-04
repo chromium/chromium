@@ -159,7 +159,7 @@ class HttpStreamFactory::Job
       NextProto alternative_protocol,
       quic::ParsedQuicVersion quic_version,
       bool is_websocket,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       std::optional<ConnectionManagementConfig> management_config,
       NetLog* net_log);
 
@@ -405,7 +405,7 @@ class HttpStreamFactory::Job
 
   // Enable pooling to a SpdySession with matching IP and certificate
   // even if the SpdySessionKey is different.
-  const bool enable_ip_based_pooling_;
+  const bool enable_ip_based_pooling_for_h2_;
 
   // Unowned. |this| job is owned by |delegate_|.
   const raw_ptr<Delegate> delegate_;
@@ -510,7 +510,7 @@ class HttpStreamFactory::JobFactory {
       url::SchemeHostPort destination,
       GURL origin_url,
       bool is_websocket,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       NetLog* net_log,
       NextProto alternative_protocol,
       quic::ParsedQuicVersion quic_version,

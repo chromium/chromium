@@ -169,14 +169,14 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStream(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     HttpStreamRequest::Delegate* delegate,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
-  return RequestStreamInternal(request_info, priority, allowed_bad_certs,
-                               delegate, nullptr,
-                               HttpStreamRequest::HTTP_STREAM,
-                               /*is_websocket=*/false, enable_ip_based_pooling,
-                               enable_alternative_services, net_log);
+  return RequestStreamInternal(
+      request_info, priority, allowed_bad_certs, delegate, nullptr,
+      HttpStreamRequest::HTTP_STREAM,
+      /*is_websocket=*/false, enable_ip_based_pooling_for_h2,
+      enable_alternative_services, net_log);
 }
 
 std::unique_ptr<HttpStreamRequest>
@@ -186,15 +186,15 @@ HttpStreamFactory::RequestWebSocketHandshakeStream(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     HttpStreamRequest::Delegate* delegate,
     WebSocketHandshakeStreamBase::CreateHelper* create_helper,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
   DCHECK(create_helper);
-  return RequestStreamInternal(request_info, priority, allowed_bad_certs,
-                               delegate, create_helper,
-                               HttpStreamRequest::HTTP_STREAM,
-                               /*is_websocket=*/true, enable_ip_based_pooling,
-                               enable_alternative_services, net_log);
+  return RequestStreamInternal(
+      request_info, priority, allowed_bad_certs, delegate, create_helper,
+      HttpStreamRequest::HTTP_STREAM,
+      /*is_websocket=*/true, enable_ip_based_pooling_for_h2,
+      enable_alternative_services, net_log);
 }
 
 std::unique_ptr<HttpStreamRequest>
@@ -203,16 +203,16 @@ HttpStreamFactory::RequestBidirectionalStreamImpl(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     HttpStreamRequest::Delegate* delegate,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
   DCHECK(request_info.url.SchemeIs(url::kHttpsScheme));
 
-  return RequestStreamInternal(request_info, priority, allowed_bad_certs,
-                               delegate, nullptr,
-                               HttpStreamRequest::BIDIRECTIONAL_STREAM,
-                               /*is_websocket=*/false, enable_ip_based_pooling,
-                               enable_alternative_services, net_log);
+  return RequestStreamInternal(
+      request_info, priority, allowed_bad_certs, delegate, nullptr,
+      HttpStreamRequest::BIDIRECTIONAL_STREAM,
+      /*is_websocket=*/false, enable_ip_based_pooling_for_h2,
+      enable_alternative_services, net_log);
 }
 
 std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStreamInternal(
@@ -224,7 +224,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStreamInternal(
         websocket_handshake_stream_create_helper,
     HttpStreamRequest::StreamType stream_type,
     bool is_websocket,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
   // This is only needed in the non-preconnect path, as preconnects do not
@@ -233,7 +233,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStreamInternal(
 
   auto job_controller = std::make_unique<JobController>(
       this, delegate, session_, job_factory_.get(), request_info,
-      /* is_preconnect = */ false, is_websocket, enable_ip_based_pooling,
+      /* is_preconnect = */ false, is_websocket, enable_ip_based_pooling_for_h2,
       enable_alternative_services,
       session_->context()
           .quic_context->params()
@@ -261,7 +261,7 @@ void HttpStreamFactory::PreconnectStreams(int num_streams,
       this, nullptr, session_, job_factory_.get(), request_info,
       /*is_preconnect=*/true,
       /*is_websocket=*/false,
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true,
       session_->context()
           .quic_context->params()

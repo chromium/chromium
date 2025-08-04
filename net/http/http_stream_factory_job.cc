@@ -113,7 +113,7 @@ HttpStreamFactory::Job::Job(
     NextProto alternative_protocol,
     quic::ParsedQuicVersion quic_version,
     bool is_websocket,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     std::optional<ConnectionManagementConfig> management_config,
     NetLog* net_log)
     : request_info_(request_info),
@@ -132,8 +132,8 @@ HttpStreamFactory::Job::Job(
       try_websocket_over_http2_(is_websocket_ &&
                                 origin_url_.SchemeIs(url::kWssScheme)),
       // Only support IP-based pooling for non-proxied streams.
-      enable_ip_based_pooling_(enable_ip_based_pooling &&
-                               proxy_info.is_direct()),
+      enable_ip_based_pooling_for_h2_(enable_ip_based_pooling_for_h2 &&
+                                      proxy_info.is_direct()),
       delegate_(delegate),
       job_type_(job_type),
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
@@ -744,7 +744,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
         bool is_blocking_request_for_session;
         existing_spdy_session_ = session_->spdy_session_pool()->RequestSession(
-            spdy_session_key_, enable_ip_based_pooling_, is_websocket_,
+            spdy_session_key_, enable_ip_based_pooling_for_h2_, is_websocket_,
             net_log_, resume_callback, this, &spdy_session_request_,
             &is_blocking_request_for_session);
         if (!existing_spdy_session_ && should_throttle_connect &&
@@ -755,7 +755,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
               FROM_HERE, resume_callback, base::Milliseconds(kHTTP2ThrottleMs));
           return ERR_IO_PENDING;
         }
-      } else if (enable_ip_based_pooling_) {
+      } else if (enable_ip_based_pooling_for_h2_) {
         // If already watching for an H2 session, still need to check for an
         // existing connection that can be reused through IP pooling, as those
         // don't post session available notifications.
@@ -764,8 +764,8 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
         // callback.
         existing_spdy_session_ =
             session_->spdy_session_pool()->FindAvailableSession(
-                spdy_session_key_, enable_ip_based_pooling_, is_websocket_,
-                net_log_);
+                spdy_session_key_, enable_ip_based_pooling_for_h2_,
+                is_websocket_, net_log_);
       }
     }
     if (existing_spdy_session_) {
@@ -1140,7 +1140,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
 
     existing_spdy_session_ =
         session_->spdy_session_pool()->FindAvailableSession(
-            spdy_session_key_, enable_ip_based_pooling_,
+            spdy_session_key_, enable_ip_based_pooling_for_h2_,
             /* is_websocket = */ false, net_log_);
   }
   if (existing_spdy_session_) {
@@ -1267,7 +1267,7 @@ HttpStreamFactory::JobFactory::CreateJob(
     url::SchemeHostPort destination,
     GURL origin_url,
     bool is_websocket,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     NetLog* net_log,
     NextProto alternative_protocol,
     quic::ParsedQuicVersion quic_version,
@@ -1275,8 +1275,8 @@ HttpStreamFactory::JobFactory::CreateJob(
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
       allowed_bad_certs, std::move(destination), origin_url,
-      alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
-      management_config, net_log);
+      alternative_protocol, quic_version, is_websocket,
+      enable_ip_based_pooling_for_h2, management_config, net_log);
 }
 
 bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {

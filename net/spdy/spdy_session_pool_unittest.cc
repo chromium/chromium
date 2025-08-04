@@ -132,10 +132,10 @@ bool TryCreateAliasedSpdySession(
     SpdySessionPool* pool,
     const SpdySessionKey& key,
     const std::vector<HostResolverEndpointResult>& endpoints,
-    bool enable_ip_based_pooling = true,
+    bool enable_ip_based_pooling_for_h2 = true,
     bool is_websocket = false) {
   // The requested session must not already exist.
-  EXPECT_FALSE(pool->FindAvailableSession(key, enable_ip_based_pooling,
+  EXPECT_FALSE(pool->FindAvailableSession(key, enable_ip_based_pooling_for_h2,
                                           is_websocket, NetLogWithSource()));
 
   // Create a request for the session. There should be no matching session
@@ -145,7 +145,7 @@ bool TryCreateAliasedSpdySession(
   bool is_blocking_request_for_session = false;
   SpdySessionRequestDelegate request_delegate;
   EXPECT_FALSE(pool->RequestSession(
-      key, enable_ip_based_pooling, is_websocket, NetLogWithSource(),
+      key, enable_ip_based_pooling_for_h2, is_websocket, NetLogWithSource(),
       /* on_blocking_request_destroyed_callback = */ base::RepeatingClosure(),
       &request_delegate, &request, &is_blocking_request_for_session));
   EXPECT_TRUE(request);
@@ -167,8 +167,8 @@ bool TryCreateAliasedSpdySession(
   // (i.e. the newly created session, if a session was created, or nullptr, if
   // one was not.)
   EXPECT_EQ(request_delegate.spdy_session(),
-            pool->RequestSession(key, enable_ip_based_pooling, is_websocket,
-                                 NetLogWithSource(),
+            pool->RequestSession(key, enable_ip_based_pooling_for_h2,
+                                 is_websocket, NetLogWithSource(),
                                  /* on_blocking_request_destroyed_callback = */
                                  base::RepeatingClosure(), &request_delegate,
                                  &request, &is_blocking_request_for_session)
@@ -183,7 +183,7 @@ bool TryCreateAliasedSpdySession(
 bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
                                  const SpdySessionKey& key,
                                  const std::string& ip_address_list,
-                                 bool enable_ip_based_pooling = true,
+                                 bool enable_ip_based_pooling_for_h2 = true,
                                  bool is_websocket = false) {
   std::vector<IPEndPoint> ip_endpoints;
   EXPECT_THAT(ParseAddressList(ip_address_list, &ip_endpoints), IsOk());
@@ -191,8 +191,8 @@ bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
   for (auto& ip_endpoint : ip_endpoints) {
     endpoint.ip_endpoints.emplace_back(ip_endpoint.address(), 443);
   }
-  return TryCreateAliasedSpdySession(pool, key, {endpoint},
-                                     enable_ip_based_pooling, is_websocket);
+  return TryCreateAliasedSpdySession(
+      pool, key, {endpoint}, enable_ip_based_pooling_for_h2, is_websocket);
 }
 
 // A delegate that opens a new session when it is closed.
@@ -601,7 +601,7 @@ void SpdySessionPoolTest::RunIPPoolingTest(
   // |session| for the second host.
   base::WeakPtr<SpdySession> session1 =
       spdy_session_pool_->FindAvailableSession(
-          test_hosts[1].key, /* enable_ip_based_pooling = */ false,
+          test_hosts[1].key, /* enable_ip_based_pooling_for_h2 = */ false,
           /* is_websocket = */ false, NetLogWithSource());
   EXPECT_FALSE(session1);
 
@@ -648,7 +648,7 @@ void SpdySessionPoolTest::RunIPPoolingTest(
   // Grab the session to host 1 and verify that it is the same session
   // we got with host 0, and that is a different from host 2's session.
   session1 = spdy_session_pool_->FindAvailableSession(
-      test_hosts[1].key, /* enable_ip_based_pooling = */ true,
+      test_hosts[1].key, /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ false, NetLogWithSource());
   EXPECT_EQ(session.get(), session1.get());
   EXPECT_NE(session2.get(), session1.get());
@@ -772,7 +772,7 @@ void SpdySessionPoolTest::RunIPPoolingDisabledTest(SSLSocketDataProvider* ssl) {
       HasSpdySession(http_session_->spdy_session_pool(), test_hosts[0].key));
   EXPECT_FALSE(TryCreateAliasedSpdySession(
       spdy_session_pool_, test_hosts[1].key, test_hosts[1].iplist,
-      /* enable_ip_based_pooling = */ false));
+      /* enable_ip_based_pooling_for_h2 = */ false));
 
   http_session_->spdy_session_pool()->CloseAllSessions();
 }
@@ -839,7 +839,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
 
   base::WeakPtr<SpdySession> session1 =
       spdy_session_pool_->FindAvailableSession(
-          test_hosts[1].key, /* enable_ip_based_pooling = */ true,
+          test_hosts[1].key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false,
           NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_EQ(session0.get(), session1.get());
@@ -939,7 +939,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingDnsAlpn) {
                                           test_hosts[1].endpoints));
   base::WeakPtr<SpdySession> session1 =
       spdy_session_pool_->FindAvailableSession(
-          test_hosts[1].key, /*enable_ip_based_pooling=*/true,
+          test_hosts[1].key, /*enable_ip_based_pooling_for_h2=*/true,
           /*is_websocket=*/false,
           NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_EQ(session0.get(), session1.get());
@@ -949,7 +949,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingDnsAlpn) {
                                           test_hosts[2].endpoints));
   base::WeakPtr<SpdySession> session2 =
       spdy_session_pool_->FindAvailableSession(
-          test_hosts[2].key, /*enable_ip_based_pooling=*/true,
+          test_hosts[2].key, /*enable_ip_based_pooling_for_h2=*/true,
           /*is_websocket=*/false,
           NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_EQ(session0.get(), session2.get());
@@ -1011,14 +1011,14 @@ TEST_F(SpdySessionPoolTest, IPPoolingDisabled) {
                                           test_hosts[1].iplist));
   base::WeakPtr<SpdySession> session1 =
       spdy_session_pool_->FindAvailableSession(
-          test_hosts[1].key, /* enable_ip_based_pooling = */ true,
+          test_hosts[1].key, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, NetLogWithSource());
   EXPECT_EQ(session0.get(), session1.get());
 
   // A request to the second host should not pool to the existing connection if
   // IP based pooling is disabled.
   session1 = spdy_session_pool_->FindAvailableSession(
-      test_hosts[1].key, /* enable_ip_based_pooling = */ false,
+      test_hosts[1].key, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ false, NetLogWithSource());
   EXPECT_FALSE(session1);
 
@@ -1522,11 +1522,11 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   // SpdySessionKeys if |is_websocket| argument is set.
   EXPECT_FALSE(TryCreateAliasedSpdySession(
       spdy_session_pool_, test_hosts[0].key, test_hosts[0].iplist,
-      /* enable_ip_based_pooling = */ true,
+      /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ true));
   EXPECT_FALSE(TryCreateAliasedSpdySession(
       spdy_session_pool_, test_hosts[1].key, test_hosts[1].iplist,
-      /* enable_ip_based_pooling = */ true,
+      /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ true));
 
   // Start request that triggers reading the SETTINGS frame.
@@ -1549,33 +1549,33 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   // session with websockets enabled, and TryCreateAliasedSpdySession() should
   // now set up aliases for |session| for the second one.
   base::WeakPtr<SpdySession> result = spdy_session_pool_->FindAvailableSession(
-      test_hosts[0].key, /* enable_ip_based_pooling = */ true,
+      test_hosts[0].key, /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
-  EXPECT_TRUE(TryCreateAliasedSpdySession(spdy_session_pool_, test_hosts[1].key,
-                                          test_hosts[1].iplist,
-                                          /* enable_ip_based_pooling = */ true,
-                                          /* is_websocket = */ true));
+  EXPECT_TRUE(TryCreateAliasedSpdySession(
+      spdy_session_pool_, test_hosts[1].key, test_hosts[1].iplist,
+      /* enable_ip_based_pooling_for_h2 = */ true,
+      /* is_websocket = */ true));
 
   // FindAvailableSession() should return |session| for either SpdySessionKeys
   // when IP based pooling is enabled.
   result = spdy_session_pool_->FindAvailableSession(
-      test_hosts[0].key, /* enable_ip_based_pooling = */ true,
+      test_hosts[0].key, /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
   result = spdy_session_pool_->FindAvailableSession(
-      test_hosts[1].key, /* enable_ip_based_pooling = */ true,
+      test_hosts[1].key, /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
 
   // FindAvailableSession() should only return |session| for the first
   // SpdySessionKey when IP based pooling is disabled.
   result = spdy_session_pool_->FindAvailableSession(
-      test_hosts[0].key, /* enable_ip_based_pooling = */ false,
+      test_hosts[0].key, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ true, net_log_with_source);
   EXPECT_EQ(session.get(), result.get());
   result = spdy_session_pool_->FindAvailableSession(
-      test_hosts[1].key, /* enable_ip_based_pooling = */ false,
+      test_hosts[1].key, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ true, net_log_with_source);
   EXPECT_FALSE(result);
 
@@ -1657,7 +1657,7 @@ TEST_F(SpdySessionPoolTest, RequestSessionWithNoSessions) {
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request1;
   bool is_first_request_for_session;
   EXPECT_FALSE(spdy_session_pool_->RequestSession(
-      kSessionKey, /* enable_ip_based_pooling = */ false,
+      kSessionKey, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ false, NetLogWithSource(),
       request_deleted_callback1.Callback(), &request_delegate1,
       &spdy_session_request1, &is_first_request_for_session));
@@ -1668,7 +1668,7 @@ TEST_F(SpdySessionPoolTest, RequestSessionWithNoSessions) {
   TestRequestDelegate request_delegate2;
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request2;
   EXPECT_FALSE(spdy_session_pool_->RequestSession(
-      kSessionKey, /* enable_ip_based_pooling = */ false,
+      kSessionKey, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ false, NetLogWithSource(),
       request_deleted_callback2.Callback(), &request_delegate2,
       &spdy_session_request2, &is_first_request_for_session));
@@ -1679,7 +1679,7 @@ TEST_F(SpdySessionPoolTest, RequestSessionWithNoSessions) {
   TestRequestDelegate request_delegate3;
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request3;
   EXPECT_FALSE(spdy_session_pool_->RequestSession(
-      kSessionKey, /* enable_ip_based_pooling = */ false,
+      kSessionKey, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ false, NetLogWithSource(),
       request_deleted_callback3.Callback(), &request_delegate3,
       &spdy_session_request3, &is_first_request_for_session));
@@ -1720,7 +1720,7 @@ TEST_F(SpdySessionPoolTest, RequestSessionDuringNotification) {
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request1;
   bool is_first_request_for_session;
   EXPECT_FALSE(spdy_session_pool_->RequestSession(
-      kSessionKey, /* enable_ip_based_pooling = */ false,
+      kSessionKey, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ false, NetLogWithSource(),
       request_deleted_callback1.Callback(), &request_delegate1,
       &spdy_session_request1, &is_first_request_for_session));
@@ -1731,7 +1731,7 @@ TEST_F(SpdySessionPoolTest, RequestSessionDuringNotification) {
   TestRequestDelegate request_delegate2;
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request2;
   EXPECT_FALSE(spdy_session_pool_->RequestSession(
-      kSessionKey, /* enable_ip_based_pooling = */ false,
+      kSessionKey, /* enable_ip_based_pooling_for_h2 = */ false,
       /* is_websocket = */ false, NetLogWithSource(),
       request_deleted_callback2.Callback(), &request_delegate2,
       &spdy_session_request2, &is_first_request_for_session));
@@ -1750,7 +1750,7 @@ TEST_F(SpdySessionPoolTest, RequestSessionDuringNotification) {
         // removed.
         bool is_first_request_for_session;
         EXPECT_FALSE(spdy_session_pool_->RequestSession(
-            kSessionKey, /* enable_ip_based_pooling = */ false,
+            kSessionKey, /* enable_ip_based_pooling_for_h2 = */ false,
             /* is_websocket = */ false, NetLogWithSource(),
             request_deleted_callback3.Callback(), &request_delegate3,
             &spdy_session_request3, &is_first_request_for_session));
@@ -1758,7 +1758,7 @@ TEST_F(SpdySessionPoolTest, RequestSessionDuringNotification) {
 
         // Fourth request.
         EXPECT_FALSE(spdy_session_pool_->RequestSession(
-            kSessionKey, /* enable_ip_based_pooling = */ false,
+            kSessionKey, /* enable_ip_based_pooling_for_h2 = */ false,
             /* is_websocket = */ false, NetLogWithSource(),
             request_deleted_callback4.Callback(), &request_delegate4,
             &spdy_session_request4, &is_first_request_for_session));

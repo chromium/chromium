@@ -102,7 +102,7 @@ class NET_EXPORT SpdySessionPool
 
     // Constructor - this is called by the SpdySessionPool.
     SpdySessionRequest(const SpdySessionKey& key,
-                       bool enable_ip_based_pooling,
+                       bool enable_ip_based_pooling_for_h2,
                        bool is_websocket,
                        bool is_blocking_request_for_session,
                        Delegate* delegate,
@@ -118,7 +118,9 @@ class NET_EXPORT SpdySessionPool
     void OnRemovedFromPool();
 
     const SpdySessionKey& key() const { return key_; }
-    bool enable_ip_based_pooling() const { return enable_ip_based_pooling_; }
+    bool enable_ip_based_pooling_for_h2() const {
+      return enable_ip_based_pooling_for_h2_;
+    }
     bool is_websocket() const { return is_websocket_; }
     bool is_blocking_request_for_session() const {
       return is_blocking_request_for_session_;
@@ -131,7 +133,7 @@ class NET_EXPORT SpdySessionPool
 
    private:
     const SpdySessionKey key_;
-    const bool enable_ip_based_pooling_;
+    const bool enable_ip_based_pooling_for_h2_;
     const bool is_websocket_;
     const bool is_blocking_request_for_session_;
     const raw_ptr<Delegate> delegate_;
@@ -209,14 +211,14 @@ class NET_EXPORT SpdySessionPool
 
   // If there is an available session for |key|, return it.
   // Otherwise if there is a session to pool to based on IP address:
-  //   * if |enable_ip_based_pooling == true|,
+  //   * if |enable_ip_based_pooling_for_h2 == true|,
   //     then mark it as available for |key| and return it;
-  //   * if |enable_ip_based_pooling == false|,
+  //   * if |enable_ip_based_pooling_for_h2 == false|,
   //     then remove it from the available sessions, and return nullptr.
   // Otherwise return nullptr.
   base::WeakPtr<SpdySession> FindAvailableSession(
       const SpdySessionKey& key,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       bool is_websocket,
       const NetLogWithSource& net_log);
 
@@ -230,9 +232,9 @@ class NET_EXPORT SpdySessionPool
 
   // Returns true if there is an available session for `key`. Otherwise, if
   // there is a session to pool to based on IP address, returns true if
-  // `enable_ip_based_pooling` is true. Otherwise returns false.
+  // `enable_ip_based_pooling_for_h2` is true. Otherwise returns false.
   bool HasAvailableSession(const SpdySessionKey& key,
-                           bool enable_ip_based_pooling,
+                           bool enable_ip_based_pooling_for_h2,
                            bool is_websocket) const;
 
   // Just like FindAvailableSession.
@@ -262,7 +264,7 @@ class NET_EXPORT SpdySessionPool
   // all requests for a session have been successfully responded to.
   base::WeakPtr<SpdySession> RequestSession(
       const SpdySessionKey& key,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       bool is_websocket,
       const NetLogWithSource& net_log,
       base::RepeatingClosure on_blocking_request_destroyed_callback,

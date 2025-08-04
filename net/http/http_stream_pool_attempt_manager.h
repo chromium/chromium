@@ -368,8 +368,9 @@ class HttpStreamPool::AttemptManager
   // limits.
   bool ShouldRespectLimits() const;
 
-  // Returns true only when there are no jobs that disable IP based pooling.
-  bool IsIpBasedPoolingEnabled() const;
+  // Returns true only when there are no jobs that disable IP based pooling for
+  // HTTP/2. Note that this does nothing with QUIC.
+  bool IsIpBasedPoolingEnabledForH2() const;
 
   // Returns true only when there are no jobs that disable alternative services.
   bool IsAlternativeServiceEnabled() const;

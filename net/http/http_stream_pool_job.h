@@ -50,7 +50,7 @@ class HttpStreamPool::Job {
         const = 0;
 
     // True when IP-based pooling is enabled.
-    virtual bool enable_ip_based_pooling() const = 0;
+    virtual bool enable_ip_based_pooling_for_h2() const = 0;
 
     // True when alternative services is enabled.
     virtual bool enable_alternative_services() const = 0;
@@ -139,8 +139,8 @@ class HttpStreamPool::Job {
 
   RespectLimits respect_limits() const { return delegate_->respect_limits(); }
 
-  bool enable_ip_based_pooling() const {
-    return delegate_->enable_ip_based_pooling();
+  bool enable_ip_based_pooling_for_h2() const {
+    return delegate_->enable_ip_based_pooling_for_h2();
   }
 
   bool enable_alternative_services() const {

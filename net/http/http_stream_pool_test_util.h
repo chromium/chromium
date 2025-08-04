@@ -327,7 +327,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
   HttpStreamPool::RespectLimits respect_limits() const override;
   const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
       const override;
-  bool enable_ip_based_pooling() const override;
+  bool enable_ip_based_pooling_for_h2() const override;
   bool enable_alternative_services() const override;
   NextProtoSet allowed_alpns() const override;
   const ProxyInfo& proxy_info() const override;

@@ -183,11 +183,11 @@ void HttpStreamPool::HandleStreamRequest(
     HttpStreamPoolRequestInfo request_info,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool enable_alternative_services) {
   auto controller = std::make_unique<JobController>(
       this, std::move(request_info), priority, allowed_bad_certs,
-      enable_ip_based_pooling, enable_alternative_services);
+      enable_ip_based_pooling_for_h2, enable_alternative_services);
   JobController* controller_raw_ptr = controller.get();
   // Put `controller` into `job_controllers_` before calling HandleRequest() to
   // make sure `job_controllers_` always contains `controller` when
@@ -206,7 +206,7 @@ int HttpStreamPool::Preconnect(HttpStreamPoolRequestInfo request_info,
   auto controller = std::make_unique<JobController>(
       this, std::move(request_info), /*priority=*/RequestPriority::IDLE,
       /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>(),
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
   JobController* controller_raw_ptr = controller.get();
   CHECK_EQ(controller_raw_ptr->respect_limits(), RespectLimits::kRespect);
@@ -529,7 +529,7 @@ bool HttpStreamPool::CloseOneIdleStreamSocket() {
 base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
     const HttpStreamKey& stream_key,
     const SpdySessionKey& spdy_session_key,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     const NetLogWithSource& net_log) {
   if (!GURL::SchemeIsCryptographic(stream_key.destination().scheme())) {
     return nullptr;
@@ -537,8 +537,8 @@ base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
 
   base::WeakPtr<SpdySession> spdy_session =
       http_network_session()->spdy_session_pool()->FindAvailableSession(
-          spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,
-          net_log);
+          spdy_session_key, enable_ip_based_pooling_for_h2,
+          /*is_websocket=*/false, net_log);
   if (spdy_session) {
     CHECK(!RequiresHTTP11(stream_key.destination(),
                           stream_key.network_anonymization_key()));

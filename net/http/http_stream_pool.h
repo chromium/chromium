@@ -194,7 +194,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       HttpStreamPoolRequestInfo request_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       bool enable_alternative_services);
 
   // Requests that enough connections/sessions for `num_streams` be opened.
@@ -362,7 +362,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   base::WeakPtr<SpdySession> FindAvailableSpdySession(
       const HttpStreamKey& stream_key,
       const SpdySessionKey& spdy_session_key,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       const NetLogWithSource& net_log = NetLogWithSource());
 
   void OnPreconnectComplete(JobController* job_controller,

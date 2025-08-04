@@ -11854,7 +11854,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
       kSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
 
   EXPECT_FALSE(trans.IsReadyToRestartForAuth());
 
@@ -11905,7 +11905,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
       url::SchemeHostPort(request.url), NetworkAnonymizationKey()));
   EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
       kSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
 }
 
 // Same as above, but with a host mapping in place. The mapped host is the one
@@ -12035,7 +12035,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
       kMappedSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
 
   EXPECT_FALSE(trans.IsReadyToRestartForAuth());
 
@@ -12088,7 +12088,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
       url::SchemeHostPort(GURL(kMappedUrl)), NetworkAnonymizationKey()));
   EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
       kMappedSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
 }
 
 // Same as NTLMOverHttp2, but with HTTP proxy.
@@ -12224,7 +12224,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHttpProxy) {
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
       kSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
@@ -12266,7 +12266,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHttpProxy) {
       url::SchemeHostPort(request.url), NetworkAnonymizationKey()));
   EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
       kSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
 }
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -12461,7 +12461,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   EXPECT_THAT(websocket_callback.GetResult(rv), IsOk());
   EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
       kSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/true));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/true));
 
   EXPECT_FALSE(websocket_trans.IsReadyToRestartForAuth());
 
@@ -12491,7 +12491,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
       url::SchemeHostPort(kInitialUrl), NetworkAnonymizationKey()));
   EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
       kSpdySessionKey,
-      /*enable_ip_based_pooling=*/true, /*is_websocket=*/true));
+      /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/true));
 }
 
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)

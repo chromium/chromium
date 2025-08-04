@@ -3396,18 +3396,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
       ::net::CreateSpdySession(http_session_.get(), key1, NetLogWithSource());
   EXPECT_FALSE(pool->IsStalled());
   EXPECT_TRUE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false));
 
   // Set up an alias for the idle SPDY session, increasing its ref count to 2.
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> request;
   bool is_blocking_request_for_session = false;
   SpdySessionRequestDelegate request_delegate;
   EXPECT_FALSE(spdy_session_pool_->RequestSession(
-      key2, /* enable_ip_based_pooling = */ true,
+      key2, /* enable_ip_based_pooling_for_h2 = */ true,
       /* is_websocket = */ false, NetLogWithSource(),
       /* on_blocking_request_destroyed_callback = */ base::RepeatingClosure(),
       &request_delegate, &request, &is_blocking_request_for_session));
@@ -3424,17 +3424,17 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // Get a session for |key2|, which should return the session created earlier.
   base::WeakPtr<SpdySession> session2 =
       spdy_session_pool_->FindAvailableSession(
-          key2, /* enable_ip_based_pooling = */ true,
+          key2, /* enable_ip_based_pooling_for_h2 = */ true,
           /* is_websocket = */ false, NetLogWithSource());
   EXPECT_TRUE(session2);
   ASSERT_EQ(session1.get(), session2.get());
   EXPECT_FALSE(pool->IsStalled());
   EXPECT_TRUE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_TRUE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false));
 
   // Trying to create a new connection should cause the pool to be stalled, and
   // post a task asynchronously to try and close the session.
@@ -3462,11 +3462,11 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   EXPECT_FALSE(session1);
   EXPECT_FALSE(session2);
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false));
   EXPECT_FALSE(http_session_->spdy_session_pool()->HasAvailableSession(
-      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
+      key2, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false));
 }
 
 // Tests that when a SPDY session becomes idle, it closes itself if there is

@@ -242,18 +242,18 @@ class StreamRequester : public HttpStreamRequest::Delegate {
       const HttpRequestInfo& request_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       bool enable_alternative_services) {
     CHECK(!request_);
 
     priority_ = priority;
     allowed_bad_certs_ = allowed_bad_certs;
-    enable_ip_based_pooling_ = enable_ip_based_pooling;
+    enable_ip_based_pooling_for_h2_ = enable_ip_based_pooling_for_h2;
     enable_alternative_services_ = enable_alternative_services;
 
     request_ =
         factory->RequestStream(request_info, priority, allowed_bad_certs, this,
-                               enable_ip_based_pooling,
+                               enable_ip_based_pooling_for_h2,
                                enable_alternative_services, NetLogWithSource());
   }
 
@@ -262,10 +262,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
       const HttpRequestInfo& request_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       bool enable_alternative_services) {
     RequestStream(factory, request_info, priority, allowed_bad_certs,
-                  enable_ip_based_pooling, enable_alternative_services);
+                  enable_ip_based_pooling_for_h2, enable_alternative_services);
     WaitForStream();
   }
 
@@ -276,13 +276,14 @@ class StreamRequester : public HttpStreamRequest::Delegate {
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       WebSocketHandshakeStreamBase::CreateHelper*
           websocket_handshake_stream_create_helper,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       bool enable_alternative_services) {
     CHECK(!request_);
     request_ = factory->RequestWebSocketHandshakeStream(
         request_info, priority, allowed_bad_certs, this,
-        websocket_handshake_stream_create_helper, enable_ip_based_pooling,
-        enable_alternative_services, NetLogWithSource());
+        websocket_handshake_stream_create_helper,
+        enable_ip_based_pooling_for_h2, enable_alternative_services,
+        NetLogWithSource());
   }
 
   void RequestBidirectionalStreamImpl(
@@ -290,12 +291,12 @@ class StreamRequester : public HttpStreamRequest::Delegate {
       const HttpRequestInfo& request_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-      bool enable_ip_based_pooling,
+      bool enable_ip_based_pooling_for_h2,
       bool enable_alternative_services) {
     CHECK(!request_);
     request_ = factory->RequestBidirectionalStreamImpl(
         request_info, priority, allowed_bad_certs, this,
-        enable_ip_based_pooling, enable_alternative_services,
+        enable_ip_based_pooling_for_h2, enable_alternative_services,
         NetLogWithSource());
   }
 
@@ -385,7 +386,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   RequestPriority priority_ = DEFAULT_PRIORITY;
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
-  bool enable_ip_based_pooling_ = true;
+  bool enable_ip_based_pooling_for_h2_ = true;
   bool enable_alternative_services_ = true;
 
   bool stream_done_ = false;
@@ -1023,7 +1024,7 @@ TEST_P(HttpStreamFactoryTest, JobNotifiesProxy) {
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
 
   // The proxy that failed should now be known to the proxy_resolution_service
@@ -1076,7 +1077,7 @@ TEST_P(HttpStreamFactoryTest, NoProxyFallbackOnTunnelFail) {
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
 
   // The stream should have failed, since the proxy server failed to
@@ -1170,7 +1171,7 @@ TEST_P(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     StreamRequester requester(session.get());
     requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                    DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                   /*enable_ip_based_pooling=*/true,
+                                   /*enable_ip_based_pooling_for_h2=*/true,
                                    /*enable_alternative_services=*/true);
 
     // The proxy that failed should now be known to the
@@ -1420,7 +1421,7 @@ TEST_P(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
   StreamRequester requester1(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   EXPECT_EQ(GetGroupCount(), 1);
@@ -1428,7 +1429,7 @@ TEST_P(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
   StreamRequester requester2(session.get());
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   EXPECT_EQ(GetGroupCount(), 1);
@@ -1437,7 +1438,7 @@ TEST_P(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
   StreamRequester requester3(session.get());
   requester3.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   EXPECT_EQ(GetGroupCount(), 2);
@@ -1491,7 +1492,7 @@ TEST_P(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
   StreamRequester requester1(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   EXPECT_EQ(SecureDnsPolicy::kAllow,
@@ -1501,7 +1502,7 @@ TEST_P(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
   StreamRequester requester2(session.get());
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   EXPECT_EQ(SecureDnsPolicy::kAllow,
@@ -1512,7 +1513,7 @@ TEST_P(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
   StreamRequester requester3(session.get());
   requester3.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   EXPECT_EQ(SecureDnsPolicy::kDisable,
@@ -1540,7 +1541,7 @@ TEST_P(HttpStreamFactoryTest, GetLoadState) {
   StreamRequester requester(session.get());
   requester.RequestStream(session->http_stream_factory(), request_info,
                           DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                          /*enable_ip_based_pooling=*/true,
+                          /*enable_ip_based_pooling_for_h2=*/true,
                           /*enable_alternative_services=*/true);
 
   EXPECT_EQ(LOAD_STATE_RESOLVING_HOST, requester.request()->GetLoadState());
@@ -1571,7 +1572,7 @@ TEST_P(HttpStreamFactoryTest, RequestHttpStream) {
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester.stream_done());
   ASSERT_TRUE(nullptr != requester.stream());
@@ -1617,7 +1618,7 @@ TEST_P(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
   EXPECT_EQ(0, GetSpdySessionCount(session.get()));
   requester.RequestStream(session->http_stream_factory(), request_info, LOWEST,
                           /*allowed_bad_certs=*/{},
-                          /*enable_ip_based_pooling=*/true,
+                          /*enable_ip_based_pooling_for_h2=*/true,
                           /*enable_alternative_services=*/true);
   EXPECT_FALSE(requester.stream_done());
 
@@ -1670,7 +1671,7 @@ TEST_P(HttpStreamFactoryTest, RequestHttpStreamOverSSL) {
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester.stream_done());
   ASSERT_TRUE(nullptr != requester.stream());
@@ -1707,7 +1708,7 @@ TEST_P(HttpStreamFactoryTest, RequestHttpStreamOverProxy) {
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester.stream_done());
   ASSERT_TRUE(nullptr != requester.stream());
@@ -1756,7 +1757,7 @@ TEST_P(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStream) {
   requester.RequestWebSocketHandshakeStream(
       session->http_stream_factory(), request_info, DEFAULT_PRIORITY,
       /*allowed_bad_certs=*/{}, &create_helper,
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
   requester.WaitForStream();
   EXPECT_TRUE(requester.stream_done());
@@ -1799,7 +1800,7 @@ TEST_P(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverSSL) {
   requester.RequestWebSocketHandshakeStream(
       session->http_stream_factory(), request_info, DEFAULT_PRIORITY,
       /*allowed_bad_certs=*/{}, &create_helper,
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
   requester.WaitForStream();
   EXPECT_TRUE(requester.stream_done());
@@ -1840,7 +1841,7 @@ TEST_P(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverProxy) {
   requester.RequestWebSocketHandshakeStream(
       session->http_stream_factory(), request_info, DEFAULT_PRIORITY,
       /*allowed_bad_certs=*/{}, &create_helper,
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
   requester.WaitForStream();
   EXPECT_TRUE(requester.stream_done());
@@ -1891,7 +1892,7 @@ TEST_P(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester.stream_done());
   EXPECT_TRUE(nullptr == requester.websocket_stream());
@@ -1943,7 +1944,7 @@ TEST_P(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester.stream_done());
   EXPECT_TRUE(nullptr == requester.websocket_stream());
@@ -2016,7 +2017,7 @@ TEST_P(HttpStreamFactoryTest,
   StreamRequester requester(session.get());
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester.stream_done());
   EXPECT_TRUE(nullptr == requester.websocket_stream());
@@ -2112,11 +2113,11 @@ TEST_P(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
   StreamRequester requester2(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_TRUE(requester2.stream_done());
@@ -2167,13 +2168,13 @@ TEST_P(HttpStreamFactoryTest, TwoSpdyConnects) {
   StreamRequester requester1(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   StreamRequester requester2(session.get());
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
 
   EXPECT_TRUE(requester1.stream_done());
@@ -2228,7 +2229,7 @@ TEST_P(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
   requester.RequestBidirectionalStreamImpl(
       session->http_stream_factory(), request_info, DEFAULT_PRIORITY,
       /*allowed_bad_certs=*/{},
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
   requester.WaitForStream();
   EXPECT_TRUE(requester.stream_done());
@@ -2503,7 +2504,7 @@ TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverQuicProxy) {
   StreamRequester requester(session);
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
 
   EXPECT_TRUE(requester.stream_done());
@@ -2650,7 +2651,7 @@ TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverTwoQuicProxies) {
   StreamRequester requester(session);
   requester.RequestStreamAndWait(session->http_stream_factory(), request_info,
                                  DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_ip_based_pooling_for_h2=*/true,
                                  /*enable_alternative_services=*/true);
 
   EXPECT_TRUE(requester.stream_done());
@@ -2857,7 +2858,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   requester.RequestBidirectionalStreamImpl(
       session()->http_stream_factory(), request_info, DEFAULT_PRIORITY,
       /*allowed_bad_certs=*/{},
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
 
   requester.WaitForStream();
@@ -2955,7 +2956,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   requester.RequestBidirectionalStreamImpl(
       session()->http_stream_factory(), request_info, DEFAULT_PRIORITY,
       /*allowed_bad_certs=*/{},
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
 
   requester.WaitForStream();
@@ -3027,7 +3028,7 @@ TEST_P(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
   requester.RequestBidirectionalStreamImpl(
       session->http_stream_factory(), request_info, DEFAULT_PRIORITY,
       /*allowed_bad_certs=*/{},
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true);
   requester.WaitForStream();
   EXPECT_TRUE(requester.stream_done());
@@ -3100,7 +3101,7 @@ TEST_P(HttpStreamFactoryTest, Tag) {
   StreamRequester requester1(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info1,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_TRUE(nullptr == requester1.websocket_stream());
@@ -3123,7 +3124,7 @@ TEST_P(HttpStreamFactoryTest, Tag) {
   StreamRequester requester2(session.get());
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info2,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_TRUE(nullptr == requester2.websocket_stream());
@@ -3146,7 +3147,7 @@ TEST_P(HttpStreamFactoryTest, Tag) {
   StreamRequester requester3(session.get());
   requester3.RequestStreamAndWait(session->http_stream_factory(), request_info2,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_TRUE(nullptr == requester3.websocket_stream());
@@ -3249,7 +3250,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   requester1.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info1, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_TRUE(nullptr == requester1.websocket_stream());
@@ -3269,7 +3270,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   requester2.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info2, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_TRUE(nullptr == requester2.websocket_stream());
@@ -3288,7 +3289,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   requester3.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info2, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_TRUE(nullptr == requester3.websocket_stream());
@@ -3362,7 +3363,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequester requester1(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info1,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_FALSE(requester1.websocket_stream());
@@ -3385,7 +3386,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequester requester2(session.get());
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info2,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_FALSE(requester2.websocket_stream());
@@ -3417,7 +3418,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequester requester3(session.get());
   requester3.RequestStreamAndWait(session->http_stream_factory(), request_info3,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_FALSE(requester3.websocket_stream());
@@ -3449,7 +3450,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequester requester4(session.get());
   requester4.RequestStreamAndWait(session->http_stream_factory(), request_info2,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester4.stream_done());
   EXPECT_FALSE(requester4.websocket_stream());
@@ -3542,7 +3543,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequester requester1(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info1,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_FALSE(requester1.websocket_stream());
@@ -3573,7 +3574,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequester requester2(session.get());
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info2,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_FALSE(requester2.websocket_stream());
@@ -3611,7 +3612,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequester requester3(session.get());
   requester3.RequestStreamAndWait(session->http_stream_factory(), request_info3,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_FALSE(requester3.websocket_stream());
@@ -3638,7 +3639,7 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequester requester4(session.get());
   requester4.RequestStreamAndWait(session->http_stream_factory(), request_info4,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester4.stream_done());
   EXPECT_FALSE(requester4.websocket_stream());
@@ -3707,7 +3708,7 @@ TEST_P(HttpStreamFactoryTest, MultiIPAliases) {
   StreamRequester requester1(session.get());
   requester1.RequestStreamAndWait(session->http_stream_factory(), request_info1,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_FALSE(requester1.websocket_stream());
@@ -3726,7 +3727,7 @@ TEST_P(HttpStreamFactoryTest, MultiIPAliases) {
   StreamRequester requester2(session.get());
   requester2.RequestStreamAndWait(session->http_stream_factory(), request_info2,
                                   DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_FALSE(requester2.websocket_stream());
@@ -3746,7 +3747,7 @@ TEST_P(HttpStreamFactoryTest, MultiIPAliases) {
   requester3.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info1_alias, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_FALSE(requester3.websocket_stream());
@@ -3773,7 +3774,7 @@ TEST_P(HttpStreamFactoryTest, MultiIPAliases) {
   requester4.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info2_alias, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester4.stream_done());
   EXPECT_FALSE(requester4.websocket_stream());
@@ -3841,7 +3842,7 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   requester1.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info_a, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_FALSE(requester1.websocket_stream());
@@ -3862,7 +3863,7 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   requester2.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info_b, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_FALSE(requester2.websocket_stream());
@@ -3890,7 +3891,7 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   requester3.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info_c, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_FALSE(requester3.websocket_stream());
@@ -3921,7 +3922,7 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   requester4.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info_a, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester4.stream_done());
   EXPECT_FALSE(requester4.websocket_stream());
@@ -3947,7 +3948,7 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   requester5.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info_b, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester5.stream_done());
   EXPECT_FALSE(requester5.websocket_stream());
@@ -3974,7 +3975,7 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   requester6.RequestStreamAndWait(session->http_stream_factory(),
                                   request_info_c, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester6.stream_done());
   EXPECT_FALSE(requester6.websocket_stream());
@@ -4068,7 +4069,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   requester1.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info_a, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_FALSE(requester1.websocket_stream());
@@ -4084,7 +4085,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   requester2.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info_b, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_FALSE(requester2.websocket_stream());
@@ -4102,7 +4103,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   requester3.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info_c, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_FALSE(requester3.websocket_stream());
@@ -4123,7 +4124,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   requester4.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info_a, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester4.stream_done());
   EXPECT_FALSE(requester4.websocket_stream());
@@ -4140,7 +4141,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   requester5.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info_b, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester5.stream_done());
   EXPECT_FALSE(requester5.websocket_stream());
@@ -4158,7 +4159,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   requester6.RequestStreamAndWait(session()->http_stream_factory(),
                                   request_info_c, DEFAULT_PRIORITY,
                                   /*allowed_bad_certs=*/{},
-                                  /*enable_ip_based_pooling=*/true,
+                                  /*enable_ip_based_pooling_for_h2=*/true,
                                   /*enable_alternative_services=*/true);
   EXPECT_TRUE(requester6.stream_done());
   EXPECT_FALSE(requester6.websocket_stream());
