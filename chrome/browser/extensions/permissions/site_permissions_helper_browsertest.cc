@@ -564,11 +564,11 @@ class SitePermissionsHelperContentScriptBrowserTest
     ASSERT_TRUE(extension_);
 
     // Navigate to a page where the extension can run.
+    auto* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
     original_url_ = embedded_test_server()->GetURL("/simple.html");
     ExtensionTestMessageListener listener("injection succeeded");
-    ASSERT_TRUE(NavigateToURL(original_url_));
-    ASSERT_TRUE(GetActiveWebContents());
-    ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+    ASSERT_TRUE(NavigateToURL(web_contents, original_url_));
 
     permissions_manager_ = PermissionsManager::Get(profile());
     ASSERT_EQ(
@@ -662,10 +662,11 @@ class SitePermissionsHelperOptionalHostPermissions
         PermissionsParser::GetOptionalPermissions(extension_));
 
     // Navigate to a page where the extension can run.
+    auto* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
     original_url_ = embedded_test_server()->GetURL("/simple.html");
     ExtensionTestMessageListener listener("success");
-    ASSERT_TRUE(NavigateToURL(original_url_));
-    ASSERT_TRUE(GetActiveWebContents());
+    ASSERT_TRUE(NavigateToURL(web_contents, original_url_));
     ASSERT_EQ(
         permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
         UserSiteAccess::kOnAllSites);

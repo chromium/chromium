@@ -105,9 +105,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     extension_ = extensions::ExtensionBuilder("Test").Build();
 #if BUILDFLAG(IS_ANDROID)
-    // Android's default blank page doesn't have a renderer process,so navigate
+    auto* web_contents = GetActiveWebContents();
+    // Android's default blank page doesn't have a renderer process, so navigate
     // to a URL that has one. Peer connection tests need a real process ID.
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://version")));
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://version")));
 #endif
   }
 

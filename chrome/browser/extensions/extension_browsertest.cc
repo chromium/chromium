@@ -773,17 +773,13 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
   return crx_path;
 }
 
-bool ExtensionBrowserTest::NavigateToURL(const GURL& url) {
-  return NavigateToURL(GetActiveWebContents(), url);
-}
-
 bool ExtensionBrowserTest::NavigateToURL(content::WebContents* web_contents,
                                          const GURL& url) {
   content::TestNavigationObserver observer(web_contents);
   // The return value is ignored because some tests load URLs that cause
   // redirects, or are blocked URLs, which make NavigateToURL return false.
   (void)content::NavigateToURL(web_contents, url);
-  // Ensure the navigation happened.
+  // Wait for load to stop.
   observer.Wait();
   return observer.last_navigation_succeeded();
 }

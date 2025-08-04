@@ -202,9 +202,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // Wait for the extension to register runtime.onConnect listener.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
+  auto* web_contents = GetActiveWebContents();
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // Wait for the content script to connect to the worker's port.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -365,9 +366,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 
   // Load the content script for |message_port_extension|, and wait for the
   // content script to connect to its background's port.
+  auto* web_contents = GetActiveWebContents();
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_TRUE(content_script_connected_catcher.GetNextResult())
       << content_script_connected_catcher.message();
 
