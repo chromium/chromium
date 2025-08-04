@@ -37,8 +37,6 @@
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/common/content_client.h"
 #include "media/capabilities/webrtc_video_stats_db_impl.h"
-#include "media/learning/common/media_learning_tasks.h"
-#include "media/learning/impl/learning_session_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
 
@@ -53,15 +51,6 @@ namespace {
 void NotifyContextWillBeDestroyed(StoragePartition* partition) {
   static_cast<StoragePartitionImpl*>(partition)
       ->OnBrowserContextWillBeDestroyed();
-}
-
-void RegisterMediaLearningTask(
-    media::learning::LearningSessionImpl* learning_session,
-    const media::learning::LearningTask& task) {
-  // The RegisterTask method cannot be directly used in base::Bind, because it
-  // provides a default argument value for the 2nd parameter
-  // (`feature_provider`).
-  learning_session->RegisterTask(task);
 }
 
 // Kill switch that controls whether to cancel navigations as part of
@@ -230,22 +219,6 @@ BrowsingDataRemoverImpl* BrowserContextImpl::GetBrowsingDataRemover() {
   }
 
   return browsing_data_remover_.get();
-}
-
-media::learning::LearningSession* BrowserContextImpl::GetLearningSession() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!learning_session_) {
-    learning_session_ = std::make_unique<media::learning::LearningSessionImpl>(
-        base::SequencedTaskRunner::GetCurrentDefault());
-
-    // Using base::Unretained is safe below, because the callback here will not
-    // be called or retained after the Register method below returns.
-    media::learning::MediaLearningTasks::Register(base::BindRepeating(
-        &RegisterMediaLearningTask, base::Unretained(learning_session_.get())));
-  }
-
-  return learning_session_.get();
 }
 
 media::VideoDecodePerfHistory* BrowserContextImpl::GetVideoDecodePerfHistory() {

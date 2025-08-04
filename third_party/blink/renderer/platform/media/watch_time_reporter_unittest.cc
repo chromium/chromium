@@ -286,11 +286,6 @@ class WatchTimeReporterTest
             receiver) override {
       FAIL();
     }
-    void AcquireLearningTaskController(
-        const String& taskName,
-        mojo::PendingReceiver<
-            media::learning::mojom::blink::LearningTaskController> receiver)
-        override {}
     void AcquirePlaybackEventsRecorder(
         mojo::PendingReceiver<media::mojom::blink::PlaybackEventsRecorder>
             receiver) override {}

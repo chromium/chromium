@@ -58,10 +58,6 @@
 #include "media/filters/ffmpeg_demuxer.h"
 #include "media/filters/memory_data_source.h"
 #include "media/filters/pipeline_controller.h"
-#include "media/learning/common/learning_task_controller.h"
-#include "media/learning/common/media_learning_tasks.h"
-#include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
-#include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/media_types.mojom-blink.h"
@@ -174,7 +170,6 @@ constexpr const char* GetHistogramName(SplitHistogramName type) {
   NOTREACHED();
 }
 
-namespace learning = ::media::learning;
 using ::media::Demuxer;
 using ::media::MediaLogEvent;
 using ::media::MediaLogProperty;
@@ -507,8 +502,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           WTF::BindRepeating(&WebMediaPlayerImpl::OnSimpleWatchTimerTick,
                              WTF::Unretained(this)),
           WTF::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
-                             WTF::Unretained(this))),
-      will_play_helper_(nullptr) {
+                             WTF::Unretained(this))) {
   DVLOG(1) << __func__;
   DCHECK(isolate_);
   DCHECK(renderer_factory_selector_);
@@ -699,9 +693,6 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   // renderer thread.
   if (observer_)
     observer_->SetClient(nullptr);
-
-  // If we're in the middle of an observation, then finish it.
-  will_play_helper_.CompleteObservationIfNeeded(learning::TargetValue(false));
 
   // Explicitly reset `pipeline_controller_` to guarantee its destruction
   // before DestructionHelper runs on `media_task_runner_`.
@@ -932,13 +923,6 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   is_cache_disabled_ = is_cache_disabled;
   cors_mode_ = cors_mode;
 
-  // Start a new observation.  If there was one before, then we didn't play it.
-  will_play_helper_.CompleteObservationIfNeeded(learning::TargetValue(false));
-  // For now, send in an empty set of features.  We should fill some in here,
-  // and / or ask blink (via `client_`) for features from the DOM.
-  learning::FeatureDictionary dict;
-  will_play_helper_.BeginObservation(dict);
-
   // Note: `url` may be very large, take care when making copies.
   demuxer_manager_->SetLoadedUrl(GURL(url));
   load_type_ = load_type;
@@ -959,10 +943,6 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   media_log_->AddEvent<MediaLogEvent::kLoad>(
       String(url).Substring(0, media::kMaxUrlLength + 1).Utf8());
   load_start_time_ = base::TimeTicks::Now();
-
-  // If we're adapting, then restart the smoothness experiment.
-  if (smoothness_helper_)
-    smoothness_helper_.reset();
 
   media_metrics_provider_->Initialize(
       load_type == kLoadTypeMediaSource,
@@ -1033,9 +1013,6 @@ void WebMediaPlayerImpl::Play() {
   if (observer_)
     observer_->OnPlaying();
 
-  // Try to create the smoothness helper, in case we were paused before.
-  UpdateSmoothnessHelper();
-
   if (playback_events_recorder_)
     playback_events_recorder_->OnPlaying();
 
@@ -1058,9 +1035,6 @@ void WebMediaPlayerImpl::Play() {
 
   MaybeUpdateBufferSizesForPlayback();
   UpdatePlayState();
-
-  // Notify the learning task, if needed.
-  will_play_helper_.CompleteObservationIfNeeded(learning::TargetValue(true));
 }
 
 void WebMediaPlayerImpl::Pause(PauseReason pause_reason) {
@@ -1076,8 +1050,6 @@ void WebMediaPlayerImpl::Pause(PauseReason pause_reason) {
     // No longer paused because it was hidden.
     visibility_pause_reason_.reset();
   }
-
-  UpdateSmoothnessHelper();
 
   // User initiated pause locks background videos.
   if (frame_->HasTransientUserActivation())
@@ -2388,14 +2360,6 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
     SetReadyState(WebMediaPlayer::kReadyStateHaveCurrentData);
   }
 
-  // If this is an NNR, then notify the smoothness helper about it.  Note that
-  // it's unclear what we should do if there is no smoothness helper yet.  As it
-  // is, we just discard the NNR.
-  if (state == media::BUFFERING_HAVE_NOTHING &&
-      reason == media::DECODER_UNDERFLOW && smoothness_helper_) {
-    smoothness_helper_->NotifyNNR();
-  }
-
   UpdatePlayState();
 }
 
@@ -2480,9 +2444,6 @@ void WebMediaPlayerImpl::OnVideoNaturalSizeChange(const gfx::Size& size) {
     CreateVideoDecodeStatsReporter();
   }
 
-  // Create or replace the smoothness helper now that we have a size.
-  UpdateSmoothnessHelper();
-
   client_->SizeChanged();
 
   if (observer_)
@@ -2506,9 +2467,6 @@ void WebMediaPlayerImpl::OnVideoFrameRateChange(std::optional<int> fps) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   if (power_status_helper_)
     power_status_helper_->SetAverageFrameRate(fps);
-
-  last_reported_fps_ = fps;
-  UpdateSmoothnessHelper();
 }
 
 void WebMediaPlayerImpl::OnAudioConfigChange(
@@ -3157,7 +3115,6 @@ void WebMediaPlayerImpl::UpdatePlayState() {
         !paused_ && !seeking_ && !IsPageHidden() && !state.is_suspended &&
         ready_state_ == kReadyStateHaveEnoughData);
   }
-  UpdateSmoothnessHelper();
 }
 
 void WebMediaPlayerImpl::OnTimeUpdate() {
@@ -4094,63 +4051,6 @@ void WebMediaPlayerImpl::OnSimpleWatchTimerTick() {
 
 GURL WebMediaPlayerImpl::GetSrcAfterRedirects() {
   return demuxer_manager_->GetDataSourceUrlAfterRedirects().value_or(GURL());
-}
-
-void WebMediaPlayerImpl::UpdateSmoothnessHelper() {
-  // If the experiment flag is off, then do nothing.
-  if (!base::FeatureList::IsEnabled(media::kMediaLearningSmoothnessExperiment))
-    return;
-
-  // If we're paused, or if we can't get all the features, then clear any
-  // smoothness helper and stop.  We'll try to create it later when we're
-  // playing and have all the features.
-  if (paused_ || !HasVideo() || pipeline_metadata_.natural_size.IsEmpty() ||
-      !last_reported_fps_) {
-    smoothness_helper_.reset();
-    return;
-  }
-
-  // Fill in features.
-  // NOTE: this is a very bad way to do this, since it memorizes the order of
-  // features in the task.  However, it'll do for now.
-  learning::FeatureVector features;
-  features.push_back(learning::FeatureValue(
-      static_cast<int>(pipeline_metadata_.video_decoder_config.codec())));
-  features.push_back(learning::FeatureValue(
-      pipeline_metadata_.video_decoder_config.profile()));
-  features.push_back(
-      learning::FeatureValue(pipeline_metadata_.natural_size.width()));
-  features.push_back(learning::FeatureValue(*last_reported_fps_));
-
-  // If we have a smoothness helper, and we're not changing the features, then
-  // do nothing.  This prevents restarting the helper for no reason.
-  if (smoothness_helper_ && features == smoothness_helper_->features())
-    return;
-
-  // Create or restart the smoothness helper with `features`.
-  smoothness_helper_ = SmoothnessHelper::Create(
-      GetLearningTaskController(learning::tasknames::kConsecutiveBadWindows),
-      GetLearningTaskController(learning::tasknames::kConsecutiveNNRs),
-      features, this);
-}
-
-std::unique_ptr<learning::LearningTaskController>
-WebMediaPlayerImpl::GetLearningTaskController(const char* task_name) {
-  // Get the LearningTaskController for `task_id`.
-  learning::LearningTask task = learning::MediaLearningTasks::Get(task_name);
-  DCHECK_EQ(task.name, task_name);
-
-  mojo::PendingRemote<learning::mojom::blink::LearningTaskController>
-      remote_ltc;
-  media_metrics_provider_->AcquireLearningTaskController(
-      String(task.name),
-      CrossVariantMojoReceiver<
-          learning::mojom::LearningTaskControllerInterfaceBase>(
-          remote_ltc.InitWithNewPipeAndPassReceiver()));
-  return std::make_unique<learning::MojoLearningTaskController>(
-      task, CrossVariantMojoRemote<
-                learning::mojom::LearningTaskControllerInterfaceBase>(
-                std::move(remote_ltc)));
 }
 
 bool WebMediaPlayerImpl::HasUnmutedAudio() const {

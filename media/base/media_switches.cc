@@ -1563,24 +1563,6 @@ BASE_FEATURE(kMediaEngagementHTTPSOnly,
              "MediaEngagementHTTPSOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables experimental local learning for media. Used in the context of media
-// capabilities only. Adds reporting only; does not change media behavior.
-BASE_FEATURE(kMediaLearningExperiment,
-             "MediaLearningExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the general purpose media machine learning framework. Adds reporting
-// only; does not change media behavior.
-BASE_FEATURE(kMediaLearningFramework,
-             "MediaLearningFramework",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the smoothness prediction experiment.  Requires
-// kMediaLearningFramework to be enabled also, else it does nothing.
-BASE_FEATURE(kMediaLearningSmoothnessExperiment,
-             "MediaLearningSmoothnessExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable the prototype global optimization of tuneables via finch.  See
 // media/base/tuneable.h for how to create tuneable parameters.
 BASE_FEATURE(kMediaOptimizer,

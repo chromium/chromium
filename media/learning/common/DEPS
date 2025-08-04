@@ -1,5 +1,0 @@
-include_rules = [
-  "+services/metrics",
-  # Needed for typemap to befriend TargetHistogram.
-  "+mojo/public",
-]

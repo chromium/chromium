@@ -55,10 +55,8 @@
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
-#include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
-#include "third_party/blink/renderer/platform/media/smoothness_helper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "url/gurl.h"
 
@@ -87,10 +85,6 @@ class MediaLog;
 class MemoryDumpProviderProxy;
 class PipelineController;
 class SwitchableAudioRendererSink;
-
-namespace learning {
-class LearningTaskController;
-}
 }  // namespace media
 
 namespace viz {
@@ -131,8 +125,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       public media::Pipeline::Client,
       public media::MediaObserverClient,
       public media::DemuxerManager::Client,
-      public WebSurfaceLayerBridgeObserver,
-      public SmoothnessHelper::Client {
+      public WebSurfaceLayerBridgeObserver {
  public:
   // Constructs a WebMediaPlayer implementation using Chromium's media stack.
   // |delegate| and |renderer_factory_selector| must not be null.
@@ -725,16 +718,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // kReadyStateHaveEnoughData for the first time.
   void MaybeUpdateBufferSizesForPlayback();
 
-  // Create / recreate |smoothness_helper_|, with current features.  Will take
-  // no action if we already have a smoothness helper with the same features
-  // that we want now.  Will destroy the helper if we shouldn't be measuring
-  // smoothness right now.
-  void UpdateSmoothnessHelper();
-
-  // Get the LearningTaskController for |task_name|.
-  std::unique_ptr<media::learning::LearningTaskController>
-  GetLearningTaskController(const char* task_name);
-
   // Returns whether the player has an audio track and whether it should be
   // allowed to play it.
   bool HasUnmutedAudio() const;
@@ -1141,13 +1124,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   media::RendererType renderer_type_ = media::RendererType::kRendererImpl;
   media::SimpleWatchTimer simple_watch_timer_;
 
-  LearningExperimentHelper will_play_helper_;
-
   std::unique_ptr<PowerStatusHelper> power_status_helper_;
-
-  // Created while playing, deleted otherwise.
-  std::unique_ptr<SmoothnessHelper> smoothness_helper_;
-  std::optional<int> last_reported_fps_;
 
   // Time of the last call to GetCurrentFrameFromCompositor(). Used to prevent
   // background optimizations from being applied when capturing is active.

@@ -18,8 +18,6 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/timestamp_constants.h"
-#include "media/learning/common/learning_session.h"
-#include "media/learning/common/value.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/video_decode_perf_history.h"
@@ -44,18 +42,13 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   enum class FrameStatus : bool { kTopFrame, kNotTopFrame };
 
-  using GetLearningSessionCallback =
-      base::RepeatingCallback<learning::LearningSession*()>;
-
   using IsShuttingDownCallback = base::RepeatingCallback<bool(void)>;
 
   MediaMetricsProvider(
       BrowsingMode is_incognito,
       FrameStatus is_top_frame,
       ukm::SourceId source_id,
-      learning::FeatureValue origin,
       VideoDecodePerfHistory::SaveCallback save_cb,
-      GetLearningSessionCallback learning_session_cb,
       IsShuttingDownCallback is_shutting_down_cb,
       PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb);
 
@@ -70,21 +63,13 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   using GetLastCommittedURLCallback =
       base::RepeatingCallback<const GURL&(void)>;
 
-  // TODO(liberato): This should be from a FeatureProvider, but the way in which
-  // we attach LearningHelper more or less precludes it.  Per-frame task
-  // controllers would make this easy, but we bypass that here.
-  using GetOriginCallback =
-      base::RepeatingCallback<learning::FeatureValue(void)>;
-
   // Creates a MediaMetricsProvider, |perf_history| may be nullptr if perf
   // history database recording is disabled.
   static void Create(
       BrowsingMode is_incognito,
       FrameStatus is_top_frame,
       ukm::SourceId source_id,
-      learning::FeatureValue origin,
       VideoDecodePerfHistory::SaveCallback save_cb,
-      GetLearningSessionCallback learning_session_cb,
       IsShuttingDownCallback is_shutting_down_cb,
       PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
       mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver);
@@ -146,10 +131,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       mojo::PendingReceiver<mojom::VideoDecodeStatsRecorder> receiver) override;
   void AcquirePlaybackEventsRecorder(
       mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver) override;
-  void AcquireLearningTaskController(
-      const std::string& taskName,
-      mojo::PendingReceiver<learning::mojom::LearningTaskController> receiver)
-      override;
 
   void ReportPipelineUMA();
   std::string GetUMANameForAVStream(const PipelineInfo& player_info);
@@ -164,10 +145,8 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   const bool is_top_frame_;
 
   const ukm::SourceId source_id_;
-  const learning::FeatureValue origin_;
 
   const VideoDecodePerfHistory::SaveCallback save_cb_;
-  const GetLearningSessionCallback learning_session_cb_;
   const IsShuttingDownCallback is_shutting_down_cb_;
   const PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb_;
 

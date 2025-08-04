@@ -432,9 +432,7 @@ class WebMediaPlayerImplTest
     media::MediaMetricsProvider::Create(
         media::MediaMetricsProvider::BrowsingMode::kNormal,
         media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
-        ukm::kInvalidSourceId, media::learning::FeatureValue(0),
-        media::VideoDecodePerfHistory::SaveCallback(),
-        media::MediaMetricsProvider::GetLearningSessionCallback(),
+        ukm::kInvalidSourceId, media::VideoDecodePerfHistory::SaveCallback(),
         WTF::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
                            WTF::Unretained(this)),
         media::PictureInPictureEventsInfo::AutoPipReasonCallback(),

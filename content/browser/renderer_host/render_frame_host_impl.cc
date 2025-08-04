@@ -228,7 +228,6 @@
 #include "content/public/common/url_utils.h"
 #include "ipc/constants.mojom.h"
 #include "media/base/media_switches.h"
-#include "media/learning/common/value.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/services/video_decode_perf_history.h"
@@ -14094,21 +14093,7 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
           ? media::MediaMetricsProvider::FrameStatus::kTopFrame
           : media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
       GetPage().last_main_document_source_id(),
-      media::learning::FeatureValue(GetLastCommittedOrigin().host()),
       std::move(save_stats_cb),
-      base::BindRepeating(
-          [](base::WeakPtr<RenderFrameHostImpl> frame)
-              -> media::learning::LearningSession* {
-            if (!base::FeatureList::IsEnabled(media::kMediaLearningFramework) ||
-                !frame) {
-              return nullptr;
-            }
-
-            return frame->GetProcess()
-                ->GetBrowserContext()
-                ->GetLearningSession();
-          },
-          weak_ptr_factory_.GetWeakPtr()),
       std::move(is_shutting_down_cb), CreateAutoPipReasonCallback(),
       std::move(receiver));
 }

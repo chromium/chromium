@@ -91,7 +91,6 @@ mojom("mojom") {
     ":speech_recognition",
     ":web_speech_recognition",
     "//gpu/ipc/common:interfaces",
-    "//media/learning/mojo/public/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/media_session/public/mojom",

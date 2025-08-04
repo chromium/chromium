@@ -16,7 +16,6 @@
 #include "media/base/video_codecs.h"
 #include "media/capabilities/video_decode_stats_db.h"
 #include "media/capabilities/video_decode_stats_db_provider.h"
-#include "media/learning/impl/feature_provider.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,8 +24,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
-
-class LearningHelper;
 
 // This class saves and retrieves video decode performance statistics on behalf
 // of the MediaCapabilities API. It also helps to grade the accuracy of the API
@@ -56,10 +53,7 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   static const char kMaxSmoothDroppedFramesPercentParamName[];
   static const char kEmeMaxSmoothDroppedFramesPercentParamName[];
 
-  explicit VideoDecodePerfHistory(
-      std::unique_ptr<VideoDecodeStatsDB> db,
-      learning::FeatureProviderFactoryCB feature_factory_cb =
-          learning::FeatureProviderFactoryCB());
+  explicit VideoDecodePerfHistory(std::unique_ptr<VideoDecodeStatsDB> db);
 
   VideoDecodePerfHistory(const VideoDecodePerfHistory&) = delete;
   VideoDecodePerfHistory& operator=(const VideoDecodePerfHistory&) = delete;
@@ -81,7 +75,6 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   // for tests to know the save is complete.
   using SaveCallback =
       base::RepeatingCallback<void(ukm::SourceId source_id,
-                                   learning::FeatureValue origin,
                                    bool is_top_frame,
                                    mojom::PredictionFeatures features,
                                    mojom::PredictionTargets targets,
@@ -129,7 +122,6 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
 
   // Initiate saving of the provided record. See GetSaveCallback().
   void SavePerfRecord(ukm::SourceId source_id,
-                      learning::FeatureValue origin,
                       bool is_top_frame,
                       mojom::PredictionFeatures features,
                       mojom::PredictionTargets targets,
@@ -198,12 +190,6 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   // Maps receivers from several render-processes to this single browser-process
   // service.
   mojo::ReceiverSet<mojom::VideoDecodePerfHistory> receivers_;
-
-  // Optional helper for local learning.
-  std::unique_ptr<LearningHelper> learning_helper_;
-
-  // Optional callback to create a FeatureProvider for |learning_helper_|.
-  learning::FeatureProviderFactoryCB feature_factory_cb_;
 
   // Ensures all access to class members come on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);

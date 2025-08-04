@@ -541,9 +541,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
   {
     base::RunLoop run_loop;
     video_decode_perf_history->GetSaveCallback().Run(
-        ukm::kInvalidSourceId, media::learning::FeatureValue(0), kIsTopFrame,
-        prediction_features, prediction_targets, kPlayerId,
-        run_loop.QuitWhenIdleClosure());
+        ukm::kInvalidSourceId, kIsTopFrame, prediction_features,
+        prediction_targets, kPlayerId, run_loop.QuitWhenIdleClosure());
     run_loop.Run();
   }
 

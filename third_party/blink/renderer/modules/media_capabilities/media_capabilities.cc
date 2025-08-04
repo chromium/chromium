@@ -21,9 +21,6 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/filters/stream_parser_factory.h"
-#include "media/learning/common/media_learning_tasks.h"
-#include "media/learning/common/target_histogram.h"
-#include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/media_types.mojom-blink.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -87,8 +84,6 @@ namespace blink {
 
 namespace {
 
-const double kLearningBadWindowThresholdDefault = 2;
-const double kLearningNnrThresholdDefault = 3;
 const bool kWebrtcDecodeSmoothIfPowerEfficientDefault = true;
 const bool kWebrtcEncodeSmoothIfPowerEfficientDefault = true;
 
@@ -96,26 +91,6 @@ constexpr const char* kApplicationMimeTypePrefix = "application/";
 constexpr const char* kAudioMimeTypePrefix = "audio/";
 constexpr const char* kVideoMimeTypePrefix = "video/";
 constexpr const char* kCodecsMimeTypeParam = "codecs";
-
-// Gets parameters for kMediaLearningSmoothnessExperiment field trial. Will
-// provide sane defaults when field trial not enabled. Values of -1 indicate
-// predictions from a given task should be ignored.
-
-// static
-double GetLearningBadWindowThreshold() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      media::kMediaLearningSmoothnessExperiment,
-      MediaCapabilities::kLearningBadWindowThresholdParamName,
-      kLearningBadWindowThresholdDefault);
-}
-
-// static
-double GetLearningNnrThreshold() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      media::kMediaLearningSmoothnessExperiment,
-      MediaCapabilities::kLearningNnrThresholdParamName,
-      kLearningNnrThresholdDefault);
-}
 
 // static
 bool WebrtcDecodeForceSmoothIfPowerEfficient() {
@@ -770,12 +745,6 @@ bool IsDolbyVisionVideoCodec(const String& video_codec_str) {
 
 }  // anonymous namespace
 
-const char MediaCapabilities::kLearningBadWindowThresholdParamName[] =
-    "bad_window_threshold";
-
-const char MediaCapabilities::kLearningNnrThresholdParamName[] =
-    "nnr_threshold";
-
 const char MediaCapabilities::kWebrtcDecodeSmoothIfPowerEfficientParamName[] =
     "webrtc_decode_smooth_if_power_efficient";
 
@@ -799,14 +768,10 @@ MediaCapabilities* MediaCapabilities::mediaCapabilities(
 MediaCapabilities::MediaCapabilities(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       decode_history_service_(navigator.GetExecutionContext()),
-      bad_window_predictor_(navigator.GetExecutionContext()),
-      nnr_predictor_(navigator.GetExecutionContext()),
       webrtc_history_service_(navigator.GetExecutionContext()) {}
 
 void MediaCapabilities::Trace(blink::Visitor* visitor) const {
   visitor->Trace(decode_history_service_);
-  visitor->Trace(bad_window_predictor_);
-  visitor->Trace(nnr_predictor_);
   visitor->Trace(webrtc_history_service_);
   visitor->Trace(pending_cb_map_);
   ScriptWrappable::Trace(visitor);
@@ -1174,47 +1139,6 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   return promise;
 }
 
-bool MediaCapabilities::EnsureLearningPredictors(
-    ExecutionContext* execution_context) {
-  DCHECK(execution_context && !execution_context->IsContextDestroyed());
-
-  // One or both of these will have been bound in an earlier pass.
-  if (bad_window_predictor_.is_bound() || nnr_predictor_.is_bound())
-    return true;
-
-  // MediaMetricsProvider currently only exposed via render frame.
-  // TODO(chcunningham): Expose in worker contexts pending outcome of
-  // media-learning experiments.
-  if (execution_context->IsWorkerGlobalScope())
-    return false;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      execution_context->GetTaskRunner(TaskType::kMediaElementEvent);
-
-  mojo::Remote<media::mojom::blink::MediaMetricsProvider> metrics_provider;
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      metrics_provider.BindNewPipeAndPassReceiver(task_runner));
-
-  if (!metrics_provider)
-    return false;
-
-  if (GetLearningBadWindowThreshold() != -1.0) {
-    DCHECK_GE(GetLearningBadWindowThreshold(), 0);
-    metrics_provider->AcquireLearningTaskController(
-        media::learning::tasknames::kConsecutiveBadWindows,
-        bad_window_predictor_.BindNewPipeAndPassReceiver(task_runner));
-  }
-
-  if (GetLearningNnrThreshold() != -1.0) {
-    DCHECK_GE(GetLearningNnrThreshold(), 0);
-    metrics_provider->AcquireLearningTaskController(
-        media::learning::tasknames::kConsecutiveNNRs,
-        nnr_predictor_.BindNewPipeAndPassReceiver(task_runner));
-  }
-
-  return bad_window_predictor_.is_bound() || nnr_predictor_.is_bound();
-}
-
 bool MediaCapabilities::EnsurePerfHistoryService(
     ExecutionContext* execution_context) {
   if (decode_history_service_.is_bound())
@@ -1444,11 +1368,6 @@ void MediaCapabilities::GetPerfInfo(
           media_capabilities_identifiability_metrics::
               ComputeDecodingInfoInputToken(decoding_config)));
 
-  if (base::FeatureList::IsEnabled(media::kMediaLearningSmoothnessExperiment)) {
-    GetPerfInfo_ML(execution_context, callback_id, video_codec, video_profile,
-                   video_config->width(), video_config->framerate());
-  }
-
   media::mojom::blink::PredictionFeaturesPtr features =
       media::mojom::blink::PredictionFeatures::New(
           video_profile,
@@ -1462,41 +1381,6 @@ void MediaCapabilities::GetPerfInfo(
   if (UseGpuFactoriesForPowerEfficient(execution_context, access)) {
     GetGpuFactoriesSupport(callback_id, video_codec, video_profile,
                            video_color_space, decoding_config);
-  }
-}
-
-void MediaCapabilities::GetPerfInfo_ML(ExecutionContext* execution_context,
-                                       int callback_id,
-                                       media::VideoCodec video_codec,
-                                       media::VideoCodecProfile video_profile,
-                                       int width,
-                                       double framerate) {
-  DCHECK(execution_context && !execution_context->IsContextDestroyed());
-  DCHECK(pending_cb_map_.Contains(callback_id));
-
-  if (!EnsureLearningPredictors(execution_context)) {
-    return;
-  }
-
-  // FRAGILE: Order here MUST match order in
-  // WebMediaPlayerImpl::UpdateSmoothnessHelper().
-  // TODO(chcunningham): refactor into something more robust.
-  Vector<media::learning::FeatureValue> ml_features(
-      {media::learning::FeatureValue(static_cast<int>(video_codec)),
-       media::learning::FeatureValue(video_profile),
-       media::learning::FeatureValue(width),
-       media::learning::FeatureValue(framerate)});
-
-  if (bad_window_predictor_.is_bound()) {
-    bad_window_predictor_->PredictDistribution(
-        ml_features, WTF::BindOnce(&MediaCapabilities::OnBadWindowPrediction,
-                                   WrapPersistent(this), callback_id));
-  }
-
-  if (nnr_predictor_.is_bound()) {
-    nnr_predictor_->PredictDistribution(
-        ml_features, WTF::BindOnce(&MediaCapabilities::OnNnrPrediction,
-                                   WrapPersistent(this), callback_id));
   }
 }
 
@@ -1583,14 +1467,6 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
   // Both db_* fields should be set simultaneously by the DB callback.
   DCHECK(pending_cb->db_is_smooth.has_value());
 
-  if (nnr_predictor_.is_bound() &&
-      !pending_cb->is_nnr_prediction_smooth.has_value())
-    return;
-
-  if (bad_window_predictor_.is_bound() &&
-      !pending_cb->is_bad_window_prediction_smooth.has_value())
-    return;
-
   if (UseGpuFactoriesForPowerEfficient(execution_context,
                                        pending_cb->key_system_access) &&
       !pending_cb->is_gpu_factories_supported.has_value()) {
@@ -1625,16 +1501,7 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
     info->setPowerEfficient(*pending_cb->db_is_power_efficient);
   }
 
-  // If ML experiment is running: AND available ML signals.
-  if (pending_cb->is_bad_window_prediction_smooth.has_value() ||
-      pending_cb->is_nnr_prediction_smooth.has_value()) {
-    info->setSmooth(
-        pending_cb->is_bad_window_prediction_smooth.value_or(true) &&
-        pending_cb->is_nnr_prediction_smooth.value_or(true));
-  } else {
-    // Use DB when ML experiment not running.
-    info->setSmooth(*pending_cb->db_is_smooth);
-  }
+  info->setSmooth(*pending_cb->db_is_smooth);
 
   const base::TimeDelta process_time =
       base::TimeTicks::Now() - pending_cb->request_time;
@@ -1656,54 +1523,6 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
   pending_cb->resolver->DowncastTo<MediaCapabilitiesDecodingInfo>()->Resolve(
       std::move(info));
   pending_cb_map_.erase(callback_id);
-}
-
-void MediaCapabilities::OnBadWindowPrediction(
-    int callback_id,
-    const std::optional<::media::learning::TargetHistogram>& histogram) {
-  DCHECK(pending_cb_map_.Contains(callback_id));
-  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
-
-  std::stringstream histogram_log;
-  if (!histogram) {
-    // No data, so optimistically assume zero bad windows.
-    pending_cb->is_bad_window_prediction_smooth = true;
-    histogram_log << "none";
-  } else {
-    double histogram_average = histogram->Average();
-    pending_cb->is_bad_window_prediction_smooth =
-        histogram_average < GetLearningBadWindowThreshold();
-    histogram_log << histogram_average;
-  }
-
-  DVLOG(2) << __func__ << " bad_win_avg:" << histogram_log.str()
-           << " smooth_threshold (<):" << GetLearningBadWindowThreshold();
-
-  ResolveCallbackIfReady(callback_id);
-}
-
-void MediaCapabilities::OnNnrPrediction(
-    int callback_id,
-    const std::optional<::media::learning::TargetHistogram>& histogram) {
-  DCHECK(pending_cb_map_.Contains(callback_id));
-  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
-
-  std::stringstream histogram_log;
-  if (!histogram) {
-    // No data, so optimistically assume zero NNRs
-    pending_cb->is_nnr_prediction_smooth = true;
-    histogram_log << "none";
-  } else {
-    double histogram_average = histogram->Average();
-    pending_cb->is_nnr_prediction_smooth =
-        histogram_average < GetLearningNnrThreshold();
-    histogram_log << histogram_average;
-  }
-
-  DVLOG(2) << __func__ << " nnr_avg:" << histogram_log.str()
-           << " smooth_threshold (<):" << GetLearningNnrThreshold();
-
-  ResolveCallbackIfReady(callback_id);
 }
 
 void MediaCapabilities::OnPerfHistoryInfo(int callback_id,

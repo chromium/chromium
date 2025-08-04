@@ -52,9 +52,7 @@ class MediaMetricsProviderTest : public testing::Test {
                       : MediaMetricsProvider::BrowsingMode::kNormal),
         (is_top_frame ? MediaMetricsProvider::FrameStatus::kTopFrame
                       : MediaMetricsProvider::FrameStatus::kNotTopFrame),
-        GetSourceId(), learning::FeatureValue(0),
-        VideoDecodePerfHistory::SaveCallback(),
-        MediaMetricsProvider::GetLearningSessionCallback(),
+        GetSourceId(), VideoDecodePerfHistory::SaveCallback(),
         base::BindRepeating(&MediaMetricsProviderTest::IsShuttingDown,
                             base::Unretained(this)),
         PictureInPictureEventsInfo::AutoPipReasonCallback(),

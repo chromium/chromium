@@ -21,10 +21,6 @@
 namespace media {
 class VideoDecodePerfHistory;
 class WebrtcVideoPerfHistory;
-namespace learning {
-class LearningSession;
-class LearningSessionImpl;
-}  // namespace learning
 }  // namespace media
 
 namespace storage {
@@ -74,8 +70,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   }
 
   BrowsingDataRemoverImpl* GetBrowsingDataRemover();
-
-  media::learning::LearningSession* GetLearningSession();
 
   storage::ExternalMountPoints* GetMountPoints();
 
@@ -166,7 +160,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<InMemoryFederatedPermissionContext>
       federated_permission_context_;
 
-  std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
