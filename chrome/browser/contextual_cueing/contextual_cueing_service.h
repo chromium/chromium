@@ -137,9 +137,11 @@ class ContextualCueingService
       const content::WebContents* focused_tab);
 
   // Callback invoked when pinned tabs suggestions are received.
-  void OnPinnedTabsSuggestionsReceived(base::TimeTicks fetch_begin_time,
-                                       GlicSuggestionsCallback callback,
-                                       std::vector<std::string> suggestions);
+  void OnPinnedTabsSuggestionsReceived(
+      base::TimeTicks fetch_begin_time,
+      ZeroStateSuggestionsRequest* pinned_tabs_request,
+      GlicSuggestionsCallback callback,
+      std::vector<std::string> suggestions);
 
   // Tracker to limit the number of nudges shown over a certain duration.
   NudgeCapTracker recent_nudge_tracker_;

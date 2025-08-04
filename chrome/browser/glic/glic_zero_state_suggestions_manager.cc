@@ -103,17 +103,11 @@ void GlicZeroStateSuggestionsManager::
         outstanding_pinned_tabs_contents =
             contextual_cueing_service_->GetOutstandingPinnedTabsContents();
     if (outstanding_pinned_tabs_contents &&
-        outstanding_pinned_tabs_contents->size() == pinned_tab_data.size()) {
-      // Check if they are the same.
-      bool all_matches = true;
-      for (size_t i = 0; i < pinned_tab_data.size(); i++) {
-        if (outstanding_pinned_tabs_contents->at(i) != pinned_tab_data[i]) {
-          all_matches = false;
-        }
-      }
-      if (all_matches) {
-        return;
-      }
+        outstanding_pinned_tabs_contents->size() == pinned_tab_data.size() &&
+        std::equal(outstanding_pinned_tabs_contents->begin(),
+                   outstanding_pinned_tabs_contents->end(),
+                   pinned_tab_data.begin())) {
+      return;
     }
 
     // Notify host that suggestions are pending in case there were suggestions
