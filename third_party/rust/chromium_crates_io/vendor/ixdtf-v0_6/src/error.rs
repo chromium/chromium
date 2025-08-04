@@ -30,7 +30,7 @@ pub enum ParseError {
     DateYear,
     #[displaydoc("Invalid character while parsing extended year value.")]
     DateExtendedYear,
-    #[displaydoc("Invalid caracter while parsing month value.")]
+    #[displaydoc("Invalid character while parsing month value.")]
     DateMonth,
     #[displaydoc("Invalid character while parsing day value.")]
     DateDay,
@@ -92,6 +92,8 @@ pub enum ParseError {
     IanaChar,
     #[displaydoc("Invalid time zone character after '/'.")]
     UtcTimeSeparator,
+    #[displaydoc("UTC offset needs a sign")]
+    OffsetNeedsSign,
 
     // MonthDay Errors
     #[displaydoc("MonthDay must begin with a month or '--'")]

@@ -248,7 +248,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."itoa:1.0.15"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ixdtf:0.6.1"]
+[policy."ixdtf:0.6.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."jiff-tzdb:0.1.4"]

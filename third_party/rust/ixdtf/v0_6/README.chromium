@@ -1,7 +1,7 @@
 Name: ixdtf
 URL: https://crates.io/crates/ixdtf
-Version: 0.6.1
-Revision: 3a1f5a9cb8d3cd5054ab9f472b0ded35a543e931
+Version: 0.6.2
+Revision: a4838b282dd738816a30cd1c91a124da17165e96
 Update Mechanism: Manual
 License: Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/ixdtf-v0_6/LICENSE

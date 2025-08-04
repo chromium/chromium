@@ -30,7 +30,7 @@ pub(crate) fn parse_annotation_set<'a, T: EncodingType>(
     cursor: &mut Cursor<'a, T>,
     handler: impl FnMut(Annotation<'a, T>) -> Option<Annotation<'a, T>>,
 ) -> ParserResult<AnnotationSet<'a, T>> {
-    // Parse the first annotation.
+    // Parse an optional TimeZoneAnnotation
     let tz_annotation = timezone::parse_ambiguous_tz_annotation(cursor)?;
 
     // Parse any `Annotations`

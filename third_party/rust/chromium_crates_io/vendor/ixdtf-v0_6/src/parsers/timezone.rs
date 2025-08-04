@@ -6,9 +6,9 @@
 
 use super::{
     grammar::{
-        is_a_key_char, is_a_key_leading_char, is_annotation_close,
-        is_annotation_key_value_separator, is_annotation_open, is_ascii_sign, is_critical_flag,
-        is_time_separator, is_tz_char, is_tz_leading_char, is_tz_name_separator, is_utc_designator,
+        is_a_key_leading_char, is_annotation_close, is_annotation_key_value_separator,
+        is_annotation_open, is_ascii_sign, is_critical_flag, is_time_separator, is_tz_char,
+        is_tz_leading_char, is_tz_name_separator, is_utc_designator,
     },
     time::{parse_fraction, parse_hour, parse_minute_second},
     Cursor,
@@ -27,6 +27,13 @@ use crate::{
 
 // ==== Time Zone Annotation Parsing ====
 
+/// We support two kinds of annotations here: annotations (e.g. `[u-ca=foo]`)
+/// and "time zone annotations" (`[UTC]` or `[+05:30]`)
+///
+/// When parsing bracketed contents, we need to figure out which one we're dealing with.
+///
+/// This function returns a time zone annotation if we are dealing with a time zone,
+/// otherwise it returns None (and the caller must handle non-tz annotations).
 pub(crate) fn parse_ambiguous_tz_annotation<'a, T: EncodingType>(
     cursor: &mut Cursor<'a, T>,
 ) -> ParserResult<Option<TimeZoneAnnotation<'a, T>>> {
@@ -46,35 +53,28 @@ pub(crate) fn parse_ambiguous_tz_annotation<'a, T: EncodingType>(
         .peek_n(current_peek)?
         .ok_or(ParseError::abrupt_end("AmbiguousAnnotation"))?;
 
-    if is_tz_leading_char(leading_char) || is_ascii_sign(leading_char) {
-        // Ambigious start values when lowercase alpha that is shared between `TzLeadingChar` and `KeyLeadingChar`.
-        if is_a_key_leading_char(leading_char) {
-            let mut peek_pos = current_peek + 1;
-            while let Some(ch) = cursor.peek_n(peek_pos)? {
-                if is_tz_name_separator(ch) || (is_tz_char(ch) && !is_a_key_char(ch)) {
-                    let tz = parse_tz_annotation(cursor)?;
-                    return Ok(Some(tz));
-                } else if is_annotation_key_value_separator(ch)
-                    || (is_a_key_char(ch) && !is_tz_char(ch))
-                {
-                    return Ok(None);
-                } else if is_annotation_close(ch) {
-                    return Err(ParseError::InvalidAnnotation);
-                }
-
-                peek_pos += 1;
-            }
-            return Err(ParseError::abrupt_end("AmbiguousAnnotation"));
-        }
-        let tz = parse_tz_annotation(cursor)?;
-        return Ok(Some(tz));
-    }
-
+    // Ambigious start values when lowercase alpha that is shared between `TzLeadingChar` and `KeyLeadingChar`.
     if is_a_key_leading_char(leading_char) {
-        return Ok(None);
-    };
+        let mut peek_pos = current_peek + 1;
+        // Go through looking for `=`
+        while let Some(ch) = cursor.peek_n(peek_pos)? {
+            if is_annotation_key_value_separator(ch) {
+                // We have an `=` sign, this is a non-tz annotation
+                return Ok(None);
+            } else if is_annotation_close(ch) {
+                // We found a `]` without an `=`, this is a time zone
+                let tz = parse_tz_annotation(cursor)?;
+                return Ok(Some(tz));
+            }
 
-    Err(ParseError::AnnotationChar)
+            peek_pos += 1;
+        }
+        Err(ParseError::abrupt_end("AmbiguousAnnotation"))
+    } else {
+        // Unambiguously not a non-tz annotation, try parsing a tz annotation
+        let tz = parse_tz_annotation(cursor)?;
+        Ok(Some(tz))
+    }
 }
 
 fn parse_tz_annotation<'a, T: EncodingType>(
@@ -202,12 +202,13 @@ pub(crate) fn parse_utc_offset_minute_precision_strict<T: EncodingType>(
 pub(crate) fn parse_utc_offset_minute_precision<T: EncodingType>(
     cursor: &mut Cursor<T>,
 ) -> ParserResult<(MinutePrecisionOffset, bool)> {
-    let sign = if cursor.check_or(false, is_ascii_sign)? {
-        let sign = cursor.next_or(ParseError::ImplAssert)?;
-        Sign::from(sign == b'+')
-    } else {
-        Sign::Positive
-    };
+    // https://www.rfc-editor.org/rfc/rfc3339#section-5.6
+    let sign = cursor.next_or(ParseError::abrupt_end("time-numoffset"))?;
+    if !is_ascii_sign(sign) {
+        return Err(ParseError::OffsetNeedsSign);
+    }
+    let sign = Sign::from(sign == b'+');
+
     let hour = parse_hour(cursor)?;
 
     // If at the end of the utc, then return.
