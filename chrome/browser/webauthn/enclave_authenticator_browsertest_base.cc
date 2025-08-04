@@ -109,7 +109,6 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
 #endif
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{device::kWebAuthnLargeBlobForGPM,
-                            device::kWebAuthnNoAccountTimeout,
                             device::kWebAuthnSignalApiHidePasskeys},
       /*disabled_features=*/{});
   OSCryptMocker::SetUp();

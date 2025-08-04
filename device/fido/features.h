@@ -101,13 +101,6 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewBfCacheHandling);
 
-// Removes the timeout when downloading the account state for the enclave,
-// tweaking the UI:
-// * A loading screen is shown when the enclave is selected.
-// * The GPM error screen now has a "try another way" button.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNoAccountTimeout);
-
 // Enables using the Microsoft Software Key Storage Provider to store
 // unexportable keys when a TPM is not available.
 COMPONENT_EXPORT(DEVICE_FIDO)

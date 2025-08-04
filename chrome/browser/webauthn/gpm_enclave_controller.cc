@@ -443,9 +443,7 @@ GPMEnclaveController::GPMEnclaveController(
     SetActive(EnclaveEnabledStatus::kEnabledAndReauthNeeded);
     return;
   }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)) {
-    SetActive(EnclaveEnabledStatus::kEnabled);
-  }
+  SetActive(EnclaveEnabledStatus::kEnabled);
   if (enclave_manager_->is_loaded()) {
     OnEnclaveLoaded();
   } else {
@@ -612,12 +610,6 @@ void GPMEnclaveController::OnEnclaveLoaded() {
       }
     }
 
-    if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)) {
-      // For get() requests, progress the UI now because, with GPM PIN support,
-      // we can handle the account in any state and we'll block the UI if needed
-      // when the user selects a GPM credential.
-      SetActive(EnclaveEnabledStatus::kEnabled);
-    }
   }
 
   FIDO_LOG(EVENT) << "Checking for UV key capability";
@@ -637,18 +629,6 @@ void GPMEnclaveController::DownloadAccountState() {
   SetAccountState(AccountState::kChecking);
 
   auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
-  account_state_timeout_ = std::make_unique<base::OneShotTimer>(
-      GpmTickAndTaskRunnerProvider::GetTickClock(rfh));
-  if (auto task_runner = GpmTickAndTaskRunnerProvider::GetTaskRunner(rfh)) {
-    account_state_timeout_->SetTaskRunner(task_runner);
-  }
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)) {
-    account_state_timeout_->Start(
-        FROM_HERE, kDownloadAccountStateTimeout,
-        base::BindOnce(&GPMEnclaveController::OnAccountStateTimeOut,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
   auto* const identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   scoped_refptr<network::SharedURLLoaderFactory> testing_url_loader =
@@ -670,31 +650,7 @@ void GPMEnclaveController::DownloadAccountState() {
           base::BindOnce(&GPMEnclaveController::OnAccountStateDownloaded,
                          weak_ptr_factory_.GetWeakPtr(), account.gaia,
                          std::move(trusted_vault_conn)),
-          base::BindRepeating(&GPMEnclaveController::OnAccountStateKeepAlive,
-                              weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GPMEnclaveController::OnAccountStateKeepAlive() {
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)) {
-    account_state_timeout_->Reset();
-  }
-}
-
-void GPMEnclaveController::OnAccountStateTimeOut() {
-  FIDO_LOG(ERROR) << "Fetching the account state timed out.";
-  device::enclave::RecordEvent(
-      device::enclave::Event::kDownloadAccountStateTimeout);
-  download_account_state_request_.reset();
-  if (enclave_manager_->is_ready()) {
-    // If we were checking the security domain just to check whether the epoch
-    // has changed then we assume that it hasn't.
-    SetAccountState(AccountState::kReady);
-    SetActive(EnclaveEnabledStatus::kEnabled);
-  } else {
-    model_->OnLoadingEnclaveTimeout();
-    SetAccountState(AccountState::kNone);
-    SetActive(EnclaveEnabledStatus::kDisabled);
-  }
+          base::DoNothing());
 }
 
 void GPMEnclaveController::OnAccountStateDownloaded(
@@ -709,7 +665,6 @@ void GPMEnclaveController::OnAccountStateDownloaded(
     return;
   }
   download_account_state_request_.reset();
-  account_state_timeout_.reset();
 
   FIDO_LOG(EVENT)
       << "Download account state result: " << ToString(result.state)
@@ -726,9 +681,6 @@ void GPMEnclaveController::OnAccountStateDownloaded(
       enclave_manager_->ConsiderSecurityDomainState(result,
                                                     base::DoNothing())) {
     SetAccountState(AccountState::kReady);
-    if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)) {
-      SetActive(EnclaveEnabledStatus::kEnabled);
-    }
     return;
   }
 
@@ -752,12 +704,6 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   pin_metadata_ = std::move(result.gpm_pin_metadata);
   security_domain_icloud_recovery_keys_ = std::move(result.icloud_keys);
   user_gaia_id_ = std::move(gaia_id);
-
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)) {
-    SetActive(account_state_ != AccountState::kNone
-                  ? EnclaveEnabledStatus::kEnabled
-                  : EnclaveEnabledStatus::kDisabled);
-  }
 }
 
 void GPMEnclaveController::SetActive(EnclaveEnabledStatus status) {
@@ -1163,8 +1109,7 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
 
 void GPMEnclaveController::OnGpmSelectedWhileLoading() {
   CHECK(waiting_for_account_state_);
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout) ||
-      model_->step() != AuthenticatorRequestDialogModel::Step::kNotStarted) {
+  if (model_->step() != AuthenticatorRequestDialogModel::Step::kNotStarted) {
     model_->DisableUiOrShowLoadingDialog();
     return;
   }

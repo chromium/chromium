@@ -129,8 +129,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
                              public EnclaveManager::Observer,
                              public GPMEnclaveTransaction::Delegate {
  public:
-  static constexpr base::TimeDelta kDownloadAccountStateTimeout =
-      base::Seconds(1);
   static constexpr base::TimeDelta kLoadingTimeout = base::Milliseconds(500);
 
   enum class AccountState {
@@ -228,10 +226,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // Called when fetching the account state took too long.
   void OnAccountStateTimeOut();
-
-  // Called when fetching the account state received partial data from the
-  // server.
-  void OnAccountStateKeepAlive();
 
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
@@ -402,9 +396,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // If changing a GPM PIN, this holds a ReAuthentication Proof Token (RAPT), if
   // the user is authenticating the request via doing a GAIA reauth.
   std::optional<std::string> rapt_ = std::nullopt;
-
-  // A timeout to prevent waiting for the security domain service forever.
-  std::unique_ptr<base::OneShotTimer> account_state_timeout_;
 
   // A timeout to prevent waiting for the enclave to load forever. If triggered
   // while still loading, the user is sent to the mechanism selection screen.

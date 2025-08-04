@@ -1395,11 +1395,8 @@ void AuthenticatorCreatePasskeySheetModel::OnAccept() {
 
 AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(
-          dialog_model,
-          base::FeatureList::IsEnabled(device::kWebAuthnNoAccountTimeout)
-              ? OtherMechanismButtonVisibility::kVisible
-              : OtherMechanismButtonVisibility::kHidden) {
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
   if (dialog_model->in_onboarding_flow) {
     RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kFailure);
