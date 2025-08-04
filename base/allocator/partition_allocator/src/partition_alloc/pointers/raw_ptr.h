@@ -680,21 +680,22 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return static_cast<U*>(GetForExtraction());
   }
 
-  PA_ALWAYS_INLINE constexpr raw_ptr& operator++() {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE constexpr raw_ptr& operator++() {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, 1, true);
     return *this;
   }
-  PA_ALWAYS_INLINE constexpr raw_ptr& operator--() {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE constexpr raw_ptr& operator--() {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
     wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, 1, true);
     return *this;
   }
-  PA_ALWAYS_INLINE constexpr raw_ptr operator++(int /* post_increment */) {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE constexpr raw_ptr operator++(
+      int /* post_increment */) {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
@@ -702,7 +703,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     ++(*this);
     return result;
   }
-  PA_ALWAYS_INLINE constexpr raw_ptr operator--(int /* post_decrement */) {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE constexpr raw_ptr operator--(
+      int /* post_decrement */) {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
@@ -713,7 +715,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <
       typename Z,
       typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
-  PA_ALWAYS_INLINE constexpr raw_ptr& operator+=(Z delta_elems) {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE constexpr raw_ptr& operator+=(
+      Z delta_elems) {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot increment raw_ptr unless AllowPtrArithmetic trait is present.");
@@ -723,7 +726,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <
       typename Z,
       typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
-  PA_ALWAYS_INLINE constexpr raw_ptr& operator-=(Z delta_elems) {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE constexpr raw_ptr& operator-=(
+      Z delta_elems) {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.");
@@ -736,7 +740,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename = std::enable_if_t<
                 !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
-  PA_ALWAYS_INLINE constexpr U& operator[](Z delta_elems) const {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE constexpr U& operator[](
+      Z delta_elems) const {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot index raw_ptr unless AllowPtrArithmetic trait is present.");
@@ -760,8 +765,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // generate code that converts `raw_ptr<T>` to `T*` and adds uint64_t to that,
   // bypassing the OOB protection entirely.
   template <typename Z>
-  PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(const raw_ptr& p,
-                                                      Z delta_elems) {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(
+      const raw_ptr& p,
+      Z delta_elems) {
     // Don't check `is_offset_type<Z>` here, as existence of `Advance` is
     // already gated on that, and we'd get double errors.
     static_assert(
@@ -771,13 +777,15 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return result;
   }
   template <typename Z>
-  PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(Z delta_elems,
-                                                      const raw_ptr& p) {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(
+      Z delta_elems,
+      const raw_ptr& p) {
     return p + delta_elems;
   }
   template <typename Z>
-  PA_ALWAYS_INLINE friend constexpr raw_ptr operator-(const raw_ptr& p,
-                                                      Z delta_elems) {
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE friend constexpr raw_ptr operator-(
+      const raw_ptr& p,
+      Z delta_elems) {
     // Don't check `is_offset_type<Z>` here, as existence of `Retreat` is
     // already gated on that, and we'd get double errors.
     static_assert(raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
