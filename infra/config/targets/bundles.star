@@ -1727,7 +1727,6 @@ targets.bundle(
         "module_installer_junit_tests",
         "net_junit_tests",
         "paint_preview_junit_tests",
-        "password_check_junit_tests",
         "password_manager_junit_tests",
         "services_junit_tests",
         "touch_to_fill_junit_tests",
@@ -1873,16 +1872,6 @@ targets.bundle(
             ],
         ),
         "paint_preview_junit_tests": targets.per_test_modification(
-            remove_mixins = [
-                "chromium_pixel_2_q",
-                "emulator-4-cores",
-                "nougat-x86-emulator",
-                "oreo-x86-emulator",
-                "pie-x86-emulator",
-                "10-x86-emulator",
-            ],
-        ),
-        "password_check_junit_tests": targets.per_test_modification(
             remove_mixins = [
                 "chromium_pixel_2_q",
                 "emulator-4-cores",

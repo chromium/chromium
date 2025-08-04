@@ -2000,10 +2000,6 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "password_check_junit_tests",
-)
-
-targets.tests.isolated_script_test(
     name = "password_manager_junit_tests",
 )
 

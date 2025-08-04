@@ -1490,11 +1490,6 @@
     "type": "generated_script",
     "skip_usage_check": True,
   },
-  "password_check_junit_tests": {
-    "label": "//chrome/browser/password_check/android:password_check_junit_tests",
-    "type": "generated_script",
-    "skip_usage_check": True,
-  },
   "password_manager_junit_tests": {
     "label": "//chrome/browser/password_manager/android:password_manager_junit_tests",
     "type": "generated_script",

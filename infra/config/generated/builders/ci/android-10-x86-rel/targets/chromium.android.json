@@ -3817,31 +3817,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "password_check_junit_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "password_check_junit_tests",
-        "test_id_prefix": "ninja://chrome/browser/password_check/android:password_check_junit_tests/"
-      },
-      {
-        "args": [
-          "--use-persistent-shell"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "password_manager_junit_tests",
         "resultdb": {
           "enable": true,

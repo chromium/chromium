@@ -1680,13 +1680,6 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "password_check_junit_tests",
-    label = "//chrome/browser/password_check/android:password_check_junit_tests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-)
-
-targets.binaries.generated_script(
     name = "password_manager_junit_tests",
     label = "//chrome/browser/password_manager/android:password_manager_junit_tests",
     # All references have been moved to starlark
