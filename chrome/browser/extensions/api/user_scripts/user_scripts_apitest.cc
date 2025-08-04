@@ -47,12 +47,9 @@ void UserScriptsAPITest::OpenInCurrentTab(const GURL& url) {
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
-  content::TestNavigationObserver nav_observer(web_contents);
-  ASSERT_TRUE(NavigateToURL(url));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
-  nav_observer.Wait();
-
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  // NavigateToURL() waits for the load to stop and verifies the navigation
+  // succeeded.
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 }
 

@@ -554,8 +554,8 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   }
 
   // Open the tab to invoke the APIs, as well as test the action visibility.
-  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, extension->GetResourceURL("page.html")));
 
   static constexpr char kScript[] =
       R"(setRulesInPageEnvironment([{

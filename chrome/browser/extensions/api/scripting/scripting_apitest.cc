@@ -84,11 +84,9 @@ class ScriptingAPITest : public ExtensionApiTest {
   void OpenURLInCurrentTab(const GURL& url) {
     content::WebContents* web_contents = GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    content::TestNavigationObserver nav_observer(web_contents);
-    ASSERT_TRUE(NavigateToURL(url));
-    nav_observer.Wait();
-    content::WaitForLoadStop(web_contents);
-    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    // NavigateToURL() waits for the load to stop and verifies the navigation
+    // succeeded.
+    ASSERT_TRUE(NavigateToURL(web_contents, url));
     EXPECT_EQ(url, web_contents->GetLastCommittedURL());
   }
 
@@ -307,11 +305,11 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
 
   // Verify that only the second script injects (i.e., that the first script
   // really was unregistered). Regression test for https://crbug.com/1496907.
+  auto* web_contents = GetActiveWebContents();
   const GURL url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(NavigateToURL(url));
-  content::RenderFrameHost* new_frame =
-      GetActiveWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+  content::RenderFrameHost* new_frame = web_contents->GetPrimaryMainFrame();
 
   static constexpr char kGetInjectedIds[] =
       R"(const divs = document.body.getElementsByTagName('div');
@@ -686,11 +684,11 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
 
   // Navigate to a page in the on-the-record profile. Both extensions should
   // inject.
+  auto* web_contents = GetActiveWebContents();
   const GURL page_url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(NavigateToURL(page_url));
-  content::RenderFrameHost* regular_page =
-      GetActiveWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
+  content::RenderFrameHost* regular_page = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
             content::EvalJs(regular_page, kGetDivIds));
 
@@ -715,12 +713,11 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
   // Repeat the steps of navigating to an on-the-record and off-the-record page
   // to validate injection after a restart. This verifies the incognito bit
   // is properly set when restoring scripts after a restart.
-
+  auto* web_contents = GetActiveWebContents();
   const GURL page_url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(NavigateToURL(page_url));
-  content::RenderFrameHost* regular_page =
-      GetActiveWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
+  content::RenderFrameHost* regular_page = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
             content::EvalJs(regular_page, kGetDivIds));
 

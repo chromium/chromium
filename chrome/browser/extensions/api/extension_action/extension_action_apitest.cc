@@ -267,7 +267,7 @@ class MultiActionAPITest
     // observers are notified.
     ExtensionActionDispatcher* dispatcher =
         ExtensionActionDispatcher::Get(profile());
-    dispatcher->NotifyChange(action, GetActiveTab(), profile());
+    dispatcher->NotifyChange(action, GetActiveWebContents(), profile());
   }
 
   // Ensures the |action| is enabled on the currently-active tab.
@@ -277,11 +277,9 @@ class MultiActionAPITest
 
   // Returns the id of the currently-active tab.
   int GetActiveTabId() const {
-    content::WebContents* web_contents = GetActiveTab();
+    content::WebContents* web_contents = GetActiveWebContents();
     return sessions::SessionTabHelper::IdForTab(web_contents).id();
   }
-
-  content::WebContents* GetActiveTab() const { return GetActiveWebContents(); }
 
   // Returns the action associated with |extension|.
   ExtensionAction* GetExtensionAction(const Extension& extension) {
@@ -402,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
 
   // Navigating should clear the title.
   GURL second_url = embedded_test_server()->GetURL("/title2.html");
-  ASSERT_TRUE(NavigateToURL(second_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, second_url));
 
   EXPECT_EQ(second_url, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(action->HasTitle(tab_id));
@@ -1070,9 +1068,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconInTabWithInvalidPath) {
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
 
-  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("page.html")));
 
   int tab_id = GetActiveTabId();
   EXPECT_TRUE(ActionHasDefaultState(*action, tab_id));
@@ -1213,8 +1211,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
                               manifest_errors::kInvalidExtensionPopupPath);
   };
 
-  ASSERT_TRUE(NavigateToURL(extension->GetResourceURL("page.html")));
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, extension->GetResourceURL("page.html")));
   int tab_id = GetActiveTabId();
 
   // Set the popup to an invalid nonexistent extension URL and expect an error.

@@ -29,11 +29,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsInternalsTest,
   ASSERT_TRUE(extension);
 
   // First, check that navigation succeeds.
-  GURL navigation_url(
-      content::GetWebUIURL(chrome::kChromeUIExtensionsInternalsHost));
-  ASSERT_TRUE(NavigateToURL(navigation_url));
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
+  GURL navigation_url(
+      content::GetWebUIURL(chrome::kChromeUIExtensionsInternalsHost));
+  ASSERT_TRUE(NavigateToURL(web_contents, navigation_url));
   EXPECT_EQ(navigation_url, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(web_contents->IsCrashed());
 

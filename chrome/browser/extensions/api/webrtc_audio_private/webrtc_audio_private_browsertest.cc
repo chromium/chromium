@@ -297,10 +297,10 @@ IN_PROC_BROWSER_TEST_F(HangoutServicesBrowserTest,
   // This runs the end-to-end JavaScript test for the Hangout Services
   // component extension, which uses the webrtcAudioPrivate API among
   // others.
-  ASSERT_TRUE(NavigateToURL(https_server().GetURL(
-      "meet.google.com", "/extensions/hangout_services_test.html")));
-
   WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      tab, https_server().GetURL("meet.google.com",
+                                 "/extensions/hangout_services_test.html")));
   WaitUntilAudioIsPlaying(tab);
 
   // Use a test server URL for uploading.

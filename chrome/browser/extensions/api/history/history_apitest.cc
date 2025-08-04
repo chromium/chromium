@@ -276,8 +276,9 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, Incognito) {
                                "countItemsInHistory()"));
 
   // Perform navigation in regular mode.
-  content::TestNavigationObserver regular_observer(GetActiveWebContents());
-  ASSERT_TRUE(NavigateToURL(b_com));
+  auto* web_contents = GetActiveWebContents();
+  content::TestNavigationObserver regular_observer(web_contents);
+  ASSERT_TRUE(NavigateToURL(web_contents, b_com));
 
   EXPECT_TRUE(regular_observer.last_navigation_succeeded());
 
