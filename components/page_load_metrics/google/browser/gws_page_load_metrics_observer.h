@@ -90,6 +90,8 @@ class GWSPageLoadMetricsObserver
 
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
                                  const GURL& currently_committed_url) override;
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
 
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
@@ -145,6 +147,7 @@ class GWSPageLoadMetricsObserver
 
   bool is_first_navigation_ = false;
   bool was_cached_ = false;
+  bool is_prerendered_ = false;
 
   NavigationSourceType source_type_ = kUnknown;
 

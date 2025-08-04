@@ -1549,6 +1549,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.Prerender.HostReused"
+    enum="Boolean" expires_after="2026-01-11">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Whether the prerendering navigation is reusing a prerender host or not. This
+    is recorded once, when a prerendered page is activated for Google search
+    page loads.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2025-12-21">
