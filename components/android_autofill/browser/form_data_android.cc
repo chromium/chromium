@@ -115,12 +115,13 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
             ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
       }
       std::string_view computed_type = [&] {
-        AutofillType autofill_type = autofill_field->ComputedType();
-        HtmlFieldType html_field_type = autofill_type.html_type();
-        if (html_field_type != HtmlFieldType::kUnspecified) {
+        if (HtmlFieldType html_field_type = autofill_field->html_type();
+            html_field_type != HtmlFieldType::kUnspecified &&
+            html_field_type != HtmlFieldType::kUnrecognized) {
           return FieldTypeToStringView(html_field_type);
         }
-        return FieldTypeToStringView(GetMostRelevantFieldType(autofill_type));
+        return FieldTypeToStringView(
+            GetMostRelevantFieldType(autofill_field->ComputedType()));
       }();
       form_field_data_android->UpdateFieldTypes(
           FormFieldDataAndroid::FieldTypes(
