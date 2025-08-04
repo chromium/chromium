@@ -23,9 +23,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -37,6 +37,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class CustomTabContextMenuTest {
 
     private static final String TEST_PATH =
@@ -96,7 +98,6 @@ public class CustomTabContextMenuTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
-    @DisabledTest(message = "crbug.com/434924638")
     public void testCustomItemPresent_WhenFeatureEnabled() throws TimeoutException {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
@@ -119,7 +120,6 @@ public class CustomTabContextMenuTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
-    @DisabledTest(message = "crbug.com/434924638")
     public void testCustomItemNotPresent_WhenFeatureDisabled() throws TimeoutException {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
