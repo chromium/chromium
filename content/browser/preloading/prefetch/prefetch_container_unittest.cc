@@ -12,6 +12,7 @@
 #include "components/variations/variations_ids_provider.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
@@ -686,10 +687,11 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
 
   // Simulates the URL of the prefetch being navigated to and the prefetch being
   // considered for serving.
-  prefetch_container->OnUnregisterCandidate(GURL("https://test.com"),
-                                            /*is_served=*/true,
-                                            /*is_nav_prerender=*/false,
-                                            /*blocked_duration=*/std::nullopt);
+  prefetch_container->OnUnregisterCandidate(
+      GURL("https://test.com"),
+      /*is_served=*/true, PrefetchPotentialCandidateServingResult::kServed,
+      /*is_nav_prerender=*/false,
+      /*blocked_duration=*/std::nullopt);
 
   // Simulate a successful DNS probe for this prefetch. Not this will also
   // update the status of the prefetch to
@@ -979,9 +981,14 @@ TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
       }
     }();
 
+    // For `PrefetchPotentialCandidateServingResult`, provides placeholder value
+    // which is consistent with `is_served`.
     prefetch_container->OnUnregisterCandidate(
-        navigated_url, test_case.is_served, test_case.is_nav_prerender,
-        test_case.blocked_duration);
+        navigated_url, test_case.is_served,
+        test_case.is_served ? PrefetchPotentialCandidateServingResult::kServed
+                            : PrefetchPotentialCandidateServingResult::
+                                  kNotServedBlockUntilHeadTimeout,
+        test_case.is_nav_prerender, test_case.blocked_duration);
   }
 
   histogram_tester.ExpectUniqueSample(
@@ -1202,9 +1209,14 @@ TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms_Prerender) {
     }
   }();
 
-  prefetch_container->OnUnregisterCandidate(navigated_url, test_case.is_served,
-                                            test_case.is_nav_prerender,
-                                            test_case.blocked_duration);
+  // For `PrefetchPotentialCandidateServingResult`, provides placeholder value
+  // which is consistent with `is_served`.
+  prefetch_container->OnUnregisterCandidate(
+      navigated_url, test_case.is_served,
+      test_case.is_served ? PrefetchPotentialCandidateServingResult::kServed
+                          : PrefetchPotentialCandidateServingResult::
+                                kNotServedBlockUntilHeadTimeout,
+      test_case.is_nav_prerender, test_case.blocked_duration);
 
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."

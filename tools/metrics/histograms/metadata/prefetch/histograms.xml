@@ -353,6 +353,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchPotentialCandidateServingResult.PerMatchingCandidate.{TriggerTypeAndEagerness}"
+    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-01-14">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver` collects potentially
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this judging ends synchronously. If not, it being the
+    `PrefetchMatchResolver` waits for non-redirect headers until it finds a
+    matched and servable one or there is no more candidates.
+
+    This histogram records the result of the serving judgement per those
+    potentially matching candidates. Recorded when that serving judgement is
+    settled and the candidate is unregistered from the resolver (i.e.
+    `PrefetchMatchResolver::UnregisterCandidate`).
+
+    This histogram is recorded per potentially matching candidate, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck"
     units="ms" expires_after="2025-03-01">
   <owner>kouhei@chromium.org</owner>

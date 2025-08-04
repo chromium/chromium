@@ -19,6 +19,59 @@ namespace content {
 
 class PrefetchContainer;
 
+// Represents the serving result with the detailed reason per potentially
+// matching candidate. Only used for metrics purpose.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PrefetchPotentialCandidateServingResult)
+enum class PrefetchPotentialCandidateServingResult {
+  // The candidate is matched and served.
+  kServed = 0,
+
+  // The candidate is not served because the other potential candidate is
+  // already determined to be served.
+  kNotServedOtherCandidatesAreMatched = 1,
+
+  // The candidate is not served because the cookie change is detected during
+  // waiting the non-redirect header.
+  kNotServedCookiesChanged = 2,
+
+  // The candidate is not served because the corresponding prefetch container is
+  // going to be destroyed during waiting the non-redirect header.
+  kNotServedPrefetchWillBeDestroyed = 3,
+
+  // The candidate is not served because it turned out to be ineligible.
+  // This can be recorded only when
+  // `features::UsePrefetchPrerenderIntegration()` is
+  // true, where the prefetch matching starts before the initial eligibility is
+  // determined.
+  kNotServedIneligiblePrefetch = 4,
+
+  // The candidate is not served because the candidate received
+  // `OnDeterminedHead()` but its associated `ServableState` is not `kServable`.
+  kNotServedUnsatisfiedPrefetchServeableState = 5,
+
+  // The candidate is not served because the candidate's
+  // `PrefetchServiceWorkerState` was matched with the expected one when
+  // starting matching but turned out to be mismatched after receiving the
+  // non-redirect header.
+  // This can be record only when `kPrefetchServiceWorker` is enabled.
+  kNotServedPrefetchServiceWorkerStateMismatch = 6,
+
+  // The candidate is not served because the candidate's url was matched with
+  // the navigation's url using NVS hint but turned out to be mismatched using
+  // actual NVS header when receiving the non-redirect header.
+  kNotServedDeterminedNVSHeaderMismatch = 7,
+
+  // The candidate is not served because of the timeout provided by
+  // `PrefetchBlockUntilHeadTimeout()`.
+  kNotServedBlockUntilHeadTimeout = 8,
+
+  kMaxValue = kNotServedBlockUntilHeadTimeout,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/prefetch/enums.xml)
+
 // Manages matching process of prefetch
 // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
 //
@@ -114,14 +167,18 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   void RegisterCandidate(PrefetchContainer& prefetch_container);
   void StartWaitFor(const PrefetchContainer::Key& prefetch_key,
                     PrefetchContainer::ServableState servable_state);
-  void UnregisterCandidate(const PrefetchContainer::Key& prefetch_key,
-                           bool is_served);
+  void UnregisterCandidate(
+      const PrefetchContainer::Key& prefetch_key,
+      bool is_served,
+      PrefetchPotentialCandidateServingResult matching_result);
   void OnTimeout(PrefetchContainer::Key prefetch_key);
   void UnblockForMatch(const PrefetchContainer::Key& prefetch_key);
   void UnblockForNoCandidates();
   // Unregisters unmatched prefetch and unblocks if there are no other waiting
   // prefetches.
-  void MaybeUnblockForUnmatch(const PrefetchContainer::Key& prefetch_key);
+  void MaybeUnblockForUnmatch(
+      const PrefetchContainer::Key& prefetch_key,
+      PrefetchPotentialCandidateServingResult matching_result);
   void UnblockForCookiesChanged(const PrefetchContainer::Key& key);
   void UnblockInternal(PrefetchContainer::Reader reader);
 

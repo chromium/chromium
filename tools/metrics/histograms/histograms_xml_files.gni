@@ -201,6 +201,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/plus_addresses/histograms.xml",
   "//tools/metrics/histograms/metadata/power/enums.xml",
   "//tools/metrics/histograms/metadata/power/histograms.xml",
+  "//tools/metrics/histograms/metadata/prefetch/enums.xml",
   "//tools/metrics/histograms/metadata/prefetch/histograms.xml",
   "//tools/metrics/histograms/metadata/preloading/histograms.xml",
   "//tools/metrics/histograms/metadata/printing/enums.xml",
