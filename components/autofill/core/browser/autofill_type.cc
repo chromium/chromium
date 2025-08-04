@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
@@ -290,6 +291,16 @@ FieldTypeSet AutofillType::GetStaticAutofillAiTypes() const {
   static constexpr FieldTypeSet kFieldTypes =
       FieldTypesOfGroup(FieldTypeGroup::kAutofillAi);
   return Intersection(GetTypes(), kFieldTypes);
+}
+
+FieldType AutofillType::GetAutofillAiTypeAndResolveTagTypes(
+    EntityType entity) const {
+  FieldType type = GetAutofillAiType(entity);
+  if (IsTagType(type) &&
+      !base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
+    type = GetAddressType();
+  }
+  return type;
 }
 
 std::string AutofillType::ToString() const {

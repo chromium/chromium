@@ -1162,7 +1162,8 @@ FormFiller::ValueAndTypeAndOverride FormFiller::GetFieldFillingData(
                         entity, fields, autofill_field, action_persistence,
                         manager_->client().GetAppLocale(),
                         manager_->client().GetAddressNormalizer()),
-                    autofill_field.Type().GetAutofillAiType(entity.type())};
+                    autofill_field.Type().GetAutofillAiTypeAndResolveTagTypes(
+                        entity.type())};
           },
           [&](const VerifiedProfile* profile)
               -> std::pair<std::u16string, FieldType> {

@@ -84,8 +84,8 @@ std::optional<std::u16string> GetValueForDateSelect(
     const AttributeInstance& attribute,
     const AutofillField& field,
     const std::string& app_locale) {
-  FieldType type =
-      field.Type().GetAutofillAiType(attribute.type().entity_type());
+  FieldType type = field.Type().GetAutofillAiTypeAndResolveTagTypes(
+      attribute.type().entity_type());
   if (!IsDateFieldType(type)) {
     return std::nullopt;
   }
@@ -118,8 +118,8 @@ std::optional<std::u16string> GetValueForDateSelect(
 std::u16string GetValueForInput(const AttributeInstance& attribute,
                                 const AutofillField& field,
                                 const std::string& app_locale) {
-  FieldType type =
-      field.Type().GetAutofillAiType(attribute.type().entity_type());
+  FieldType type = field.Type().GetAutofillAiTypeAndResolveTagTypes(
+      attribute.type().entity_type());
   // TODO(crbug.com/389625753): Investigate whether only passing the
   // field type is the right choice here. This would for example
   // fail the fill a PASSPORT_NUMBER field that gets a
@@ -150,8 +150,8 @@ std::u16string GetValueForSelect(const AttributeInstance& attribute,
                                  const AutofillField& field,
                                  const std::string& app_locale,
                                  AddressNormalizer* address_normalizer) {
-  FieldType type =
-      field.Type().GetAutofillAiType(attribute.type().entity_type());
+  FieldType type = field.Type().GetAutofillAiTypeAndResolveTagTypes(
+      attribute.type().entity_type());
   if (IsDateFieldType(type)) {
     return GetValueForDateSelect(attribute, field, app_locale).value_or(u"");
   }

@@ -129,6 +129,10 @@ class AutofillType {
   FieldTypeSet GetAutofillAiTypes() const;
   FieldTypeSet GetStaticAutofillAiTypes() const;
 
+  // Returns GetAutofillAiType() or falls back to GetAddressType().
+  // TODO(crbug.com/422563282): Remove when cleaning up kAutofillAiNoTagTypes.
+  FieldType GetAutofillAiTypeAndResolveTagTypes(EntityType entity) const;
+
   std::string ToString() const;
 
  private:
