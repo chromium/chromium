@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.HandwritingModel.Recognize.Event"
-    enum="Boolean" expires_after="2025-09-07">
+    enum="Boolean" expires_after="2026-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcBeginInstallDlcServiceError"
-    enum="MachineLearningServiceDlcErrorCode" expires_after="2025-09-09">
+    enum="MachineLearningServiceDlcErrorCode" expires_after="2026-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.MlCore.DlcBeginInstallResult"
     enum="MachineLearningServiceDlcBeginInstallResult"
-    expires_after="2025-09-09">
+    expires_after="2026-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcFinalInstallDlcServiceError"
-    enum="MachineLearningServiceDlcErrorCode" expires_after="2025-09-09">
+    enum="MachineLearningServiceDlcErrorCode" expires_after="2026-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcInstallAttemptCount"
-    units="attempts" expires_after="2025-09-09">
+    units="attempts" expires_after="2026-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
