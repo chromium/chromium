@@ -37,9 +37,15 @@
 - (void)setConsumer:(id<ReaderModeOptionsConsumer>)consumer {
   _consumer = consumer;
   if (_consumer) {
-    [self onChangeFontFamily:_distilledPagePrefs->GetFontFamily()];
-    [self onChangeTheme:_distilledPagePrefs->GetTheme()];
-    [self onChangeFontScaling:_distilledPagePrefs->GetFontScaling()];
+    // Initialize consumer with current state of `_distilledPagePrefs`.
+    [self.consumer setSelectedFontFamily:_distilledPagePrefs->GetFontFamily()];
+    [self.consumer setSelectedTheme:_distilledPagePrefs->GetTheme()];
+    std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
+    const float scaling = _distilledPagePrefs->GetFontScaling();
+    [self.consumer
+        setDecreaseFontSizeButtonEnabled:(scaling > multipliers.front())];
+    [self.consumer
+        setIncreaseFontSizeButtonEnabled:(scaling < multipliers.back())];
   }
 }
 
@@ -102,6 +108,7 @@
       setDecreaseFontSizeButtonEnabled:(scaling > multipliers.front())];
   [self.consumer
       setIncreaseFontSizeButtonEnabled:(scaling < multipliers.back())];
+  [self.consumer announceFontSizeMultiplier:scaling];
 }
 
 @end

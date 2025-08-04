@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_controls_view.h"
 
+#import <UIKit/UIAccessibility.h>
+
+#import "base/task/sequenced_task_runner.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
@@ -25,6 +28,12 @@ constexpr CGFloat kSecondRowSpacing = 15.0;
 constexpr CGFloat kSecondRowHeight = 48.0;
 constexpr CGFloat kSelectedThemeBorderWidth = 3.0;
 constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
+
+// Delay for setting an utterance to be queued, it is required to ensure that
+// standard announcements have already been started and thus would not interrupt
+// the enqueued utterance.
+constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
+
 }  // namespace
 
 @implementation ReaderModeOptionsControlsView {
@@ -96,6 +105,21 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
 
 - (void)setIncreaseFontSizeButtonEnabled:(BOOL)enabled {
   _increaseFontSizeButton.enabled = enabled;
+}
+
+- (void)announceFontSizeMultiplier:(CGFloat)multiplier {
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    NSNumberFormatter* numberFormatter = [[NSNumberFormatter alloc] init];
+    numberFormatter.numberStyle = NSNumberFormatterPercentStyle;
+    numberFormatter.maximumFractionDigits = 0;
+    NSString* announcement = [numberFormatter stringFromNumber:@(multiplier)];
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          UIAccessibilityPostNotification(
+              UIAccessibilityAnnouncementNotification, announcement);
+        }),
+        kA11yAnnouncementQueueDelay);
+  }
 }
 
 #pragma mark - UI actions

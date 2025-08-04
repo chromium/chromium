@@ -222,6 +222,10 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   // Nothing to do.
 }
 
+- (void)announceFontSizeMultiplier:(CGFloat)multiplier {
+  // Nothing to do.
+}
+
 #pragma mark - Private
 
 // Dismisses the page action menu.
