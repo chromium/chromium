@@ -508,22 +508,6 @@ const FeatureEntry::FeatureVariation kDXGIWaitableSwapChainVariations[] = {
     {"Max 3 Frames", &kDXGIWaitableSwapChain3Frames, 1, nullptr}};
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-const FeatureEntry::Choice kOzonePlatformHintRuntimeChoices[] = {
-    {flag_descriptions::kOzonePlatformHintChoiceDefault, "", ""},
-    {flag_descriptions::kOzonePlatformHintChoiceAuto,
-     switches::kOzonePlatformHint, "auto"},
-#if BUILDFLAG(IS_OZONE_X11)
-    {flag_descriptions::kOzonePlatformHintChoiceX11,
-     switches::kOzonePlatformHint, "x11"},
-#endif
-#if BUILDFLAG(IS_OZONE_WAYLAND)
-    {flag_descriptions::kOzonePlatformHintChoiceWayland,
-     switches::kOzonePlatformHint, "wayland"},
-#endif
-};
-#endif
-
 #if BUILDFLAG(ENABLE_VR)
 const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -5959,10 +5943,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPulseaudioLoopbackForScreenShareName,
      flag_descriptions::kPulseaudioLoopbackForScreenShareDescription, kOsLinux,
      FEATURE_VALUE_TYPE(media::kPulseaudioLoopbackForScreenShare)},
-
-    {"ozone-platform-hint", flag_descriptions::kOzonePlatformHintName,
-     flag_descriptions::kOzonePlatformHintDescription, kOsLinux,
-     MULTI_VALUE_TYPE(kOzonePlatformHintRuntimeChoices)},
 
     {"simplified-tab-drag-ui", flag_descriptions::kSimplifiedTabDragUIName,
      flag_descriptions::kSimplifiedTabDragUIDescription, kOsLinux,

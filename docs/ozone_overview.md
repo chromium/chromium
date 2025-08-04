@@ -191,9 +191,7 @@ Or run for example the Wayland platform:
 ./out/OzoneLinuxDesktop/chrome --ozone-platform=wayland
 ```
 
-It is also possible to choose an Ozone backend via the chrome://flags/#ozone-platform-hint.
-The following options are available - Default, X11, Wayland, and Auto. "Auto"
-selects Wayland if possible, X11 otherwise.
+
 
 
 ### GN Configuration notes

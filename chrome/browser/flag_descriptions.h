@@ -4593,13 +4593,7 @@ extern const char kEnableArmHwdrmDescription[];
 // Linux ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_LINUX)
-extern const char kOzonePlatformHintChoiceDefault[];
-extern const char kOzonePlatformHintChoiceAuto[];
-extern const char kOzonePlatformHintChoiceX11[];
-extern const char kOzonePlatformHintChoiceWayland[];
 
-extern const char kOzonePlatformHintName[];
-extern const char kOzonePlatformHintDescription[];
 
 extern const char kPulseaudioLoopbackForCastName[];
 extern const char kPulseaudioLoopbackForCastDescription[];
