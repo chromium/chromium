@@ -7266,7 +7266,7 @@ TEST_P(
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
       "SpeculationRule_"
-      "Immediate",
+      "Immediate2",
       false, 2);
 }
 
@@ -7334,7 +7334,7 @@ TEST_P(
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
       "SpeculationRule_"
-      "Immediate",
+      "Immediate2",
       true, 2);
 }
 
@@ -7408,7 +7408,7 @@ TEST_P(PrefetchServiceTest,
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
       "SpeculationRule_"
-      "Immediate",
+      "Immediate2",
       true, 2);
 }
 
@@ -7466,7 +7466,7 @@ TEST_P(PrefetchServiceTest,
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
       "SpeculationRule_"
-      "Immediate",
+      "Immediate2",
       true, 2);
 }
 
@@ -7555,7 +7555,7 @@ TEST_P(PrefetchServiceTest,
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
       "SpeculationRule_"
-      "Immediate",
+      "Immediate2",
       true, 1);
 
   prefetch_service.SetDelayEligibilityCheckForTesting(base::NullCallback());
@@ -8538,39 +8538,39 @@ TEST_P(
 
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "SpeculationRule_Immediate",
+      "SpeculationRule_Immediate2",
       true, 1);
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "NonPrerender.SpeculationRule_Immediate",
+      "NonPrerender.SpeculationRule_Immediate2",
       true, 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "Prerender.SpeculationRule_Immediate",
+      "Prerender.SpeculationRule_Immediate2",
       0);
   histogram_tester.ExpectUniqueTimeSample(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
-      "SpeculationRule_Immediate",
+      "SpeculationRule_Immediate2",
       base::Milliseconds(kHeaderLatency), 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
-      "SpeculationRule_Immediate",
+      "SpeculationRule_Immediate2",
       0);
   histogram_tester.ExpectUniqueTimeSample(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
-      "Served.SpeculationRule_Immediate",
+      "Served.SpeculationRule_Immediate2",
       base::Milliseconds(kHeaderLatency), 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
-      "NotServed.SpeculationRule_Immediate",
+      "NotServed.SpeculationRule_Immediate2",
       0);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
-      "SpeculationRule_Immediate",
+      "SpeculationRule_Immediate2",
       0);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
-      "NotServed.SpeculationRule_Immediate",
+      "NotServed.SpeculationRule_Immediate2",
       0);
 }
 

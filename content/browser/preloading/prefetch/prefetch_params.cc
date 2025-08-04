@@ -246,10 +246,7 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
 }
 
 // These strings (including `embedder_histogram_suffix`) are persisted to logs.
-// `kEager` is treated the same as `kImmediate` here for historical reasons.
-// TODO(crbug.com/40287486): Change records for `kEager` or create updated
-// metrics that handle `kEager` separately.
-// LINT.IfChange
+// LINT.IfChange(GetMetricsSuffixTriggerTypeAndEagerness)
 std::string GetMetricsSuffixTriggerTypeAndEagerness(
     const PrefetchType prefetch_type,
     const std::optional<std::string>& embedder_histogram_suffix) {
@@ -257,8 +254,9 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
     case PreloadingTriggerType::kSpeculationRule:
       switch (prefetch_type.GetEagerness()) {
         case blink::mojom::SpeculationEagerness::kImmediate:
+          return "SpeculationRule_Immediate2";
         case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRule_Immediate";
+          return "SpeculationRule_Eager2";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRule_Moderate";
         case blink::mojom::SpeculationEagerness::kConservative:
@@ -267,8 +265,9 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       switch (prefetch_type.GetEagerness()) {
         case blink::mojom::SpeculationEagerness::kImmediate:
+          return "SpeculationRule_Immediate2";
         case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromIsolatedWorld_Immediate";
+          return "SpeculationRule_Eager2";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRuleFromIsolatedWorld_Moderate";
         case blink::mojom::SpeculationEagerness::kConservative:
@@ -277,8 +276,9 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       switch (prefetch_type.GetEagerness()) {
         case blink::mojom::SpeculationEagerness::kImmediate:
+          return "SpeculationRule_Immediate2";
         case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromAutoSpeculationRules_Immediate";
+          return "SpeculationRule_Eager2";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRuleFromAutoSpeculationRules_Moderate";
         case blink::mojom::SpeculationEagerness::kConservative:
