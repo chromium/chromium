@@ -47,6 +47,7 @@ android_library("data_importer_service_impl_java") {
     ":os_migration_target_service_proto_java",
     "//base:callback_java",
     "//base:log_java",
+    "//base:metrics_java",
     "//base:tasks_java",
     "//base/version_info/android:version_constants_java",
     "//chrome/android:base_module_java",

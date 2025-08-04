@@ -33,6 +33,7 @@ import io.grpc.stub.StreamObserver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
@@ -179,6 +180,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             public int successItemCount;
             public int failedItemCount;
             public int ignoredItemCount;
+
+            // Used to record the time it took to import a BrowserFileType.
+            public Map<BrowserFileType, Long> startTimes = new HashMap<>();
         }
 
         @GuardedBy("mPendingImportsLock")
@@ -269,6 +273,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                         "Invalid or missing file_metadata")));
                 return;
             }
+
+            recordImportStartMetrics(sessionId, fileType);
+
             switch (fileType) {
                 case BROWSER_FILE_TYPE_BOOKMARKS:
                     {
@@ -415,8 +422,16 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             mBridge.importBookmarks(
                     ownedFd,
                     (count) -> {
+                        recordImportDoneMetrics(
+                                sessionId, BrowserFileType.BROWSER_FILE_TYPE_BOOKMARKS, count);
                         Log.i(TAG, "Bookmarks imported: %d", count);
-                        updateImportResults(sessionId, count);
+                        synchronized (mPendingImportsLock) {
+                            ImportResults importResults = mPendingImports.get(sessionId);
+                            assert (importResults != null);
+                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
+                            // failure) back here, so it can be properly reported.
+                            importResults.successItemCount++;
+                        }
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
@@ -434,8 +449,16 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             mBridge.importReadingList(
                     ownedFd,
                     (count) -> {
+                        recordImportDoneMetrics(
+                                sessionId, BrowserFileType.BROWSER_FILE_TYPE_READING_LIST, count);
                         Log.i(TAG, "ReadingList imported: %d", count);
-                        updateImportResults(sessionId, count);
+                        synchronized (mPendingImportsLock) {
+                            ImportResults importResults = mPendingImports.get(sessionId);
+                            assert (importResults != null);
+                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
+                            // failure) back here, so it can be properly reported.
+                            importResults.successItemCount++;
+                        }
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
@@ -453,8 +476,18 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             mBridge.importHistory(
                     ownedFd,
                     (count) -> {
+                        recordImportDoneMetrics(
+                                sessionId,
+                                BrowserFileType.BROWSER_FILE_TYPE_BROWSING_HISTORY,
+                                count);
                         Log.i(TAG, "History imported: %d", count);
-                        updateImportResults(sessionId, count);
+                        synchronized (mPendingImportsLock) {
+                            ImportResults importResults = mPendingImports.get(sessionId);
+                            assert (importResults != null);
+                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
+                            // failure) back here, so it can be properly reported.
+                            importResults.successItemCount++;
+                        }
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
@@ -469,16 +502,63 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             }
         }
 
-        private void updateImportResults(ByteString sessionId, int count) {
+        private String getHistogramSuffix(BrowserFileType fileType) {
+            switch (fileType) {
+                case BROWSER_FILE_TYPE_BOOKMARKS:
+                    return "Bookmarks";
+                case BROWSER_FILE_TYPE_READING_LIST:
+                    return "ReadingList";
+                case BROWSER_FILE_TYPE_BROWSING_HISTORY:
+                    return "History";
+                case UNRECOGNIZED:
+                case BROWSER_FILE_TYPE_UNSPECIFIED:
+                    return "NotSupported";
+                default:
+                    assert false;
+                    return "";
+            }
+        }
+
+        private void recordImportStartMetrics(ByteString sessionId, BrowserFileType fileType) {
+            // Record `False` to report the `Started` bucket.
+            RecordHistogram.recordBooleanHistogram(
+                    "UserDataImporter.OSMigration." + getHistogramSuffix(fileType) + ".Flow",
+                    false);
+
+            synchronized (mPendingImportsLock) {
+                // Save the start time of the import for the datatype.
+                ImportResults importResults = mPendingImports.get(sessionId);
+                assert (importResults != null);
+                importResults.startTimes.put(fileType, System.currentTimeMillis());
+            }
+        }
+
+        private long getImportDuration(ByteString sessionId, BrowserFileType fileType) {
             synchronized (mPendingImportsLock) {
                 ImportResults importResults = mPendingImports.get(sessionId);
                 assert (importResults != null);
-                if (count >= 0) {
-                    importResults.successItemCount++;
-                } else {
-                    importResults.failedItemCount++;
-                }
+                Long startTime = importResults.startTimes.get(fileType);
+                assert (startTime != null);
+                return System.currentTimeMillis() - startTime;
             }
+        }
+
+        private void recordImportDoneMetrics(
+                ByteString sessionId, BrowserFileType fileType, int count) {
+            RecordHistogram.recordCount1000Histogram(
+                    "UserDataImporter.OSMigration."
+                            + getHistogramSuffix(fileType)
+                            + ".ImportedCount",
+                    count);
+            RecordHistogram.recordTimesHistogram(
+                    "UserDataImporter.OSMigration."
+                            + getHistogramSuffix(fileType)
+                            + ".FlowDuration",
+                    getImportDuration(sessionId, fileType));
+
+            // Record `True` to report the `Completed` bucket.
+            RecordHistogram.recordBooleanHistogram(
+                    "UserDataImporter.OSMigration." + getHistogramSuffix(fileType) + ".Flow", true);
         }
     }
 }

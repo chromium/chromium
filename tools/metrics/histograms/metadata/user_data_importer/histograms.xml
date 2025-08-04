@@ -1,0 +1,74 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+importing user data along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="ImportDataType">
+  <variant name="Bookmarks" summary="Bookmarks"/>
+  <variant name="History" summary="History"/>
+  <variant name="NotSupported" summary="Not supported"/>
+  <variant name="ReadingList" summary="Reading list"/>
+</variants>
+
+<variants name="ImportSource">
+  <variant name="OSMigration" summary="Data import from an OS migration."/>
+</variants>
+
+<histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.Flow"
+    enum="BooleanStartedCompleted" expires_after="2025-11-30">
+  <owner>fsenra@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records when the import for the data type has started or completed.
+  </summary>
+  <token key="ImportDataType" variants="ImportDataType"/>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.FlowDuration"
+    units="ms" expires_after="2025-11-30">
+  <owner>fsenra@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The time taken to parse the data and import it into the user's storage for
+    the data type. Recorded once the import for the data type is completed.
+  </summary>
+  <token key="ImportDataType" variants="ImportDataType"/>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram
+    name="UserDataImporter.{ImportSource}.{ImportDataType}.ImportedCount"
+    units="count" expires_after="2025-11-30">
+  <owner>fsenra@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of items successfully imported for this data type. Recorded once
+    the import for the data type is completed.
+  </summary>
+  <token key="ImportDataType" variants="ImportDataType"/>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
