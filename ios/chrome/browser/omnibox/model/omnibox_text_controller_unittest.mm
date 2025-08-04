@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 
 #import "base/test/task_environment.h"
+#import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_provider_client.h"
+#import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -54,6 +58,11 @@ class OmniboxTextControllerTest : public PlatformTest {
  public:
   OmniboxTextControllerTest() {
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
+    omnibox::RegisterProfilePrefs(
+        static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+            classifier_pref_service())
+            ->registry());
+
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
 
@@ -82,6 +91,13 @@ class OmniboxTextControllerTest : public PlatformTest {
     omnibox_client_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
+  }
+
+  PrefService* classifier_pref_service() {
+    return omnibox_client_->autocomplete_classifier()
+        ->autocomplete_controller()
+        ->autocomplete_provider_client()
+        ->GetPrefs();
   }
 
   TestLocationBarModel* location_bar_model() {

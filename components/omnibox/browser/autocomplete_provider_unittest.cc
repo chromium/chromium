@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -51,6 +52,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -363,6 +365,13 @@ class AutocompleteProviderTest : public testing::Test {
     base::flat_set<omnibox::SuggestSubtype> subtypes;
   };
 
+  void SetUp() override {
+    omnibox::RegisterProfilePrefs(
+        static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+            client_->GetPrefs())
+            ->registry());
+  }
+
   // Registers a test TemplateURL under the given keyword.
   void RegisterTemplateURL(const std::u16string& keyword,
                            const std::string& template_url,
@@ -425,10 +434,6 @@ class AutocompleteProviderTest : public testing::Test {
     experiment_stats_v2s.push_back(experiment_stat_v2);
   }
 
-  PrefService* GetPrefs() {
-    return &search_engines_test_environment_.pref_service();
-  }
-
   // Resets the controller with the given |type|. |type| is a bitmap containing
   // AutocompleteProvider::Type values that will (potentially, depending on
   // platform, flags, etc.) be instantiated.
@@ -451,10 +456,7 @@ class AutocompleteProviderTest : public testing::Test {
 };
 
 AutocompleteProviderTest::AutocompleteProviderTest()
-    : client_(new MockAutocompleteProviderClient()) {
-  client_->set_template_url_service(
-      search_engines_test_environment_.template_url_service());
-}
+    : client_(new FakeAutocompleteProviderClient()) {}
 
 AutocompleteProviderTest::~AutocompleteProviderTest() {
   EXPECT_TRUE(client_owned_);

@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//components/omnibox/common",
     "//components/open_from_clipboard:test_support",
     "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
     "//components/url_formatter",
     "//extensions/buildflags",
     "//ios/chrome/browser/autocomplete/model",

@@ -17,9 +17,12 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/url_formatter/url_fixer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +33,20 @@ class OmniboxTextUtilTest : public testing::Test {
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
   }
 
+  void SetUp() override {
+    omnibox::RegisterProfilePrefs(
+        static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+            classifier_pref_service())
+            ->registry());
+  }
+
+  PrefService* classifier_pref_service() {
+    return client()
+        ->autocomplete_classifier()
+        ->autocomplete_controller()
+        ->autocomplete_provider_client()
+        ->GetPrefs();
+  }
   TestOmniboxClient* client() { return omnibox_client_.get(); }
   TestLocationBarModel* location_bar_model() {
     return omnibox_client_->location_bar_model();
