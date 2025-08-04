@@ -237,9 +237,6 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
 
   executor_ = CreateWebContents(profile_, change_password_url_);
   CHECK(executor_);
-
-  auto* client = ChromePasswordManagerClient::FromWebContents(executor_.get());
-
   navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
       executor_.get(), AffiliationServiceFactory::GetForProfile(profile_),
       base::BindOnce(
@@ -247,12 +244,13 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
           weak_ptr_factory_.GetWeakPtr()));
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(executor_.get());
   form_finder_ = std::make_unique<ChangePasswordFormFinder>(
-      executor_.get(), client, logs_uploader_.get(), change_password_url_,
+      executor_.get(),
+      ChromePasswordManagerClient::FromWebContents(executor_.get()),
+      logs_uploader_.get(), change_password_url_,
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PasswordChangeDelegateImpl::OnLoginFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
-  otp_observation_.Observe(client->GetOtpManager());
 }
 
 void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
@@ -262,7 +260,6 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   navigation_observer_.reset();
   submission_verifier_.reset();
   form_finder_.reset();
-  otp_observation_.Reset();
   executor_.reset();
 
   UpdateState(State::kCanceled);
@@ -352,7 +349,18 @@ void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
 }
 
 void PasswordChangeDelegateImpl::OnOtpFieldDetected(
-    password_manager::OtpFormManager* form_manager) {
+    content::WebContents* web_contents) {
+  if (!executor_ || web_contents != executor_.get()) {
+    return;
+  }
+
+  // OTP is relevant only when the change password flow is "ongoing", other
+  // states should be disregarded.
+  if (current_state_ != State::kChangingPassword &&
+      current_state_ != State::kWaitingForChangePasswordForm) {
+    return;
+  }
+
   if (logs_uploader_) {
     logs_uploader_->SetOtpDetected();
   }
@@ -399,13 +407,11 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
   }
 }
 
-void PasswordChangeDelegateImpl::AddObserver(
-    PasswordChangeDelegate::Observer* observer) {
+void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void PasswordChangeDelegateImpl::RemoveObserver(
-    PasswordChangeDelegate::Observer* observer) {
+void PasswordChangeDelegateImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -429,8 +435,7 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
     return;
   }
   current_state_ = new_state;
-  observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
-                    new_state);
+  observers_.Notify(&Observer::OnStateChanged, new_state);
   ui_controller_->UpdateState(new_state);
 
   if (auto logger = GetLoggerIfAvailable(originator_)) {

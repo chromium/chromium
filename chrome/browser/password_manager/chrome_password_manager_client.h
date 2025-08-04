@@ -308,6 +308,7 @@ class ChromePasswordManagerClient
   void UpdateFormManagers() override;
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
+  void InformPasswordChangeServiceOfOtpPresent() override;
 
 #if BUILDFLAG(IS_ANDROID)
   void NavigateToManagePasskeysPage(

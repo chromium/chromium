@@ -826,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
-  delegate_impl->OnOtpFieldDetected(/*form_manager=*/nullptr);
+  delegate->OnOtpFieldDetected(delegate_impl->executor());
 
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kOtpDetected);
@@ -1322,7 +1322,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       delegate->AsWeakPtr();
 
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
-  delegate_impl->OnOtpFieldDetected(/*form_manager=*/nullptr);
+  delegate->OnOtpFieldDetected(delegate_impl->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kOtpDetected);
   delegate_impl->ui_controller()->CallOnDialogCanceledForTesting();

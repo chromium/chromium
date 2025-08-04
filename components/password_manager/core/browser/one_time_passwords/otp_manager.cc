@@ -83,6 +83,8 @@ void OtpManager::ProcessClassificationModelPredictions(
     for (Observer& observer : observers_) {
       observer.OnOtpFieldDetected(GetManagerForForm(form_id));
     }
+    client_->InformPasswordChangeServiceOfOtpPresent();
+
   } else {
     form_manager->ProcessUpdatedPredictions(fillable_otp_fields);
   }
@@ -113,6 +115,7 @@ void OtpManager::ProcessServerPredictions(
     for (Observer& observer : observers_) {
       observer.OnOtpFieldDetected(GetManagerForForm(form.global_id()));
     }
+    client_->InformPasswordChangeServiceOfOtpPresent();
     return;
   }
 
