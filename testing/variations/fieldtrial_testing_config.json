@@ -12944,6 +12944,24 @@
             ]
         }
     ],
+    "IOSOmniboxAimShortcut": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1Char",
+                    "params": {
+                        "MinimumTypedCharactersToInvokeAimShortcut": "1"
+                    },
+                    "enable_features": [
+                        "OmniboxAimShortcutTypedState"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOneTapMiniMapRemoveSectionsBreaks": [
         {
             "platforms": [
