@@ -830,6 +830,15 @@ BASE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary,
              "AutofillUseStructuralSignatureInsteadOfSecondary",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, forms that are only identified through server predictions
+// are considered for key and funnel metric logging. Without this feature, due
+// to a bug, only forms identified by parsing are considered.
+// TODO(crbug.com/436171158): Clean up when launched.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillConsiderServerOnlyFormsInKeyMetrics,
+             "AutofillConsiderServerOnlyFormsInKeyMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the field classification model uses runtime caching to not run
 // models on the same inputs multiple times.
 // TODO(crbug.com/371933424). Clean up when launched, if not used for Autofill

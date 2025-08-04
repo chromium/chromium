@@ -2411,6 +2411,18 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
+  for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
+    if (form) {
+      OnDidIdentifyFormForMetrics(
+          *form, autofill_metrics::FormEventLoggerBase::FormIdentificationTime::
+                     kAfterServerPredictions);
+    }
+  }
+  HandleLoadedServerPredictionsForAutofillAi(forms);
+}
+
+void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
+    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
   const AutofillAiModelCache* const model_cache =
       client().GetAutofillAiModelCache();
 
@@ -3049,23 +3061,9 @@ void BrowserAutofillManager::OnFormProcessed(
       break;
     }
   }
-  // Log the type of form that was parsed.
-  DenseSet<FormType> form_types = form_structure.GetFormTypes();
-  const bool card_form =
-      base::Contains(form_types, FormType::kCreditCardForm) ||
-      base::Contains(form_types, FormType::kStandaloneCvcForm);
-  const bool address_form = base::Contains(form_types, FormType::kAddressForm);
-  const bool loyalty_card_form =
-      base::Contains(form_types, FormType::kLoyaltyCardForm);
-  if (card_form) {
-    metrics_->credit_card_form_event_logger.OnDidParseForm(form_structure);
-  }
-  if (address_form) {
-    metrics_->address_form_event_logger.OnDidParseForm(form_structure);
-  }
-  if (loyalty_card_form) {
-    metrics_->loyalty_card_form_event_logger.OnDidParseForm(form_structure);
-  }
+  OnDidIdentifyFormForMetrics(
+      form_structure, autofill_metrics::FormEventLoggerBase::
+                          FormIdentificationTime::kAfterLocalHeuristics);
   // `autofill_optimization_guide_` is not present on unsupported platforms.
   if (auto* autofill_optimization_guide =
           client().GetAutofillOptimizationGuide()) {
@@ -3087,6 +3085,31 @@ void BrowserAutofillManager::OnFormProcessed(
   form_filler_->MaybeTriggerRefill(form, form_structure,
                                    RefillTriggerReason::kFormChanged,
                                    AutofillTriggerSource::kFormsSeen);
+}
+
+void BrowserAutofillManager::OnDidIdentifyFormForMetrics(
+    const FormStructure& form_structure,
+    autofill_metrics::FormEventLoggerBase::FormIdentificationTime
+        identification_time) {
+  DenseSet<FormType> form_types = form_structure.GetFormTypes();
+  const bool card_form =
+      base::Contains(form_types, FormType::kCreditCardForm) ||
+      base::Contains(form_types, FormType::kStandaloneCvcForm);
+  const bool address_form = base::Contains(form_types, FormType::kAddressForm);
+  const bool loyalty_card_form =
+      base::Contains(form_types, FormType::kLoyaltyCardForm);
+  if (card_form) {
+    metrics_->credit_card_form_event_logger.OnDidIdentifyForm(
+        form_structure, identification_time);
+  }
+  if (address_form) {
+    metrics_->address_form_event_logger.OnDidIdentifyForm(form_structure,
+                                                          identification_time);
+  }
+  if (loyalty_card_form) {
+    metrics_->loyalty_card_form_event_logger.OnDidIdentifyForm(
+        form_structure, identification_time);
+  }
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(

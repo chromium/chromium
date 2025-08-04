@@ -32,6 +32,14 @@ namespace autofill::autofill_metrics {
 // the presence of server and/or local data.
 class FormEventLoggerBase {
  public:
+  enum class FormIdentificationTime {
+    // After local heuristics (regexes, autocomplete attribute, ML model).
+    kAfterLocalHeuristics = 0,
+    // After loading server predictions.
+    kAfterServerPredictions = 1,
+    kMaxValue = kAfterServerPredictions
+  };
+
   FormEventLoggerBase(std::string form_type_name,
                       BrowserAutofillManager* owner);
 
@@ -39,7 +47,8 @@ class FormEventLoggerBase {
 
   void OnDidPollSuggestions(FieldGlobalId field_id);
 
-  void OnDidParseForm(const FormStructure& form);
+  void OnDidIdentifyForm(const FormStructure& form,
+                         FormIdentificationTime identification_time);
 
   // Derived classes should call the protected overload of
   // OnDidShowSuggestions().
@@ -215,7 +224,6 @@ class FormEventLoggerBase {
   std::string form_type_name_;
 
   // State variables.
-  bool has_parsed_form_ = false;
   bool has_logged_interacted_ = false;
   bool has_logged_user_hide_suggestions_ = false;
   bool has_logged_suggestions_shown_ = false;
@@ -248,8 +256,8 @@ class FormEventLoggerBase {
   // Unique ID of a Fast Checkout run. Used for metrics.
   std::optional<int64_t> fast_checkout_run_id_;
 
-  // Form types of the parsed forms for logging purposes.
-  DenseSet<FormTypeNameForLogging> parsed_form_types_;
+  // Form types of the identified forms, for logging purposes.
+  DenseSet<FormTypeNameForLogging> identified_form_types_;
 
   // Form types of the submitted form.
   DenseSet<FormTypeNameForLogging> submitted_form_types_;

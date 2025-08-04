@@ -542,7 +542,7 @@ void CreditCardFormEventLogger::Log(FormEvent event,
   for (FormTypeNameForLogging form_type :
        base::FeatureList::IsEnabled(
            features::kAutofillEnableLogFormEventsToAllParsedFormTypes)
-           ? parsed_form_types_
+           ? identified_form_types_
            : GetFormTypesForLogging(form)) {
     std::string name = base::StrCat(
         {"Autofill.FormEvents.", FormTypeNameForLoggingToStringView(form_type),

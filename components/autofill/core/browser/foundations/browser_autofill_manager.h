@@ -632,6 +632,17 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillProfile& filled_profile,
       const FormGlobalId& form_id);
 
+  // Updates Autofill Ai's model cache after server predictions were loaded.
+  void HandleLoadedServerPredictionsForAutofillAi(
+      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms);
+
+  // Calls `OnDidIdentifyForms()` on all appropriate form event loggers,
+  // depending on the form types of the `form_structure`.
+  void OnDidIdentifyFormForMetrics(
+      const FormStructure& form_structure,
+      autofill_metrics::FormEventLoggerBase::FormIdentificationTime
+          identification_time);
+
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_ =
