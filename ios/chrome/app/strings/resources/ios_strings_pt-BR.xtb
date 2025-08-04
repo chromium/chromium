@@ -207,7 +207,6 @@
 <translation id="178400879184240105">Suas senhas são exclusivas</translation>
 <translation id="17906873777101817">Oferecer para salvar senhas e chaves de acesso</translation>
 <translation id="1794893174442046596">Grupo de guias</translation>
-<translation id="1807246157184219062">Claro</translation>
 <translation id="1807893857950749072">Permitir notificações de monitoramento de preços…</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1812514023095547458">Selecionar cor</translation>
@@ -378,7 +377,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2394659309569789395">Abrir site mesmo assim</translation>
 <translation id="2403129868389095715">Não foi possível entregar seu pacote</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
-<translation id="2414886740292270097">Escuro</translation>
 <translation id="2422174748424038845">Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continuar nesta guia</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
@@ -768,7 +766,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4047337302138771011">Compartilhe suas senhas</translation>
 <translation id="4049419681095579435">Pacote já rastreado</translation>
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
-<translation id="4056223980640387499">Sépia</translation>
 <translation id="4070132839822635162">Não fazer login</translation>
 <translation id="4099756562043439968">Definir um lembrete</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
@@ -1229,6 +1226,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="58081802114142635">Sua atividade ajuda a aprimorar a IA do Google</translation>
 <translation id="5813223718099710537">Ao usar esse recurso, o conteúdo da página e os URLs são enviados ao Google. Você pode desativá-lo nas configurações quando quiser.</translation>
 <translation id="5817176759448082654">Check-up de Senha</translation>
+<translation id="5818161931099046557">Editar na Conta do Google</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
@@ -1818,7 +1816,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8040407350301524547">Para conferir opções de trajeto, toque em "Conferir rotas".</translation>
 <translation id="804225253087497565">O <ph name="BEGIN_LINK" />histórico de pesquisa<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser salvos na sua Conta do Google quando ela está conectada. É possível excluí-los a qualquer momento.</translation>
 <translation id="804427445359061970">Suas guias de outros dispositivos vão aparecer aqui</translation>
-<translation id="8049767396294520796">App de navegação padrão</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} favorito}one{{count} favorito}other{{count} favoritos}}</translation>
 <translation id="8059533439631660104">Recolhe a seção.</translation>

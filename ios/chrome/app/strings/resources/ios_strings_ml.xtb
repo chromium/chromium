@@ -207,7 +207,6 @@
 <translation id="178400879184240105">നിങ്ങളുടെ പാസ്‌വേഡുകൾ തനതാണ്</translation>
 <translation id="17906873777101817">പാസ്‍വേഡുകളും പാസ്‌കീകളും സംരക്ഷിക്കുന്നതിനുള്ള ഓഫർ</translation>
 <translation id="1794893174442046596">ടാബ് ഗ്രൂപ്പ്</translation>
-<translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1807893857950749072">നിരക്ക് ട്രാക്ക് ചെയ്യലുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ അനുവദിക്കുക…</translation>
 <translation id="1810976980198522421">റദ്ദാക്കുക</translation>
 <translation id="1812514023095547458">വർണ്ണം തിരഞ്ഞെടുക്കുക</translation>
@@ -378,7 +377,6 @@
 <translation id="2394659309569789395">എന്തായാലും സൈറ്റ് തുറക്കുക</translation>
 <translation id="2403129868389095715">നിങ്ങളുടെ പാക്കേജ് ഡെലിവർ ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="2410754283952462441">ഒരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
-<translation id="2414886740292270097">ഇരുണ്ടത്</translation>
 <translation id="2422174748424038845">നിങ്ങൾ ഇത് ഇല്ലാതാക്കുകയാണെങ്കിൽ, എല്ലാവർക്കും ഉടൻ തന്നെ “<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, അത് എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും.</translation>
 <translation id="2424805048070062787">ഈ ടാബിൽ തുടരുക</translation>
 <translation id="2426805022920575512">മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
@@ -768,7 +766,6 @@
 <translation id="4047337302138771011">നിങ്ങളുടെ പാസ്‌വേഡുകൾ പങ്കിടുക</translation>
 <translation id="4049419681095579435">പാക്കേജ് മുമ്പേ ട്രാക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="4049507953662678203">നിങ്ങൾക്ക് നെറ്റ്‌വർക്ക് കണക്ഷനുണ്ടെന്ന് ഉറപ്പാക്കി, വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="4056223980640387499">സിപിയ</translation>
 <translation id="4070132839822635162">സൈൻ ഇൻ ചെയ്യരുത്</translation>
 <translation id="4099756562043439968">റിമെെൻഡർ സീജ്ജീകരിക്കുക</translation>
 <translation id="4108998448622696017">അപകടകരമായ ഇവന്റുകൾ നടക്കുമ്പോൾ അവ കണ്ടെത്തുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു.</translation>
@@ -1229,6 +1226,7 @@
 <translation id="58081802114142635">നിങ്ങളുടെ ആക്റ്റിവിറ്റി, Google AI മെച്ചപ്പെടുത്തുന്നു</translation>
 <translation id="5813223718099710537">നിങ്ങൾ ഈ ഫീച്ചർ ഉപയോഗിക്കുമ്പോൾ, പേജ് ഉള്ളടക്കവും URL-കളും Google-ലേക്ക് അയയ്ക്കും. ക്രമീകരണത്തിൽ ഏത് സമയത്തും നിങ്ങൾക്ക് ഇത് ഓഫാക്കാം.</translation>
 <translation id="5817176759448082654">പാസ്‌വേഡ് പരിശോധന</translation>
+<translation id="5818161931099046557">Google Account-ൽ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">സമന്വയിപ്പിക്കുന്നു…</translation>
@@ -1818,7 +1816,6 @@
 <translation id="8040407350301524547">വഴി ഓപ്ഷനുകൾക്ക് “വഴികൾ നേടുക” ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="804225253087497565">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK" />തിരയൽ ചരിത്രവും<ph name="END_LINK" /> <ph name="BEGIN_LINK" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റിയും<ph name="END_LINK" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. അവ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇല്ലാതാക്കാം.</translation>
 <translation id="804427445359061970">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
-<translation id="8049767396294520796">ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ്</translation>
 <translation id="8058655154417507695">കാലാവധി കഴിയുന്ന വർഷം</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} ബുക്ക്‌മാർക്കുകൾ}other{{count} ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="8059533439631660104">വിഭാഗത്തെ ചുരുക്കുന്നു.</translation>

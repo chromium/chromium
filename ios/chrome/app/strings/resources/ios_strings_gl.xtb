@@ -207,7 +207,6 @@
 <translation id="178400879184240105">Ningún contrasinal reutilizado</translation>
 <translation id="17906873777101817">Ofrecer gardar contrasinais e claves de acceso</translation>
 <translation id="1794893174442046596">Grupo de pestanas</translation>
-<translation id="1807246157184219062">Claro</translation>
 <translation id="1807893857950749072">Permitir notificacións de seguimento de prezos…</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1812514023095547458">Seleccionar cor</translation>
@@ -378,7 +377,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2394659309569789395">Abrir sitio de todos modos</translation>
 <translation id="2403129868389095715">Non se pode entregar o paquete</translation>
 <translation id="2410754283952462441">Escolle unha conta</translation>
-<translation id="2414886740292270097">Escuro</translation>
 <translation id="2422174748424038845">Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continuar con esta pestana</translation>
 <translation id="2426805022920575512">Escoller outra conta</translation>
@@ -768,7 +766,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4047337302138771011">Comparte os teus contrasinais</translation>
 <translation id="4049419681095579435">Xa se está facendo o seguimento deste paquete</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
-<translation id="4056223980640387499">Sepia</translation>
 <translation id="4070132839822635162">Non iniciar sesión</translation>
 <translation id="4099756562043439968">Definir un recordatorio</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
@@ -1229,6 +1226,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="58081802114142635">A túa actividade mellora coa IA de Google</translation>
 <translation id="5813223718099710537">Cando uses esta función, o contido da páxina e os URL enviaranse a Google. Podes desactivala cando queiras na configuración.</translation>
 <translation id="5817176759448082654">Revisión de contrasinais</translation>
+<translation id="5818161931099046557">Editar na Conta de Google</translation>
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
@@ -1818,7 +1816,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8040407350301524547">Para consultar as opcións de ruta, toca a opción de obter indicacións.</translation>
 <translation id="804225253087497565">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google o <ph name="BEGIN_LINK" />historial de busca<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.</translation>
 <translation id="804427445359061970">Aquí atoparás as túas pestanas doutros dispositivos</translation>
-<translation id="8049767396294520796">Aplicación de navegador predeterminada</translation>
 <translation id="8058655154417507695">Ano de caducidade</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8059533439631660104">Contrae a sección.</translation>

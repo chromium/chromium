@@ -705,6 +705,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2166378884831602661">Este sitio non pode fornecer unha conexión segura</translation>
 <translation id="2168151236314517198">A política do administrador bloqueou a impresión deste contido</translation>
 <translation id="2172089022819052306">Mantemento e reparación de vehículos</translation>
+<translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
 <translation id="2174875517416416684">Non se procesou a transacción. Non se retiraron fondos da conta.</translation>
 <translation id="2175630235841878061">Os ficheiros de máis 100 MB non se poden descargar</translation>
 <translation id="2178665390943006934">Botón para actualizar Chrome. Actívao para actualizar Chrome desde a configuración do navegador</translation>
@@ -2490,6 +2491,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5147633291963801297">Consulta as baixadas de prezo no panel lateral</translation>
 <translation id="5148809049217731050">Cara arriba</translation>
 <translation id="5148889558173091794">A túa organización bloqueou <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque infrinxe unha política. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">Grandes comerciantes e centros comerciais</translation>
 <translation id="5158275234811857234">Portada</translation>
 <translation id="5159010409087891077">Abre a páxina nunha nova ventá do modo de incógnito (⇧⌘N)</translation>
@@ -3300,7 +3302,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6494750904506170417">ventás emerxentes e redireccións</translation>
 <translation id="6495664197699704593">Este contrasinal está gardado só neste dispositivo. Para usalo noutros, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Para usar outro servizo de autocompletar en Chrome, escolle o teu fornecedor de autocompletado na configuración de Android</translation>
-<translation id="6496888501595572660">Mostra as <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />opcións de pago aprazado<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> ao tramitar a compra</translation>
 <translation id="6499038740797743453">Queres restablecer o contrasinal?</translation>
 <translation id="6502510275417601303">Pechouse a alerta sobre unha nova configuración de pago</translation>
 <translation id="6502991525169604759">Sen os teus cambios</translation>
@@ -4453,6 +4454,7 @@ Detalles adicionais:
 <translation id="8438923942245957911">A túa organización marcou este sitio</translation>
 <translation id="8446275044635689572">Artes escénicas</translation>
 <translation id="8446884382197647889">Máis información</translation>
+<translation id="8449036207308062757">Xestionar almacenamento</translation>
 <translation id="8449155699563577224">17 x 24 polgadas</translation>
 <translation id="8449836157089738489">Abrir todo nun grupo de pestanas novo</translation>
 <translation id="84561192812921051">A persoa administradora pode facer cambios no teu perfil e no teu navegador de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

@@ -707,6 +707,7 @@
 <translation id="2166378884831602661">यह साइट सुरक्षित कनेक्शन नहीं उपलब्ध करा सकती</translation>
 <translation id="2168151236314517198">एडमिन नीति के तहत, इस कॉन्टेंट की प्रिंटिंग को ब्लॉक किया गया</translation>
 <translation id="2172089022819052306">वाहन की मरम्मत और रखरखाव</translation>
+<translation id="2173302385160625112">अपना इंटरनेट कनेक्शन जाँचें</translation>
 <translation id="2174875517416416684">लेन-देन पूरा नहीं हुआ. आपके खाते से पैसे नहीं कटे.</translation>
 <translation id="2175630235841878061">100 एमबी से बड़ी फ़ाइलें डाउनलोड नहीं की जा सकतीं</translation>
 <translation id="2178665390943006934">'Chrome अपडेट करें' बटन, Chrome की सेटिंग से Chrome को अपडेट करने के लिए इसे चालू करें</translation>
@@ -2492,6 +2493,7 @@
 <translation id="5147633291963801297">कीमत में गिरावट साइड पैनल में दिखेगी</translation>
 <translation id="5148809049217731050">सीधा करके रखें</translation>
 <translation id="5148889558173091794">किसी नीति का उल्लंघन करने की वजह से, आपके संगठन ने <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> को ब्लॉक कर दिया है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">थोक व्यापारी और डिपार्टमेंट स्टोर</translation>
 <translation id="5158275234811857234">कवर</translation>
 <translation id="5159010409087891077">पेज को नई गुप्त विंडो में खोलें (⇧⌘N)</translation>
@@ -3302,7 +3304,6 @@
 <translation id="6494750904506170417">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="6495664197699704593">यह पासवर्ड सिर्फ़ इस डिवाइस में सेव किया गया है. अपने अन्य डिवाइसों पर इसका इस्तेमाल करने के लिए, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Chrome में जानकारी ऑटोमैटिक तरीके से भरने वाली कोई दूसरी सेवा इस्तेमाल करने के लिए, Android की सेटिंग में जाकर, जानकारी ऑटोमैटिक तरीके से भरने की सेवा देने वाली कंपनी चुनें</translation>
-<translation id="6496888501595572660">चेकआउट के समय, <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />बाद में पेमेंट करने के विकल्प<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> दिखाएं</translation>
 <translation id="6499038740797743453">क्या पासवर्ड रीसेट करना चाहते हैं?</translation>
 <translation id="6502510275417601303">पेमेंट की नई सेटिंग बंद होने की सूचना</translation>
 <translation id="6502991525169604759">बिना बदलाव के मूल दस्तावेज़ डाउनलोड करें</translation>
@@ -4456,6 +4457,7 @@
 <translation id="8438923942245957911">इस साइट को आपके संगठन ने फ़्लैग किया है</translation>
 <translation id="8446275044635689572">परफ़ॉर्मिंग आर्ट</translation>
 <translation id="8446884382197647889">ज़्यादा जानें</translation>
+<translation id="8449036207308062757">जगह प्रबंधित करें</translation>
 <translation id="8449155699563577224">17 x 24 इंच</translation>
 <translation id="8449836157089738489">सभी यूआरएल नए टैब ग्रुप में खोलें</translation>
 <translation id="84561192812921051">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chrome से बाहर भी मैनेज किया जा सकता है.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>

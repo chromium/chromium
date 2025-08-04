@@ -367,6 +367,7 @@
 <translation id="5924017743176219022">인터넷에 연결 중...</translation>
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5949225980829865667">모든 기기에서 이 북마크 등을 사용하려면 Chromium에 로그인하세요.</translation>
+<translation id="5968400720580217226">AI 모드</translation>
 <translation id="5972142260211327093">Chromium에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chromium에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침됩니다.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}}</translation>
 <translation id="5987687638152509985">동기화를 시작하려면 Chromium을 업데이트하세요.</translation>

@@ -207,7 +207,6 @@
 <translation id="178400879184240105">Your passwords are unique</translation>
 <translation id="17906873777101817">Offer to save passwords and passkeys</translation>
 <translation id="1794893174442046596">Tab group</translation>
-<translation id="1807246157184219062">Light</translation>
 <translation id="1807893857950749072">Allow price tracking notifications…</translation>
 <translation id="1810976980198522421">Cancel</translation>
 <translation id="1812514023095547458">Select Colour</translation>
@@ -378,7 +377,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2394659309569789395">Open site anyway</translation>
 <translation id="2403129868389095715">Your package can't be delivered</translation>
 <translation id="2410754283952462441">Choose an account</translation>
-<translation id="2414886740292270097">Dark</translation>
 <translation id="2422174748424038845">If you delete it, everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices.</translation>
 <translation id="2424805048070062787">Continue with this tab</translation>
 <translation id="2426805022920575512">Choose another account</translation>
@@ -768,7 +766,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4047337302138771011">Share your passwords</translation>
 <translation id="4049419681095579435">Parcel already tracked</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
-<translation id="4056223980640387499">Sepia</translation>
 <translation id="4070132839822635162">Don't sign in</translation>
 <translation id="4099756562043439968">Set a reminder</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
@@ -1229,6 +1226,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="58081802114142635">Your activity improves Google AI</translation>
 <translation id="5813223718099710537">When you use this feature, page content and URLs are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="5817176759448082654">Password Checkup</translation>
+<translation id="5818161931099046557">Edit in Google Account</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Syncing…</translation>
@@ -1818,7 +1816,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8040407350301524547">For route options, tap 'Get directions'.</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
-<translation id="8049767396294520796">Default browser app</translation>
 <translation id="8058655154417507695">Expiry year</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="8059533439631660104">Collapses the section.</translation>

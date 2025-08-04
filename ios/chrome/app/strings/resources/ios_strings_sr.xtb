@@ -207,7 +207,6 @@
 <translation id="178400879184240105">Ваше лозинке су јединствене</translation>
 <translation id="17906873777101817">Понуди чување лозинки и приступних кључева</translation>
 <translation id="1794893174442046596">Група картица</translation>
-<translation id="1807246157184219062">Светлa</translation>
 <translation id="1807893857950749072">Дозволите обавештења о праћењу цена…</translation>
 <translation id="1810976980198522421">Откажи</translation>
 <translation id="1812514023095547458">Избор боја</translation>
@@ -379,7 +378,6 @@
 <translation id="2394659309569789395">Ипак отвори сајт</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
-<translation id="2414886740292270097">Тамнa</translation>
 <translation id="2422174748424038845">Ако је избришете, сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја.</translation>
 <translation id="2424805048070062787">Наставите са овом картицом</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
@@ -573,7 +571,6 @@
 <translation id="3213807041830307252">Купујте, преводите и идентификујте оно што видите помоћу камере и галерије слика.</translation>
 <translation id="3214379938835224220">Одјављени сте у склопу ресетовања iPad-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="3218296450292600703">Пријављивање помоћу управљаног налога вам помаже да одвојите прегледање повезано са организацијом (укључујући картице, историју и лозинке) од осталог прегледања</translation>
-<translation id="3219075100684645795">Browser App (Апликација прегледача)</translation>
 <translation id="3224075676564434205">Картице ће остати отворене на овом уређају, али ће се група избрисати са свих уређаја пријављених на <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Да бисте извозили лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -770,7 +767,6 @@
 <translation id="4047337302138771011">Делите лозинке</translation>
 <translation id="4049419681095579435">Пакет се већ прати</translation>
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
-<translation id="4056223980640387499">Сепија</translation>
 <translation id="4070132839822635162">Не пријављуј ме</translation>
 <translation id="4099756562043439968">Подеси подсетник</translation>
 <translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
@@ -1232,6 +1228,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="58081802114142635">Ваше активности побољшавају Google вештачку интелигенцију</translation>
 <translation id="5813223718099710537">Када користите ову функцију, садржај и URL-ови страница се шаљу Google-у. To можете да искључите у подешавањима у сваком тренутку.</translation>
 <translation id="5817176759448082654">Провера лозинки</translation>
+<translation id="5818161931099046557">Измени на Google налогу</translation>
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронизује се…</translation>
@@ -1822,7 +1819,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8040407350301524547">За опције руте додирните Прикажи путању.</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Историја претраге<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други облици активности<ph name="END_LINK" /> могу да буду сачувани на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.</translation>
 <translation id="804427445359061970">Овде ћете пронаћи картице са других уређаја</translation>
-<translation id="8049767396294520796">Подразумевана апликација за прегледач</translation>
 <translation id="8058655154417507695">Година истека</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} обележивач}one{{count} обележивач}few{{count} обележивача}other{{count} обележивача}}</translation>
 <translation id="8059533439631660104">Скупља одељак.</translation>

@@ -207,7 +207,6 @@
 <translation id="178400879184240105">Нет одинаковых паролей</translation>
 <translation id="17906873777101817">Предл. сохр. пароли и ключи доступа</translation>
 <translation id="1794893174442046596">Группа вкладок</translation>
-<translation id="1807246157184219062">Светлая</translation>
 <translation id="1807893857950749072">Включить уведомления об изменении цены</translation>
 <translation id="1810976980198522421">Отмена</translation>
 <translation id="1812514023095547458">Выберите цвет</translation>
@@ -378,7 +377,6 @@
 <translation id="2394659309569789395">Все равно открыть сайт</translation>
 <translation id="2403129868389095715">Недоступно</translation>
 <translation id="2410754283952462441">Выберите аккаунт</translation>
-<translation id="2414886740292270097">Тёмная</translation>
 <translation id="2422174748424038845">Тогда группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
 <translation id="2424805048070062787">Снова открыть эту вкладку</translation>
 <translation id="2426805022920575512">Сменить аккаунт</translation>
@@ -768,7 +766,6 @@
 <translation id="4047337302138771011">Предоставляйте доступ к паролям</translation>
 <translation id="4049419681095579435">Посылка уже отслеживается</translation>
 <translation id="4049507953662678203">Проверьте подключение к Интернету и повторите попытку.</translation>
-<translation id="4056223980640387499">Сепия</translation>
 <translation id="4070132839822635162">Не входить</translation>
 <translation id="4099756562043439968">Создать напоминание</translation>
 <translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
@@ -1229,6 +1226,7 @@
 <translation id="58081802114142635">Ваши действия улучшают ИИ от Google</translation>
 <translation id="5813223718099710537">Когда вы используете эту функцию, URL и данные страницы передаются в Google. Отключить их отправку всегда можно в настройках.</translation>
 <translation id="5817176759448082654">Проверка паролей</translation>
+<translation id="5818161931099046557">Изменить в аккаунте Google</translation>
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронизация…</translation>
@@ -1818,7 +1816,6 @@
 <translation id="8040407350301524547">Чтобы узнать, как добраться до места, нажмите "Проложить маршрут".</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />История поиска<ph name="END_LINK" /> и сведения о <ph name="BEGIN_LINK" />других действиях<ph name="END_LINK" /> могут сохраняться в аккаунте Google, если вы в него вошли. Эти данные можно удалить в любое время.</translation>
 <translation id="804427445359061970">Здесь вы найдете свои вкладки с других устройств</translation>
-<translation id="8049767396294520796">Приложение браузера по умолчанию</translation>
 <translation id="8058655154417507695">Год окончания срока действия</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} закладка.}one{{count} закладка.}few{{count} закладки.}many{{count} закладок.}other{{count} закладки.}}</translation>
 <translation id="8059533439631660104">Сворачивает раздел.</translation>

@@ -207,7 +207,6 @@
 <translation id="178400879184240105">不存在密码重复使用的情况</translation>
 <translation id="17906873777101817">主动询问是否保存密码和通行密钥</translation>
 <translation id="1794893174442046596">标签页分组</translation>
-<translation id="1807246157184219062">浅色调</translation>
 <translation id="1807893857950749072">允许接收价格跟踪通知…</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1812514023095547458">选择颜色</translation>
@@ -378,7 +377,6 @@
 <translation id="2394659309569789395">仍然打开网站</translation>
 <translation id="2403129868389095715">您的包裹无法送达</translation>
 <translation id="2410754283952462441">选择账号</translation>
-<translation id="2414886740292270097">深色调</translation>
 <translation id="2422174748424038845">如果删除，所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除。</translation>
 <translation id="2424805048070062787">继续使用此标签页</translation>
 <translation id="2426805022920575512">选择其他账号</translation>
@@ -768,7 +766,6 @@
 <translation id="4047337302138771011">分享您的密码</translation>
 <translation id="4049419681095579435">已在跟踪此包裹</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
-<translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4070132839822635162">不登录</translation>
 <translation id="4099756562043439968">设置提醒</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
@@ -1229,6 +1226,7 @@
 <translation id="58081802114142635">您的活动记录可以帮助改进 Google AI</translation>
 <translation id="5813223718099710537">当您使用此功能时，网页内容和网址会发送给 Google。您随时可以在设置中关闭此功能。</translation>
 <translation id="5817176759448082654">密码安全检查</translation>
+<translation id="5818161931099046557">在 Google 账号中修改</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">正在同步…</translation>
@@ -1818,7 +1816,6 @@
 <translation id="8040407350301524547">如果您想查看路线选项，请点按“查询路线”。</translation>
 <translation id="804225253087497565">当您登录后，系统可能会将<ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
-<translation id="8049767396294520796">默认浏览器应用</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
 <translation id="8059533439631660104">合拢此部分。</translation>

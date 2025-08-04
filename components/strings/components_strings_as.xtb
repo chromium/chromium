@@ -705,6 +705,7 @@
 <translation id="2166378884831602661">এই ছাইটটোৱে সুৰক্ষিত সংযোগ প্ৰদান কৰিব নোৱাৰে</translation>
 <translation id="2168151236314517198">এই সমল প্ৰিণ্ট কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="2172089022819052306">বাহনৰ মেৰামতি আৰু তত্ত্বাৱধান</translation>
+<translation id="2173302385160625112">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="2174875517416416684">আপোনাৰ লেনদেনটো সফল হোৱা নাই। আপোনাৰ একাউণ্টৰ পৰা কোনো পুঁজি লোৱা নাই।</translation>
 <translation id="2175630235841878061">১০০ এমবিতকৈ ডাঙৰ ফাইল ডাউনল’ড কৰাৰ বাবে উপলব্ধ নহয়</translation>
 <translation id="2178665390943006934">Chrome আপডে’ট কৰাৰ বুটাম, আপোনাৰ Chromeৰ ছেটিঙৰ পৰা Chrome আপডে’ট কৰিবলৈ সক্ৰিয় কৰক</translation>
@@ -2486,6 +2487,7 @@
 <translation id="5147633291963801297">ছাইডৰ পেনেলত মূল্য কমাৰ বিষয়ে তথ্য চাওক</translation>
 <translation id="5148809049217731050">ওপৰমুখীয়া</translation>
 <translation id="5148889558173091794">আপোনাৰ প্ৰশাসকে <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> অৱৰোধ কৰিছে কাৰণ ই এটা নীতি উলংঘন কৰিছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">সামূহিক বণিক আৰু ডিপার্টমেণ্টেল ষ্ট’ৰ</translation>
 <translation id="5158275234811857234">ক'ভাৰ</translation>
 <translation id="5159010409087891077">কোনো নতুন ইনক’গনিট’ ৱিণ্ড’ত পৃষ্ঠা খোলক (⇧⌘N)</translation>
@@ -3295,7 +3297,6 @@
 <translation id="6494750904506170417">পপ-আপ আৰু পুনৰ নির্দেশ</translation>
 <translation id="6495664197699704593">এই পাছৱৰ্ডটো কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। আপোনাৰ আন ডিভাইচসমূহত এইটো ব্যৱহাৰ কৰিবলৈ, <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
 <translation id="649611364763911650">Chromeত অন্য এটা স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱা ব্যৱহাৰ কৰিবলৈ, Androidৰ ছেটিঙত আপোনাৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱা প্ৰদানকাৰী বাছনি কৰক</translation>
-<translation id="6496888501595572660">চেক আউটত <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />পাছত পৰিশোধ কৰাৰ সুবিধাৰ বিকল্পসমূহ<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> দেখুৱাওক</translation>
 <translation id="6499038740797743453">পাছৱৰ্ড ৰিছেট কৰিবনে?</translation>
 <translation id="6502510275417601303">নতুন পৰিশোধ ছেটিঙৰ বিষয়ে সতর্কবার্তা বন্ধ কৰা হৈছে</translation>
 <translation id="6502991525169604759">আপোনাৰ সালসলনিসমূহ অবিহনে</translation>
@@ -4448,6 +4449,7 @@
 <translation id="8438923942245957911">আপোনাৰ প্ৰতিষ্ঠানে এই ছাইটটো ফ্লেগ কৰিছে</translation>
 <translation id="8446275044635689572">পৰিৱেশ্য কলা</translation>
 <translation id="8446884382197647889">অধিক জানক</translation>
+<translation id="8449036207308062757">ষ্ট’ৰেজ পৰিচালনা কৰক</translation>
 <translation id="8449155699563577224">১৭ x ২৪ ইঞ্চি</translation>
 <translation id="8449836157089738489">নতুন টেবৰ গোটত আটাইবোৰ খোলক</translation>
 <translation id="84561192812921051">আপোনাৰ প্ৰশাসকে দূৰৰ পৰা আপোনাৰ প্ৰ’ফাইল আৰু ব্ৰাউজাৰৰ সালসলনি কৰিব পাৰে, ৰিপ’ৰ্টিঙৰ জৰিয়তে ব্ৰাউজাৰৰ বিষয়ে তথ্য বিশ্লেষণ কৰিব পাৰে আৰু অন্য আৱশ্যকীয় কাৰ্যসমূহ কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromeৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ’ব পাৰে।  <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
