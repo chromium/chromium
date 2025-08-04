@@ -9563,9 +9563,6 @@ crbug.com/420596996 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/co
 crbug.com/426054999 external/wpt/html/editing/dnd/images/023.html [ Timeout ]
 crbug.com/426054999 external/wpt/html/editing/dnd/images/024.html [ Timeout ]
 
-# Gardener 2025-06-18
-crbug.com/425936609 external/wpt/resource-timing/tentative/document-initiated.html [ Pass Timeout ]
-
 # Gardener 2025-06-19
 crbug.com/426081198 [ Mac ] external/wpt/html/document-isolation-policy/service-worker-coep-credentialless-proxy.https.tentative.window.html [ Pass Timeout ]
 
