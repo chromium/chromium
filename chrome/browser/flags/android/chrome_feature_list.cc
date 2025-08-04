@@ -575,11 +575,9 @@ BASE_FEATURE(kAndroidBottomToolbarV2,
              "AndroidBottomToolbarV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/431218724): Enable by default when the implementation is
-// complete. Remember to also update the CachedFlag in ChromeFeatureList.java.
 BASE_FEATURE(kAndroidDataImporterService,
              "AndroidDataImporterService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidElegantTextHeight,
              "AndroidElegantTextHeight",
