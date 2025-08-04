@@ -179,6 +179,7 @@ if (current_toolchain == default_toolchain) {
       "password_manager_off.icon",
       "pause.icon",
       "pause_chrome_refresh.icon",
+      "person_check.icon",
       "photo.icon",
       "photo_chrome_refresh.icon",
       "photo_off_chrome_refresh.icon",
