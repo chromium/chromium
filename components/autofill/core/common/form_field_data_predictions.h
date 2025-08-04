@@ -31,7 +31,6 @@ struct FormFieldDataPredictions {
   std::optional<std::string> server_type;
   std::string html_type;
   std::string overall_type;
-  std::string autofill_ai_type;
   std::string attribute_types;
   std::string format_string;
   std::string parseable_name;
