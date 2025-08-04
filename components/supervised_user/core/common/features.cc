@@ -10,6 +10,8 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -98,7 +100,6 @@ BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-
 BASE_FEATURE(kAlignSafeSitesValueWithBrowserDefault,
              "AlignSafeSitesValueWithBrowserDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -112,18 +113,61 @@ BASE_FEATURE(kAllowNonFamilyLinkUrlFilterMode,
 BASE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser,
              "PropagateDeviceContentFiltersToSupervisedUser",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch,
+             "SupervisedUserBrowserContentFiltersKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch,
+             "SupervisedUserSearchContentFiltersKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserClearDeviceContentFiltersPrefsOnStartup,
              "SupervisedUserClearDeviceContentFiltersPrefsOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch,
-              "SupervisedUserBrowserContentFiltersKillSwitch",
-              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch,
-              "SupervisedUserSearchContentFiltersKillSwitch",
-              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserInterstitialWithoutApprovals,
              "SupervisedUserInterstitialWithoutApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserLocalSupervisionPreview,
+             "SupervisedUserLocalSupervisionPreview",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string>
+    kSupervisedUserLocalSupervisionPreviewBuildVersionMajor{
+        &kSupervisedUserLocalSupervisionPreview, "build_version_major", "BP41"};
+
+namespace {
+bool PlatformSupportsLocalSupervision() {
+  int32_t major, minor, bugfix;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  bool supported_by_os = (major == 16 && minor >= 1) || major > 16;
+
+  bool supported_by_build = base::StartsWith(
+      base::SysInfo::GetAndroidBuildID(),
+      kSupervisedUserLocalSupervisionPreviewBuildVersionMajor.Get(),
+      base::CompareCase::SENSITIVE);
+
+  return supported_by_os || supported_by_build;
+}
+
+bool IsLocalSupervisionEnabled() {
+  return PlatformSupportsLocalSupervision() &&
+         base::FeatureList::IsEnabled(kSupervisedUserLocalSupervisionPreview);
+}
+}  // namespace
+
+bool UseLocalSupervision() {
+  return IsLocalSupervisionEnabled() ||
+         base::FeatureList::IsEnabled(
+             kPropagateDeviceContentFiltersToSupervisedUser);
+}
+bool UseInterstitialForLocalSupervision() {
+  return IsLocalSupervisionEnabled() ||
+         base::FeatureList::IsEnabled(
+             kSupervisedUserInterstitialWithoutApprovals);
+}
+bool ClassifyUrlWithoutCredentialsForLocalSupervision() {
+  return IsLocalSupervisionEnabled() ||
+         base::FeatureList::IsEnabled(kAllowNonFamilyLinkUrlFilterMode);
+}
+
 #endif
 
 }  // namespace supervised_user

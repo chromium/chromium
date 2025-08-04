@@ -22,8 +22,7 @@ namespace {
 // Each of the content filters have their own kill switch. This function
 // returns true if the feature is enabled for the given setting.
 bool IsFeatureEnabledForSetting(std::string_view setting_name) {
-  if (!base::FeatureList::IsEnabled(
-          kPropagateDeviceContentFiltersToSupervisedUser)) {
+  if (!UseLocalSupervision()) {
     return false;
   }
 
@@ -53,8 +52,7 @@ ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     base::RepeatingClosure on_disabled)
     : setting_name_(setting_name),
       on_enabled_(on_enabled),
-      on_disabled_(on_disabled) {
-}
+      on_disabled_(on_disabled) {}
 
 ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
   if (bridge_) {
