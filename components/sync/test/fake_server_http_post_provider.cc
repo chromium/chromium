@@ -41,11 +41,10 @@ FakeServerHttpPostProvider::FakeServerHttpPostProvider(
 
 FakeServerHttpPostProvider::~FakeServerHttpPostProvider() = default;
 
-void FakeServerHttpPostProvider::SetExtraRequestHeaders(const char* headers) {
+void FakeServerHttpPostProvider::SetExtraRequestHeaders(
+    const net::HttpRequestHeaders& headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(pvalenzuela): Add assertions on this value.
-  extra_request_headers_.assign(headers);
+  extra_request_headers_ = headers;
 }
 
 void FakeServerHttpPostProvider::SetURL(const GURL& url) {

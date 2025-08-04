@@ -72,9 +72,9 @@ HttpResponse Connection::PostRequestAndDownloadResponse(
   post_provider_->SetURL(sync_request_url);
 
   if (!access_token.empty()) {
-    std::string headers;
-    headers = "Authorization: Bearer " + access_token;
-    post_provider_->SetExtraRequestHeaders(headers.c_str());
+    net::HttpRequestHeaders headers;
+    headers.SetHeader("Authorization", "Bearer " + access_token);
+    post_provider_->SetExtraRequestHeaders(headers);
   }
 
   // Must be octet-stream, or the payload may be parsed for a cookie.

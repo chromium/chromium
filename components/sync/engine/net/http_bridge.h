@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -47,7 +48,7 @@ class HttpBridge : public HttpPostProvider {
   HttpBridge& operator=(const HttpBridge&) = delete;
 
   // HttpPostProvider implementation.
-  void SetExtraRequestHeaders(const char* headers) override;
+  void SetExtraRequestHeaders(const net::HttpRequestHeaders& headers) override;
   void SetURL(const GURL& url) override;
   void SetPostPayload(const char* content_type,
                       int content_length,
@@ -107,7 +108,7 @@ class HttpBridge : public HttpPostProvider {
   // POST payload information.
   std::string content_type_;
   std::string request_content_;
-  std::string extra_headers_;
+  net::HttpRequestHeaders extra_headers_;
 
   // A waitable event we use to provide blocking semantics to
   // MakeSynchronousPost. We block the Sync thread while the IO thread processes

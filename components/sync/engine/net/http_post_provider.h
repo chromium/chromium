@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 namespace syncer {
@@ -22,7 +23,8 @@ namespace syncer {
 class HttpPostProvider : public base::RefCountedThreadSafe<HttpPostProvider> {
  public:
   // Add additional headers to the request.
-  virtual void SetExtraRequestHeaders(const char* headers) = 0;
+  virtual void SetExtraRequestHeaders(
+      const net::HttpRequestHeaders& headers) = 0;
 
   // Set the URL to POST to.
   virtual void SetURL(const GURL& url) = 0;

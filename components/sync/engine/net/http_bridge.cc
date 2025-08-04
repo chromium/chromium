@@ -98,10 +98,11 @@ HttpBridge::~HttpBridge() {
 #endif
 }
 
-void HttpBridge::SetExtraRequestHeaders(const char* headers) {
-  DCHECK(extra_headers_.empty())
+void HttpBridge::SetExtraRequestHeaders(
+    const net::HttpRequestHeaders& headers) {
+  DCHECK(extra_headers_.IsEmpty())
       << "HttpBridge::SetExtraRequestHeaders called twice.";
-  extra_headers_.assign(headers);
+  extra_headers_ = headers;
 }
 
 void HttpBridge::SetURL(const GURL& url) {
@@ -236,10 +237,7 @@ void HttpBridge::MakeAsynchronousPost() {
   resource_request->credentials_mode =
       google_apis::GetOmitCredentialsModeForGaiaRequests();
 
-  if (!extra_headers_.empty()) {
-    resource_request->headers.AddHeadersFromString(extra_headers_);
-  }
-
+  resource_request->headers.MergeFrom(extra_headers_);
   resource_request->headers.SetHeader("Content-Encoding", "gzip");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                       user_agent_);

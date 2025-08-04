@@ -255,7 +255,9 @@ TEST_F(MAYBE_SyncHttpBridgeTest, TestExtraRequestHeaders) {
   scoped_refptr<HttpBridge> http_bridge(BuildBridge());
 
   http_bridge->SetURL(test_server_.GetURL("/echoall"));
-  http_bridge->SetExtraRequestHeaders("test:fnord");
+  net::HttpRequestHeaders headers;
+  headers.SetHeader("test", "fnord");
+  http_bridge->SetExtraRequestHeaders(headers);
 
   std::string test_payload = "###TEST PAYLOAD###";
   http_bridge->SetPostPayload("text/html", test_payload.length() + 1,

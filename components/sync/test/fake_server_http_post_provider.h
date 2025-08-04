@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "net/http/http_request_headers.h"
 
 namespace fake_server {
 
@@ -31,7 +32,7 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
       delete;
 
   // HttpPostProvider implementation.
-  void SetExtraRequestHeaders(const char* headers) override;
+  void SetExtraRequestHeaders(const net::HttpRequestHeaders& headers) override;
   void SetURL(const GURL& url) override;
   void SetPostPayload(const char* content_type,
                       int content_length,
@@ -75,7 +76,7 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
   GURL request_url_;
   std::string request_content_;
   std::string request_content_type_;
-  std::string extra_request_headers_;
+  net::HttpRequestHeaders extra_request_headers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

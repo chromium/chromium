@@ -47,6 +47,10 @@
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "url/gurl.h"
 
+namespace net {
+class HttpRequestHeaders;
+}  // namespace net
+
 using testing::_;
 using testing::SaveArg;
 using testing::Sequence;
@@ -58,7 +62,8 @@ namespace {
 
 class TestHttpPostProvider : public HttpPostProvider {
  public:
-  void SetExtraRequestHeaders(const char* headers) override {}
+  void SetExtraRequestHeaders(const net::HttpRequestHeaders& headers) override {
+  }
   void SetURL(const GURL& url) override {}
   void SetPostPayload(const char* content_type,
                       int content_length,
