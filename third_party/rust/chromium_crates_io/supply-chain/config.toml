@@ -173,7 +173,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."hex:0.4.3"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."icu_calendar:2.0.2"]
+[policy."icu_calendar:2.0.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_calendar_data:2.0.0"]

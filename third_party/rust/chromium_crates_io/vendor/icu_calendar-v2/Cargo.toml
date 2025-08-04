@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "icu_calendar"
-version = "2.0.2"
+version = "2.0.3"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [

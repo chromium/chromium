@@ -217,7 +217,7 @@ impl Calendar for Ethiopian {
 
     fn extended_year(&self, date: &Self::DateInner) -> i32 {
         let year = date.0.extended_year();
-        if self.0 || year <= INCARNATION_OFFSET {
+        if self.0 {
             year
         } else {
             year - INCARNATION_OFFSET
@@ -353,5 +353,42 @@ mod test {
         let ethiopian = iso_date.to_calendar(Ethiopian::new());
         let recovered_iso = ethiopian.to_iso();
         assert_eq!(iso_date, recovered_iso);
+    }
+
+    #[test]
+    fn extended_year() {
+        assert_eq!(
+            Date::new_from_iso(
+                Date::try_new_iso(-5500 + 9, 1, 1).unwrap(),
+                Ethiopian::new_with_era_style(EthiopianEraStyle::AmeteAlem)
+            )
+            .extended_year(),
+            1
+        );
+        assert_eq!(
+            Date::new_from_iso(
+                Date::try_new_iso(9, 1, 1).unwrap(),
+                Ethiopian::new_with_era_style(EthiopianEraStyle::AmeteAlem)
+            )
+            .extended_year(),
+            5501
+        );
+
+        assert_eq!(
+            Date::new_from_iso(
+                Date::try_new_iso(-5500 + 9, 1, 1).unwrap(),
+                Ethiopian::new_with_era_style(EthiopianEraStyle::AmeteMihret)
+            )
+            .extended_year(),
+            -5499
+        );
+        assert_eq!(
+            Date::new_from_iso(
+                Date::try_new_iso(9, 1, 1).unwrap(),
+                Ethiopian::new_with_era_style(EthiopianEraStyle::AmeteMihret)
+            )
+            .extended_year(),
+            1
+        );
     }
 }
