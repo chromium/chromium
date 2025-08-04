@@ -71,9 +71,9 @@
     <div slot="view" id="privacy">
       <template is="dom-if" if="[[renderPlugin_(
           routes_.PRIVACY, lastRoute_, inSearchMode_)]]">
-        <settings-basic-page class="cr-centered-card-container"
-            prefs="{{prefs}}" in-search-mode="[[inSearchMode_]]">
-        </settings-basic-page>
+        <settings-privacy-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-privacy-page-index>
       </template>
     </div>
   </template>

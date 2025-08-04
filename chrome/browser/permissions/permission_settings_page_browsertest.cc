@@ -35,6 +35,7 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
 const WebContentsInteractionTestUtil::DeepQuery kAskButton{
     "settings-ui",
     "settings-main",
+    "settings-privacy-page-index",
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
@@ -44,6 +45,7 @@ const WebContentsInteractionTestUtil::DeepQuery kAskButton{
 const WebContentsInteractionTestUtil::DeepQuery kQuietButton{
     "settings-ui",
     "settings-main",
+    "settings-privacy-page-index",
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
@@ -52,6 +54,7 @@ const WebContentsInteractionTestUtil::DeepQuery kQuietButton{
 const WebContentsInteractionTestUtil::DeepQuery kCpssButton{
     "settings-ui",
     "settings-main",
+    "settings-privacy-page-index",
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
@@ -60,6 +63,7 @@ const WebContentsInteractionTestUtil::DeepQuery kCpssButton{
 const WebContentsInteractionTestUtil::DeepQuery kLoudButton{
     "settings-ui",
     "settings-main",
+    "settings-privacy-page-index",
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
@@ -68,6 +72,7 @@ const WebContentsInteractionTestUtil::DeepQuery kLoudButton{
 const WebContentsInteractionTestUtil::DeepQuery kBlockButton{
     "settings-ui",
     "settings-main",
+    "settings-privacy-page-index",
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
@@ -217,6 +222,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               const WebContentsInteractionTestUtil::DeepQuery kAskQuiet{
                   "settings-ui",
                   "settings-main",
+                  "settings-privacy-page-index",
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",
@@ -242,6 +248,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               const WebContentsInteractionTestUtil::DeepQuery kAskCpss{
                   "settings-ui",
                   "settings-main",
+                  "settings-privacy-page-index",
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",
@@ -317,6 +324,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               const WebContentsInteractionTestUtil::DeepQuery kAskQuiet{
                   "settings-ui",
                   "settings-main",
+                  "settings-privacy-page-index",
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",
@@ -358,6 +366,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               const WebContentsInteractionTestUtil::DeepQuery kAskCpss{
                   "settings-ui",
                   "settings-main",
+                  "settings-privacy-page-index",
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",

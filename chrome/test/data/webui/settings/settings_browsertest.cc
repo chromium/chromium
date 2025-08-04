@@ -357,6 +357,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageSyncControls) {
   RunTest("settings/people_page_sync_controls_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyPageIndex) {
+  RunTest("settings/privacy_page_index_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, Prefs) {
   RunTest("settings/settings_prefs_test.js", "mocha.run()");
 }
@@ -833,13 +837,9 @@ IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, WithoutRelatedWebsiteSetsData) {
           "runMochaSuite('WithoutRelatedWebsiteSetsData')");
 }
 
-// TODO(crbug.com/40823128): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_BasicPage) {
-  RunTest("settings/basic_page_test.js", "runMochaSuite('BasicPage')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyGuidePromo) {
-  RunTest("settings/basic_page_test.js", "runMochaSuite('PrivacyGuidePromo')");
+  RunTest("settings/privacy_guide_promo_test.js",
+          "runMochaSuite('PrivacyGuidePromo')");
 }
 
 using SettingsClearBrowsingDataTest = SettingsBrowserTest;

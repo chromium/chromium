@@ -108,12 +108,17 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
 
   const GURL cookie_setting_url("chrome://settings/privacy");
   const WebContentsInteractionTestUtil::DeepQuery cookies_link_row = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-privacy-page", "cr-link-row#thirdPartyCookiesLinkRow"};
+      "settings-ui",
+      "settings-main",
+      "settings-privacy-page-index",
+      "settings-basic-page",
+      "settings-privacy-page",
+      "cr-link-row#thirdPartyCookiesLinkRow"};
   const WebContentsInteractionTestUtil::DeepQuery
       cookies_setting_page_help_icon = {
           "settings-ui",
           "settings-main",
+          "settings-privacy-page-index",
           "settings-basic-page",
           "settings-privacy-page",
           "settings-subpage",

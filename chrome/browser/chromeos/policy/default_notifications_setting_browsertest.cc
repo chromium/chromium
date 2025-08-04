@@ -96,6 +96,7 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       "let radios = "
       "  document.querySelector('settings-ui').shadowRoot."
       "  querySelector('settings-main').shadowRoot."
+      "  querySelector('settings-privacy-page-index').shadowRoot."
       "  querySelector('settings-basic-page').shadowRoot."
       "  querySelector('settings-privacy-page').shadowRoot."
       "  querySelector('settings-notifications-page').shadowRoot."

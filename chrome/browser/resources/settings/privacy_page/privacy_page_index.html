@@ -1,0 +1,43 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+
+  /* Necessary to display multiple cr-view-manager views (in this case "cards")
+     at the same time. */
+  cr-view-manager [slot=view]:not(.closing) {
+    position: initial;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+
+  <template is="dom-if" if="[[isPrivacyGuideAvailable]]" restamp>
+    <settings-section slot="view" id="privacyGuidePromo" page-title=""
+        hidden$="[[!showPrivacyGuidePromo_]]">
+      <settings-privacy-guide-promo prefs="{{prefs}}">
+      </settings-privacy-guide-promo>
+    </settings-section>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.safetyHub)]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY, currentRoute, inSearchMode)]]">
+      <settings-section slot="view" id="safetyHubEntryPoint"
+          page-title="$i18n{safetyHub}">
+        <settings-safety-hub-entry-point></settings-safety-hub-entry-point>
+      </settings-section>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderOldView_(currentRoute, inSearchMode)]]">
+    <!-- TODO(crbug.com/424223101): Remove <settings-basic-page> once all UIs
+        have been migrated to standalone views. -->
+    <settings-basic-page slot="view" id="old" prefs="{{prefs}}"
+        in-search-mode="[[inSearchMode]]">
+    </settings-basic-page>
+  </template>
+
+</cr-view-manager>

@@ -69,7 +69,7 @@ export const SearchableViewContainerMixin = dedupingMixin(
         }
 
         declare inSearchMode: boolean;
-        declare private currentRoute: Route|null;
+        declare currentRoute: Route|null;
         declare shouldShowAll: boolean;
 
         private getCrViewManager_(): CrViewManagerElement {
@@ -153,4 +153,5 @@ export interface SearchableViewContainerMixinInterface extends
     RouteObserverMixinInterface, SettingsPlugin {
   inSearchMode: boolean;
   shouldShowAll: boolean;
+  currentRoute: Route|null;
 }

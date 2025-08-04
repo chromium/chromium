@@ -142,6 +142,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_welcome_fragment.ts",
     "privacy_page/privacy_guide/step_indicator.ts",
+    "privacy_page/privacy_page_index.ts",
     "privacy_page/privacy_page.ts",
     "privacy_page/secure_dns.ts",
     "privacy_page/secure_dns_input.ts",

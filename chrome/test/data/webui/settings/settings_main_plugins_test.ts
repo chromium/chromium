@@ -63,7 +63,7 @@ suite('SettingsMain', function() {
     const routesToVisit: Array<{route: Route, pluginTag: string}> = [
       {route: routes.PEOPLE, pluginTag: 'settings-people-page-index'},
       {route: routes.BASIC, pluginTag: 'settings-people-page-index'},
-      {route: routes.PRIVACY, pluginTag: 'settings-basic-page'},
+      {route: routes.PRIVACY, pluginTag: 'settings-privacy-page-index'},
       {route: routes.AUTOFILL, pluginTag: 'settings-autofill-page-index'},
       {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},

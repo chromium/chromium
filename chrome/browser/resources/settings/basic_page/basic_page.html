@@ -4,32 +4,8 @@
       }
     </style>
     <div id="basicPage">
-      <template is="dom-if" if="[[isPrivacyGuideAvailable]]" restamp>
-        <settings-section id="privacyGuidePromoSection" page-title=""
-            hidden$="[[!showPrivacyGuidePromo_]]" nest-under-section="privacy"
-            no-search>
-          <settings-privacy-guide-promo id="privacyGuidePromo"
-              prefs="{{prefs}}">
-          </settings-privacy-guide-promo>
-        </settings-section>
-      </template>
-      <!--  TODO(crbug.com/40267370): Add a test to basic_page_test.ts
-      to check that settings-safety-hub-entry-point is not visible
-      in the guest mode. -->
-      <template is="dom-if" if="[[showPage_(pageVisibility_.safetyHub)]]"
-          restamp>
-        <settings-section page-title="$i18n{safetyHub}"
-            section="safetyHubEntryPoint" nest-under-section="privacy"
-            id="safetyHubEntryPointSection">
-          <settings-safety-hub-entry-point></settings-safety-hub-entry-point>
-        </settings-section>
-      </template>
-      <template is="dom-if" if="[[showPage_(pageVisibility_.privacy)]]"
-          restamp>
-        <settings-section page-title="$i18n{privacyPageTitle}"
-            section="privacy">
-          <settings-privacy-page prefs="{{prefs}}">
-          </settings-privacy-page>
-        </settings-section>
-      </template>
+      <settings-section page-title="$i18n{privacyPageTitle}"
+          section="privacy">
+        <settings-privacy-page prefs="{{prefs}}"></settings-privacy-page>
+      </settings-section>
     </div>

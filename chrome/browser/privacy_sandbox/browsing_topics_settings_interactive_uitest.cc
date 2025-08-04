@@ -36,15 +36,17 @@ constexpr char BlockedTopicsListFirstTopicIdFunc[] =
     "topicId";
 
 DeepQuery GetManageTopicsPageQuery() {
-  return DeepQuery({{"settings-ui", "settings-main", "settings-basic-page",
-                     "settings-privacy-page",
-                     "settings-privacy-sandbox-manage-topics-subpage"}});
+  return DeepQuery(
+      {{"settings-ui", "settings-main", "settings-privacy-page-index",
+        "settings-basic-page", "settings-privacy-page",
+        "settings-privacy-sandbox-manage-topics-subpage"}});
 }
 
 DeepQuery GetAdTopicsPageQuery() {
   return DeepQuery(
-      {{"settings-ui", "settings-main", "settings-basic-page",
-        "settings-privacy-page", "settings-privacy-sandbox-topics-subpage"}});
+      {{"settings-ui", "settings-main", "settings-privacy-page-index",
+        "settings-basic-page", "settings-privacy-page",
+        "settings-privacy-sandbox-topics-subpage"}});
 }
 
 class PrivacySandboxSettingsTopicsInteractiveTest
