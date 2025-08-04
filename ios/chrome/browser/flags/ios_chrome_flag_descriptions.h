@@ -86,6 +86,9 @@ extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];
 extern const char
     kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[];
 
+extern const char kAutofillPaymentsFieldSwappingName[];
+extern const char kAutofillPaymentsFieldSwappingDescription[];
+
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[];
 

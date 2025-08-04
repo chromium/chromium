@@ -124,6 +124,12 @@ const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[] =
     "When enabled, the address fields for input would be dynamically loaded "
     "based on the country value";
 
+const char kAutofillPaymentsFieldSwappingName[] =
+    "Swap credit card suggestions";
+const char kAutofillPaymentsFieldSwappingDescription[] =
+    "When enabled, swapping autofilled payment suggestions would result"
+    "in overriding all of the payments fields with the swapped profile data";
+
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
     "Enable showing flat rate card benefits sourced from Curinos";
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =

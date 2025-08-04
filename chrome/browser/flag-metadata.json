@@ -938,7 +938,7 @@
   {
     "name": "autofill-payments-field-swapping",
     "owners": ["vidhanj@google.com"],
-    "expiry_milestone": 138
+    "expiry_milestone": 143
   },
   {
     "name": "autofill-payments-sheet-v2",
