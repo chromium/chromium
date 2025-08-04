@@ -52,7 +52,7 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
   std::optional<ui::ColorVariant> requested_disabled_color_;
 
   base::CallbackListSubscription enabled_changed_subscription_ =
-      AddEnabledChangedCallback(
+      AddEnabledInViewsSubtreeChangedCallback(
           base::BindRepeating(&LabelButtonLabel::OnEnabledChanged,
                               base::Unretained(this)));
 };

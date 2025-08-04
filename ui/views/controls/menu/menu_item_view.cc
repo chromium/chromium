@@ -875,7 +875,7 @@ bool MenuItemView::ShouldShowNewBadge() const {
 bool MenuItemView::IsTraversableByKeyboard() const {
   bool ignore_enabled =
       ui::AXPlatform::GetInstance().GetMode().has_mode(ui::AXMode::kNativeAPIs);
-  return GetVisible() && (ignore_enabled || GetEnabled());
+  return GetVisible() && (ignore_enabled || GetEnabledInViewsSubtree());
 }
 
 int MenuItemView::GetItemHorizontalBorder() const {
@@ -930,8 +930,9 @@ MenuItemView::MenuItemView(MenuItemView* parent,
 
   visible_changed_callback_ = AddVisibleChangedCallback(base::BindRepeating(
       &MenuItemView::UpdateAccessibleSelection, base::Unretained(this)));
-  enabled_changed_callback_ = AddEnabledChangedCallback(base::BindRepeating(
-      &MenuItemView::UpdateAccessibleSelection, base::Unretained(this)));
+  enabled_changed_callback_ =
+      AddEnabledInViewsSubtreeChangedCallback(base::BindRepeating(
+          &MenuItemView::UpdateAccessibleSelection, base::Unretained(this)));
 
   UpdateAccessibleSelection();
   UpdateAccessibleKeyShortcuts();
@@ -1275,7 +1276,7 @@ SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
   style::TextStyle text_style = style::STYLE_PRIMARY;
   if (type_ == Type::kHighlighted) {
     text_style = style::STYLE_HIGHLIGHTED;
-  } else if (!GetEnabled()) {
+  } else if (!GetEnabledInViewsSubtree()) {
     text_style = style::STYLE_DISABLED;
   } else if (paint_as_selected) {
     text_style = style::STYLE_SELECTED;
@@ -1579,14 +1580,15 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
 
   // Update any vector icons if a custom color is used or if the icon is
   // disabled.
-  if ((!GetEnabled() || foreground_color_id_.has_value()) && icon_view_) {
+  if ((!GetEnabledInViewsSubtree() || foreground_color_id_.has_value()) &&
+      icon_view_) {
     ui::ImageModel icon_model = icon_view_->GetImageModel();
     if (!icon_model.IsEmpty() && icon_model.IsVectorIcon()) {
       ui::VectorIconModel model = icon_model.GetVectorIcon();
       const gfx::VectorIcon* icon = model.vector_icon();
       const ui::ImageModel& image_model = ui::ImageModel::FromVectorIcon(
           *icon,
-          GetEnabled()
+          GetEnabledInViewsSubtree()
               ? GetColorProvider()->GetColor(foreground_color_id_.value())
               : GetColorProvider()->GetColor(ui::kColorMenuIconDisabled),
           model.icon_size());

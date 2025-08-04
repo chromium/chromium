@@ -24,7 +24,7 @@ LabelButtonLabel::~LabelButtonLabel() = default;
 
 void LabelButtonLabel::SetDisabledColor(ui::ColorVariant color) {
   requested_disabled_color_ = color;
-  if (!GetEnabled()) {
+  if (!GetEnabledInViewsSubtree()) {
     Label::SetEnabledColor(color);
   }
 }
@@ -35,7 +35,7 @@ std::optional<ui::ColorVariant> LabelButtonLabel::GetDisabledColor() const {
 
 void LabelButtonLabel::SetEnabledColor(ui::ColorVariant color) {
   requested_enabled_color_ = color;
-  if (GetEnabled()) {
+  if (GetEnabledInViewsSubtree()) {
     Label::SetEnabledColor(color);
   }
 }
@@ -54,16 +54,17 @@ void LabelButtonLabel::OnEnabledChanged() {
 }
 
 void LabelButtonLabel::SetColorForEnableState() {
-  const auto& color_variant =
-      GetEnabled() ? requested_enabled_color_ : requested_disabled_color_;
+  const auto& color_variant = GetEnabledInViewsSubtree()
+                                  ? requested_enabled_color_
+                                  : requested_disabled_color_;
 
   if (color_variant) {
     Label::SetEnabledColor(*color_variant);
   } else {
     // Get default color Id.
     const ui::ColorId default_color_id = TypographyProvider::Get().GetColorId(
-        GetTextContext(),
-        GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED);
+        GetTextContext(), GetEnabledInViewsSubtree() ? style::STYLE_PRIMARY
+                                                     : style::STYLE_DISABLED);
     // Set default color Id.
     Label::SetEnabledColor(default_color_id);
   }

@@ -778,11 +778,12 @@ base::WeakPtr<Button> Button::GetWeakPtr() {
 }
 
 void Button::OnEnabledChanged() {
-  if (GetEnabled() ? (state_ != STATE_DISABLED) : (state_ == STATE_DISABLED)) {
+  if (GetEnabledInViewsSubtree() ? (state_ != STATE_DISABLED)
+                                 : (state_ == STATE_DISABLED)) {
     return;
   }
 
-  if (GetEnabled()) {
+  if (GetEnabledInViewsSubtree()) {
     bool should_enter_hover_state = ShouldEnterHoveredState();
     SetState(should_enter_hover_state ? STATE_HOVERED : STATE_NORMAL);
     InkDrop::Get(ink_drop_view_)
@@ -818,7 +819,7 @@ void Button::SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb) {
 }
 
 void Button::UpdateAccessibleDefaultActionVerb() {
-  if (GetEnabled()) {
+  if (GetEnabledInViewsSubtree()) {
     GetViewAccessibility().SetDefaultActionVerb(default_action_verb_);
   } else {
     GetViewAccessibility().RemoveDefaultActionVerb();

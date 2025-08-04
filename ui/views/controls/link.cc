@@ -28,7 +28,7 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
     : Label(title, text_context, text_style) {
   RecalculateFont();
 
-  enabled_changed_subscription_ = AddEnabledChangedCallback(
+  enabled_changed_subscription_ = AddEnabledInViewsSubtreeChangedCallback(
       base::BindRepeating(&Link::RecalculateFont, base::Unretained(this)));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
@@ -49,7 +49,7 @@ SkColor Link::GetColor() const {
   // TODO(crbug.com/40268779): Use TypographyProvider::GetColorId().
   const ui::ColorProvider* color_provider = GetColorProvider();
   DCHECK(color_provider);
-  if (!GetEnabled()) {
+  if (!GetEnabledInViewsSubtree()) {
     return color_provider->GetColor(ui::kColorLinkForegroundDisabled);
   }
 
@@ -81,7 +81,7 @@ bool Link::GetForceUnderline() const {
 }
 
 ui::Cursor Link::GetCursor(const ui::MouseEvent& event) {
-  if (!GetEnabled()) {
+  if (!GetEnabledInViewsSubtree()) {
     return ui::Cursor();
   }
   return ui::mojom::CursorType::kHand;
@@ -235,7 +235,8 @@ void Link::OnClick(const ui::Event& event) {
 void Link::RecalculateFont() {
   const int style = font_list().GetFontStyle();
   const int intended_style =
-      ((GetEnabled() && (HasFocus() || IsMouseHovered())) || force_underline_)
+      ((GetEnabledInViewsSubtree() && (HasFocus() || IsMouseHovered())) ||
+       force_underline_)
           ? (style | gfx::Font::UNDERLINE)
           : (style & ~gfx::Font::UNDERLINE);
 

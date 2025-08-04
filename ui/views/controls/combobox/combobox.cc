@@ -154,15 +154,17 @@ Combobox::Combobox(ui::ComboboxModel* model) {
   // TODO(crbug.com/40250124): This setter should be removed and the behavior
   // made default when ChromeRefresh2023 is finalized.
   SetEventHighlighting(true);
-  enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
-      [](Combobox* combobox) {
-        combobox->SetBackgroundColorId(
-            combobox->GetEnabled() ? ui::kColorComboboxBackground
-                                   : ui::kColorComboboxBackgroundDisabled);
-        combobox->UpdateBorder();
-        combobox->UpdateAccessibleDefaultActionVerb();
-      },
-      base::Unretained(this)));
+  enabled_changed_subscription_ =
+      AddEnabledInViewsSubtreeChangedCallback(base::BindRepeating(
+          [](Combobox* combobox) {
+            combobox->SetBackgroundColorId(
+                combobox->GetEnabledInViewsSubtree()
+                    ? ui::kColorComboboxBackground
+                    : ui::kColorComboboxBackgroundDisabled);
+            combobox->UpdateBorder();
+            combobox->UpdateAccessibleDefaultActionVerb();
+          },
+          base::Unretained(this)));
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).
@@ -566,7 +568,7 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 }
 
 void Combobox::UpdateBorder() {
-  if (!GetEnabled()) {
+  if (!GetEnabledInViewsSubtree()) {
     SetBorder(nullptr);
     return;
   }
@@ -616,9 +618,10 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   }
 
   // Draw the text.
-  SkColor text_color = foreground_color_id_
-                           ? GetColorProvider()->GetColor(*foreground_color_id_)
-                           : GetTextColorForEnableState(*this, GetEnabled());
+  SkColor text_color =
+      foreground_color_id_
+          ? GetColorProvider()->GetColor(*foreground_color_id_)
+          : GetTextColorForEnableState(*this, GetEnabledInViewsSubtree());
   std::u16string text = GetModel()->GetItemAt(*selected_index_);
   const gfx::FontList& font_list = GetForegroundFontList();
 
@@ -825,7 +828,7 @@ void Combobox::UpdateAccessibleValue() const {
 }
 
 void Combobox::UpdateAccessibleDefaultActionVerb() {
-  if (GetEnabled()) {
+  if (GetEnabledInViewsSubtree()) {
     GetViewAccessibility().SetDefaultActionVerb(
         ax::mojom::DefaultActionVerb::kOpen);
   } else {

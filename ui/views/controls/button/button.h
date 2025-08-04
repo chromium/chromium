@@ -410,8 +410,9 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   std::unique_ptr<ButtonController> button_controller_;
 
   base::CallbackListSubscription enabled_changed_subscription_{
-      AddEnabledChangedCallback(base::BindRepeating(&Button::OnEnabledChanged,
-                                                    base::Unretained(this)))};
+      AddEnabledInViewsSubtreeChangedCallback(
+          base::BindRepeating(&Button::OnEnabledChanged,
+                              base::Unretained(this)))};
 
   size_t anchor_count_ = 0;
 

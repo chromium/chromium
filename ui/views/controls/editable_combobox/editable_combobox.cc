@@ -110,13 +110,14 @@ class Arrow : public Button {
     // Make sure the arrow use the same color as the text in the combobox.
     PaintComboboxArrow(
         GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
-            style::CONTEXT_TEXTFIELD,
-            GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED)),
+            style::CONTEXT_TEXTFIELD, GetEnabledInViewsSubtree()
+                                          ? style::STYLE_PRIMARY
+                                          : style::STYLE_DISABLED)),
         arrow_bounds, canvas);
   }
 
   void UpdateAccessibleDefaultActionVerb() {
-    if (GetEnabled()) {
+    if (GetEnabledInViewsSubtree()) {
       GetViewAccessibility().SetDefaultActionVerb(
           ax::mojom::DefaultActionVerb::kOpen);
     } else {
@@ -125,7 +126,7 @@ class Arrow : public Button {
   }
 
   base::CallbackListSubscription enabled_changed_subscription_ =
-      AddEnabledChangedCallback(
+      AddEnabledInViewsSubtreeChangedCallback(
           base::BindRepeating(&Arrow::UpdateAccessibleDefaultActionVerb,
                               base::Unretained(this)));
 };

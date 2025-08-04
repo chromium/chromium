@@ -251,6 +251,8 @@ TEST_F(LoginAuthUserViewUnittest,
 }
 
 TEST_F(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
+
   LoginAuthUserView::TestApi auth_test(view_);
   LoginPasswordView::TestApi password_test(auth_test.password_view());
 
