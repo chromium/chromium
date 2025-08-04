@@ -14,15 +14,11 @@
 #import "components/search/search.h"
 #import "components/search_provider_logos/logo_observer.h"
 #import "ios/chrome/browser/google/model/google_logo_service.h"
-#import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_container_view.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -83,9 +79,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 #pragma mark - SearchEngineLogoMediator Implementation
 
 @implementation SearchEngineLogoMediator {
-  raw_ptr<ProfileIOS> _profile;
   raw_ptr<web::WebState> _webState;
-  raw_ptr<Browser> _browser;
   raw_ptr<TemplateURLService> _templateURLService;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
@@ -93,6 +87,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   // settings.
   raw_ptr<const TemplateURL> _defaultSearchProvider;
   raw_ptr<GoogleLogoService> _logoService;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
 
   // Current logo fingerprint.
   std::string _fingerprint;
@@ -104,38 +99,45 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   GURL _onClickUrl;
   GURL _animatedUrl;
 
+  scoped_refptr<network::SharedURLLoaderFactory> _sharedURLLoaderFactory;
   std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper> _imageFetcher;
   SearchEngineLogoState _logoState;
+  BOOL _offTheRecord;
 }
 
 @synthesize containerView = _containerView;
 
-- (instancetype)initWithBrowser:(Browser*)browser
-                       webState:(web::WebState*)webState {
-  DCHECK(browser);
+- (instancetype)initWithWebState:(web::WebState*)webState
+              templateURLService:(TemplateURLService*)templateURLService
+                     logoService:(GoogleLogoService*)logoService
+          URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+          sharedURLLoaderFactory:
+              (scoped_refptr<network::SharedURLLoaderFactory>)
+                  sharedURLLoaderFactory
+                    offTheRecord:(BOOL)offTheRecord {
   DCHECK(webState);
   if ((self = [super init])) {
-    _browser = browser;
-    _profile = _browser->GetProfile();
     _webState = webState;
-    _templateURLService =
-        ios::TemplateURLServiceFactory::GetForProfile(_profile);
+    _templateURLService = templateURLService;
     _searchEngineObserver =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
-    _logoService = GoogleLogoServiceFactory::GetForProfile(_profile);
+    _logoService = logoService;
+    _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
+    _sharedURLLoaderFactory = sharedURLLoaderFactory;
+    _offTheRecord = offTheRecord;
     [self searchEngineChanged];
   }
   return self;
 }
 
 - (void)disconnect {
-  _profile = nullptr;
   _webState = nullptr;
-  _browser = nullptr;
   _templateURLService = nullptr;
   _searchEngineObserver.reset();
   _defaultSearchProvider = nullptr;
   _logoService = nullptr;
+  _URLLoadingBrowserAgent = nullptr;
+  _sharedURLLoaderFactory = nullptr;
   _imageFetcher.reset();
 }
 
@@ -277,9 +279,9 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     UrlLoadParams params = UrlLoadParams::InCurrentTab(_onClickUrl);
     params.web_params.transition_type = ui::PageTransitionFromInt(
         ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-    UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
+    _URLLoadingBrowserAgent->Load(params);
     bool is_ntp = _webState && _webState->GetVisibleURL() == kChromeUINewTabURL;
-    new_tab_page_uma::RecordNTPAction(_profile->IsOffTheRecord(), is_ntp,
+    new_tab_page_uma::RecordNTPAction(_offTheRecord, is_ntp,
                                       new_tab_page_uma::ACTION_OPENED_DOODLE);
     logoType = self.containerView.animatingDoodle ? CLICKED_LOGO_TYPE_ANIMATING
                                                   : CLICKED_LOGO_TYPE_STATIC;
@@ -386,7 +388,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return;
   }
   _imageFetcher = std::make_unique<image_fetcher::IOSImageDataFetcherWrapper>(
-      _profile->GetSharedURLLoaderFactory());
+      _sharedURLLoaderFactory);
   __weak __typeof(self) weakSelf = self;
   image_fetcher::ImageDataFetcherBlock callback =
       base::CallbackToBlock(base::BindPostTask(

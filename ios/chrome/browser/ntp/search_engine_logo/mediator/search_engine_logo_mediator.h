@@ -7,15 +7,21 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/scoped_refptr.h"
 #import "url/gurl.h"
 
+class GoogleLogoService;
 @protocol SearchEngineLogoConsumer;
 enum class SearchEngineLogoState;
+class TemplateURLService;
+class UrlLoadingBrowserAgent;
 
-class Browser;
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 namespace web {
 class WebState;
-}
+}  // namespace web
 
 @interface SearchEngineLogoMediator : NSObject
 
@@ -28,11 +34,14 @@ class WebState;
 @property(nonatomic, strong, readonly) UIView* view;
 
 // Designated initializer.
-// TODO(crbug.com/423883582): Need remove browser parameter and all the service
-// parameters.
-- (instancetype)initWithBrowser:(Browser*)browser
-                       webState:(web::WebState*)webState
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithWebState:(web::WebState*)webState
+              templateURLService:(TemplateURLService*)templateURLService
+                     logoService:(GoogleLogoService*)logoService
+          URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+          sharedURLLoaderFactory:
+              (scoped_refptr<network::SharedURLLoaderFactory>)
+                  sharedURLLoaderFactory
+                    offTheRecord:(BOOL)offTheRecord NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnect the instance.

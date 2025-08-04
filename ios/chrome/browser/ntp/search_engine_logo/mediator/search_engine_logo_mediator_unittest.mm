@@ -5,14 +5,17 @@
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -35,9 +38,22 @@ class SearchEngineLogoMediatorTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
-    controller_ =
-        [[SearchEngineLogoMediator alloc] initWithBrowser:browser_.get()
-                                                 webState:web_state_.get()];
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+    GoogleLogoService* logoService =
+        GoogleLogoServiceFactory::GetForProfile(profile_.get());
+    UrlLoadingBrowserAgent* URLLoadingBrowserAgent =
+        UrlLoadingBrowserAgent::FromBrowser(browser_.get());
+    scoped_refptr<network::SharedURLLoaderFactory> sharedURLLoaderFactory =
+        profile_->GetSharedURLLoaderFactory();
+    BOOL offTheRecord = profile_->IsOffTheRecord();
+    mediator_ = [[SearchEngineLogoMediator alloc]
+              initWithWebState:web_state_.get()
+            templateURLService:templateURLService
+                   logoService:logoService
+        URLLoadingBrowserAgent:URLLoadingBrowserAgent
+        sharedURLLoaderFactory:sharedURLLoaderFactory
+                  offTheRecord:offTheRecord];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -46,21 +62,21 @@ class SearchEngineLogoMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
-  SearchEngineLogoMediator* controller_;
+  SearchEngineLogoMediator* mediator_;
 };
 
 // Sanity check.
 TEST_F(SearchEngineLogoMediatorTest, TestConstructorDestructor) {
-  EXPECT_TRUE(controller_);
+  EXPECT_TRUE(mediator_);
 }
 
 // Verifies that tapping the doodle navigates to the stored URL.
 TEST_F(SearchEngineLogoMediatorTest, TestTapDoodleWithValidClickURL) {
   const std::string kURL = "http://foo/";
-  [controller_ setClickURLText:GURL(kURL)];
+  [mediator_ setClickURLText:GURL(kURL)];
 
   // Tap the doodle and verify the expected url was loaded.
-  [controller_ simulateDoodleTapped];
+  [mediator_ simulateDoodleTapped];
   EXPECT_EQ(kURL, url_loader_->last_params.web_params.url);
   EXPECT_EQ(1, url_loader_->load_current_tab_call_count);
 }
@@ -68,10 +84,10 @@ TEST_F(SearchEngineLogoMediatorTest, TestTapDoodleWithValidClickURL) {
 // Verifies the case where the URL value is invalid (which should result in not
 // attempting to load any URL when the doodle is tapped).
 TEST_F(SearchEngineLogoMediatorTest, TestTapDoodle_InvalidSearchQuery) {
-  [controller_ setClickURLText:GURL("foo")];
+  [mediator_ setClickURLText:GURL("foo")];
 
   // Tap the doodle and verify nothing was loaded.
-  [controller_ simulateDoodleTapped];
+  [mediator_ simulateDoodleTapped];
 
   EXPECT_EQ(GURL(), url_loader_->last_params.web_params.url);
   EXPECT_EQ(0, url_loader_->load_current_tab_call_count);
