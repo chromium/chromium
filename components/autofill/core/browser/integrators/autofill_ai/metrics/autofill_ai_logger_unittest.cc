@@ -652,10 +652,12 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
     EXPECT_EQ(mqls_field_event.field_type(),
               static_cast<int>(field.Type().GetStorableType()))
         << event;
-    EXPECT_EQ(
-        mqls_field_event.ai_field_type(),
-        static_cast<int>(
-            field.GetAutofillAiServerTypePredictions().value_or(UNKNOWN_TYPE)))
+    EXPECT_EQ(mqls_field_event.ai_field_type(), static_cast<int>([&field] {
+                FieldTypeSet autofill_ai_types =
+                    field.Type().GetAutofillAiTypes();
+                return !autofill_ai_types.empty() ? *autofill_ai_types.begin()
+                                                  : UNKNOWN_TYPE;
+              }()))
         << event;
     EXPECT_EQ(base::to_underlying(mqls_field_event.format_string_source()),
               base::to_underlying(field.format_string_source()))

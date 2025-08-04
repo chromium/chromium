@@ -117,7 +117,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         auto attribute_it =
             entity_attributes.try_emplace(attribute_type, attribute_type).first;
         attribute_it->second.SetInfo(
-            field->Type().GetStorableType(), value.value, app_locale,
+            field->Type().GetAutofillAiType(entity), value.value, app_locale,
             value.format_string, VerificationStatus::kObserved);
       }
     }

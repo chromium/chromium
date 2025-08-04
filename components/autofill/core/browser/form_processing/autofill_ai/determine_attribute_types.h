@@ -55,8 +55,7 @@ class DetermineAttributeTypesPassKey {
 // testing easier.
 //
 // Static AttributeTypes are determined by the Autofill AI FieldType
-// (AutofillField::GetAutofillAiServerTypePredictions()).
-// Every field has at most one static AttributeType.
+// (AutofillType::GetStaticAutofillAiTypes()).
 //
 // Dynamic types are determined by propagating types to neighboring fields as
 // follows: a target field is assigned an AttributeType if

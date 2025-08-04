@@ -268,8 +268,6 @@ bool ShowPredictions(const WebDocument& document,
                                       : "SERVER_RESPONSE_PENDING",
         "\nheuristic type: ",
         field.heuristic_type,
-        (!field.autofill_ai_type.empty() ? "\nautofill ai type: " : ""),
-        (!field.autofill_ai_type.empty() ? field.autofill_ai_type : ""),
         (!field.attribute_types.empty() ? "\nautofill ai attribute types: "
                                         : ""),
         (!field.attribute_types.empty() ? field.attribute_types : ""),

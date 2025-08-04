@@ -531,8 +531,6 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
 
   AutofillType autofill_type = autofill_field.Type();
   FieldTypeSet field_types = autofill_type.GetTypes();
-  std::optional<FieldType> autofill_ai_type =
-      autofill_field.GetAutofillAiServerTypePredictions();
 
   // On a refill, only fill fields from type groups that were present during
   // the initial fill.
@@ -550,10 +548,8 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
       GetFieldTypesToFillFromFillingProduct(filling_product);
   // This ensures that a filling product only operates on fields of supported
   // types.
-  add_if(
-      supported_types && !supported_types->contains_any(field_types) &&
-          (!autofill_ai_type || !supported_types->contains(*autofill_ai_type)),
-      FieldFillingSkipReason::kFieldTypeUnrelated);
+  add_if(supported_types && !supported_types->contains_any(field_types),
+         FieldFillingSkipReason::kFieldTypeUnrelated);
 
   // Don't fill meaningfully pre-filled fields but overwrite placeholders.
   add_if(ShouldSkipFieldBecauseOfMeaningfulInitialValue(autofill_field,
@@ -1162,30 +1158,11 @@ FormFiller::ValueAndTypeAndOverride FormFiller::GetFieldFillingData(
                 CHECK_DEREF(entity_and_fields_and_types.first);
             const std::vector<AutofillFieldWithAttributeType>& fields =
                 entity_and_fields_and_types.second;
-            AutofillType autofill_type = autofill_field.Type();
-            FieldType field_type =
-                autofill_type.GetAutofillAiType(entity.type());
-            if (field_type == UNKNOWN_TYPE &&
-                !autofill_type.GetTypes().empty()) {
-              // This is currently reachable if a classical prediction is
-              // followed by an Autofill AI prediction, e.g.,
-              // ADDRESS_HOME_COUNTRY followed by PASSPORT_ISSUING_COUNTRY.
-              //
-              // Then AutofillField::Type() only contains the classical
-              // prediction but Autofill AI nonetheless may fill the field
-              // because it obtains the Autofill AI type in
-              // AutofillField::GetAutofillAiServerTypePredictions()
-              //
-              // TODO(crbug.com/432645177): Remove once we've removed
-              // AutofillField::GetAutofillAiServerTypePredictions() (and
-              // instead populate AutofillType with Autofill AI types).
-              field_type = *autofill_type.GetTypes().begin();
-            }
             return {GetFillValueForEntity(
                         entity, fields, autofill_field, action_persistence,
                         manager_->client().GetAppLocale(),
                         manager_->client().GetAddressNormalizer()),
-                    field_type};
+                    autofill_field.Type().GetAutofillAiType(entity.type())};
           },
           [&](const VerifiedProfile* profile)
               -> std::pair<std::u16string, FieldType> {

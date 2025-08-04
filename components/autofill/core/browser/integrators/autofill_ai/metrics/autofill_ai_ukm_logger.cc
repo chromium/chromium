@@ -229,8 +229,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
   const uint64_t field_session_identifier =
       autofill_metrics::FieldGlobalIdToHash64Bit(field.global_id());
   const FieldTypeSet field_types = field.Type().GetTypes();
-  const FieldTypeSet ai_field_types = {
-      field.GetAutofillAiServerTypePredictions().value_or(UNKNOWN_TYPE)};
+  const FieldTypeSet ai_field_types = field.Type().GetAutofillAiTypes();
 
   // TODO(crbug.com/432645177): Emit multiple `field_types` and
   // `ai_field_types`.

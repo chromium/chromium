@@ -678,10 +678,11 @@ void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
   // server) may lead to too many false positives. We therefore favor server
   // predictions over model predictions. (There's no specific reason for this
   // precedence -- preferring model predictions may work just as well.)
-  if (std::ranges::any_of(
-          form.fields(), [](const std::unique_ptr<AutofillField>& field) {
-            return field->GetAutofillAiServerTypePredictions().has_value();
-          })) {
+  if (std::ranges::any_of(form.fields(),
+                          [](const std::unique_ptr<AutofillField>& field) {
+                            return field->Type().GetGroups().contains(
+                                FieldTypeGroup::kAutofillAi);
+                          })) {
     return;
   }
 

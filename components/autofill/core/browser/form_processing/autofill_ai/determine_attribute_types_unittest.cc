@@ -78,10 +78,15 @@ class DetermineAttributeTypesTest : public testing::Test {
  public:
   static constexpr DetermineAttributeTypesPassKey kPassKey = {};
 
+  DetermineAttributeTypesTest() {
+    feature_list_.InitWithFeatures({features::kAutofillAiWithDataSchema,
+                                    features::kAutofillUnionTypesForAutofillAi},
+                                   {});
+  }
+
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillUnionTypesForAutofillAi};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that DetermineAttributeTypes() doesn't crash on empty lists.

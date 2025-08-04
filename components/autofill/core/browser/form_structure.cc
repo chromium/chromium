@@ -317,11 +317,6 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
     if (!field->server_predictions().empty()) {
       annotated_field.server_type = FieldTypeToStringView(field->server_type());
     }
-    if (std::optional<FieldType> autofill_ai_type =
-            field->GetAutofillAiServerTypePredictions()) {
-      annotated_field.autofill_ai_type =
-          FieldTypeToStringView(*autofill_ai_type);
-    }
     if (auto it = field_to_attribute_types.find(&*field);
         it != field_to_attribute_types.end()) {
       annotated_field.attribute_types = AttributeTypesToString(it->second);
@@ -957,7 +952,6 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                        HashFormSignature(field->host_form_signature()))});
     buffer << "\n  Name: " << field->parseable_name();
 
-    auto type = field->Type().ToString();
     auto regex_heuristic_type =
         FieldTypeToStringView(field->heuristic_type(HeuristicSource::kRegexes));
     std::string ml_heuristic_part;
@@ -985,7 +979,8 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     }
 
     buffer << "\n  Type: "
-           << base::StrCat({type, " (regex heuristic: ", regex_heuristic_type,
+           << base::StrCat({field->Type().ToString(),
+                            " (regex heuristic: ", regex_heuristic_type,
                             ml_heuristic_part, ", server: ", server_type,
                             is_override, html_type_description, ")"});
     buffer << "\n  Section: " << field->section();
@@ -1065,7 +1060,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Name:" << field->parseable_name();
     buffer << Tr{} << "Placeholder:" << field->placeholder();
 
-    auto type = field->Type().ToString();
     auto regex_heuristic_type =
         FieldTypeToStringView(field->heuristic_type(HeuristicSource::kRegexes));
     std::string ml_heuristic_part;
@@ -1094,14 +1088,10 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     }
 
     buffer << Tr{} << "Type:"
-           << base::StrCat({type, " (regex heuristic: ", regex_heuristic_type,
-                            ml_heuristic_part, ", server: ",
-                            server_type, html_type_description, ")"});
-    if (std::optional<FieldType> autofill_ai_type =
-            field->GetAutofillAiServerTypePredictions()) {
-      buffer << Tr{}
-             << "Autofill AI Type:" << FieldTypeToStringView(*autofill_ai_type);
-    }
+           << base::StrCat({field->Type().ToString(),
+                            " (regex heuristic: ", regex_heuristic_type,
+                            ml_heuristic_part, ", server: ", server_type,
+                            html_type_description, ")"});
     if (auto it = field_to_attribute_types.find(&*field);
         it != field_to_attribute_types.end()) {
       buffer << Tr{} << "Autofill AI AttributeTypes:"

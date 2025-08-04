@@ -82,15 +82,9 @@ static_assert(
           });
     }));
 
-// A field's static AttributeType is the unique AttributeType whose
+// A FieldType's static AttributeType is the unique AttributeType whose
 // AttributeType::field_type() is the field's FieldType.
-std::optional<AttributeType> GetStaticAttributeType(
-    const AutofillField& field) {
-  std::optional<FieldType> ft = field.GetAutofillAiServerTypePredictions();
-  if (!ft) {
-    return std::nullopt;
-  }
-
+std::optional<AttributeType> GetStaticAttributeType(FieldType ft) {
   // Returns `at` if its entity is enabled and std::nullopt otherwise.
   auto if_enabled = [](std::optional<AttributeType> at) {
     return at && at->entity_type().enabled() ? at : std::nullopt;
@@ -106,8 +100,8 @@ std::optional<AttributeType> GetStaticAttributeType(
       }
       return arr;
     }();
-    return 0 <= *ft && *ft < kTable.size() ? if_enabled(kTable[*ft])
-                                           : std::nullopt;
+    return 0 <= ft && ft < kTable.size() ? if_enabled(kTable[ft])
+                                         : std::nullopt;
   }
 
   // This lookup table is the inverse of AttributeType::field_type(), except
@@ -122,13 +116,12 @@ std::optional<AttributeType> GetStaticAttributeType(
     }
     return arr;
   }();
-  return 0 <= *ft && *ft < kTable.size() ? if_enabled(kTable[*ft])
-                                         : std::nullopt;
+  return 0 <= ft && ft < kTable.size() ? if_enabled(kTable[ft]) : std::nullopt;
 }
 
 // A field is assignable a dynamic AttributeType iff it is a name field.
-bool IsAssignableDynamicAttributeType(FieldType ft) {
-  return GroupTypeOfFieldType(ft) == FieldTypeGroup::kName;
+bool IsAssignableDynamicAttributeType(const FieldTypeSet& fts) {
+  return kNonInjectiveFieldTypes.contains_any(fts);
 }
 
 std::optional<AttributeType> GetAttributeType(EntityType entity,
@@ -152,12 +145,14 @@ bool AddStaticAttributeTypes(
     if (!IsRelevant(*field)) {
       continue;
     }
-    std::optional<AttributeType> at = GetStaticAttributeType(*field);
-    if (!at) {
-      continue;
+    for (FieldType ft : field->Type().GetStaticAutofillAiTypes()) {
+      std::optional<AttributeType> at = GetStaticAttributeType(ft);
+      if (!at) {
+        continue;
+      }
+      attributes.insert(*at);
+      found_type = true;
     }
-    attributes.insert(*at);
-    found_type = true;
   }
   return found_type;
 }
@@ -187,17 +182,19 @@ void AddDynamicAttributeTypes(
       return;
     }
     ++offset;
-    const FieldType field_type = field.Type().GetStorableType();
-    if (IsAssignableDynamicAttributeType(field_type)) {
+    const FieldTypeSet field_types = field.Type().GetTypes();
+    if (IsAssignableDynamicAttributeType(field_types)) {
       for (const auto& [p, entity_offset] : last_seen) {
         const auto& [entity_section, entity] = p;
         if (std::abs(entity_offset - offset) > kMaxPropagationDistance ||
             entity_section != field.section()) {
           continue;
         }
-        if (const std::optional<AttributeType> attribute =
-                GetAttributeType(entity, field_type)) {
-          attributes.insert(*attribute);
+        for (const FieldType field_type : field_types) {
+          if (const std::optional<AttributeType> attribute =
+                  GetAttributeType(entity, field_type)) {
+            attributes.insert(*attribute);
+          }
         }
       }
     }
