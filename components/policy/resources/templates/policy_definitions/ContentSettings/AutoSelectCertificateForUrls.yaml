@@ -27,7 +27,7 @@ features:
 future_on:
 - fuchsia
 owners:
-- file://components/policy/OWNERS
+- chromeos-commercial-networking-team@google.com
 - miersh@google.com
 schema:
   items:

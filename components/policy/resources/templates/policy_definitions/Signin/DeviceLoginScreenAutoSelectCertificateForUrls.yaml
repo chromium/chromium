@@ -31,7 +31,8 @@ example_value:
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/OWNERS
+- chromeos-commercial-networking-team@google.com
+- miersh@google.com
 schema:
   items:
     type: string
