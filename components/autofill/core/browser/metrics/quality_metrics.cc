@@ -83,7 +83,7 @@ void LogDurationMetrics(const FormStructure& form,
       form, [](const auto& field) { return field->is_autofilled(); });
   bool has_observed_one_time_code_field =
       std::ranges::any_of(form, [](const auto& field) {
-        return field->Type().html_type() == HtmlFieldType::kOneTimeCode;
+        return field->html_type() == HtmlFieldType::kOneTimeCode;
       });
   if (num_detected_field_types >= kMinRequiredFieldsForHeuristics ||
       num_detected_field_types >= kMinRequiredFieldsForQuery) {

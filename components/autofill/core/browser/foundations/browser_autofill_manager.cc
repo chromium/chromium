@@ -3026,7 +3026,7 @@ void BrowserAutofillManager::OnFormProcessed(
                             driver().GetPageUkmSourceId(), form_structure);
 
   for (const auto& field : form_structure) {
-    if (field->Type().html_type() == HtmlFieldType::kOneTimeCode) {
+    if (field->html_type() == HtmlFieldType::kOneTimeCode) {
       metrics_->has_observed_one_time_code_field = true;
       break;
     }
