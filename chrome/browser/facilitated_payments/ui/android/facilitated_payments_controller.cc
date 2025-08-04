@@ -5,9 +5,11 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
@@ -49,7 +51,9 @@ void FacilitatedPaymentsController::ShowForPaymentLink(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
         app_suggestions,
-    base::OnceCallback<void(int64_t)> on_payment_account_selected) {
+    base::OnceCallback<void(int64_t)> on_payment_account_selected,
+    base::OnceCallback<void(std::string_view, std::string_view)>
+        on_payment_app_selected) {
   // Abort if there are no eWallets and no payment apps.
   if (ewallet_suggestions.empty() &&
       (app_suggestions == nullptr || app_suggestions->Size() == 0)) {
@@ -59,6 +63,7 @@ void FacilitatedPaymentsController::ShowForPaymentLink(
   view_->RequestShowContentForPaymentLink(std::move(ewallet_suggestions),
                                           std::move(app_suggestions));
   on_payment_account_selected_ = std::move(on_payment_account_selected);
+  on_payment_app_selected_ = std::move(on_payment_app_selected);
 }
 
 void FacilitatedPaymentsController::ShowProgressScreen() {
@@ -113,6 +118,17 @@ void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
                                                       jlong instrument_id) {
   if (on_payment_account_selected_) {
     std::move(on_payment_account_selected_).Run(instrument_id);
+  }
+}
+
+void FacilitatedPaymentsController::OnPaymentAppSelected(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& j_package_name,
+    const base::android::JavaParamRef<jstring>& j_activity_name) {
+  if (on_payment_app_selected_) {
+    std::move(on_payment_app_selected_)
+        .Run(base::android::ConvertJavaStringToUTF8(env, j_package_name),
+             base::android::ConvertJavaStringToUTF8(env, j_activity_name));
   }
 }
 

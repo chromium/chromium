@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -113,7 +114,9 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-      base::OnceCallback<void(int64_t)> on_ewallet_account_selected);
+      base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
+      base::OnceCallback<void(std::string_view, std::string_view)>
+          on_payment_app_selected);
 
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
@@ -93,7 +94,9 @@ class ChromeFacilitatedPaymentsClient
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
           app_suggestions,
-      base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
+      base::OnceCallback<void(int64_t)> on_payment_account_selected,
+      base::OnceCallback<void(std::string_view, std::string_view)>
+          on_payment_app_selected) final;
   void ShowProgressScreen() final;
   void ShowErrorScreen() final;
   void DismissPrompt() final;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -108,6 +109,8 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   ShowPaymentLinkPrompt(
       supported_ewallets_, std::move(supported_apps),
       base::BindOnce(&PaymentLinkManager::OnEwalletAccountSelected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&PaymentLinkManager::OnPaymentAppSelected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -238,6 +241,17 @@ void PaymentLinkManager::OnEwalletAccountSelected(
   client_->LoadRiskData(base::BindOnce(&PaymentLinkManager::OnRiskDataLoaded,
                                        weak_ptr_factory_.GetWeakPtr(),
                                        base::TimeTicks::Now()));
+}
+
+void PaymentLinkManager::OnPaymentAppSelected(std::string_view package_name,
+                                              std::string_view activity_name) {
+  if (auto* strike_database = GetOrCreateStrikeDatabase()) {
+    strike_database->ClearStrikes();
+  }
+
+  client_->GetDeviceDelegate()->InvokePaymentApp(
+      package_name, activity_name,
+      GURL(initiate_payment_request_details_->payment_link_));
 }
 
 void PaymentLinkManager::OnRiskDataLoaded(base::TimeTicks start_time,
@@ -407,7 +421,9 @@ void PaymentLinkManager::DismissPrompt() {
 void PaymentLinkManager::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-    base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {
+    base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
+    base::OnceCallback<void(std::string_view, std::string_view)>
+        on_payment_app_selected) {
   const bool is_payment_app_available =
       app_suggestions != nullptr && app_suggestions->Size() > 0;
 
@@ -423,7 +439,8 @@ void PaymentLinkManager::ShowPaymentLinkPrompt(
   ui_state_ = UiState::kFopSelector;
   client_->ShowPaymentLinkPrompt(std::move(ewallet_suggestions),
                                  std::move(app_suggestions),
-                                 std::move(on_ewallet_account_selected));
+                                 std::move(on_ewallet_account_selected),
+                                 std::move(on_payment_app_selected));
 }
 
 void PaymentLinkManager::ShowProgressScreen() {

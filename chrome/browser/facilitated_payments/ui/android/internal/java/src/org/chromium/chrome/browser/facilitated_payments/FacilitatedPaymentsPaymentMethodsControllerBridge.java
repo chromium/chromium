@@ -66,7 +66,11 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     @Override
     public void onPaymentAppSelected(String packageName, String activityName) {
-        // TODO(crbug.com/433642700): Use the JNI bridge to invoke the selected payment app.
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onPaymentAppSelected(
+                            mNativeFacilitatedPaymentsController, packageName, activityName);
+        }
     }
 
     @Override
@@ -106,5 +110,8 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         void onPixAccountLinkingPromptAccepted(long nativeFacilitatedPaymentsController);
 
         void onPixAccountLinkingPromptDeclined(long nativeFacilitatedPaymentsController);
+
+        void onPaymentAppSelected(
+                long nativeFacilitatedPaymentsController, String packageName, String activityName);
     }
 }

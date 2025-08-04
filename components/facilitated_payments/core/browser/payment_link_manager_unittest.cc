@@ -989,7 +989,8 @@ TEST_F(PaymentLinkManagerTest,
   FastForwardBy(base::Seconds(2));
   // Simulate that the FOP selector was shown successfully.
   test_api(*payment_link_manager_)
-      .ShowPaymentLinkPrompt({supported_ewallet}, {}, base::DoNothing());
+      .ShowPaymentLinkPrompt({supported_ewallet}, {}, base::DoNothing(),
+                             base::DoNothing());
   test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
 
   // Verify that when the eWallet FOP selector is shown, latency histogram is
@@ -1027,7 +1028,8 @@ class PaymentLinkManagerTestForUiScreens
         const std::vector<autofill::Ewallet> ewallets = {
             autofill::test::CreateEwalletAccount(100L)};
         test_api(*payment_link_manager_)
-            .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing());
+            .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing(),
+                                   base::DoNothing());
         break;
       }
       case UiState::kProgressScreen:
@@ -1382,7 +1384,8 @@ TEST_F(PaymentLinkManagerTest, ScreenClosedByUser_FopSelectorRejected) {
   const std::vector<autofill::Ewallet> ewallets = {
       autofill::test::CreateEwalletAccount(100L)};
   test_api(*payment_link_manager_)
-      .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing());
+      .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing(),
+                             base::DoNothing());
   // Simulate new screen was shown successfully.
   test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
@@ -1638,7 +1641,7 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
       client_,
       ShowPaymentLinkPrompt(
           testing::Eq(std::vector<autofill::Ewallet>{supported_ewallet}),
-          testing::_, testing::_));
+          testing::_, testing::_, testing::_));
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -1747,6 +1750,44 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+}
+
+// Test that when a payment app is selected, the strikes are cleared.
+TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_ClearsStrikes) {
+  // Setup strikes.
+  PaymentLinkSuggestionStrikeDatabase strike_database =
+      PaymentLinkSuggestionStrikeDatabase(test_strike_database_.get());
+  strike_database.AddStrikes(2);
+  ASSERT_EQ(2, strike_database.GetStrikes());
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected("com.example.app", "com.example.app.activity");
+
+  // Verify strikes are cleared.
+  EXPECT_EQ(0, strike_database.GetStrikes());
+}
+
+// Test that when a payment app is selected, the app is invoked.
+TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_InvokesApp) {
+  // Setup for InvokePaymentApp call.
+  const std::string package_name = "com.example.app";
+  const std::string activity_name = "com.example.app.activity";
+  const std::string payment_link =
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay";
+  auto request_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details->payment_link_ = payment_link;
+  test_api(*payment_link_manager_)
+      .set_initiate_payment_request_details(std::move(request_details));
+
+  EXPECT_CALL(
+      *mock_device_delegate_,
+      InvokePaymentApp(package_name, activity_name, GURL(payment_link)));
+
+  // Trigger the call.
+  test_api(*payment_link_manager_)
+      .OnPaymentAppSelected(package_name, activity_name);
 }
 
 }  // namespace payments::facilitated

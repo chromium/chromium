@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -31,7 +32,9 @@ void FacilitatedPaymentsClient::ShowPixPaymentPrompt(
 void FacilitatedPaymentsClient::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-    base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {}
+    base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
+    base::OnceCallback<void(std::string_view, std::string_view)>
+        on_payment_app_selected) {}
 
 void FacilitatedPaymentsClient::ShowProgressScreen() {}
 

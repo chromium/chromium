@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -86,6 +87,10 @@ class PaymentLinkManager {
   // Called when user selects the eWallet account to pay with.
   void OnEwalletAccountSelected(int64_t selected_instrument_id);
 
+  // Called when user selects a payment app to pay with.
+  void OnPaymentAppSelected(std::string_view package_name,
+                            std::string_view activity_name);
+
   // Invoked when risk data is fetched. The call to fetch the risk data was
   // made at `start_time`. `risk_data` is the fetched risk data.
   void OnRiskDataLoaded(base::TimeTicks start_time,
@@ -126,7 +131,9 @@ class PaymentLinkManager {
   void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-      base::OnceCallback<void(int64_t)> on_ewallet_account_selected);
+      base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
+      base::OnceCallback<void(std::string_view, std::string_view)>
+          on_payment_app_selected);
 
   // Updates the `ui_state_` value and triggers showing the progress screen.
   void ShowProgressScreen();

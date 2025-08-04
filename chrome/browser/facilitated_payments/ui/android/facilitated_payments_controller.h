@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_CONTROLLER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
@@ -46,7 +47,9 @@ class FacilitatedPaymentsController {
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
           app_suggestions,
-      base::OnceCallback<void(int64_t)> on_payment_account_selected);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected,
+      base::OnceCallback<void(std::string_view, std::string_view)>
+          on_payment_app_selected);
 
   // Asks the `view_` to show the progress screen. Virtual for overriding in
   // tests.
@@ -71,6 +74,11 @@ class FacilitatedPaymentsController {
   void OnBankAccountSelected(JNIEnv* env, jlong instrument_id);
 
   void OnEwalletSelected(JNIEnv* env, jlong instrument_id);
+
+  void OnPaymentAppSelected(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& package_name,
+      const base::android::JavaParamRef<jstring>& activity_name);
 
   // Asks the `view_` to show the PIX account linking prompt. Virtual for
   // overriding in tests.
@@ -109,6 +117,10 @@ class FacilitatedPaymentsController {
 
   // Called when user selects the payment account to pay with.
   base::OnceCallback<void(int64_t)> on_payment_account_selected_;
+
+  // Called when a payment app is selected.
+  base::OnceCallback<void(std::string_view, std::string_view)>
+      on_payment_app_selected_;
 
   // Callback used to communicate view events to the feature.
   base::RepeatingCallback<void(payments::facilitated::UiEvent)>

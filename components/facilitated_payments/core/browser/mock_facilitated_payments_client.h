@@ -74,7 +74,8 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               ShowPaymentLinkPrompt,
               (base::span<const autofill::Ewallet> ewallet_suggestions,
                std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-               base::OnceCallback<void(int64_t)>),
+               base::OnceCallback<void(int64_t)>,
+               base::OnceCallback<void(std::string_view, std::string_view)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
