@@ -33,7 +33,6 @@ public class PwaRestoreBottomSheetCoordinator {
             String[] appIds,
             String[] appNames,
             List<Bitmap> appIcons,
-            int[] lastUsedInDays,
             Activity activity,
             BottomSheetController bottomSheetController,
             int backArrowId) {
@@ -42,12 +41,9 @@ public class PwaRestoreBottomSheetCoordinator {
         ArrayList<PwaRestoreProperties.AppInfo> apps = new ArrayList();
 
         assert appIds.length == appNames.length;
-        assert appIds.length == lastUsedInDays.length;
         assert appIds.length == appIcons.size();
         for (int i = 0; i < appIds.length; i++) {
-            apps.add(
-                    new PwaRestoreProperties.AppInfo(
-                            appIds[i], appNames[i], appIcons.get(i), lastUsedInDays[i]));
+            apps.add(new PwaRestoreProperties.AppInfo(appIds[i], appNames[i], appIcons.get(i)));
         }
 
         mView = new PwaRestoreBottomSheetView(activity);

@@ -460,10 +460,7 @@ std::vector<WebApkRestoreData> WebApkSyncBridge::GetRestorableAppsShortcutInfo()
         AppWasUsedRecently(&proto->sync_data())) {
       auto restore_info = CreateShortcutInfoFromSpecifics(proto->sync_data());
       if (restore_info) {
-        results.emplace_back(WebApkRestoreData(
-            appId, std::move(restore_info),
-            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-                proto->sync_data().last_used_time_windows_epoch_micros()))));
+        results.emplace_back(appId, std::move(restore_info));
       }
     }
   }

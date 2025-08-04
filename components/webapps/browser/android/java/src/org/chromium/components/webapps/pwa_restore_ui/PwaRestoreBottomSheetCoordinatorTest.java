@@ -48,8 +48,6 @@ import java.util.List;
 public class PwaRestoreBottomSheetCoordinatorTest {
     Activity mActivity;
 
-    // Each entry in this list should have a corresponding entry in
-    // mLastUsedList below.
     private final String[] mDefaultAppIds = new String[] {"appId1", "appId2", "appId3"};
     private final String[] mDefaultAppNames = new String[] {"App 1", "App 2", "App 3"};
     private final ArrayList<Bitmap> mDefaultAppIcons =
@@ -58,7 +56,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                             createBitmap(Color.RED),
                             createBitmap(Color.GREEN),
                             createBitmap(Color.BLUE)));
-    private final int[] mLastUsedList = new int[] {1, 1, 35};
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
     @Mock private PwaRestoreBottomSheetMediator.Natives mNativeMediatorMock;
@@ -89,7 +86,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                         mDefaultAppIds,
                         mDefaultAppNames,
                         mDefaultAppIcons,
-                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);
@@ -139,7 +135,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                         mDefaultAppIds,
                         mDefaultAppNames,
                         mDefaultAppIcons,
-                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);

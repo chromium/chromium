@@ -35,7 +35,6 @@ namespace {
 void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
                    const std::vector<std::string>& app_ids,
                    const std::vector<std::u16string>& names,
-                   const std::vector<int>& last_used_in_days,
                    const std::vector<SkBitmap>& icons) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jbitmaps =
@@ -47,8 +46,7 @@ void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
   Java_PwaRestorableListCallback_onRestorableAppsAvailable(
       env, java_callback, true,
       base::android::ToJavaArrayOfStrings(env, app_ids),
-      base::android::ToJavaArrayOfStrings(env, names),
-      base::android::ToJavaIntArray(env, last_used_in_days), jbitmaps);
+      base::android::ToJavaArrayOfStrings(env, names), jbitmaps);
 }
 
 }  // namespace

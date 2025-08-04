@@ -40,8 +40,7 @@ void WebApkRestoreManager::PrepareRestorableApps(
   for (auto&& restore_data : restore_apps_list) {
     restorable_tasks_.emplace(
         restore_data.app_id,
-        CreateNewTask(std::move(restore_data.shortcut_info),
-                      restore_data.last_used_time));
+        CreateNewTask(std::move(restore_data.shortcut_info)));
   }
 
   // Prepare a web_contents and load |kAboutBlankURL| in the web contents to
@@ -72,17 +71,14 @@ void WebApkRestoreManager::OnAllIconsDownloaded(
     RestorableAppsCallback apps_info_callback) {
   std::vector<std::string> app_ids;
   std::vector<std::u16string> names;
-  std::vector<int> last_used_in_days;
   std::vector<SkBitmap> icons;
 
   for (auto&& [app_id, task] : restorable_tasks_) {
     app_ids.emplace_back(app_id);
     names.emplace_back(task->app_name());
-    last_used_in_days.emplace_back(
-        (base::Time::Now() - task->last_used_time()).InDays());
     icons.push_back(task->app_icon());
   }
-  std::move(apps_info_callback).Run(app_ids, names, last_used_in_days, icons);
+  std::move(apps_info_callback).Run(app_ids, names, icons);
 }
 
 void WebApkRestoreManager::ScheduleRestoreTasks(
@@ -95,11 +91,10 @@ void WebApkRestoreManager::ScheduleRestoreTasks(
 }
 
 std::unique_ptr<WebApkRestoreTask> WebApkRestoreManager::CreateNewTask(
-    std::unique_ptr<webapps::ShortcutInfo> restore_info,
-    base::Time last_used_time) {
+    std::unique_ptr<webapps::ShortcutInfo> restore_info) {
   return std::make_unique<WebApkRestoreTask>(
       PassKey(), web_apk_install_service_, web_contents_manager(),
-      std::move(restore_info), last_used_time);
+      std::move(restore_info));
 }
 
 void WebApkRestoreManager::MaybeStartNextTask() {

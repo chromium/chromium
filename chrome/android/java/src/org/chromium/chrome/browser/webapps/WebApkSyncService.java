@@ -36,7 +36,6 @@ public class WebApkSyncService {
                 boolean success,
                 @NonNull String[] appIds,
                 @NonNull String[] appNames,
-                @NonNull int[] lastUsedInDays,
                 @NonNull List<Bitmap> icons);
     }
 
