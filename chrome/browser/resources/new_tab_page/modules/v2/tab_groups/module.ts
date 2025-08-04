@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '/strings.m.js';
+import '../../info_dialog.js';
 import '../module_header.js';
 import './icons.html.js';
 import './icon_container.js';
@@ -45,10 +46,12 @@ export class ModuleElement extends ModuleElementBase {
   static override get properties() {
     return {
       tabGroups: {type: Object},
+      showInfoDialog: {type: Boolean},
     };
   }
 
   accessor tabGroups: TabGroup[] = [];
+  accessor showInfoDialog: boolean = false;
 
   protected getMenuItemGroups_(): MenuItem[][] {
     return [
@@ -91,6 +94,14 @@ export class ModuleElement extends ModuleElementBase {
 
   protected getFaviconUrls_(objects: Array<{url: string}>): string[] {
     return objects.map(obj => obj.url);
+  }
+
+  protected onInfoButtonClick_() {
+    this.showInfoDialog = true;
+  }
+
+  protected onInfoDialogClose_() {
+    this.showInfoDialog = false;
   }
 }
 

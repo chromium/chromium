@@ -2,7 +2,8 @@
     header-text="${this.i18n('modulesTabGroupsTitle')}"
     .menuItemGroups="${this.getMenuItemGroups_()}"
     more-actions-text="${this.i18nRecursive(
-        '', 'modulesMoreActions', 'modulesTabGroupsTitle')}">
+        '', 'modulesMoreActions', 'modulesTabGroupsTitle')}"
+    @info-button-click="${this.onInfoButtonClick_}">
 </ntp-module-header-v2>
 <div id="tabGroups">
   ${this.shouldShowZeroStateCard_() ? html`
@@ -53,3 +54,9 @@
     </div>
   `}
 </div>
+${this.showInfoDialog ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('modulesTabGroupsInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

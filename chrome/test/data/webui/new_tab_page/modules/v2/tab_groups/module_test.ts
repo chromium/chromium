@@ -6,7 +6,7 @@ import type {IconContainerElement, TabGroupsModuleElement} from 'chrome://new-ta
 import {tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -235,5 +235,40 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         'You can group tabs to keep related pages together and saved across your devices',
         zeroStateContainer.querySelector(
                               '#zeroTabGroupsText')!.textContent!.trim());
+  });
+
+  test('action menu - open and close info dialog', async () => {
+    // Arrange.
+    const module = await createModule([{
+      title: 'Tab Group',
+      faviconUrls: [{url: 'https://www.google.com'}],
+      totalTabCount: 1,
+    }]);
+
+    // Assert.
+    // Open the dialog.
+    assertTrue(!!module);
+    const headerElement =
+        module.shadowRoot.querySelector('ntp-module-header-v2');
+    assertTrue(!!headerElement);
+    const infoButton =
+        headerElement.shadowRoot.querySelector<HTMLButtonElement>('#info');
+    assertTrue(!!infoButton);
+    infoButton.click();
+    await microtasksFinished();
+    const dialog = module.shadowRoot.querySelector('ntp-info-dialog');
+    assertTrue(!!dialog);
+
+    // Validate dialog text.
+    const text = dialog.textContent!.replace(/\s+/g, ' ').trim();
+    assertTrue(text.includes(
+        'You’re seeing your recently used tab groups to help you easily pick up where you left off.'));
+    assertTrue(text.includes(
+        'You can manage settings from the card menu or see more options in Customize Chrome.'));
+
+    // Close the dialog.
+    dialog.dispatchEvent(new CustomEvent('close'));
+    await microtasksFinished();
+    assertFalse(!!module.shadowRoot.querySelector('ntp-info-dialog'));
   });
 });
