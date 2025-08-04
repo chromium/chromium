@@ -29,6 +29,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info_internal.h"
@@ -315,7 +316,7 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
       return 0;
     }
     if (!StringToUint(
-            content,
+            base::TrimWhitespaceASCII(content, TRIM_ALL),
             &max_core_frequencies_khz[static_cast<size_t>(core_index)])) {
       return 0;
     }
