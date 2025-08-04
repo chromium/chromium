@@ -59,76 +59,31 @@ config("winver") {
 }
 
 if (use_clang_modules) {
-  if (is_linux || is_chromeos) {
-    textual_module("sysroot_ctype") {
-    }
-    textual_module("sysroot_errno") {
-      public_deps = [ ":sysroot" ]
-    }
-    textual_module("sysroot_fenv") {
-    }
-    alias("sysroot_features") {
-      actual = [ ":sysroot_limits" ]
-    }
-    textual_module("sysroot_inttypes") {
-      public_deps = [
-        ":_Builtin_stdint",
-        ":sysroot_features",
-      ]
-    }
-    sysroot_module("sysroot_limits") {
-    }
+  # We need to have libc++ headers, __assertion_handler and __config_site in the
+  # same directory for clang modules build.
+  copy("copy_libcxx_headers") {
+    sources = libcxx_headers
+    outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+  }
 
-    alias("sysroot_locale") {
-      actual = []
-    }
+  copy("copy_custom_headers") {
+    sources = [
+      "__assertion_handler",
+      "__config_site",
+    ]
+    outputs = [
+      "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
+    ]
+  }
+}
 
-    textual_module("sysroot_math") {
-      public_deps = [ ":sysroot_stdlib" ]
-    }
-
-    alias("sysroot_pthread") {
-      actual = [ ":sysroot" ]
-    }
-
-    textual_module("sysroot_stdatomic") {
-    }
-    textual_module("sysroot_stdint") {
-      public_deps = [ ":sysroot_features" ]
-    }
-    alias("sysroot_stdlib") {
-      actual = [ ":sysroot" ]
-    }
-    textual_module("sysroot_string") {
-      public_deps = [
-        ":_Builtin_stddef",
-        ":sysroot",
-      ]
-    }
-    textual_module("sysroot_uchar") {
-      public_deps = [ ":_Builtin_stddef" ]
-    }
-    alias("sysroot_wchar") {
-      actual = [ ":sysroot" ]
-    }
-    textual_module("sysroot_wctype") {
-    }
-
-    sysroot_module("sysroot") {
-      public_deps = [
-        ":_Builtin_limits",
-        ":_Builtin_stdarg",
-        ":_Builtin_stddef",
-      ]
-    }
-
-    alias("all_sysroot") {
-      actual = [
-        ":sysroot_limits",
-        ":sysroot",
-      ]
-    }
-  } else if (is_android) {
+if (module_platform != "") {
+  alias("all_modules") {
+    # If this doesn't exist, you'll need to run build/modules/modularize.py for that platform.
+    actual = [ "//build/modules/${module_platform}:all_modules" ]
+  }
+} else if (use_clang_modules) {
+  if (is_android) {
     textual_module("sysroot_ctype") {
       public_deps = [ ":sysroot" ]
     }
@@ -637,23 +592,6 @@ if (use_clang_modules) {
       "//buildtools/third_party/libc++:_Builtin_stdint",
       "//buildtools/third_party/libc++:_Builtin_unwind",
       "//buildtools/third_party/libc++:ptrauth",
-    ]
-  }
-
-  # We need to have libc++ headers, __assertion_handler and __config_site in the
-  # same directory for clang modules build.
-  copy("copy_libcxx_headers") {
-    sources = libcxx_headers
-    outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
-  }
-
-  copy("copy_custom_headers") {
-    sources = [
-      "__assertion_handler",
-      "__config_site",
-    ]
-    outputs = [
-      "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
     ]
   }
 
