@@ -57,6 +57,8 @@ constexpr char kToastTriggeredHistogram[] =
     "Signin.DiceMigrationDialog.ToastTriggered";
 constexpr char kDialogNotShownReasonHistogram[] =
     "Signin.DiceMigrationDialog.NotShownReason";
+constexpr char kRestoredFromBackupHistogram[] =
+    "Signin.DiceMigration.RestoredFromBackup";
 
 void LogDialogCloseReason(DiceMigrationService::DialogCloseReason reason) {
   base::UmaHistogramEnumeration(kDialogCloseReasonHistogram, reason);
@@ -119,6 +121,19 @@ bool MaybeMigrateUser(Profile* profile) {
     return false;
   }
   PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+
+  // Backup the prefs.
+  prefs->SetDict(
+      kDiceMigrationBackup,
+      base::Value::Dict()
+          .SetByDottedPath(prefs::kExplicitBrowserSignin,
+                           prefs->GetBoolean(prefs::kExplicitBrowserSignin))
+          .SetByDottedPath(
+              prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
+              prefs->GetBoolean(
+                  prefs::kPrefsThemesSearchEnginesAccountStorageEnabled)));
+
   // TODO(crbug.com/399838468): Consider calling
   // `PrimaryAccountManager::ComputeExplicitBrowserSignin` upon explicit signin
   // pref change.
@@ -127,7 +142,43 @@ bool MaybeMigrateUser(Profile* profile) {
 
   prefs->SetBoolean(prefs::kExplicitBrowserSignin, true);
 
+  // Mark the migration pref as successful.
+  prefs->SetBoolean(kDiceMigrationMigrated, true);
+  // Reset the restoration pref.
+  prefs->SetBoolean(kDiceMigrationRestoredFromBackup, false);
   return true;
+}
+
+void RestoreImplicitlySignedInStateFromBackupIfExists(PrefService* prefs) {
+  CHECK(prefs);
+
+  if (!prefs->GetBoolean(kDiceMigrationMigrated)) {
+    return;
+  }
+
+  const bool restored_from_backup = [prefs]() -> bool {
+    const base::Value* backup = prefs->GetUserPrefValue(kDiceMigrationBackup);
+    if (!backup || !backup->is_dict()) {
+      return false;
+    }
+    const std::optional<bool> prefs_account_storage_enabled =
+        backup->GetDict().FindBoolByDottedPath(
+            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
+    const std::optional<bool> explicit_browser_signin =
+        backup->GetDict().FindBoolByDottedPath(prefs::kExplicitBrowserSignin);
+    if (!explicit_browser_signin.has_value() ||
+        !prefs_account_storage_enabled.has_value()) {
+      return false;
+    }
+    prefs->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
+                      *prefs_account_storage_enabled);
+    prefs->SetBoolean(prefs::kExplicitBrowserSignin, *explicit_browser_signin);
+    return true;
+  }();
+
+  prefs->SetBoolean(kDiceMigrationRestoredFromBackup, restored_from_backup);
+  prefs->SetBoolean(kDiceMigrationMigrated, !restored_from_backup);
+  base::UmaHistogramBoolean(kRestoredFromBackupHistogram, restored_from_backup);
 }
 
 bool MaybeShowToast(Browser* browser) {
@@ -147,6 +198,13 @@ const char kDiceMigrationDialogShownCount[] =
 
 const char kDiceMigrationDialogLastShownTime[] =
     "signin.dice_migration.dialog_last_shown_time";
+
+const char kDiceMigrationMigrated[] = "signin.dice_migration.migrated";
+
+const char kDiceMigrationBackup[] = "signin.dice_migration.backup";
+
+const char kDiceMigrationRestoredFromBackup[] =
+    "signin.dice_migration.restored_from_backup";
 
 // static
 const int DiceMigrationService::kMaxDialogShownCount = 3;
@@ -186,6 +244,12 @@ DiceMigrationService::DiceMigrationService(
     Profile* profile,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing)
     : profile_(profile) {
+  CHECK(profile_);
+  if (!base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)) {
+    RestoreImplicitlySignedInStateFromBackupIfExists(profile_->GetPrefs());
+    return;
+  }
+
   const std::optional<DialogNotShownReason> not_shown_reason =
       ShouldStartDialogTriggerTimer();
   base::UmaHistogramBoolean(kDialogTimerStartedHistogram,
@@ -233,6 +297,9 @@ void DiceMigrationService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kDiceMigrationDialogShownCount, 0);
   registry->RegisterTimePref(kDiceMigrationDialogLastShownTime, base::Time());
+  registry->RegisterBooleanPref(kDiceMigrationMigrated, false);
+  registry->RegisterDictionaryPref(kDiceMigrationBackup);
+  registry->RegisterBooleanPref(kDiceMigrationRestoredFromBackup, false);
 }
 
 std::optional<DiceMigrationService::DialogNotShownReason>

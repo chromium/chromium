@@ -1321,6 +1321,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceMigration.RestoredFromBackup" enum="Boolean"
+    expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether the DICe migration was reverted from a backup upon feature
+    disable. This is recorded once per profile load, only for users who were
+    migrated to explicitly signed-in state with the DICe migration dialog.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceMigrationDialog.AccountManagedStatus"
     enum="AccountManagedStatusFinderOutcome" expires_after="2026-07-30">
   <owner>ankushkush@google.com</owner>

@@ -126,6 +126,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   WaitForHide(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  EXPECT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(kDiceMigrationMigrated));
   histogram_tester_.ExpectUniqueSample(
       kDiceMigrationDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kCancelled, 1);
@@ -154,6 +156,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   WaitForHide(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  EXPECT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(kDiceMigrationMigrated));
   histogram_tester_.ExpectUniqueSample(
       kDiceMigrationDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kClosed, 1);
@@ -177,7 +181,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   WaitForHide(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
-
+  EXPECT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(kDiceMigrationMigrated));
   histogram_tester_.ExpectUniqueSample(
       kDiceMigrationDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kAccepted, 1);
@@ -202,6 +207,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest, EscClosesDialog) {
       EnsureNotPresent(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  EXPECT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(kDiceMigrationMigrated));
   histogram_tester_.ExpectUniqueSample(
       kDiceMigrationDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kEscKeyPressed, 1);
@@ -225,6 +232,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   WaitForHide(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  EXPECT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(kDiceMigrationMigrated));
   histogram_tester_.ExpectUniqueSample(
       kDiceMigrationDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kAvatarButtonClicked, 1);

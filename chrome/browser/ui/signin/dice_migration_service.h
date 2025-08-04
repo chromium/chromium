@@ -41,6 +41,19 @@ extern const char kDiceMigrationDialogShownCount[];
 // dismissed the dialog unknowingly, for example, by closing the browser.
 extern const char kDiceMigrationDialogLastShownTime[];
 
+// Tracks whether the user has been migrated to explicitly signed-in state
+// following the DICe migration flow.
+extern const char kDiceMigrationMigrated[];
+
+// Stores the backup of the prefs updated during the DICe migration. This allows
+// restoring the prefs to their previous state in case the feature flag is
+// disabled.
+extern const char kDiceMigrationBackup[];
+
+// This tracks whether the user had DICe migration reverted due to feature flag
+// being disabled.
+extern const char kDiceMigrationRestoredFromBackup[];
+
 class DiceMigrationService : public KeyedService,
                              public views::WidgetObserver,
                              public signin::IdentityManager::Observer {
