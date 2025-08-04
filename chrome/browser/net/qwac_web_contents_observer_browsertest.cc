@@ -886,8 +886,8 @@ IN_PROC_BROWSER_TEST_F(QwacWebContentsObserverBrowserTest, TestInvalidBinding) {
                             k2QwacVerificationFailed);
 }
 
-// TODO(crbug.com/392931069): Test that qwac is not fetched after clicking
+// TODO(crbug.com/436274241): Test that qwac is not fetched after clicking
 // through HTTPS error.
-// TODO(crbug.com/392931069): Test that qwac requests shows up in netlog?
+// TODO(crbug.com/436300891): Test that qwac requests shows up in netlog?
 
 }  // namespace

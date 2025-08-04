@@ -268,7 +268,7 @@ class NET_EXPORT CertVerifyProc
       base::span<const uint8_t> tls_cert,
       const NetLogWithSource& net_log);
 
-  // TODO(crbug.com/392931070): remove this (make internal to
+  // TODO(crbug.com/436300895): remove this (make internal to
   // CertVerifyProcBuiltin), since it is only used internally by
   // Verify2QwacBinding.
   // Performs 2-QWAC verification, if implemented by the subclass. The default

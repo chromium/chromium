@@ -1761,7 +1761,7 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
     const std::string& hostname,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
-  // TODO(crbug.com/392931070): EUTL anchor usage histograms
+  // TODO(crbug.com/436274250): EUTL anchor usage histograms
 
   LogChromeRootStoreVersion(net_log);
 
