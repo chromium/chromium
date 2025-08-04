@@ -1833,9 +1833,9 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
 
   TwoQwacPathBuilderDelegateImpl path_builder_delegate(net_log);
 
-  // TODO(crbug.com/392931070): try with both system time and time_tracker_?
-  // It's less important here since the failure mode is just that it doesn't get
-  // marked as a qwac.
+  // QWAC verification is only attempted using system time. If the system time
+  // is off but time_tracker_ can provide the correct time, 2-QWAC verification
+  // may fail.
   bssl::der::GeneralizedTime der_verification_system_time;
   if (!EncodeTimeAsGeneralizedTime(base::Time::Now(),
                                    &der_verification_system_time)) {
@@ -1904,10 +1904,6 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
     HistogramVerify2QwacResult(MapErrorTo2QwacResult(rv));
     return rv;
   }
-
-  // TODO(crbug.com/392931070): is there any point in setting this? This method
-  // only ever returns OK if it is a valid 2-qwac anyway.
-  verify_result->cert_status |= CERT_STATUS_IS_QWAC;
 
   // No histogram result is recorded in the success case, as it is assumed
   // Verify2Qwac is only called by Verify2QwacBinding, which will record the
