@@ -39,15 +39,15 @@ bool IsVerticalArrowSide(views::BubbleArrowSide side) {
          side == views::BubbleArrowSide::kBottom;
 }
 
-// Returns false if the element is not sufficiently visible to place an arrow.
+// Returns false if the element is not sufficiently wide to place an arrow.
+// A vertical arrow points upwards or downwards and we require an input element
+// to be at least 3x wider than the arrow for esthetic reasons.
+// This must only be called for vertical arrows (pointing up or down).
 bool IsElementSufficientlyVisibleForAVerticalArrow(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side) {
-  // Only consider the visible size of the element for vertical arrows.
-  if (!IsVerticalArrowSide(side)) {
-    return true;
-  }
+  CHECK(IsVerticalArrowSide(side));
 
   int visible_width =
       std::clamp(element_bounds.right(), content_area_bounds.x(),
@@ -145,9 +145,22 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
 bool CanShowDropdownHere(int item_height,
                          const gfx::Rect& content_area_bounds,
                          const gfx::Rect& element_bounds) {
-  // Ensure that at least one row of the popup will be displayed within the
+  // Ensure that at least one row of the popup can be displayed within the
   // bounds of the content area so that the user notices the presence of the
   // popup.
+  // It is sufficient to check if the element can be placed above or below the
+  // element (and not on the left or right) because positioning on the sides
+  // is only allowed if the "preferred size" of the popup fully fits to the
+  // sides of the element. If that's not the case, the popup is placed above or
+  // below the element as a fallback. This function ensures that the fallback
+  // location provides enough space for at least one item in the content area
+  // above the element.
+  // TODO(crbug.com/430555440) - The one necessary row should be within the
+  // intersection of the content_area_bounds and the screen showing the popup.
+  // We need to check the vertical space, but we should also check that the
+  // position of the element falls within the horizontal bounds of the screen by
+  // at least a certain amount (e.g. 200px). If that's the case, the popup
+  // placement later will try to make the popup maximally visible.
   bool enough_space_for_one_item_in_content_area_above_element =
       element_bounds.y() - content_area_bounds.y() >= item_height;
   bool element_top_is_within_content_area_bounds =
@@ -160,8 +173,6 @@ bool CanShowDropdownHere(int item_height,
       element_bounds.bottom() > content_area_bounds.y() &&
       element_bounds.bottom() <= content_area_bounds.bottom();
 
-  // TODO(crbug.com/40272733): Test the space on the left/right or forbid it
-  // explicitly.
   return (enough_space_for_one_item_in_content_area_above_element &&
           element_top_is_within_content_area_bounds) ||
          (enough_space_for_one_item_in_content_area_below_element &&
@@ -314,6 +325,12 @@ bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
   }
 }
 
+// Returns the first side (in the order of `popup_preferred_sides`) where the
+// popup can be rendered in the preferred size. If no such site exists, falls
+// back to the top of bottom of the element, depending on where more space is
+// available.
+// TODO(crbug.com/430555440) - We should only allow placement within the
+// intersection of the content_area_bounds and the screen showing the popup.
 views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
@@ -322,19 +339,24 @@ views::BubbleArrowSide GetOptimalArrowSide(
     PopupAnchorType anchor_type) {
   // Probe for a side of the element on which the popup can be shown entirely.
   for (views::BubbleArrowSide possible_side : popup_preferred_sides) {
-    // For caret elements, do not check whether the bounds are sufficiently
-    // large to place a vertical arrow.
+    // If the popup is anchored on the cursor position (kCaret), do not check
+    // whether the bounds of the element are sufficiently large to place a
+    // vertical arrow because a caret is just one pixel wide.
     const bool
         skip_element_bounds_sufficiently_visible_for_vertical_arrow_check =
             anchor_type == PopupAnchorType::kCaret;
-    const bool can_arrow_side_be_vertical =
+    // Is the element wide enough to place an arrow on the side. For arrows
+    // pointing left or right, this is always true. For arrows pointing up or
+    // down, the element must be sufficiently wide to place an arrow.
+    const bool vertical_size_requirements_sufficient =
+        !IsVerticalArrowSide(possible_side) ||
         skip_element_bounds_sufficiently_visible_for_vertical_arrow_check ||
         IsElementSufficientlyVisibleForAVerticalArrow(
             content_area_bounds, element_bounds, possible_side);
     if (IsPopupPlaceableOnSideOfElement(
             content_area_bounds, element_bounds, popup_preferred_size,
             BubbleBorder::kVisibleArrowLength, possible_side) &&
-        can_arrow_side_be_vertical) {
+        vertical_size_requirements_sufficient) {
       return possible_side;
     }
   }
@@ -361,7 +383,9 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
     base::span<const views::BubbleArrowSide> popup_preferred_sides,
     PopupAnchorType anchor_type) {
   // Determine the best side of the element to put the popup and get a
-  // corresponding arrow.
+  // corresponding arrow. In the best case, this side fully fits the popup at
+  // the `popup_preferred_size`. Otherwise, the popup is rendered on top or
+  // below the element, depending on where more space is available.
   views::BubbleArrowSide side = GetOptimalArrowSide(
       content_area_bounds, element_bounds, popup_preferred_size,
       popup_preferred_sides, anchor_type);
