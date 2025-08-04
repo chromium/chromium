@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+  </head>
+<body>
+  <script>
+    const worker = new SharedWorker('fetch-from-shared-worker-as-public-address.js');
+
+    let resolve;
+    worker.port.onmessage = e => { resolve(e.data); };
+    worker.port.start();
+
+    function fetch_from_shared_worker(url) {
+      let p = new Promise(r => { resolve = r; });
+      worker.port.postMessage({ url });
+      return p;
+    }
+  </script>
+</body></html>

@@ -4,6 +4,8 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +36,9 @@ constexpr char kLnaPath[] =
 
 constexpr char kWorkerHtmlPath[] =
     "/private_network_access/fetch-from-worker-as-public-address.html";
+
+constexpr char kSharedWorkerHtmlPath[] =
+    "/private_network_access/fetch-from-shared-worker-as-public-address.html";
 
 class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
  public:
@@ -251,6 +256,47 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, WorkerAcceptPermission) {
   std::string_view script_template = "fetch_from_worker($1);";
   // URL fetched, body is just the header that's set.
   EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       SharedWorkerDenyPermission) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kSharedWorkerHtmlPath)));
+
+  // Enable auto-deny of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_shared_worker($1);";
+  // Failure to fetch URL
+  EXPECT_EQ("TypeError: Failed to fetch",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+}
+
+// Known to not work. See crbug.com/434744665.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       SharedWorkerAcceptPermissionDoesNotWork) {
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kSharedWorkerHtmlPath)));
+
+  // Enable auto-deny of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_shared_worker($1);";
+  // Failure to fetch URL
+  EXPECT_EQ("TypeError: Failed to fetch",
             content::EvalJs(web_contents(),
                             content::JsReplace(script_template, fetch_url)));
 }
