@@ -495,11 +495,12 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   capture_callback_->Capture(audio_bus, capture_time, glitch_info,
                              buffer->params.volume);
   if (confirm_reads_via_shmem_) {
-    // Use Release_Store to create a memory barrier that ensures that
+    // Use memory_order_release to create a memory barrier that ensures that
     // callback_capture_->Capture() doesn't get moved to after has_unread_data
     // has been changed, which would risk that the other side overwrites the
     // memory while being used in Capture().
-    base::subtle::Release_Store(&(buffer->params.has_unread_data), 0);
+    std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+    has_unread_data.store(0, std::memory_order_release);
   }
 
   if (++current_segment_id_ >= total_segments_)

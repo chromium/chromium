@@ -226,9 +226,9 @@ class InputSyncWriterTest
     ptr += segment_id * segment_length_;
     media::AudioInputBuffer* buffer =
         reinterpret_cast<media::AudioInputBuffer*>(ptr);
-    EXPECT_EQ(base::subtle::NoBarrier_Load(&(buffer->params.has_unread_data)),
-              1);
-    base::subtle::Release_Store(&(buffer->params.has_unread_data), 0);
+    std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+    EXPECT_EQ(has_unread_data.load(std::memory_order_relaxed), 1u);
+    has_unread_data.store(0, std::memory_order_release);
     ++current_renderer_side_buffer_;
   }
 
