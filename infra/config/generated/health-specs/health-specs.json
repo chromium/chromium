@@ -747,27 +747,6 @@
           }
         ]
       },
-      "ChromeOS FYI Release Skylab (volteer)": {
-        "contact_team_email": "chrome-gpu-infra@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "ChromiumOS ASAN Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
         "problem_specs": [
@@ -1027,27 +1006,6 @@
         ]
       },
       "Dawn Android arm64 Release (Samsung S24)": {
-        "contact_team_email": "chrome-gpu-infra@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "Dawn ChromeOS Skylab Release (volteer)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
           {

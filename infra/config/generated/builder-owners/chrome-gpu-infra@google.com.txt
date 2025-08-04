@@ -8,7 +8,6 @@ ci/Android FYI Release (Samsung A23)
 ci/Android FYI Release (Samsung S23)
 ci/Android Release (Pixel 2)
 ci/ChromeOS FYI Release (amd64-generic)
-ci/ChromeOS FYI Release Skylab (volteer)
 ci/Dawn Android arm Builder
 ci/Dawn Android arm DEPS Builder
 ci/Dawn Android arm DEPS Release (Pixel 4)
@@ -19,7 +18,6 @@ ci/Dawn Android arm64 DEPS Release (Pixel 6)
 ci/Dawn Android arm64 Experimental Release (Pixel 6)
 ci/Dawn Android arm64 Release (Pixel 6)
 ci/Dawn Android arm64 Release (Samsung S24)
-ci/Dawn ChromeOS Skylab Release (volteer)
 ci/Dawn Chromium Presubmit
 ci/Dawn Linux TSAN Release
 ci/Dawn Linux x64 Builder
@@ -158,7 +156,6 @@ try/dawn-chromium-presubmit
 try/dawn-linux-x64-deps-rel
 try/dawn-mac-arm64-deps-rel
 try/dawn-mac-x64-deps-rel
-try/dawn-try-chromeos-volteer-rel
 try/dawn-try-linux-tsan-rel
 try/dawn-try-linux-x64-intel-uhd770-rel
 try/dawn-try-mac-amd-exp
@@ -187,7 +184,6 @@ try/gpu-fyi-try-android-q-pixel-2-32
 try/gpu-fyi-try-android-r-pixel-4-32
 try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
-try/gpu-fyi-try-chromeos-skylab-volteer
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-amd-rx-7600-rel
 try/gpu-fyi-try-linux-intel-exp

@@ -13,7 +13,7 @@
 #             android-sm-s911u1
 #         android-brya android-corsola
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus chromeos-board-volteer
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -254,16 +254,6 @@ crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
-
-# Extensions not available on volteer ChromeOS devices.
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_EXT_conservative_depth [ Skip ]
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_EXT_render_snorm [ Skip ]
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_OVR_multiview2 [ Skip ]
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_WEBGL_polygon_mode [ Skip ]
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-crbug.com/1505599 [ chromeos cros-chrome chromeos-board-volteer passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Parallel Shader compile/link is currently slower with Vulkan backend.
 crbug.com/angleproject/6748 [ angle-vulkan passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]

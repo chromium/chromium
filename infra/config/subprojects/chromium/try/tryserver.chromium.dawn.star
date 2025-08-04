@@ -534,20 +534,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "dawn-try-chromeos-volteer-rel",
-    mirrors = [
-        "ci/Dawn ChromeOS Skylab Release (volteer)",
-    ],
-    gn_args = "ci/Dawn ChromeOS Skylab Release (volteer)",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    max_concurrent_builds = 1,
-    test_presentation = resultdb.test_presentation(
-        grouping_keys = ["status", "v.test_suite", "v.gpu"],
-    ),
-)
-
-try_.builder(
     name = "dawn-try-linux-x64-intel-uhd770-rel",
     description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
     mirrors = [

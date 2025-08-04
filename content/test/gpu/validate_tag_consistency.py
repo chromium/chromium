@@ -194,7 +194,7 @@ TAG_HEADER = """\
 #             android-sm-s911u1
 #         android-brya android-corsola
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus chromeos-board-volteer
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform

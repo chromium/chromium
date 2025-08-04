@@ -66,21 +66,6 @@ targets.variant(
 )
 
 targets.variant(
-    name = "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-    identifier = "VOLTEER_PUBLIC_RELEASE_LKGM",
-    generate_pyl_entry = False,
-    skylab = targets.skylab(
-        bucket = "chromiumos-image-archive",
-        cros_board = "volteer",
-        cros_model = "voxel",
-        dut_pool = "chromium",
-        public_builder = "cros_test_platform_public",
-        public_builder_bucket = "testplatform-public",
-        use_lkgm = True,
-    ),
-)
-
-targets.variant(
     name = "CROS_GPU_BRYA_RELEASE_LKGM",
     identifier = "GPU_BRYA_RELEASE_LKGM",
     skylab = targets.skylab(

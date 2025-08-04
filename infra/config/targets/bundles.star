@@ -2526,45 +2526,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "dawn_chromeos_release_telemetry_tests_volteer_skylab",
-    targets = [
-        # TODO(crbug.com/340815322): Add gpu_dawn_webgpu_compat_cts once
-        # compat works properly on ChromeOS.
-        targets.bundle(
-            targets = "gpu_dawn_webgpu_cts",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "dawn_chromeos_release_tests_volteer_skylab",
-    targets = [
-        # gtests
-        targets.bundle(
-            targets = "gpu_common_gtests_passthrough",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_dawn_gtests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_dawn_gtests_with_validation",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "desktop_chromium_isolated_scripts",
     targets = [
         "blink_python_tests",
@@ -4174,21 +4135,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_fyi_chromeos_release_gtests_volteer_skylab",
-    targets = [
-        # gpu_angle_unit_gtests and gpu_desktop_specific_gtests should also be
-        # enabled here, but are removed for various reasons. See the definition
-        # for gpu_fyi_chromeos_release_gtests for more information.
-        targets.bundle(
-            targets = "gpu_common_gtests_passthrough",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -4197,48 +4143,6 @@ targets.bundle(
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-    ],
-)
-
-targets.bundle(
-    name = "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
-    targets = [
-        targets.bundle(
-            targets = "gpu_common_and_optional_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_passthrough_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webcodecs_telemetry_test",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webrtc_telemetry_test",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
     ],
 )
 

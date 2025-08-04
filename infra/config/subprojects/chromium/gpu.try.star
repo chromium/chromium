@@ -157,15 +157,6 @@ gpu_chromeos_builder(
     gn_args = "ci/ChromeOS FYI Release (amd64-generic)",
 )
 
-gpu_chromeos_builder(
-    name = "gpu-fyi-try-chromeos-skylab-volteer",
-    description_html = "Runs standard GPU tests on Skylab-hosted volteer devices",
-    mirrors = [
-        "ci/ChromeOS FYI Release Skylab (volteer)",
-    ],
-    gn_args = "ci/ChromeOS FYI Release Skylab (volteer)",
-)
-
 def gpu_linux_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
