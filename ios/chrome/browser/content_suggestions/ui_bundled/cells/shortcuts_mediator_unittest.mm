@@ -8,6 +8,7 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
@@ -18,9 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -35,12 +34,7 @@
 class ShortcutsMediatorTest : public PlatformTest {
  public:
   ShortcutsMediatorTest() {
-    TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegate(
-            std::make_unique<FakeAuthenticationServiceDelegate>()));
-    profile_ = std::move(builder).Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
     auto storage = std::make_unique<FakeReadingListModelStorage>();
     base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
@@ -56,12 +50,12 @@ class ShortcutsMediatorTest : public PlatformTest {
     mock_ntp_actions_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
 
-    AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
     mediator_ = [[ShortcutsMediator alloc]
         initWithReadingListModel:reading_list_model_.get()
         featureEngagementTracker:&tracker_
-                     authService:authentication_service];
+                 identityManager:identity_manager];
 
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     mediator_.dispatcher = dispatcher_;

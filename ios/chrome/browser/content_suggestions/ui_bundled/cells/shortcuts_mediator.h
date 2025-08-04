@@ -13,8 +13,11 @@ namespace feature_engagement {
 class Tracker;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 @protocol ApplicationCommands;
-class AuthenticationService;
 @protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMetricsRecorder;
@@ -60,7 +63,8 @@ class ReadingListModel;
 // Default initializer.
 - (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel
                 featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                             authService:(AuthenticationService*)authService
+                         identityManager:
+                             (signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

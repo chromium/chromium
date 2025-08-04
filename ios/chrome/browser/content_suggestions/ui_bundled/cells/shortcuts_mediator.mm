@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_commands.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 
 @interface ShortcutsConsumerList : CRBProtocolObservers <ShortcutsConsumer>
@@ -49,19 +49,20 @@
   NSInteger _readingListUnreadCount;
   //  ShortcutsConfig* _shortcutsConfig;
   raw_ptr<feature_engagement::Tracker> _tracker;
-  raw_ptr<AuthenticationService> _authService;
+  raw_ptr<signin::IdentityManager> _identityManager;
   ShortcutsConsumerList* _consumers;
 }
 
 - (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel
                 featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                             authService:(AuthenticationService*)authService {
+                         identityManager:
+                             (signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
     _tracker = tracker;
-    _authService = authService;
+    _identityManager = identityManager;
 
     _shortcutsConfig = [[ShortcutsConfig alloc] init];
     _shortcutsConfig.shortcutItems = [self shortcutItems];
@@ -76,7 +77,7 @@
 - (void)disconnect {
   _readingListModelBridge.reset();
   _tracker = nil;
-  _authService = nil;
+  _identityManager = nil;
 }
 
 - (NSArray<ContentSuggestionsMostVisitedActionItem*>*)shortcutItems {
@@ -178,7 +179,7 @@
   }
 
   BOOL isSignedIn =
-      _authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 
   return !isSignedIn;
 }

@@ -285,12 +285,10 @@ class MagicStackRankingModelTest : public PlatformTest {
         ReadingListModelFactory::GetForProfile(GetProfile());
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(GetProfile());
-    AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForProfile(GetProfile());
     _shortcutsMediator = [[ShortcutsMediator alloc]
         initWithReadingListModel:readingListModel
         featureEngagementTracker:(feature_engagement::Tracker*)tracker
-                     authService:authentication_service];
+                 identityManager:identityManager];
     _setUpListMediator = [[FakeSetUpListMediator alloc]
                    initWithPrefService:GetProfile()->GetPrefs()
                  authenticationService:authenticationService
