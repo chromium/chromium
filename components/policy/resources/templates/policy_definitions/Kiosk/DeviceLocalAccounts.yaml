@@ -5,18 +5,58 @@ desc: |-
         If the policy is unset or an empty list, there are no device-local accounts.
 device_only: true
 example_value:
-- demo@example.com
+- account_id: impjpekpbbjbphdokggglkmcnjpigcgf
+  type: 1 # Chrome App
+  kiosk_app:
+    app_id: impjpekpbbjbphdokggglkmcnjpigcgf
+    update_url: https://example.com/updates.xml
+- account_id: https://example.com
+  type: 4 # Web App
+  web_kiosk_app:
+    url: https://example.com
+- account_id: aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai
+  type: 5 # Isolated Web App
+  isolated_kiosk_app:
+    web_bundle_id: aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai
+    update_manifest_url: https://example.com/update.json
 features:
   dynamic_refresh: true
 owners:
 - file://components/policy/OWNERS
 - zmin@chromium.org
 schema:
-  items:
-    type: string
   type: array
+  items:
+    type: object
+    properties:
+      account_id:
+        type: string
+      type:
+        type: integer
+      kiosk_app:
+        type: object
+        properties:
+          app_id:
+            type: string
+          update_url:
+            type: string
+      web_kiosk_app:
+        type: object
+        properties:
+          url:
+            type: string
+      isolated_kiosk_app:
+        type: object
+        properties:
+          web_bundle_id:
+            type: string
+          update_manifest_url:
+            type: string
+    required:
+    - account_id
+    - type
 supported_on:
 - chrome_os:25-
 tags: []
-type: list
+type: dict
 generate_device_proto: False
