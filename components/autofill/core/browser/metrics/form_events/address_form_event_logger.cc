@@ -131,8 +131,9 @@ void AddressFormEventLogger::OnDidShowSuggestions(
     base::TimeTicks form_parsed_timestamp,
     bool off_the_record,
     base::span<const Suggestion> suggestions) {
-  FormEventLoggerBase::OnDidShowSuggestions(form, field, form_parsed_timestamp,
-                                            off_the_record, suggestions);
+  FormEventLoggerBase::OnDidShowSuggestions(
+      form, field, field.Type().GetAddressType(), form_parsed_timestamp,
+      off_the_record, suggestions);
 
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForHomeAndWork)) {

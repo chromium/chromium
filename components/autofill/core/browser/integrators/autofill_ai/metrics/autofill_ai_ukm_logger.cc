@@ -228,9 +228,16 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
   const int form_event_order = field_event_count_per_form_[form.global_id()]++;
   const uint64_t field_session_identifier =
       autofill_metrics::FieldGlobalIdToHash64Bit(field.global_id());
-  const auto field_type = base::to_underlying(field.Type().GetStorableType());
+  const FieldTypeSet field_types = field.Type().GetTypes();
+  const FieldTypeSet ai_field_types = {
+      field.GetAutofillAiServerTypePredictions().value_or(UNKNOWN_TYPE)};
+
+  // TODO(crbug.com/432645177): Emit multiple `field_types` and
+  // `ai_field_types`.
+  const auto field_type = base::to_underlying(
+      !field_types.empty() ? *field_types.begin() : UNKNOWN_TYPE);
   const auto ai_field_type = base::to_underlying(
-      field.GetAutofillAiServerTypePredictions().value_or(UNKNOWN_TYPE));
+      !ai_field_types.empty() ? *ai_field_types.begin() : UNKNOWN_TYPE);
 
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();
@@ -275,6 +282,8 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
     return;
   }
 
+  // TODO(crbug.com/432645177): Emit more than just one FieldType and
+  // FieldTypeGroup.
   ukm::builders::AutofillAi_FieldEvent(ukm_source_id)
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFormSessionIdentifier(form_session_identifier)

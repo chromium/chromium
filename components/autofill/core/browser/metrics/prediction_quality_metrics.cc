@@ -825,10 +825,12 @@ void LogOverallPredictionQualityMetrics(
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
-  LogPredictionQualityMetrics(
-      PREDICTION_SOURCE_OVERALL, field.Type().GetStorableType(),
-      form_interactions_ukm_logger, source_id, form, field, metric_type,
-      /*log_rationalization_metrics=*/true);
+  for (FieldType field_type : field.Type().GetTypes()) {
+    LogPredictionQualityMetrics(PREDICTION_SOURCE_OVERALL, field_type,
+                                form_interactions_ukm_logger, source_id, form,
+                                field, metric_type,
+                                /*log_rationalization_metrics=*/true);
+  }
 }
 
 void LogEmailFieldPredictionMetrics(const AutofillField& field) {

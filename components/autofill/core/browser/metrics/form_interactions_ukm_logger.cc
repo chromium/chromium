@@ -118,10 +118,15 @@ void FormInteractionsUkmLogger::LogEditedAutofilledFieldAtSubmission(
     return;
   }
 
+  FieldTypeSet field_types = field.Type().GetTypes();
+  auto field_type = static_cast<uint64_t>(
+      !field_types.empty() ? *field_types.begin() : NO_SERVER_DATA);
+
+  // TODO(crbug.com/432645177): Emit more than just one FieldType.
   ukm::builders::Autofill_EditedAutofilledFieldAtSubmission(ukm_source_id)
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
-      .SetOverallType(static_cast<int64_t>(field.Type().GetStorableType()))
+      .SetOverallType(field_type)
       .Record(autofill_client_->GetUkmRecorder());
 }
 
@@ -133,10 +138,16 @@ void FormInteractionsUkmLogger::LogTextFieldValueChanged(
     return;
   }
 
+  FieldTypeGroupSet field_type_groups = field.Type().GetGroups();
+  auto field_type_group = static_cast<uint64_t>(!field_type_groups.empty()
+                                                    ? *field_type_groups.begin()
+                                                    : FieldTypeGroup::kNoGroup);
+
+  // TODO(crbug.com/432645177): Emit more than just one FieldTypeGroup.
   ukm::builders::Autofill_TextFieldDidChange(ukm_source_id)
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetFieldTypeGroup(static_cast<int>(field.Type().group()))
+      .SetFieldTypeGroup(field_type_group)
       .SetHeuristicType(static_cast<int>(field.heuristic_type()))
       .SetServerType(static_cast<int>(field.server_type()))
       .SetHtmlFieldType(static_cast<int>(field.html_type()))
@@ -716,68 +727,70 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
   int day_in_ablation_window = -1;
 
   for (const std::unique_ptr<AutofillField>& field : form_structure.fields()) {
-    FormType form_type = FieldTypeGroupToFormType(field->Type().group());
-    if (form_type == FormType::kUnknownFormType) {
-      continue;
-    }
-
-    some_classified_field_was_focused |= field->was_focused();
-
-    OptionalBoolean had_value_after_filling = OptionalBoolean::kUndefined;
-    OptionalBoolean has_value_after_typing = OptionalBoolean::kUndefined;
-
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
-        field->field_log_events();
-
-    bool current_field_was_autofilled = false;
-    for (const AutofillField::FieldLogEventType& log_event : field_log_events) {
-      if (auto* event =
-              std::get_if<AskForValuesToFillFieldLogEvent>(&log_event)) {
-        autofill_data_queried.insert(form_type);
-        if (event->has_suggestion == OptionalBoolean::kTrue) {
-          suggestions_available.insert(form_type);
-        }
+    for (FormType form_type : field->Type().GetFormTypes()) {
+      if (form_type == FormType::kUnknownFormType) {
+        continue;
       }
 
-      if (auto* event = std::get_if<FillFieldLogEvent>(&log_event)) {
-        if (event->filling_prevented_by_iframe_security_policy ==
-            OptionalBoolean::kFalse) {
+      some_classified_field_was_focused |= field->was_focused();
+
+      OptionalBoolean had_value_after_filling = OptionalBoolean::kUndefined;
+      OptionalBoolean has_value_after_typing = OptionalBoolean::kUndefined;
+
+      const std::vector<AutofillField::FieldLogEventType>& field_log_events =
+          field->field_log_events();
+
+      bool current_field_was_autofilled = false;
+      for (const AutofillField::FieldLogEventType& log_event :
+           field_log_events) {
+        if (auto* event =
+                std::get_if<AskForValuesToFillFieldLogEvent>(&log_event)) {
+          autofill_data_queried.insert(form_type);
+          if (event->has_suggestion == OptionalBoolean::kTrue) {
+            suggestions_available.insert(form_type);
+          }
+        }
+
+        if (auto* event = std::get_if<FillFieldLogEvent>(&log_event)) {
+          if (event->filling_prevented_by_iframe_security_policy ==
+              OptionalBoolean::kFalse) {
+            user_modified.insert(form_type);
+            autofilled.insert(form_type);
+            current_field_was_autofilled = true;
+            had_value_after_filling = event->had_value_after_filling;
+          }
+        }
+
+        if (auto* event = std::get_if<TypingFieldLogEvent>(&log_event)) {
           user_modified.insert(form_type);
-          autofilled.insert(form_type);
-          current_field_was_autofilled = true;
-          had_value_after_filling = event->had_value_after_filling;
+          if (current_field_was_autofilled) {
+            edited_after_autofill.insert(form_type);
+          }
+          has_value_after_typing = event->has_value_after_typing;
+        }
+
+        if (auto* event = std::get_if<AblationFieldLogEvent>(&log_event)) {
+          if (event->ablation_group == AblationGroup::kControl) {
+            control_group_of_ablation.insert(form_type);
+          } else if (event->ablation_group == AblationGroup::kAblation) {
+            ablation_group_of_ablation.insert(form_type);
+          }
+          if (event->conditional_ablation_group == AblationGroup::kControl) {
+            control_group_of_conditional_ablation.insert(form_type);
+          } else if (event->conditional_ablation_group ==
+                     AblationGroup::kAblation) {
+            ablation_group_of_conditional_ablation.insert(form_type);
+          }
+          if (event->day_in_ablation_window >= 0) {
+            day_in_ablation_window = event->day_in_ablation_window;
+          }
         }
       }
 
-      if (auto* event = std::get_if<TypingFieldLogEvent>(&log_event)) {
-        user_modified.insert(form_type);
-        if (current_field_was_autofilled) {
-          edited_after_autofill.insert(form_type);
-        }
-        has_value_after_typing = event->has_value_after_typing;
+      if (had_value_after_filling == OptionalBoolean::kTrue ||
+          has_value_after_typing == OptionalBoolean::kTrue) {
+        had_non_empty_value_at_submission.insert(form_type);
       }
-
-      if (auto* event = std::get_if<AblationFieldLogEvent>(&log_event)) {
-        if (event->ablation_group == AblationGroup::kControl) {
-          control_group_of_ablation.insert(form_type);
-        } else if (event->ablation_group == AblationGroup::kAblation) {
-          ablation_group_of_ablation.insert(form_type);
-        }
-        if (event->conditional_ablation_group == AblationGroup::kControl) {
-          control_group_of_conditional_ablation.insert(form_type);
-        } else if (event->conditional_ablation_group ==
-                   AblationGroup::kAblation) {
-          ablation_group_of_conditional_ablation.insert(form_type);
-        }
-        if (event->day_in_ablation_window >= 0) {
-          day_in_ablation_window = event->day_in_ablation_window;
-        }
-      }
-    }
-
-    if (had_value_after_filling == OptionalBoolean::kTrue ||
-        has_value_after_typing == OptionalBoolean::kTrue) {
-      had_non_empty_value_at_submission.insert(form_type);
     }
   }
 
@@ -838,11 +851,23 @@ void FormInteractionsUkmLogger::LogHiddenRepresentationalFieldSkipDecision(
     return;
   }
 
+  FieldTypeSet field_types = field.Type().GetTypes();
+  auto field_type = static_cast<uint64_t>(
+      !field_types.empty() ? *field_types.begin() : NO_SERVER_DATA);
+
+  FieldTypeGroupSet field_type_groups = field.Type().GetGroups();
+  auto field_type_group = static_cast<uint64_t>(!field_type_groups.empty()
+                                                    ? *field_type_groups.begin()
+                                                    : FieldTypeGroup::kNoGroup);
+
+  // TODO(crbug.com/432645177): Emit more than just one FieldType and
+  // FieldTypeGroup.
+  // TODO(crbug.com/432645177): Emit the AutofillField::autofilled_type()?
   ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision(ukm_source_id)
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetFieldTypeGroup(static_cast<int>(field.Type().group()))
-      .SetFieldOverallType(static_cast<int>(field.Type().GetStorableType()))
+      .SetFieldTypeGroup(field_type_group)
+      .SetFieldOverallType(field_type)
       .SetHeuristicType(static_cast<int>(field.heuristic_type()))
       .SetServerType(static_cast<int>(field.server_type()))
       .SetHtmlFieldType(static_cast<int>(field.html_type()))

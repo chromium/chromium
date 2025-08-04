@@ -117,6 +117,7 @@ void FormEventLoggerBase::OnDidParseForm(const FormStructure& form) {
 void FormEventLoggerBase::OnDidShowSuggestions(
     const FormStructure& form,
     const AutofillField& field,
+    FieldType field_type,
     base::TimeTicks form_parsed_timestamp,
     bool off_the_record,
     base::span<const Suggestion> suggestions) {
@@ -133,7 +134,6 @@ void FormEventLoggerBase::OnDidShowSuggestions(
 
   has_logged_autocomplete_off_ |= field.autocomplete_attribute() == "off";
 
-  FieldType field_type = field.Type().GetStorableType();
   // Do not mark the field as shown if it was already accepted.
   if (!field_types_with_accepted_suggestions_.contains(field_type)) {
     field_types_with_shown_suggestions_.insert(field_type);

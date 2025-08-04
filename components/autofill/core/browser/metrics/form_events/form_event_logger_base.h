@@ -41,11 +41,14 @@ class FormEventLoggerBase {
 
   void OnDidParseForm(const FormStructure& form);
 
-  virtual void OnDidShowSuggestions(const FormStructure& form,
-                                    const AutofillField& field,
-                                    base::TimeTicks form_parsed_timestamp,
-                                    bool off_the_record,
-                                    base::span<const Suggestion> suggestions);
+  // Derived classes should call the protected overload of
+  // OnDidShowSuggestions().
+  virtual void OnDidShowSuggestions(
+      const FormStructure& form,
+      const AutofillField& field,
+      base::TimeTicks form_parsed_timestamp,
+      bool off_the_record,
+      base::span<const Suggestion> suggestions) = 0;
 
   void OnDidRefill(const FormStructure& form);
 
@@ -108,6 +111,16 @@ class FormEventLoggerBase {
   virtual void RecordPollSuggestions() = 0;
   virtual void RecordParseForm() = 0;
   virtual void RecordShowSuggestions() = 0;
+
+  // Overload of the public OnDidShowSuggestions() that additionally takes the
+  // relevant `field_type` of `field`. To be called by derived class's
+  // implementation of the pure virtual overload of OnDidShowSuggestions().
+  void OnDidShowSuggestions(const FormStructure& form,
+                            const AutofillField& field,
+                            FieldType field_type,
+                            base::TimeTicks form_parsed_timestamp,
+                            bool off_the_record,
+                            base::span<const Suggestion> suggestions);
 
   // Shared logic of `OnEdited[NonFilled|Autofilled]Field`, called irrespective
   // of the autofill state of the field represented by `field_global_id`.

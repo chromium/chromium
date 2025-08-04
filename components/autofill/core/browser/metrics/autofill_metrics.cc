@@ -574,10 +574,11 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
       "Autofill.EditedAutofilledFieldAtSubmission2.Aggregate", editing_metric);
 
   // Record the type specific UMA statistics.
-  base::UmaHistogramSparse(
-      "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType",
-      GetFieldTypeUserEditStatusMetric(field.Type().GetStorableType(),
-                                       editing_metric));
+  if (std::optional<FieldType> ft = field.autofilled_type()) {
+    base::UmaHistogramSparse(
+        "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType",
+        GetFieldTypeUserEditStatusMetric(*ft, editing_metric));
+  }
 
   // Record the metric for Autofill AI specific fields.
   if (field.filling_product() == FillingProduct::kAutofillAi) {
@@ -593,15 +594,17 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
   }
 
   // Record the UMA statistics spliced by the autocomplete attribute value.
-  FormType form_type = FieldTypeGroupToFormType(field.Type().group());
-  if (form_type == FormType::kAddressForm ||
-      form_type == FormType::kCreditCardForm) {
-    bool autocomplete_off = field.autocomplete_attribute() == "off";
-    const std::string autocomplete_histogram = base::StrCat(
-        {"Autofill.Autocomplete.", autocomplete_off ? "Off" : "NotOff",
-         ".EditedAutofilledFieldAtSubmission2.",
-         form_type == FormType::kAddressForm ? "Address" : "CreditCard"});
-    base::UmaHistogramEnumeration(autocomplete_histogram, editing_metric);
+  if (std::optional<FieldType> ft = field.autofilled_type()) {
+    FormType form_type = FieldTypeGroupToFormType(GroupTypeOfFieldType(*ft));
+    if (form_type == FormType::kAddressForm ||
+        form_type == FormType::kCreditCardForm) {
+      bool autocomplete_off = field.autocomplete_attribute() == "off";
+      const std::string autocomplete_histogram = base::StrCat(
+          {"Autofill.Autocomplete.", autocomplete_off ? "Off" : "NotOff",
+           ".EditedAutofilledFieldAtSubmission2.",
+           form_type == FormType::kAddressForm ? "Address" : "CreditCard"});
+      base::UmaHistogramEnumeration(autocomplete_histogram, editing_metric);
+    }
   }
 
   // If the field was edited, record the event to UKM.

@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -198,6 +199,18 @@ class AutofillMetricsBaseTest {
     autofill_manager().AddSeenForm(form,
                                    test::GetHeuristicTypes(form_description),
                                    test::GetServerTypes(form_description));
+
+    // Set the AutofillField::autofilled_type() according to the
+    // `form_description`.
+    if (FormStructure* form_structure =
+            autofill_manager().FindCachedFormById(form.global_id())) {
+      for (auto [field, field_description] :
+           base::zip(form_structure->fields(), form_description.fields)) {
+        if (field->is_autofilled()) {
+          field->set_autofilled_type(field_description.role);
+        }
+      }
+    }
     return form;
   }
 

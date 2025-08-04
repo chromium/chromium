@@ -62,6 +62,17 @@ LoyaltyCardFormEventLogger::LoyaltyCardFormEventLogger(
 
 LoyaltyCardFormEventLogger::~LoyaltyCardFormEventLogger() = default;
 
+void LoyaltyCardFormEventLogger::OnDidShowSuggestions(
+    const FormStructure& form,
+    const AutofillField& field,
+    base::TimeTicks form_parsed_timestamp,
+    bool off_the_record,
+    base::span<const Suggestion> suggestions) {
+  FormEventLoggerBase::OnDidShowSuggestions(
+      form, field, field.Type().GetLoyaltyCardType(), form_parsed_timestamp,
+      off_the_record, suggestions);
+}
+
 void LoyaltyCardFormEventLogger::UpdateLoyaltyCardsAvailabilityForReadiness(
     const std::vector<LoyaltyCard>& loyalty_cards,
     const GURL& url) {
