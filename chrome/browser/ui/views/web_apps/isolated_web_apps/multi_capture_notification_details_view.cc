@@ -162,7 +162,7 @@ MultiCaptureNotificationDetailsView::MultiCaptureNotificationDetailsView(
 
   auto* admin_icon = AddChildView(std::make_unique<views::ImageView>());
   admin_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, ui::kColorIcon, 24));
+      vector_icons::kBusinessIcon, ui::kColorAccent, 24));
   admin_icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   const int vertical_margin =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
