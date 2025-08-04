@@ -263,8 +263,9 @@ FakeSystemIdentityManager::CreateRefreshAccessTokenFailure(
   FakeSystemIdentityDetails* details =
       [storage_ detailsForGaiaID:identity.gaiaID];
   details.error = [[FakeRefreshAccessTokenError alloc]
-      initWithIdentity:identity
-              callback:std::move(callback)];
+         initWithIdentity:identity
+      isScopeLimitedError:false
+                 callback:std::move(callback)];
   return details.error;
 }
 
@@ -475,6 +476,12 @@ bool FakeSystemIdentityManager::HandleMDMNotification(
               base::BindOnce(fake_refresh_access_token_error.callback,
                              std::move(callback)));
   return true;
+}
+
+bool FakeSystemIdentityManager::IsScopeLimitedError(
+    id<RefreshAccessTokenError> error) {
+  return base::apple::ObjCCastStrict<FakeRefreshAccessTokenError>(error)
+      .isScopeLimitedError;
 }
 
 bool FakeSystemIdentityManager::IsMDMError(id<SystemIdentity> identity,

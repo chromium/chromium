@@ -86,6 +86,9 @@ class TestSystemIdentityManager : public SystemIdentityManager {
                              HandleMDMCallback callback) final {
     NOTREACHED();
   }
+  bool IsScopeLimitedError(id<RefreshAccessTokenError> error) final {
+    NOTREACHED();
+  }
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final {
     NOTREACHED();
   }

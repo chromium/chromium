@@ -613,6 +613,15 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
 
   SystemIdentityManager* system_identity_manager =
       GetApplicationContext()->GetSystemIdentityManager();
+  if (base::FeatureList::IsEnabled(switches::kAllowlistScopesForMdmErrors)) {
+    bool scope_limited_error_suppressed =
+        system_identity_manager->IsScopeLimitedError(error);
+    base::UmaHistogramBoolean("Signin.ScopeLimitedErrorSuppressed",
+                              scope_limited_error_suppressed);
+    if (scope_limited_error_suppressed) {
+      return false;
+    }
+  }
 
   if (system_identity_manager->HandleMDMNotification(
           identity, ActiveIdentities(), error,

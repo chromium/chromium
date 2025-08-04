@@ -22,6 +22,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
@@ -192,7 +193,8 @@ class AuthenticationServiceTestBase : public PlatformTest {
   id<RefreshAccessTokenError> CreateRefreshAccessTokenError(
       id<SystemIdentity> identity,
       uint32_t* invocation_counter = nullptr,
-      bool is_identity_blocked = false) {
+      bool is_identity_blocked = false,
+      bool is_scope_limited_error = false) {
     auto mdm_callback = base::BindRepeating(
         [](uint32_t* counter, bool is_blocked, HandleMDMCallback callback) {
           if (counter) {
@@ -202,8 +204,9 @@ class AuthenticationServiceTestBase : public PlatformTest {
         },
         invocation_counter, is_identity_blocked);
     id<RefreshAccessTokenError> mdm_error = [[FakeRefreshAccessTokenError alloc]
-        initWithIdentity:identity
-                callback:std::move(mdm_callback)];
+           initWithIdentity:identity
+        isScopeLimitedError:is_scope_limited_error
+                   callback:std::move(mdm_callback)];
     GetAccessTokenCallback callback = base::BindRepeating(
         [](id<RefreshAccessTokenError> mdm_error,
            SystemIdentityManager::AccessTokenCallback cb)
@@ -702,6 +705,36 @@ TEST_P(AuthenticationServiceTest, HandleMDMNotification) {
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   EXPECT_EQ(invocation_counter1, 1u);
   EXPECT_EQ(invocation_counter2, 1u);
+}
+
+// Tests that MDM notification is suppressed for scope limited errors.
+TEST_P(AuthenticationServiceTest, HandleMDMNotificationSuppressed) {
+  base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histogram_tester;
+  feature_list.InitAndEnableFeature(switches::kAllowlistScopesForMdmErrors);
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kUnknown);
+  VerifyLastSigninTimestamp();
+
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager(), GetAccountId(identity(0)), error);
+
+  uint32_t invocation_counter = 0;
+  id<RefreshAccessTokenError> mdm_error = CreateRefreshAccessTokenError(
+      identity(0), &invocation_counter, /*is_identity_blocked*/ false,
+      /*is_scope_limited_error*/ true);
+  ASSERT_TRUE(mdm_error);
+
+  // MDM notification handling will be suppressed.
+  FireAccessTokenRefreshFailed(identity(0), mdm_error);
+  fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
+  EXPECT_EQ(invocation_counter, 0u);
+  histogram_tester.ExpectBucketCount("Signin.ScopeLimitedErrorSuppressed", true,
+                                     1);
 }
 
 // Tests that MDM blocked notifications are correctly signing out the user if

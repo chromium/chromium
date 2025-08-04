@@ -2739,6 +2739,20 @@ accounts .-->
   </summary>
 </histogram>
 
+<histogram name="Signin.ScopeLimitedErrorSuppressed" enum="Boolean"
+    expires_after="2025-12-01">
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records whether mdm notification was suppressed for scope limited errors.
+    Every time chrome tries to get an access token for a set of scopes and gets
+    an error, we will call mdm service to check if it wants to show a
+    notification for this error. If it's a scope limited error we will not call
+    the mdm service. So any notification it would have shown is effectively
+    suppressed. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SetCookieSuccess" enum="BooleanSuccess"
     expires_after="never">
 <!-- expires-never: For monitoring setting cookies in the cookie jar after an
