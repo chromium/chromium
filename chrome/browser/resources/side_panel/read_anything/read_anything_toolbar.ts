@@ -443,6 +443,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.restoreFontMenu_();
 
     this.updateLinkToggleButton();
+    this.updateImagesToggleButton();
 
     if (this.isReadAloudEnabled_) {
       this.speechRate_ = getCurrentSpeechRate();
