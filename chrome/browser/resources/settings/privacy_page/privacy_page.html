@@ -8,6 +8,19 @@
         padding-bottom: 10px;
       }
 
+      settings-collapse-radio-button {
+        --settings-collapse-toggle-min-height: var(--cr-section-min-height);
+      }
+
+      settings-collapse-radio-button.two-line {
+        --settings-collapse-toggle-min-height:
+            var(--cr-section-two-line-min-height);
+      }
+
+      settings-collapse-radio-button:not(:first-of-type) {
+        --settings-collapse-separator-line: var(--cr-separator-line);
+      }
+
       .cpss-heading {
         padding-bottom: 13px;
         padding-top: 13px;
@@ -484,8 +497,31 @@
       </template>
       <template is="dom-if" route-path="/content/pdfDocuments" no-search>
         <settings-subpage page-title="$i18n{siteSettingsPdfDocuments}">
-          <settings-pdf-documents-page prefs="{{prefs}}"
-          </settings-pdf-documents-page>
+          <div class="radio-group">
+            <div class="secondary">$i18n{siteSettingsPdfsDescription}</div>
+            <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+            <div class="secondary radio-sub-heading">
+              $i18n{siteSettingsDefaultBehaviorDescription}
+            </div>
+            <settings-radio-group
+                pref="{{prefs.plugins.always_open_pdf_externally}}"
+                selectable-elements="settings-collapse-radio-button">
+              <settings-collapse-radio-button no-collapse
+                  pref="[[prefs.plugins.always_open_pdf_externally]]"
+                  label="$i18n{siteSettingsPdfsAllowed}"
+                  name="true"
+                  disabled$="[[isGuest_]]"
+                  icon="cr:file-download">
+              </settings-collapse-radio-button>
+              <settings-collapse-radio-button no-collapse
+                  pref="[[prefs.plugins.always_open_pdf_externally]]"
+                  label="$i18n{siteSettingsPdfsBlocked}"
+                  name="false"
+                  disabled$="[[isGuest_]]"
+                  icon="privacy:open-in-browser">
+              </settings-collapse-radio-button>
+            </settings-radio-group>
+          </div>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/javascript" no-search>
