@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -14,13 +17,12 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Browser;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -41,6 +43,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
  * Manages all SendTabToSelf related notifications for Android. This includes displaying, handling
  * taps, and timeouts.
  */
+@NullMarked
 public class NotificationManager {
     private static final String NOTIFICATION_GUID_EXTRA = "send_tab_to_self.notification.guid";
     // Action constants for the registered BroadcastReceiver.
@@ -53,7 +56,7 @@ public class NotificationManager {
      *
      * @param uri The URI to open.
      */
-    private static void openUrl(Uri uri) {
+    private static void openUrl(@Nullable Uri uri) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent =
                 new Intent()
@@ -68,8 +71,9 @@ public class NotificationManager {
     }
 
     public static void handleIntent(Intent intent) {
-        final String action = intent.getAction();
+        final String action = assertNonNull(intent.getAction());
         final String guid = IntentUtils.safeGetStringExtra(intent, NOTIFICATION_GUID_EXTRA);
+        assertNonNull(guid);
         // If this feature ever supports incognito mode, we need to modify
         // this method to obtain the current profile, rather than the last-used
         // regular profile.
@@ -103,7 +107,7 @@ public class NotificationManager {
     @CalledByNative
     private static boolean hideNotification(@Nullable String guid) {
         NotificationSharedPrefManager.ActiveNotification activeNotification =
-                NotificationSharedPrefManager.findActiveNotification(guid);
+                assumeNonNull(NotificationSharedPrefManager.findActiveNotification(guid));
         if (!NotificationSharedPrefManager.removeActiveNotification(guid)) {
             return false;
         }
@@ -125,7 +129,7 @@ public class NotificationManager {
     @CalledByNative
     private static boolean showNotification(
             String guid,
-            @NonNull String url,
+            String url,
             String title,
             String deviceName,
             long timeoutAtMillis,
