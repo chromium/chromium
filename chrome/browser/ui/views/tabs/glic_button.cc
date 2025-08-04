@@ -66,12 +66,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   SetTooltipText(tooltip);
   GetViewAccessibility().SetName(tooltip);
 
-  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-
-  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
-  SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-  SetBackgroundFrameInactiveColorId(
-      kColorNewTabButtonCRBackgroundFrameInactive);
+  SetDefaultColors();
 
   UpdateColors();
 
@@ -231,6 +226,20 @@ void GlicButton::AnnounceNudgeShown() {
       IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT,
       GlicLauncherConfiguration::GetGlobalHotkey().GetShortcutText());
   GetViewAccessibility().AnnounceAlert(announcement);
+}
+
+void GlicButton::HighlightGlicButton() {
+  SetBackgroundFrameActiveColorId(kColorTabBackgroundInactiveHoverFrameActive);
+  SetBackgroundFrameInactiveColorId(
+      kColorTabBackgroundInactiveHoverFrameInactive);
+}
+
+void GlicButton::SetDefaultColors() {
+  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
+  SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+  SetBackgroundFrameInactiveColorId(
+      kColorNewTabButtonCRBackgroundFrameInactive);
 }
 
 BEGIN_METADATA(GlicButton)

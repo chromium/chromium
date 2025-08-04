@@ -529,7 +529,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       browser()->browser_window_features()->glic_actor_task_icon_controller();
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::UiState::kActive,
-      glic::GlicWindowController::State::kClosed);
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation);
 
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
@@ -540,7 +541,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::UiState::kInactive,
-      glic::GlicWindowController::State::kClosed);
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation);
 
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   EXPECT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
@@ -557,7 +559,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::UiState::kCheckTasks,
-      glic::GlicWindowController::State::kClosed);
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation);
 
   ASSERT_TRUE(tab_strip_action_container()
                   ->animation_session_for_testing()
@@ -574,7 +577,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::UiState::kInactive,
-      glic::GlicWindowController::State::kClosed);
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation);
 
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
@@ -588,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::UiState::kCheckTasks,
-      glic::GlicWindowController::State::kClosed);
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation);
 
   ASSERT_TRUE(tab_strip_action_container()
                   ->animation_session_for_testing()
@@ -605,7 +610,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::UiState::kActive,
-      glic::GlicWindowController::State::kClosed);
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation);
 
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());

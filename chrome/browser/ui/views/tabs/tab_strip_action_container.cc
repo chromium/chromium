@@ -650,6 +650,44 @@ bool TabStripActionContainer::GetIsShowingGlicActorTaskIconNudge() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
+void TabStripActionContainer::HighlightGlicActorTaskIcon() {
+#if BUILDFLAG(ENABLE_GLIC)
+  CHECK(glic_actor_task_icon_);
+
+  glic_actor_task_icon_->HighlightTaskIcon();
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+void TabStripActionContainer::UnhighlightGlicActorTaskIcon() {
+#if BUILDFLAG(ENABLE_GLIC)
+  CHECK(glic_actor_task_icon_);
+
+  glic_actor_task_icon_->SetDefaultColors();
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+void TabStripActionContainer::HighlightGlicButton() {
+#if BUILDFLAG(ENABLE_GLIC)
+  CHECK(glic_button_);
+  glic_button_->HighlightGlicButton();
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+void TabStripActionContainer::UnhighlightGlicButton() {
+#if BUILDFLAG(ENABLE_GLIC)
+  CHECK(glic_button_);
+  glic_button_->SetDefaultColors();
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
 DeclutterTriggerCTRBucket TabStripActionContainer::GetDeclutterTriggerBucket(
     bool clicked) {
   const auto total_tab_count =

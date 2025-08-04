@@ -1516,7 +1516,8 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
   Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
   if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
     actor_keyed_service->GetActorUiStateManager()->OnGlicUpdateFloatyState(
-        state_, last_active_browser);
+        state_, last_active_browser,
+        glic_service_->host().GetPrimaryCurrentView());
   }
 
   if (IsWindowOpenAndReady()) {

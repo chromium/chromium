@@ -145,6 +145,12 @@ class TabStripActionContainer : public views::View,
   void HideGlicActorTaskIcon();
   bool GetIsShowingGlicActorTaskIconNudge();
 
+  // UI controls for updating buttons based on the floaty view state:
+  void HighlightGlicActorTaskIcon();
+  void UnhighlightGlicActorTaskIcon();
+  void HighlightGlicButton();
+  void UnhighlightGlicButton();
+
   void UpdateButtonBorders(gfx::Insets button_insets);
 
   void DidBecomeActive(BrowserWindowInterface* browser);

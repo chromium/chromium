@@ -56,13 +56,17 @@ class ActorUiStateManagerInterface {
   // last active window before the floaty became active.
   virtual void OnGlicUpdateFloatyState(
       glic::GlicWindowController::State floaty_state,
-      BrowserWindowInterface* bwi) = 0;
+      BrowserWindowInterface* bwi,
+      glic::mojom::CurrentView current_view) = 0;
+
+  virtual void OnGlicCurrentViewChanged(glic::mojom::CurrentView new_view) = 0;
 
   // Register for this callback to detect changes to the glic floaty status and
   // UiState.
   using FloatyTaskStateChangeCallback =
       base::RepeatingCallback<void(ActorUiStateManagerInterface::UiState,
-                                   glic::GlicWindowController::State)>;
+                                   glic::GlicWindowController::State,
+                                   glic::mojom::CurrentView)>;
   virtual base::CallbackListSubscription RegisterFloatyTaskStateChange(
       FloatyTaskStateChangeCallback callback) = 0;
 #endif

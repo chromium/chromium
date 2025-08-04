@@ -40,7 +40,8 @@ void GlicActorTaskIconController::RegisterFloatyTaskStateCallback() {
 #if BUILDFLAG(ENABLE_GLIC)
 void GlicActorTaskIconController::OnStateUpdate(
     actor::ui::ActorUiStateManagerInterface::UiState task_state,
-    glic::GlicWindowController::State floaty_state) {
+    glic::GlicWindowController::State floaty_state,
+    glic::mojom::CurrentView floaty_view) {
   switch (task_state) {
     case actor::ui::ActorUiStateManagerInterface::UiState::kActive:
       tab_strip_action_container_->ShowGlicActorTaskIcon();
@@ -57,9 +58,18 @@ void GlicActorTaskIconController::OnStateUpdate(
     // Floaty state will only ever be sent if a task is not inactive (so if
     // the Task Icon is already open).
     case glic::GlicWindowController::State::kOpen:
-      // TODO(crbug.com/422439931): Highlight Gemini icon.
+      if (floaty_view == glic::mojom::CurrentView::kConversation) {
+        tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
+        tab_strip_action_container_->HighlightGlicButton();
+      } else if (floaty_view == glic::mojom::CurrentView::kActuation) {
+        tab_strip_action_container_->UnhighlightGlicButton();
+        tab_strip_action_container_->HighlightGlicActorTaskIcon();
+      }
+      break;
     case glic::GlicWindowController::State::kClosed:
-      // TODO(crbug.com/422439931): Unhighlight Gemini icon.
+      tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
+      tab_strip_action_container_->UnhighlightGlicButton();
+      break;
     case glic::GlicWindowController::State::kWaitingForGlicToLoad:
       break;
   }

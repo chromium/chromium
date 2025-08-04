@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/host/host.h"
 
 #include "base/containers/to_vector.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
@@ -321,6 +323,12 @@ void Host::OnViewChanged(GlicWebClientAccess* client,
   if (primary_current_view_ != new_view) {
     primary_current_view_ = new_view;
     observers_.Notify(&Observer::OnViewChanged, primary_current_view_);
+    // Call the ActorUiStateManager directly on view as we want to avoid adding
+    // any GlicKeyedService dependencies to the AUSM.
+    if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
+      actor_keyed_service->GetActorUiStateManager()->OnGlicCurrentViewChanged(
+          new_view);
+    }
   }
 }
 

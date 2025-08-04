@@ -73,6 +73,12 @@ class GlicButton : public TabStripNudgeButton,
 
   bool IsContextMenuShowingForTest();
 
+  // Sets the button back to its default colors.
+  void SetDefaultColors();
+
+  // Sets the button to its highlighted state.
+  void HighlightGlicButton();
+
  private:
   // Creates the model for the context menu.
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();

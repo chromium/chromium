@@ -171,14 +171,39 @@ TEST_F(ActorUiStateManagerTest, GlicUpdateFloatyState_NotifiesSubscribers) {
       actor_ui_state_manager()->RegisterFloatyTaskStateChange(
           base::BindRepeating(
               [](ActorUiStateManager::UiState actual_ui_state,
-                 glic::GlicWindowController::State actual_glic_state) {
+                 glic::GlicWindowController::State actual_glic_state,
+                 glic::mojom::CurrentView actual_glic_view) {
                 EXPECT_EQ(actual_ui_state,
                           ActorUiStateManager::UiState::kCheckTasks);
                 EXPECT_EQ(actual_glic_state,
                           glic::GlicWindowController::State::kOpen);
+                EXPECT_EQ(actual_glic_view,
+                          glic::mojom::CurrentView::kConversation);
               })));
   actor_ui_state_manager()->OnGlicUpdateFloatyState(
-      glic::GlicWindowController::State::kOpen, browser_window_interface());
+      glic::GlicWindowController::State::kOpen, browser_window_interface(),
+      glic::mojom::CurrentView::kConversation);
+}
+
+TEST_F(ActorUiStateManagerTest, OnGlicCurrentViewChanged_NotifiesSubscribers) {
+  std::vector<base::CallbackListSubscription> subscriptions;
+  actor_ui_state_manager()->SetUiStateForTesting(
+      ActorUiStateManager::UiState::kCheckTasks);
+  subscriptions.push_back(
+      actor_ui_state_manager()->RegisterFloatyTaskStateChange(
+          base::BindRepeating(
+              [](ActorUiStateManager::UiState actual_ui_state,
+                 glic::GlicWindowController::State actual_glic_state,
+                 glic::mojom::CurrentView actual_glic_view) {
+                EXPECT_EQ(actual_ui_state,
+                          ActorUiStateManager::UiState::kCheckTasks);
+                EXPECT_EQ(actual_glic_state,
+                          glic::GlicWindowController::State::kOpen);
+                EXPECT_EQ(actual_glic_view,
+                          glic::mojom::CurrentView::kConversation);
+              })));
+  actor_ui_state_manager()->OnGlicCurrentViewChanged(
+      glic::mojom::CurrentView::kConversation);
 }
 
 #endif

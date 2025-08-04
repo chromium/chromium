@@ -28,7 +28,8 @@ class GlicActorTaskIconController {
 
 #if BUILDFLAG(ENABLE_GLIC)
   void OnStateUpdate(actor::ui::ActorUiStateManagerInterface::UiState,
-                     glic::GlicWindowController::State floaty_state);
+                     glic::GlicWindowController::State floaty_state,
+                     glic::mojom::CurrentView floaty_view);
 #endif
 
  private:

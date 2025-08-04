@@ -34,7 +34,11 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 // functions from AUSM.
 #if BUILDFLAG(ENABLE_GLIC)
   void OnGlicUpdateFloatyState(glic::GlicWindowController::State floaty_state,
-                               BrowserWindowInterface* bwi) override;
+                               BrowserWindowInterface* bwi,
+                               glic::mojom::CurrentView current_view) override;
+
+  // Update the UI based on the current floaty view (conversation or actuation).
+  void OnGlicCurrentViewChanged(glic::mojom::CurrentView new_view) override;
 
   base::CallbackListSubscription RegisterFloatyTaskStateChange(
       FloatyTaskStateChangeCallback callback) override;
@@ -69,7 +73,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 #if BUILDFLAG(ENABLE_GLIC)
   using FloatyTaskStateChangeCallbackList =
       base::RepeatingCallbackList<void(ActorUiStateManagerInterface::UiState,
-                                       glic::GlicWindowController::State)>;
+                                       glic::GlicWindowController::State,
+                                       glic::mojom::CurrentView)>;
   FloatyTaskStateChangeCallbackList floaty_task_state_change_callback_list_;
 #endif
 
