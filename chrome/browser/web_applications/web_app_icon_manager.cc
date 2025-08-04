@@ -353,14 +353,15 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
     const base::FilePath& web_apps_directory,
     const webapps::AppId& app_id,
     IconPurpose purpose,
-    const std::vector<SquareSizePx>& icon_sizes) {
+    const std::vector<SquareSizePx>& icon_sizes,
+    bool read_trusted_icons) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconsBlocking");
   TypedResult<std::map<SquareSizePx, SkBitmap>> result;
 
   for (SquareSizePx icon_size_px : icon_sizes) {
     IconId icon_id(app_id, purpose, icon_size_px);
-    TypedResult<SkBitmap> read_result =
-        ReadIconBlocking(utils, web_apps_directory, icon_id);
+    TypedResult<SkBitmap> read_result = ReadIconBlocking(
+        utils, web_apps_directory, icon_id, read_trusted_icons);
     base::Extend(result.error_log, std::move(read_result.error_log));
     if (!read_result.value.empty()) {
       result.value[icon_size_px] = std::move(read_result.value);
@@ -451,22 +452,37 @@ ReadIconsLastUpdateTimeBlocking(scoped_refptr<FileUtilsWrapper> utils,
   return result;
 }
 
-TypedResult<IconBitmaps> ReadAllIconsBlocking(
+TypedResult<WebAppIconManager::WebAppBitmaps> ReadAllIconsBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const webapps::AppId& app_id,
     const std::map<IconPurpose, std::vector<SquareSizePx>>&
-        icon_purposes_to_sizes) {
+        manifest_icon_purpose_to_sizes,
+    const std::map<IconPurpose, std::vector<SquareSizePx>>&
+        trusted_icon_purpose_to_sizes) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadAllIconsBlocking");
-  TypedResult<IconBitmaps> result;
+  TypedResult<WebAppIconManager::WebAppBitmaps> result;
 
-  for (const auto& purpose_sizes : icon_purposes_to_sizes) {
+  // Read manifest icons (untrusted) first.
+  for (const auto& purpose_sizes : manifest_icon_purpose_to_sizes) {
     TypedResult<std::map<SquareSizePx, SkBitmap>> read_result =
         ReadIconsBlocking(utils, web_apps_directory, app_id,
-                          purpose_sizes.first, purpose_sizes.second);
+                          purpose_sizes.first, purpose_sizes.second,
+                          /*read_trusted_icons=*/false);
     base::Extend(result.error_log, std::move(read_result.error_log));
-    result.value.SetBitmapsForPurpose(purpose_sizes.first,
-                                      std::move(read_result.value));
+    result.value.manifest_icons.SetBitmapsForPurpose(
+        purpose_sizes.first, std::move(read_result.value));
+  }
+
+  // Read trusted icons next.
+  for (const auto& purpose_sizes : trusted_icon_purpose_to_sizes) {
+    TypedResult<std::map<SquareSizePx, SkBitmap>> read_result =
+        ReadIconsBlocking(utils, web_apps_directory, app_id,
+                          purpose_sizes.first, purpose_sizes.second,
+                          /*read_trusted_icons=*/true);
+    base::Extend(result.error_log, std::move(read_result.error_log));
+    result.value.trusted_icons.SetBitmapsForPurpose(
+        purpose_sizes.first, std::move(read_result.value));
   }
 
   return result;
@@ -1140,7 +1156,8 @@ void WebAppIconManager::ReadUntrustedIcons(const webapps::AppId& app_id,
       base::BindOnce(
           ReadIconsBlocking, provider_->file_utils(), web_apps_directory_,
           app_id, purpose,
-          std::vector<SquareSizePx>(icon_sizes.begin(), icon_sizes.end())),
+          std::vector<SquareSizePx>(icon_sizes.begin(), icon_sizes.end()),
+          /*read_trusted_icons=*/false),
       base::BindOnce(&LogErrorsCallCallback<std::map<SquareSizePx, SkBitmap>>,
                      GetWeakPtr(), std::move(callback)));
 }
@@ -1257,24 +1274,46 @@ void WebAppIconManager::ReadAllIcons(const webapps::AppId& app_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
-    std::move(callback).Run(IconBitmaps());
+    std::move(callback).Run(WebAppBitmaps());
     return;
   }
 
-  std::map<IconPurpose, std::vector<SquareSizePx>> icon_purposes_to_sizes;
+  std::map<IconPurpose, std::vector<SquareSizePx>>
+      manifest_icon_purposes_to_sizes;
+  std::map<IconPurpose, std::vector<SquareSizePx>>
+      trusted_icon_purposes_to_sizes;
 
   for (IconPurpose purpose : kIconPurposes) {
     const SortedSizesPx& sizes_px = web_app->downloaded_icon_sizes(purpose);
-    icon_purposes_to_sizes[purpose] =
+    manifest_icon_purposes_to_sizes[purpose] =
         std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+    if (!web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE).empty()) {
+      const SortedSizesPx& sizes_px =
+          web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE);
+      trusted_icon_purposes_to_sizes[IconPurpose::MASKABLE] =
+          std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
+    }
+#endif  //  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+
+    if (trusted_icon_purposes_to_sizes.empty()) {
+      const SortedSizesPx& sizes_px =
+          web_app->stored_trusted_icon_sizes(IconPurpose::ANY);
+      trusted_icon_purposes_to_sizes[IconPurpose::ANY] =
+          std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end());
+    }
   }
 
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(ReadAllIconsBlocking, provider_->file_utils(),
                      web_apps_directory_, app_id,
-                     std::move(icon_purposes_to_sizes)),
-      base::BindOnce(&LogErrorsCallCallback<IconBitmaps>, GetWeakPtr(),
+                     std::move(manifest_icon_purposes_to_sizes),
+                     std::move(trusted_icon_purposes_to_sizes)),
+      base::BindOnce(&LogErrorsCallCallback<WebAppBitmaps>, GetWeakPtr(),
                      std::move(callback)));
 }
 

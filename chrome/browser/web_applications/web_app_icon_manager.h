@@ -147,9 +147,19 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void ReadIconsLastUpdateTime(const webapps::AppId& app_id,
                                ReadIconsUpdateTimeCallback callback);
 
-  // TODO (crbug.com/1102701): Callback with const ref instead of value.
+  // Encapsulate the type of bitmaps being returned by ReadAllIcons().
+  struct WebAppBitmaps {
+    WebAppBitmaps(IconBitmaps manifest_icons, IconBitmaps trusted_icons)
+        : manifest_icons(std::move(manifest_icons)),
+          trusted_icons(std::move(trusted_icons)) {}
+    WebAppBitmaps() = default;
+    ~WebAppBitmaps() = default;
+
+    IconBitmaps manifest_icons;
+    IconBitmaps trusted_icons;
+  };
   using ReadIconBitmapsCallback =
-      base::OnceCallback<void(IconBitmaps icon_bitmaps)>;
+      base::OnceCallback<void(WebAppBitmaps disk_bitmap)>;
   // Reads all icon bitmaps for an app. Returns empty |icon_bitmaps| in
   // |callback| if IO error.
   void ReadAllIcons(const webapps::AppId& app_id,

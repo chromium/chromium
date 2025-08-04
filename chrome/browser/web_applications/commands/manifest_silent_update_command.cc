@@ -409,17 +409,18 @@ void ManifestSilentUpdateCommand::
 }
 
 void ManifestSilentUpdateCommand::StashExistingAppIcons(
-    IconBitmaps icon_bitmaps) {
+    WebAppIconManager::WebAppBitmaps icon_bitmaps) {
   CHECK_EQ(stage_,
            ManifestSilentUpdateCommandStage::kLoadingExistingManifestData);
 
-  if (icon_bitmaps.empty()) {
+  if (icon_bitmaps.manifest_icons.empty()) {
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed);
     return;
   }
-  // TODO(msiem): Use the primary icon's bitmaps when retrievable.
-  existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
+
+  // TODO(msiem): Use the trusted icon bitmaps when retrievable.
+  existing_app_icon_bitmaps_ = std::move(icon_bitmaps.manifest_icons);
   app_lock_->icon_manager().ReadAllShortcutsMenuIcons(
       app_id_,
       base::BindOnce(&ManifestSilentUpdateCommand::

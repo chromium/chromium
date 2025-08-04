@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 
 class GURL;
@@ -104,7 +105,7 @@ class ManifestSilentUpdateCommand
 
   // Stage: Loading existing manifest data from disk.
   // (ManifestSilentUpdateCommandStage::kLoadingExistingManifestData)
-  void StashExistingAppIcons(IconBitmaps icon_bitmaps);
+  void StashExistingAppIcons(WebAppIconManager::WebAppBitmaps icon_bitmaps);
 
   // Stage: Comparing manifest data and exiting update if no changes detected.
   // (ManifestSilentUpdateCommandStage::kComparingManifestData)

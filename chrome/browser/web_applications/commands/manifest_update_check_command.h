@@ -107,7 +107,7 @@ class ManifestUpdateCheckCommand
   void LoadExistingAppIcons(
       WebAppIconManager::ReadIconBitmapsCallback next_step_callback);
   void StashExistingAppIcons(base::OnceClosure next_step_callback,
-                             IconBitmaps icon_bitmaps);
+                             WebAppIconManager::WebAppBitmaps icon_bitmaps);
   void LoadExistingShortcutsMenuIcons(
       WebAppIconManager::ReadShortcutsMenuIconsCallback next_step_callback);
   void StashExistingShortcutsMenuIcons(

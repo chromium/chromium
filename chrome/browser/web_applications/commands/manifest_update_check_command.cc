@@ -299,16 +299,17 @@ void ManifestUpdateCheckCommand::LoadExistingAppIcons(
 
 void ManifestUpdateCheckCommand::StashExistingAppIcons(
     base::OnceClosure next_step_callback,
-    IconBitmaps icon_bitmaps) {
+    WebAppIconManager::WebAppBitmaps icon_bitmaps) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
 
-  if (icon_bitmaps.empty()) {
+  if (icon_bitmaps.manifest_icons.empty()) {
     CompleteCommandAndSelfDestruct(
         ManifestUpdateCheckResult::kIconReadFromDiskFailed);
     return;
   }
 
-  existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
+  // TODO(crbug.com/427566193): Also store trusted app icons.
+  existing_app_icon_bitmaps_ = std::move(icon_bitmaps.manifest_icons);
   std::move(next_step_callback).Run();
 }
 
