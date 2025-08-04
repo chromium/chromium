@@ -33,6 +33,15 @@ class GURL;
 // The selection rect of the lens region.
 @property(nonatomic, readonly) CGRect selectionRect;
 
+/// Called when the result is successfully loaded in the webview.
+- (void)resultSuccessfullyLoadedInWebView;
+
+/// Called when the result loading is cancelled in the webview.
+- (void)resultLoadingCancelledInWebView;
+
+/// Called when the result fails to load in the webview.
+- (void)resultFailedToLoadInWebViewWithError:(NSError*)error;
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_OVERLAY_RESULT_H_

@@ -7,4 +7,17 @@
 #import "url/gurl.h"
 
 @implementation FakeChromeLensOverlayResult
+
+- (void)resultSuccessfullyLoadedInWebView {
+  // NO-OP
+}
+
+- (void)resultLoadingCancelledInWebView {
+  // NO-OP
+}
+
+- (void)resultFailedToLoadInWebViewWithError:(NSError*)error {
+  // NO-OP
+}
+
 @end
