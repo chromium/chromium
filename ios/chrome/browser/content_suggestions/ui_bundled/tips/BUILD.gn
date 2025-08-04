@@ -43,6 +43,7 @@ source_set("tips") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

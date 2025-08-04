@@ -19,7 +19,7 @@
 // This view shows users the current state of the Update Chrome, Password, and
 // Safe Browsing check.
 @interface SafetyCheckView
-    : UIView <SafetyCheckMagicStackConsumer, NewTabPageColorUpdating>
+    : UIView <NewTabPageColorUpdating, SafetyCheckMagicStackConsumer>
 
 // Initializes the SafetyCheckView with `state` and `contentViewDelegate`.
 // TODO(crbug.com/391617946): Refactor content view delegate and methods that

@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -211,7 +212,13 @@ const CGFloat kSeparatorHeight = 0.5;
           @[ UITraitPreferredContentSizeCategory.class ]);
       [self registerForTraitChanges:traits
                          withAction:@selector(updateCardSizing)];
+
+      if (IsNTPBackgroundCustomizationEnabled()) {
+        [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                           withAction:@selector(applyBackgroundColors)];
+      }
     }
+    [self applyBackgroundColors];
   }
   return self;
 }
@@ -515,6 +522,15 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 }
 #endif
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  _seeMoreButton.tintColor = colorPalette ? colorPalette.tintColor : nil;
+}
 
 #pragma mark - MagicStackModuleContentViewDelegate
 

@@ -61,6 +61,10 @@ bool IsDefault(SafetyCheckState* state) {
   // The background color applied behind the symbol.
   UIColor* _symbolBackgroundColor;
 
+  // The background color of the container if the symbol is rendered in a
+  // container.
+  UIColor* _symbolContainerBackgroundColor;
+
   // The array of foreground colors used to render the symbol.
   NSArray<UIColor*>* _symbolColorPalette;
 }
@@ -77,8 +81,8 @@ bool IsDefault(SafetyCheckState* state) {
     if (IsNTPBackgroundCustomizationEnabled()) {
       [self registerForTraitChanges:@[ NewTabPageTrait.class ]
                          withAction:@selector(applyBackgroundColors)];
-      [self applyBackgroundColors];
     }
+    [self applyBackgroundColors];
   }
 
   return self;
@@ -116,26 +120,31 @@ bool IsDefault(SafetyCheckState* state) {
 
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-  if (colorPalette) {
+      IsNTPBackgroundCustomizationEnabled()
+          ? [self.traitCollection objectForNewTabPageTrait]
+          : nil;
+
+  int checkIssuesCount = [_state numberOfIssues];
+  BOOL isRunning = IsRunning(_state);
+  BOOL isDefault = IsDefault(_state);
+  BOOL isHeroLayout = isRunning || isDefault || checkIssuesCount <= 1;
+
+  // Determine the symbol color palette and symbol background color based on
+  // the layout.
+  if (isHeroLayout) {
+    _symbolColorPalette = @[ [UIColor whiteColor] ];
+    _symbolBackgroundColor = [UIColor colorNamed:kBlue500Color];
+    _symbolContainerBackgroundColor = colorPalette
+                                          ? colorPalette.tertiaryColor
+                                          : [UIColor colorNamed:kGrey100Color];
+  } else if (colorPalette) {
     _symbolColorPalette = @[ colorPalette.tintColor ];
     _symbolBackgroundColor = colorPalette.tertiaryColor;
+    _symbolContainerBackgroundColor = colorPalette.tertiaryColor;
   } else {
-    int checkIssuesCount = [_state numberOfIssues];
-    BOOL isRunning = IsRunning(_state);
-    BOOL isDefault = IsDefault(_state);
-    BOOL isHeroLayout = isRunning || isDefault || checkIssuesCount <= 1;
-
-    // Determine the symbol color palette and symbol background color based on
-    // the layout.
-    if (isHeroLayout) {
-      _symbolColorPalette = @[ [UIColor whiteColor] ];
-      _symbolBackgroundColor = [UIColor colorNamed:kBlue500Color];
-    } else {
-      // compact view.
-      _symbolColorPalette = @[ [UIColor colorNamed:kBlue500Color] ];
-      _symbolBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
-    }
+    _symbolColorPalette = @[ [UIColor colorNamed:kBlue500Color] ];
+    _symbolBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
+    _symbolContainerBackgroundColor = [UIColor colorNamed:kGrey100Color];
   }
 
   // Redraws the view by removing and recreating the content view.
@@ -251,19 +260,21 @@ bool IsDefault(SafetyCheckState* state) {
   }
 
   IconDetailView* view = [[IconDetailView alloc]
-                initWithTitle:[self titleText:itemType]
-                  description:(layoutType == IconDetailViewLayoutType::kHero
-                                   ? [self descriptionText:itemType]
-                                   : [self compactDescriptionText:itemType])
-                   layoutType:layoutType
-              backgroundImage:nil
-                   symbolName:symbolName
-           symbolColorPalette:_symbolColorPalette
-        symbolBackgroundColor:_symbolBackgroundColor
-            usesDefaultSymbol:usesDefaultSymbol
-                showCheckmark:(itemType == SafetyCheckItemType::kAllSafe)
-      accessibilityIdentifier:[self
-                                  accessibilityIdentifierForItemType:itemType]];
+                       initWithTitle:[self titleText:itemType]
+                         description:
+                             (layoutType == IconDetailViewLayoutType::kHero
+                                  ? [self descriptionText:itemType]
+                                  : [self compactDescriptionText:itemType])
+                          layoutType:layoutType
+                     backgroundImage:nil
+                          symbolName:symbolName
+                  symbolColorPalette:_symbolColorPalette
+               symbolBackgroundColor:_symbolBackgroundColor
+      symbolContainerBackgroundColor:_symbolContainerBackgroundColor
+                   usesDefaultSymbol:usesDefaultSymbol
+                       showCheckmark:(itemType == SafetyCheckItemType::kAllSafe)
+             accessibilityIdentifier:
+                 [self accessibilityIdentifierForItemType:itemType]];
 
   view.identifier = NameForSafetyCheckItemType(itemType);
 

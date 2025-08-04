@@ -7,13 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
+
 enum class ContentSuggestionsModuleType;
 @class MagicStackContextMenuInteractionHandler;
 @class MagicStackModule;
 @protocol MagicStackModuleContainerDelegate;
 
 // Container View for a module in the Magic Stack.
-@interface MagicStackModuleContainer : UIView
+@interface MagicStackModuleContainer : UIView <NewTabPageColorUpdating>
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 

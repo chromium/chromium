@@ -76,24 +76,25 @@ struct BadgeShapeConfig {
 // checkmark to indicate a completed state.
 //
 // The icon will display a badge based on `badgeSymbolName`,
-// `badgeColorPalette`, `badgeShapeConfig`, `badgeUsesDefaultSymbol`, and
-// `badgeBackgroundColor`.
+// `badgeColorPalette`, `badgeShapeConfig`, `badgeUsesDefaultSymbol`,
+// `symbolContainerBackgroundColor` and `badgeBackgroundColor`.
 - (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-              backgroundImage:(UIImage*)backgroundImage
-                   symbolName:(NSString*)symbolName
-           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                  symbolWidth:(CGFloat)symbolwidth
-                showCheckmark:(BOOL)showCheckmark
-              badgeSymbolName:(NSString*)badgeSymbolName
-            badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
-             badgeShapeConfig:(BadgeShapeConfig)badgeShapeConfig
-         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
-       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier;
+                       description:(NSString*)description
+                        layoutType:(IconDetailViewLayoutType)layoutType
+                   backgroundImage:(UIImage*)backgroundImage
+                        symbolName:(NSString*)symbolName
+                symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+             symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+    symbolContainerBackgroundColor:(UIColor*)symbolContainerBackgroundColor
+                 usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                       symbolWidth:(CGFloat)symbolwidth
+                     showCheckmark:(BOOL)showCheckmark
+                   badgeSymbolName:(NSString*)badgeSymbolName
+                 badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
+                  badgeShapeConfig:(BadgeShapeConfig)badgeShapeConfig
+              badgeBackgroundColor:(UIColor*)badgeBackgroundColor
+            badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
+           accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 // Initializer for creating an `IconDetailView` with the
 // given `title`, `description`, `layoutType`, `backgroundImage`,
@@ -108,23 +109,24 @@ struct BadgeShapeConfig {
 // checkmark to indicate a completed state.
 //
 // The icon will display a badge based on `badgeSymbolName`,
-// `badgeColorPalette`, `badgeShape`, `badgeUsesDefaultSymbol`, and
-// `badgeBackgroundColor`.
+// `badgeColorPalette`, `badgeShape`, `badgeUsesDefaultSymbol`,
+// `symbolContainerBackgroundColor` and `badgeBackgroundColor`.
 - (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-              backgroundImage:(UIImage*)backgroundImage
-                   symbolName:(NSString*)symbolName
-           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                showCheckmark:(BOOL)showCheckmark
-              badgeSymbolName:(NSString*)badgeSymbolName
-            badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
-                   badgeShape:(IconDetailViewBadgeShape)badgeShape
-         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
-       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier;
+                       description:(NSString*)description
+                        layoutType:(IconDetailViewLayoutType)layoutType
+                   backgroundImage:(UIImage*)backgroundImage
+                        symbolName:(NSString*)symbolName
+                symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+             symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+    symbolContainerBackgroundColor:(UIColor*)symbolContainerBackgroundColor
+                 usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                     showCheckmark:(BOOL)showCheckmark
+                   badgeSymbolName:(NSString*)badgeSymbolName
+                 badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
+                        badgeShape:(IconDetailViewBadgeShape)badgeShape
+              badgeBackgroundColor:(UIColor*)badgeBackgroundColor
+            badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
+           accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 // Initializer for creating an `IconDetailView` with the
 // given `title`, `description`, `layoutType`, `backgroundImage`,
@@ -138,15 +140,16 @@ struct BadgeShapeConfig {
 // When `showCheckmark` is true, the icon is displayed with a green checkmark to
 // indicate a completed state.
 - (instancetype)initWithTitle:(NSString*)title
-                  description:(NSString*)description
-                   layoutType:(IconDetailViewLayoutType)layoutType
-              backgroundImage:(UIImage*)backgroundImage
-                   symbolName:(NSString*)symbolName
-           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-            usesDefaultSymbol:(BOOL)usesDefaultSymbol
-                showCheckmark:(BOOL)showCheckmark
-      accessibilityIdentifier:(NSString*)accessibilityIdentifier;
+                       description:(NSString*)description
+                        layoutType:(IconDetailViewLayoutType)layoutType
+                   backgroundImage:(UIImage*)backgroundImage
+                        symbolName:(NSString*)symbolName
+                symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+             symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+    symbolContainerBackgroundColor:(UIColor*)symbolContainerBackgroundColor
+                 usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                     showCheckmark:(BOOL)showCheckmark
+           accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 // Initializer for creating an `IconDetailView` with the
 // given `title`, `description`, `layoutType`, `symbolName` (and whether it

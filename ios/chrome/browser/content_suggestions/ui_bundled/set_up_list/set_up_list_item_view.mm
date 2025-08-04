@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -124,6 +126,12 @@ struct ViewConfig {
           kTextSpacing,
       };
     }
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                         withAction:@selector(applyBackgroundColors)];
+    }
+    [self applyBackgroundColors];
   }
   return self;
 }
@@ -195,6 +203,20 @@ struct ViewConfig {
   }
 }
 
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      IsNTPBackgroundCustomizationEnabled()
+          ? [self.traitCollection objectForNewTabPageTrait]
+          : nil;
+  if (colorPalette) {
+    _iconContainerView.backgroundColor = colorPalette.tertiaryColor;
+  } else {
+    _iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  }
+}
+
 #pragma mark - Private methods
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
@@ -228,7 +250,6 @@ struct ViewConfig {
   if (putIconInSquareBackground) {
     _icon.translatesAutoresizingMaskIntoConstraints = NO;
     _iconContainerView = [[UIView alloc] init];
-    _iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
     _iconContainerView.layer.cornerRadius = 12;
     _iconContainerView.layer.masksToBounds = NO;
     _iconContainerView.clipsToBounds = YES;

@@ -8,13 +8,14 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_mediator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 
 @protocol PriceTrackingPromoCommands;
 @class PriceTrackingPromoItem;
 
 // View for the Price Tracking Promo module.
 @interface PriceTrackingPromoModuleView
-    : UIView <PriceTrackingPromoFaviconConsumer>
+    : UIView <NewTabPageColorUpdating, PriceTrackingPromoFaviconConsumer>
 
 // Configures this view with `config`.
 - (void)configureView:(PriceTrackingPromoItem*)config;

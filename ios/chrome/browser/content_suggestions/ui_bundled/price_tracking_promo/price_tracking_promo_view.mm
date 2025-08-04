@@ -8,6 +8,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_item.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -309,8 +312,6 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
                 [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
           }];
   _allowButton.configuration = buttonConfiguration;
-  [_allowButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                     forState:UIControlStateNormal];
   _allowButton.isAccessibilityElement = YES;
   _allowButton.titleLabel.numberOfLines = 1;
   _allowButton.titleLabel.adjustsFontForContentSizeCategory = YES;
@@ -354,7 +355,13 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
         @[ UITraitPreferredContentSizeCategory.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(hideDescriptionOnTraitChange)];
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                         withAction:@selector(applyBackgroundColors)];
+    }
   }
+  [self applyBackgroundColors];
 }
 
 - (void)allowPriceTrackingTapped:(UIGestureRecognizer*)sender {
@@ -364,6 +371,20 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
 - (void)hideDescriptionOnTraitChange {
   _descriptionLabel.hidden = self.traitCollection.preferredContentSizeCategory >
                              UIContentSizeCategoryExtraExtraLarge;
+}
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  if (colorPalette) {
+    [_allowButton setTitleColor:colorPalette.tintColor
+                       forState:UIControlStateNormal];
+  } else {
+    [_allowButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                       forState:UIControlStateNormal];
+  }
 }
 
 #pragma mark - PriceTrackingPromoFaviconConsumer

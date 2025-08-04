@@ -15,6 +15,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_state.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -139,11 +142,21 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 
   // The root view of the Tips module.
   UIView* _contentView;
+
+  // The background color of the container if the symbol is rendered in a
+  // container.
+  UIColor* _symbolContainerBackgroundColor;
 }
 
 - (instancetype)initWithState:(TipsModuleState*)state {
   if ((self = [super init])) {
     _state = state;
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                         withAction:@selector(applyBackgroundColors)];
+    }
+    [self applyBackgroundColors];
   }
 
   return self;
@@ -182,6 +195,20 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   CHECK_NE(tip, TipIdentifier::kUnknown);
 
   [self.audience didSelectTip:tip];
+}
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  _symbolContainerBackgroundColor = colorPalette
+                                        ? colorPalette.tertiaryColor
+                                        : [UIColor colorNamed:kGrey100Color];
+
+  // Redraws the view by removing and recreating the content view.
+  [self tipsStateDidChange:_state];
 }
 
 #pragma mark - Private methods
@@ -236,23 +263,25 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
     }
 
     IconDetailView* view = [[IconDetailView alloc]
-                  initWithTitle:[self titleText:tip]
-                    description:[self descriptionText:tip]
-                     layoutType:IconDetailViewLayoutType::kHero
-                backgroundImage:productImage
-                     symbolName:base::SysUTF8ToNSString(symbol.name)
-             symbolColorPalette:[self symbolColorPalette:tip]
-          symbolBackgroundColor:[self symbolBackgroundColor:tip]
-              usesDefaultSymbol:symbol.is_default_symbol
-                    symbolWidth:kSymbolWidth
-                  showCheckmark:NO
-                badgeSymbolName:base::SysUTF8ToNSString(badgeConfig.name)
-              badgeColorPalette:badgeColorPalette
-               badgeShapeConfig:badgeShapeConfig
-           badgeBackgroundColor:[self badgeBackgroundColor:tip
-                                           hasProductImage:hasProductImage]
-         badgeUsesDefaultSymbol:badgeConfig.is_default_symbol
-        accessibilityIdentifier:[self accessibilityIdentifier:tip]];
+                         initWithTitle:[self titleText:tip]
+                           description:[self descriptionText:tip]
+                            layoutType:IconDetailViewLayoutType::kHero
+                       backgroundImage:productImage
+                            symbolName:base::SysUTF8ToNSString(symbol.name)
+                    symbolColorPalette:[self symbolColorPalette:tip]
+                 symbolBackgroundColor:[self symbolBackgroundColor:tip]
+        symbolContainerBackgroundColor:_symbolContainerBackgroundColor
+                     usesDefaultSymbol:symbol.is_default_symbol
+                           symbolWidth:kSymbolWidth
+                         showCheckmark:NO
+                       badgeSymbolName:base::SysUTF8ToNSString(badgeConfig.name)
+                     badgeColorPalette:badgeColorPalette
+                      badgeShapeConfig:badgeShapeConfig
+                  badgeBackgroundColor:[self
+                                           badgeBackgroundColor:tip
+                                                hasProductImage:hasProductImage]
+                badgeUsesDefaultSymbol:badgeConfig.is_default_symbol
+               accessibilityIdentifier:[self accessibilityIdentifier:tip]];
 
     view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
 
@@ -269,6 +298,7 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
                                  symbolName:base::SysUTF8ToNSString(symbol.name)
                          symbolColorPalette:[self symbolColorPalette:tip]
                       symbolBackgroundColor:[self symbolBackgroundColor:tip]
+             symbolContainerBackgroundColor:_symbolContainerBackgroundColor
                           usesDefaultSymbol:symbol.is_default_symbol
                               showCheckmark:NO
                     accessibilityIdentifier:[self accessibilityIdentifier:tip]];

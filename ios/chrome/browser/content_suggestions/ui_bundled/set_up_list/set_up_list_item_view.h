@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_mediator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 
 @protocol ContentSuggestionsViewControllerAudience;
 enum class SetUpListItemType;
@@ -22,7 +23,8 @@ enum class SetUpListItemType;
 @end
 
 // A view to display an individual item in the SetUpListView.
-@interface SetUpListItemView : UIView <SetUpListConsumer>
+@interface SetUpListItemView
+    : UIView <NewTabPageColorUpdating, SetUpListConsumer>
 
 // Initialize a SetUpListItemView with the given `data`.
 - (instancetype)initWithData:(SetUpListItemViewData*)data;
