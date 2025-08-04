@@ -23,9 +23,10 @@
             ${this.i18n('modulesTabGroupsZeroStateText')}
           </div>
         </div>
-        <div id="createNewTabGroup">
+        <div id="zeroTabGroupsCreateNewTabGroup">
           <cr-button id="createNewTabGroupButton">
             <cr-icon id="createNewTabGroupButtonIcon"
+                class="create-new-tab-group-icon"
                 icon="tab_groups:create_new_tab_group" slot="prefix-icon">
             </cr-icon>
             <div id="createNewTabGroupButtonText">
@@ -39,7 +40,7 @@
     <div id="tabGroupsContainer">
       ${this.getTabGroups_().map(item => html`
         <div class="tab-group-container">
-          <div id="hoverLayer"></div>
+          <div class="hover-layer"></div>
           <a class="tab-group">
             <ntp-icon-container class="icon-container"
                 .faviconUrls="${this.getFaviconUrls_(item.faviconUrls)}"
@@ -51,6 +52,22 @@
           </a>
         </div>
       `)}
+      <div id="footer">
+        <div id="divider"></div>
+          <div id="createNewTabGroupContainer" class="tab-group-container">
+            <div class="hover-layer"></div>
+            <a id="createNewTabGroup">
+              <cr-icon id="createNewTabGroupIcon"
+                  class="create-new-tab-group-icon"
+                  icon="tab_groups:create_new_tab_group" slot="icon">
+              </cr-icon>
+              <div id="createNewTabGroupText" class="tab-group-title">
+                ${this.i18n('modulesTabGroupsCreateNewTabGroup')}
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   `}
 </div>

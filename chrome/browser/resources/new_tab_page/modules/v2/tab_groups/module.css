@@ -142,12 +142,6 @@ a:focus-visible {
   text-align: center;
 }
 
-#createNewTabGroup {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 #createNewTabGroupButton {
   --cr-hover-background-color:
       var(--color-new-tab-page-button-background-hovered);
@@ -162,13 +156,14 @@ a:focus-visible {
   border: none;
 }
 
-#createNewTabGroupButtonIcon {
-  display: flex;
+.create-new-tab-group-icon {
   width: 20px;
   height: 20px;
-  flex-direction: column;
-  justify-content: center;
   flex-shrink: 0;
+}
+
+#createNewTabGroupButtonIcon {
+  color: var(--color-new-tab-page-button-foreground);
 }
 
 .tab-group {
@@ -178,7 +173,7 @@ a:focus-visible {
   flex: 1 0 0;
 }
 
-.tab-group-container:hover #hoverLayer {
+.tab-group-container:hover .hover-layer {
   background: var(--color-new-tab-page-module-item-background-hovered);
   display: block;
   inset: 0;
@@ -186,7 +181,7 @@ a:focus-visible {
   position: absolute;
 }
 
-#hoverLayer {
+.hover-layer {
   display: none;
 }
 
@@ -196,7 +191,7 @@ a:focus-visible {
   padding-top: var(--ntp-module-first-element-top-padding);
 }
 
-.tab-group-container:first-of-type:hover #hoverLayer {
+.tab-group-container:first-of-type:hover .hover-layer {
   border-radius: var(--ntp-module-item-border-radius)
       var(--ntp-module-item-border-radius) 0 0;
   top: calc(-1 * var(--ntp-module-first-element-top-padding));
@@ -208,7 +203,7 @@ a:focus-visible {
   padding-bottom: var(--ntp-module-first-element-top-padding);
 }
 
-.tab-group-container:last-of-type:hover #hoverLayer {
+.tab-group-container:last-of-type:hover .hover-layer {
   border-radius: 0 0 var(--ntp-module-item-border-radius)
       var(--ntp-module-item-border-radius);
   bottom: calc(-1 * var(--ntp-module-first-element-top-padding));
@@ -246,4 +241,48 @@ a:focus-visible {
   color: var(--color-new-tab-page-secondary-foreground);
   font-size: var(--ntp-module-secondary-text-size);
   line-height: var(--ntp-module-secondary-line-height);
+}
+
+#footer {
+  display: flex;
+  flex-direction: column;
+}
+
+#divider {
+  padding: 4px 0;
+  position: relative;
+}
+
+#divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--color-new-tab-page-module-background);
+}
+
+#createNewTabGroupContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  align-self: stretch;
+}
+
+#createNewTabGroup {
+  display: flex;
+  flex-direction: row;
+  height: 28px;
+  padding: 4px 16px;
+  justify-content: center;
+  gap: 8px;
+  flex-basis: 0;
+}
+
+#createNewTabGroupIcon {
+  color: var(--color-new-tab-page-primary-foreground);
 }
