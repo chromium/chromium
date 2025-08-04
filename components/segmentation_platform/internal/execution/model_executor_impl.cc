@@ -273,6 +273,10 @@ void ModelExecutorImpl::RunModelExecutionCallback(
     const ExecutionState& state,
     ModelExecutionCallback callback,
     std::unique_ptr<ModelExecutionResult> result) {
+  VLOG(1) << "Model: " << proto::SegmentId_Name(state.segment_id)
+          << " version: " << state.model_version
+          << " execution status: " << static_cast<int>(result->status)
+          << ", output size: " << result->scores.size();
   stats::RecordModelExecutionDurationTotal(
       state.segment_id, result->status,
       clock_->Now() - state.total_execution_start_time);
