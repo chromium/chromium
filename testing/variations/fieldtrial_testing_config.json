@@ -13034,6 +13034,21 @@
             ]
         }
     ],
+    "IOSOneTimeDefaultBrowserNotification": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSOneTimeDefaultBrowserNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPartitionAllocBackupRefPtr": [
         {
             "platforms": [

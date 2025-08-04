@@ -107,6 +107,8 @@ void MaybeDismissNotification() {
     config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   }
 
+  config.features_disabled.push_back(kIOSOneTimeDefaultBrowserNotification);
+
   return config;
 }
 
