@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 
 #import "base/metrics/user_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -32,6 +33,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -92,6 +95,14 @@ using password_manager::PasswordCheckReferrer;
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    // The Password Checkup homepage is not made to be visited when signed out.
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(self.profile);
+    CHECK(authenticationService);
+    CHECK(authenticationService->HasPrimaryIdentity(
+              signin::ConsentLevel::kSignin),
+          base::NotFatalUntil::M142);
+
     _baseNavigationController = navigationController;
     _reauthModule = reauthModule;
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),

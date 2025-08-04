@@ -19,6 +19,9 @@
 // Informs the presenter that the Password Checkup homepage should be opened.
 - (void)openPasswordCheckup;
 
+// Informs the presenter that the Password Manager page should be opened.
+- (void)openPasswordManager;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_PRESENTER_H_

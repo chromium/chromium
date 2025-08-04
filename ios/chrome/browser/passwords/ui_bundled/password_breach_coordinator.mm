@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -73,11 +75,17 @@ using password_manager::CredentialLeakType;
   auto recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
       self.ukm_source_id, password_manager::GetLeakDialogType(self.leakType));
+
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  CHECK(authenticationService);
+
   self.mediator =
       [[PasswordBreachMediator alloc] initWithConsumer:self.viewController
                                              presenter:self
                                       metrics_recorder:std::move(recorder)
-                                              leakType:self.leakType];
+                                              leakType:self.leakType
+                                 authenticationService:authenticationService];
   self.viewController.actionHandler = self.mediator;
 
   [self.baseViewController presentViewController:self.viewController
@@ -114,16 +122,24 @@ using password_manager::CredentialLeakType;
 - (void)openPasswordCheckup {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  password_manager::LogPasswordCheckReferrer(
-      password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.ManagePasswordsReferrer",
-      password_manager::ManagePasswordsReferrer::kPasswordBreachDialog);
   base::RecordAction(
       base::UserMetricsAction("MobilePasswordBreachOpenPasswordCheckup"));
 
   [handler dismissModalsAndShowPasswordCheckupPageForReferrer:
                password_manager::PasswordCheckReferrer::kPasswordBreachDialog];
+}
+
+- (void)openPasswordManager {
+  id<SettingsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kPasswordBreachDialog);
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordBreachOpenPasswordManager"));
+
+  [handler
+      showSavedPasswordsSettingsFromViewController:self.baseViewController];
 }
 
 @end
