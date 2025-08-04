@@ -87,6 +87,7 @@ source_set("features") {
     ":constants",
     "//base",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }

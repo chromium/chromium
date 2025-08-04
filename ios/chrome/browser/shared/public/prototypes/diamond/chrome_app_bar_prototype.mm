@@ -4,12 +4,25 @@
 
 #import "ios/chrome/browser/shared/public/prototypes/diamond/chrome_app_bar_prototype.h"
 
+#import "components/translate/core/browser/translate_manager.h"
+#import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/diamond_grid_button.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -172,6 +185,10 @@ void ConfigureButtonShadow(UIButton* button) {
                            selector:@selector(didLeaveTabGrid)
                                name:kDiamondLeaveTabGridNotification
                              object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(longPressButton:)
+                               name:kDiamondLongPressButton
+                             object:nil];
   }
   return self;
 }
@@ -221,6 +238,134 @@ void ConfigureButtonShadow(UIButton* button) {
                      browserBackground.effect = nil;
                      tabGridBackground.effect = blur;
                    }];
+}
+
+// Callback when there is a long press on the diamond button in the toolbar.
+- (void)longPressButton:(NSNotification*)notification {
+  id<BrowserProviderInterface> browserProvider =
+      self.regularBrowser->GetSceneState().controller.browserProviderInterface;
+  Browser* browser = browserProvider.currentBrowserProvider.browser;
+
+  web::WebState* activeWebState =
+      browser->GetWebStateList()->GetActiveWebState();
+
+  BOOL canManuallyTranslate =
+      [self canManuallyTranslateForWebState:activeWebState];
+  BOOL lensOverlayVisible =
+      [self isLensOverlayVisibleForWebState:activeWebState];
+  BOOL readerModeAvailable =
+      [self isReaderModeEnabledForWebState:activeWebState];
+  BOOL readerModeVisible = [self isReaderModeActiveForWebState:activeWebState];
+
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+
+  id<ReaderModeCommands> readerModeHandler =
+      HandlerForProtocol(dispatcher, ReaderModeCommands);
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  id<LensOverlayCommands> lensOverlayHandler =
+      HandlerForProtocol(dispatcher, LensOverlayCommands);
+
+  UIButton* button = notification.object;
+  UIAction* translate =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE)
+                          image:CustomSymbolWithPointSize(
+                                    kTranslateSymbol, kSymbolActionPointSize)
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [browserCoordinatorHandler showTranslate];
+                        }];
+  if (readerModeVisible || !canManuallyTranslate || lensOverlayVisible) {
+    translate.attributes = UIMenuElementAttributesDisabled;
+  }
+
+  UIAction* readerMode;
+  if (readerModeVisible) {
+    readerMode = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_AI_HUB_HIDE_READER_MODE_LABEL)
+                  image:DefaultSymbolWithPointSize(kReaderModeSymbolPostIOS18,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [readerModeHandler hideReaderMode];
+                }];
+  } else {
+    readerMode = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_AI_HUB_READER_MODE_LABEL)
+                  image:DefaultSymbolWithPointSize(kReaderModeSymbolPostIOS18,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [readerModeHandler
+                      showReaderModeFromAccessPoint:ReaderModeAccessPoint::
+                                                        kContextualChip];
+                }];
+    if (!readerModeAvailable) {
+      readerMode.attributes = UIMenuElementAttributesDisabled;
+    }
+  }
+
+  UIAction* lens = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT)
+                image:CustomSymbolWithPointSize(kCameraLensSymbol,
+                                                kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [lensOverlayHandler
+                    createAndShowLensUI:YES
+                             entrypoint:LensOverlayEntrypoint::kOverflowMenu
+                             completion:nil];
+              }];
+  button.menu = [UIMenu menuWithChildren:@[ translate, readerMode, lens ]];
+}
+
+// Whether `webState` can be manually translated.
+- (BOOL)canManuallyTranslateForWebState:(web::WebState*)webState {
+  if (!webState) {
+    return NO;
+  }
+
+  auto* translateClient = ChromeIOSTranslateClient::FromWebState(webState);
+  if (!translateClient) {
+    return NO;
+  }
+
+  translate::TranslateManager* translateManager =
+      translateClient->GetTranslateManager();
+  return translateManager->CanManuallyTranslate(NO);
+}
+
+// Returns whether Lens Overlay is currently being displayed.
+- (BOOL)isLensOverlayVisibleForWebState:(web::WebState*)webState {
+  if (!webState) {
+    return NO;
+  }
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(webState);
+  return lensOverlayTabHelper &&
+         lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+}
+
+- (BOOL)isReaderModeActiveForWebState:(web::WebState*)webState {
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(webState);
+  return readerModeTabHelper && readerModeTabHelper->IsActive();
+}
+
+// Whether Reader mode is enabled.
+- (BOOL)isReaderModeEnabledForWebState:(web::WebState*)webState {
+  if (!webState) {
+    return NO;
+  }
+
+  ReaderModeTabHelper* helper = ReaderModeTabHelper::FromWebState(webState);
+  if (!helper || helper->CurrentPageDistillationAlreadyFailed()) {
+    return NO;
+  }
+
+  return helper->CurrentPageIsEligibleForReaderMode();
 }
 
 // Updates the mask of the background blur.

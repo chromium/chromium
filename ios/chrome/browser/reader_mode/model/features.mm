@@ -9,6 +9,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 namespace {
@@ -73,6 +74,9 @@ const base::TimeDelta ReaderModeHeuristicPageLoadDelay() {
 }
 
 bool IsReaderModeAvailable() {
+  if (IsDiamondPrototypeEnabled()) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kEnableReaderMode);
 }
 

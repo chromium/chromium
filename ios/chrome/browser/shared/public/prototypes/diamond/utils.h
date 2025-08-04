@@ -25,6 +25,8 @@ extern const CGFloat kDiamondLocationBarHeight;
 extern NSString* kDiamondEnterTabGridNotification;
 // Notification sent when leaving the tab grid.
 extern NSString* kDiamondLeaveTabGridNotification;
+// Notification sent for long press on the button, passing the button.
+extern NSString* kDiamondLongPressButton;
 
 // The symbol for the app icon.
 extern NSString* const kAppSymbol;

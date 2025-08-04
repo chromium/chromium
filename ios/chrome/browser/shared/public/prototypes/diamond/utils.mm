@@ -47,6 +47,7 @@ NSString* kDiamondEnterTabGridNotification =
     @"kDiamondEnterTabGridNotification";
 NSString* kDiamondLeaveTabGridNotification =
     @"kDiamondLeaveTabGridNotification";
+NSString* kDiamondLongPressButton = @"kDiamondLongPressButton";
 
 NSString* const kAppSymbol = @"app";
 NSString* const kAppFillSymbol = @"app.fill";
