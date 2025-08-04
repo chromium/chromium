@@ -211,6 +211,12 @@ constexpr char kOptGuideModelFetcherLastFetchAttempt[] =
 constexpr char kOptGuideModelFetcherLastFetchSuccess[] =
     "optimization_guide.predictionmodelfetcher.last_fetch_success";
 
+// Deprecated 08/2025.
+inline constexpr char kInvalidationClientIDCache[] =
+    "invalidation.per_sender_client_id_cache";
+inline constexpr char kInvalidationTopicsToHandler[] =
+    "invalidation.per_sender_topics_to_handler";
+
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -1109,6 +1115,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
   registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchAttempt, 0);
   registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchSuccess, 0);
+
+  // Deprecated 08/2025.
+  registry->RegisterDictionaryPref(kInvalidationClientIDCache);
+  registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1300,6 +1310,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kGoogleServicesSecondLastSyncingGaiaId);
 
   // Added 07/2025.
+
   // TODO(crbug.com/429521151): Remove migration call below after successfully
   // migrating from local to profile prefs.
   MigrateListPrefFromLocalStatePrefsToProfilePrefs(
@@ -1312,6 +1323,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 07/2025.
   prefs->ClearPref(kOptGuideModelFetcherLastFetchAttempt);
   prefs->ClearPref(kOptGuideModelFetcherLastFetchSuccess);
+
+  // Added 08/2025.
+  prefs->ClearPref(kInvalidationClientIDCache);
+  prefs->ClearPref(kInvalidationTopicsToHandler);
 }
 
 void MigrateObsoleteUserDefault() {

@@ -1098,6 +1098,12 @@ inline constexpr char kSyncPromoIdentityPillShownCount[] =
 inline constexpr char kSyncPromoIdentityPillUsedCount[] =
     "ChromeSigninSyncPromoIdentityPillUsedCount";
 
+// Deprecated 08/2025.
+inline constexpr char kInvalidationClientIDCache[] =
+    "invalidation.per_sender_client_id_cache";
+inline constexpr char kInvalidationTopicsToHandler[] =
+    "invalidation.per_sender_topics_to_handler";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1199,6 +1205,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kDeviceNativeClientForceAllowedCache, false);
   registry->RegisterBooleanPref(kIsFirstBootForNacl, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 08/2025.
+  registry->RegisterDictionaryPref(kInvalidationClientIDCache);
+  registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1553,6 +1563,10 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterIntegerPref(kSyncPromoIdentityPillShownCount, 0);
   registry->RegisterIntegerPref(kSyncPromoIdentityPillUsedCount, 0);
+
+  // Deprecated 08/2025.
+  registry->RegisterDictionaryPref(kInvalidationClientIDCache);
+  registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
 }
 
 }  // namespace
@@ -2463,6 +2477,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kIsFirstBootForNacl);
 #endif
 
+  // Added 08/2025.
+  local_state->ClearPref(kInvalidationClientIDCache);
+  local_state->ClearPref(kInvalidationTopicsToHandler);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2843,6 +2861,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   profile_prefs->ClearPref(kSyncPromoIdentityPillShownCount);
   profile_prefs->ClearPref(kSyncPromoIdentityPillUsedCount);
+
+  // Added 08/2025.
+  profile_prefs->ClearPref(kInvalidationClientIDCache);
+  profile_prefs->ClearPref(kInvalidationTopicsToHandler);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
