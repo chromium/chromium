@@ -33,7 +33,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
@@ -71,6 +70,7 @@ class ColorChangeHandler;
 }  // namespace ui
 
 class BrowserCommandHandler;
+class ComposeboxHandler;
 class CustomizeButtonsHandler;
 class DriveSuggestionHandler;
 #if !defined(OFFICIAL_BUILD)
