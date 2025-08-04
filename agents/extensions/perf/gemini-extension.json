@@ -1,0 +1,15 @@
+{
+  "name": "perf",
+  "version": "1.0.0",
+  "mcpServers": {
+    "perf": {
+      "url": "https://mcp-perf.luci.app/sse",
+      "authProviderType": "google_credentials",
+      "oauth": {
+        "scopes": [
+          "https://www.googleapis.com/auth/userinfo.email"
+        ]
+      }
+    }
+  }
+}
