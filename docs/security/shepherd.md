@@ -326,14 +326,17 @@ account to move this bug into that component.
 ### Assign
 
 Security bugs are not automatically visible, so you must add people to get them
-fixed. For each bug, set:
+fixed. **Every security bug that is severity S0, S1, or S2 must have an assigned
+owner.** For each bug, set:
 
 * The **Component** – due to a limited set of auto-cc rules, this may add
   some visibility. This will "move" the bug into that component; this is the
   expected outcome. It can also be helpful to set additional **Component Tags**
   when a bug does not fall neatly into a single component.
 * An **assignee/owner**. Use `git blame` or look for similar past bugs in the
-  tracker.
+  tracker. Every security bug that is severity S0, S1, or S2 must always have an
+  assigned owner. Every security bug, regardless of severity, should initially
+  be assigned to an owner.
 * Lots of **cc**s. Copy everyone who could possibly be relevant. Use the owners
   file for a particular feature to help achieve this.
 * Add a **comment** so that recipients know what’s expected, and why you think

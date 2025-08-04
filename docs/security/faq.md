@@ -13,7 +13,10 @@ Please see [the VRP FAQ page](vrp-faq.md).
 ### Why are security bugs hidden in the Chromium issue tracker?
 
 We must balance a commitment to openness with a commitment to avoiding
-unnecessary risk for users of widely-used open source libraries.
+unnecessary risk for users of widely-used open source libraries. All critical,
+high, and medium severity bugs are visible only to the security team and to the
+engineers directly involved in fixing them. Low-severity security bugs may be
+visible to all project contributors after an initial triage phase.
 
 <a name="TOC-Can-you-please-un-hide-old-security-bugs-"></a>
 ### Can you please un-hide old security bugs?
