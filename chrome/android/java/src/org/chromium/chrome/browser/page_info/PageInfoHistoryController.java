@@ -103,7 +103,8 @@ public class PageInfoHistoryController
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ false,
                         /* openHistoryItemCallback= */ null,
-                        new ChromeAsyncTabLauncher(profile.isOffTheRecord()));
+                        new ChromeAsyncTabLauncher(/* incognito= */ false),
+                        new ChromeAsyncTabLauncher(/* incognito= */ true));
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }

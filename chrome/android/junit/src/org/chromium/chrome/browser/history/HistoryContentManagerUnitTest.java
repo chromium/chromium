@@ -54,7 +54,8 @@ public class HistoryContentManagerUnitTest {
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private HistoryUmaRecorder mUmaRecorder;
     @Mock private HistoryProvider mHistoryProvider;
-    @Mock private AsyncTabLauncher mAsyncTabLauncher;
+    @Mock private AsyncTabLauncher mRegularAsyncTabLauncher;
+    @Mock private AsyncTabLauncher mIncognitoAsyncTabLauncher;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private IdentityServicesProviderJni mIdentityServicesProviderJni;
     @Mock private SigninManager mSigninManager;
@@ -91,7 +92,8 @@ public class HistoryContentManagerUnitTest {
                         false,
                         false,
                         null,
-                        mAsyncTabLauncher);
+                        mRegularAsyncTabLauncher,
+                        mIncognitoAsyncTabLauncher);
     }
 
     @Test
@@ -113,6 +115,26 @@ public class HistoryContentManagerUnitTest {
                 /* isIncognito= */ false,
                 /* createNewTab= */ false,
                 /* runCallback= */ false);
-        verify(mAsyncTabLauncher).launchNewTab(any(), anyInt(), any());
+        verify(mRegularAsyncTabLauncher).launchNewTab(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testOpenUrlInNewTab_Regular() {
+        mHistoryContentManager.openUrl(
+                new GURL("https://test.com"),
+                /* isIncognito= */ false,
+                /* createNewTab= */ true,
+                /* runCallback= */ false);
+        verify(mRegularAsyncTabLauncher).launchNewTab(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testOpenUrlInNewTab_Incognito() {
+        mHistoryContentManager.openUrl(
+                new GURL("https://test.com"),
+                /* isIncognito= */ true,
+                /* createNewTab= */ true,
+                /* runCallback= */ false);
+        verify(mIncognitoAsyncTabLauncher).launchNewTab(any(), anyInt(), any());
     }
 }
