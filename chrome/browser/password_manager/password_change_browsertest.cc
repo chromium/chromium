@@ -164,33 +164,20 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                               QualityStatus submit_form_status,
                               QualityStatus verify_submission_status,
                               FinalModelStatus final_status) {
-    const std::vector<
-        std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>& logs =
-        logs_uploader().uploaded_logs();
-    ASSERT_EQ(1u, logs.size());
-    EXPECT_EQ(logs[0]
-                  ->mutable_password_change_submission()
-                  ->mutable_quality()
-                  ->final_model_status(),
-              final_status);
-    EXPECT_EQ(logs[0]
-                  ->mutable_password_change_submission()
-                  ->mutable_quality()
-                  ->verify_submission()
-                  .status(),
-              verify_submission_status);
-    EXPECT_EQ(logs[0]
-                  ->mutable_password_change_submission()
-                  ->mutable_quality()
-                  ->open_form()
-                  .status(),
-              open_form_status);
-    EXPECT_EQ(logs[0]
-                  ->mutable_password_change_submission()
-                  ->mutable_quality()
-                  ->submit_form()
-                  .status(),
-              submit_form_status);
+    const auto& logs = logs_uploader().uploaded_logs();
+    ASSERT_EQ(1, std::ranges::count_if(logs, [](const auto& log) {
+                return log->password_change_submission().has_quality();
+              }));
+    const auto it = std::find_if(logs.begin(), logs.end(), [](const auto& log) {
+      return log->password_change_submission().has_quality();
+    });
+    // Verify the single log values.
+    optimization_guide::proto::PasswordChangeQuality quality =
+        it->get()->password_change_submission().quality();
+    EXPECT_EQ(quality.final_model_status(), final_status);
+    EXPECT_EQ(quality.verify_submission().status(), verify_submission_status);
+    EXPECT_EQ(quality.open_form().status(), open_form_status);
+    EXPECT_EQ(quality.submit_form().status(), submit_form_status);
   }
 
   void SetPrivacyNoticeAcceptedPref() {

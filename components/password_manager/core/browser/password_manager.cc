@@ -43,6 +43,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
+#include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
@@ -109,8 +110,8 @@ bool DidLoginWithPrimaryChangedPassword(
 }
 
 void RecordMetricsForLoginWithChangedPassword(
+    password_manager::PasswordManagerClient* client,
     const PasswordFormManager& submitted_manager,
-    ukm::SourceId ukm_id,
     bool login_successful) {
   const PasswordForm* change_password_login =
       password_manager_util::FindLoginWithChangedPassword(submitted_manager);
@@ -130,7 +131,11 @@ void RecordMetricsForLoginWithChangedPassword(
                   : LogInWithChangedPasswordOutcome::kBackupPasswordFailed;
   }
 
-  ukm::builders::PasswordManager_ChangeSubmission(ukm_id)
+  if (auto* password_change_service = client->GetPasswordChangeService()) {
+    password_change_service->RecordLoginAttemptQuality(
+        outcome, client->GetLastCommittedURL());
+  }
+  ukm::builders::PasswordManager_ChangeSubmission(client->GetUkmSourceId())
       .SetLogInWithPasswordChangeSubmission(static_cast<int>(outcome))
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramEnumeration(kLogInWithPasswordChangeSubmissionHistogram,
@@ -465,17 +470,16 @@ void RecordProvisionalSaveFailure(
 }
 
 void HandleFailedLoginDetectionForPasswordChange(
+    password_manager::PasswordManagerClient* client,
     PasswordManagerDriver* driver,
-    UndoPasswordChangeController* undo_controller,
-    const PasswordFormManager& submitted_manager,
-    ukm::SourceId ukm_id) {
-  RecordMetricsForLoginWithChangedPassword(submitted_manager, ukm_id,
+    const PasswordFormManager& submitted_manager) {
+  RecordMetricsForLoginWithChangedPassword(client, submitted_manager,
                                            /*login_successful=*/false);
 
   // Proactive recovery on mobile will be implemented via touch to fill instead.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Create a copy of the submitted form because it will soon be destroyed.
-  undo_controller->OnLoginPotentiallyFailed(
+  client->GetUndoPasswordChangeController()->OnLoginPotentiallyFailed(
       driver, *submitted_manager.GetSubmittedForm());
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
@@ -1554,8 +1558,8 @@ void PasswordManager::OnLoginSuccessful() {
                                          client_);
   }
 
-  RecordMetricsForLoginWithChangedPassword(
-      *submitted_manager, client_->GetUkmSourceId(), /*login_successful=*/true);
+  RecordMetricsForLoginWithChangedPassword(client_, *submitted_manager,
+                                           /*login_successful=*/true);
 
   bool able_to_save_passwords =
       password_manager_util::IsAbleToSavePasswords(client_);
@@ -1649,9 +1653,8 @@ void PasswordManager::OnLoginFailed(PasswordManagerDriver* driver,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  HandleFailedLoginDetectionForPasswordChange(
-      driver, client_->GetUndoPasswordChangeController(), *submitted_manager,
-      client_->GetUkmSourceId());
+  HandleFailedLoginDetectionForPasswordChange(client_, driver,
+                                              *submitted_manager);
 
   ResetSubmittedManager();
   base::UmaHistogramBoolean("PasswordManager.FailedLoginDetected", false);
@@ -1664,9 +1667,8 @@ void PasswordManager::OnLoginPotentiallyFailed(
     logger->LogMessage(Logger::STRING_PASSWORD_POTENTIALLY_FAILED_LOGIN);
   }
 
-  HandleFailedLoginDetectionForPasswordChange(
-      driver, client_->GetUndoPasswordChangeController(),
-      *GetSubmittedManager(), client_->GetUkmSourceId());
+  HandleFailedLoginDetectionForPasswordChange(client_, driver,
+                                              *GetSubmittedManager());
 
   base::UmaHistogramBoolean("PasswordManager.FailedLoginDetected", true);
 }

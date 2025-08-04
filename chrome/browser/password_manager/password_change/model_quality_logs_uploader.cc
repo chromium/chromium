@@ -12,6 +12,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/password_manager/core/browser/password_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
@@ -22,6 +23,8 @@ using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
 using PasswordChangeOutcome = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeOutcome;
 using PageType = optimization_guide::proto::OpenFormResponseData_PageType;
+using LoginPasswordType =
+    optimization_guide::proto::LoginAttemptOutcome_PasswordType;
 
 namespace {
 int64_t ComputeRequestLatencyMs(base::Time server_request_start_time) {
@@ -36,11 +39,9 @@ std::string GetLocation() {
              : std::string();
 }
 
-std::string GetPageDomain(content::WebContents* web_contents) {
-  CHECK(web_contents);
-  return affiliations::GetExtendedTopLevelDomain(
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
-      /*psl_extensions=*/{});
+std::string GetPageDomain(const GURL& page_url) {
+  return affiliations::GetExtendedTopLevelDomain(page_url,
+                                                 /*psl_extensions=*/{});
 }
 
 std::string GetPageLanguage(content::WebContents* web_contents) {
@@ -133,6 +134,38 @@ optimization_guide::proto::PasswordChangeQuality_StepQuality* GetStepQuality(
   }
 }
 
+bool IsSuccessfulLoginAttempt(
+    password_manager::LogInWithChangedPasswordOutcome login_outcome) {
+  switch (login_outcome) {
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kBackupPasswordSucceeded:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kPrimaryPasswordSucceeded:
+      // TODO(crbug.com/425927757): Add Unknown case.
+      return true;
+    default:
+      return false;
+  }
+}
+
+LoginPasswordType GetLoginAttemptPasswordType(
+    password_manager::LogInWithChangedPasswordOutcome login_outcome) {
+  switch (login_outcome) {
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kPrimaryPasswordSucceeded:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kPrimaryPasswordFailed:
+      return LoginPasswordType::LoginAttemptOutcome_PasswordType_PRIMARY;
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kBackupPasswordFailed:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kBackupPasswordSucceeded:
+      return LoginPasswordType::LoginAttemptOutcome_PasswordType_BACKUP;
+    default:
+      return LoginPasswordType::LoginAttemptOutcome_PasswordType_UNKNOWN;
+  }
+}
+
 }  // namespace
 
 ModelQualityLogsUploader::ModelQualityLogsUploader(
@@ -145,9 +178,12 @@ ModelQualityLogsUploader::~ModelQualityLogsUploader() = default;
 
 void ModelQualityLogsUploader::SetCommonInformationQuality(
     content::WebContents* web_contents) {
+  CHECK(web_contents);
+  const GURL& page_url =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
   final_log_data_.mutable_password_change_submission()
       ->mutable_quality()
-      ->set_domain(GetPageDomain(web_contents));
+      ->set_domain(GetPageDomain(page_url));
   final_log_data_.mutable_password_change_submission()
       ->mutable_quality()
       ->set_location(GetLocation());
@@ -320,16 +356,34 @@ void ModelQualityLogsUploader::SetVerifySubmissionQuality(
           ComputeRequestLatencyMs(server_request_start_time));
 }
 
+// static
+void ModelQualityLogsUploader::RecordLoginAttemptQuality(
+    optimization_guide::ModelQualityLogsUploaderService* mqls_service,
+    const GURL& page_url,
+    password_manager::LogInWithChangedPasswordOutcome login_outcome) {
+  CHECK(mqls_service);
+  auto new_log_entry =
+      std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          mqls_service->GetWeakPtr());
+  auto* login_attempt_outcome = new_log_entry->log_ai_data_request()
+                                    ->mutable_password_change_submission()
+                                    ->mutable_login_attempt_outcome();
+  login_attempt_outcome->set_domain(GetPageDomain(page_url));
+  login_attempt_outcome->set_success(IsSuccessfulLoginAttempt(login_outcome));
+  login_attempt_outcome->set_password_type(
+      GetLoginAttemptPasswordType(login_outcome));
+}
+
 void ModelQualityLogsUploader::UploadFinalLog() {
-  auto* logs_uploader =
+  auto* mqls_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_)
           ->GetModelQualityLogsUploaderService();
-  if (!logs_uploader) {
+  if (!mqls_service) {
     return;
   }
   auto new_log_entry =
       std::make_unique<optimization_guide::ModelQualityLogEntry>(
-          logs_uploader->GetWeakPtr());
+          mqls_service->GetWeakPtr());
 
   new_log_entry->log_ai_data_request()->MergeFrom(final_log_data_);
   optimization_guide::ModelQualityLogEntry::Upload(std::move(new_log_entry));

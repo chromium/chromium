@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -130,6 +131,21 @@ bool ChromePasswordChangeService::IsPasswordChangeAvailable() const {
 
   return base::FeatureList::IsEnabled(
       password_manager::features::kImprovedPasswordChangeService);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePasswordChangeService::RecordLoginAttemptQuality(
+    password_manager::LogInWithChangedPasswordOutcome login_outcome,
+    const GURL& page_url) const {
+#if BUILDFLAG(IS_ANDROID)
+  return;
+#else
+  optimization_guide::ModelQualityLogsUploaderService* mqls_service =
+      optimization_keyed_service_->GetModelQualityLogsUploaderService();
+  if (mqls_service) {
+    ModelQualityLogsUploader::RecordLoginAttemptQuality(mqls_service, page_url,
+                                                        login_outcome);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

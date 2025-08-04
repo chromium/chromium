@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/test/test_future.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -15,6 +17,8 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/password_manager/core/browser/password_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -31,6 +35,9 @@ using PasswordChangeOutcome = ::optimization_guide::proto::
     PasswordChangeSubmissionData_PasswordChangeOutcome;
 using PageType = optimization_guide::proto::OpenFormResponseData_PageType;
 using FlowStep = optimization_guide::proto::PasswordChangeRequest::FlowStep;
+using LoginPasswordType =
+    optimization_guide::proto::LoginAttemptOutcome_PasswordType;
+using ::optimization_guide::TestModelQualityLogsUploaderService;
 
 namespace {
 void CheckOpenFormStatus(const optimization_guide::proto::LogAiDataRequest& log,
@@ -85,8 +92,27 @@ class ModelQualityLogsUploaderTest : public ChromeRenderViewHostTestHarness {
                                 /*enabled=*/true) {}
   ~ModelQualityLogsUploaderTest() override = default;
 
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    mock_optimization_guide_keyed_service_ = static_cast<
+        MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockOptimizationGuideKeyedService>();
+                })));
+    auto logs_uploader = std::make_unique<TestModelQualityLogsUploaderService>(
+        TestingBrowserProcess::GetGlobal()->local_state());
+    mock_optimization_guide_keyed_service_
+        ->SetModelQualityLogsUploaderServiceForTesting(
+            std::move(logs_uploader));
+  }
+
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    mock_optimization_guide_keyed_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -96,6 +122,20 @@ class ModelQualityLogsUploaderTest : public ChromeRenderViewHostTestHarness {
         ->GetTranslateManager()
         ->GetLanguageState()
         ->SetSourceLanguage(language);
+  }
+
+  void VerifyUniqueLoginAttemptLog(const std::string& expected_domain,
+                                   LoginPasswordType expected_password_type,
+                                   bool expected_success) {
+    const std::vector<
+        std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>& logs =
+        mqls_uploader_service()->uploaded_logs();
+    ASSERT_EQ(1u, logs.size());
+    optimization_guide::proto::LoginAttemptOutcome login_attempt_outcome =
+        logs[0]->password_change_submission().login_attempt_outcome();
+    EXPECT_EQ(login_attempt_outcome.domain(), expected_domain);
+    EXPECT_EQ(login_attempt_outcome.success(), expected_success);
+    EXPECT_EQ(login_attempt_outcome.password_type(), expected_password_type);
   }
 
   void SetCountryCode(const std::string& country) {
@@ -116,9 +156,17 @@ class ModelQualityLogsUploaderTest : public ChromeRenderViewHostTestHarness {
     prefs_.SetString(variations::prefs::kVariationsCountry, country);
   }
 
+  TestModelQualityLogsUploaderService* mqls_uploader_service() {
+    return static_cast<TestModelQualityLogsUploaderService*>(
+        mock_optimization_guide_keyed_service_
+            ->GetModelQualityLogsUploaderService());
+  }
+
   TestingPrefServiceSimple prefs_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  raw_ptr<MockOptimizationGuideKeyedService>
+      mock_optimization_guide_keyed_service_ = nullptr;
   std::unique_ptr<variations::TestVariationsService> variations_service_;
 };
 
@@ -628,4 +676,27 @@ TEST_F(ModelQualityLogsUploaderTest, CompleteLogWithGeneralInformation) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
   CheckCommonQualityLogFields(final_log, "url.com", expected_language,
                               expected_country);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, RecordLogPrimaryPassword) {
+  const GURL url("http://www.url.com");
+  NavigateAndCommit(url);
+  ModelQualityLogsUploader::RecordLoginAttemptQuality(
+      mqls_uploader_service(), url,
+      password_manager::LogInWithChangedPasswordOutcome::
+          kPrimaryPasswordSucceeded);
+  VerifyUniqueLoginAttemptLog(
+      "url.com", LoginPasswordType::LoginAttemptOutcome_PasswordType_PRIMARY,
+      true);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, RecordLogBackupPassword) {
+  const GURL url("http://www.url.com");
+  NavigateAndCommit(url);
+  ModelQualityLogsUploader::RecordLoginAttemptQuality(
+      mqls_uploader_service(), url,
+      password_manager::LogInWithChangedPasswordOutcome::kBackupPasswordFailed);
+  VerifyUniqueLoginAttemptLog(
+      "url.com", LoginPasswordType::LoginAttemptOutcome_PasswordType_BACKUP,
+      false);
 }

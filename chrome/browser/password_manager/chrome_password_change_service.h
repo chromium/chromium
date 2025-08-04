@@ -75,6 +75,9 @@ class ChromePasswordChangeService
   bool IsPasswordChangeSupported(
       const GURL& url,
       const autofill::LanguageCode& page_language) const override;
+  void RecordLoginAttemptQuality(
+      password_manager::LogInWithChangedPasswordOutcome login_outcome,
+      const GURL& page_url) const override;
 
   // Checks if user has interacted with the feature and only then general
   // availability.

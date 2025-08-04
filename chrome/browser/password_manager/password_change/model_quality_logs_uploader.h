@@ -14,6 +14,10 @@ namespace content {
 class WebContents;
 }
 
+namespace password_manager {
+enum class LogInWithChangedPasswordOutcome;
+}
+
 // Helper class which handles Model Logging Quality logic and uploads the
 // logs to the Server.
 class ModelQualityLogsUploader {
@@ -83,6 +87,14 @@ class ModelQualityLogsUploader {
           response,
       std::unique_ptr<LoggingData> logging_data,
       base::Time server_request_start_time);
+
+  // Records the outcome of the first login attempt
+  // using a previously saved APC-password and immediately
+  // uploads it to the server.
+  static void RecordLoginAttemptQuality(
+      optimization_guide::ModelQualityLogsUploaderService* mqls_service,
+      const GURL& page_url,
+      password_manager::LogInWithChangedPasswordOutcome login_outcome);
 
 #if defined(UNIT_TEST)
   // Used for testing only.

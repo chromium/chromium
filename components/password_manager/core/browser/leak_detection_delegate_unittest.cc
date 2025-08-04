@@ -114,6 +114,10 @@ class MockPasswordChangeService : public PasswordChangeServiceInterface {
               IsPasswordChangeSupported,
               (const GURL&, const autofill::LanguageCode&),
               (const override));
+  MOCK_METHOD(void,
+              RecordLoginAttemptQuality,
+              (password_manager::LogInWithChangedPasswordOutcome, const GURL&),
+              (const override));
 };
 
 }  // namespace
