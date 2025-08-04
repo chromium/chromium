@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef PARTITION_ALLOC_POINTERS_RAW_PTR_BACKUP_REF_IMPL_H_
 #define PARTITION_ALLOC_POINTERS_RAW_PTR_BACKUP_REF_IMPL_H_
 
@@ -340,15 +335,18 @@ struct RawPtrBackupRefImpl {
   // Advance the wrapped pointer by `delta_elems`.
   // `is_in_pointer_modification` means that the result is intended to modify
   // the pointer (as opposed to creating a new one).
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` before the
+  // end of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Advance(T* wrapped_ptr, Z delta_elems, bool is_in_pointer_modification) {
+    // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
     if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr + delta_elems;
+      return PA_UNSAFE_BUFFERS(wrapped_ptr + delta_elems);
     }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
     // When modifying the pointer, we have to make sure it doesn't migrate to a
@@ -357,24 +355,29 @@ struct RawPtrBackupRefImpl {
     // properly. Do it anyway if extra OOB checks are enabled.
     if (PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS) ||
         is_in_pointer_modification) {
+      // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
       return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
-          unpoisoned_ptr, unpoisoned_ptr + delta_elems);
+          unpoisoned_ptr, PA_UNSAFE_BUFFERS(unpoisoned_ptr + delta_elems));
     }
-    return unpoisoned_ptr + delta_elems;
+    // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
+    return PA_UNSAFE_BUFFERS(unpoisoned_ptr + delta_elems);
   }
 
   // Retreat the wrapped pointer by `delta_elems`.
   // `is_in_pointer_modification` means that the result is intended to modify
   // the pointer (as opposed to creating a new one).
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` after
+  // the start of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Retreat(T* wrapped_ptr, Z delta_elems, bool is_in_pointer_modification) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr - delta_elems;
+      // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
+      return PA_UNSAFE_BUFFERS(wrapped_ptr - delta_elems);
     }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
     // When modifying the pointer, we have to make sure it doesn't migrate to a
@@ -383,10 +386,12 @@ struct RawPtrBackupRefImpl {
     // properly. Do it anyway if extra OOB checks are enabled.
     if (PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS) ||
         is_in_pointer_modification) {
+      // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
       return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
-          unpoisoned_ptr, unpoisoned_ptr - delta_elems);
+          unpoisoned_ptr, PA_UNSAFE_BUFFERS(unpoisoned_ptr - delta_elems));
     }
-    return unpoisoned_ptr - delta_elems;
+    // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
+    return PA_UNSAFE_BUFFERS(unpoisoned_ptr - delta_elems);
   }
 
   template <typename T>
