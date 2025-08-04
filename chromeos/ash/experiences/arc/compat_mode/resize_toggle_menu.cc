@@ -307,8 +307,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
       views::Builder<views::View>()
           .CopyAddressTo(&background_view)
           .SetUseDefaultFillLayout(true)
-          .SetBackground(views::CreateRoundedRectBackground(background_color_id,
-                                                            kCornerRadius))
+          .SetBackground(views::CreateSolidBackground(background_color_id))
           .Build());
 
   background_view->SetPaintToLayer();
