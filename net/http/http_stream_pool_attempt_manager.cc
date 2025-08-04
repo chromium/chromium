@@ -270,8 +270,11 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
     return;
   }
 
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::OnServiceEndpointsUpdated",
-                      track_);
+  CHECK(service_endpoint_request_);
+  TRACE_EVENT_INSTANT(
+      "net.stream", "AttemptManager::OnServiceEndpointsUpdated", track_,
+      "endpoints",
+      GetServiceEndpointRequestAsValue(service_endpoint_request_.get()));
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_UPDATED,
       [&] {
@@ -287,11 +290,12 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
     return;
   }
 
-  TRACE_EVENT_INSTANT("net.stream",
-                      "AttemptManager::OnServiceEndpointRequestFinished",
-                      track_, "result", rv);
   CHECK(!service_endpoint_request_finished_);
   CHECK(service_endpoint_request_);
+  TRACE_EVENT_INSTANT(
+      "net.stream", "AttemptManager::OnServiceEndpointRequestFinished", track_,
+      "result", rv, "endpoints",
+      GetServiceEndpointRequestAsValue(service_endpoint_request_.get()));
 
   service_endpoint_request_finished_ = true;
   dns_resolution_end_time_ = base::TimeTicks::Now();
