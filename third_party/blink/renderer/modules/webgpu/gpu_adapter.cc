@@ -207,28 +207,7 @@ void GPUAdapter::OnRequestDeviceCallback(
     case wgpu::RequestDeviceStatus::Success: {
       DCHECK(dawn_device);
 
-      GPUDeviceLostInfo* device_lost_info = nullptr;
-      if (is_consumed_) {
-        // Immediately force the device to be lost.
-        // TODO: Ideally this should be handled in Dawn, which can return an
-        // error device.
-        device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
-            wgpu::DeviceLostReason::Unknown,
-            StringFromASCIIAndUTF8(
-                "The adapter is invalid because it has already been used to "
-                "create a device. A lost device has been returned."));
-      }
-      is_consumed_ = true;
-
-      device->Initialize(dawn_device, descriptor, device_lost_info);
-
-      if (device_lost_info) {
-        // Ensure the Dawn device is marked as lost as well.
-        device->InjectError(
-            wgpu::ErrorType::Internal,
-            "Device was marked as lost due to a stale adapter.");
-      }
-
+      device->Initialize(dawn_device, descriptor, /*lost_info=*/nullptr);
       resolver->Resolve(device);
 
       ukm::builders::ClientRenderingAPI(

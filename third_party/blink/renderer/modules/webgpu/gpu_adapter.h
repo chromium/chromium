@@ -74,7 +74,6 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   Member<GPU> gpu_;
   wgpu::BackendType backend_type_;
   wgpu::AdapterType adapter_type_;
-  bool is_consumed_ = false;
   bool is_xr_compatible_ = false;
   Member<GPUSupportedLimits> limits_;
   Member<GPUSupportedFeatures> features_;
