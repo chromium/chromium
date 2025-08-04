@@ -23,7 +23,6 @@ static_library("internal") {
     "android/fake_preview_server_proxy.h",
     "avatar_fetcher.cc",
     "avatar_fetcher.h",
-    "client_version_info.h",
     "collaboration_group_sync_bridge.cc",
     "collaboration_group_sync_bridge.h",
     "data_sharing_network_loader_impl.cc",
