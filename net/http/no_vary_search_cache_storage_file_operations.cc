@@ -463,6 +463,10 @@ class RealFileOperations : public FileOperations {
     return path_.AppendASCII(filename);
   }
 
+  // TODO(https://crbug.com/433551601): Remove `legacy_path_` once the
+  // SourceDidNotExist bucket of all the
+  // HttpCache.NoVarySearch.RenameOrDeleteResult.{NoVarySearch,Parent}.{Journal,Snapshot}
+  // histograms has reached 100.00%.
   const base::FilePath legacy_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   const base::FilePath path_ GUARDED_BY_CONTEXT(sequence_checker_);
 
