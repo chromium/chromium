@@ -95,7 +95,6 @@ def main():
                       required=True,
                       help='where to write output rustc flags')
   parser.add_argument('--target', required=True, help='rust target triple')
-  parser.add_argument('--target-abi', help='rust target_abi')
   parser.add_argument(
       '--rustc-print-cfg-path',
       required=True,

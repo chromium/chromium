@@ -488,12 +488,6 @@ template("cargo_crate") {
         "--rustflags",
         rebase_path(_rustflags_txt, root_build_dir),
       ]
-      if (cargo_target_abi != "") {
-        args += [
-          "--target-abi",
-          cargo_target_abi,
-        ]
-      }
       if (defined(invoker.features)) {
         args += [ "--features" ]
         args += invoker.features
