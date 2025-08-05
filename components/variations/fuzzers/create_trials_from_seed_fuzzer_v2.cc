@@ -133,9 +133,11 @@ void CreateTrialsFromSeedFuzzer(
   base::HistogramTester histogram_tester;
   auto seed = test_case.seed();
   VariationsLayers layers(seed, entropy_providers);
-  VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, layers, &feature_list);
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor(sticky_activation_manager)
+      .CreateTrialsFromSeed(seed, *client_state,
+                            base::BindRepeating(NoopUIStringOverrideCallback),
+                            entropy_providers, layers, &feature_list);
 
   // There are numerous conditions for which the seed could be rejected. They
   // should all be caught during the initial seed validation. Post validation,

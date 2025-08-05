@@ -78,9 +78,10 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
       // The following is a test value for limited entropy randomization source
       "00000000000000000000000000000001");
   VariationsLayers layers(seed, entropy_providers);
-  VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_state, override_callback.callback(), entropy_providers,
-      layers, &feature_list);
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor(sticky_activation_manager)
+      .CreateTrialsFromSeed(seed, *client_state, override_callback.callback(),
+                            entropy_providers, layers, &feature_list);
 }
 
 DEFINE_PROTO_FUZZER(const VariationsSeed& seed) {

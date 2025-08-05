@@ -166,6 +166,8 @@ class TestOverrideStringCallback {
 // chrome.
 class ChromeEnvironment {
  public:
+  ChromeEnvironment() : sticky_activation_manager_(/*local_state=*/nullptr) {}
+
   bool HasHighEntropy() { return true; }
   bool HasLimitedEntropy() { return true; }
 
@@ -185,15 +187,21 @@ class ChromeEnvironment {
     VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // components/variations/service/variations_service.cc
-    VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, layers, feature_list);
+    VariationsSeedProcessor(sticky_activation_manager_)
+        .CreateTrialsFromSeed(seed, *client_state, callback, entropy_providers,
+                              layers, feature_list);
   }
+
+ private:
+  StickyActivationManager sticky_activation_manager_;
 };
 
 // WebViewEnvironment calls CreateTrialsFromSeed with arguments similar to
 // WebView.
 class WebViewEnvironment {
  public:
+  WebViewEnvironment() : sticky_activation_manager_(/*local_state=*/nullptr) {}
+
   bool HasHighEntropy() { return false; }
   bool HasLimitedEntropy() { return false; }
 
@@ -211,9 +219,13 @@ class WebViewEnvironment {
     VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // android_webview/browser/aw_feature_list_creator.cc
-    VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, layers, feature_list);
+    VariationsSeedProcessor(sticky_activation_manager_)
+        .CreateTrialsFromSeed(seed, *client_state, callback, entropy_providers,
+                              layers, feature_list);
   }
+
+ private:
+  StickyActivationManager sticky_activation_manager_;
 };
 
 template <typename Environment>
@@ -600,7 +612,8 @@ TYPED_TEST(VariationsSeedProcessorTest, StartsActive) {
   AddExperiment("Default", 0, study3);
   study3->set_activation_type(Study::ACTIVATE_ON_QUERY);
 
-  VariationsSeedProcessor seed_processor;
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor seed_processor(sticky_activation_manager);
   this->CreateTrialsFromSeed(seed);
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but

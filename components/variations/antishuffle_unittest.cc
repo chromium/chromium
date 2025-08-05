@@ -115,9 +115,11 @@ void ProcessSeed(EntropyProviders&& entropy_providers) {
   auto client_state = CreateDummyClientFilterableState();
   base::FeatureList feature_list;
   VariationsLayers layers(seed, entropy_providers);
-  VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, layers, &feature_list);
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor(sticky_activation_manager)
+      .CreateTrialsFromSeed(seed, *client_state,
+                            base::BindRepeating(NoopUIStringOverrideCallback),
+                            entropy_providers, layers, &feature_list);
 }
 
 }  // namespace

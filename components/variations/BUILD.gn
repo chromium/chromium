@@ -68,6 +68,8 @@ component("variations") {
     "seed_reader_writer.h",
     "seed_response.cc",
     "seed_response.h",
+    "sticky_activation_manager.cc",
+    "sticky_activation_manager.h",
     "study_filtering.cc",
     "study_filtering.h",
     "synthetic_trial_registry.cc",

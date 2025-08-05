@@ -280,7 +280,9 @@ bool VariationsSeedProcessor::HasGoogleWebExperimentId(
          experiment.has_google_web_trigger_experiment_id();
 }
 
-VariationsSeedProcessor::VariationsSeedProcessor() = default;
+VariationsSeedProcessor::VariationsSeedProcessor(
+    StickyActivationManager& sticky_activation_manager)
+    : sticky_activation_manager_(sticky_activation_manager) {}
 
 VariationsSeedProcessor::~VariationsSeedProcessor() = default;
 

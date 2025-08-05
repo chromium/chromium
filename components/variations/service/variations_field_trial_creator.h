@@ -27,6 +27,7 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/sticky_activation_manager.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/version_info/channel.h"
 
@@ -325,6 +326,8 @@ class VariationsFieldTrialCreator {
   // Caches the UI strings which need to be overridden in the resource bundle.
   // These strings are cached before the resource bundle is initialized.
   std::unordered_map<int, std::u16string> overridden_strings_map_;
+
+  StickyActivationManager sticky_activation_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
