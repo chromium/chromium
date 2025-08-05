@@ -63,7 +63,6 @@ public class TabModelNotificationDotManagerUnitTest {
     private static final int EXISTING_TAB_ID = 5;
     private static final int ROOT_ID = 6;
     private static final int NON_EXISTANT_TAB_ID = 7;
-    private static final int TAB_COUNT = 3;
     private static final Token TAB_GROUP_ID = new Token(378L, 4378L);
     private static final String TITLE = "Vacation";
 
@@ -105,7 +104,7 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(TAB_COUNT);
+        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab));
         when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
@@ -292,7 +291,7 @@ public class TabModelNotificationDotManagerUnitTest {
         // Set to visible.
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
 
-        verifyShown("3 tabs");
+        verifyShown("1 tab");
     }
 
     private void initializeBothBackends() {

@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
+import java.util.List;
 import java.util.Objects;
 
 /** Helper class to handle tab group title related utilities. */
@@ -67,7 +68,13 @@ public class TabGroupTitleUtils {
                         ? tabGroupModelFilter.getTabGroupTitle(assumeNonNull(tabGroupId))
                         : null;
         if (TextUtils.isEmpty(explicitTitle)) {
-            int tabCount = tabGroupModelFilter.getTabCountForGroup(tabGroupId);
+            int tabCount = 0;
+            List<Tab> tabsInGroup = tabGroupModelFilter.getTabsInGroup(assumeNonNull(tabGroupId));
+            for (Tab tab : tabsInGroup) {
+                if (!tab.isClosing()) {
+                    tabCount++;
+                }
+            }
             return getDefaultTitle(context, tabCount);
         } else {
             return explicitTitle;
