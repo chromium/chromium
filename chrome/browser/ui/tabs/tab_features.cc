@@ -68,7 +68,6 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "chrome/browser/ui/views/translate/translate_page_action_controller.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
@@ -371,10 +370,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     qwac_web_contents_observer_ =
         std::make_unique<QwacWebContentsObserver>(tab);
   }
-
-  tab_capture_contents_border_helper_ =
-      GetUserDataFactory().CreateInstance<TabCaptureContentsBorderHelper>(tab,
-                                                                          tab);
 }
 
 TabResourceUsageTabHelper* TabFeatures::SetResourceUsageHelperForTesting(

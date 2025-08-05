@@ -24,7 +24,6 @@ class Profile;
 class PwaInstallPageActionController;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
-class TabCaptureContentsBorderHelper;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class TranslatePageActionController;
@@ -412,9 +411,6 @@ class TabFeatures {
 
   std::unique_ptr<TabCreationMetricsController>
       tab_creation_metrics_controller_;
-
-  std::unique_ptr<TabCaptureContentsBorderHelper>
-      tab_capture_contents_border_helper_;
 
   std::unique_ptr<autofill::BubbleManager> autofill_bubble_manager_;
 

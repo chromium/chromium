@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -256,8 +255,12 @@ void TabSharingUIViews::OnRegionCaptureRectChanged(
     return;
   }
 
-  auto* const helper = TabCaptureContentsBorderHelper::From(
-      tabs::TabInterface::GetFromContents(shared_tab_));
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(shared_tab_);
+  if (!helper) {
+    return;
+  }
+
   helper->OnRegionCaptureRectChanged(capture_session_id_, region_capture_rect);
 }
 
@@ -570,20 +573,14 @@ void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
 
 void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
                                              TabCaptureUpdate update) {
-  // Only update tab capture data `contents` aren't being destroyed
-  // because the capture data should be automatically updated on
-  // destruction.
-  if (!contents || contents->IsBeingDestroyed()) {
+  if (!contents) {
     return;
   }
 
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(contents);
-  if (!tab_interface || !tab_interface->GetTabFeatures()) {
-    return;
-  }
+  TabCaptureContentsBorderHelper::CreateForWebContents(contents);
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(contents);
 
-  auto* const helper = TabCaptureContentsBorderHelper::From(tab_interface);
   switch (update) {
     case TabCaptureUpdate::kCaptureAdded:
       helper->OnCapturerAdded(capture_session_id_);
