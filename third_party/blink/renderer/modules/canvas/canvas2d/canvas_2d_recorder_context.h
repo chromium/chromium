@@ -840,6 +840,7 @@ void Canvas2DRecorderContext::DrawInternal(
   }
   const CanvasRenderingContext2DState& state = GetState();
   SkBlendMode global_composite = state.GlobalComposite();
+  paint_canvas->AddHighEntropyCanvasOpTypes(state.HighEntropyCanvasOpTypes());
   if (ShouldUseCompositedDraw(paint_type, image_type)) {
     WillDraw(clip_bounds, draw_type);
     CompositedDraw(draw_func, paint_canvas, paint_type, image_type);

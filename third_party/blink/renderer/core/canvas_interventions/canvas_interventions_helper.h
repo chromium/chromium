@@ -23,6 +23,28 @@ inline constexpr std::string_view kCanvasSizeMetricName =
 inline constexpr std::string_view kCanvasOperationMetricName =
     "FingerprintingProtection.CanvasNoise.OperationTriggered";
 
+enum class CanvasNoiseReason {
+  kAllConditionsMet = 0,
+  kNoRenderContext = 1,  // Deprecated; this is now implied by the trigger.
+  kNoTrigger = 2,
+  kNo2d = 4,   // Deprecated; this is now implied by the trigger.
+  kNoGpu = 8,  // Deprecated; this is now implied by the trigger.
+  kNotEnabledInMode = 16,
+  kNoExecutionContext = 32,
+  kMaxValue = kNoExecutionContext
+};
+
+inline constexpr CanvasNoiseReason operator|(CanvasNoiseReason a,
+                                             CanvasNoiseReason b) {
+  return static_cast<CanvasNoiseReason>(static_cast<int>(a) |
+                                        static_cast<int>(b));
+}
+inline constexpr CanvasNoiseReason& operator|=(CanvasNoiseReason& a,
+                                               CanvasNoiseReason b) {
+  a = a | b;
+  return a;
+}
+
 class CORE_EXPORT CanvasInterventionsHelper
     : public GarbageCollected<CanvasInterventionsHelper>,
       public Supplement<ExecutionContext>,
@@ -42,8 +64,7 @@ class CORE_EXPORT CanvasInterventionsHelper
   // If allowed, performs noising on a copy of the snapshot StaticBitmapImage
   // and returns the noised snapshot, otherwise it will return the original
   // inputted snapshot.
-  static bool MaybeNoiseSnapshot(CanvasRenderingContext* rendering_context,
-                                 ExecutionContext* execution_context,
+  static bool MaybeNoiseSnapshot(ExecutionContext* execution_context,
                                  scoped_refptr<StaticBitmapImage>& snapshot);
 
   void Trace(Visitor* visitor) const override {

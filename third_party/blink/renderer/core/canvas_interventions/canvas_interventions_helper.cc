@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -23,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -41,26 +41,14 @@ namespace {
 
 // Returns true when all criteria to apply noising are met. Currently this
 // entails that
-//   1) an operation was made on the canvas that triggers an
-//   2) the render context is 2d
-//   3) the raster mode is GPU unless an exception is made
-//   4) the CanvasInterventions RuntimeEnabledFeature is force enabled for
-//      testing.
-bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
-                      scoped_refptr<StaticBitmapImage>& snapshot,
+//   1) a triggering operation was made on the canvas, implying it was made on
+//      an accelerated 2d context
+//   2) the CanvasInterventions RuntimeEnabledFeature is enabled
+bool ShouldApplyNoise(HighEntropyCanvasOpType canvas_operations,
                       ExecutionContext* execution_context) {
   CanvasNoiseReason noise_reason = CanvasNoiseReason::kAllConditionsMet;
-  if (!rendering_context) {
-    noise_reason |= CanvasNoiseReason::kNoRenderContext;
-  }
-  if (rendering_context && !rendering_context->ShouldTriggerIntervention()) {
+  if (canvas_operations == HighEntropyCanvasOpType::kNone) {
     noise_reason |= CanvasNoiseReason::kNoTrigger;
-  }
-  if (rendering_context && !rendering_context->IsRenderingContext2D()) {
-    noise_reason |= CanvasNoiseReason::kNo2d;
-  }
-  if (!snapshot->IsTextureBacked()) {
-    noise_reason |= CanvasNoiseReason::kNoGpu;
   }
   if (!execution_context) {
     noise_reason |= CanvasNoiseReason::kNoExecutionContext;
@@ -112,13 +100,14 @@ const char CanvasInterventionsHelper::kSupplementName[] =
 
 // static
 bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
-    CanvasRenderingContext* rendering_context,
     ExecutionContext* execution_context,
     scoped_refptr<StaticBitmapImage>& snapshot) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   CHECK(snapshot);
 
-  if (!ShouldApplyNoise(rendering_context, snapshot, execution_context)) {
+  HighEntropyCanvasOpType high_entropy_canvas_op_types =
+      snapshot->HighEntropyCanvasOpTypes();
+  if (!ShouldApplyNoise(high_entropy_canvas_op_types, execution_context)) {
     return false;
   }
 
@@ -171,11 +160,10 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
       std::move(noised_image), snapshot->Orientation());
 
   constexpr int canvas_op_exclusive_max =
-      static_cast<int>(CanvasOperationType::kMaxValue) << 1;
-  UMA_HISTOGRAM_EXACT_LINEAR(
-      kCanvasOperationMetricName,
-      static_cast<int>(rendering_context->GetCanvasTriggerOperations()),
-      canvas_op_exclusive_max);
+      static_cast<int>(HighEntropyCanvasOpType::kMaxValue) << 1;
+  UMA_HISTOGRAM_EXACT_LINEAR(kCanvasOperationMetricName,
+                             static_cast<int>(high_entropy_canvas_op_types),
+                             canvas_op_exclusive_max);
 
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kIntervention,

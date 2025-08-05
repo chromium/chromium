@@ -47,6 +47,7 @@
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
@@ -544,9 +545,19 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       return SnapshotInternal(orientation, reason);
 
     if (!cached_snapshot_) {
+      // Getting the high entropy canvas operations should be done before
+      // flushing the canvas as flushing discards the recording (including the
+      // associated HighEntropyCanvasOpTypes).
+      HighEntropyCanvasOpType high_entropy_canvas_op_types =
+          GetRecorderHighEntropyCanvasOpTypes();
       FlushCanvas(reason);
       EndWriteAccess();
       cached_snapshot_ = resource_->Bitmap();
+      if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                                  IsAccelerated())) {
+        cached_snapshot_->SetHighEntropyCanvasOpTypes(
+            high_entropy_canvas_op_types);
+      }
 
       // We'll record its content_id to be used by the FlushForImageListener.
       // This will be needed in WillDrawInternal, but we are doing it now, as we
@@ -1101,9 +1112,19 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     if (!IsValid())
       return nullptr;
 
+    // Getting the high entropy canvas operations should be done before
+    // flushing the canvas as flushing discards the recording (including the
+    // associated HighEntropyCanvasOpTypes).
+    HighEntropyCanvasOpType high_entropy_canvas_op_types =
+        GetRecorderHighEntropyCanvasOpTypes();
     FlushIfNeeded(reason);
 
-    return resource_->Bitmap();
+    scoped_refptr<StaticBitmapImage> snapshot = resource_->Bitmap();
+    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                                IsAccelerated())) {
+      snapshot->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
+    }
+    return snapshot;
   }
 
   sk_sp<SkSurface> CreateSkSurface() const override {
@@ -1779,10 +1800,21 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProvider::SnapshotInternal(
   if (!IsValid())
     return nullptr;
 
+  // Getting the high entropy canvas operations should be done before
+  // flushing the canvas as flushing discards the recording (including the
+  // associated HighEntropyCanvasOpTypes).
+  HighEntropyCanvasOpType high_entropy_canvas_op_types =
+      GetRecorderHighEntropyCanvasOpTypes();
   auto paint_image = MakeImageSnapshot(reason);
   DCHECK(!paint_image.IsTextureBacked());
-  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                                orientation);
+  scoped_refptr<StaticBitmapImage> snapshot =
+      UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
+                                             orientation);
+  if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                              IsAccelerated())) {
+    snapshot->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
+  }
+  return snapshot;
 }
 
 cc::PaintImage CanvasResourceProvider::MakeImageSnapshot(FlushReason reason) {
@@ -2057,6 +2089,11 @@ void CanvasResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
           gpu::kGpuFeatureStatusEnabled) {
     recorder_->DisableLineDrawingAsPaths();
   }
+}
+
+HighEntropyCanvasOpType
+CanvasResourceProvider::GetRecorderHighEntropyCanvasOpTypes() const {
+  return recorder_->getRecordingCanvas().HighEntropyCanvasOpTypes();
 }
 
 }  // namespace blink

@@ -34,7 +34,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
@@ -346,12 +345,6 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual bool IdentifiabilityEncounteredPartiallyDigestedImage() const {
     return false;
-  }
-
-  virtual bool ShouldTriggerIntervention() const { return false; }
-
-  virtual CanvasOperationType GetCanvasTriggerOperations() const {
-    return CanvasOperationType::kNone;
   }
 
   bool did_print_in_current_task() const { return did_print_in_current_task_; }

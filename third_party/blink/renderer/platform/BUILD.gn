@@ -894,6 +894,7 @@ component("platform") {
     "graphics/canvas_deferred_paint_record.h",
     "graphics/canvas_hibernation_handler.cc",
     "graphics/canvas_hibernation_handler.h",
+    "graphics/canvas_high_entropy_op_type.h",
     "graphics/canvas_resource.cc",
     "graphics/canvas_resource.h",
     "graphics/canvas_resource_dispatcher.cc",

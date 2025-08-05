@@ -406,6 +406,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
+  HighEntropyCanvasOpType GetRecorderHighEntropyCanvasOpTypes() const;
+
  private:
   friend class FlushForImageListener;
 

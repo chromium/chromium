@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -134,14 +133,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   bool IdentifiabilityEncounteredPartiallyDigestedImage() const override {
     return identifiability_study_helper_.encountered_partially_digested_image();
-  }
-
-  bool ShouldTriggerIntervention() const override {
-    return HasTriggerForIntervention();
-  }
-
-  CanvasOperationType GetCanvasTriggerOperations() const override {
-    return GetTriggersForIntervention();
   }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;

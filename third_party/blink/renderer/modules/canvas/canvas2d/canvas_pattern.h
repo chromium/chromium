@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -55,14 +56,19 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   CanvasPattern(scoped_refptr<Image>,
                 Pattern::RepeatMode,
                 bool origin_clean,
-                bool has_intervention_trigger);
+                HighEntropyCanvasOpType high_entropy_canvas_op_types);
 
   Pattern* GetPattern() const { return pattern_.get(); }
   const AffineTransform& GetTransform() const { return pattern_transform_; }
 
   bool OriginClean() const { return origin_clean_; }
 
-  bool HasInterventionTrigger() const { return has_intervention_trigger_; }
+  HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
+    return high_entropy_canvas_op_types_;
+  }
+  bool HasHighEntropyCanvasOpTypes() const {
+    return high_entropy_canvas_op_types_ != HighEntropyCanvasOpType::kNone;
+  }
 
   void setTransform(DOMMatrix2DInit*, ExceptionState&);
 
@@ -77,7 +83,7 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   scoped_refptr<Pattern> pattern_;
   AffineTransform pattern_transform_;
   const bool origin_clean_;
-  const bool has_intervention_trigger_;
+  const HighEntropyCanvasOpType high_entropy_canvas_op_types_;
   IdentifiabilityStudyHelper identifiability_study_helper_;
 };
 

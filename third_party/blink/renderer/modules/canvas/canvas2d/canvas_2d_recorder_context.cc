@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -106,6 +105,8 @@
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
@@ -1021,9 +1022,6 @@ void Canvas2DRecorderContext::setStrokeStyle(v8::Isolate* isolate,
       if (!origin_tainted_by_content_ && !v8_style.pattern->OriginClean()) {
         SetOriginTaintedByContent();
       }
-      if (v8_style.pattern->HasInterventionTrigger()) {
-        AddTriggersForCanvasIntervention(CanvasOperationType::kCopyFromCanvas);
-      }
       state.SetStrokePattern(v8_style.pattern);
       break;
     case V8CanvasStyleType::kString: {
@@ -1147,9 +1145,6 @@ void Canvas2DRecorderContext::setFillStyle(v8::Isolate* isolate,
     case V8CanvasStyleType::kPattern:
       if (!origin_tainted_by_content_ && !v8_style.pattern->OriginClean()) {
         SetOriginTaintedByContent();
-      }
-      if (v8_style.pattern->HasInterventionTrigger()) {
-        AddTriggersForCanvasIntervention(CanvasOperationType::kCopyFromCanvas);
       }
       state.SetFillPattern(v8_style.pattern);
       break;
@@ -1308,9 +1303,6 @@ void Canvas2DRecorderContext::setShadowBlur(double blur) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowBlur,
                                                 blur);
   }
-  if (blur > 0) {
-    AddTriggersForCanvasIntervention(CanvasOperationType::kSetShadowBlur);
-  }
   state.SetShadowBlur(ClampTo<float>(blur));
 }
 
@@ -1334,7 +1326,6 @@ void Canvas2DRecorderContext::setShadowColor(const String& color_string) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowColor,
                                                 color.Rgb());
   }
-  AddTriggersForCanvasIntervention(CanvasOperationType::kSetShadowColor);
   state.SetShadowColor(color);
 }
 
@@ -1425,10 +1416,6 @@ void Canvas2DRecorderContext::setGlobalCompositeOperation(
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kSetGlobalCompositeOpertion, sk_blend_mode);
-  }
-  if (op != kCompositeSourceOver || blend_mode != BlendMode::kNormal) {
-    AddTriggersForCanvasIntervention(
-        CanvasOperationType::kGlobalCompositionOperation);
   }
   state.SetGlobalComposite(sk_blend_mode);
 }
@@ -1768,6 +1755,9 @@ void Canvas2DRecorderContext::DrawPathInternal(
     return;
   }
 
+  HighEntropyCanvasOpType high_entropy_path_op_types =
+      path.HighEntropyPathOpTypes();
+
   if (path.IsArc()) {
     const auto& arc = path.arc();
     const SkRect oval =
@@ -1780,11 +1770,13 @@ void Canvas2DRecorderContext::DrawPathInternal(
     const bool closed = arc.closed;
     Draw<OverdrawOp::kNone>(
         /*draw_func=*/
-        [oval, start_degrees, sweep_degrees, closed](
-            MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
+        [oval, start_degrees, sweep_degrees, closed,
+         high_entropy_path_op_types](MemoryManagedPaintCanvas* c,
+                                     const cc::PaintFlags* flags) {
           cc::PaintFlags arc_paint_flags(*flags);
           arc_paint_flags.setArcClosed(closed);
           c->drawArc(oval, start_degrees, sweep_degrees, arc_paint_flags);
+          c->AddHighEntropyCanvasOpTypes(high_entropy_path_op_types);
         },
         NoOverdraw, bounds, paint_type,
         GetState().HasPattern(paint_type)
@@ -1799,9 +1791,10 @@ void Canvas2DRecorderContext::DrawPathInternal(
 
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
-      [sk_path, use_paint_cache](MemoryManagedPaintCanvas* c,
-                                 const cc::PaintFlags* flags) {
+      [sk_path, use_paint_cache, high_entropy_path_op_types](
+          MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         c->drawPath(sk_path, *flags, use_paint_cache);
+        c->AddHighEntropyCanvasOpTypes(high_entropy_path_op_types);
       },
       NoOverdraw, bounds, paint_type,
       GetState().HasPattern(paint_type)
@@ -1852,7 +1845,6 @@ void Canvas2DRecorderContext::FillPathImpl(Path2D* dom_path,
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
   }
-  AddTriggersForCanvasIntervention(dom_path->GetTriggersForIntervention());
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, path2d_use_paint_cache_);
 }
@@ -1870,7 +1862,6 @@ void Canvas2DRecorderContext::stroke(Path2D* dom_path) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kStroke__Path, dom_path->GetIdentifiableToken());
   }
-  AddTriggersForCanvasIntervention(dom_path->GetTriggersForIntervention());
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, path2d_use_paint_cache_);
 }
@@ -2672,19 +2663,18 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
 
   bool origin_clean = !WouldTaintCanvasOrigin(image_source);
 
-  bool has_intervention_trigger = false;
-  if (image_source->IsCanvasElement() || image_source->IsOffscreenCanvas()) {
-    CanvasRenderingContext* rendering_context =
-        static_cast<CanvasRenderingContextHost*>(image_source)
-            ->RenderingContext();
-    if (rendering_context && rendering_context->ShouldTriggerIntervention()) {
-      has_intervention_trigger = true;
-    }
+  HighEntropyCanvasOpType source_high_entropy_canvas_op_types =
+      HighEntropyCanvasOpType::kNone;
+  if ((image_source->IsCanvasElement() || image_source->IsOffscreenCanvas()) &&
+      image_for_rendering->IsStaticBitmapImage()) {
+    source_high_entropy_canvas_op_types =
+        static_cast<StaticBitmapImage*>(image_for_rendering.get())
+            ->HighEntropyCanvasOpTypes();
   }
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       std::move(image_for_rendering), repeat_mode, origin_clean,
-      has_intervention_trigger);
+      source_high_entropy_canvas_op_types);
   pattern->SetExecutionContext(
       identifiability_study_helper_.execution_context());
   return pattern;

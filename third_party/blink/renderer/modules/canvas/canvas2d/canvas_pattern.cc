@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -65,13 +66,14 @@ Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
   return Pattern::kRepeatModeNone;
 }
 
-CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
-                             Pattern::RepeatMode repeat,
-                             bool origin_clean,
-                             bool has_intervention_trigger)
+CanvasPattern::CanvasPattern(
+    scoped_refptr<Image> image,
+    Pattern::RepeatMode repeat,
+    bool origin_clean,
+    HighEntropyCanvasOpType high_entropy_canvas_op_types)
     : pattern_(Pattern::CreateImagePattern(image, repeat)),
       origin_clean_(origin_clean),
-      has_intervention_trigger_(has_intervention_trigger) {
+      high_entropy_canvas_op_types_(high_entropy_canvas_op_types) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kCreatePattern, image ? image->width() : 0,

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -235,7 +236,7 @@ TEST(Canvas2DRecorderContextCompositingTests, Pattern) {
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
-      /*has_intervention_trigger=*/false);
+      /*high_entropy_canvas_op_types=*/HighEntropyCanvasOpType::kNone);
 
   context->setFillStyle(scope.GetIsolate(),
                         pattern->ToV8(scope.GetScriptState()),
@@ -918,7 +919,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowPattern) {
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
-      /*has_intervention_trigger=*/false);
+      /*high_entropy_canvas_op_types=*/HighEntropyCanvasOpType::kNone);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -981,7 +982,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowPatternTransform) {
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
-      /*has_intervention_trigger=*/false);
+      /*high_entropy_canvas_op_types=*/HighEntropyCanvasOpType::kNone);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
