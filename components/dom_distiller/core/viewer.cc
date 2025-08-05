@@ -36,25 +36,34 @@ namespace viewer {
 
 namespace {
 
-// JS Themes. Must agree with useTheme() in dom_distiller_viewer.js.
+// LINT.IfChange(JSThemesAndFonts)
+
+// JS Themes. Must agree with themeClasses in dom_distiller_viewer.js.
 const char kDarkJsTheme[] = "dark";
 const char kLightJsTheme[] = "light";
 const char kSepiaJsTheme[] = "sepia";
 
-// CSS Theme classes.  Must agree with classes in distilledpage.css.
-const char kDarkCssClass[] = "dark";
-const char kLightCssClass[] = "light";
-const char kSepiaCssClass[] = "sepia";
-
-// JS FontFamilies. Must agree with useFontFamily() in dom_distiller_viewer.js.
+// JS FontFamilies. Must agree with fontFamilyClasses in
+// dom_distiller_viewer.js.
 const char kSerifJsFontFamily[] = "serif";
 const char kSansSerifJsFontFamily[] = "sans-serif";
 const char kMonospaceJsFontFamily[] = "monospace";
 
-// CSS FontFamily classes.  Must agree with classes in distilledpage.css.
+// LINT.ThenChange(//components/dom_distiller/core/javascript/dom_distiller_viewer.js:JSThemesAndFonts)
+
+// LINT.IfChange
+
+// CSS Theme classes.  Must agree with classes in distilledpage_common.css.
+const char kDarkCssClass[] = "dark";
+const char kLightCssClass[] = "light";
+const char kSepiaCssClass[] = "sepia";
+
+// CSS FontFamily classes.  Must agree with classes in distilledpage_common.css.
 const char kSerifCssClass[] = "serif";
 const char kSansSerifCssClass[] = "sans-serif";
 const char kMonospaceCssClass[] = "monospace";
+
+// LINT.ThenChange(//components/dom_distiller/core/css/distilledpage_common.css)
 
 std::string GetPlatformSpecificCss() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -281,7 +290,7 @@ const std::string GetAddToPageJs(const std::string& unsafe_content) {
 const std::string GetCss() {
   return base::StrCat(
       {ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-           IDR_DISTILLER_CSS),
+           IDR_DISTILLER_COMMON_CSS),
        GetPlatformSpecificCss()});
 }
 

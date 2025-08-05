@@ -3,7 +3,7 @@
   <include name="IDR_DOM_DISTILLER_VIEWER_HTML" file="../dom_distiller/core/html/dom_distiller_viewer.html" type="BINDATA" preprocess="true"/>
   <include name="IDR_DOM_DISTILLER_VIEWER_JS" file="../dom_distiller/core/javascript/dom_distiller_viewer.js" type="BINDATA" />
   <include name="IDR_DISTILLER_JS" file="../dom_distiller/core/javascript/domdistiller.js" flattenhtml="true" type="BINDATA" />
-  <include name="IDR_DISTILLER_CSS" file="../dom_distiller/core/css/distilledpage.css" type="BINDATA" preprocess="true"/>
+  <include name="IDR_DISTILLER_COMMON_CSS" file="../dom_distiller/core/css/distilledpage_common.css" type="BINDATA" preprocess="true"/>
   <include name="IDR_DISTILLER_DESKTOP_CSS" file="../dom_distiller/core/css/distilledpage_desktop.css" type="BINDATA" />
   <include name="IDR_DISTILLER_LOADING_IMAGE" file="../dom_distiller/core/images/dom_distiller_material_spinner.svg" type="BINDATA" />
   <include name="IDR_EXTRACT_PAGE_FEATURES_JS" file="../dom_distiller/core/javascript/extract_features.js" type="BINDATA" />

@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// LINT.IfChange(JSThemesAndFonts)
+
+// These classes must agree with the font classes in distilledpage.css.
+const themeClasses = ['light', 'dark', 'sepia'];
+const fontFamilyClasses = ['sans-serif', 'serif', 'monospace'];
+
+// LINT.ThenChange(//components/dom_distiller/core/viewer.cc:JSThemesAndFonts)
+
 // On iOS, |distillerOnIos| was set to true before this script.
 // eslint-disable-next-line no-var
 var distillerOnIos;
@@ -111,10 +119,6 @@ function setTitle(title, documentTitleSuffix) {
 function setTextDirection(direction) {
   document.body.setAttribute('dir', direction);
 }
-
-// These classes must agree with the font classes in distilledpage.css.
-const themeClasses = ['light', 'dark', 'sepia'];
-const fontFamilyClasses = ['sans-serif', 'serif', 'monospace'];
 
 // Get the currently applied appearance setting.
 function getAppearanceSetting(settingClasses) {
