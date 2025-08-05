@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -645,9 +646,11 @@ bool DecodeStringWithLength(std::string_view* slice, std::u16string* value) {
     return false;
 
   int64_t length = 0;
-  if (!DecodeVarInt(slice, &length) || length < 0)
+  size_t bytes;
+  if (!DecodeVarInt(slice, &length) ||
+      !base::CheckMul(length, sizeof(char16_t)).AssignIfValid(&bytes)) {
     return false;
-  size_t bytes = length * sizeof(char16_t);
+  }
   if (slice->size() < bytes)
     return false;
 
@@ -664,11 +667,15 @@ bool DecodeBinary(std::string_view* slice, std::string* value) {
     return false;
 
   int64_t length = 0;
-  if (!DecodeVarInt(slice, &length) || length < 0)
+  size_t size;
+  if (!DecodeVarInt(slice, &length) ||
+      !base::MakeCheckedNum(length).AssignIfValid(&size)) {
     return false;
-  size_t size = length;
-  if (slice->size() < size)
+  }
+
+  if (slice->size() < size) {
     return false;
+  }
 
   value->assign(slice->data(), size);
   slice->remove_prefix(size);
@@ -680,9 +687,12 @@ bool DecodeBinary(std::string_view* slice, base::span<const uint8_t>* value) {
     return false;
 
   int64_t length = 0;
-  if (!DecodeVarInt(slice, &length) || length < 0)
+  size_t size;
+  if (!DecodeVarInt(slice, &length) ||
+      !base::MakeCheckedNum(length).AssignIfValid(&size)) {
     return false;
-  size_t size = length;
+  }
+
   if (slice->size() < size)
     return false;
 
@@ -993,21 +1003,24 @@ int CompareEncodedStringsWithLength(std::string_view* slice1,
     *ok = false;
     return 0;
   }
-  if (len1 < 0 || len2 < 0) {
+
+  size_t size1, size2;
+  if (!base::CheckMul(len1, sizeof(char16_t)).AssignIfValid(&size1) ||
+      !base::CheckMul(len2, sizeof(char16_t)).AssignIfValid(&size2)) {
     *ok = false;
     return 0;
   }
-  if (slice1->size() < len1 * sizeof(char16_t) ||
-      slice2->size() < len2 * sizeof(char16_t)) {
+
+  if (slice1->size() < size1 || slice2->size() < size2) {
     *ok = false;
     return 0;
   }
 
   // Extract the string data, and advance the passed slices.
-  std::string_view string1(slice1->data(), len1 * sizeof(char16_t));
-  std::string_view string2(slice2->data(), len2 * sizeof(char16_t));
-  slice1->remove_prefix(len1 * sizeof(char16_t));
-  slice2->remove_prefix(len2 * sizeof(char16_t));
+  std::string_view string1(slice1->data(), size1);
+  std::string_view string2(slice2->data(), size2);
+  slice1->remove_prefix(size1);
+  slice2->remove_prefix(size2);
 
   *ok = true;
   // Strings are UTF-16BE encoded, so a simple memcmp is sufficient.
@@ -1022,12 +1035,13 @@ int CompareEncodedBinary(std::string_view* slice1,
     *ok = false;
     return 0;
   }
-  if (len1 < 0 || len2 < 0) {
+
+  size_t size1, size2;
+  if (!base::MakeCheckedNum(len1).AssignIfValid(&size1) ||
+      !base::MakeCheckedNum(len2).AssignIfValid(&size2)) {
     *ok = false;
     return 0;
   }
-  size_t size1 = len1;
-  size_t size2 = len2;
 
   if (slice1->size() < size1 || slice2->size() < size2) {
     *ok = false;
