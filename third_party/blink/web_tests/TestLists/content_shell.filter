@@ -43,7 +43,7 @@ external/wpt/compat/webkit-box-horizontal-rtl-variants.html
 external/wpt/compat/webkit-box-rtl-flex.html
 external/wpt/console/console-log-large-array.any.html
 external/wpt/content-security-policy/report-hash/*
-external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html
+external/wpt/cookiestore/cookieStore_subscribe_arguments.https.any.html
 external/wpt/cookies/attributes/attributes-ctl.sub.html
 external/wpt/cookies/attributes/domain.sub.html
 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-animation.html
