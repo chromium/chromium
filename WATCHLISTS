@@ -70,6 +70,9 @@
     'agent_scheduling_group': {
       'filepath': '.*agent_scheduling_group|.*agent_group_scheduler',
     },
+    'agents': {
+      'filepath': '^agents/',
+    },
     'ai_page_content' : {
       'filepath': 'chrome/browser/ai/ai_data_keyed_service|' \
                   'chrome/browser/glic/host/context/|' \
@@ -2519,6 +2522,7 @@
                           'webapks-watchlist@chromium.org'],
     'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
                                'chikamune+watch@chromium.org'],
+    'agents': ['estaab+watch@chromium.org'],
     'ai_page_content': ['mfoltz+watch@chromium.org'],
     'ai_settings_page_desktop': ['rainhard+watch@chromium.org'],
     'android_accessibility': ['mschillaci+watcha11y@google.com',
