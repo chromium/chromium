@@ -957,9 +957,6 @@ ci.builder(
             "blink_web_tests": targets.remove(
                 reason = "TODO: crbug.com/346921029 - fix broken tests.",
             ),
-            "blink_wpt_tests": targets.remove(
-                reason = "TODO: crbug.com/346921029 - fix broken tests.",
-            ),
             "grit_python_unittests": targets.remove(
                 reason = "TODO: crbug.com/346921029 - fix broken tests.",
             ),
