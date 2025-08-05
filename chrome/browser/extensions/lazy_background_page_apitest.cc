@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -206,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BrowserActionCreateTab) {
   // Background page created a new tab before it closed.
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
   EXPECT_EQ(num_tabs_before + 1, browser()->tab_strip_model()->count());
-  content::WebContents* active_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* active_tab = GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(active_tab));
   EXPECT_EQ(GURL(chrome::kChromeUIExtensionsURL),
             active_tab->GetLastCommittedURL());
@@ -244,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BroadcastEvent) {
   // Lazy Background Page doesn't exist yet.
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
   EXPECT_EQ(0u, extension_action_test_util::GetActivePageActionCount(
-                    browser()->tab_strip_model()->GetActiveWebContents()));
+                    GetActiveWebContents()));
 
   // Open a tab to a URL that will trigger the page action to show.
   ExtensionHostTestHelper host_helper(profile(), last_loaded_extension_id());
@@ -260,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BroadcastEvent) {
   // Page action is shown.
   WaitForPageActionVisibilityChangeTo(1);
   EXPECT_EQ(1u, extension_action_test_util::GetActivePageActionCount(
-                    browser()->tab_strip_model()->GetActiveWebContents()));
+                    GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, Filters) {
@@ -388,8 +386,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForView) {
   ASSERT_TRUE(extension);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  content::WebContents* active_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* active_tab = GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(active_tab));
   // The extension should've opened a new tab to an extension page.
   EXPECT_EQ(extension->GetResourceURL("extension_page.html"),
@@ -455,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForNTP) {
   ASSERT_TRUE(extension);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  content::WebContents* active_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* active_tab = GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(active_tab));
   // The extension should've opened a new tab to an extension page.
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),

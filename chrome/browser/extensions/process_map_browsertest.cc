@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -47,13 +46,8 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  // Returns the WebContents of the currently-active tab.
-  content::WebContents* GetActiveTab() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
   content::RenderProcessHost& GetActiveMainFrameProcess() {
-    return *GetActiveTab()->GetPrimaryMainFrame()->GetProcess();
+    return *GetActiveWebContents()->GetPrimaryMainFrame()->GetProcess();
   }
 
   int GetActiveMainFrameProcessID() {
@@ -109,7 +103,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
 
   void ExecuteUserScriptInActiveTab(const ExtensionId& extension_id) {
     base::RunLoop run_loop;
-    content::WebContents* web_contents = GetActiveTab();
+    content::WebContents* web_contents = GetActiveWebContents();
     // TODO(crbug.com/40262660): Add a utility method for user script
     // injection in browser tests.
     ScriptExecutor script_executor(web_contents);
@@ -580,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
       browser(), embedded_test_server()->GetURL("a.test", "/simple.html")));
   ASSERT_TRUE(listener_mainframe.WaitUntilSatisfied());
 
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::TestNavigationObserver observer(web_contents, 1);
   ExtensionTestMessageListener listener_subframe("dynamic import success");
@@ -613,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, SandboxedWebPageEmbedsExtension) {
       embedded_test_server()->GetURL("a.test", "/csp-sandbox.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sandboxed_url));
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* sandboxed_main_frame =
       web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(sandboxed_main_frame->IsSandboxed(
@@ -729,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(
   // Load E1.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension1->GetResourceURL("main.html")));
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_a_frame =
       content::ChildFrameAt(main_frame, 0);
@@ -977,7 +971,7 @@ void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("parent.html")));
 
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_child_frame =
       content::ChildFrameAt(main_frame, 0);
@@ -1077,7 +1071,7 @@ void ProcessMapBrowserTest::
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("parent.html")));
 
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   // Use JS to add content to the child frame.
   content::TestNavigationObserver observer(web_contents);
@@ -1172,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension2->GetResourceURL("parent.html")));
 
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_child_frame =
       content::ChildFrameAt(main_frame, 0);
@@ -1205,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
         frm.src = $1;
         document.body.appendChild(frm);
       )";
-  content::TestNavigationObserver observer(GetActiveTab(), 1);
+  content::TestNavigationObserver observer(GetActiveWebContents(), 1);
   EXPECT_TRUE(ExecJs(sandboxed_child_frame,
                      content::JsReplace(kJsScript, e2_private_page_url)));
   observer.Wait();
@@ -1231,7 +1225,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   OpenExtensionPageWithSandboxedFrame(*extension);
 
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_frame =
       content::ChildFrameAt(main_frame, 0);
@@ -1288,7 +1282,7 @@ IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("parent.html")));
 
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* extension_frame =
       web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* non_extension_frame =
@@ -1368,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   OpenExtensionPageWithSandboxedFrame(*extension);
 
-  content::WebContents* web_contents = GetActiveTab();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* sandboxed_frame =
       content::ChildFrameAt(main_frame, 0);

@@ -60,8 +60,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV3) {
   // We wait on a console message which will be raised on an unsuccessful
   // navigation to a javascript url since there isn't any other clean way to
   // assert that the navigation didn't succeed.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
       "Refused to run the JavaScript URL because it violates the following "

@@ -107,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
-  EXPECT_EQ(u"script injected",
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"script injected", GetActiveWebContents()->GetTitle());
 
   const Extension* extension = nullptr;
   for (const auto& entry :
@@ -183,8 +182,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
-  EXPECT_EQ(u"script injected",
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"script injected", GetActiveWebContents()->GetTitle());
 }
 
 }  // namespace extensions

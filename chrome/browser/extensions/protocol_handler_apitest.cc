@@ -87,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, MAYBE_Registration) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Bypass permission dialogs for registering new protocol handlers.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -159,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, BrowserProcessSecurityLevel) {
       << message_;
 
   content::WebContentsDelegate* web_contents_delegate =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetDelegate();
+      GetActiveWebContents()->GetDelegate();
   content::RenderFrameHost* main_frame = browser()
                                              ->tab_strip_model()
                                              ->GetActiveWebContents()

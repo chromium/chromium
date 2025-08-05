@@ -186,8 +186,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // Navigate to a page with a subframe.
   GURL main_url = embedded_test_server()->GetURL("/iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             main_url);
 
@@ -291,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
       document.body.appendChild(a);
       a.click();
   )";
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::TestNavigationObserver nav_observer(web_contents, 1);
   ExecuteScriptAsync(web_contents,
                      content::JsReplace(kScriptTemplate, target_url));
