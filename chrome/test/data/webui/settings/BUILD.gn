@@ -85,7 +85,7 @@ build_webui_tests("build") {
     "privacy_guide_integration_test.ts",
     "privacy_guide_msbb_fragment_test.ts",
     "privacy_guide_page_test.ts",
-    "privacy_guide_promo_test.ts",
+    "privacy_guide_promo_visibility_test.ts",
     "privacy_guide_safe_browsing_fragment_test.ts",
     "privacy_guide_test_util.ts",
     "privacy_guide_welcome_fragment_test.ts",

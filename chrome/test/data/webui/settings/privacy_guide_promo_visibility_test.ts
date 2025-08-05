@@ -19,7 +19,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // TODO(crbug.com/40184479): Remove once the privacy guide promo has been
 // removed.
-suite('PrivacyGuidePromo', () => {
+suite('PrivacyGuidePromoVisibility', () => {
   let page: SettingsPrivacyPageIndexElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
