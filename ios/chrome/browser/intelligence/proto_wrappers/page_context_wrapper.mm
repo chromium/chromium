@@ -435,18 +435,28 @@ result.links = linksArray;
            maybeAnchorTagsJavaScript, nonceString}),
       nullptr);
 
-  // Execute the JavaScript on the main WebFrame first and pass in the callback
-  // (which executes the barrier when run)
-  mainFrame->ExecuteJavaScript(
-      script,
-      base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
-                     /*isMainFrame=*/YES, mainFrame->GetSecurityOrigin()));
+  // If the page is not protected, execute the JavaScript on the main WebFrame
+  // first and pass in the callback (which executes the barrier when run).
+  if (ios::provider::IsProtectedUrl(mainFrame->GetUrl().spec())) {
+    _forceDetachPageContext = YES;
+    annotatedPageContentBarrier.Run();
+  } else {
+    mainFrame->ExecuteJavaScript(
+        script,
+        base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
+                       /*isMainFrame=*/YES, mainFrame->GetSecurityOrigin()));
+  }
 
   // Execute the JavaScript on each other WebFrame and pass in the callback
   // (which executes the barrier when run).
   for (web::WebFrame* webFrame : webFrames) {
-    // Skip the main frame since it was already processed above.
-    if (!webFrame || webFrame->IsMainFrame()) {
+    if (ios::provider::IsProtectedUrl(webFrame->GetUrl().spec())) {
+      _forceDetachPageContext = YES;
+    }
+
+    // Skip if it's the main frame since it was already processed above, or if
+    // Page Context should already be force detached.
+    if (!webFrame || webFrame->IsMainFrame() || _forceDetachPageContext) {
       annotatedPageContentBarrier.Run();
       continue;
     }

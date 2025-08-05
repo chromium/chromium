@@ -36,4 +36,8 @@ void CheckGeminiEligibility(AuthenticationService* auth_service,
 
 void ResetGemini() {}
 
+bool IsProtectedUrl(std::string url) {
+  return false;
+}
+
 }  // namespace ios::provider
