@@ -70,7 +70,7 @@
 <translation id="1113869188872983271">&amp;Қайта ретке келтіру әрекетін болдырмау</translation>
 <translation id="1118429183611783760">Шаңсорғыштар және еденге күтім жасау</translation>
 <translation id="1122714970786750095">Электроника және электр</translation>
-<translation id="1123753900084781868">Live Caption қазір қолжетімді емес.</translation>
+<translation id="1123753900084781868">Автоматты субтитр функциясы қазір қолжетімді емес.</translation>
 <translation id="1125453215844207206">Кескіннің белгісі жоқ. Google AI көмегімен мәтін шығарып алынып жатыр.</translation>
 <translation id="112840717907525620">Саясат кэші жарамды</translation>
 <translation id="1131264053432022307">Көшірілген сурет</translation>
@@ -1756,7 +1756,7 @@
 <translation id="398470910934384994">Құстар</translation>
 <translation id="3985750352229496475">Мекенжайларды басқару...</translation>
 <translation id="3986506998755860149">Жасанды интеллектімен автоматты түрде толтыру функциясы туралы толық ақпаратты параметрлерден қараңыз</translation>
-<translation id="3986705137476756801">Live Caption функциясын қазір өшіру</translation>
+<translation id="3986705137476756801">Автоматты субтитр функциясын қазір өшіру</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 МБ-тан аз</translation>
 <translation id="3990250421422698716">Бірқалыпты ығысу</translation>
@@ -2022,7 +2022,7 @@
 <translation id="4395550503472021297">Бұл саясат келесі саясаттардың әдепкі әрекетін басқарады: <ph name="POLICIES" /></translation>
 <translation id="4396554829965096368">Жүргізуші куәлігі</translation>
 <translation id="4397978002248035985">Банк веб-сайтында растауға арналған қалқымалы терезені ашады</translation>
-<translation id="4406883609789734330">Live Caption</translation>
+<translation id="4406883609789734330">Автоматты субтитр</translation>
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
 <translation id="4407758156081352648">Қауіпсіздікті сақтау мақсатында ұйымыңыз Chrome-да құпия сөздерді қайта пайдалануға рұқсат бермейді. Chrome-дағы құпия сөздер пайдаланушының құпиялығын қорғау үшін шифрланған.</translation>
 <translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
