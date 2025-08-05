@@ -18,6 +18,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.url.GURL;
 
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -70,6 +71,10 @@ public class Profile {
     @NonNull
     public String getName() {
         return mName;
+    }
+
+    public void preconnect(String url) {
+        mBrowserContext.getPreconnector().preconnect(new GURL(url));
     }
 
     @NonNull
