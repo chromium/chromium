@@ -7,8 +7,10 @@
 
 #include <compare>
 #include <cstdint>
+#include <iosfwd>
 #include <type_traits>
 
+#include "base/base_export.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -31,7 +33,7 @@ namespace base {
 //
 // KiB(), MiB() and GiB() can take float parameters. This will return the
 // nearest integral number of bytes, rounding towards zero.
-class ByteCount {
+class BASE_EXPORT ByteCount {
  public:
   constexpr ByteCount() = default;
 
@@ -170,6 +172,8 @@ constexpr ByteCount GiB(T gib) {
   return ByteCount::FromChecked(
       CheckedNumeric<int64_t>(gib * 1024.0 * 1024.0 * 1024.0));
 }
+
+BASE_EXPORT std::ostream& operator<<(std::ostream& os, ByteCount byte_count);
 
 }  // namespace base
 

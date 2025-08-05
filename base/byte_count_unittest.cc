@@ -216,4 +216,42 @@ TEST(ByteCount, Comparison) {
   EXPECT_FALSE(b != c);
 }
 
+TEST(ByteCount, StreamOperator) {
+  {
+    std::stringstream ss;
+    ss << ByteCount(3);
+    EXPECT_EQ("3B", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << ByteCount(1024);
+    EXPECT_EQ("1KiB", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << ByteCount(1025);
+    EXPECT_EQ("1025B (1.001KiB)", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << ByteCount(1024 * 1024);
+    EXPECT_EQ("1MiB", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << ByteCount(1024 * 1024 + 1000);
+    EXPECT_EQ("1049576B (1.001MiB)", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << ByteCount(1024LL * 1024 * 1024);
+    EXPECT_EQ("1GiB", ss.str());
+  }
+  {
+    std::stringstream ss;
+    ss << ByteCount(1024LL * 1024 * 1024 + 1000000);
+    EXPECT_EQ("1074741824B (1.001GiB)", ss.str());
+  }
+}
+
 }  // namespace base

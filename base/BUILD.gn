@@ -212,6 +212,7 @@ component("base") {
     "bit_cast.h",
     "bits.h",
     "build_time.h",
+    "byte_count.cc",
     "byte_count.h",
     "callback_list.cc",
     "callback_list.h",
