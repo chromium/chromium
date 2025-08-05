@@ -713,6 +713,16 @@ content::WebContents* ExtensionBrowserTest::GetActiveWebContents() const {
   return chrome_test_utils::GetActiveWebContents(this);
 }
 
+content::WebContents* ExtensionBrowserTest::GetWebContentsAt(int index) const {
+#if !BUILDFLAG(IS_ANDROID)
+  // Some tests may not immediately open a browser. Handle this gracefully.
+  if (!browser()) {
+    return nullptr;
+  }
+#endif
+  return chrome_test_utils::GetWebContentsAt(this, index);
+}
+
 base::FilePath ExtensionBrowserTest::PackExtension(
     const base::FilePath& dir_path,
     int extra_run_flags) {

@@ -31,6 +31,20 @@ content::WebContents* GetActiveWebContents(
 #endif
 }
 
+content::WebContents* GetWebContentsAt(const PlatformBrowserTest* browser_test,
+                                       int index) {
+#if BUILDFLAG(IS_ANDROID)
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->IsActiveModel()) {
+      return model->GetWebContentsAt(index);
+    }
+  }
+  NOTREACHED() << "No active TabModel??";
+#else
+  return browser_test->browser()->tab_strip_model()->GetWebContentsAt(index);
+#endif
+}
+
 Profile* GetProfile(const PlatformBrowserTest* browser_test) {
 #if BUILDFLAG(IS_ANDROID)
   for (const TabModel* model : TabModelList::models()) {

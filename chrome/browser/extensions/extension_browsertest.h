@@ -215,6 +215,10 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   // tab.
   content::WebContents* GetActiveWebContents() const;
 
+  // Returns the WebContents at the specified index, or nullptr if there is
+  // none.
+  content::WebContents* GetWebContentsAt(int index) const;
+
   // Pack the extension in `dir_path` into a crx file and return its path.
   // Return an empty FilePath if there were errors.
   base::FilePath PackExtension(
