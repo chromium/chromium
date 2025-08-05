@@ -1,0 +1,50 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WEB_CONTENTS_DELEGATE_H_
+#define CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WEB_CONTENTS_DELEGATE_H_
+
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+
+// The delegate for the WebContents managing the UI in WebUI-based browser.
+class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
+                                        public content::WebContentsObserver {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void DraggableRegionsChanged(
+        const std::vector<blink::mojom::DraggableRegionPtr>& regions) = 0;
+  };
+
+  WebUIBrowserWebContentsDelegate();
+  ~WebUIBrowserWebContentsDelegate() override;
+
+  void SetUIWebContents(content::WebContents* ui_web_contents);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+ private:
+  // WebContentsDelegate implementation.
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override;
+  void CloseContents(content::WebContents* source) override;
+
+  // WebContentsObserver implementation.
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+
+  void EnableDraggableRegions();
+
+  raw_ptr<content::WebContents> ui_web_contents_ = nullptr;
+  base::ObserverList<Observer> observers_;
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WEB_CONTENTS_DELEGATE_H_

@@ -10,13 +10,20 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
 #include "chrome/browser/ui/webui_browser/webui_location_bar.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/sharing_message/sharing_dialog_data.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -31,21 +38,37 @@ bool IsUsingLinuxSystemTheme(Profile* profile) {
 
 }  // namespace
 
+class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
+ public:
+  explicit WidgetDelegate(
+      WebUIBrowserWebContentsDelegate* web_contents_delegate);
+
+  views::ClientView* CreateClientView(views::Widget* widget) override;
+
+ private:
+  raw_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
+};
+
 WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
     : browser_(std::move(browser)) {
   location_bar_ = std::make_unique<WebUILocationBar>(browser_.get());
+  web_contents_delegate_ = std::make_unique<WebUIBrowserWebContentsDelegate>();
+  widget_delegate_ =
+      std::make_unique<WidgetDelegate>(web_contents_delegate_.get());
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   params.name = "WebUIBrowserWindow";
   params.bounds = gfx::Rect(0, 0, 800, 600);
+  params.delegate = widget_delegate_.get();
   widget_->Init(std::move(params));
   auto web_view = std::make_unique<views::WebView>(browser_->profile());
 
+  auto* ui_web_contents = web_view->GetWebContents();
+  web_contents_delegate_->SetUIWebContents(ui_web_contents);
+  ui_web_contents->SetDelegate(web_contents_delegate_.get());
+
   web_view->LoadInitialURL(GURL(chrome::kChromeUIWebuiBrowserURL));
-  // Sets the weview as the content view of the default ClientView.
-  // TODO(webium): make a subclass of ClientView so that non-client hit testing
-  // can be customized.
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
 
   widget_->Show();
@@ -720,4 +743,14 @@ void WebUIBrowserWindow::Restore() {
 
 void WebUIBrowserWindow::DestroyBrowser() {
   NOTIMPLEMENTED();
+}
+
+WebUIBrowserWindow::WidgetDelegate::WidgetDelegate(
+    WebUIBrowserWebContentsDelegate* web_contents_delegate)
+    : web_contents_delegate_(web_contents_delegate) {}
+
+views::ClientView* WebUIBrowserWindow::WidgetDelegate::CreateClientView(
+    views::Widget* widget) {
+  return new WebUIBrowserClientView(web_contents_delegate_, widget,
+                                    TransferOwnershipOfContentsView());
 }

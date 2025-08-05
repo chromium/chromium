@@ -15,6 +15,7 @@ source_set("webui_browser") {
     "//content/public/browser",
     "//ui/color",
     "//ui/color:color_provider_key",
+    "//ui/views",
     "//ui/webui",
   ]
 }
@@ -22,7 +23,11 @@ source_set("webui_browser") {
 source_set("impl") {
   sources = [
     "webui_browser.cc",
+    "webui_browser_client_view.cc",
+    "webui_browser_client_view.h",
     "webui_browser_ui.cc",
+    "webui_browser_web_contents_delegate.cc",
+    "webui_browser_web_contents_delegate.h",
     "webui_browser_window.cc",
     "webui_location_bar.cc",
   ]

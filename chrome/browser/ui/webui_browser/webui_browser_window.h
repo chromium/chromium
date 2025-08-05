@@ -18,6 +18,7 @@ class Widget;
 }  // namespace views
 
 class WebUILocationBar;
+class WebUIBrowserWebContentsDelegate;
 class Browser;
 
 // A BrowserWindow implementation that uses WebUI for its primary UI. It still
@@ -223,6 +224,10 @@ class WebUIBrowserWindow : public BrowserWindow,
   void DestroyBrowser() override;
 
  private:
+  class WidgetDelegate;
+
+  std::unique_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
+  std::unique_ptr<WidgetDelegate> widget_delegate_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::WebView> web_view_ = nullptr;

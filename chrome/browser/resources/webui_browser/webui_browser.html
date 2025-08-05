@@ -5,7 +5,16 @@
     body {
       margin: 0;
     }
+    #titlebar {
+      height: 1.2em;
+      border: 2px solid green;
+      color: white;
+      background-color: blue;
+      width: 50%;
+      app-region: drag;
+    }
   </style>
+  <div id="titlebar">Titlebar</div>
   <webui-browser-app></webui-browser-app>
   <script type="module" src="app.js"></script>
 </html>
