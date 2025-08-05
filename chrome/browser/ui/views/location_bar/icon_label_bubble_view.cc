@@ -724,7 +724,9 @@ void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
   if (!label()->GetVisible() || IsShrinking()) {
     // Start animation from the current width, otherwise the icon will also be
     // included if visible.
-    grow_animation_starting_width_ = GetVisibleBounds().width();
+    // Use a min width of at least 1 to prevent this view from being considered
+    // hidden while animating in.
+    grow_animation_starting_width_ = std::max(GetVisibleBounds().width(), 1);
     if (string_id) {
       std::u16string label = l10n_util::GetStringUTF16(string_id.value());
       SetLabel(label);
