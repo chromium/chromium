@@ -163,6 +163,7 @@ MockTransferBuffer::ExpectedMemoryInfo MockTransferBuffer::GetExpectedMemory(
   mem.id = GetExpectedTransferBufferId();
   mem.ptr = static_cast<uint8_t*>(
       GetExpectedTransferAddressFromOffset(mem.offset, size));
+  mem.span = expected_span().subspan(mem.offset);
   return mem;
 }
 
@@ -173,6 +174,7 @@ MockTransferBuffer::GetExpectedResultMemory(uint32_t size) {
   mem.id = GetExpectedResultBufferId();
   mem.ptr = static_cast<uint8_t*>(
       GetExpectedTransferAddressFromOffset(mem.offset, size));
+  mem.span = expected_span().subspan(mem.offset);
   return mem;
 }
 

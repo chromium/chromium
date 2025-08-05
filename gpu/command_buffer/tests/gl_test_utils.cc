@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -277,12 +278,12 @@ bool GLTestHelper::CheckPixels(GLint x,
 
 namespace {
 
-void Set16BitValue(uint8_t dest[2], uint16_t value) {
+void Set16BitValue(base::span<uint8_t, 2> dest, uint16_t value) {
   dest[0] = value & 0xFFu;
   dest[1] = value >> 8;
 }
 
-void Set32BitValue(uint8_t dest[4], uint32_t value) {
+void Set32BitValue(base::span<uint8_t, 4> dest, uint32_t value) {
   dest[0] = (value >> 0) & 0xFFu;
   dest[1] = (value >> 8) & 0xFFu;
   dest[2] = (value >> 16) & 0xFFu;

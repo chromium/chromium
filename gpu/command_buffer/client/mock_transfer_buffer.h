@@ -26,6 +26,7 @@ class MockTransferBuffer : public TransferBufferInterface {
     uint32_t offset;
     int32_t id;
     uint8_t* ptr;
+    base::span<uint8_t> span;
   };
 
   MockTransferBuffer(CommandBuffer* command_buffer,
@@ -77,6 +78,13 @@ class MockTransferBuffer : public TransferBufferInterface {
 
   uint8_t* expected_buffer() const {
     return static_cast<uint8_t*>(buffers_[expected_buffer_index_]->memory());
+  }
+
+  base::span<uint8_t> actual_span() {
+    return buffers_[actual_buffer_index_]->as_byte_span();
+  }
+  base::span<uint8_t> expected_span() {
+    return buffers_[expected_buffer_index_]->as_byte_span();
   }
 
   uint32_t AllocateExpectedTransferBuffer(uint32_t size);

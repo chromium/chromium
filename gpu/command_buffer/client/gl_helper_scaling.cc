@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -168,12 +169,12 @@ class ScalerImpl : public GLHelper::ScalerInterface {
     }
   }
 
-  void SetColorWeights(int plane, const GLfloat color_weights[4]) {
+  void SetColorWeights(int plane, base::span<const GLfloat, 4> color_weights) {
     DCHECK(plane >= 0 && plane < 3);
     UNSAFE_TODO(color_weights_[plane])[0] = color_weights[0];
-    UNSAFE_TODO(color_weights_[plane])[1] = UNSAFE_TODO(color_weights[1]);
-    UNSAFE_TODO(color_weights_[plane])[2] = UNSAFE_TODO(color_weights[2]);
-    UNSAFE_TODO(color_weights_[plane])[3] = UNSAFE_TODO(color_weights[3]);
+    UNSAFE_TODO(color_weights_[plane])[1] = color_weights[1];
+    UNSAFE_TODO(color_weights_[plane])[2] = color_weights[2];
+    UNSAFE_TODO(color_weights_[plane])[3] = color_weights[3];
   }
 
   void ScaleToMultipleOutputs(GLuint src_texture,
@@ -1339,10 +1340,8 @@ void ShaderProgram::UseProgram(const gfx::Size& src_texture_size,
     gl_->Uniform4fv(rgb_to_plane0_location_, 1, &color_weights[0][0]);
     if (rgb_to_plane1_location_ != -1) {
       DCHECK_NE(rgb_to_plane2_location_, -1);
-      gl_->Uniform4fv(rgb_to_plane1_location_, 1,
-                      &UNSAFE_TODO(color_weights[1])[0]);
-      gl_->Uniform4fv(rgb_to_plane2_location_, 1,
-                      &UNSAFE_TODO(color_weights[2])[0]);
+      gl_->Uniform4fv(rgb_to_plane1_location_, 1, &UNSAFE_TODO(color_weights[1])[0]);
+      gl_->Uniform4fv(rgb_to_plane2_location_, 1, &UNSAFE_TODO(color_weights[2])[0]);
     }
   }
 }

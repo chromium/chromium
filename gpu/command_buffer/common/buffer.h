@@ -28,6 +28,13 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT BufferBacking {
     return const_cast<void*>(std::as_const(*this).GetMemory());
   }
   virtual const void* GetMemory() const = 0;
+  base::span<uint8_t> as_byte_span() {
+    // SAFETY, this is the same as_byte_span() just without const.
+    base::span<const uint8_t> tmp = std::as_const(*this).as_byte_span();
+    return UNSAFE_BUFFERS(
+        base::span<uint8_t>(const_cast<uint8_t*>(tmp.data()), tmp.size()));
+  }
+  virtual base::span<const uint8_t> as_byte_span() const = 0;
   virtual uint32_t GetSize() const = 0;
 };
 
@@ -41,6 +48,7 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT MemoryBufferBacking
 
   ~MemoryBufferBacking() override;
   const void* GetMemory() const override;
+  base::span<const uint8_t> as_byte_span() const override;
   uint32_t GetSize() const override;
 
  private:
@@ -64,6 +72,7 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT SharedMemoryBufferBacking
   const base::UnsafeSharedMemoryRegion& shared_memory_region() const override;
   base::UnguessableToken GetGUID() const override;
   const void* GetMemory() const override;
+  base::span<const uint8_t> as_byte_span() const override;
   uint32_t GetSize() const override;
 
  private:
@@ -83,6 +92,10 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT Buffer
   BufferBacking* backing() const { return backing_.get(); }
   void* memory() { return memory_; }
   const void* memory() const { return memory_; }
+  base::span<uint8_t> as_byte_span() { return backing_->as_byte_span(); }
+  base::span<const uint8_t> as_byte_span() const {
+    return backing_->as_byte_span();
+  }
   uint32_t size() const { return size_; }
 
   // Returns nullptr if the address overflows the memory.

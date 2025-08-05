@@ -13,6 +13,7 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
@@ -47,6 +48,12 @@ const void* MemoryBufferBacking::GetMemory() const {
                         : memory_.get();
 }
 
+base::span<const uint8_t> MemoryBufferBacking::as_byte_span() const {
+  // SAFETY: MemoryBufferBacking maintains its own size, and was allocated
+  // above in the constructor of size_ + alignment_ and thus is only in bounds.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(
+      reinterpret_cast<const uint8_t*>(GetMemory()), GetSize()));
+}
 uint32_t MemoryBufferBacking::GetSize() const {
   return size_;
 }
@@ -73,6 +80,10 @@ base::UnguessableToken SharedMemoryBufferBacking::GetGUID() const {
 
 const void* SharedMemoryBufferBacking::GetMemory() const {
   return shared_memory_mapping_.memory();
+}
+
+base::span<const uint8_t> SharedMemoryBufferBacking::as_byte_span() const {
+  return base::span(shared_memory_mapping_);
 }
 
 uint32_t SharedMemoryBufferBacking::GetSize() const {

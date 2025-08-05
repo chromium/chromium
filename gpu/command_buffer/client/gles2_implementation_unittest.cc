@@ -24,6 +24,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -64,8 +65,13 @@ ACTION_P2(SetMemory, dst, obj) {
   memcpy(dst, &obj, sizeof(obj));
 }
 
-ACTION_P3(SetMemoryFromArray, dst, array, size) {
-  memcpy(dst, array, size);
+ACTION_P3(SetMemoryFromArray, dst_span, src_span, size) {
+  // GMock actions are by default const so we need to const_cast to set the
+  // contents of the span.
+  // const_cast only works on pointers so first take the address, to work with
+  // the macros we use decltype to get the correct type.
+  const_cast<decltype(dst_span)*>(&dst_span)->copy_prefix_from(
+      src_span.first(size));
 }
 
 // Used to help set the transfer buffer result to SizedResult of a single value.
@@ -671,7 +677,7 @@ TEST_F(GLES2ImplementationTest, GetBucketContents) {
   const uint32_t kTestSize = MaxTransferBufferSize() + 32;
 
   auto buf = base::HeapArray<uint8_t>::Uninit(kTestSize);
-  uint8_t* expected_data = buf.data();
+  base::span<uint8_t> expected_data = buf;
   for (uint32_t ii = 0; ii < kTestSize; ++ii) {
     expected_data[ii] = ii * 3;
   }
@@ -701,12 +707,11 @@ TEST_F(GLES2ImplementationTest, GetBucketContents) {
   expected.set_token2.Init(GetNextToken());
 
   EXPECT_CALL(*command_buffer(), OnFlush())
-      .WillOnce(DoAll(
-          SetMemory(result1.ptr, kTestSize),
-          SetMemoryFromArray(
-              mem1.ptr, expected_data, MaxTransferBufferSize())))
+      .WillOnce(DoAll(SetMemory(result1.ptr, kTestSize),
+                      SetMemoryFromArray(mem1.span, expected_data,
+                                         MaxTransferBufferSize())))
       .WillOnce(SetMemoryFromArray(
-          mem2.ptr, expected_data + MaxTransferBufferSize(),
+          mem2.span, expected_data.subspan(MaxTransferBufferSize()),
           kTestSize - MaxTransferBufferSize()))
       .RetiresOnSaturation();
 
@@ -714,7 +719,7 @@ TEST_F(GLES2ImplementationTest, GetBucketContents) {
   GetBucketContents(kBucketId, &data);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   ASSERT_EQ(kTestSize, data.size());
-  EXPECT_EQ(0, memcmp(expected_data, &data[0], data.size()));
+  EXPECT_THAT(data, testing::ElementsAreArray(expected_data));
 }
 
 TEST_F(GLES2ImplementationTest, GetShaderPrecisionFormat) {

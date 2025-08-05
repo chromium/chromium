@@ -9,6 +9,8 @@
 
 #include <array>
 
+#include "base/containers/span.h"
+
 #ifndef GL_GLEXT_PROTOTYPES
 #define GL_GLEXT_PROTOTYPES
 #endif
@@ -164,7 +166,7 @@ void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t* color) {
 
 void getExpectedColorAndMask(GLenum src_internal_format,
                              GLenum dest_internal_format,
-                             const uint8_t* color,
+                             base::span<const uint8_t> color,
                              uint8_t* expected_color,
                              uint8_t* expected_mask) {
   uint8_t adjusted_color[4];
