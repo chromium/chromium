@@ -662,7 +662,13 @@ class PrivacyBudgetGroupConfigBrowserTest : public PlatformBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetGroupConfigBrowserTest, LoadsAGroup) {
+// TODO(https://crbug.com/385000599): Flaky on linux-chromeos-rel builder.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LoadsAGroup DISABLED_LoadsAGroup
+#else
+#define MAYBE_LoadsAGroup LoadsAGroup
+#endif
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetGroupConfigBrowserTest, MAYBE_LoadsAGroup) {
   EXPECT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
 
   const auto* settings = blink::IdentifiabilityStudySettings::Get();
