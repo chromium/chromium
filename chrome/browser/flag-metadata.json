@@ -406,11 +406,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "animated-image-resume",
-    "owners": [ "cblume@chromium.org", "vmpstr@chromium.org" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "apn-policies",
     "owners": [ "nikhilcn@google.com", "hsuregan@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 138
