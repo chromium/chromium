@@ -120,11 +120,6 @@ class CC_EXPORT LayerTreeSettings {
   // ready.
   bool enable_checker_imaging = false;
 
-  // When content needs a wide color gamut, raster in wide if available.
-  // But when the content is sRGB, some situations prefer to raster in
-  // wide while others prefer to raster in sRGB.
-  bool prefer_raster_in_srgb = false;
-
   // The minimum size of an image we should considering decoding using the
   // deferred path.
   size_t min_image_bytes_to_checker = 1 * 1024 * 1024;  // 1MB.

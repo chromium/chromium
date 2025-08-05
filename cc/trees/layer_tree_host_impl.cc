@@ -2030,11 +2030,6 @@ TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
 
   gfx::DisplayColorSpaces display_cs = GetDisplayColorSpaces();
 
-  if (settings_.prefer_raster_in_srgb &&
-      content_color_usage == gfx::ContentColorUsage::kSRGB) {
-    return params;
-  }
-
   auto raster_color_space =
       display_cs.GetRasterAndCompositeColorSpace(content_color_usage);
   if (raster_color_space.IsValid()) {

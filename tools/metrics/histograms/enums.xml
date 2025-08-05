@@ -16982,7 +16982,6 @@ from previous Chrome versions.
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>
   <int value="1060127537" label="TabSwitcherFullNewTabButton:disabled"/>
   <int value="1060319397" label="enable-data-reduction-proxy-carrier-test"/>
-  <int value="1060780557" label="DynamicColorGamut:disabled"/>
   <int value="1061351122" label="LinkLayerPrivacy:disabled"/>
   <int value="1061947013" label="OmniboxDeferredKeyboardPopup:disabled"/>
   <int value="1062127311" label="PermissionSiteSettingsRadioButton:disabled"/>
@@ -19563,7 +19562,6 @@ from previous Chrome versions.
   <int value="1967267147" label="SwapBackquoteKeysInISOKeyboard:enabled"/>
   <int value="1968199744" label="PrintJobManagementApp:disabled"/>
   <int value="1969604362" label="enable-pinch-virtual-viewport"/>
-  <int value="1969860311" label="DynamicColorGamut:enabled"/>
   <int value="1970371579" label="UseNewEtc1Encoder:disabled"/>
   <int value="1971436110" label="PasswordsInCredMan:enabled"/>
   <int value="1971472561" label="CrostiniImeSupport:disabled"/>

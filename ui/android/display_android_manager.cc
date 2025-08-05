@@ -128,11 +128,7 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
       // If the device supports WCG, then use P3 for the output surface when
       // there is WCG content on screen.
       cs_for_wcg = gfx::ColorSpace::CreateDisplayP3D65();
-      // If dynamically changing color gamut is disallowed, then use P3 even
-      // when all content is sRGB.
-      if (!features::IsDynamicColorGamutEnabled()) {
-        cs_for_srgb = cs_for_wcg;
-      }
+      cs_for_srgb = cs_for_wcg;
     }
     // The color space for HDR is scaled to reach the maximum luminance ratio.
     gfx::ColorSpace cs_for_hdr = cs_for_wcg;

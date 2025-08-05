@@ -245,11 +245,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       !cmd.HasSwitch(::switches::kDisableCheckerImaging) && is_threaded;
 
 #if BUILDFLAG(IS_ANDROID)
-  // WebView should always raster in the default color space.
-  // Synchronous compositing indicates WebView.
-  if (!platform->IsSynchronousCompositingEnabledForAndroidWebView())
-    settings.prefer_raster_in_srgb = ::features::IsDynamicColorGamutEnabled();
-
   // We can use a more aggressive limit on Android since decodes tend to take
   // longer on these devices.
   settings.min_image_bytes_to_checker = 512 * 1024;  // 512kB

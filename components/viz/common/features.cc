@@ -152,14 +152,6 @@ BASE_FEATURE(kRemoveRedirectionBitmap,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// When wide color gamut content from the web is encountered, promote our
-// display to wide color gamut if supported.
-BASE_FEATURE(kDynamicColorGamut,
-             "DynamicColorGamut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Submit CompositorFrame from SynchronousLayerTreeFrameSink directly to viz in
 // WebView.
 BASE_FEATURE(kVizFrameSubmissionForWebView,
@@ -474,17 +466,6 @@ bool IsDelegatedCompositingEnabled() {
 bool IsVizDirectCompositorThreadIpcNonRootEnabled() {
   return base::FeatureList::IsEnabled(kVizDirectCompositorThreadIpcNonRoot);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-bool IsDynamicColorGamutEnabled() {
-  if (viz::AlwaysUseWideColorGamut())
-    return false;
-  auto* build_info = base::android::BuildInfo::GetInstance();
-  if (build_info->sdk_int() < base::android::SDK_VERSION_Q)
-    return false;
-  return base::FeatureList::IsEnabled(kDynamicColorGamut);
-}
-#endif
 
 bool IsUsingVizFrameSubmissionForWebView() {
   return base::FeatureList::IsEnabled(kVizFrameSubmissionForWebView);

@@ -16635,25 +16635,6 @@ TEST_P(LayerTreeHostImplTest, RasterColorSpaceSoftware) {
   EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateSRGB());
 }
 
-TEST_P(LayerTreeHostImplTest, RasterColorPrefersSRGB) {
-  auto p3 = gfx::ColorSpace::CreateDisplayP3D65();
-
-  LayerTreeSettings settings = DefaultSettings();
-  settings.prefer_raster_in_srgb = true;
-  CreateHostImpl(settings, CreateLayerTreeFrameSink());
-  host_impl_->active_tree()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(p3));
-
-  auto srgb_params =
-      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB);
-  EXPECT_EQ(srgb_params.color_space, gfx::ColorSpace::CreateSRGB());
-
-  settings.prefer_raster_in_srgb = false;
-  CreateHostImpl(settings, CreateLayerTreeFrameSink());
-  host_impl_->active_tree()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(p3));
-  srgb_params = host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB);
-  EXPECT_EQ(srgb_params.color_space, p3);
-}
-
 TEST_P(LayerTreeHostImplTest, RasterColorSpaceHDR) {
   constexpr float kCustomWhiteLevel = 200.f;
   constexpr float kHDRMaxLuminanceRelative = 2.f;

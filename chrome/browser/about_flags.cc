@@ -7100,12 +7100,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForcedColorsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kForcedColors)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"dynamic-color-gamut", flag_descriptions::kDynamicColorGamutName,
-     flag_descriptions::kDynamicColorGamutDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kDynamicColorGamut)},
-#endif
-
     {"hdr-agtm", flag_descriptions::kHdrAgtmName,
      flag_descriptions::kHdrAgtmDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kHdrAgtm)},

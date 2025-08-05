@@ -152,8 +152,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // on WebView.
   aw_feature_overrides.DisableFeature(::features::kDigitalGoodsApi);
 
-  aw_feature_overrides.DisableFeature(::features::kDynamicColorGamut);
-
   // COOP is not supported on WebView yet. See:
   // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/XBKAGb2_7uAi.
   aw_feature_overrides.DisableFeature(

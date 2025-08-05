@@ -7252,8 +7252,7 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
 #if BUILDFLAG(IS_ANDROID)
 content::ContentBrowserClient::WideColorGamutHeuristic
 ChromeContentBrowserClient::GetWideColorGamutHeuristic() {
-  if (viz::AlwaysUseWideColorGamut() ||
-      features::IsDynamicColorGamutEnabled()) {
+  if (viz::AlwaysUseWideColorGamut()) {
     return WideColorGamutHeuristic::kUseDisplay;
   }
 

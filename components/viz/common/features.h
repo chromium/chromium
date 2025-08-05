@@ -67,9 +67,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVideoDetectorIgnoreNonVideos);
-#if BUILDFLAG(IS_ANDROID)
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicColorGamut);
-#endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizFrameSubmissionForWebView);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseRealBuffersForPageFlipTest);
 #if BUILDFLAG(IS_FUCHSIA)
@@ -149,9 +146,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kShutdownForFailedChannelCreation);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBatchResourceRelease);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoLateBeginFrames);
 
-#if BUILDFLAG(IS_ANDROID)
-VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
-#endif
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
 VIZ_COMMON_EXPORT bool IsBackdropFiltersCullingOptimizationEnabled();
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
