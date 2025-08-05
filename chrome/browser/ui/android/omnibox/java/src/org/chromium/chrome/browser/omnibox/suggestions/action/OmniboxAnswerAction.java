@@ -28,7 +28,8 @@ public class OmniboxAnswerAction extends OmniboxAction {
                 hint,
                 accessibilityHint,
                 NO_ICON,
-                R.style.TextAppearance_ChipText);
+                R.style.TextAppearance_ChipText,
+                /* showAsActionButton= */ false);
     }
 
     @Override

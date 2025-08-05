@@ -33,6 +33,7 @@ public interface OmniboxActionFactory {
      * @param actionType the specific type of an action matching the {@link
      *     SuggestTemplateInfo.TemplateAction.ActionType}
      * @param actionUri the corresponding action URI/URL (serialized intent)
+     * @param showAsActionButton whether to show it as action button
      * @return new instance of an OmniboxActionInSuggest
      */
     @CalledByNative
@@ -41,7 +42,8 @@ public interface OmniboxActionFactory {
             String hint,
             String accessibilityHint,
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
-            String actionUri);
+            String actionUri,
+            boolean showAsActionButton);
 
     /**
      * Construct a new OmniboxAnswerAction.

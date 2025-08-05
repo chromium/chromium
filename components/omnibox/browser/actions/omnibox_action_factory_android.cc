@@ -52,14 +52,15 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     const std::u16string& hint,
     const std::u16string& accessibility_hint,
     int action_type,
-    const std::string& action_uri) {
+    const std::string& action_uri,
+    bool show_as_action_button) {
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildActionInSuggest(
           env, g_java_factory.Get(), instance,
           base::android::ConvertUTF16ToJavaString(env, hint),
           base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
-          action_type,
-          base::android::ConvertUTF8ToJavaString(env, action_uri)));
+          action_type, base::android::ConvertUTF8ToJavaString(env, action_uri),
+          show_as_action_button));
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxAnswerAction(

@@ -60,6 +60,9 @@ public abstract class OmniboxAction {
 
     public final int primaryTextAppearance;
 
+    /** Whether to show it as action button. */
+    public final boolean showAsActionButton;
+
     /** The corresponding native instance, or 0 if the native instance is not available. */
     private long mNativeInstance;
 
@@ -69,13 +72,15 @@ public abstract class OmniboxAction {
             String hint,
             String accessibilityHint,
             ChipIcon icon,
-            int primaryTextAppearance) {
+            int primaryTextAppearance,
+            boolean showAsActionButton) {
         assert !TextUtils.isEmpty(hint);
         this.actionId = actionId;
         this.hint = hint;
         this.accessibilityHint = accessibilityHint;
         this.icon = icon;
         this.primaryTextAppearance = primaryTextAppearance;
+        this.showAsActionButton = showAsActionButton;
         mNativeInstance = nativeInstance;
     }
 

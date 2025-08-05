@@ -40,7 +40,8 @@ public class OmniboxPedal extends OmniboxAction {
                 pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME
                         ? DINO_GAME_ICON
                         : OmniboxAction.DEFAULT_ICON,
-                R.style.TextAppearance_ChipText);
+                R.style.TextAppearance_ChipText,
+                /* showAsActionButton= */ false);
         this.pedalId = pedalId;
     }
 

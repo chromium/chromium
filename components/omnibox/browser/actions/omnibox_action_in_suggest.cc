@@ -100,6 +100,12 @@ constexpr int ToActionContents(
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
+
+constexpr bool AllowAsActionButton(
+    const omnibox::SuggestTemplateInfo::TemplateAction& action) {
+  return action.action_type() ==
+         omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM;
+}
 }  // namespace
 
 OmniboxActionInSuggest::OmniboxActionInSuggest(
@@ -110,7 +116,8 @@ OmniboxActionInSuggest::OmniboxActionInSuggest(
                         ToActionContents(template_action.action_type()),
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
                         ToActionContents(template_action.action_type())),
-                    {}),
+                    {},
+                    AllowAsActionButton(template_action)),
       template_action{std::move(template_action)},
       search_terms_args{std::move(search_terms_args)} {}
 
@@ -123,7 +130,7 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
     j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
         env, reinterpret_cast<intptr_t>(this), strings_.hint,
         strings_.accessibility_hint, template_action.action_type(),
-        template_action.action_uri()));
+        template_action.action_uri(), show_as_action_button_));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

@@ -37,8 +37,8 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo.TemplateAction;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo.TemplateAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionJni;
 
@@ -123,7 +123,8 @@ public class OmniboxActionsTest {
                             "hint",
                             "accessibility",
                             type.getNumber(),
-                            "https://www.google.com"));
+                            "https://www.google.com",
+                            /* showAsActionButton= */ false));
         }
 
         return createFakeSuggestion(actions);

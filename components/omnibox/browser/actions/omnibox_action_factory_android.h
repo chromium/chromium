@@ -32,7 +32,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     const std::u16string& hint,
     const std::u16string& accessibility_hint,
     int action_type,
-    const std::string& action_uri);
+    const std::string& action_uri,
+    bool show_as_action_button);
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxAnswerAction(
     JNIEnv* env,

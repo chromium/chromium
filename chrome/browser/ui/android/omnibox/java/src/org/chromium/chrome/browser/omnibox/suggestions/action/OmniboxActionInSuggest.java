@@ -11,8 +11,8 @@ import android.util.SparseArray;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.R;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
@@ -35,14 +35,16 @@ public class OmniboxActionInSuggest extends OmniboxAction {
             String hint,
             String accessibilityHint,
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
-            String actionUri) {
+            String actionUri,
+            boolean showAsActionButton) {
         super(
                 OmniboxActionId.ACTION_IN_SUGGEST,
                 nativeInstance,
                 hint,
                 accessibilityHint,
                 ICON_MAP.get(actionType, DEFAULT_ICON),
-                R.style.TextAppearance_ChipText);
+                R.style.TextAppearance_ChipText,
+                showAsActionButton);
         this.actionType = actionType;
         mActionUri = actionUri;
     }
@@ -70,6 +72,11 @@ public class OmniboxActionInSuggest extends OmniboxAction {
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
                 new ChipIcon(R.drawable.action_reviews, true));
+        map.put(
+                SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                new ChipIcon(
+                        org.chromium.chrome.browser.omnibox.R.drawable.search_spark_black_24dp,
+                        true));
         return map;
     }
 
@@ -89,6 +96,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
         switch (actionType) {
             case SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE:
+            case SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE:
                 delegate.loadPageInCurrentTab(assumeNonNull(intent.getDataString()));
                 actionStarted = true;
                 break;

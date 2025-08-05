@@ -66,12 +66,14 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
             String hint,
             String accessibilityHint,
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
-            String actionUri) {
-        if (actionType == SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE && !mDialerAvailable) {
+            String actionUri,
+            boolean showAsActionButton) {
+        if (actionType == SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE
+                && !mDialerAvailable) {
             return null;
         }
         return new OmniboxActionInSuggest(
-                nativeInstance, hint, accessibilityHint, actionType, actionUri);
+                nativeInstance, hint, accessibilityHint, actionType, actionUri, showAsActionButton);
     }
 
     @Override

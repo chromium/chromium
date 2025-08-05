@@ -89,7 +89,8 @@ public class OmniboxPedalUnitTest {
                                         "",
                                         "",
                                         null,
-                                        R.style.TextAppearance_ChipText) {
+                                        R.style.TextAppearance_ChipText,
+                                        /* showAsActionButton= */ false) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));
