@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/image_traits.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/position_traits.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace tabs_api {
 namespace {
@@ -60,6 +62,22 @@ TEST(TabsStripServiceMojoTraitsTest, ConvertSplitTabVisualData) {
       mojom::SplitTabVisualData::Deserialize(serialized, &deserialized));
 
   ASSERT_TRUE(original == deserialized);
+}
+
+TEST(TabsStripServiceMojoTraitsTest, ConvertImage) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::ImageSkia original = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+
+  std::vector<uint8_t> serialized = mojom::Image::Serialize(&original);
+
+  gfx::ImageSkia deserialized;
+  ASSERT_TRUE(mojom::Image::Deserialize(serialized, &deserialized));
+
+  ASSERT_FALSE(deserialized.isNull());
+  ASSERT_EQ(original.bitmap()->getColor(0, 0),
+            deserialized.bitmap()->getColor(0, 0));
 }
 
 }  // namespace

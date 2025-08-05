@@ -9,14 +9,17 @@ import "chrome/browser/ui/webui/tabs/tabs.mojom";
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "url/mojom/url.mojom";
 
+// Holds a data URL representation of an image, ie: favicon.
+struct Image {
+  url.mojom.Url data_url;
+};
+
 struct Tab {
   NodeId id;
   string title;
   url.mojom.Url url;
 
-  // TODO(crbug.com/414630734). The favicon should be typemapped to ImageModel
-  // in c++. Leave this as a data uri for now.
-  url.mojom.Url favicon_url;
+  Image favicon;
 
   array<tabs.mojom.TabAlertState> alert_states;
   tabs.mojom.TabNetworkState network_state;

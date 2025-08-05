@@ -61,11 +61,16 @@ mojom("mojom") {
           cpp = "::tab_groups::TabGroupVisualData"
         },
         {
+          mojom = "tabs_api.mojom.Image"
+          cpp = "::gfx::ImageSkia"
+        },
+        {
           mojom = "tabs_api.mojom.SplitTabVisualData"
           cpp = "::split_tabs::SplitTabVisualData"
         },
       ]
       traits_headers = [
+        "//chrome/browser/ui/tabs/tab_strip_api/types/image_traits.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/node_id.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/position.h",
@@ -73,9 +78,11 @@ mojom("mojom") {
         "//chrome/browser/ui/tabs/tab_strip_api/types/tab_group_visual_data_traits.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/split_tab_visual_data_traits.h",
         "//components/tab_groups/tab_group_visual_data.h",
+        "//ui/gfx/image/image_skia.h",
         "//components/tabs/public/split_tab_visual_data.h",
       ]
       traits_sources = [
+        "//chrome/browser/ui/tabs/tab_strip_api/types/image_traits.cc",
         "//chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.cc",
         "//chrome/browser/ui/tabs/tab_strip_api/types/position_traits.cc",
         "//chrome/browser/ui/tabs/tab_strip_api/types/split_tab_visual_data_traits.cc",
