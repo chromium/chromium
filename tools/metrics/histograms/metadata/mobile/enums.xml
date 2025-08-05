@@ -464,6 +464,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="EditedCardHolderName"/>
   <int value="1" label="EditedExpirationMonth"/>
   <int value="2" label="EditedExpirationYear"/>
+  <int value="3" label="EditedCvc"/>
 </enum>
 
 <enum name="MobileMessagesTranslateBannerEvent">

@@ -433,6 +433,9 @@
       <message name="IDS_IOS_AUTOFILL_CREDIT_CARD_AUTOFILL_DATA" desc="The accessible name for the button in the keyboard accessory shown when filling out forms used to open the expanded view to see credit card autofill data. This is spoken by VoiceOver. [Length: unlimited] [iOS only]">
         Payment methods
       </message>
+      <message name="IDS_IOS_AUTOFILL_CVC" desc="The placeholder text for credit card security code in the payments card unmask dialog. [iOS only]">
+        Security code
+      </message>
       <message name="IDS_IOS_AUTOFILL_DEPENDENT_LOCALITY" desc="Title of the field of a profile address representing the neighborhood. A dependent locality is a subunit of a locality, where a 'locality' is roughly equivalent to a city. Examples of dependent localities include inner-city districts and suburbs. Only used in certain countries, like Brazil and Mexico, for example. [Length: 15em] [iOS only]">
         Neighborhood
       </message>

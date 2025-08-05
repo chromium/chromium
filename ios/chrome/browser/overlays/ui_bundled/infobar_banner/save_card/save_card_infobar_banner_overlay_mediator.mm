@@ -72,7 +72,7 @@
     InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
     infobar->set_accepted(delegate->UpdateAndAccept(
         delegate->cardholder_name(), delegate->expiration_date_month(),
-        delegate->expiration_date_year(), /*cvc=*/u""));
+        delegate->expiration_date_year(), delegate->card_cvc()));
 
     // Create and show the snackbar message.
     MDCSnackbarMessage* message = [self createCardSavedSnackbarMessage];

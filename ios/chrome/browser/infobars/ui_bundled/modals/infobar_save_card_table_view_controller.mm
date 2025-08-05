@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/save_card_infobar_metrics_recorder.h"
@@ -49,6 +50,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCardHolderName,
   ItemTypeCardExpireMonth,
   ItemTypeCardExpireYear,
+  ItemTypeCardCvc,
   ItemTypeCardLegalMessage,
   ItemTypeCardSave,
 };
@@ -75,6 +77,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, copy) NSString* expirationMonth;
 // Card Expiration Year to be displayed.
 @property(nonatomic, copy) NSString* expirationYear;
+// Card Security code to be displayed.
+@property(nonatomic, strong) NSString* cardCvc;
 // Card related Legal Messages to be displayed.
 @property(nonatomic, copy)
     NSMutableArray<SaveCardMessageWithLinks*>* legalMessages;
@@ -98,6 +102,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong) TableViewTextEditItem* expirationMonthItem;
 // Item for displaying and editing the expiration year.
 @property(nonatomic, strong) TableViewTextEditItem* expirationYearItem;
+// Item for displaying and editing the security code.
+@property(nonatomic, strong) TableViewTextEditItem* cardCvcItem;
 // Item for displaying the save card button .
 @property(nonatomic, strong) TableViewTextButtonItem* saveCardButtonItem;
 @end
@@ -206,6 +212,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
+    self.cardCvcItem =
+        [self textEditItemWithType:ItemTypeCardCvc
+                fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CVC)
+                    textFieldValue:self.cardCvc
+                  textFieldEnabled:self.supportsEditing];
+    [model addItem:self.cardCvcItem
+        toSectionWithIdentifier:SectionIdentifierContent];
+  }
+
   // Add a `TableViewTextLinkItem` for each legal message and add logo to the
   // last item.
   for (size_t index = 0; index < self.legalMessages.count; index++) {
@@ -256,6 +273,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.cardNumber = prefs[kCardNumberPrefKey];
   self.expirationMonth = prefs[kExpirationMonthPrefKey];
   self.expirationYear = prefs[kExpirationYearPrefKey];
+  self.cardCvc = prefs[kCardCvcPrefKey];
   self.legalMessages = prefs[kLegalMessagesPrefKey];
   self.currentCardSaveAccepted =
       [prefs[kCurrentCardSaveAcceptedPrefKey] boolValue];
@@ -317,6 +335,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              action:@selector(expireYearDidChange:)
                    forControlEvents:UIControlEventEditingChanged |
                                     UIControlEventEditingDidEnd];
+      editCell.selectionStyle = UITableViewCellSelectionStyleNone;
+      editCell.textField.delegate = self;
+      break;
+    }
+    case ItemTypeCardCvc: {
+      TableViewTextEditCell* editCell =
+          base::apple::ObjCCast<TableViewTextEditCell>(cell);
+      editCell.textField.keyboardType = UIKeyboardTypeNumberPad;
+      [editCell.textField addTarget:self
+                             action:@selector(cvcDidChange:)
+                   forControlEvents:UIControlEventEditingChanged];
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
@@ -383,7 +412,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self reconfigureCellsForItems:@[
     self.cardLastDigitsItem, self.cardholderNameItem, self.expirationMonthItem,
-    self.expirationYearItem, self.saveCardButtonItem
+    self.expirationYearItem, self.cardCvcItem, self.saveCardButtonItem
   ]];
 }
 
@@ -427,7 +456,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.saveCardModalDelegate
       saveCardWithCardholderName:self.cardholderNameItem.textFieldValue
                  expirationMonth:self.expirationMonthItem.textFieldValue
-                  expirationYear:self.expirationYearItem.textFieldValue];
+                  expirationYear:self.expirationYearItem.textFieldValue
+                         cardCvc:self.cardCvcItem.textFieldValue];
 }
 
 - (void)nameEditDidBegin {
@@ -443,6 +473,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)yearEditDidBegin {
   [SaveCardInfobarMetricsRecorder
       recordModalEvent:MobileMessagesSaveCardModalEvent::EditedExpirationYear];
+}
+
+- (void)cvcEditDidBegin {
+  [SaveCardInfobarMetricsRecorder
+      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedCvc];
 }
 
 - (void)nameDidChange:(UITextField*)textField {
@@ -484,6 +519,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateSaveCardButtonState];
 }
 
+- (void)cvcDidChange:(UITextField*)textField {
+  self.cardCvcItem.textFieldValue = textField.text;
+}
+
 - (void)dismissInfobarModal {
   base::RecordAction(
       base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
@@ -506,6 +545,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.expirationYearItem.identifyingIconEnabled = NO;
   self.expirationYearItem.textFieldEnabled = NO;
+
+  self.cardCvcItem.identifyingIconEnabled = NO;
+  self.cardCvcItem.textFieldEnabled = NO;
 }
 
 #pragma mark - Helpers

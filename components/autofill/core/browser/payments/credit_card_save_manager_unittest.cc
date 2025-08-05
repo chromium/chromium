@@ -2082,6 +2082,7 @@ TEST_F(CreditCardSaveManagerTest,
               testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCardUploadSave_DoNotSendSaveCvcSignalIfCvcEmpty) {
   // Set up the flags to enable the Tos for Save Card CVC UI.
@@ -2113,6 +2114,7 @@ TEST_F(CreditCardSaveManagerTest,
               testing::Not(testing::Contains(
                   ClientBehaviorConstants::kOfferingToSaveCvc)));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(
     CreditCardSaveManagerTest,
@@ -2300,6 +2302,118 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesConflict) {
       autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS);
 }
 #endif
+
+#if BUILDFLAG(IS_IOS)
+// Tests that for the iOS bottom sheet, the kOfferingToSaveCvc signal is NOT
+// sent if the CVC is missing from the form.
+TEST_F(CreditCardSaveManagerTest,
+       IOS_BottomSheet_DoNotSendSaveCvcSignalIfCvcEmpty) {
+  // Enable the bottom sheet feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
+                            features::kAutofillSaveCardBottomSheet},
+      /*disabled_features=*/{});
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+
+  // Set up form data with no strikes and no fix flows required.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen({credit_card_form});
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"");  // CVC is empty.
+
+  FormSubmitted(credit_card_form);
+
+  // For the bottom sheet, the signal should NOT be sent if the CVC is empty.
+  EXPECT_THAT(payments_network_interface().client_behavior_signals_in_request(),
+              testing::Not(testing::Contains(
+                  ClientBehaviorConstants::kOfferingToSaveCvc)));
+}
+
+// Tests that for the iOS infobar/detail page flow (triggered by disabling
+// the bottom sheet feature), the kOfferingToSaveCvc signal IS sent, even if
+// the CVC is missing from the form.
+TEST_F(CreditCardSaveManagerTest,
+       IOS_Infobar_SendSaveCvcSignalIfCvcEmpty_FeatureDisabled) {
+  // Disable the bottom sheet feature to force the infobar flow.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillSaveCardBottomSheet});
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+
+  // Set up form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen({credit_card_form});
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(4).set_value(u"");  // CVC is empty.
+
+  FormSubmitted(credit_card_form);
+
+  // For the infobar flow, the signal SHOULD be sent even if the CVC is empty.
+  EXPECT_THAT(payments_network_interface().client_behavior_signals_in_request(),
+              testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
+}
+
+// Tests that for the iOS infobar/detail page flow (triggered by strikes),
+// the kOfferingToSaveCvc signal IS sent, even if the CVC is missing.
+TEST_F(CreditCardSaveManagerTest,
+       IOS_Infobar_SendSaveCvcSignalIfCvcEmpty_WithStrikes) {
+  // Enable the bottom sheet feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
+                            features::kAutofillSaveCardBottomSheet},
+      /*disabled_features=*/{});
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+
+  // Add one strike to the card to force the infobar flow.
+  TestCreditCardSaveStrikeDatabase(&strike_database()).AddStrike("1111");
+
+  // Set up form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen({credit_card_form});
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(4).set_value(u"");  // CVC is empty.
+
+  FormSubmitted(credit_card_form);
+
+  // For the infobar flow (due to strikes), the signal SHOULD be sent.
+  EXPECT_THAT(payments_network_interface().client_behavior_signals_in_request(),
+              testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
+}
+
+// Tests that for the iOS infobar/detail page flow (triggered by a name fix
+// flow), the kOfferingToSaveCvc signal IS sent, even if the CVC is missing.
+TEST_F(CreditCardSaveManagerTest,
+       IOS_Infobar_SendSaveCvcSignalIfCvcEmpty_NameFixFlow) {
+  // Enable the bottom sheet feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
+                            features::kAutofillSaveCardBottomSheet},
+      /*disabled_features=*/{});
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+
+  // Set up form data to trigger a name fix flow (name is missing).
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen({credit_card_form});
+  test_api(credit_card_form).field(0).set_value(u"");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(4).set_value(u"");  // CVC is empty.
+
+  FormSubmitted(credit_card_form);
+
+  // For the infobar flow (due to fix flow), the signal SHOULD be sent.
+  EXPECT_THAT(payments_network_interface().client_behavior_signals_in_request(),
+              testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.

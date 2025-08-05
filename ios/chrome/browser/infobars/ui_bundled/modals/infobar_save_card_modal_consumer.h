@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // Pref keys passed through setupModalViewControllerWithPrefs:.
+extern NSString* const kCardCvcPrefKey;
 extern NSString* const kCardholderNamePrefKey;
 extern NSString* const kCardIssuerIconNamePrefKey;
 extern NSString* const kCardNetworkPrefKey;

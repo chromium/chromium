@@ -202,7 +202,7 @@ class CreditCardSaveManager {
           get_details_for_enrollment_response_details);
 
   // Returns the CreditCardSaveStrikeDatabase for |client_|.
-  CreditCardSaveStrikeDatabase* GetCreditCardSaveStrikeDatabase();
+  CreditCardSaveStrikeDatabase* GetCreditCardSaveStrikeDatabase() const;
 
   // Returns the CvcStorageStrikeDatabase for `client_`.
   CvcStorageStrikeDatabase* GetCvcStorageStrikeDatabase();
@@ -351,6 +351,10 @@ class CreditCardSaveManager {
     observer_for_testing_ = observer;
   }
 
+  // Returns true if the CVC-inclusive legal message should be requested from
+  // the server.
+  bool ShouldRequestCvcInclusiveLegalMessage() const;
+
   PaymentsDataManager& payments_data_manager();
   const PaymentsDataManager& payments_data_manager() const;
 
@@ -404,7 +408,7 @@ class CreditCardSaveManager {
   // The parsed lines from the legal message returned from GetUploadDetails.
   LegalMessageLines legal_message_lines_;
 
-  std::unique_ptr<CreditCardSaveStrikeDatabase>
+  mutable std::unique_ptr<CreditCardSaveStrikeDatabase>
       credit_card_save_strike_database_;
 
   std::unique_ptr<CvcStorageStrikeDatabase> cvc_storage_strike_database_;

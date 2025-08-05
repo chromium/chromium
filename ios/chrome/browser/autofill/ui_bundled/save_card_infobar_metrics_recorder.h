@@ -17,8 +17,10 @@ enum class MobileMessagesSaveCardModalEvent {
   EditedExpirationMonth = 1,
   // Save Card Infobar expiration year was edited.
   EditedExpirationYear = 2,
+  // Save Card Infobar cvc was edited.
+  EditedCvc = 3,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = EditedExpirationYear,
+  kMaxValue = EditedCvc,
 };
 
 // Used to record metrics related to Save Card Infobar specific events.

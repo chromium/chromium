@@ -510,9 +510,9 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
 #endif
 
-  // Check if the CVC is being uploaded and CVC storage is enabled on the
-  // client.
-  if (!upload_request_.card.cvc().empty() &&
+  // Check if we should request the CVC-inclusive legal message and if the user
+  // has enabled CVC storage.
+  if (ShouldRequestCvcInclusiveLegalMessage() &&
       payments_data_manager().IsPaymentCvcStorageEnabled()) {
     upload_request_.client_behavior_signals.push_back(
         ClientBehaviorConstants::kOfferingToSaveCvc);
@@ -664,7 +664,7 @@ void CreditCardSaveManager::InitVirtualCardEnroll(
 }
 
 CreditCardSaveStrikeDatabase*
-CreditCardSaveManager::GetCreditCardSaveStrikeDatabase() {
+CreditCardSaveManager::GetCreditCardSaveStrikeDatabase() const {
   if (credit_card_save_strike_database_.get() == nullptr) {
     credit_card_save_strike_database_ =
         std::make_unique<CreditCardSaveStrikeDatabase>(
@@ -1399,6 +1399,14 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
         client_->GetAppLocale());
   }
 
+// On iOS, the user can add a CVC on the save card details page. This CVC is
+// then passed here and set on the card to be uploaded. For other platforms,
+// this is a no-op as `user_provided_card_details.cvc` will be empty.
+#if BUILDFLAG(IS_IOS)
+  if (!user_provided_card_details.cvc.empty()) {
+    upload_request_.card.set_cvc(user_provided_card_details.cvc);
+  }
+#endif
   // Virtual card enrollment manager may not be set of CWV clients.
   if (auto* virtual_card_enrollment_manager =
       client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager()) {
@@ -1603,6 +1611,36 @@ void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
         autofill_metrics::SaveCardRequestExpirationDateReason::
             kExpirationDatePresentButExpired);
   }
+}
+
+bool CreditCardSaveManager::ShouldRequestCvcInclusiveLegalMessage() const {
+  // If the main CVC storage feature is disabled, we should never request the
+  // CVC-inclusive legal message.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling)) {
+    return false;
+  }
+#if BUILDFLAG(IS_IOS)
+  // On iOS, we request the CVC-inclusive message if a CVC is already present,
+  // or if the save prompt will be the infobar and detail page flow, where a CVC
+  // can be added by the user.
+  if (!upload_request_.card.cvc().empty()) {
+    return true;
+  }
+
+  int num_strikes = GetCreditCardSaveStrikeDatabase()->GetStrikes(
+      base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
+  bool will_show_bottom_sheet =
+      num_strikes == 0 && !should_request_name_from_user_ &&
+      !should_request_expiration_date_from_user_ &&
+      base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
+
+  return !will_show_bottom_sheet;
+#else
+  // For other platforms, we only request the CVC-inclusive message if a CVC
+  // was present in the form.
+  return !upload_request_.card.cvc().empty();
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 PaymentsDataManager& CreditCardSaveManager::payments_data_manager() {
