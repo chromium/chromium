@@ -9650,3 +9650,6 @@ crbug.com/40253082 [ Mac14 ] virtual/controls-refresh-hc/fast/forms/color-scheme
 # Gardener 2025-08-04
 crbug.com/436140064 [ Win ] images/png-crbug423310049.html [ Failure ]
 crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Crash Timeout ]
+
+# Gardener 2025-08-05
+crbug.com/436615917 inspector-protocol/timeline/long-animation-frame-trace-visual-update.js [ Failure Pass ]
