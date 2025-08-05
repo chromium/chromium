@@ -14,7 +14,7 @@ source_set("ios") {
   public_deps = [ ":bookmark_parser" ]
   deps = [
     "//base",
-    "//components/user_data_importer/utility:safari_data_importer",
+    "//components/user_data_importer/utility:bookmarks",
     "//ios/web/public/js_messaging:web_view_js_utils",
     "//url",
   ]
