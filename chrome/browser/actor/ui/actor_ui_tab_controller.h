@@ -44,13 +44,13 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
                                 tabs::TabInterface* tab) override;
   void SetActiveTaskId(TaskId task_id) override;
   void ClearActiveTaskId() override;
-  base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
   void SetActorTaskPaused() override;
   void SetActorTaskResume() override;
   void SetOverlayHoverStatus(bool is_hovering) override;
   void SetHandoffButtonHoverStatus(bool is_hovering) override;
   void SetCallbackForTesting(base::OnceClosure callback) override;
   bool ShouldShowActorTabIndicator() override;
+  base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 
   // Binds the Mojo receiver to the tab's ActorOverlayViewController.
   // Called by ActorOverlayUI when the chrome://actor-overlay page loads.
@@ -64,7 +64,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Called to propagate a UiTabState and tab status change to UI controllers.
   // This is passed through a debounce timer to stabilize updates.
   void MaybeUpdateState(const UiTabState& ui_tab_state,
-                        bool tab_active_status,
                         UiResultCallback callback);
   void UpdateState(const UiTabState& ui_tab_state,
                    bool tab_active_status,
@@ -106,6 +105,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // How many outstanding callbacks are pending for the debounce timer.
   int in_progress_updates_int_ = 0;
 
+  // TODO(crbug.com/425952887): Look into replacing oneshottimer with
+  // retainingoneshottimer.
   base::OneShotTimer update_state_debounce_timer_;
   base::OnceClosure on_idle_for_testing_;
 
