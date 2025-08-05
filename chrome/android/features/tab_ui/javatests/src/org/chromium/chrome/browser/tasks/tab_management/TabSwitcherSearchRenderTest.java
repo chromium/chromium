@@ -106,8 +106,7 @@ public class TabSwitcherSearchRenderTest {
     @Before
     public void setUp() throws ExecutionException {
         mTestServer =
-                TabSwitcherSearchTestUtils.setServerPortAndGetTestServer(
-                        mCtaTestRule.getActivityTestRule(), SERVER_PORT);
+                mCtaTestRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT).getServer();
         mInitialPage = mCtaTestRule.startOnBlankPage();
     }
 

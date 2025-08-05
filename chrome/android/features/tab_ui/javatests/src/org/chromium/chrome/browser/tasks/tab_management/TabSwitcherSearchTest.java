@@ -85,8 +85,7 @@ public class TabSwitcherSearchTest {
     @Before
     public void setUp() {
         mTestServer =
-                TabSwitcherSearchTestUtils.setServerPortAndGetTestServer(
-                        mCtaTestRule.getActivityTestRule(), SERVER_PORT);
+                mCtaTestRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT).getServer();
         mPage = mCtaTestRule.startOnBlankPage();
         mUserActionTester = new UserActionTester();
 
