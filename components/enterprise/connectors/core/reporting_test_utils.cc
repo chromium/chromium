@@ -579,47 +579,6 @@ void EventReportValidatorBase::ExpectPassowrdChangedEvent(
       });
 }
 
-void EventReportValidatorBase::ExpectSecurityInterstitialEvent(
-    const std::string& expected_url,
-    const std::string& expected_reason,
-    const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier,
-    const std::string& result,
-    const bool expected_click_through,
-    int expected_net_error_code) {
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce([this, expected_url, expected_reason, expected_profile_username,
-                 expected_profile_identifier, result, expected_click_through,
-                 expected_net_error_code](
-                    bool include_device_info, base::Value::Dict report,
-                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                        callback) {
-        // Extract the event list.
-        const base::Value::List* event_list = report.FindList(
-            policy::RealtimeReportingJobConfiguration::kEventListKey);
-        ASSERT_TRUE(event_list);
-
-        // There should only be 1 event per test.
-        ASSERT_EQ(1u, event_list->size());
-        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-        const base::Value::Dict* event =
-            wrapper.FindDict(enterprise_connectors::kKeyInterstitialEvent);
-        ASSERT_TRUE(event);
-
-        ValidateField(event, kKeyURL, expected_url);
-        ValidateField(event, kKeyReason, expected_reason);
-        ValidateField(event, kKeyNetErrorCode, expected_net_error_code);
-        ValidateField(event, kKeyClickedThrough, expected_click_through);
-        ValidateField(event, kKeyProfileUserName, expected_profile_username);
-        ValidateField(event, kKeyProfileIdentifier,
-                      expected_profile_identifier);
-        ValidateField(event, kKeyEventResult, result);
-        if (!done_closure_.is_null()) {
-          done_closure_.Run();
-        }
-      });
-}
-
 void EventReportValidatorBase::ExpectSecurityInterstitialEventWithReferrers(
     const std::string& expected_url,
     const std::string& expected_reason,
