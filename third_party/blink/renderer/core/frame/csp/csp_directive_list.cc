@@ -392,6 +392,16 @@ bool CheckEvalAndReportViolation(
   } else {
     hash = std::nullopt;
   }
+  // The console message will only be printed inside ReportEvalViolation if the
+  // directive is report only (because the main part of the message is redundant
+  // with the text included in the exception thrown otherwise).
+  // Print the suffix here if that's not the case.
+  if (!suffix.empty() && !CSPDirectiveListIsReportOnly(csp)) {
+    auto* suffix_console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError, suffix);
+    policy->LogToConsole(suffix_console_message);
+  }
   ReportEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
       StrCat({console_message, "\"", raw_directive, "\".", suffix, "\n"}),
@@ -819,7 +829,8 @@ bool CSPDirectiveListAllowEval(
   }
   if (!CheckAllowEval(directive.source_list)) {
     if (base::FeatureList::IsEnabled(
-            network::features::kCSPScriptSrcHashesInV1)) {
+            network::features::kCSPScriptSrcHashesInV1) &&
+        !content.empty()) {
       policy->LogToConsole(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kSecurity,
           mojom::blink::ConsoleMessageLevel::kError,
