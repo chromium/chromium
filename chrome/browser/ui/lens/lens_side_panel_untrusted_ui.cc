@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/lens/lens_composebox_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
@@ -27,9 +28,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/webui_util.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
-#include "chrome/browser/ui/lens/lens_composebox_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 static constexpr webui::LocalizedString kStrings[] = {
@@ -269,8 +269,10 @@ void LensSidePanelUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
-  auto handler = std::make_unique<LensComposeboxHandler>(
-      std::move(pending_page_handler), std::move(pending_page), std::move(pending_searchbox_handler));
+  auto* controller = GetLensSearchController().lens_composebox_controller();
+  controller->BindComposebox(std::move(pending_page_handler),
+                             std::move(pending_page),
+                             std::move(pending_searchbox_handler));
 }
 
 LensSearchController& LensSidePanelUntrustedUI::GetLensSearchController() {

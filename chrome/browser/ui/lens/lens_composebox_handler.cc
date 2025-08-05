@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/lens/lens_composebox_handler.h"
 
-#include "base/notreached.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ui/lens/lens_composebox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -15,7 +15,10 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "url/gurl.h"
 
+namespace lens {
+
 LensComposeboxHandler::LensComposeboxHandler(
+    lens::LensComposeboxController* parent_controller,
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
@@ -24,6 +27,7 @@ LensComposeboxHandler::LensComposeboxHandler(
                        /*profile=*/nullptr,
                        /*web_contents=*/nullptr,
                        /*metrics_reporter=*/nullptr),
+      lens_composebox_controller_(parent_controller),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {}
 
@@ -92,3 +96,5 @@ void LensComposeboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
 void LensComposeboxHandler::OnThumbnailRemoved() {
   NOTREACHED();
 }
+
+}  // namespace lens
