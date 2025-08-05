@@ -203,7 +203,8 @@ class PLATFORM_EXPORT KURL {
 
   void RemovePort();
   void SetPort(uint16_t);
-  void SetPort(const String&);
+  // Returns false if the port string is invalid and true otherwise.
+  bool SetPort(const String&);
 
   // Input is like "foo.com" or "foo.com:8000".
   void SetHostAndPort(const String&);
