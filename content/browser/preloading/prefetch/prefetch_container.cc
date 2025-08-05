@@ -532,12 +532,13 @@ PrefetchContainer::~PrefetchContainer() {
   MaybeRecordPrefetchStatusToUMA(
       prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted));
   RecordPrefetchDurationHistogram();
+  RecordPrefetchContainerServedCountHistogram();
 
   ukm::builders::PrefetchProxy_PrefetchedResource builder(ukm_source_id_);
   builder.SetResourceType(/*mainframe*/ 1);
   builder.SetStatus(static_cast<int>(
       prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted)));
-  builder.SetLinkClicked(navigated_to_);
+  builder.SetLinkClicked(served_count_ > 0);
 
   if (GetNonRedirectResponseReader()) {
     GetNonRedirectResponseReader()->RecordOnPrefetchContainerDestroyed(
@@ -2013,7 +2014,7 @@ void PrefetchContainer::OnUnregisterCandidate(
   // true.
 
   if (is_served) {
-    navigated_to_ = true;
+    served_count_++;
 
     UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
                              redirect_chain_.size());
@@ -2357,6 +2358,14 @@ void PrefetchContainer::RecordPrefetchPotentialCandidateServingResultHistogram(
                     GetMetricsSuffixTriggerTypeAndEagerness(
                         prefetch_type_, embedder_histogram_suffix_)}),
       matching_result);
+}
+
+void PrefetchContainer::RecordPrefetchContainerServedCountHistogram() {
+  base::UmaHistogramCounts100(
+      base::StrCat({"Prefetch.PrefetchContainer.ServedCount.",
+                    GetMetricsSuffixTriggerTypeAndEagerness(
+                        prefetch_type_, embedder_histogram_suffix_)}),
+      served_count_);
 }
 
 }  // namespace content

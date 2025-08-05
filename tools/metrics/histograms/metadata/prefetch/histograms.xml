@@ -298,6 +298,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.ServedCount.{TriggerTypeAndEagerness}"
+    units="count" expires_after="2026-01-11">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    This histogram records how many times the `PrefetchContainer` has been
+    served to the navigation.
+
+    The count is incremented when `PrefetchContainer` receives the
+    `PrefetchMatchResolver`'s notification that the container is serevd (i.e.
+    `PrefetchMatchResolver::UnregisterCandidate`), and its value is recorded on
+    `PrefetchContainer::dtor()`.
+
+    This histogram is recorded with its TriggerType and Eagerness as
+    {TriggerTypeAndEagerness}.
+  </summary>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{PrerenderOrNonPrerender}.{TriggerTypeAndEagerness}"
     enum="Boolean" expires_after="2025-12-14">
   <owner>kouhei@chromium.org</owner>

@@ -915,6 +915,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // Records `Prefetch.PrefetchMatchingBlockedNavigationWithPrefetch.*` UMAs.
   void RecordPrefetchMatchingBlockedNavigationHistogram(bool blocked_until_head,
                                                         bool is_nav_prerender);
+  // Records `Prefetch.PrefetchContainer.ServedCount`.
+  void RecordPrefetchContainerServedCountHistogram();
+
   // Records `Prefetch.BlockUntilHeadDuration.*` UMAs.
   void RecordBlockUntilHeadDurationHistogram(
       const std::optional<base::TimeDelta>& blocked_duration,
@@ -1039,8 +1042,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // The amount of time it took for the headers to be received.
   std::optional<base::TimeDelta> header_latency_;
 
-  // Whether or not a navigation to this prefetch occurred.
-  bool navigated_to_ = false;
+  // Counts how many times this container has been served to the navigation.
+  // Only used for the metrics.
+  base::ClampedNumeric<uint32_t> served_count_ = 0;
 
   // The result of probe when checked on navigation.
   std::optional<PrefetchProbeResult> probe_result_;

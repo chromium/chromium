@@ -7352,6 +7352,11 @@ TEST_P(
       "SpeculationRule_"
       "Immediate2",
       false, 2);
+  // Call `PrefetchContainer` dtor to record the UMA.
+  PrefetchDocumentManager::DeleteForCurrentDocument(main_rfh());
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.ServedCount.SpeculationRule_Immediate2", 2,
+      1);
 }
 
 // Scenario:
@@ -7420,6 +7425,11 @@ TEST_P(
       "SpeculationRule_"
       "Immediate2",
       true, 2);
+  // Call `PrefetchContainer` dtor to record the UMA.
+  PrefetchDocumentManager::DeleteForCurrentDocument(main_rfh());
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.ServedCount.SpeculationRule_Immediate2", 2,
+      1);
 }
 
 // Scenario:
@@ -7494,6 +7504,11 @@ TEST_P(PrefetchServiceTest,
       "SpeculationRule_"
       "Immediate2",
       true, 2);
+  // Call `PrefetchContainer` dtor to record the UMA.
+  PrefetchDocumentManager::DeleteForCurrentDocument(main_rfh());
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.ServedCount.SpeculationRule_Immediate2", 1,
+      1);
 }
 
 // Scenario:
@@ -7552,6 +7567,11 @@ TEST_P(PrefetchServiceTest,
       "SpeculationRule_"
       "Immediate2",
       true, 2);
+  // Call `PrefetchContainer` dtor to record the UMA.
+  PrefetchDocumentManager::DeleteForCurrentDocument(main_rfh());
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.ServedCount.SpeculationRule_Immediate2", 0,
+      1);
 }
 
 // Scenario:
