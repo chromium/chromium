@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -57,7 +58,7 @@ class PredictionBasedPermissionUiSelector
     PredictionRequestMetadata request_metadata;
     permissions::PredictionModelType model_type;
     std::optional<std::string> inner_text;
-    std::optional<SkBitmap>(snapshot);
+    std::optional<SkBitmap> snapshot;
     std::optional<passage_embeddings::Embedding> inner_text_embedding;
 
     ModelExecutionData(permissions::PredictionRequestFeatures features,
@@ -281,6 +282,12 @@ class PredictionBasedPermissionUiSelector
   // AIv4.
   std::optional<passage_embeddings::Embedder::TaskId>
       passage_embeddings_task_id_;
+
+  // For the Aiv4 execution flow we use a text embeddings model that only works
+  // for the English language. Therefore we use an observer to wait for language
+  // detection to finish (in case its not already done when we need this).
+  std::optional<permissions::LanguageDetectionObserver>
+      language_detection_observer_;
 #endif
 
   // Used to asynchronously call the callback during on device model execution.

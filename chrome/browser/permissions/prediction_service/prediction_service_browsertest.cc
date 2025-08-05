@@ -26,6 +26,7 @@
 #include "chrome/browser/permissions/test/mock_passage_embedder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -53,6 +54,7 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -314,11 +316,12 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     mock_permission_prompt_factory_.reset();
   }
 
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
   content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetPrimaryMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   PermissionRequestManager* GetPermissionRequestManager() {
@@ -368,16 +371,29 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     return model_handler_provider()->GetPermissionsAiv4Handler(request_type());
   }
 
+  ChromeTranslateClient* GetChromeTranslateClient() {
+    return ChromeTranslateClient::FromWebContents(web_contents());
+  }
+
+  void SetTranslateSourceLanguage(const std::string& language) {
+    GetChromeTranslateClient()
+        ->GetTranslateManager()
+        ->GetLanguageState()
+        ->SetSourceLanguage(language);
+  }
+
   void TriggerPromptAndVerifyUi(
       std::string test_url,
       PermissionAction permission_action,
       bool should_expect_quiet_ui,
       std::optional<PermissionRequestRelevance> expected_relevance,
       std::optional<PermissionUiSelector::PredictionGrantLikelihood>
-          expected_prediction_likelihood) {
+          expected_prediction_likelihood,
+      std::string translate_source_language = "en") {
     auto* manager = GetPermissionRequestManager();
     GURL url = embedded_test_server()->GetURL(test_url, "/title1.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    SetTranslateSourceLanguage(translate_source_language);
 
     auto req = std::make_unique<MockPermissionRequest>(request_type());
     manager->AddRequest(GetActiveMainFrame(), std::move(req));

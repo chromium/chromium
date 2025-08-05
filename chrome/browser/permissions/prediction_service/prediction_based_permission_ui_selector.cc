@@ -226,13 +226,22 @@ void PredictionBasedPermissionUiSelector::
         permissions::PredictionRequestFeatures features,
         PredictionRequestMetadata request_metadata) {
   VLOG(1) << "[PermissionsAIv4] On device AI prediction requested";
-  GetInnerText(
-      web_contents->GetPrimaryMainFrame(),
-      ModelExecutionData{std::move(features), std::move(request_metadata),
+
+  auto language_detected_cbk = base::BindOnce(
+      &PredictionBasedPermissionUiSelector::GetInnerText,
+      weak_ptr_factory_.GetWeakPtr(), web_contents->GetPrimaryMainFrame(),
+      ModelExecutionData{features, request_metadata,
                          PredictionModelType::kOnDeviceAiV4Model},
       base::BindOnce(&PredictionBasedPermissionUiSelector::TakeSnapshot,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetRenderWidgetHostView()));
+
+  language_detection_observer_.emplace(
+      web_contents, std::move(language_detected_cbk),
+      /*timeout_cbk=*/
+      base::BindOnce(&PredictionBasedPermissionUiSelector::InquireServerModel,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(features),
+                     std::move(request_metadata)));
 }
 
 void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
@@ -292,6 +301,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   last_request_grant_likelihood_ = std::nullopt;
   cpss_v1_model_holdback_probability_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
+  language_detection_observer_ = std::nullopt;
 
   bool is_tflite_available = true;
   // BUILD_WITH_TFLITE_LIB should be enabled for most of the devices on all
@@ -398,7 +408,8 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
       return std::move(model_execution_callback).Run(std::move(model_data));
     }
     // Aiv4
-    // TODO(chrbug.com/382447738) Add histogram to track execution time of this
+    // TODO(chrbug.com/382447738) Add histogram to track execution time of
+    // this
     return CreatePassageEmbeddingFromRenderedText(
         std::move(inner_text),
         base::BindOnce(
