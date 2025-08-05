@@ -39,7 +39,7 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
 
   // Invokes AudioWorkletGlobalScope to create an instance of
   // AudioWorkletProcessor.
-  void CreateProcessorOnRenderingThread(
+  static void CreateProcessorOnRenderingThread(
       WorkerThread*,
       scoped_refptr<AudioWorkletHandler>,
       const String& name,
