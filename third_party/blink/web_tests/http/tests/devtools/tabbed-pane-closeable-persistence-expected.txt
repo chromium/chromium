@@ -1,9 +1,0 @@
-Tests extensible tabbed pane closeable tabs persistence logic.
-
-Closeable tabs to restore: {"security":true,"freestyler":true,"chrome-recorder":true}
-Closeable tabs to restore: {"security":true,"freestyler":true,"chrome-recorder":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"freestyler":true,"chrome-recorder":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"freestyler":true,"chrome-recorder":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"freestyler":true,"chrome-recorder":true,"sensors":true}
-Closeable tabs to restore: {"security":true,"freestyler":true,"chrome-recorder":true,"sensors":false}
-
