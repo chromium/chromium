@@ -295,10 +295,6 @@ bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
   return false;
 }
 
-void ImmersiveModeControllerMac::OnWidgetActivationChanged(
-    views::Widget* widget,
-    bool active) {}
-
 int ImmersiveModeControllerMac::GetMinimumContentOffset() const {
   if (find_bar_visible_ &&
       !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser_view_->browser()) &&

@@ -4474,8 +4474,6 @@ void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
              extension_keybinding_registry_.get()) {
     registry->set_registry_for_active_window(nullptr);
   }
-
-  immersive_mode_controller()->OnWidgetActivationChanged(widget, active);
 }
 
 void BrowserView::OnWidgetBoundsChanged(views::Widget* widget,

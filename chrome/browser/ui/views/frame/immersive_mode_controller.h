@@ -114,13 +114,6 @@ class ImmersiveModeController {
   // in which case we should stay in immersive mode.
   virtual bool ShouldStayImmersiveAfterExitingFullscreen() = 0;
 
-  // Called by browser view to indicate the widget activation has changed.
-  // Immersive mode should be enabled/disabled if the widget is
-  // active/nonactive when the auto hide title bars in tablet mode feature is
-  // on.
-  virtual void OnWidgetActivationChanged(views::Widget* widget,
-                                         bool active) = 0;
-
   // Returns the minimum y-offset for the web contents. Used on Mac to prevent
   // find results from hiding under the top chrome when the find bar is in use.
   virtual int GetMinimumContentOffset() const = 0;

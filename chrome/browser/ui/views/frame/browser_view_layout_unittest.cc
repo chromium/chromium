@@ -146,7 +146,6 @@ class MockImmersiveModeController : public ImmersiveModeController {
   void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds) override {}
   bool ShouldStayImmersiveAfterExitingFullscreen() override { return true; }
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {}
   int GetMinimumContentOffset() const override { return 0; }
   int GetExtraInfobarOffset() const override { return 0; }
   void OnContentFullscreenChanged(bool is_content_fullscreen) override {}
