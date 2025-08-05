@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -313,13 +314,21 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
 void GaiaScreen::OnGetAuthFactorsConfiguration(
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> error) {
-  bool is_recovery_configured = false;
-  bool is_gaia_password_configured = true;
   if (!view_) {
     LOG(WARNING) << "The view is nullptr during OnGetAuthFactorsConfiguration";
     return;
   }
+
+  if (is_hidden()) {
+    LOG(WARNING) << "The Gaia screen is already hidden";
+    return;
+  } else {
+    CHECK(context());
+  }
+
   CHECK(user_context);
+  bool is_recovery_configured = false;
+  bool is_gaia_password_configured = true;
   if (error.has_value()) {
     LOG(WARNING) << "Failed to get auth factors configuration, code "
                  << error->get_cryptohome_error()
@@ -338,7 +347,6 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
 
   // Disallow passwordless login when Gaia password is configured during
   // reauthentication or recovery flow.
-  CHECK(context());
   auto flow = context()->knowledge_factor_setup.auth_setup_flow;
   if ((flow == WizardContext::AuthChangeFlow::kReauthentication ||
        flow == WizardContext::AuthChangeFlow::kRecovery) &&
