@@ -241,9 +241,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenExtension) {
                      last_loaded_extension_id() + "/test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
   WebContents* newtab = nullptr;
-  ASSERT_NO_FATAL_FAILURE(
-      OpenWindow(browser()->tab_strip_model()->GetActiveWebContents(),
-                 start_url.Resolve("newtab.html"), true, true, &newtab));
+  ASSERT_NO_FATAL_FAILURE(OpenWindow(GetActiveWebContents(),
+                                     start_url.Resolve("newtab.html"), true,
+                                     true, &newtab));
 
   EXPECT_EQ(true, content::EvalJs(newtab, "testExtensionApi()"));
 }
@@ -262,9 +262,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenInvalidExtension) {
   bool expect_success = false;
   GURL broken_extension_url(
       "chrome-extension://thisissurelynotavalidextensionid/newtab.html");
-  ASSERT_NO_FATAL_FAILURE(OpenWindow(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      broken_extension_url, new_page_in_same_process, expect_success, &newtab));
+  ASSERT_NO_FATAL_FAILURE(
+      OpenWindow(GetActiveWebContents(), broken_extension_url,
+                 new_page_in_same_process, expect_success, &newtab));
 
   EXPECT_EQ(broken_extension_url,
             newtab->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenNoPrivileges) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WebContents* newtab = nullptr;
   ASSERT_NO_FATAL_FAILURE(
-      OpenWindow(browser()->tab_strip_model()->GetActiveWebContents(),
+      OpenWindow(GetActiveWebContents(),
                  GURL(std::string(extensions::kExtensionScheme) +
                       url::kStandardSchemeSeparator +
                       last_loaded_extension_id() + "/newtab.html"),
@@ -307,9 +307,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   // test.html is not web-accessible and should not be loaded.
   GURL extension_url(extension->GetResourceURL("test.html"));
   content::CreateAndLoadWebContentsObserver windowed_observer;
-  ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "window.open('" + extension_url.spec() + "');"));
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "window.open('" + extension_url.spec() + "');"));
   content::WebContents* newtab = windowed_observer.Wait();
   ASSERT_TRUE(newtab);
 
@@ -332,8 +331,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   ASSERT_TRUE(extension);
   GURL extension_url(extension->GetResourceURL("test.html"));
 
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
 
   // Navigate to the non-web-accessible URL from chrome:// and
   // chrome-search:// pages.  Verify that the page loads correctly.

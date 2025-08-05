@@ -257,8 +257,7 @@ class ServiceWorkerIdTrackingBrowserTest
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     content::WaitForLoadStop(web_contents);
   }
 
@@ -833,8 +832,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRendererTrackingBrowserTest,
   ASSERT_EQ("0.2", new_extension_version->version().GetString());
 
   // Double-confirm that after our wait the renderer hasn't crashed.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   EXPECT_FALSE(web_contents->IsCrashed());
 }

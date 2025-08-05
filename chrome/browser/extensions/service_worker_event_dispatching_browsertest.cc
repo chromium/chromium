@@ -113,10 +113,6 @@ class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
     sw_context_ = nullptr;
   }
 
-  content::WebContents* web_contents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
   DispatchWebNavigationEventCallback CreateDispatchWebNavEventCallback(
       int num_events_to_dispatch = 1) {
     return base::BindOnce(
@@ -127,7 +123,8 @@ class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
   // Broadcasts a webNavigation.onBeforeNavigate events.
   void DispatchWebNavigationEvent(int num_events_to_dispatch = 1) {
     EventRouter* router = EventRouter::EventRouter::Get(profile());
-    testing::NiceMock<content::MockNavigationHandle> handle(web_contents());
+    testing::NiceMock<content::MockNavigationHandle> handle(
+        GetActiveWebContents());
     for (int i = 0; i < num_events_to_dispatch; i++) {
       auto event =
           web_navigation_api_helpers::CreateOnBeforeNavigateEvent(&handle);

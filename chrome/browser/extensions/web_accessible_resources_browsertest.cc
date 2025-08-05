@@ -346,8 +346,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                            resource_url.spec());
 
     // Get the first child frame, which should be the only html child [iframe].
-    auto* active_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    auto* active_web_contents = GetActiveWebContents();
     content::RenderFrameHost* first_child =
         content::ChildFrameAt(active_web_contents, 0);
 
@@ -415,8 +414,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                          resource_url.spec());
 
   // Get the first child frame, which should be the only html child [iframe].
-  auto* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* active_web_contents = GetActiveWebContents();
   content::RenderFrameHost* first_child =
       content::ChildFrameAt(active_web_contents, 0);
 
@@ -456,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
                          extension->GetResourceURL("accessible.html").spec());
   GURL gurl(embedded_test_server()->GetURL("an.example.org", url));
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   observer.WaitForNavigationFinished();
@@ -483,8 +481,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   // Navigate to a non-extension web page before beginning the test. This might
   // not be needed, but it will at the very least put the tab on a known url.
   {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     GURL gurl = embedded_test_server()->GetURL("example.com", "/simple.html");
     content::TestNavigationObserver navigation_observer(web_contents);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
@@ -505,8 +502,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     // in manual testing, this would succeed when the url is pasted into the
     // Omnibox but not when the same url is clicked from a link withing the
     // page.
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     content::TestNavigationObserver navigation_observer(web_contents);
     ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(),
                        base::StringPrintf("window.location.href = '%s';",
@@ -683,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
           base::StringPrintf(
               "/server-redirect?%s",
               extension->GetResourceURL(resource).spec().c_str()));
-      auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+      auto* web_contents = GetActiveWebContents();
       content::TestNavigationObserver observer(web_contents);
       EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
       observer.WaitForNavigationFinished();
@@ -821,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     int expect_net_error = net::ERR_BLOCKED_BY_CLIENT;
     const char* resource = "inaccessible.html";
     GURL gurl = embedded_test_server()->GetURL("a.example.com", "/empty.html");
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = GetActiveWebContents();
     content::TestNavigationObserver observer(web_contents);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
     observer.WaitForNavigationFinished();
@@ -892,10 +888,6 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
 
  protected:
   const Extension* GetExtension() { return extension_; }
-
-  content::WebContents* GetActiveWebContents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 
   content::RenderFrameHost* GetPrimaryMainFrame() const {
     return GetActiveWebContents()->GetPrimaryMainFrame();

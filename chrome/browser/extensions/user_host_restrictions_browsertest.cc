@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
@@ -47,12 +46,8 @@ class UserHostRestrictionsBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  content::WebContents* GetActiveTab() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
   int GetActiveTabId() {
-    return sessions::SessionTabHelper::IdForTab(GetActiveTab()).id();
+    return sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
   }
 
   // Withholds host permissions from `extension` and waits for the withholding
@@ -186,16 +181,16 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
   static constexpr char16_t kInjectedTitle[] = u"Injected";
-  EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+  EXPECT_EQ(kInjectedTitle, GetActiveWebContents()->GetTitle());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
 
   // The extension should not be able to run on the user-restricted site iff
   // the feature is enabled.
   if (GetParam()) {
-    EXPECT_EQ(u"Title Of Awesomeness", GetActiveTab()->GetTitle());
+    EXPECT_EQ(u"Title Of Awesomeness", GetActiveWebContents()->GetTitle());
   } else {
-    EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+    EXPECT_EQ(kInjectedTitle, GetActiveWebContents()->GetTitle());
   }
 }
 
@@ -447,13 +442,13 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
   // their original (awesome) titles.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
   static constexpr char16_t kInjectedTitle[] = u"Injected";
-  EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+  EXPECT_EQ(kInjectedTitle, GetActiveWebContents()->GetTitle());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
-  EXPECT_EQ(u"Title Of Awesomeness", GetActiveTab()->GetTitle());
+  EXPECT_EQ(u"Title Of Awesomeness", GetActiveWebContents()->GetTitle());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unrequested_url));
-  EXPECT_EQ(u"Title Of More Awesomeness", GetActiveTab()->GetTitle());
+  EXPECT_EQ(u"Title Of More Awesomeness", GetActiveWebContents()->GetTitle());
 
   // Finally, remove the user-permitted `allowed_url`. Since the extension
   // only had access to this URL via it being a user-permitted URL (and not
@@ -476,7 +471,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
   // sanitized for display (e.g. stripping HTTPS) so to avoid tying this too
   // closely with the UI, we just check that it's not equal to the injected
   // title.
-  EXPECT_NE(kInjectedTitle, GetActiveTab()->GetTitle());
+  EXPECT_NE(kInjectedTitle, GetActiveWebContents()->GetTitle());
 
   // TODO(crbug.com/40803363): We could add more checks here to
   // exercise the network service path, as we do for user restricted sites

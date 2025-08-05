@@ -482,10 +482,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  EXPECT_EQ(
-      "This is a page",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.body.innerText;"));
+  EXPECT_EQ("This is a page", content::EvalJs(GetActiveWebContents(),
+                                              "document.body.innerText;"));
 
   // Verify the service worker is at v1.
   EXPECT_EQ(base::Value(1), GetVersionFlagFromBackgroundContext(id));
@@ -934,14 +932,13 @@ class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
 
   // Get the NTP javascript's version.
   content::EvalJsResult GetVersionOfNTPScript() {
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           "self.currentVersion;");
+    return content::EvalJs(GetActiveWebContents(), "self.currentVersion;");
   }
 
   // Request the version of the background context script from the perspective
   // of the NTP js.
   content::EvalJsResult GetBackgroundContextVersionFromNTPPage() {
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+    return content::EvalJs(GetActiveWebContents(),
                            "getCurrentVersionOfBackgroundContext();");
   }
 

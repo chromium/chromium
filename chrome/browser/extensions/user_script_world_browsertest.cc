@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -170,10 +169,6 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
                                       std::optional<std::string> world_id) {
     RendererStartupHelperFactory::GetForBrowserContext(profile())
         ->ClearUserScriptWorldProperties(extension, std::move(world_id));
-  }
-
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 };
 
