@@ -296,7 +296,7 @@ void PinBackend::SetWithContext(const AccountId& account_id,
     return;
   }
   QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  if (!storage) {
+  if (!storage && storage->pin_storage_prefs()) {
     // There may be a pref value if resetting PIN and the device now supports
     // cryptohome-based PIN.
     storage->pin_storage_prefs()->RemovePin();
