@@ -7306,16 +7306,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       static_cast<int64_t>(lens::MimeType::kAnnotatedPageContent));
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RecordQueryIssuesBeforeZpsShownInSessionHistograms \
-  DISABLED_RecordQueryIssuesBeforeZpsShownInSessionHistograms
-#else
-#define MAYBE_RecordQueryIssuesBeforeZpsShownInSessionHistograms \
-  RecordQueryIssuesBeforeZpsShownInSessionHistograms
-#endif
+// TODO - crbug.com/400650442: Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     LensOverlayControllerBrowserTest,
-    MAYBE_RecordQueryIssuesBeforeZpsShownInSessionHistograms) {
+    DISABLED_RecordQueryIssuesBeforeZpsShownInSessionHistograms) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
