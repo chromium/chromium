@@ -1882,17 +1882,12 @@ bool WebGLRenderingContextBase::
           .SharedImageInterface()
           ->GetCapabilities();
 
-  const gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
-  bool gmb_allowed =
-      gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format) &&
-      gpu::IsImageFromGpuMemoryBufferFormatSupported(buffer_format,
-                                                     capabilities);
+  bool shared_image_format_supported =
+      gpu::IsFormatSupportedForSIWithNativeBuffer(format, capabilities);
 
-  // Either swap_chain or gpu memory buffer should be enabled for this be used.
-  // TODO(crbug.com/404887530) : Remove or Rename `gmb_allowed` since
-  // CanvasResourceProvider no longer uses GMBs.
-  if (!shared_image_capabilities.shared_image_swap_chain && !gmb_allowed) {
+  // Either swap_chain or shared image should be supported for this be used.
+  if (!shared_image_capabilities.shared_image_swap_chain &&
+      !shared_image_format_supported) {
     return false;
   }
 

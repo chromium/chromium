@@ -373,8 +373,7 @@ bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
     return false;
   }
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size,
-                                                     ToBufferFormat(format))) {
+  if (!gpu::IsSharedImageSizeValid(size, format)) {
     DVLOG(1) << "Invalid image size: " << size.ToString()
              << " for format: " << format.ToString();
     return false;

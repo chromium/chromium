@@ -1668,8 +1668,7 @@ _CONFIG = [
         'allowed': [
             'gfx::BufferFormat',
             'gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS',
-            'gpu::IsImageFromGpuMemoryBufferFormatSupported',
-            'gpu::IsImageSizeValidForGpuMemoryBufferFormat',
+            'gpu::IsFormatSupportedForSIWithNativeBuffer',
             'viz::SinglePlaneSharedImageFormatToBufferFormat',
         ],
     },

@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/viz/common/resources/shared_image_format.h",
+  "+components/viz/common/resources/shared_image_format_utils.h",
   "+third_party/skia/include",
 ]
 specific_include_rules = {

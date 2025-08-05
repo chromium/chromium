@@ -103,19 +103,6 @@ static FlushForImageListener* GetFlushForImageListener() {
   return flush_for_image_listener;
 }
 
-namespace {
-
-bool IsGMBAllowed(gfx::Size size,
-                  viz::SharedImageFormat format,
-                  const gpu::Capabilities& caps) {
-  const gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
-  return gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format) &&
-         gpu::IsImageFromGpuMemoryBufferFormatSupported(buffer_format, caps);
-}
-
-}  // namespace
-
 class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
  public:
   CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
@@ -1312,23 +1299,22 @@ CanvasResourceProvider::CreateSharedImageProvider(
     format = viz::SinglePlaneFormat::kRGBA_8888;
   }
 
-  // TODO(crbug.com/404887530) : Remove or Rename IsGMBAllowed() since
-  // CanvasResourceProvider no longer uses GMBs.
-  const bool is_gpu_memory_buffer_image_allowed =
-      is_gpu_compositing_enabled && IsGMBAllowed(size, format, capabilities);
+  const bool is_mappable_shared_image_allowed =
+      is_gpu_compositing_enabled &&
+      gpu::IsFormatSupportedForSIWithNativeBuffer(format, capabilities);
 
-  if (raster_mode == RasterMode::kCPU && !is_gpu_memory_buffer_image_allowed)
+  if (raster_mode == RasterMode::kCPU && !is_mappable_shared_image_allowed) {
     return nullptr;
+  }
 
   // If we cannot use overlay, we have to remove the scanout flag and the
   // concurrent read write flag.
   const auto& shared_image_caps = context_provider_wrapper->ContextProvider()
                                       .SharedImageInterface()
                                       ->GetCapabilities();
-  bool is_overlay_supported_via_gmb =
-      is_gpu_memory_buffer_image_allowed &&
+  bool is_overlay_supported =
+      is_mappable_shared_image_allowed &&
       (!is_accelerated || shared_image_caps.supports_scanout_shared_images);
-  bool is_overlay_supported = is_overlay_supported_via_gmb;
 
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kUseCRPSIForLowLatencyOnWindows)) {

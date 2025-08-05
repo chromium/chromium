@@ -104,6 +104,7 @@ source_set("common_sources") {
   public_deps = [
     ":mailbox",
     "//base",
+    "//components/viz/common:shared_image_format",
     "//mojo/public/cpp/system",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",

@@ -7,6 +7,7 @@
 
 #include "base/containers/enum_set.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,16 +22,16 @@ static_assert(static_cast<int>(gfx::BufferFormat::LAST) < 64);
 
 struct Capabilities;
 
-// Returns true if creating an image for a GpuMemoryBuffer with |format| is
+// Returns true if creating a shared image with |format| is
 // supported by |capabilities|.
-GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsImageFromGpuMemoryBufferFormatSupported(
-    gfx::BufferFormat format,
+GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsFormatSupportedForSIWithNativeBuffer(
+    viz::SharedImageFormat format,
     const Capabilities& capabilities);
 
 // Returns true if |size| is valid for plane |plane| of |format|.
-GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsImageSizeValidForGpuMemoryBufferFormat(
+GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsSharedImageSizeValid(
     const gfx::Size& size,
-    gfx::BufferFormat format);
+    viz::SharedImageFormat format);
 
 }  // namespace gpu
 

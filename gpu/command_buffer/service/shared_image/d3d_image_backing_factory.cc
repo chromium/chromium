@@ -683,10 +683,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   CHECK(!format.PrefersExternalSampler());
 
   // TOOD(hitawala): Move this size check to IsSupported.
-  const gfx::BufferFormat buffer_format = gpu::ToBufferFormat(format);
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+  if (!gpu::IsSharedImageSizeValid(size, format)) {
     LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
-               << gfx::BufferFormatToString(buffer_format);
+               << format.ToString();
     return nullptr;
   }
 
