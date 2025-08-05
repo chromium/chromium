@@ -42,8 +42,8 @@ SkAlpha PercentageToSkAlpha(int percent_value) {
 // 3. Otherwise, the default value stored in the PrefService is returned.
 int GetOpacity(const PrefService* prefs,
                const char* pref_name,
-               const char* cmd_opacity_percent_flag) {
-  int percent_value = prefs->GetInteger(pref_name);
+               const char* cmd_opacity_percent_flag,
+               int default_percent_value) {
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   if (cmd->HasSwitch(cmd_opacity_percent_flag) &&
       chrome::GetChannel() != version_info::Channel::STABLE &&
@@ -51,11 +51,16 @@ int GetOpacity(const PrefService* prefs,
     int percent_from_flag;
     if (base::StringToInt(cmd->GetSwitchValueASCII(cmd_opacity_percent_flag),
                           &percent_from_flag)) {
-      percent_value = percent_from_flag;
+      return PercentageToSkAlpha(percent_from_flag);
     }
   }
-  // Clamp the final percentage (0-100) and convert to Skia alpha (0-255).
-  return PercentageToSkAlpha(percent_value);
+
+  if (base::FeatureList::IsEnabled(
+          enterprise_watermark::kEnableWatermarkCustomization)) {
+    return PercentageToSkAlpha(prefs->GetInteger(pref_name));
+  }
+
+  return PercentageToSkAlpha(default_percent_value);
 }
 }  // namespace
 
@@ -80,24 +85,18 @@ int GetDefaultFontSize() {
 }
 
 SkColor GetFillColor(const PrefService* prefs) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_watermark::kEnableWatermarkCustomization)) {
-    return GetDefaultFillColor();
-  }
   int alpha =
       GetOpacity(prefs, enterprise_connectors::kWatermarkStyleFillOpacityPref,
-                 kWatermarkFillOpacityPercentFlag);
+                 kWatermarkFillOpacityPercentFlag,
+                 enterprise_connectors::kWatermarkStyleFillOpacityDefault);
   return SkColorSetA(kBaseFillRGB, alpha);
 }
 
 SkColor GetOutlineColor(const PrefService* prefs) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_watermark::kEnableWatermarkCustomization)) {
-    return GetDefaultOutlineColor();
-  }
   int alpha = GetOpacity(
       prefs, enterprise_connectors::kWatermarkStyleOutlineOpacityPref,
-      kWatermarkOutlineOpacityPercentFlag);
+      kWatermarkOutlineOpacityPercentFlag,
+      enterprise_connectors::kWatermarkStyleOutlineOpacityDefault);
   return SkColorSetA(kBaseOutlineRGB, alpha);
 }
 
