@@ -7,6 +7,25 @@
 
 namespace autofill {
 
+enum class BubbleType {
+  // Denotes the save/update address bubble.
+  kSaveUpdateAddress,
+  // Denotes bubble for saving a new IBAN.
+  kSaveIban,
+  // Denotes bubble for saving/updating a credit card.
+  kSaveUpdateCard,
+  // Denotes bubble for saving/updating autofill ai data.
+  kSaveUpdateAutofillAi,
+  // Denotes bubble for virtual card enrollment confirmation.
+  kVirtualCardEnrollConfirmation,
+  // Denotes bubble for mandatory reauth types.
+  kMandatoryReauth,
+  // Denotes bubble for offer notifications.
+  kOfferNotification,
+  // Denotes bubble for filled card information.
+  kFilledCardInformation
+};
+
 // This class serves as the base for all bubble controllers, which manage the
 // logic and state of an Autofill bubble.
 class BubbleControllerBase {
@@ -18,6 +37,9 @@ class BubbleControllerBase {
 
   // Instructs the controller to hide the bubble view.
   virtual void HideBubble() = 0;
+
+  // Returns the corresponding `BubbleType` for the controller.
+  virtual BubbleType GetBubbleType() const = 0;
 };
 
 }  // namespace autofill

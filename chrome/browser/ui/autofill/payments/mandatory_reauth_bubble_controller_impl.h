@@ -49,6 +49,9 @@ class MandatoryReauthBubbleControllerImpl
   bool IsIconVisible() override;
   MandatoryReauthBubbleType GetMandatoryReauthBubbleType() const override;
 
+  // BubbleControllerBase:
+  BubbleType GetBubbleType() const override;
+
  protected:
   explicit MandatoryReauthBubbleControllerImpl(
       content::WebContents* web_contents);

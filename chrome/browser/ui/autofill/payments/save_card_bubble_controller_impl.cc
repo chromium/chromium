@@ -774,6 +774,10 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   }
 }
 
+BubbleType SaveCardBubbleControllerImpl::GetBubbleType() const {
+  return BubbleType::kSaveUpdateCard;
+}
+
 void SaveCardBubbleControllerImpl::SetupAndShowBubble() {
   CHECK(current_bubble_type_ != PaymentsBubbleType::INACTIVE);
   // Upload save callback should not be null for UPLOAD_SAVE or

@@ -281,6 +281,10 @@ void SaveOrUpdateAutofillAiDataControllerImpl::DoShowBubble() {
   CHECK(bubble_view());
 }
 
+BubbleType SaveOrUpdateAutofillAiDataControllerImpl::GetBubbleType() const {
+  return BubbleType::kSaveUpdateAutofillAi;
+}
+
 base::WeakPtr<SaveOrUpdateAutofillAiDataController>
 SaveOrUpdateAutofillAiDataControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

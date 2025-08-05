@@ -70,6 +70,9 @@ class OfferNotificationBubbleControllerImpl
   // Removes any visible bubble and the omnibox icon.
   void DismissNotification();
 
+  // BubbleControllerBase:
+  BubbleType GetBubbleType() const override;
+
  protected:
   explicit OfferNotificationBubbleControllerImpl(
       content::WebContents* web_contents);

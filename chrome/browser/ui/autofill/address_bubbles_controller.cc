@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
+#include "bubble_controller_base.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -231,6 +232,10 @@ void AddressBubblesController::DoShowBubble() {
       web_contents(), shown_by_user_gesture_, GetWeakPtr()));
 
   CHECK(bubble_view());
+}
+
+BubbleType AddressBubblesController::GetBubbleType() const {
+  return BubbleType::kSaveUpdateAddress;
 }
 
 void AddressBubblesController::SetUpAndShowBubble(

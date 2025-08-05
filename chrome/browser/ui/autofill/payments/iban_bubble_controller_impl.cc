@@ -464,6 +464,10 @@ void IbanBubbleControllerImpl::DoShowBubble() {
   }
 }
 
+BubbleType IbanBubbleControllerImpl::GetBubbleType() const {
+  return BubbleType::kSaveIban;
+}
+
 Profile* IbanBubbleControllerImpl::GetProfile() {
   if (!web_contents()) {
     return nullptr;

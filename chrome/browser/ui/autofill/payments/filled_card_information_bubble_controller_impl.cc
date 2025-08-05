@@ -414,6 +414,10 @@ bool FilledCardInformationBubbleControllerImpl::IsBnplFlow() const {
   return options_.filled_card.is_bnpl_card();
 }
 
+BubbleType FilledCardInformationBubbleControllerImpl::GetBubbleType() const {
+  return BubbleType::kFilledCardInformation;
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FilledCardInformationBubbleControllerImpl);
 
 }  // namespace autofill

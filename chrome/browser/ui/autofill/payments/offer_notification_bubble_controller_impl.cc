@@ -224,6 +224,10 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   }
 }
 
+BubbleType OfferNotificationBubbleControllerImpl::GetBubbleType() const {
+  return BubbleType::kOfferNotification;
+}
+
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
   Browser* active_browser = chrome::FindBrowserWithActiveWindow();
   if (!active_browser) {

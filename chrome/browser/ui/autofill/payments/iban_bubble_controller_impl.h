@@ -101,6 +101,9 @@ class IbanBubbleControllerImpl
   const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const override;
 
+  // BubbleControllerBase:
+  BubbleType GetBubbleType() const override;
+
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {
     observer_for_testing_ = observer;

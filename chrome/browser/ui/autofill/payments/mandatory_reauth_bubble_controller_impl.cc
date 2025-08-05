@@ -238,6 +238,10 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+BubbleType MandatoryReauthBubbleControllerImpl::GetBubbleType() const {
+  return BubbleType::kMandatoryReauth;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {

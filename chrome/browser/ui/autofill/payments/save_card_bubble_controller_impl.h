@@ -158,6 +158,9 @@ class SaveCardBubbleControllerImpl
   AutofillBubbleBase* GetPaymentBubbleView() const override;
   int GetSaveSuccessAnimationStringId() const override;
 
+  // BubbleControllerBase:
+  BubbleType GetBubbleType() const override;
+
   static base::AutoReset<bool> IgnoreWindowActivationForTesting();
 
  protected:

@@ -78,6 +78,9 @@ class VirtualCardEnrollBubbleControllerImpl
   GetConfirmationUiParams() const override;
   bool IsIconVisible() const override;
 
+  // BubbleControllerBase:
+  BubbleType GetBubbleType() const override;
+
  protected:
   explicit VirtualCardEnrollBubbleControllerImpl(
       content::WebContents* web_contents);
