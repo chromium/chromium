@@ -2786,9 +2786,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
   CacheGiantEntry();
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
-// Android build does not support 64 bits offset file read, so this test does
-// not work.
+#if !BUILDFLAG(IS_WIN)
 // This test is too slow on Windows which ends up with Timeout.
 // Writing to a large offset can be slow on some filesystems if they don't
 // efficiently support sparse files.
@@ -2844,7 +2842,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheLargeOffsetIO) {
 
   entry->Close();
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(DiskCacheEntryTest, SimpleCacheInvalidLargeOffsetWriteToStream0) {
   SetBackendToTest(BackendToTest::kSimple);
