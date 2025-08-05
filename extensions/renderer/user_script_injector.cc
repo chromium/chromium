@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -86,8 +87,10 @@ blink::WebScriptSource GreasemonkeyApiJsString::GetSource() const {
   return blink::WebScriptSource(source_);
 }
 
-base::LazyInstance<GreasemonkeyApiJsString>::Leaky g_greasemonkey_api =
-    LAZY_INSTANCE_INITIALIZER;
+const GreasemonkeyApiJsString& GetGreasemonkeyApi() {
+  static base::NoDestructor<GreasemonkeyApiJsString> api;
+  return *api;
+}
 
 bool ShouldInjectScripts(const UserScript::ContentList& script_contents,
                          const std::set<std::string>& injected_files) {
@@ -250,7 +253,7 @@ std::vector<blink::WebScriptSource> UserScriptInjector::GetJsSources(
   // Emulate Greasemonkey API for scripts that were converted to extension
   // user scripts.
   if (script_->emulate_greasemonkey())
-    sources.push_back(g_greasemonkey_api.Get().GetSource());
+    sources.push_back(GetGreasemonkeyApi().GetSource());
   for (const std::unique_ptr<UserScript::Content>& file : js_scripts) {
     const GURL& script_url = file->url();
     // Check if the script is already injected.

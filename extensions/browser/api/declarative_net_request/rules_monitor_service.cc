@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -60,10 +59,6 @@ namespace declarative_net_request {
 namespace {
 
 namespace dnr_api = api::declarative_net_request;
-
-static base::LazyInstance<
-    BrowserContextKeyedAPIFactory<RulesMonitorService>>::Leaky g_factory =
-    LAZY_INSTANCE_INITIALIZER;
 
 bool RulesetInfoCompareByID(const RulesetInfo& lhs, const RulesetInfo& rhs) {
   return lhs.source().id() < rhs.source().id();
@@ -336,7 +331,9 @@ class RulesMonitorService::ApiCallQueue {
 // static
 BrowserContextKeyedAPIFactory<RulesMonitorService>*
 RulesMonitorService::GetFactoryInstance() {
-  return g_factory.Pointer();
+  static base::NoDestructor<BrowserContextKeyedAPIFactory<RulesMonitorService>>
+      instance;
+  return instance.get();
 }
 
 // static

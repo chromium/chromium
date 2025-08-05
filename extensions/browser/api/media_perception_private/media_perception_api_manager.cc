@@ -10,8 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -125,14 +125,13 @@ MediaPerceptionAPIManager* MediaPerceptionAPIManager::Get(
   return GetFactoryInstance()->Get(context);
 }
 
-static base::LazyInstance<
-    BrowserContextKeyedAPIFactory<MediaPerceptionAPIManager>>::Leaky g_factory =
-    LAZY_INSTANCE_INITIALIZER;
-
 // static
 BrowserContextKeyedAPIFactory<MediaPerceptionAPIManager>*
 MediaPerceptionAPIManager::GetFactoryInstance() {
-  return g_factory.Pointer();
+  static base::NoDestructor<
+      BrowserContextKeyedAPIFactory<MediaPerceptionAPIManager>>
+      instance;
+  return instance.get();
 }
 
 MediaPerceptionAPIManager::MediaPerceptionAPIManager(
