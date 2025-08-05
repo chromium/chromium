@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -340,7 +341,7 @@ TEST_F(SystemMetricsTest, IsValidDiskName) {
 }
 
 TEST_F(SystemMetricsTest, ParseMeminfo) {
-  SystemMemoryInfoKB meminfo;
+  SystemMemoryInfo meminfo;
   const char invalid_input1[] = "abc";
   const char invalid_input2[] = "MemTotal:";
   // Partial file with no MemTotal
@@ -424,39 +425,39 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
       "Hugepagesize:     4096 kB\n";
 
   EXPECT_TRUE(ParseProcMeminfo(valid_input1, &meminfo));
-  EXPECT_EQ(meminfo.total, 3981504);
-  EXPECT_EQ(meminfo.free, 140764);
-  EXPECT_EQ(meminfo.available, 535413);
-  EXPECT_EQ(meminfo.buffers, 116480);
-  EXPECT_EQ(meminfo.cached, 406160);
-  EXPECT_EQ(meminfo.active_anon, 2972352);
-  EXPECT_EQ(meminfo.active_file, 179688);
-  EXPECT_EQ(meminfo.inactive_anon, 270108);
-  EXPECT_EQ(meminfo.inactive_file, 202748);
-  EXPECT_EQ(meminfo.swap_total, 5832280);
-  EXPECT_EQ(meminfo.swap_free, 3672368);
-  EXPECT_EQ(meminfo.dirty, 184);
-  EXPECT_EQ(meminfo.reclaimable, 30936);
+  EXPECT_EQ(meminfo.total.InKiB(), 3981504);
+  EXPECT_EQ(meminfo.free.InKiB(), 140764);
+  EXPECT_EQ(meminfo.available.InKiB(), 535413);
+  EXPECT_EQ(meminfo.buffers.InKiB(), 116480);
+  EXPECT_EQ(meminfo.cached.InKiB(), 406160);
+  EXPECT_EQ(meminfo.active_anon.InKiB(), 2972352);
+  EXPECT_EQ(meminfo.active_file.InKiB(), 179688);
+  EXPECT_EQ(meminfo.inactive_anon.InKiB(), 270108);
+  EXPECT_EQ(meminfo.inactive_file.InKiB(), 202748);
+  EXPECT_EQ(meminfo.swap_total.InKiB(), 5832280);
+  EXPECT_EQ(meminfo.swap_free.InKiB(), 3672368);
+  EXPECT_EQ(meminfo.dirty.InKiB(), 184);
+  EXPECT_EQ(meminfo.reclaimable.InKiB(), 30936);
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(meminfo.shmem, 140204);
-  EXPECT_EQ(meminfo.slab, 54212);
+  EXPECT_EQ(meminfo.shmem.InKiB(), 140204);
+  EXPECT_EQ(meminfo.slab.InKiB(), 54212);
 #endif
   EXPECT_EQ(355725u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
   // Simulate as if there is no MemAvailable.
-  meminfo.available = 0;
+  meminfo.available = ByteCount(0);
   EXPECT_EQ(374448u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
   meminfo = {};
   EXPECT_TRUE(ParseProcMeminfo(valid_input2, &meminfo));
-  EXPECT_EQ(meminfo.total, 255908);
-  EXPECT_EQ(meminfo.free, 69936);
-  EXPECT_EQ(meminfo.available, 0);
-  EXPECT_EQ(meminfo.buffers, 15812);
-  EXPECT_EQ(meminfo.cached, 115124);
-  EXPECT_EQ(meminfo.swap_total, 524280);
-  EXPECT_EQ(meminfo.swap_free, 524200);
-  EXPECT_EQ(meminfo.dirty, 4);
+  EXPECT_EQ(meminfo.total.InKiB(), 255908);
+  EXPECT_EQ(meminfo.free.InKiB(), 69936);
+  EXPECT_EQ(meminfo.available.InKiB(), 0);
+  EXPECT_EQ(meminfo.buffers.InKiB(), 15812);
+  EXPECT_EQ(meminfo.cached.InKiB(), 115124);
+  EXPECT_EQ(meminfo.swap_total.InKiB(), 524280);
+  EXPECT_EQ(meminfo.swap_free.InKiB(), 524200);
+  EXPECT_EQ(meminfo.dirty.InKiB(), 4);
   EXPECT_EQ(69936u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
 
@@ -508,10 +509,10 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
 
   meminfo = {};
   EXPECT_TRUE(ParseProcMeminfo(large_cache_input, &meminfo));
-  EXPECT_EQ(meminfo.total, 18025572);
-  EXPECT_EQ(meminfo.free, 13150176);
-  EXPECT_EQ(meminfo.buffers, 1524852);
-  EXPECT_EQ(meminfo.cached, 12645260);
+  EXPECT_EQ(meminfo.total.InKiB(), 18025572);
+  EXPECT_EQ(meminfo.free.InKiB(), 13150176);
+  EXPECT_EQ(meminfo.buffers.InKiB(), 1524852);
+  EXPECT_EQ(meminfo.cached.InKiB(), 12645260);
   EXPECT_EQ(GetSystemCommitChargeFromMeminfo(meminfo), 0u);
 }
 
@@ -801,21 +802,21 @@ TEST_F(SystemMetricsTest, ParseZramStat) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
-  SystemMemoryInfoKB info;
+  SystemMemoryInfo info;
   EXPECT_TRUE(GetSystemMemoryInfo(&info));
 
   // Ensure each field received a value.
-  EXPECT_GT(info.total, 0);
+  EXPECT_GT(info.total, ByteCount(0));
 #if BUILDFLAG(IS_WIN)
-  EXPECT_GT(info.avail_phys, 0);
+  EXPECT_GT(info.avail_phys, ByteCount(0));
 #else
-  EXPECT_GT(info.free, 0);
+  EXPECT_GT(info.free, ByteCount(0));
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  EXPECT_GT(info.buffers, 0);
-  EXPECT_GT(info.cached, 0);
-  EXPECT_GT(info.active_anon + info.inactive_anon, 0);
-  EXPECT_GT(info.active_file + info.inactive_file, 0);
+  EXPECT_GT(info.buffers, ByteCount(0));
+  EXPECT_GT(info.cached, ByteCount(0));
+  EXPECT_GT(info.active_anon + info.inactive_anon, ByteCount(0));
+  EXPECT_GT(info.active_file + info.inactive_file, ByteCount(0));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
@@ -835,12 +836,12 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
         // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)
-  EXPECT_GT(info.file_backed, 0);
+  EXPECT_GT(info.file_backed, ByteCount(0));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS exposes shmem.
-  EXPECT_GT(info.shmem, 0);
+  EXPECT_GT(info.shmem, ByteCount(0));
   EXPECT_LT(info.shmem, info.total);
 #endif
 }

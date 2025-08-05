@@ -20,6 +20,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
@@ -266,20 +267,20 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) : process_(process) {}
 #endif
 
 size_t GetSystemCommitCharge() {
-  SystemMemoryInfoKB meminfo;
+  SystemMemoryInfo meminfo;
   if (!GetSystemMemoryInfo(&meminfo)) {
     return 0;
   }
   return GetSystemCommitChargeFromMeminfo(meminfo);
 }
 
-size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo) {
-  // TODO(crbug.com/315988925): This math is incorrect: `cached` can be very
+size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfo& meminfo) {
+  // TODO(http://b/315988925): This math is incorrect: `cached` can be very
   // large so that `free` + `buffers` + `cached` > `total`. Replace this with a
   // more meaningful metric or remove it. In the meantime, convert underflows to
   // 0 instead of crashing.
-  return ClampedNumeric<size_t>(meminfo.total) - meminfo.free -
-         meminfo.buffers - meminfo.cached;
+  return ClampedNumeric<size_t>(meminfo.total.InKiB()) - meminfo.free.InKiB() -
+         meminfo.buffers.InKiB() - meminfo.cached.InKiB();
 }
 
 int ParseProcStatCPU(std::string_view input) {
@@ -380,7 +381,7 @@ const size_t kDiskWeightedIOTime = 13;
 }  // namespace
 
 bool ParseProcMeminfo(std::string_view meminfo_data,
-                      SystemMemoryInfoKB* meminfo) {
+                      SystemMemoryInfo* meminfo) {
   // The format of /proc/meminfo is:
   //
   // MemTotal:      8235324 kB
@@ -393,7 +394,7 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
 
   // As a basic sanity check at the end, make sure the MemTotal value will be at
   // least non-zero. So start off with a zero total.
-  meminfo->total = 0;
+  meminfo->total = ByteCount(0);
 
   for (std::string_view line : SplitStringPiece(
            meminfo_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
@@ -407,7 +408,7 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
       continue;
     }
 
-    int* target = nullptr;
+    ByteCount* target = nullptr;
     if (tokens[0] == "MemTotal:") {
       target = &meminfo->total;
     } else if (tokens[0] == "MemFree:") {
@@ -445,12 +446,15 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
     }
 #endif
     if (target) {
-      StringToInt(tokens[1], target);
+      int64_t value;
+      if (StringToInt64(tokens[1], &value)) {
+        *target = KiB(value);
+      }
     }
   }
 
   // Make sure the MemTotal is valid.
-  return meminfo->total > 0;
+  return meminfo->total > ByteCount(0);
 }
 
 bool ParseProcVmstat(std::string_view vmstat_data, VmStatInfo* vmstat) {
@@ -510,7 +514,7 @@ bool ParseProcVmstat(std::string_view vmstat_data, VmStatInfo* vmstat) {
   return has_pswpin && has_pswpout && has_pgmajfault;
 }
 
-bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
+bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
   // Used memory is: total - free - buffers - caches
   // ReadFileToStringNonBlocking doesn't require ScopedAllowIO, and reading
   // /proc/meminfo is fast. See crbug.com/1160988 for details.

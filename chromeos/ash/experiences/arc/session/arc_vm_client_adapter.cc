@@ -221,11 +221,11 @@ void AppendParamsFromStartParams(
 }
 
 int GetDefaultVmMemoryMiB(ArcVmClientAdapterDelegate* delegate) {
-  base::SystemMemoryInfoKB info;
+  base::SystemMemoryInfo info;
   if (!delegate->GetSystemMemoryInfo(&info)) {
     return 0;
   }
-  const int sys_memory_mb = info.total / 1024;
+  const int sys_memory_mb = info.total.InMiB();
   int vm_memory_mb;
   if (sys_memory_mb >= 4096) {
     // On devices with >=4GB RAM, reserve 1GB for other processes.
@@ -399,9 +399,9 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   // Specify VM Memory.
   if (base::FeatureList::IsEnabled(kVmMemorySize)) {
-    base::SystemMemoryInfoKB info;
+    base::SystemMemoryInfo info;
     if (delegate->GetSystemMemoryInfo(&info)) {
-      const int ram_mib = info.total / 1024;
+      const int ram_mib = info.total.InMiB();
       const int shift_mib = kVmMemorySizeShiftMiB.Get();
       const int max_mib = kVmMemorySizeMaxMiB.Get();
       const int ram_percentage = kVmMemorySizePercentage.Get();
@@ -636,7 +636,7 @@ bool SendUpgradePropsToArcVmBootNotificationServer(
 }  // namespace
 
 bool ArcVmClientAdapterDelegate::GetSystemMemoryInfo(
-    base::SystemMemoryInfoKB* info) {
+    base::SystemMemoryInfo* info) {
   // Call the base function by default.
   return base::GetSystemMemoryInfo(info);
 }

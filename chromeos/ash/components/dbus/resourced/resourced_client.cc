@@ -129,9 +129,9 @@ class ResourcedClientImpl : public ResourcedClient {
 };
 
 ResourcedClientImpl::ResourcedClientImpl() {
-  base::SystemMemoryInfoKB info;
+  base::SystemMemoryInfo info;
   if (base::GetSystemMemoryInfo(&info)) {
-    total_memory_kb_ = static_cast<uint64_t>(info.total);
+    total_memory_kb_ = static_cast<uint64_t>(info.total.InKiB());
   } else {
     PLOG(ERROR) << "Error reading total memory.";
   }

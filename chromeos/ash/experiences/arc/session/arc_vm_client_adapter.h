@@ -15,7 +15,7 @@
 #include "chromeos/ash/experiences/arc/session/file_system_status.h"
 
 namespace base {
-struct SystemMemoryInfoKB;
+struct SystemMemoryInfo;
 class TimeDelta;
 }  // namespace base
 
@@ -62,7 +62,7 @@ class ArcVmClientAdapterDelegate {
   ArcVmClientAdapterDelegate& operator=(const ArcVmClientAdapterDelegate&) =
       delete;
   virtual ~ArcVmClientAdapterDelegate() = default;
-  virtual bool GetSystemMemoryInfo(base::SystemMemoryInfoKB* info);
+  virtual bool GetSystemMemoryInfo(base::SystemMemoryInfo* info);
 
   // Returns if crosvm is a 32-bit process.
   virtual bool IsCrosvm32bit();

@@ -1410,7 +1410,7 @@ base::TimeTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
 
 void FreezingPolicy::CheckMemoryPressureForFreezing() {
 #if BUILDFLAG(IS_WIN)
-  base::SystemMemoryInfoKB info;
+  base::SystemMemoryInfo info;
   if (!base::GetSystemMemoryInfo(&info)) {
     // Cannot get system memory info, do nothing.
     return;
@@ -1423,8 +1423,8 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
   const int kPressureThresholdPercent =
       features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
 
-  uint64_t total_kb = info.total;
-  uint64_t avail_kb = info.avail_phys;
+  uint64_t total_kb = info.total.InKiB();
+  uint64_t avail_kb = info.avail_phys.InKiB();
 
   int available_percent = 0;
   if (total_kb > 0) {

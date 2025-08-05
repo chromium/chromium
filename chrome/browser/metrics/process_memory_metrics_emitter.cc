@@ -1690,12 +1690,12 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
     per_tab_metrics.RecordPmfs(GetUkmRecorder());
 
 #if BUILDFLAG(IS_CHROMEOS)
-    base::SystemMemoryInfoKB system_meminfo;
+    base::SystemMemoryInfo system_meminfo;
     if (base::GetSystemMemoryInfo(&system_meminfo)) {
-      int mem_used_mb =
-          (system_meminfo.total - system_meminfo.available) / 1024;
+      int64_t mem_used_mb =
+          (system_meminfo.total - system_meminfo.available).InMiB();
       UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.System.MemAvailableMB",
-                                    system_meminfo.available / 1024);
+                                    system_meminfo.available.InMiB());
       UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.System.MemUsedMB", mem_used_mb);
     }
 #endif

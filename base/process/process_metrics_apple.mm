@@ -16,6 +16,7 @@
 
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/byte_count.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -252,8 +253,8 @@ size_t GetSystemCommitCharge() {
   return (data.active_count * PAGE_SIZE) / 1024;
 }
 
-bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
-  meminfo->total = static_cast<int>(SysInfo::AmountOfPhysicalMemory() / 1024);
+bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
+  meminfo->total = ByteCount::FromUnsigned(SysInfo::AmountOfPhysicalMemory());
 
   base::apple::ScopedMachSendRight host(mach_host_self());
   vm_statistics64_data_t vm_info;
@@ -298,8 +299,8 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
 #endif  // !(defined(IS_IOS) && defined(ARCH_CPU_X86_FAMILY))
 
   if (vm_info.speculative_count <= vm_info.free_count) {
-    meminfo->free = saturated_cast<int>(
-        PAGE_SIZE / 1024 * (vm_info.free_count - vm_info.speculative_count));
+    meminfo->free = ByteCount::FromUnsigned(
+        PAGE_SIZE * (vm_info.free_count - vm_info.speculative_count));
   } else {
     // Inside the `host_statistics64` call above, `speculative_count` is
     // computed later than `free_count`, so these values are snapshots of two
@@ -312,15 +313,15 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
     // inexact, but even in the case where `speculative_count` is less than
     // `free_count`, the computed `meminfo->free` will only be an approximation
     // given that the two inputs come from different points in time.
-    meminfo->free = 0;
+    meminfo->free = ByteCount();
   }
 
   meminfo->speculative =
-      saturated_cast<int>(PAGE_SIZE / 1024 * vm_info.speculative_count);
+      ByteCount::FromUnsigned(PAGE_SIZE * vm_info.speculative_count);
   meminfo->file_backed =
-      saturated_cast<int>(PAGE_SIZE / 1024 * vm_info.external_page_count);
+      ByteCount::FromUnsigned(PAGE_SIZE * vm_info.external_page_count);
   meminfo->purgeable =
-      saturated_cast<int>(PAGE_SIZE / 1024 * vm_info.purgeable_count);
+      ByteCount::FromUnsigned(PAGE_SIZE * vm_info.purgeable_count);
 
   return true;
 }

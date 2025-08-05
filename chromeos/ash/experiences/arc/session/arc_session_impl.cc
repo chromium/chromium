@@ -90,20 +90,20 @@ bool WaitForSocketReadable(int raw_socket_fd, int raw_cancel_fd) {
 void ApplyDalvikMemoryProfile(
     ArcSessionImpl::SystemMemoryInfoCallback system_memory_info_callback,
     StartParams* params) {
-  base::SystemMemoryInfoKB mem_info;
+  base::SystemMemoryInfo mem_info;
   if (!system_memory_info_callback.Run(&mem_info)) {
     LOG(ERROR) << "Failed to get system memory info";
     return;
   }
 
   std::string log_profile_name;
-  if (mem_info.total >= kClassify16GbDeviceInKb) {
+  if (mem_info.total.InKiB() >= kClassify16GbDeviceInKb) {
     params->dalvik_memory_profile = StartParams::DalvikMemoryProfile::M16G;
     log_profile_name = "high-memory 16G";
-  } else if (mem_info.total >= kClassify8GbDeviceInKb) {
+  } else if (mem_info.total.InKiB() >= kClassify8GbDeviceInKb) {
     params->dalvik_memory_profile = StartParams::DalvikMemoryProfile::M8G;
     log_profile_name = "high-memory 8G";
-  } else if (mem_info.total >= kClassify4GbDeviceInKb) {
+  } else if (mem_info.total.InKiB() >= kClassify4GbDeviceInKb) {
     params->dalvik_memory_profile = StartParams::DalvikMemoryProfile::M4G;
     log_profile_name = "high-memory 4G";
   } else {
@@ -111,7 +111,7 @@ void ApplyDalvikMemoryProfile(
     log_profile_name = "default low-memory";
   }
   VLOG(1) << "Applied " << log_profile_name << " profile for the "
-          << (mem_info.total / 1024) << "Mb device.";
+          << mem_info.total.InMiB() << "Mb device.";
 }
 
 void ApplyHostUreadaheadMode(StartParams* params) {

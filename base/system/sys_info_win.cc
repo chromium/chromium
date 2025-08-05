@@ -195,11 +195,11 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
 
 // static
 uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
-  SystemMemoryInfoKB info;
+  SystemMemoryInfo info;
   if (!GetSystemMemoryInfo(&info)) {
     return 0;
   }
-  return checked_cast<uint64_t>(info.avail_phys) * 1024;
+  return info.avail_phys.InBytesUnsigned();
 }
 
 // static

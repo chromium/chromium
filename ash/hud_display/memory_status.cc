@@ -163,10 +163,10 @@ void MemoryStatus::UpdatePerProcessStat() {
 }
 
 void MemoryStatus::UpdateMeminfo() {
-  base::SystemMemoryInfoKB meminfo;
+  base::SystemMemoryInfo meminfo;
   base::GetSystemMemoryInfo(&meminfo);
-  total_ram_size_ = meminfo.total * 1024LL;
-  total_free_ = meminfo.free * 1024LL;
+  total_ram_size_ = meminfo.total.InBytes();
+  total_free_ = meminfo.free.InBytes();
 
   base::GraphicsMemoryInfoKB gpu_meminfo;
   if (base::GetGraphicsMemoryInfo(&gpu_meminfo))

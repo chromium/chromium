@@ -9,7 +9,7 @@
 
 namespace base {
 class CommandLine;
-struct SystemMemoryInfoKB;
+struct SystemMemoryInfo;
 }  // namespace base
 
 namespace arc {
@@ -27,7 +27,7 @@ void SetArcAvailableCommandLineForTesting(base::CommandLine* command_line);
 
 // Gets a system memory profile based on file name.
 bool GetSystemMemoryInfoForTesting(const std::string& file_name,
-                                   base::SystemMemoryInfoKB* mem_info);
+                                   base::SystemMemoryInfo* mem_info);
 
 }  // namespace arc
 

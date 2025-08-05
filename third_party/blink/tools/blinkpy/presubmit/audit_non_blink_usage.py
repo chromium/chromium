@@ -144,7 +144,7 @@ _CONFIG = [
             'base::StringPiece',
             'base::SubstringSetMatcher',
             'base::SysInfo',
-            'base::SystemMemoryInfoKB',
+            'base::SystemMemoryInfo',
             'base::ThreadChecker',
             'base::ThreadTicks',
             'base::ThreadType',

@@ -13,6 +13,7 @@
 
 #include <algorithm>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -247,22 +248,22 @@ size_t GetSystemCommitCharge() {
 }
 
 // This function uses the following mapping between MEMORYSTATUSEX and
-// SystemMemoryInfoKB:
+// SystemMemoryInfo:
 //   ullTotalPhys ==> total
 //   ullAvailPhys ==> avail_phys
 //   ullTotalPageFile ==> swap_total
 //   ullAvailPageFile ==> swap_free
-bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
+bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
   MEMORYSTATUSEX mem_status;
   mem_status.dwLength = sizeof(mem_status);
   if (!::GlobalMemoryStatusEx(&mem_status)) {
     return false;
   }
 
-  meminfo->total = saturated_cast<int>(mem_status.ullTotalPhys / 1024);
-  meminfo->avail_phys = saturated_cast<int>(mem_status.ullAvailPhys / 1024);
-  meminfo->swap_total = saturated_cast<int>(mem_status.ullTotalPageFile / 1024);
-  meminfo->swap_free = saturated_cast<int>(mem_status.ullAvailPageFile / 1024);
+  meminfo->total = ByteCount::FromUnsigned(mem_status.ullTotalPhys);
+  meminfo->avail_phys = ByteCount::FromUnsigned(mem_status.ullAvailPhys);
+  meminfo->swap_total = ByteCount::FromUnsigned(mem_status.ullTotalPageFile);
+  meminfo->swap_free = ByteCount::FromUnsigned(mem_status.ullAvailPageFile);
 
   return true;
 }

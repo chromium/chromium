@@ -184,17 +184,17 @@ void CrashMetricsReporter::ChildProcessExited(
           base::RecordAction(
               base::UserMetricsAction("RendererForegroundMainFrameOOM"));
         }
-        base::SystemMemoryInfoKB meminfo;
+        base::SystemMemoryInfo meminfo;
         base::GetSystemMemoryInfo(&meminfo);
         base::UmaHistogramMemoryLargeMB(
             "Memory.Experimental.Renderer.TotalMemoryAfterOOM",
-            meminfo.total / 1024);
+            meminfo.total.InMiB());
         base::UmaHistogramMemoryLargeMB(
             "Memory.Experimental.Renderer.AvailableMemoryAfterOOM",
-            meminfo.available / 1024);
+            meminfo.available.InMiB());
         base::UmaHistogramMemoryLargeMB(
             "Memory.Experimental.Renderer.SwapFreeAfterOOM",
-            meminfo.swap_free / 1024);
+            meminfo.swap_free.InMiB());
         base::UmaHistogramMemoryLargeMB(
             "Memory.Experimental.Renderer.AvailableMemoryBeforeOOM",
             available_memory_kb / 1024);

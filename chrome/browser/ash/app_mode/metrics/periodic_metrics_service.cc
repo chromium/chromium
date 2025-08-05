@@ -163,12 +163,12 @@ void PeriodicMetricsService::RecordRamUsage() const {
 }
 
 void PeriodicMetricsService::RecordSwapUsage() const {
-  base::SystemMemoryInfoKB memory;
+  base::SystemMemoryInfo memory;
   if (!base::GetSystemMemoryInfo(&memory)) {
     return;
   }
-  int64_t swap_free = memory.swap_free;
-  int64_t swap_total = memory.swap_total;
+  int64_t swap_free = memory.swap_free.InKiB();
+  int64_t swap_total = memory.swap_total.InKiB();
   ReportUsedPercentage(kKioskSwapUsagePercentageHistogram, swap_free,
                        swap_total);
 }

@@ -50,7 +50,7 @@ class ScopedAmountOfPhysicalMemoryOverride;
 }
 
 class FilePath;
-struct SystemMemoryInfoKB;
+struct SystemMemoryInfo;
 
 class BASE_EXPORT SysInfo {
  public:
@@ -374,7 +374,7 @@ class BASE_EXPORT SysInfo {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
   static uint64_t AmountOfAvailablePhysicalMemory(
-      const SystemMemoryInfoKB& meminfo);
+      const SystemMemoryInfo& meminfo);
 #endif
 
   // Sets the amount of physical memory in MB for testing, thus allowing tests

@@ -15,6 +15,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/byte_count.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
@@ -98,7 +99,7 @@ struct ProcessMemoryInfo {
 #endif  // BUILDFLAG(IS_WIN)
 
   // On iOS,
-  //   TBD: https://crbug.com/714961
+  //   TBD: https://crbug.com/41315025
 };
 
 // Provides performance metrics for a specified process (CPU usage and IO
@@ -311,25 +312,28 @@ BASE_EXPORT void IncreaseFdLimitTo(unsigned int max_descriptors);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||      \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX) || \
     BUILDFLAG(IS_FUCHSIA)
-// Data about system-wide memory consumption. Values are in KB. Available on
-// Windows, Mac, Linux, Android and Chrome OS.
+// Data about system-wide memory consumption. Available on Windows, Mac, Linux,
+// Android and Chrome OS.
+//
+// The values are kept in ByteCount but depending on the platform, the
+// granularity might be at the KB level or higher.
 //
 // Total memory are available on all platforms that implement
 // GetSystemMemoryInfo(). Total/free swap memory are available on all platforms
 // except on Mac. Buffers/cached/active_anon/inactive_anon/active_file/
 // inactive_file/dirty/reclaimable/pswpin/pswpout/pgmajfault are available on
 // Linux/Android/Chrome OS. Shmem/slab are Chrome OS only.
-// Speculative/file_backed/purgeable are Mac and iOS only.
-// Free is absent on Windows (see "avail_phys" below).
-struct BASE_EXPORT SystemMemoryInfoKB {
-  SystemMemoryInfoKB();
-  SystemMemoryInfoKB(const SystemMemoryInfoKB& other);
-  SystemMemoryInfoKB& operator=(const SystemMemoryInfoKB& other);
+// Speculative/file_backed/purgeable are Mac and iOS only. Free is absent on
+// Windows (see "avail_phys" below).
+struct BASE_EXPORT SystemMemoryInfo {
+  SystemMemoryInfo();
+  SystemMemoryInfo(const SystemMemoryInfo& other);
+  SystemMemoryInfo& operator=(const SystemMemoryInfo& other);
 
-  int total = 0;
+  ByteCount total;
 
 #if !BUILDFLAG(IS_WIN)
-  int free = 0;
+  ByteCount free;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -338,7 +342,7 @@ struct BASE_EXPORT SystemMemoryInfoKB {
   // size of the standby, free, and zero lists." (MSDN).
   // Standby: not modified pages of physical ram (file-backed memory) that are
   // not actively being used.
-  int avail_phys = 0;
+  ByteCount avail_phys;
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
@@ -348,36 +352,36 @@ struct BASE_EXPORT SystemMemoryInfoKB {
   // NOTE: this is ONLY valid in kernels 3.14 and up.  Its value will always
   // be 0 in earlier kernel versions.
   // Note: it includes _all_ file-backed memory (active + inactive).
-  int available = 0;
+  ByteCount available;
 #endif
 
 #if !BUILDFLAG(IS_APPLE)
-  int swap_total = 0;
-  int swap_free = 0;
+  ByteCount swap_total;
+  ByteCount swap_free;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX) || BUILDFLAG(IS_FUCHSIA)
-  int buffers = 0;
-  int cached = 0;
-  int active_anon = 0;
-  int inactive_anon = 0;
-  int active_file = 0;
-  int inactive_file = 0;
-  int dirty = 0;
-  int reclaimable = 0;
+  ByteCount buffers;
+  ByteCount cached;
+  ByteCount active_anon;
+  ByteCount inactive_anon;
+  ByteCount active_file;
+  ByteCount inactive_file;
+  ByteCount dirty;
+  ByteCount reclaimable;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX) BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  int shmem = 0;
-  int slab = 0;
+  ByteCount shmem;
+  ByteCount slab;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
-  int speculative = 0;
-  int file_backed = 0;
-  int purgeable = 0;
+  ByteCount speculative;
+  ByteCount file_backed;
+  ByteCount purgeable;
 #endif  // BUILDFLAG(IS_APPLE)
 };
 
@@ -387,7 +391,7 @@ struct BASE_EXPORT SystemMemoryInfoKB {
 //
 // Fills in the provided |meminfo| structure. Returns true on success.
 // Exposed for memory debugging widget.
-BASE_EXPORT bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo);
+BASE_EXPORT bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo);
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX) ||
@@ -413,13 +417,13 @@ BASE_EXPORT extern const char kProcSelfExe[];
 // returns true on success or false for a parsing error
 // Exposed for testing.
 BASE_EXPORT bool ParseProcMeminfo(std::string_view input,
-                                  SystemMemoryInfoKB* meminfo);
+                                  SystemMemoryInfo* meminfo);
 
 // Returns the memory committed by the system in KBytes, as from
 // GetSystemCommitCharge(), using data from `meminfo` instead of /proc/meminfo.
 // Exposed for testing.
 BASE_EXPORT size_t
-GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo);
+GetSystemCommitChargeFromMeminfo(const SystemMemoryInfo& meminfo);
 
 // Data from /proc/vmstat.
 struct BASE_EXPORT VmStatInfo {
@@ -571,7 +575,7 @@ class BASE_EXPORT SystemMetrics {
 
   size_t committed_memory_;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  SystemMemoryInfoKB memory_info_;
+  SystemMemoryInfo memory_info_;
   VmStatInfo vmstat_info_;
   SystemDiskInfo disk_info_;
 #endif

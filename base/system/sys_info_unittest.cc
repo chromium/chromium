@@ -53,7 +53,7 @@ namespace base {
 // Some Android (Cast) test devices have a large portion of physical memory
 // reserved. During investigation, around 115-150 MB were seen reserved, so we
 // track this here with a factory of safety of 2.
-static constexpr int kReservedPhysicalMemory = 300 * 1024;  // In _K_bytes.
+static constexpr ByteCount kReservedPhysicalMemory = MiB(300);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using SysInfoTest = PlatformTest;
@@ -103,34 +103,35 @@ TEST_F(SysInfoTest, AmountOfMem) {
 #define MAYBE_AmountOfAvailablePhysicalMemory AmountOfAvailablePhysicalMemory
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(SysInfoTest, MAYBE_AmountOfAvailablePhysicalMemory) {
-  // Note: info is in _K_bytes.
-  SystemMemoryInfoKB info;
+  SystemMemoryInfo info;
   ASSERT_TRUE(GetSystemMemoryInfo(&info));
-  EXPECT_GT(info.free, 0);
-  if (info.available != 0) {
+  EXPECT_GT(info.free, ByteCount(0));
+  if (!info.available.is_zero()) {
     // If there is MemAvailable from kernel.
     EXPECT_LT(info.available, info.total);
-    const uint64_t amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
+    const ByteCount amount =
+        ByteCount(SysInfo::AmountOfAvailablePhysicalMemory(info));
     // We aren't actually testing that it's correct, just that it's sane.
     // Available memory is |free - reserved + reclaimable (inactive, non-free)|.
     // On some android platforms, reserved is a substantial portion.
-    const int available =
+    const ByteCount available =
 #if BUILDFLAG(IS_ANDROID)
-        std::max(info.free - kReservedPhysicalMemory, 0);
+        std::max(info.free - kReservedPhysicalMemory, ByteCount(0));
 #else
         info.free;
 #endif  // BUILDFLAG(IS_ANDROID)
-    EXPECT_GT(amount, checked_cast<uint64_t>(available) * 1024);
-    EXPECT_LT(amount / 1024, checked_cast<uint64_t>(info.available));
+    EXPECT_GT(amount, available);
+    EXPECT_LT(amount, info.available);
     // Simulate as if there is no MemAvailable.
-    info.available = 0;
+    info.available = ByteCount(0);
   }
 
   // There is no MemAvailable. Check the fallback logic.
-  const uint64_t amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
+  const ByteCount amount =
+      ByteCount(SysInfo::AmountOfAvailablePhysicalMemory(info));
   // We aren't actually testing that it's correct, just that it's sane.
-  EXPECT_GT(amount, checked_cast<uint64_t>(info.free) * 1024);
-  EXPECT_LT(amount / 1024, checked_cast<uint64_t>(info.total));
+  EXPECT_GT(amount, info.free);
+  EXPECT_LT(amount, info.total);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)

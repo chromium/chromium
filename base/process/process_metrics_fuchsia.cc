@@ -68,8 +68,8 @@ ProcessMetrics::GetMemoryInfo() const {
   return memory_info;
 }
 
-bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
-  // TODO(crbug.com/42050627).
+bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
+  // TODO(https://crbug.com/42050627).
   return false;
 }
 
