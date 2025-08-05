@@ -65,7 +65,6 @@ Network.responseReceived{
             Server : Apache
             X-Powered-By : <string>
         }
-        isIpProtectionUsed : false
         mimeType : text/plain
         protocol : http/1.1
         remoteIPAddress : 127.0.0.1

@@ -545,7 +545,7 @@ const base::FeatureParam<bool> kIpPrivacyDisableForEnterpriseByDefault{
 const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyEnableIppInDevTools",
-    /*default_value=*/true};
+    /*default_value=*/false};
 
 const base::FeatureParam<bool> kIpPrivacyEnableIppPanelInDevTools{
     &kEnableIpProtectionProxy,

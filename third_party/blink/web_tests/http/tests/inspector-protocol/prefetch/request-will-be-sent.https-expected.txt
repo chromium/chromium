@@ -80,7 +80,6 @@ Network.onResponseReceived{
             Last-Modified : <string>
             Server : Apache
         }
-        isIpProtectionUsed : false
         mimeType : text/html
         protocol : http/1.1
         remoteIPAddress : 127.0.0.1
