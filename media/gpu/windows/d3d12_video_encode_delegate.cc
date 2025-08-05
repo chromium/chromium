@@ -291,11 +291,11 @@ D3D12VideoEncodeDelegate::Encode(
     return std::move(payload_size_or_error).error();
   }
   EncodeResult encode_result{
-      .bitstream_buffer_id_ = bitstream_buffer.id(),
-      .metadata_ = std::move(impl_result).value(),
+      .bitstream_buffer_id = bitstream_buffer.id(),
+      .metadata = std::move(impl_result).value(),
   };
-  encode_result.metadata_.encoded_color_space = output_color_space;
-  encode_result.metadata_.payload_size_bytes =
+  encode_result.metadata.encoded_color_space = output_color_space;
+  encode_result.metadata.payload_size_bytes =
       std::move(payload_size_or_error).value();
   return encode_result;
 }

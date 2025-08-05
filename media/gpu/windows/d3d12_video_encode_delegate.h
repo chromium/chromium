@@ -26,8 +26,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
  public:
   static constexpr size_t kAV1DPBMaxSize = 8;
   struct EncodeResult {
-    int32_t bitstream_buffer_id_;
-    BitstreamBufferMetadata metadata_;
+    int32_t bitstream_buffer_id;
+    BitstreamBufferMetadata metadata;
   };
 
   // Returns the supported profiles for given |codecs|.

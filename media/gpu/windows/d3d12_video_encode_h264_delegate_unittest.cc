@@ -360,7 +360,7 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFrame) {
   ASSERT_TRUE(result_or_error.has_value());
 
   BitstreamBufferMetadata metadata =
-      std::move(result_or_error).value().metadata_;
+      std::move(result_or_error).value().metadata;
   EXPECT_EQ(metadata.key_frame, is_key_frame);
   if (encoder_delegate_->ReportsAverageQp()) {
     EXPECT_GE(metadata.qp, 0);

@@ -712,10 +712,10 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
 
   D3D12VideoEncodeDelegate::EncodeResult result =
       std::move(result_or_error).value();
-  result.metadata_.timestamp = frame->timestamp();
+  result.metadata.timestamp = frame->timestamp();
   child_task_runner_->PostTask(
       FROM_HERE, BindOnce(&Client::BitstreamBufferReady, client_,
-                          result.bitstream_buffer_id_, result.metadata_));
+                          result.bitstream_buffer_id, result.metadata));
 }
 
 void D3D12VideoEncodeAccelerator::DestroyTask() {
