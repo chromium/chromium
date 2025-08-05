@@ -10100,6 +10100,9 @@ test("unit_tests") {
       "//services/network/public/mojom:url_loader_base",
       "//url",
     ]
+    if (enable_pdf_save_to_drive) {
+      deps += [ "//chrome/browser/save_to_drive" ]
+    }
   }
 
   if (enable_pdf_save_to_drive) {

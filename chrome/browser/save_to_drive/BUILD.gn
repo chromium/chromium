@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+assert(enable_pdf_save_to_drive)
+
+source_set("save_to_drive") {
+  public = [
+    "save_to_drive_flow.h",
+  ]
+
+  sources = [
+    "save_to_drive_flow.cc",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
+  deps = [
+    "//content/public/browser",
+  ]
+}

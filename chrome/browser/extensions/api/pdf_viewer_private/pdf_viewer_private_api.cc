@@ -13,6 +13,7 @@
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/save_to_drive/save_to_drive_flow.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/pdf/common/constants.h"
@@ -127,7 +128,15 @@ ExtensionFunction::ResponseAction PdfViewerPrivateSaveToDriveFunction::Run() {
   std::optional<SaveToDrive::Params> params =
       SaveToDrive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  // TODO(crbug.com/424208776): Start the save to drive flow.
+  using SaveToDriveFlow = save_to_drive::SaveToDriveFlow;
+
+  auto* flow = SaveToDriveFlow::GetForCurrentDocument(render_frame_host());
+  if (flow) {
+    return RespondNow(Error("An upload is already in progress"));
+  }
+  flow = SaveToDriveFlow::GetOrCreateForCurrentDocument(render_frame_host());
+  flow->Run();
+
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error("Not supported"));
