@@ -737,6 +737,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
 
   EXPECT_EQ(tab_strip->active_index(), 0);
   delegate->OpenPasswordChangeTab();
+  // Stop the flow as this what happens in reality when user chooses to see a
+  // hidden tab.
+  delegate->Stop();
 
   EXPECT_EQ(tab_strip->count(), 2);
   EXPECT_EQ(tab_strip->active_index(), 1);
@@ -826,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
-  delegate->OnOtpFieldDetected(delegate_impl->executor());
+  delegate_impl->OnOtpFieldDetected(/*form_manager=*/nullptr);
 
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kOtpDetected);
@@ -1322,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       delegate->AsWeakPtr();
 
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
-  delegate->OnOtpFieldDetected(delegate_impl->executor());
+  delegate_impl->OnOtpFieldDetected(/*form_manager=*/nullptr);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kOtpDetected);
   delegate_impl->ui_controller()->CallOnDialogCanceledForTesting();

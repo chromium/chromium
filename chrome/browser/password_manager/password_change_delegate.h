@@ -107,8 +107,6 @@ class PasswordChangeDelegate {
 
   virtual void OnPrivacyNoticeAccepted() = 0;
 
-  virtual void OnOtpFieldDetected(content::WebContents* web_contents) = 0;
-
   // Called when the user declines the initial dialog offering password change.
   virtual void OnPasswordChangeDeclined() = 0;
 

@@ -202,42 +202,6 @@ TEST_F(PasswordChangeDelegateImplTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(PasswordChangeDelegateImplTest,
-       OtpDetectionIgnoredWhenPasswordChangeNotStarted) {
-  SetOptimizationFeatureEnabled(true);
-  CreateDelegate();
-  ASSERT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kOfferingPasswordChange);
-
-  delegate()->OnOtpFieldDetected(web_contents());
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kOfferingPasswordChange);
-}
-
-TEST_F(PasswordChangeDelegateImplTest,
-       OtpDetectionIgnoredWhenWaitingForAgreement) {
-  CreateDelegate();
-  ASSERT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForAgreement);
-
-  delegate()->OnOtpFieldDetected(
-      static_cast<PasswordChangeDelegateImpl*>(delegate())->executor());
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForAgreement);
-}
-
-TEST_F(PasswordChangeDelegateImplTest, OtpDetectionIgnoredOnOriginalTab) {
-  SetOptimizationFeatureEnabled(true);
-  CreateDelegate();
-  delegate()->StartPasswordChangeFlow();
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
-
-  delegate()->OnOtpFieldDetected(web_contents());
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
-}
-
 TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
   SetOptimizationFeatureEnabled(true);
   CreateDelegate();
@@ -247,8 +211,8 @@ TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  delegate()->OnOtpFieldDetected(
-      static_cast<PasswordChangeDelegateImpl*>(delegate())->executor());
+  static_cast<PasswordChangeDelegateImpl*>(delegate())
+      ->OnOtpFieldDetected(/*form_manager=*/nullptr);
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kOtpDetected);
 
