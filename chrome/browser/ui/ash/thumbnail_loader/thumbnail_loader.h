@@ -77,6 +77,11 @@ class ThumbnailLoader {
                          const gfx::Size& requested_size,
                          const std::string& data);
 
+  // Called when the image is decoded by the data decoder service.
+  void OnImageDecoded(const base::UnguessableToken& request_id,
+                      const gfx::Size& requested_size,
+                      const SkBitmap& bitmap);
+
   // Finalizes the thumbnail request identified by `request_id`. It invokes the
   // request callback with `bitmap`. If `bitmap` size is larger than the
   // originally `requested_size`, the bitmap will be cropped.
@@ -89,11 +94,6 @@ class ThumbnailLoader {
 
   // Maps pending thumbnail requests to their registered callbacks.
   std::map<base::UnguessableToken, ImageCallback> requests_;
-
-  // Maps pending thumbnail requests to image decoders used to transform data
-  // received from the image loder into a bitmap.
-  std::map<base::UnguessableToken, std::unique_ptr<ThumbnailDecoder>>
-      thumbnail_decoders_;
 
   base::WeakPtrFactory<ThumbnailLoader> weak_factory_{this};
 };
