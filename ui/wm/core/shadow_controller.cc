@@ -100,6 +100,7 @@ class ShadowController::Impl :
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroyed(aura::Window* window) override;
+  void OnWindowOcclusionChanged(aura::Window* window) override;
 
  private:
   friend class base::RefCounted<Impl>;
@@ -265,6 +266,10 @@ void ShadowController::Impl::OnWindowActivated(ActivationReason reason,
 
 bool ShadowController::Impl::ShouldShowShadowForWindow(
     aura::Window* window) const {
+  if (window->GetOcclusionState() == aura::Window::OcclusionState::OCCLUDED) {
+    return false;
+  }
+
   if (delegate_) {
     const bool should_show = delegate_->ShouldShowShadowForWindow(window);
     if (should_show)
@@ -280,6 +285,14 @@ bool ShadowController::Impl::ShouldShowShadowForWindow(
   }
 
   return GetShadowElevationConvertDefault(window) > 0;
+}
+
+void ShadowController::Impl::OnWindowOcclusionChanged(aura::Window* window) {
+  ui::Shadow* shadow = GetShadowForWindow(window);
+  if (!shadow) {
+    return;
+  }
+  HandlePossibleShadowVisibilityChange(window);
 }
 
 void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
@@ -330,6 +343,8 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   shadow->layer()->SetVisible(ShouldShowShadowForWindow(window));
   window->layer()->Add(shadow->layer());
   window->layer()->StackAtBottom(shadow->layer());
+
+  window->TrackOcclusionState();
 
   if (delegate_) {
     delegate_->ApplyColorThemeToWindowShadow(window);
