@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -19,6 +18,8 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -46,24 +47,6 @@ public class TabGroupListBottomSheetCoordinator {
 
         /** Hides the bottom sheet. */
         void hide(@StateChangeReason int hideReason);
-    }
-
-    /** A callback to run after a tab group is created. */
-    @FunctionalInterface
-    public interface TabGroupCreationCallback {
-        /**
-         * Responds to tab group creation.
-         *
-         * @param tabGroupId The tab group ID of the newly-created tab group.
-         */
-        void onTabGroupCreated(Token tabGroupId);
-    }
-
-    /** A callback to run after a tab moves groups or is ungrouped. */
-    @FunctionalInterface
-    public interface TabMovedCallback {
-        /** Runs after a tab moves groups or is ungrouped. */
-        void onTabMoved();
     }
 
     private final TabGroupListBottomSheetView mView;

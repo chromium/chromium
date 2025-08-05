@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE_USE})
 @NullMarked
-@interface GroupWindowState {
+public @interface GroupWindowState {
     int IN_CURRENT = 0;
     int IN_CURRENT_CLOSING = 1;
     int IN_ANOTHER = 2;
