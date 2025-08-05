@@ -17,7 +17,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_web_contents_observer.h"
-#include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/updater/null_extension_cache.h"
@@ -84,13 +83,6 @@ ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
   return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
-}
-
-void ChromeExtensionsBrowserClient::RegisterBrowserInterfaceBindersForFrame(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
-    content::RenderFrameHost* render_frame_host,
-    const Extension* extension) const {
-  PopulateExtensionFrameBinders(binder_map, render_frame_host, extension);
 }
 
 void ChromeExtensionsBrowserClient::ReportError(

@@ -8,17 +8,22 @@
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
-#include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "extensions/common/api/mime_handler.mojom.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/common/api/mime_handler.mojom.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
@@ -59,6 +64,8 @@
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -136,6 +143,7 @@ void BindCfmServiceContext(
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 void BindMimeHandlerService(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<mime_handler::MimeHandlerService> receiver) {
@@ -156,6 +164,7 @@ void BindBeforeUnloadControl(
   }
   guest_view->FuseBeforeUnloadControl(std::move(receiver));
 }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 }  // namespace
 
@@ -287,8 +296,10 @@ void PopulateChromeFrameBindersForExtension(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   binder_map->Add<mime_handler::MimeHandlerService>(&BindMimeHandlerService);
   binder_map->Add<mime_handler::BeforeUnloadControl>(&BindBeforeUnloadControl);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 }
 
 void PopulateChromeServiceWorkerBindersForExtension(
