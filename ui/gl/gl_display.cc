@@ -749,6 +749,8 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
       base::SysInfo::GetAndroidHardwareEGL() != "emulation") {
     egl_android_native_fence_sync_supported_ = true;
   }
+  UMA_HISTOGRAM_BOOLEAN("GPU.Android.HasEGLDupNativeFenceFunction",
+                        !!g_driver_egl.fn.eglDupNativeFenceFDANDROIDFn);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableAndroidNativeFenceSyncForTesting)) {

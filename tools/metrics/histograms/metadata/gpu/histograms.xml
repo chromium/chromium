@@ -312,6 +312,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Android.HasEGLDupNativeFenceFunction" enum="Boolean"
+    expires_after="M145">
+  <owner>boliu@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <summary>
+    Recordes whether the eglDupNativeFenceFDANDROIDFn function is exported.
+    Recorded once on eglDisplay init, which is basically once on GPU process
+    start.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ANGLE.Buffer11CPUMemoryMB" units="MB"
     expires_after="2020-05-10">
   <owner>cwallez@chromium.org</owner>
