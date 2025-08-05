@@ -2414,11 +2414,9 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
   for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
-    if (form) {
-      OnDidIdentifyFormForMetrics(
-          *form, autofill_metrics::FormEventLoggerBase::FormIdentificationTime::
-                     kAfterServerPredictions);
-    }
+    OnDidIdentifyFormForMetrics(
+        *form, autofill_metrics::FormEventLoggerBase::FormIdentificationTime::
+                   kAfterServerPredictions);
   }
   HandleLoadedServerPredictionsForAutofillAi(forms);
 }
@@ -2433,10 +2431,6 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
   }
 
   for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
-    if (!form) {
-      continue;
-    }
-
     if (model_cache->Contains(form->form_signature())) {
       if (MayPerformAutofillAiAction(
               client(),
