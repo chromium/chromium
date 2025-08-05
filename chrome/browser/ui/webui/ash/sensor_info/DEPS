@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/search/background",
   "+chrome/browser/search_engines",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",

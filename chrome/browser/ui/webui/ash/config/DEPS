@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/app_mode/app_mode_utils.h",
   "+chrome/browser/ash/annotator",
-  "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/eche_app",
   "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/mall",
@@ -50,7 +49,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/enterprise_reporting",
   "+chrome/browser/ui/webui/ash/extended_updates",
   "+chrome/browser/ui/webui/ash/floating_workspace",
-  "+chrome/browser/ui/webui/ash/growth_internals",
   "+chrome/browser/ui/webui/ash/healthd_internals",
   "+chrome/browser/ui/webui/ash/in_session_password_change",
   "+chrome/browser/ui/webui/ash/internet",
@@ -79,5 +77,4 @@ include_rules = [
   "+chrome/browser/ui/webui/chromeos/chrome_url_disabled",
   "+chrome/browser/ui/webui/nearby_internals",
   "+chrome/browser/ui/webui/nearby_share",
-  "+chrome/browser/ui/webui/webui_util.h",
 ]

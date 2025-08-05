@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/views/borealis",
   "+chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
 ]

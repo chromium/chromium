@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/webui/ash/office_fallback",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/grit",

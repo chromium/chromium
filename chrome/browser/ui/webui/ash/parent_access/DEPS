@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",

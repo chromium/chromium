@@ -10,12 +10,8 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/lobster",
   "+chrome/browser/download",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/views/bubble",
-  "+chrome/browser/ui/webui/ash/mako/mako_bubble_event_handler.h",
   "+chrome/browser/ui/webui/ash/mako/draggable_bubble_dialog_view.h",
-  "+chrome/browser/ui/webui/top_chrome",
   "+chrome/test",
 ]

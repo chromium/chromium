@@ -5,7 +5,6 @@ include_rules = [
  "+components/services/app_service/public",
  "+components/url_formatter",
  "+components/user_education/views",
- "+services/tracing/public",
  "+third_party/libaddressinput",
  "+third_party/omnibox_proto",
 ]
