@@ -26,7 +26,7 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
-class BubbleDialogDelegateView;
+class BubbleDialogDelegate;
 class ImageView;
 class Label;
 }  // namespace views
@@ -98,9 +98,9 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   gfx::Rect GetAnchorRect() const;
 
-  base::WeakPtr<views::BubbleDialogDelegateView> bubble_view_;
+  base::WeakPtr<views::BubbleDialogDelegate> bubble_delegate_;
 
-  std::unique_ptr<views::BubbleDialogDelegateView> MakeBubbleDelegateView(
+  std::unique_ptr<views::BubbleDialogDelegate> MakeBubbleDelegate(
       views::Widget* parent,
       gfx::Rect anchor_rect,
       base::RepeatingCallback<void(ash::ResizeCompatMode)> command_handler);
