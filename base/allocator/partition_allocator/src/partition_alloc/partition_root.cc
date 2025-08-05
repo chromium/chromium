@@ -1842,10 +1842,8 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
     return;
   }
 
-  auto* root = FromAddrInFirstSuperpage(address);
-
   const internal::ReservationOffsetTable& reservation_offset =
-      root->GetReservationOffsetTable();
+      internal::ReservationOffsetTable::Get(address);
   if (reservation_offset.IsManagedByDirectMap(address)) {
     // OOB for direct-mapped allocations is likely immediate crash.
     // No extra benefit from additional checks.
@@ -1853,6 +1851,8 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
   }
 
   PA_CHECK(reservation_offset.IsManagedByNormalBuckets(address));
+
+  auto* root = FromAddrInFirstSuperpage(address);
   SlotSpanMetadata* slot_span = SlotSpanMetadata::FromAddr(address, root);
   PA_CHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == root);
 
