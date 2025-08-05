@@ -586,6 +586,7 @@ void LensSearchController::CloseLensPart2(
   // dependent on the overlay controller.
   lens_overlay_controller_->CloseUI(dismissal_source);
   lens_searchbox_controller_->CloseUI();
+  lens_composebox_controller_->CloseUI();
   lens_permission_bubble_controller_.reset();
   lens_contextualization_controller_->ResetState();
   lens_overlay_side_panel_coordinator_->DeregisterEntryAndCleanup();

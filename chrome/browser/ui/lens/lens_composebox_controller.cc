@@ -27,4 +27,8 @@ void LensComposeboxController::BindComposebox(
       std::move(pending_searchbox_handler));
 }
 
+void LensComposeboxController::CloseUI() {
+  composebox_handler_.reset();
+}
+
 }  // namespace lens
