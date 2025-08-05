@@ -79,7 +79,8 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/browser_window_features.h",
     "+chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h",
   ],
-  "kiosk_web_contents_logs_collector_unittest.cc": [
-    "+content/browser/web_contents/web_contents_impl.h",
-  ]
+  "kiosk_browser_logs_collector.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
+  ],
 }
