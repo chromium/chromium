@@ -1526,9 +1526,6 @@
     "META": {"sizes": {"includes": [1100]}},
     "includes": [10000],
   },
-  "weblayer/weblayer_resources.grd": {
-    "includes": [10020],
-  },
 
   # This file is generated during the build.
   # .grd extension is required because it's checked before var interpolation.
