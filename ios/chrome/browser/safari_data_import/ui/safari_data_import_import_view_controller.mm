@@ -7,17 +7,24 @@
 #import <ostream>
 
 #import "base/check_op.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@implementation SafariDataImportImportViewController
+@implementation SafariDataImportImportViewController {
+  /// Disclaimer text above the button after import items are ready and before
+  /// they are imported.
+  UITextView* _disclaimer;
+}
 
 - (void)viewDidLoad {
   _importStage = SafariDataImportStage::kNotStarted;
@@ -55,6 +62,7 @@
       break;
     case SafariDataImportStage::kReadyForImport:
       [self showTableView];
+      [self showDisclaimerForEligibleUser];
       self.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);
       self.primaryButtonSpinnerEnabled = NO;
@@ -63,6 +71,7 @@
       self.primaryButtonEnabled = NO;
       break;
     case SafariDataImportStage::kImported:
+      [_disclaimer removeFromSuperview];
       self.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE);
       self.primaryButtonEnabled = YES;
@@ -134,6 +143,40 @@
     [tableView.trailingAnchor
         constraintEqualToAnchor:self.specificContentView.trailingAnchor],
   ]];
+}
+
+/// Displays the disclaimer informing user that the Safari items will be
+/// imported to their account store.
+- (void)showDisclaimerForEligibleUser {
+  if (!self.email) {
+    return;
+  }
+  CHECK(self.itemTableView.superview);
+  UITextView* disclaimer = CreateUITextViewWithTextKit1();
+  disclaimer.scrollEnabled = NO;
+  disclaimer.editable = NO;
+  disclaimer.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  disclaimer.backgroundColor = UIColor.clearColor;
+  disclaimer.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  disclaimer.textAlignment = NSTextAlignmentCenter;
+  disclaimer.adjustsFontForContentSizeCategory = YES;
+  disclaimer.translatesAutoresizingMaskIntoConstraints = NO;
+  disclaimer.text = l10n_util::GetNSStringF(
+      IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER,
+      base::SysNSStringToUTF16(self.email));
+  [self.specificContentView addSubview:disclaimer];
+  /// Bottom align the disclaimer view.
+  [NSLayoutConstraint activateConstraints:@[
+    [disclaimer.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.itemTableView.bottomAnchor],
+    [disclaimer.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+    [disclaimer.leadingAnchor
+        constraintEqualToAnchor:self.specificContentView.leadingAnchor],
+    [disclaimer.trailingAnchor
+        constraintEqualToAnchor:self.specificContentView.trailingAnchor],
+  ]];
+  _disclaimer = disclaimer;
 }
 
 /// Invoked when the user taps the "Cancel" button.
