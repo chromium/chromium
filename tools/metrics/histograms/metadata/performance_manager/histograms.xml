@@ -106,7 +106,7 @@ each histogram.
 
 <histogram
     name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
-    units="%" expires_after="2025-11-30">
+    units="%" expires_after="2026-02-01">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -227,7 +227,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsOutcome"
-    enum="FrontEndHeapDebugOptionsOutcome" expires_after="2025-11-30">
+    enum="FrontEndHeapDebugOptionsOutcome" expires_after="2026-02-01">
   <owner>fdoray@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -283,7 +283,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
-    enum="EfficiencyMode" expires_after="2025-11-30">
+    enum="EfficiencyMode" expires_after="2026-02-01">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

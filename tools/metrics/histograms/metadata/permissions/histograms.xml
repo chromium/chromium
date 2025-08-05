@@ -207,17 +207,6 @@ chromium-metrics-reviews@google.com.
   <variant name="PredictionService"/>
 </variants>
 
-<variants name="RelevanceOutputPredictionModels">
-  <variant name="AIv1"/>
-  <variant name="AIv3"/>
-  <variant name="AIv4"/>
-</variants>
-
-<variants name="SnapshotBasedPredictionModels">
-  <variant name="AIv3"/>
-  <variant name="AIv4"/>
-</variants>
-
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PredictionModelType) -->
 
 <variants name="PromptDisposition">
@@ -233,6 +222,17 @@ chromium-metrics-reviews@google.com.
   <variant name="MiniInfobar"/>
   <variant name="ModalDialog"/>
   <variant name="NoneVisible"/>
+</variants>
+
+<variants name="RelevanceOutputPredictionModels">
+  <variant name="AIv1"/>
+  <variant name="AIv3"/>
+  <variant name="AIv4"/>
+</variants>
+
+<variants name="SnapshotBasedPredictionModels">
+  <variant name="AIv3"/>
+  <variant name="AIv4"/>
 </variants>
 
 <histogram name="BrowserDialogs.ExternalProtocol.BlockState"
@@ -470,7 +470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv1.SessionCreationSuccess" enum="BooleanSuccess"
-    expires_after="2025-12-02">
+    expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -683,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Engagement.Accepted{PermissionRequestTypes}"
-    units="%" expires_after="2025-11-30">
+    units="%" expires_after="2026-02-01">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1854,7 +1854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.SnapshotTaken"
-    enum="BooleanSuccess" expires_after="2025-12-02">
+    enum="BooleanSuccess" expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1867,7 +1867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.SnapshotTakenDuration"
-    units="ms" expires_after="2025-12-02">
+    units="ms" expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1965,7 +1965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.AllSitesAction2"
-    enum="WebSiteSettingsAllSitesAction2" expires_after="2025-11-30">
+    enum="WebSiteSettingsAllSitesAction2" expires_after="2026-02-01">
   <owner>sauski@google.com</owner>
   <owner>alimariam@google.com</owner>
   <summary>

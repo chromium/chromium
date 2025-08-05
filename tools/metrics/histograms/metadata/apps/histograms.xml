@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.Status"
-    enum="ImageContentAnnotatorStatus" expires_after="2025-11-30">
+    enum="ImageContentAnnotatorStatus" expires_after="2026-02-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueNumberOfObjectsToProcess"
-    units="units" expires_after="2025-11-30">
+    units="units" expires_after="2026-02-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueProcessingTime"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-02-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.Status"
-    enum="AnnotationStorageStatus" expires_after="2025-11-30">
+    enum="AnnotationStorageStatus" expires_after="2026-02-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1796,7 +1796,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppListBubble.{AppListPage}.AppLaunchesByEntity{ExperimentalArm}"
-    enum="AppListEntity" expires_after="2025-11-30">
+    enum="AppListEntity" expires_after="2026-02-01">
   <owner>anasalazar@google.com</owner>
   <owner>anooshree@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
