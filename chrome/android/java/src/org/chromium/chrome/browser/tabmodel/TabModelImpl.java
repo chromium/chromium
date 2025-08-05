@@ -87,7 +87,6 @@ public class TabModelImpl extends TabModelJniBridge {
 
     private boolean mActive;
     private boolean mInitializationComplete;
-    private final PinnedTabReorderManager mPinnedTabReorderManager = new PinnedTabReorderManager();
 
     // Undo State Tracking -------------------------------------------------------------------------
 
@@ -157,36 +156,6 @@ public class TabModelImpl extends TabModelJniBridge {
             if (undoRunnable != null) {
                 undoRunnable.run();
             }
-        }
-    }
-
-    /** Manages the order of pinned tabs in the tab model. */
-    private class PinnedTabReorderManager {
-        /**
-         * Returns the index of the first non-pinned tab in the model.
-         *
-         * @return The index of the first non-pinned tab, or {@link TabModel#INVALID_TAB_INDEX} if
-         *     all tabs are pinned or the model is empty.
-         */
-        int findFirstNonPinnedTabIndex() {
-            int low = 0;
-            int high = mTabs.size() - 1;
-            int firstNonPinnedIndex = INVALID_TAB_INDEX;
-
-            while (low <= high) {
-                int mid = low + (high - low) / 2;
-                Tab tab = mTabs.get(mid);
-                if (tab.getIsPinned()) {
-                    // The first non-pinned tab must be after this index.
-                    low = mid + 1;
-                } else {
-                    // This might be the first non-pinned tab, but there might be an earlier one.
-                    firstNonPinnedIndex = mid;
-                    high = mid - 1;
-                }
-            }
-
-            return firstNonPinnedIndex;
         }
     }
 
@@ -324,7 +293,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
             index = mOrderController.determineInsertionIndex(type, index, tab);
             if (tab.getIsPinned()) {
-                int firstNonPinnedTabIndex = mPinnedTabReorderManager.findFirstNonPinnedTabIndex();
+                int firstNonPinnedTabIndex = findFirstNonPinnedTabIndex();
                 if (firstNonPinnedTabIndex == INVALID_TAB_INDEX) {
                     // All tabs are pinned or the model is empty, next valid non-pinned index is at
                     // the end of the list.
@@ -419,8 +388,8 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public void pinTab(int tabId) {
-        int availableIndex = mPinnedTabReorderManager.findFirstNonPinnedTabIndex();
-        if (availableIndex == INVALID_TAB_INDEX) return;
+        int availableIndex = findFirstNonPinnedTabIndex();
+        if (availableIndex == mTabs.size()) return;
 
         Tab tab = getTabById(tabId);
         if (tab == null) return;
@@ -434,10 +403,8 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public void unpinTab(int tabId) {
-        int nextAvailableIndex = mPinnedTabReorderManager.findFirstNonPinnedTabIndex();
-        if (nextAvailableIndex == INVALID_TAB_INDEX) {
-            nextAvailableIndex = mTabs.size();
-        }
+        int nextAvailableIndex = findFirstNonPinnedTabIndex();
+
         Tab tab = getTabById(tabId);
         if (tab == null) return;
 
@@ -1116,5 +1083,28 @@ public class TabModelImpl extends TabModelJniBridge {
         // If no other tabs are in multi-selection, this returns 1, as the active tab is always
         // considered selected.
         return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
+    }
+
+    @Override
+    public int findFirstNonPinnedTabIndex() {
+        int low = 0;
+        int high = getCount() - 1;
+        int firstNonPinnedIndex = getCount();
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            Tab tab = getTabAt(mid);
+            assumeNonNull(tab);
+            if (tab.getIsPinned()) {
+                // The first non-pinned tab must be after this index.
+                low = mid + 1;
+            } else {
+                // This might be the first non-pinned tab, but there might be an earlier one.
+                firstNonPinnedIndex = mid;
+                high = mid - 1;
+            }
+        }
+
+        return firstNonPinnedIndex;
     }
 }

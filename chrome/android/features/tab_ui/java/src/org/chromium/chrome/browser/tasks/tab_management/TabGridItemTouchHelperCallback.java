@@ -277,14 +277,39 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             int newIndex =
                     distance >= 0
                             ? TabGroupUtils.getLastTabModelIndexForList(
-                                            tabModel, destinationTabGroup)
+                                    tabModel, destinationTabGroup)
                             : TabGroupUtils.getFirstTabModelIndexForList(
                                     tabModel, destinationTabGroup);
+            newIndex = adjustIndexBasedOnPinning(tabModel, currentTabId, newIndex);
             filter.moveRelatedTabs(currentTabId, newIndex);
         }
         RecordUserAction.record("TabGrid.Drag.Reordered." + mComponentName);
         mActionAttempted = true;
         return true;
+    }
+
+    private int adjustIndexBasedOnPinning(TabModel tabModel, int fromTabId, int newIndex) {
+        // Get the tab being moved.
+        Tab fromTab = tabModel.getTabById(fromTabId);
+        if (fromTab != null) {
+
+            // Determine the index of the last pinned tab.
+            int lastPinnedIndex = tabModel.findFirstNonPinnedTabIndex() - 1;
+
+            if (fromTab.getIsPinned()) {
+                // If the moved tab is pinned, ensure it doesn't move beyond the last pinned index.
+                if (newIndex > lastPinnedIndex) {
+                    newIndex = lastPinnedIndex;
+                }
+            } else {
+                // If the moved tab is not pinned, ensure it doesn't move before the first
+                // non-pinned index.
+                if (newIndex <= lastPinnedIndex) {
+                    newIndex = lastPinnedIndex + 1;
+                }
+            }
+        }
+        return newIndex;
     }
 
     @Override

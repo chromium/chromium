@@ -246,4 +246,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public int getMultiSelectedTabsCount() {
         return 0;
     }
+
+    @Override
+    public int findFirstNonPinnedTabIndex() {
+        return 0;
+    }
 }

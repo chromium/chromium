@@ -188,4 +188,11 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @return The total count of selected tabs.
      */
     int getMultiSelectedTabsCount();
+
+    /**
+     * Returns the index of the first non-pinned tab in the model.
+     *
+     * @return The index of the first non-pinned tab, or the model count if all tabs are pinned.
+     */
+    int findFirstNonPinnedTabIndex();
 }

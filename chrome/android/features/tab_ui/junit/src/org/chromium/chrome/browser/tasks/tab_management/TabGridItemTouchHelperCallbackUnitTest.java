@@ -42,6 +42,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -109,7 +110,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock private Canvas mCanvas;
     @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.Adapter mAdapter;
-    @Mock private TabModel mTabModel;
+    @Spy private TabModel mTabModel;
     @Mock private TabListMediator.TabActionListener mTabClosedListener;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
@@ -1184,6 +1185,147 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 0,
                 mItemTouchHelperCallback.interpolateOutOfBoundsScroll(
                         mRecyclerView, 100, 10, 1000, 100));
+    }
+
+    @Test
+    public void testOnMove_PinnedTab_WithinPinnedTabs() {
+        // Setup: 2 pinned tabs and 2 unpinned tabs.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTab3.getIsPinned()).thenReturn(false);
+        when(mTab4.getIsPinned()).thenReturn(false);
+        when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        // Drag pinned tab1 to pinned tab2's position.
+        mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder2);
+        // Verify that tab1 is moved to index 1.
+        verify(mTabGroupModelFilter).moveRelatedTabs(TAB1_ID, 1);
+    }
+
+    @Test
+    public void testOnMove_UnpinnedTab_WithinUnpinnedTabs() {
+        // Setup: 2 pinned tabs and 2 unpinned tabs.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTab3.getIsPinned()).thenReturn(false);
+        when(mTab4.getIsPinned()).thenReturn(false);
+        when(mTabGroupModelFilter.getRelatedTabList(TAB3_ID)).thenReturn(List.of(mTab3));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab4));
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(mTab3)).thenReturn(2);
+        when(mTabModel.indexOf(mTab4)).thenReturn(3);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        // Drag unpinned tab3 to unpinned tab4's position.
+        mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder3, mMockViewHolder4);
+
+        // Verify that tab3 is moved to index 3.
+        verify(mTabGroupModelFilter).moveRelatedTabs(TAB3_ID, 3);
+    }
+
+    @Test
+    public void testOnMove_GroupedTab_pinnedTabTriedToMoveBeyondLimit() {
+        // Setup: 2 pinned tabs, 2 grouped tabs.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTab3.getIsPinned()).thenReturn(false);
+        when(mTab4.getIsPinned()).thenReturn(false);
+        Token groupId = Token.createRandom();
+        when(mTab3.getTabGroupId()).thenReturn(groupId);
+        when(mTab4.getTabGroupId()).thenReturn(groupId);
+
+        when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB3_ID)).thenReturn(List.of(mTab3, mTab4));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab3, mTab4));
+
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(mTab3)).thenReturn(2);
+        when(mTabModel.indexOf(mTab4)).thenReturn(3);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        // Try drag a pinned tab to an unpinned tab's position.
+        mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder4);
+
+        // Verify that the tab is moved to index 1, the last possible position for a pinned tab.
+        verify(mTabGroupModelFilter).moveRelatedTabs(TAB1_ID, 1);
+    }
+
+    @Test
+    public void testOnMove_GroupedTab_unpinnedTabTriedToMoveIntoPinnedArea() {
+        // Setup: 2 pinned tabs, 2 grouped tabs.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTab3.getIsPinned()).thenReturn(false);
+        when(mTab4.getIsPinned()).thenReturn(false);
+        Token groupId = Token.createRandom();
+        when(mTab3.getTabGroupId()).thenReturn(groupId);
+        when(mTab4.getTabGroupId()).thenReturn(groupId);
+
+        when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB3_ID)).thenReturn(List.of(mTab3, mTab4));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab3, mTab4));
+
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(mTab3)).thenReturn(2);
+        when(mTabModel.indexOf(mTab4)).thenReturn(3);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        // Try drag an unpinned tab to a pinned tab's position.
+        mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder3, mMockViewHolder1);
+
+        // Verify that the tab is moved to index 2, the first possible position for an unpinned
+        // tab.
+        verify(mTabGroupModelFilter).moveRelatedTabs(TAB3_ID, 2);
+    }
+
+    @Test
+    public void testOnMove_AllUnpinnedTabs_MovedAround() {
+        // Setup: all tabs are unpinned.
+        when(mTab1.getIsPinned()).thenReturn(false);
+        when(mTab2.getIsPinned()).thenReturn(false);
+        when(mTab3.getIsPinned()).thenReturn(false);
+        when(mTab4.getIsPinned()).thenReturn(false);
+        when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab4));
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab4)).thenReturn(3);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
+
+        // Drag tab1 to tab4's position.
+        mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder4);
+
+        // Verify that tab1 is moved to index 3.
+        verify(mTabGroupModelFilter).moveRelatedTabs(TAB1_ID, 3);
+    }
+
+    @Test
+    public void testOnMove_AllPinnedTabs_MovedAround() {
+        // Setup: all tabs are pinned.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTab3.getIsPinned()).thenReturn(true);
+        when(mTab4.getIsPinned()).thenReturn(true);
+        when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab4));
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab4)).thenReturn(3);
+        // All tabs are pinned, so the first non-pinned tab is at the end of the list.
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(4);
+
+        // Drag tab1 to tab4's position.
+        mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder4);
+
+        // Verify that tab1 is moved to index 3.
+        verify(mTabGroupModelFilter).moveRelatedTabs(TAB1_ID, 3);
     }
 
     private void verifyDrag(

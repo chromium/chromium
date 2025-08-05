@@ -588,6 +588,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
     }
 
+    @Override
+    public int findFirstNonPinnedTabIndex() {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return 0;
+        return TabCollectionTabModelImplJni.get()
+                .getIndexOfFirstNonPinnedTab(mNativeTabCollectionTabModelImplPtr);
+    }
+
     // TabCloser overrides.
 
     @Override
@@ -1957,5 +1965,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         @JniType("TabAndroid*")
         Tab getLastShownTabForGroup(
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        int getIndexOfFirstNonPinnedTab(long nativeTabCollectionTabModelImpl);
     }
 }

@@ -401,4 +401,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public int getMultiSelectedTabsCount() {
         return mDelegateModel.getMultiSelectedTabsCount();
     }
+
+    @Override
+    public int findFirstNonPinnedTabIndex() {
+        return mDelegateModel.findFirstNonPinnedTabIndex();
+    }
 }

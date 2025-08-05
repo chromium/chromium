@@ -366,6 +366,10 @@ TabAndroid* TabCollectionTabModelImpl::GetLastShownTabForGroup(
   return TabAndroid::FromTabHandle(*handle);
 }
 
+int TabCollectionTabModelImpl::GetIndexOfFirstNonPinnedTab(JNIEnv* env) {
+  return tab_strip_collection_->IndexOfFirstNonPinnedTab();
+}
+
 // Private methods:
 
 size_t TabCollectionTabModelImpl::GetSafeIndex(
