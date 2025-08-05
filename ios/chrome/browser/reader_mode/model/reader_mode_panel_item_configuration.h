@@ -41,6 +41,9 @@ class ReaderModePanelItemConfiguration
   // Invalidates this configuration.
   void Invalidate();
 
+  // Helper which returns whether the profile is eligible for BWG.
+  bool IsProfileEligibleForBwg();
+
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
