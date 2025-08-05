@@ -186,13 +186,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks sharing a group without being synced.
 - (void)testShareGroupNotSynced {
-  // TODO(crbug.com/436164455): Re-enable the test on iOS26.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
 
@@ -201,6 +194,11 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
   // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // On iOS26 the grey_longPress action doesn't return an error for EarlGrey,
+  // but the tab group doesn't open accordingly. Waiting has been seen as fixing
+  // this.
+  base::PlatformThread::Sleep(base::Seconds(1));
 
   // Share the first group.
   LongPressTabGroupCellAtIndex(0);
