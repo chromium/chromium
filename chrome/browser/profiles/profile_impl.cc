@@ -1146,6 +1146,18 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   FullBrowserTransitionManager::Get()->OnProfileCreated(this);
 
   SimpleDependencyManager::GetInstance()->CreateServices(GetProfileKey());
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Check that the IdentityManager was not created before the browser context
+  // services were created. This ensures that browser tests can override the
+  // IdentityManager with a fake.
+
+  // TODO(msarda): This invariant is violated on Android. Remove this check
+  // once the IdentityManager is no longer created as part of the initialization
+  // of the storage partition on Android.
+  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this));
+#endif
+
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
 
