@@ -1713,7 +1713,10 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
     for (const auto& mtp_entry : mtp_entries) {
       filesystem::mojom::DirectoryEntry entry;
       auto name = base::SafeBaseName::Create(mtp_entry.name);
-      CHECK(name) << mtp_entry.name;
+      if (!name) {
+        LOG(ERROR) << "Skipped unsafe MTP entry '" << mtp_entry.name << "'";
+        continue;
+      }
       entry.name = *name;
       entry.type = mtp_entry.file_info.is_directory
                        ? filesystem::mojom::FsFileType::DIRECTORY
