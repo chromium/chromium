@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.base.TestActivity;
 
@@ -101,7 +102,8 @@ public class AddressBarSettingsFragmentUnitTest {
     @Test
     @SmallTest
     public void testTopAndThenSelectBottom() {
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
 
         launchFragment();
         assertEquals(
@@ -118,9 +120,9 @@ public class AddressBarSettingsFragmentUnitTest {
 
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
-        assertFalse(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true));
+        assertEquals(
+                ToolbarPositionAndSource.BOTTOM_SETTINGS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         assertFalse(mToolbarPositionImage.isSelected());
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_currently_on_bottom),
@@ -130,7 +132,9 @@ public class AddressBarSettingsFragmentUnitTest {
     @Test
     @SmallTest
     public void testBottomAndThenSelectTop() {
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_SETTINGS);
 
         launchFragment();
         assertFalse(mTopButton.isChecked());
@@ -141,9 +145,9 @@ public class AddressBarSettingsFragmentUnitTest {
 
         assertTrue(mTopButton.isChecked());
         assertFalse(mBottomButton.isChecked());
-        assertTrue(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false));
+        assertEquals(
+                ToolbarPositionAndSource.TOP_SETTINGS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         assertTrue(mToolbarPositionImage.isSelected());
     }
 

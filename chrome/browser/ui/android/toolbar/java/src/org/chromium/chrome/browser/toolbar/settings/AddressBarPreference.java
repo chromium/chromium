@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -40,10 +41,44 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
      * configurable for experimental purposes but defaults to top.
      */
     public static boolean isToolbarConfiguredToShowOnTop() {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                        ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue());
+        try {
+            Boolean oldPrefValue =
+                    ChromeSharedPreferences.getInstance()
+                            .readBoolean(
+                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                                    ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue());
+            // When transitioning to the new preference key value, use settings as the source to
+            // prevent an animation. The first time this function gets called is during startup,
+            // and the toolbar will appear buggy if the position transition has an animation.
+            if (ChromeSharedPreferences.getInstance()
+                    .contains(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED)) {
+                if (oldPrefValue) {
+                    ChromeSharedPreferences.getInstance()
+                            .writeInt(
+                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                                    ToolbarPositionAndSource.TOP_SETTINGS);
+                } else {
+                    ChromeSharedPreferences.getInstance()
+                            .writeInt(
+                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                                    ToolbarPositionAndSource.BOTTOM_SETTINGS);
+                }
+            }
+            return oldPrefValue;
+        } catch (ClassCastException e) {
+            int prefValue =
+                    ChromeSharedPreferences.getInstance()
+                            .readInt(
+                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                                    ToolbarPositionAndSource.UNDEFINED);
+            return switch (prefValue) {
+                case ToolbarPositionAndSource.TOP_LONG_PRESS,
+                        ToolbarPositionAndSource.TOP_SETTINGS -> true;
+                case ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
+                        ToolbarPositionAndSource.BOTTOM_SETTINGS -> false;
+                default -> ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue();
+            };
+        }
     }
 
     @Override
@@ -64,8 +99,17 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         boolean isTop = mTopButton.isChecked();
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, isTop);
+        if (isTop) {
+            ChromeSharedPreferences.getInstance()
+                    .writeInt(
+                            ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                            ToolbarPositionAndSource.TOP_SETTINGS);
+        } else {
+            ChromeSharedPreferences.getInstance()
+                    .writeInt(
+                            ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                            ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        }
     }
 
     private void initializeRadioButtonSelection() {

@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -244,7 +245,15 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
 
     private void handleMoveAddressBarTo() {
         boolean onTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, !onTop);
+        if (onTop) {
+            mSharedPreferencesManager.writeInt(
+                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                    ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+        } else {
+            mSharedPreferencesManager.writeInt(
+                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                    ToolbarPositionAndSource.TOP_LONG_PRESS);
+        }
     }
 
     private void handleCopyLink() {

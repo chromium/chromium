@@ -41,6 +41,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -57,9 +58,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.BottomControlsLayerWithOffset;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.StateTransition;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -273,6 +276,7 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>();
     private HistogramWatcher mStartupExpectation;
     private WindowAndroid mWindowAndroid;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
     public static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
@@ -342,6 +346,8 @@ public class ToolbarPositionControllerTest {
                         mTopInsetCoordinatorSupplier,
                         new Handler(Looper.getMainLooper()),
                         mContext);
+
+        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }
 
     @After
@@ -360,8 +366,14 @@ public class ToolbarPositionControllerTest {
         if (showToolbarOnTop == null) {
             editor.remove(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
             ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        } else if (showToolbarOnTop) {
+            editor.putInt(
+                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                    ToolbarPositionAndSource.TOP_LONG_PRESS);
         } else {
-            editor.putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, showToolbarOnTop);
+            editor.putInt(
+                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                    ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
         }
         editor.apply();
         ShadowLooper.runUiThreadTasks();
@@ -720,6 +732,9 @@ public class ToolbarPositionControllerTest {
                         doesUserPreferTopToolbar,
                         ControlsPosition.TOP));
 
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
         assertEquals(
                 StateTransition.ANIMATE_TO_BOTTOM,
                 ToolbarPositionController.calculateStateTransition(
@@ -732,6 +747,52 @@ public class ToolbarPositionControllerTest {
                         isFormFieldFocusedWithKeyboardVisible,
                         doesUserPreferTopToolbar,
                         ControlsPosition.TOP));
+
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        assertEquals(
+                StateTransition.SNAP_TO_BOTTOM,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        true,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.TOP));
+
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_LONG_PRESS);
+        assertEquals(
+                StateTransition.ANIMATE_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        true,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        true,
+                        ControlsPosition.BOTTOM));
+
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        true,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        true,
+                        ControlsPosition.BOTTOM));
     }
 
     @Test

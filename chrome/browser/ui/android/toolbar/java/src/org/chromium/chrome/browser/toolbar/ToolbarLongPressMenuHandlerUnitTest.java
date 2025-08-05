@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -61,6 +60,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarApi26;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
@@ -260,18 +260,58 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     @SmallTest
-    public void testHandleMoveAddressBarTo() {
+    public void testPreferenceKeyMigration() {
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
-        assertFalse(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true));
+        assertEquals(
+                ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+
+        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
-        assertTrue(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false));
+        assertEquals(
+                ToolbarPositionAndSource.TOP_LONG_PRESS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+    }
+
+    @Test
+    @SmallTest
+    public void testHandleMoveAddressBarTo() {
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_LONG_PRESS);
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        assertEquals(
+                ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        assertEquals(
+                ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        assertEquals(
+                ToolbarPositionAndSource.TOP_LONG_PRESS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
+        assertEquals(
+                ToolbarPositionAndSource.TOP_LONG_PRESS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
     }
 
     @Test

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
@@ -49,6 +50,20 @@ import java.lang.annotation.RetentionPolicy;
 /** Class responsible for managing the position (top, bottom) of the browsing mode toolbar. */
 @NullMarked
 public class ToolbarPositionController implements OnSharedPreferenceChangeListener {
+    @IntDef({
+        ToolbarPositionAndSource.TOP_LONG_PRESS,
+        ToolbarPositionAndSource.TOP_SETTINGS,
+        ToolbarPositionAndSource.BOTTOM_LONG_PRESS,
+        ToolbarPositionAndSource.BOTTOM_SETTINGS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ToolbarPositionAndSource {
+        int TOP_LONG_PRESS = 0;
+        int TOP_SETTINGS = 1;
+        int BOTTOM_LONG_PRESS = 2;
+        int BOTTOM_SETTINGS = 3;
+        int UNDEFINED = -1;
+    }
 
     @IntDef({
         StateTransition.NONE,
@@ -563,10 +578,25 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             // Don't do anything for non-transitions.
             return StateTransition.NONE;
         } else if (prefStateChanged) {
-            // Animate when the pref changes (i.e. the long press menu is invoked).
-            return switchingToBottom
-                    ? StateTransition.ANIMATE_TO_BOTTOM
-                    : StateTransition.ANIMATE_TO_TOP;
+            // Animate when the pref changes via the long press menu, but not if it was changed via
+            // the settings UI.
+            int positionAndSource =
+                    ChromeSharedPreferences.getInstance()
+                            .readInt(
+                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                                    ToolbarPositionAndSource.UNDEFINED);
+            boolean animate =
+                    positionAndSource == ToolbarPositionAndSource.TOP_LONG_PRESS
+                            || positionAndSource == ToolbarPositionAndSource.BOTTOM_LONG_PRESS;
+            if (animate) {
+                return switchingToBottom
+                        ? StateTransition.ANIMATE_TO_BOTTOM
+                        : StateTransition.ANIMATE_TO_TOP;
+            } else {
+                return switchingToBottom
+                        ? StateTransition.SNAP_TO_BOTTOM
+                        : StateTransition.SNAP_TO_TOP;
+            }
         }
 
         // For all other state transitions, just snap to the correct position immediately.
