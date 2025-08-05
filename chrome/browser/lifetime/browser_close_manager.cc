@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/extensions/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -56,6 +57,8 @@ BrowserCloseManager::BrowserCloseManager() : current_browser_(nullptr) {}
 BrowserCloseManager::~BrowserCloseManager() = default;
 
 void BrowserCloseManager::StartClosingBrowsers() {
+  close_timer_.emplace();
+
   // If the session is ending or a silent exit was requested, skip straight to
   // closing the browsers without waiting for beforeunload dialogs.
   if (browser_shutdown::ShouldIgnoreUnloadHandlers()) {
@@ -68,6 +71,13 @@ void BrowserCloseManager::StartClosingBrowsers() {
 }
 
 void BrowserCloseManager::CancelBrowserClose() {
+  // This is the abort endpoint. Record the metric if we haven't already.
+  if (close_timer_) {
+    base::UmaHistogramMediumTimes("Shutdown.Time.BrowserCloseManager.Canceled",
+                                  close_timer_->Elapsed());
+    close_timer_.reset();
+  }
+
   browser_shutdown::SetTryingToQuit(false);
   for (Browser* browser : *BrowserList::GetInstance()) {
     browser->ResetTryToCloseWindow();
@@ -88,6 +98,15 @@ void BrowserCloseManager::TryToCloseBrowsers() {
       return;
     }
   }
+
+  // This is the success endpoint. If we get here, all beforeunload handlers
+  // have been processed successfully.
+  if (close_timer_) {
+    base::UmaHistogramMediumTimes("Shutdown.Time.BrowserCloseManager.Confirmed",
+                                  close_timer_->Elapsed());
+    close_timer_.reset();
+  }
+
   CheckForDownloadsInProgress();
 }
 

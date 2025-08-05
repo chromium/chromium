@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_LIFETIME_BROWSER_CLOSE_MANAGER_H_
 #define CHROME_BROWSER_LIFETIME_BROWSER_CLOSE_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/timer/elapsed_timer.h"
 
 class Browser;
 
@@ -56,6 +59,12 @@ class BrowserCloseManager : public base::RefCounted<BrowserCloseManager> {
 
   // Called to report whether downloads may be cancelled during shutdown.
   void OnReportDownloadsCancellable(bool proceed);
+
+  // Timer for the total time spent running beforeunload handlers across all
+  // browsers during a shutdown attempt.
+  // This is emplaced when TryToCloseBrowsers() begins processing and is reset
+  // after the metric is recorded to prevent recording more than once.
+  std::optional<base::ElapsedTimer> close_timer_;
 
   // The browser for which we are waiting for a callback to
   // OnBrowserReportCloseable.

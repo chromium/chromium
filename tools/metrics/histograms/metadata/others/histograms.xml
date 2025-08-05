@@ -8593,6 +8593,30 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.Time.BrowserCloseManager.Canceled" units="ms"
+    expires_after="2026-07-11">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The total wall-clock time spent in the page unload process during a
+    user-initiated browser shutdown, for cases where the shutdown was canceled
+    by the user. This is measured from the start of the exit attempt until the
+    user cancels the action, typically via a beforeunload dialog.
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.Time.BrowserCloseManager.Confirmed" units="ms"
+    expires_after="2026-07-11">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The total wall-clock time spent processing beforeunload and unload handlers
+    during a user-initiated browser shutdown, for cases where the shutdown was
+    confirmed. This is measured from the start of the exit attempt until all
+    unload-related handlers have completed.
+  </summary>
+</histogram>
+
 <histogram name="Shutdown.Time.RenderProcess.Termination" units="ms"
     expires_after="2026-07-11">
   <owner>aattar@google.com</owner>
