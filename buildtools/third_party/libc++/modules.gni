@@ -36,11 +36,24 @@ if (use_clang_modules) {
                              ])
       use_libcxx_modules = false
       sources = [ invoker.modulemap ]
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      if (is_ios) {
+        public_deps += [ "//buildtools/third_party/libc++:copy_sysroot_modulemaps($default_toolchain)" ]
+      }
+      if (!defined(public_configs)) {
+        public_configs = []
+      }
 
       # By always including all module maps, we can get it to error out if
       # we attempt to include something not in your dependencies.
       # Otherwise, it would silently add it to your own AST.
-      cflags = module_map_flags
+      public_configs += [
+        "//buildtools/third_party/libc++:builtin_modulemap",
+        "//buildtools/third_party/libc++:libcxx_modulemap",
+        "//buildtools/third_party/libc++:sysroot_modulemaps",
+      ]
       configs -= configs_to_remove
       configs += configs_to_add
     }
@@ -52,6 +65,7 @@ if (use_clang_modules) {
   # before submitting this.
   template("alias") {
     source_set(target_name) {
+      forward_variables_from(invoker, [ "public_configs" ])
       public_deps = invoker.actual
       use_libcxx_modules = false
     }
@@ -83,36 +97,18 @@ if (use_clang_modules) {
       modulemap(target_name) {
         forward_variables_from(invoker, "*")
         modulemap = "$sdk_path/usr/include/DarwinBasic.modulemap"
-        if (!defined(public_deps)) {
-          public_deps = []
-        }
-        if (is_ios) {
-          public_deps += [ ":copy_sysroot_modulemaps($default_toolchain)" ]
-        }
       }
     }
     template("DarwinFoundation_module") {
       modulemap(target_name) {
         forward_variables_from(invoker, "*")
         modulemap = "$sdk_path/usr/include/DarwinFoundation.modulemap"
-        if (!defined(public_deps)) {
-          public_deps = []
-        }
-        if (is_ios) {
-          public_deps += [ ":copy_sysroot_modulemaps($default_toolchain)" ]
-        }
       }
     }
     template("c_standard_library_module") {
       modulemap(target_name) {
         forward_variables_from(invoker, "*")
         modulemap = "$sdk_path/usr/include/c_standard_library.modulemap"
-        if (!defined(public_deps)) {
-          public_deps = []
-        }
-        if (is_ios) {
-          public_deps += [ ":copy_sysroot_modulemaps($default_toolchain)" ]
-        }
       }
     }
   } else {

@@ -123,12 +123,6 @@ template("rust_bindgen_generator") {
     # Several important compiler flags come from default_compiler_configs
     configs += default_compiler_configs
 
-    # Disable libc++ module build as GN couldn't handle module deps for action
-    # correctly.
-    # TODO(crbug.com/418642435): Remove this workaround once GN can handle module deps for
-    # action correctly.
-    configs -= [ "//build/config/compiler:libcxx_module" ]
-
     # Bindgen uses the pinned version of clang, and these warnings only apply
     # to the very newest version.
     configs -= [ "//build/config/compiler:tot_warnings" ]

@@ -1874,25 +1874,24 @@ config("compiler_arm") {
 
 config("libcxx_module") {
   if (use_clang_modules) {
-    cflags_cc =
-        [
-          "-fmodules",
-          clang_arg_prefix + "-fno-implicit-module-maps",
-          "-fno-implicit-modules",
+    cflags_cc = [
+      "-fmodules",
+      clang_arg_prefix + "-fno-implicit-module-maps",
+      "-fno-implicit-modules",
 
-          "-Xclang",
-          "-fmodules-local-submodule-visibility",  # required for builtins
+      "-Xclang",
+      "-fmodules-local-submodule-visibility",  # required for builtins
 
-          # TODO(crbug.com/1456385): Figure out if this can be removed.
-          "-Wno-modules-ambiguous-internal-linkage",
+      # TODO(crbug.com/1456385): Figure out if this can be removed.
+      "-Wno-modules-ambiguous-internal-linkage",
 
-          # TODO(crbug.com/40440396): Clean up.
-          "-Wno-modules-import-nested-redundant",
+      # TODO(crbug.com/40440396): Clean up.
+      "-Wno-modules-import-nested-redundant",
 
-          # Needed to allow using builtin modules when the headers are
-          # unnecessarily using extern "C".
-          "-Wno-module-import-in-extern-c",
-        ] + module_map_flags
+      # Needed to allow using builtin modules when the headers are
+      # unnecessarily using extern "C".
+      "-Wno-module-import-in-extern-c",
+    ]
   }
 }
 

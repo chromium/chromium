@@ -80,9 +80,6 @@ if (enable_nocompile_tests) {
         # Disable the checks that the Chrome style plugin normally enforces to
         # reduce the amount of boilerplate needed in nocompile tests.
         "//build/config/clang:find_bad_constructs",
-
-        # Disable modules in this target to keep config for this action simple.
-        "//build/config/compiler:libcxx_module",
       ]
 
       if (is_win) {

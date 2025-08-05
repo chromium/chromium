@@ -58,6 +58,37 @@ config("winver") {
   ]
 }
 
+config("builtin_modulemap") {
+  cflags = [ clang_arg_prefix + "-fbuiltin-module-map" ]
+}
+
+config("libcxx_modulemap") {
+  cflags =
+      [ "-fmodule-map-file=" + rebase_path(
+            "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
+            root_build_dir) ]
+}
+
+if (use_clang_modules) {
+  config("sysroot_modulemaps") {
+    cflags = []
+    foreach(modulemap, sysroot_modulemaps) {
+      cflags +=
+          [ "-fmodule-map-file=" + rebase_path(modulemap, root_build_dir) ]
+    }
+  }
+}
+
+if (use_clang_modules && current_toolchain == default_toolchain && is_ios) {
+  # sysroot_modulemaps can be inside the build directory. This no-op action
+  # declares the modulemap files as outputs to satisfy GN's dependency
+  # tracking when other targets use them as inputs.
+  action("copy_sysroot_modulemaps") {
+    script = "//build/noop.py"
+    outputs = sysroot_modulemaps
+  }
+}
+
 if (use_clang_modules) {
   if (is_linux || is_chromeos) {
     textual_module("sysroot_ctype") {
@@ -230,16 +261,6 @@ if (use_clang_modules) {
       ]
     }
   } else if (is_apple) {
-    if (default_toolchain == current_toolchain && is_ios) {
-      # sysroot_modulemaps can be inside the build directory. This no-op action
-      # declares the modulemap files as outputs to satisfy GN's dependency
-      # tracking when other targets use them as inputs.
-      action("copy_sysroot_modulemaps") {
-        script = "//build/noop.py"
-        outputs = sysroot_modulemaps
-      }
-    }
-
     DarwinBasic_module("MachO") {
       public_deps = [
         ":_Builtin_stdbool",
@@ -811,6 +832,7 @@ if (use_clang_modules) {
       ":all_std",
       ":all_sysroot",
     ]
+    public_configs = [ "//build/config/compiler:libcxx_module" ]
   }
 }
 
