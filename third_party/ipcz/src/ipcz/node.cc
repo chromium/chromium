@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-#include "ipcz/node.h"
-
 #include <optional>
 #include <utility>
 #include <vector>
@@ -17,6 +10,7 @@
 #include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
+#include "ipcz/node.h"
 #include "ipcz/node_connector.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
@@ -28,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
 #include "util/ref_counted.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -41,8 +36,8 @@ IpczCreateNodeOptions CopyOrUseDefaultOptions(
     const IpczCreateNodeOptions* options) {
   IpczCreateNodeOptions copied_options = {0};
   if (options) {
-    memcpy(&copied_options, options,
-           std::min(options->size, sizeof(copied_options)));
+    IPCZ_UNSAFE_TODO(memcpy(&copied_options, options,
+                            std::min(options->size, sizeof(copied_options))));
   }
   copied_options.size = sizeof(copied_options);
   return copied_options;
@@ -465,7 +460,8 @@ bool Node::RelayMessage(const NodeName& from_node, msg::RelayMessage& relay) {
   accept.v0()->source = from_node;
   accept.v0()->data = accept.AllocateArray<uint8_t>(data.size());
   accept.v0()->padding = 0;
-  memcpy(accept.GetArrayData(accept.v0()->data), data.data(), data.size());
+  IPCZ_UNSAFE_TODO(
+      memcpy(accept.GetArrayData(accept.v0()->data), data.data(), data.size()));
   accept.v0()->driver_objects =
       accept.AppendDriverObjects(relay.driver_objects());
   link->Transmit(accept);

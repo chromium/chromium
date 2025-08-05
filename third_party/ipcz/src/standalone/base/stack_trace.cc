@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-#include "standalone/base/stack_trace.h"
-
 #include <string>
 #include <vector>
 
+#include "standalone/base/stack_trace.h"
+#include "standalone/base/unsafe_buffers.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/debugging/stacktrace.h"
 #include "third_party/abseil-cpp/absl/debugging/symbolize.h"
@@ -48,7 +43,7 @@ std::string StackTrace::ToString() const {
     const size_t length = strlen(symbolized);
     const size_t index = buffer.size();
     buffer.resize(buffer.size() + length + 1);
-    memcpy(&buffer[index], symbolized, length);
+    IPCZ_UNSAFE_TODO(memcpy(&buffer[index], symbolized, length));
     buffer[index + length] = '\n';
   }
   return std::string(buffer.begin(), buffer.end());

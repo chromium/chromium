@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-#include "ipcz/node_link.h"
-
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
@@ -26,6 +19,7 @@
 #include "ipcz/message.h"
 #include "ipcz/node.h"
 #include "ipcz/node_connector.h"
+#include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/parcel.h"
@@ -38,6 +32,7 @@
 #include "util/log.h"
 #include "util/ref_counted.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -278,8 +273,9 @@ void NodeLink::RelayMessage(const NodeName& to_node, Message& message) {
   relay.v0()->destination = to_node;
   relay.v0()->data = relay.AllocateArray<uint8_t>(message.data_view().size());
   relay.v0()->padding = 0;
-  memcpy(relay.GetArrayData(relay.v0()->data), message.data_view().data(),
-         message.data_view().size());
+  IPCZ_UNSAFE_TODO(memcpy(relay.GetArrayData(relay.v0()->data),
+                          message.data_view().data(),
+                          message.data_view().size()));
   relay.v0()->driver_objects =
       relay.AppendDriverObjects(message.driver_objects());
   Transmit(relay);

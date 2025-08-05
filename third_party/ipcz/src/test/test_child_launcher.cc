@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "test/test_child_launcher.h"
-
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -20,10 +13,12 @@
 
 #include "reference_drivers/handle_eintr.h"
 #include "test/multinode_test.h"
+#include "test/test_child_launcher.h"
 #include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz::test {
 
@@ -99,7 +94,7 @@ void TestChildLauncher::Initialize(int argc, char** argv) {
   ArgList& args = GetArgList();
   args.resize(argc);
   for (int i = 0; i < argc; ++i) {
-    std::string_view value(argv[i]);
+    std::string_view value(IPCZ_UNSAFE_TODO(argv[i]));
     if (value.rfind(kTestChildSwitchPrefix) != std::string::npos) {
       GetTestNodeName() = value.substr(kTestChildSwitchPrefix.size());
     } else if (value.rfind(kSocketFdSwitchPrefix) != std::string::npos) {

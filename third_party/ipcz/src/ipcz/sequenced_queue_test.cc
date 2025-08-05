@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "ipcz/sequenced_queue.h"
-
 #include <string>
 
 #include "ipcz/sequence_number.h"
+#include "ipcz/sequenced_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -154,11 +149,12 @@ TEST(SequencedQueueTest, SparseSequence) {
       SequenceNumber(12), SequenceNumber(15), SequenceNumber(13),
       SequenceNumber(14)};
   for (SequenceNumber n : kMessageSequence) {
-    EXPECT_TRUE(q.Push(SequenceNumber(n), kEntries[n.value()]));
+    IPCZ_UNSAFE_TODO(
+        EXPECT_TRUE(q.Push(SequenceNumber(n), kEntries[n.value()])));
     std::string s;
     while (q.Pop(s)) {
       EXPECT_EQ(*next_expected_pop, s);
-      ++next_expected_pop;
+      IPCZ_UNSAFE_TODO(++next_expected_pop);
     }
   }
 

@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "fuzzer/fuzzer.h"
-
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -18,10 +11,12 @@
 #include <vector>
 
 #include "fuzzer/driver.h"
+#include "fuzzer/fuzzer.h"
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz::fuzzer {
 
@@ -466,8 +461,8 @@ void Fuzzer::InjectFuzzDataIntoMemory() {
     const auto bytes = memory->bytes();
     const size_t offset = (4ul * config_.target_offset) % bytes.size();
     const size_t size = std::min(bytes.size() - offset, fuzz_data_.size());
-    std::copy(fuzz_data_.begin(), fuzz_data_.begin() + size,
-              bytes.begin() + offset);
+    std::copy(fuzz_data_.begin(), IPCZ_UNSAFE_TODO(fuzz_data_.begin() + size),
+              IPCZ_UNSAFE_TODO(bytes.begin() + offset));
   }
 }
 

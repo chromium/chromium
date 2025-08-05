@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-#include "ipcz/remote_router_link.h"
-
 #include <algorithm>
 #include <sstream>
 #include <utility>
@@ -20,9 +13,11 @@
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/parcel.h"
+#include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "util/log.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -275,8 +270,8 @@ void RemoteRouterLink::AcceptParcel(std::unique_ptr<Parcel> parcel) {
       accept.GetArrayView<RouterDescriptor>(accept.v0()->new_routers);
 
   if (!inline_parcel_data.empty()) {
-    memcpy(inline_parcel_data.data(), parcel->data_view().data(),
-           parcel->data_size());
+    IPCZ_UNSAFE_TODO(memcpy(inline_parcel_data.data(),
+                            parcel->data_view().data(), parcel->data_size()));
   }
 
   // Serialize attached objects. We accumulate the Routers of all attached
@@ -287,7 +282,8 @@ void RemoteRouterLink::AcceptParcel(std::unique_ptr<Parcel> parcel) {
 
   // Explicitly zero the descriptor memory since there may be padding bits
   // within and we'll be copying the full contents into message data below.
-  memset(descriptors.data(), 0, descriptors.size() * sizeof(descriptors[0]));
+  IPCZ_UNSAFE_TODO(memset(descriptors.data(), 0,
+                          descriptors.size() * sizeof(descriptors[0])));
 
   size_t portal_index = 0;
   for (size_t i = 0; i < objects.size(); ++i) {
@@ -333,8 +329,8 @@ void RemoteRouterLink::AcceptParcel(std::unique_ptr<Parcel> parcel) {
   // Copy all the serialized router descriptors into the message. Our local
   // copy will supply inputs for BeginProxyingToNewRouter() calls below.
   if (!descriptors.empty()) {
-    memcpy(new_routers.data(), descriptors.data(),
-           new_routers.size() * sizeof(new_routers[0]));
+    IPCZ_UNSAFE_TODO(memcpy(new_routers.data(), descriptors.data(),
+                            new_routers.size() * sizeof(new_routers[0])));
   }
 
   if (must_split_parcel) {

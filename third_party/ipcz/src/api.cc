@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <cstddef>
 #include <cstring>
 #include <memory>
@@ -24,6 +19,7 @@
 #include "ipcz/parcel_wrapper.h"
 #include "ipcz/router.h"
 #include "util/ref_counted.h"
+#include "util/unsafe_buffers.h"
 
 extern "C" {
 
@@ -397,7 +393,7 @@ IPCZ_EXPORT IpczResult IPCZ_API IpczGetAPI(IpczAPI* api) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  memcpy(api, &kCurrentAPI, kVersion0APISize);
+  IPCZ_UNSAFE_TODO(memcpy(api, &kCurrentAPI, kVersion0APISize));
   return IPCZ_RESULT_OK;
 }
 

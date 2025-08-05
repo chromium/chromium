@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-#include "ipcz/router.h"
-
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
@@ -20,6 +13,7 @@
 #include "ipcz/node_link.h"
 #include "ipcz/parcel_wrapper.h"
 #include "ipcz/remote_router_link.h"
+#include "ipcz/router.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/trap_event_dispatcher.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -28,6 +22,7 @@
 #include "util/log.h"
 #include "util/multi_mutex_lock.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -403,7 +398,8 @@ IpczResult Router::Put(absl::Span<const uint8_t> data,
   std::unique_ptr<Parcel> parcel =
       AllocateOutboundParcel(data.size(), /*allow_partial=*/false);
   if (!data.empty()) {
-    memcpy(parcel->data_view().data(), data.data(), data.size());
+    IPCZ_UNSAFE_TODO(
+        memcpy(parcel->data_view().data(), data.data(), data.size()));
   }
   parcel->CommitData(data.size());
   parcel->SetObjects(std::move(objects));
@@ -541,7 +537,7 @@ IpczResult Router::Get(IpczGetFlags flags,
     }
 
     if (data_size > 0) {
-      memcpy(data, p->data_view().data(), data_size);
+      IPCZ_UNSAFE_TODO(memcpy(data, p->data_view().data(), data_size));
     }
 
     const bool ok = inbound_parcels_.Pop(consumed_parcel);
