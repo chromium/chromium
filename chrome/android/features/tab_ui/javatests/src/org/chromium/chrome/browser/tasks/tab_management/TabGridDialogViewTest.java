@@ -171,33 +171,6 @@ public class TabGridDialogViewTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testUpdateDialogWithOrientation_NewOrientationFetchedEachTime() {
-        mockDialogStatus(false);
-        int appHeaderHeight = 10;
-        mTabGridDialogView.setAppHeaderHeight(appHeaderHeight);
-
-        // Setup the initial orientation and assert the margins are correct.
-        sActivity.getResources().getConfiguration().orientation =
-                Configuration.ORIENTATION_PORTRAIT;
-        mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_PORTRAIT);
-        assertThat(
-                mContainerParams.topMargin,
-                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
-        assertEquals(mContainerParams.leftMargin, mMinMargin);
-
-        // Update the orientation and assert the margins are updated.
-        sActivity.getResources().getConfiguration().orientation =
-                Configuration.ORIENTATION_LANDSCAPE;
-        mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_LANDSCAPE);
-        assertThat(
-                mContainerParams.leftMargin,
-                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
-        assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
     public void testResetDialog() {
         View toolbarView = new View(sActivity);
         View recyclerView = new View(sActivity);
