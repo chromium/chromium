@@ -989,6 +989,11 @@
       name: "ColorInputDatalistLooksNormal",
       status: "stable",
     },
+    // Enable the rec2100-linear color space in CSS and PredefinedColorSpace.
+    {
+      name: "ColorSpaceRec2100Linear",
+      status: "experimental",
+    },
     {
       name: "CompositeBGColorAnimation",
       public: true,

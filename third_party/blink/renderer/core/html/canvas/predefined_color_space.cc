@@ -16,32 +16,41 @@ namespace blink {
 bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
                                   PredefinedColorSpace& color_space,
                                   ExceptionState& exception_state) {
-  bool needs_hdr = false;
+  bool supported = true;
   switch (v8_color_space.AsEnum()) {
     case V8PredefinedColorSpace::Enum::kSRGB:
       color_space = PredefinedColorSpace::kSRGB;
       break;
-    case V8PredefinedColorSpace::Enum::kRec2020:
-      color_space = PredefinedColorSpace::kRec2020;
-      needs_hdr = true;
-      break;
     case V8PredefinedColorSpace::Enum::kDisplayP3:
       color_space = PredefinedColorSpace::kP3;
       break;
+
+    // To be shipped via Rec2100Linear feature.
+    // https://crbug.com/436274258
+    case V8PredefinedColorSpace::Enum::kRec2100Linear:
+      color_space = PredefinedColorSpace::kRec2100Linear;
+      supported = RuntimeEnabledFeatures::ColorSpaceRec2100LinearEnabled();
+      break;
+
+    // Speculative CanvasHDR color spaces.
+    case V8PredefinedColorSpace::Enum::kRec2020:
+      color_space = PredefinedColorSpace::kRec2020;
+      supported = RuntimeEnabledFeatures::CanvasHDREnabled();
+      break;
     case V8PredefinedColorSpace::Enum::kRec2100Hlg:
       color_space = PredefinedColorSpace::kRec2100HLG;
-      needs_hdr = true;
+      supported = RuntimeEnabledFeatures::CanvasHDREnabled();
       break;
     case V8PredefinedColorSpace::Enum::kRec2100Pq:
       color_space = PredefinedColorSpace::kRec2100PQ;
-      needs_hdr = true;
+      supported = RuntimeEnabledFeatures::CanvasHDREnabled();
       break;
     case V8PredefinedColorSpace::Enum::kSRGBLinear:
       color_space = PredefinedColorSpace::kSRGBLinear;
-      needs_hdr = true;
+      supported = RuntimeEnabledFeatures::CanvasHDREnabled();
       break;
   }
-  if (needs_hdr && !RuntimeEnabledFeatures::CanvasHDREnabled()) {
+  if (!supported) {
     exception_state.ThrowTypeError(StrCat(
         {"The provided value '", v8_color_space.AsString(),
          "' is not a valid enum value of the type PredefinedColorSpace."}));
@@ -65,6 +74,9 @@ V8PredefinedColorSpace PredefinedColorSpaceToV8(
       return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2100Pq);
     case PredefinedColorSpace::kSRGBLinear:
       return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGBLinear);
+    case PredefinedColorSpace::kRec2100Linear:
+      return V8PredefinedColorSpace(
+          V8PredefinedColorSpace::Enum::kRec2100Linear);
   }
 }
 

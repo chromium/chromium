@@ -9,6 +9,7 @@ enum PredefinedColorSpace {
     "rec2100-hlg", // Enabled only in CanvasHDR
     "rec2100-pq", // Enabled only in CanvasHDR
     "srgb-linear", // Enabled only in CanvasHDR
+    "rec2100-linear", // Enabled in ColorSpaceRec2100Linear
 };
 
 enum ImageDataPixelFormat {
