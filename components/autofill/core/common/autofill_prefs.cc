@@ -92,6 +92,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kAutofillAblationSeedPref, "");
   registry->RegisterBooleanPref(kAutofillRanQuasiDuplicateExtraDeduplication,
                                 false);
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kFacilitatedPaymentsPixAccountLinkingDeprecated,
+                                /*default_value=*/true);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kAutofillUsingVirtualViewStructure, false);
@@ -103,9 +107,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       kFacilitatedPaymentsPix, /*default_value=*/true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      kFacilitatedPaymentsPixAccountLinking, /*default_value=*/true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  // The Pix account linking pref is a profile pref but not synced across
+  // devices since users may prefer to have a different value for it on
+  // different devices.
+  registry->RegisterBooleanPref(kFacilitatedPaymentsPixAccountLinking,
+                                /*default_value=*/true);
   registry->RegisterBooleanPref(
       kFacilitatedPaymentsA2AEnabled, /*default_value=*/true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -145,6 +151,10 @@ void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   pref_service->ClearPref(kAutofillRanQuasiDuplicateExtraDeduplication);
   // Added 03/2025
   pref_service->ClearPref(kAutofillEnabledDeprecated);
+#if BUILDFLAG(IS_ANDROID)
+  // Added 08/2025
+  pref_service->ClearPref(kFacilitatedPaymentsPixAccountLinkingDeprecated);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
