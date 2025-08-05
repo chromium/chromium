@@ -94,8 +94,11 @@ std::string OrderByManagedAndAlphabetically::GetShortNameSortKey(
 }  // namespace internal
 
 TemplateURLTableModel::TemplateURLTableModel(
-    TemplateURLService* template_url_service)
-    : observer_(nullptr), template_url_service_(template_url_service) {
+    TemplateURLService* template_url_service,
+    bool ai_mode_enabled)
+    : observer_(nullptr),
+      template_url_service_(template_url_service),
+      ai_mode_enabled_(ai_mode_enabled) {
   DCHECK(template_url_service);
   template_url_service_->AddObserver(this);
   template_url_service_->Load();
@@ -114,14 +117,23 @@ void TemplateURLTableModel::Reload() {
       extension_entries;
   // Keywords that can be made the default first.
   for (TemplateURL* template_url : urls) {
-    // Don't include the expanded set of starter pack keywords if the expansion
-    // feature flag is not enabled.
-    if ((template_url->starter_pack_id() ==
-             template_url_starter_pack_data::kGemini &&
-         !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
-        (template_url->starter_pack_id() ==
-             template_url_starter_pack_data::kPage &&
-         !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page)) {
+    // Skip @gemini if feature disabled.
+    if (template_url->starter_pack_id() ==
+            template_url_starter_pack_data::kGemini &&
+        !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) {
+      continue;
+    }
+    // Skip @page if feature disabled.
+    if (template_url->starter_pack_id() ==
+            template_url_starter_pack_data::kPage &&
+        !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+      continue;
+    }
+    // Skip @aimode if feature disabled.
+    if (template_url->starter_pack_id() ==
+            template_url_starter_pack_data::kAiMode &&
+        (!omnibox_feature_configs::Toolbelt::Get().enabled ||
+         !ai_mode_enabled_)) {
       continue;
     }
 

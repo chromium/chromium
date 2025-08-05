@@ -60,7 +60,8 @@ class OrderByManagedAndAlphabetically {
 class TemplateURLTableModel : public ui::TableModel,
                               TemplateURLServiceObserver {
  public:
-  explicit TemplateURLTableModel(TemplateURLService* template_url_service);
+  TemplateURLTableModel(TemplateURLService* template_url_service,
+                        bool ai_mode_enabled);
 
   TemplateURLTableModel(const TemplateURLTableModel&) = delete;
   TemplateURLTableModel& operator=(const TemplateURLTableModel&) = delete;
@@ -148,6 +149,9 @@ class TemplateURLTableModel : public ui::TableModel,
   // Index of the last other engine in entries_. This is used to determine the
   // group boundaries.
   size_t last_other_engine_index_;
+
+  // Whether to show the @aimode keyword. This depends on user eligibility.
+  bool ai_mode_enabled_;
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_TEMPLATE_URL_TABLE_MODEL_H_
