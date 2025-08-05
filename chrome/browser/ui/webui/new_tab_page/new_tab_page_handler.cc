@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -896,6 +897,12 @@ void NewTabPageHandler::UpdateFooterVisibility() {
     return;
   }
 
+  // TODO(webium): FooterController depends on BrowserView, but WebUIBrowser
+  // doesn't have a BrowserView.
+  if (webui_browser::IsWebUIBrowserEnabled()) {
+    return;
+  }
+
   auto* browser = webui::GetBrowserWindowInterface(web_contents_);
   if (!browser) {
     // TODO(crbug.com/378475391): NTP should always load into a WebContents
@@ -1325,6 +1332,12 @@ void NewTabPageHandler::OnLogoAvailable(
 
 void NewTabPageHandler::OnBrowserWindowInterfaceChanged() {
   if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    return;
+  }
+
+  // TODO(webium): FooterController depends on BrowserView, but WebUIBrowser
+  // doesn't have a BrowserView.
+  if (webui_browser::IsWebUIBrowserEnabled()) {
     return;
   }
 
