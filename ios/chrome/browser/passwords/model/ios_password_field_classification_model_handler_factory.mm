@@ -8,6 +8,7 @@
 
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -50,6 +51,12 @@ IOSPasswordFieldClassificationModelHandlerFactory::BuildServiceInstanceFor(
     // `OptimizationGuideService`.
     return nullptr;
   }
+
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
+    return nullptr;
+  }
+
   return std::make_unique<autofill::FieldClassificationModelHandler>(
       optimization_guide,
       optimization_guide::proto::OptimizationTarget::

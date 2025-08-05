@@ -10,9 +10,12 @@
 #include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/browser_context.h"
 
 // static
@@ -56,12 +59,21 @@ PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
 std::unique_ptr<KeyedService> PasswordFieldClassificationModelHandlerFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  ChromePasswordChangeService* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier) &&
+      (!password_change_service ||
+       !password_change_service->UserIsActivePasswordChangeUser())) {
+    return nullptr;
+  }
+
   OptimizationGuideKeyedService* optimization_guide =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   autofill::MLLogRouter* log_router =
-      autofill::MLLogRouterFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
+      autofill::MLLogRouterFactory::GetForProfile(profile);
   return std::make_unique<autofill::FieldClassificationModelHandler>(
       optimization_guide,
       optimization_guide::proto::OptimizationTarget::
