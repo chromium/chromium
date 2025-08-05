@@ -1425,13 +1425,6 @@ bool PageInfo::ShouldShowPermission(
     return true;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (info.type == ContentSettingsType::WEB_APP_INSTALLATION &&
-      base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
-    return true;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   return false;
 }
 
