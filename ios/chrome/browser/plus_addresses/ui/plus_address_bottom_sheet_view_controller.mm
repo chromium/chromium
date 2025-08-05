@@ -555,7 +555,6 @@ UIImageView* BrandingImageView() {
 // Enables/Disables the primary action button.
 - (void)enablePrimaryActionButton:(BOOL)enabled {
   self.primaryActionButton.enabled = enabled;
-  UpdateButtonColorOnEnableDisable(self.primaryActionButton);
 }
 
 - (void)onURLTapForType:(PlusAddressURLType)type {

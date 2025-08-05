@@ -7,81 +7,163 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
-const CGFloat kButtonVerticalInsets = 14.5;
-const CGFloat kPrimaryButtonCornerRadius = 15;
+namespace {
+
 // Alpha value for the disabled action button.
 const CGFloat kDisabledButtonAlpha = 0.5;
 
-UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
-  UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
-  primary_blue_button.translatesAutoresizingMaskIntoConstraints = NO;
-
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+// Updates `configuration` with the configuration shared with all buttons, and
+// sets its `font`.
+void CommonSetupButtonConfiguration(UIButtonConfiguration* configuration,
+                                    UIFont* font) {
+  configuration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.baseForegroundColor =
+  configuration.background.cornerRadius = kPrimaryButtonCornerRadius;
+
+  configuration.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* incoming) {
+    NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
+        [incoming mutableCopy];
+    outgoing[NSFontAttributeName] = font;
+    return outgoing;
+  };
+}
+
+// Creates a button configured for all cases.
+UIButton* CreateCommonButton() {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+
+  button.configuration = [UIButtonConfiguration plainButtonConfiguration];
+
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
+
+  return button;
+}
+
+// Returns a configuration update handler to be used for primary action.
+UIButtonConfigurationUpdateHandler PrimaryActionConfigurationUpdateHandler() {
+  return ^(UIButton* button) {
+    UIButtonConfiguration* configuration = button.configuration;
+    if (button.enabled) {
+      configuration.background.backgroundColor =
+          [UIColor colorNamed:kBlueColor];
+
+    } else {
+      configuration.background.backgroundColor =
+          [UIColor colorNamed:kGrey100Color];
+    }
+    button.configuration = configuration;
+  };
+}
+
+// Returns a configuration update handler to be used for equal weight actions.
+UIButtonConfigurationUpdateHandler EqualWeightConfigurationUpdateHandler() {
+  return ^(UIButton* button) {
+    UIButtonConfiguration* configuration = button.configuration;
+    UIColor* background_color = [UIColor colorNamed:kBlueHaloColor];
+    if (!button.enabled) {
+      background_color =
+          [background_color colorWithAlphaComponent:kDisabledButtonAlpha];
+    }
+    configuration.background.backgroundColor = background_color;
+    button.configuration = configuration;
+  };
+}
+
+// Updates `configuration` to match a Primary action.
+void SetConfigurationForPrimaryAction(UIButtonConfiguration* configuration) {
+  CommonSetupButtonConfiguration(
+      configuration,
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
+  configuration.baseForegroundColor =
       [UIColor colorNamed:kSolidButtonTextColor];
-  buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
+  configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
+}
 
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string =
-      [[NSMutableAttributedString alloc] initWithString:@" "];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
+// Updates `configuration` to match a Secondary action.
+void SetConfigurationForSecondaryAction(UIButtonConfiguration* configuration) {
+  CommonSetupButtonConfiguration(
+      configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
+  configuration.background.backgroundColor = [UIColor clearColor];
+  configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+}
 
-  primary_blue_button.configuration = buttonConfiguration;
+// Updates `configuration` to match an equal weight action.
+void SetConfigurationForEqualWeight(UIButtonConfiguration* configuration) {
+  CommonSetupButtonConfiguration(
+      configuration,
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
+  configuration.background.backgroundColor =
+      [UIColor colorNamed:kBlueHaloColor];
+  configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+}
 
-  if (pointer_interaction_enabled) {
-    primary_blue_button.pointerInteractionEnabled = YES;
-    primary_blue_button.pointerStyleProvider =
-        CreateOpaqueButtonPointerStyleProvider();
-  }
+}  // namespace
 
-  return primary_blue_button;
+const CGFloat kButtonVerticalInsets = 14.5;
+const CGFloat kPrimaryButtonCornerRadius = 15;
+
+void UpdateButtonToMatchPrimaryAction(UIButton* button) {
+  UIButtonConfiguration* configuration = button.configuration;
+  SetConfigurationForPrimaryAction(configuration);
+  button.configuration = configuration;
+  button.configurationUpdateHandler = PrimaryActionConfigurationUpdateHandler();
+}
+
+void UpdateButtonToMatchSecondaryAction(UIButton* button) {
+  UIButtonConfiguration* configuration = button.configuration;
+  SetConfigurationForSecondaryAction(configuration);
+  button.configuration = configuration;
+  button.configurationUpdateHandler = nil;
+}
+
+void UpdateButtonToMatchEqualWeightAction(UIButton* button) {
+  UIButtonConfiguration* configuration = button.configuration;
+  SetConfigurationForEqualWeight(configuration);
+  button.configuration = configuration;
+  button.configurationUpdateHandler = EqualWeightConfigurationUpdateHandler();
+}
+
+UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
+  UIButton* button = CreateCommonButton();
+  UpdateButtonToMatchPrimaryAction(button);
+  return button;
+}
+
+UIButton* SecondaryActionButton() {
+  UIButton* button = CreateCommonButton();
+  UpdateButtonToMatchSecondaryAction(button);
+  return button;
+}
+
+// Returns equal weight button with rounded corners.
+UIButton* EqualWeightButton() {
+  UIButton* button = CreateCommonButton();
+  UpdateButtonToMatchEqualWeightAction(button);
+  return button;
 }
 
 void SetConfigurationTitle(UIButton* button, NSString* newString) {
   UIButtonConfiguration* buttonConfiguration = button.configuration;
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc]
-          initWithAttributedString:buttonConfiguration.attributedTitle];
-  [attributedString.mutableString setString:newString ? newString : @""];
-  buttonConfiguration.attributedTitle = attributedString;
+  buttonConfiguration.title = newString;
   button.configuration = buttonConfiguration;
 }
 
 void SetConfigurationFont(UIButton* button, UIFont* font) {
   UIButtonConfiguration* buttonConfiguration = button.configuration;
-  NSString* configurationString = buttonConfiguration.attributedTitle.string;
 
-  if (configurationString) {
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSMutableAttributedString* string =
-        [[NSMutableAttributedString alloc] initWithString:configurationString];
-    [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-    buttonConfiguration.attributedTitle = string;
-    button.configuration = buttonConfiguration;
-  }
-}
+  buttonConfiguration.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* incoming) {
+    NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
+        [incoming mutableCopy];
+    outgoing[NSFontAttributeName] = font;
+    return outgoing;
+  };
 
-void UpdateButtonColorOnEnableDisable(UIButton* button) {
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  if (button.enabled) {
-    buttonConfiguration.background.backgroundColor =
-        [UIColor colorNamed:kBlueColor];
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kSolidButtonTextColor];
-  } else {
-    buttonConfiguration.background.backgroundColor =
-        [buttonConfiguration.background.backgroundColor
-            colorWithAlphaComponent:kDisabledButtonAlpha];
-    buttonConfiguration.baseForegroundColor =
-        [buttonConfiguration.baseForegroundColor
-            colorWithAlphaComponent:kDisabledButtonAlpha];
-  }
   button.configuration = buttonConfiguration;
 }

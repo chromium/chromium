@@ -106,27 +106,6 @@ void SetPillButtonTitle(UIButton* pill_button, int string_id) {
   pill_button.configuration = buttonConfiguration;
 }
 
-// Configures a "Set as Default" button to be enabled or disabled.
-void EnableSetAsDefaultButton(UIButton* button, BOOL is_enabled) {
-  UIButtonConfiguration* button_configuration = button.configuration;
-  if (is_enabled) {
-    button_configuration.background.backgroundColor =
-        [UIColor colorNamed:kBlueColor];
-    button_configuration.baseForegroundColor =
-        [UIColor colorNamed:kSolidButtonTextColor];
-    button.accessibilityHint = nil;
-  } else {
-    button_configuration.background.backgroundColor =
-        [UIColor colorNamed:kGrey100Color];
-    button_configuration.baseForegroundColor =
-        [UIColor colorNamed:kDisabledTintColor];
-    button.accessibilityHint =
-        l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_DEFAULT_HINT);
-  }
-  button.configuration = button_configuration;
-  button.enabled = is_enabled;
-}
-
 // Creates a "Set as Default" button. The button is returned as disabled.
 UIButton* CreateSetAsDefaultButton() {
   UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
@@ -136,7 +115,7 @@ UIButton* CreateSetAsDefaultButton() {
   // Add semantic group, so the user can skip all the search engine stack view,
   // and jump to the SetAsDefault button, using VoiceOver.
   button.accessibilityContainerType = UIAccessibilityContainerTypeSemanticGroup;
-  EnableSetAsDefaultButton(button, /*is_enabled=*/NO);
+  button.enabled = NO;
   return button;
 }
 
@@ -607,8 +586,12 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   if (wasSelectedYet) {
     return;
   }
-  EnableSetAsDefaultButton(_inlineSetAsDefaultButton, /*is_enabled=*/YES);
-  EnableSetAsDefaultButton(_floatingSetAsDefaultButton, /*is_enabled=*/YES);
+  _inlineSetAsDefaultButton.enabled = YES;
+  _inlineSetAsDefaultButton.accessibilityHint =
+      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_DEFAULT_HINT);
+  _floatingSetAsDefaultButton.enabled = YES;
+  _floatingSetAsDefaultButton.accessibilityHint =
+      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_DEFAULT_HINT);
   if (!_moreOrContinueButton) {
     // If the more pill button is not visible, the user already saw the last
     // search engine, and since they selected one, then the "Set as Default"

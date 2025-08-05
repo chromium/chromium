@@ -940,7 +940,6 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
         DefaultCheckmarkCircleFillSymbol(kSymbolConfirmationCheckmarkPointSize),
         _confirmationCheckmarkColor);
   } else {
-    UpdateButtonColorOnEnableDisable(_primaryActionButton);
     SetConfigurationImage(_primaryActionButton, /*image=*/nil, /*color=*/nil);
   }
   SetConfigurationActivityIndicator(_primaryActionButton, _isLoading,

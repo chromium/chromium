@@ -76,7 +76,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 @property(nonatomic, strong) UIImageView* headerImageView;
 @property(nonatomic, strong) UITextView* disclaimerView;
 // Primary action button for the view controller.
-@property(nonatomic, strong) HighlightButton* primaryActionButton;
+@property(nonatomic, strong) UIButton* primaryActionButton;
 // Activity indicator on top of `primaryActionButton`.
 @property(nonatomic, strong)
     UIActivityIndicatorView* primaryButtonActivityIndicatorView;
@@ -657,7 +657,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // On unhiding, the primary action button will have updated style based
   // on actionButtonsVisibility.
   if (self.primaryActionString) {
-    [self setPrimaryActionButtonColor:self.primaryActionButton];
+    BOOL equallyWeightedButton =
+        (self.actionButtonsVisibility ==
+         ActionButtonsVisibility::kEquallyWeightedButtonShown);
+    if (equallyWeightedButton) {
+      UpdateButtonToMatchEqualWeightAction(self.primaryActionButton);
+    } else {
+      UpdateButtonToMatchPrimaryAction(self.primaryActionButton);
+    }
   }
   // The secondary action button has button type based on
   // actionButtonsVisibility and should be recreated.
@@ -757,7 +764,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     buttonConfiguration.attributedTitle = nil;
     buttonConfiguration.title = _primaryActionString;
     _primaryActionButton.configuration = buttonConfiguration;
-    [self setPrimaryActionButtonFont:_primaryActionButton];
   }
 }
 
@@ -836,29 +842,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   return _specificContentView;
 }
 
-- (HighlightButton*)createHighlightButtonWithText:(NSString*)buttonText
-                          accessibilityIdentifier:
-                              (NSString*)accessibilityIdentifier {
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  buttonConfiguration.titlePadding = kMoreArrowMargin;
-  buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
-  buttonConfiguration.title = buttonText;
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-
-  HighlightButton* button = [[HighlightButton alloc] initWithFrame:CGRectZero];
-  button.configuration = buttonConfiguration;
-  [self setPrimaryActionButtonFont:button];
-  [self setPrimaryActionButtonColor:button];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.pointerInteractionEnabled = YES;
-  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-  button.accessibilityIdentifier = accessibilityIdentifier;
-  return button;
-}
-
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
     // Use `primaryActionString` even if scrolling to the end is mandatory
@@ -866,9 +849,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     // content height, so there is no way to know if scrolling is needed.
     // This label will be updated at the viewDidAppear stage if necessary.
     _primaryActionButton =
-        [self createHighlightButtonWithText:self.primaryActionString
-                    accessibilityIdentifier:
-                        kPromoStylePrimaryActionAccessibilityIdentifier];
+        [self createButtonForPrimary:YES
+                            withText:self.primaryActionString
+             accessibilityIdentifier:
+                 kPromoStylePrimaryActionAccessibilityIdentifier];
 
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
@@ -1100,18 +1084,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
           self.bannerImageView));
 }
 
-- (void)setPrimaryActionButtonFont:(UIButton*)button {
-  DCHECK(button.configuration.title);
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-      initWithString:button.configuration.title];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
-  button.configuration = buttonConfiguration;
-}
-
 - (void)setPrimaryActionButtonColor:(UIButton*)button {
   UIButtonConfiguration* buttonConfiguration = button.configuration;
   BOOL useEquallyWeightedButtons =
@@ -1185,36 +1157,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     weakSelf.primaryActionButton.configuration = buttonConfiguration;
     [weakSelf.primaryActionButton layoutIfNeeded];
   }];
-}
-
-- (UIButton*)createButtonWithText:(NSString*)buttonText
-          accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.title = buttonText;
-  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
-  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string =
-      [[NSMutableAttributedString alloc] initWithString:buttonText];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  button.configuration = buttonConfiguration;
-
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.titleLabel.adjustsFontForContentSizeCategory = YES;
-  button.accessibilityIdentifier = accessibilityIdentifier;
-
-  button.pointerInteractionEnabled = YES;
-  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-
-  return button;
 }
 
 // Add the scroll view delegate and setup the content views. Should be done only
@@ -1308,7 +1250,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     return;
   }
   _buttonUpdated = YES;
-  HighlightButton* primaryActionButton = self.primaryActionButton;
+  UIButton* primaryActionButton = self.primaryActionButton;
   UIButtonConfiguration* buttonConfiguration =
       primaryActionButton.configuration;
   buttonConfiguration.attributedTitle = nil;
@@ -1316,9 +1258,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   primaryActionButton.configuration = buttonConfiguration;
   primaryActionButton.accessibilityIdentifier =
       kPromoStylePrimaryActionAccessibilityIdentifier;
-
-  // Reset the font to make sure it is properly scaled.
-  [self setPrimaryActionButtonFont:primaryActionButton];
 
   // Add other buttons with the correct margins.
   if (self.secondaryActionString) {
@@ -1518,22 +1457,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (UIButton*)createSecondaryActionButton {
   DCHECK(self.secondaryActionString);
-  UIButton* button;
-  if (self.actionButtonsVisibility ==
-      ActionButtonsVisibility::kEquallyWeightedButtonShown) {
-    // Create the secondaryActionButton matching the button type, colors, and
-    // text style of the primaryActionButton.
-    button = [self createHighlightButtonWithText:self.secondaryActionString
-                         accessibilityIdentifier:
-                             kPromoStyleSecondaryActionAccessibilityIdentifier];
-  } else {
-    button = [self createButtonWithText:self.secondaryActionString
-                accessibilityIdentifier:
-                    kPromoStyleSecondaryActionAccessibilityIdentifier];
-    UILabel* titleLabel = button.titleLabel;
-    titleLabel.adjustsFontSizeToFitWidth = YES;
-    titleLabel.minimumScaleFactor = 0.7;
-  }
+  UIButton* button =
+      [self createButtonForPrimary:NO
+                          withText:self.secondaryActionString
+           accessibilityIdentifier:
+               kPromoStyleSecondaryActionAccessibilityIdentifier];
+  UILabel* titleLabel = button.titleLabel;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.7;
 
   [button addTarget:self
                 action:@selector(didTapSecondaryActionButton)
@@ -1545,7 +1476,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (UIButton*)createTertiaryActionButton {
   DCHECK(self.tertiaryActionString);
   UIButton* button = [self
-         createButtonWithText:self.tertiaryActionString
+       createButtonForPrimary:NO
+                     withText:self.tertiaryActionString
       accessibilityIdentifier:kPromoStyleTertiaryActionAccessibilityIdentifier];
   [button addTarget:self
                 action:@selector(didTapTertiaryActionButton)
@@ -1623,6 +1555,31 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [strongSelf updatePromoStyleWidth];
     [strongSelf hideHeaderOnTallContentIfNeeded];
   });
+}
+
+// Creates a button to be used for the button `primary` or not.
+- (UIButton*)createButtonForPrimary:(BOOL)primary
+                           withText:(NSString*)buttonText
+            accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  BOOL equallyWeightedButton =
+      (self.actionButtonsVisibility ==
+       ActionButtonsVisibility::kEquallyWeightedButtonShown);
+  UIButton* button;
+  if (equallyWeightedButton) {
+    button = EqualWeightButton();
+  } else {
+    button = primary ? PrimaryActionButton(YES) : SecondaryActionButton();
+  }
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  buttonConfiguration.titlePadding = kMoreArrowMargin;
+  buttonConfiguration.title = buttonText;
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  button.configuration = buttonConfiguration;
+
+  button.titleLabel.adjustsFontForContentSizeCategory = YES;
+  button.accessibilityIdentifier = accessibilityIdentifier;
+
+  return button;
 }
 
 #pragma mark - UIScrollViewDelegate

@@ -155,20 +155,6 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 // Updates the state of `_saveInAccountButton` according to
 // `_saveInAccountButtonEnabled`.
 - (void)updateSaveInAccountButton {
-  UIButtonConfiguration* buttonConfiguration =
-      _saveInAccountButton.configuration;
-  if (_saveInAccountButtonEnabled) {
-    buttonConfiguration.background.backgroundColor =
-        [UIColor colorNamed:kBlueColor];
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kSolidButtonTextColor];
-  } else {
-    buttonConfiguration.background.backgroundColor =
-        [UIColor colorNamed:kTertiaryBackgroundColor];
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kDisabledTintColor];
-  }
-  _saveInAccountButton.configuration = buttonConfiguration;
   _saveInAccountButton.enabled = _saveInAccountButtonEnabled;
 }
 

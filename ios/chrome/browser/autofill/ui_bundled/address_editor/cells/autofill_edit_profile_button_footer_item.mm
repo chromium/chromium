@@ -23,7 +23,6 @@
 
   SetConfigurationTitle(footer.button, self.buttonText);
   footer.button.enabled = self.enabled;
-  UpdateButtonColorOnEnableDisable(footer.button);
 }
 
 @end
@@ -43,7 +42,6 @@
   if (self) {
     // Create button.
     self.button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
-    UpdateButtonColorOnEnableDisable(self.button);
     [self.button addTarget:self
                     action:@selector(didTapButton)
           forControlEvents:UIControlEventTouchUpInside];
