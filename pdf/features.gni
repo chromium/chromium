@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//build/config/cast.gni")
 
 # Most build code won't need to include this file. Instead you can
@@ -19,7 +18,7 @@ declare_args() {
   # This argument indicates whether the ink libraries provided by the ChromeOS
   # media app dependency is enabled. It also determines whether the annotation
   # feature is enabled for the PDF Viewer on Chrome OS.
-  enable_ink = enable_cros_media_app
+  enable_ink = false
 
   # Enable the next generation of ink libraries. This can co-exist with
   # `enable_ink` above.
