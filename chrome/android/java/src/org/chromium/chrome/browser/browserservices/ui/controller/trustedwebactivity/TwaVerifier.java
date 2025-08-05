@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -22,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Provides Trusted Web Activity specific behaviour for the {@link CurrentPageVerifier}. */
+@NullMarked
 public class TwaVerifier implements Verifier, DestroyObserver {
     /** The Digital Asset Link relationship used for Trusted Web Activities. */
     private static final int RELATIONSHIP = CustomTabsService.RELATION_HANDLE_ALL_URLS;
@@ -35,7 +37,7 @@ public class TwaVerifier implements Verifier, DestroyObserver {
      * <p>This value will be {@code null} until {@link #getPendingOrigins} is called (you can just
      * use getPendingOrigins to get a ensured non-null value).
      */
-    @Nullable private Set<Origin> mPendingOrigins;
+    private @Nullable Set<Origin> mPendingOrigins;
 
     private boolean mDestroyed;
 
@@ -90,7 +92,7 @@ public class TwaVerifier implements Verifier, DestroyObserver {
     }
 
     @Override
-    public String getVerifiedScope(String url) {
+    public @Nullable String getVerifiedScope(String url) {
         Origin origin = Origin.create(url);
         if (origin == null) return null;
         return origin.toString();

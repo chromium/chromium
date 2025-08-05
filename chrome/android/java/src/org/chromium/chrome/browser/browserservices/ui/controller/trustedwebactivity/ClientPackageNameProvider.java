@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -15,6 +18,7 @@ import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
  * Provides the client package name for TWAs - this can come from either the Custom Tabs Connection
  * or one previously stored in the Activity's save instance state.
  */
+@NullMarked
 public class ClientPackageNameProvider implements SaveInstanceStateObserver {
     /** Key for storing in Activity instance state. */
     private static final String KEY_CLIENT_PACKAGE = "twaClientPackageName";
@@ -26,7 +30,7 @@ public class ClientPackageNameProvider implements SaveInstanceStateObserver {
             BrowserServicesIntentDataProvider intentDataProvider,
             Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mClientPackageName = savedInstanceState.getString(KEY_CLIENT_PACKAGE);
+            mClientPackageName = assertNonNull(savedInstanceState.getString(KEY_CLIENT_PACKAGE));
         } else {
             mClientPackageName =
                     CustomTabsConnection.getInstance()

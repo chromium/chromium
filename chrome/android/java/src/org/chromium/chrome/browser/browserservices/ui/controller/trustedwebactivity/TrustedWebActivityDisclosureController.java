@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
  * Controls when Trusted Web Activity disclosure should be shown and hidden, reacts to interaction
  * with it.
  */
+@NullMarked
 public class TrustedWebActivityDisclosureController extends DisclosureController {
     private final ClientPackageNameProvider mClientPackageNameProvider;
 

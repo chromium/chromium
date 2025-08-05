@@ -43,7 +43,7 @@ public abstract class DisclosureController
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
-            String packageName) {
+            @Nullable String packageName) {
         mModel = model;
         mCurrentPageVerifier = currentPageVerifier;
 
