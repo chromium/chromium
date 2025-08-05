@@ -222,6 +222,7 @@ class CORE_EXPORT WebLocalFrameImpl final
                               base::i18n::TextDirection& end) const override;
   bool IsSelectionAnchorFirst() const override;
   void SetTextDirectionForTesting(base::i18n::TextDirection direction) override;
+  void SetIsCaretBrowsingOverridden(bool overridden) override;
   bool HasSelection() const override;
   WebRange SelectionRange() const override;
   WebString SelectionAsText() const override;

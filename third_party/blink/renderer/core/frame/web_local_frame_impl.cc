@@ -1395,6 +1395,10 @@ void WebLocalFrameImpl::SetTextDirectionForTesting(
   frame_->SetTextDirection(direction);
 }
 
+void WebLocalFrameImpl::SetIsCaretBrowsingOverridden(bool overridden) {
+  GetFrame()->SetIsCaretBrowsingOverridden(overridden);
+}
+
 void WebLocalFrameImpl::ReplaceMisspelledRange(const WebString& text) {
   // If this caret selection has two or more markers, this function replace the
   // range covered by the first marker with the specified word as Microsoft Word

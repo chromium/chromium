@@ -3204,6 +3204,8 @@ void PdfViewWebPlugin::ApplyAndObserveRendererPreferences() {
     return;
   }
 
+  frame->SetIsCaretBrowsingOverridden(true);
+
   OnRendererPreferencesUpdated(view->GetRendererPreferences());
 
   blink::WebViewObserver::Observe(view);

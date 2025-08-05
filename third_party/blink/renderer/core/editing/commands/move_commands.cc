@@ -113,6 +113,10 @@ bool MoveCommands::ModifySelectionWithPageGranularity(
 bool MoveCommands::MoveSelection(LocalFrame& frame,
                                  SelectionModifyDirection direction,
                                  TextGranularity granularity) {
+  if (frame.IsCaretBrowsingOverridden()) {
+    return true;
+  }
+
   UpdateSelectionForCaretBrowsing(frame);
   const bool modified =
       frame.Selection().Modify(SelectionModifyAlteration::kMove, direction,
@@ -124,8 +128,9 @@ bool MoveCommands::MoveSelection(LocalFrame& frame,
 }
 
 void MoveCommands::UpdateFocusForCaretBrowsing(LocalFrame& frame) {
-  if (!frame.IsCaretBrowsingEnabled())
+  if (!frame.IsCaretBrowsingEnabled() || frame.IsCaretBrowsingOverridden()) {
     return;
+  }
 
   SelectionInDOMTree selection = frame.Selection().GetSelectionInDOMTree();
   if (!selection.IsCaret())

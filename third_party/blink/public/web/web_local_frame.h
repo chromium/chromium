@@ -542,6 +542,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void SetTextDirectionForTesting(
       base::i18n::TextDirection direction) = 0;
 
+  // Sets whether caret browsing mode has been overridden. Embedders that want
+  // to override caret browsing need to set this to prevent any default move
+  // commands from interfering with the embedder's implementation.
+  virtual void SetIsCaretBrowsingOverridden(bool should_update) = 0;
+
   // Selection -----------------------------------------------------------
   virtual void CenterSelection() = 0;
 
