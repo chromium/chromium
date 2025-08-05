@@ -1002,10 +1002,6 @@ public final class ProductionSupportedFlagList {
                         + " - caches any chromium startup exception and rethrows it if startup is"
                         + " retried without a restart."),
         Flag.baseFeature(
-                CcFeatures.EXPORT_FRAME_TIMING_AFTER_FRAME_DONE,
-                "When enabled, moves the layer tree client's metric export call for from beginning"
-                        + " of the subsequent frame to the end of the subsequent frame."),
-        Flag.baseFeature(
                 BlinkFeatures.ASYNC_SET_COOKIE,
                 "When enabled, the communication between renderer and network service is "
                         + "asynchronous when setting cookies."),

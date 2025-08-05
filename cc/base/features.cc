@@ -206,10 +206,6 @@ BASE_FEATURE(kFastPathNoRaster,
              "FastPathNoRaster",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExportFrameTimingAfterFrameDone,
-             "ExportFrameTimingAfterFrameDone",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kInternalBeginFrameSourceOnManyDidNotProduceFrame,
              "InternalBeginFrameSourceOnManyDidNotProduceFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);

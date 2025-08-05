@@ -331,13 +331,10 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
 }
 
 void AsyncLayerTreeFrameSink::ExportFrameTiming() {
-  if (base::FeatureList::IsEnabled(
-          features::kExportFrameTimingAfterFrameDone)) {
-    for (const auto& pair : timing_details_) {
-      client_->DidPresentCompositorFrame(pair.first, pair.second);
-    }
-    timing_details_.clear();
+  for (const auto& pair : timing_details_) {
+    client_->DidPresentCompositorFrame(pair.first, pair.second);
   }
+  timing_details_.clear();
 }
 
 std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext(
@@ -383,17 +380,9 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
     ReclaimResources(std::move(resources));
   }
 
-  bool timing_export =
-      base::FeatureList::IsEnabled(features::kExportFrameTimingAfterFrameDone);
-  if (timing_export) {
-    timing_details_.insert(timing_details.begin(), timing_details.end());
-  }
+  timing_details_.insert(timing_details.begin(), timing_details.end());
+
   for (const auto& pair : timing_details) {
-    // Cache timing details to be exported in either SubmitCompositorFrame() or
-    // DidNotProduceFrame().
-    if (!timing_export) {
-      client_->DidPresentCompositorFrame(pair.first, pair.second);
-    }
     if (synthetic_begin_frame_source_ &&
         use_begin_frame_presentation_feedback_) {
       const auto& feedback = pair.second.presentation_feedback;

@@ -200,11 +200,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<int>
 // tasks.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFastPathNoRaster);
 
-// When enabled, moves the layer tree client's metric export call
-// for from beginning of the subsequent frame to the end of the subsequent
-// frame.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kExportFrameTimingAfterFrameDone);
-
 // When enabled, internal begin frame source will be used in cc to reduce IPC
 // between cc and viz when there were many "did not produce frame" recently,
 // and SetAutoNeedsBeginFrame will be called on CompositorFrameSink.
