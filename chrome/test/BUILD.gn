@@ -4121,6 +4121,15 @@ if (!is_android) {
       }
     }
 
+    if (enable_pdf_save_to_drive) {
+      sources += [
+        "../browser/ui/save_to_drive/add_account_dialog_controller_browsertest.cc",
+        "//chrome/browser/ui/save_to_drive/add_account_dialog_controller.cc",
+        "//chrome/browser/ui/save_to_drive/add_account_dialog_controller.h",
+      ]
+      deps += [ "//chrome/browser/ui/save_to_drive" ]
+    }
+
     if (enable_request_header_integrity) {
       deps += [ "//chrome/common/request_header_integrity:browser_tests" ]
     }

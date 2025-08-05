@@ -9,7 +9,11 @@ source_set("save_to_drive") {
     "account_chooser_controller_delegate.h",
     "account_chooser_view_delegate.h",
   ]
-  public_deps = [ "//components/signin/public/identity_manager" ]
+  public_deps = [
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+  ]
+  deps = [ "//ui/display" ]
 }
 
 source_set("test_support") {
