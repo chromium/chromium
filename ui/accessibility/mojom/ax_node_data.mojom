@@ -14,8 +14,6 @@ struct AXBitsetData {
 };
 
 // See ui::AXNodeData for comments / explanations of these fields.
-// Next version: 2
-[Stable, Uuid="5ee2327f-edc3-4d0e-aa96-6f8ce5720390"]
 struct AXNodeData {
   int32 id;
   ax.mojom.Role role;
@@ -34,5 +32,5 @@ struct AXNodeData {
   map<string, string> html_attributes;
   array<int32> child_ids;
   ax.mojom.AXRelativeBounds relative_bounds;
-  [MinVersion=1] AXBitsetData? bool_attributes_data;
+  AXBitsetData? bool_attributes_data;
 };
