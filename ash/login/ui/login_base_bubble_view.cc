@@ -23,6 +23,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
@@ -156,8 +157,7 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
 
-  SetBackground(views::CreateRoundedRectBackground(background_color_id,
-                                                   kBubbleBorderRadius));
+  SetBackground(views::CreateSolidBackground(background_color_id));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleBorderRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
@@ -167,20 +167,16 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
       this, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kBubbleBorderRadius);
 
-  SetVisible(false);
-}
-
-void LoginBaseBubbleView::EnsureLayer() {
-  if (layer()) {
-    return;
-  }
-  // Layer rendering is needed for animation.
   SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kBubbleBorderRadius));
+  layer()->SetIsFastRoundedCorner(true);
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
+
+  SetVisible(false);
 }
 
 LoginBaseBubbleView::~LoginBaseBubbleView() = default;
@@ -370,7 +366,6 @@ void LoginBaseBubbleView::ScheduleAnimation(bool visible) {
     layer()->GetAnimator()->StopAnimating();
   }
 
-  EnsureLayer();
   float opacity_start = 0.0f;
   float opacity_end = 1.0f;
   if (!visible) {
