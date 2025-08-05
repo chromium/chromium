@@ -83,4 +83,7 @@ specific_include_rules = {
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   ],
+  "kiosk_app_windows_logs_collector_unittest.cc": [
+    "+ash/test/ash_test_helper.h",
+  ],
 }

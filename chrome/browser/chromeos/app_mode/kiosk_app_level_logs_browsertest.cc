@@ -18,6 +18,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/app_window/app_window.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,6 +41,14 @@ content::WebContents* GetWebContents(Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
+content::WebContents* GetWebContents(extensions::AppWindow* app_window) {
+  if (!app_window) {
+    return nullptr;
+  }
+
+  return app_window->web_contents();
+}
+
 std::string ConsoleLogScript(std::string log) {
   return base::StringPrintf("console.log('%s');", log);
 }
@@ -50,6 +59,14 @@ ash::KioskMixin::Config GetWebAppConfig() {
       ash::KioskMixin::AutoLaunchAccount{
           ash::KioskMixin::SimpleWebAppOption().account_id},
       {ash::KioskMixin::SimpleWebAppOption()}};
+}
+
+ash::KioskMixin::Config GetChromeAppConfig() {
+  return ash::KioskMixin::Config{
+      /*name=*/"ChromeApp",
+      ash::KioskMixin::AutoLaunchAccount{
+          ash::KioskMixin::SimpleChromeAppOption().account_id},
+      {ash::KioskMixin::SimpleChromeAppOption()}};
 }
 
 }  // namespace
@@ -79,7 +96,7 @@ class KioskAppLevelLogsTestBase : public MixinBasedInProcessBrowserTest {
   }
 
   void SetKioskAppLevelLogCollectionPolicy(bool enable) {
-    ash::kiosk::test::CurrentProfile().GetPrefs()->SetBoolean(
+    profile()->GetPrefs()->SetBoolean(
         prefs::kKioskApplicationLogCollectionEnabled, enable);
   }
 
@@ -106,6 +123,8 @@ class KioskAppLevelLogsTestBase : public MixinBasedInProcessBrowserTest {
   }
 
   bool IsPolicyEnabled() { return policy_enabled_; }
+
+  Profile* profile() { return &ash::kiosk::test::CurrentProfile(); }
 
  private:
   ash::KioskMixin kiosk_;
@@ -193,6 +212,44 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppLevelLogsTest, ShouldCollectBrowserLogs) {
   ExpectMessageInKioskLogs(log_message_1);
 
   EXPECT_TRUE(content::ExecJs(GetWebContents(browser()),
+                              ConsoleLogScript(kDefaultLog2)));
+  std::string log_message_2 =
+      base::StringPrintf("kiosk_app_level_logs_saver.cc.*%s", kDefaultLog2);
+
+  ExpectMessageInKioskLogs(log_message_2);
+}
+
+// TODO(b:425645764) Add service worker logs collection test with chrome apps.
+class ChromeKioskAppLevelLogsTest : public KioskAppLevelLogsTestBase {
+ public:
+  ChromeKioskAppLevelLogsTest()
+      : KioskAppLevelLogsTestBase(GetChromeAppConfig(),
+                                  /*policy_enabled=*/true) {}
+
+  void SetUpOnMainThread() override {
+    KioskAppLevelLogsTestBase::SetUpOnMainThread();
+    ASSERT_TRUE(ash::kiosk::test::WaitKioskLaunched());
+  }
+
+  extensions::AppWindow* app_window() {
+    extensions::AppWindowRegistry* const app_window_registry =
+        extensions::AppWindowRegistry::Get(profile());
+    CHECK(app_window_registry);
+    CHECK_EQ(app_window_registry->app_windows().size(), 1u);
+    return app_window_registry->app_windows().front();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeKioskAppLevelLogsTest,
+                       ShouldCollectAppWindowLogs) {
+  EXPECT_TRUE(content::ExecJs(GetWebContents(app_window()),
+                              ConsoleLogScript(kDefaultLog1)));
+  std::string log_message_1 =
+      base::StringPrintf("kiosk_app_level_logs_saver.cc.*%s", kDefaultLog1);
+
+  ExpectMessageInKioskLogs(log_message_1);
+
+  EXPECT_TRUE(content::ExecJs(GetWebContents(app_window()),
                               ConsoleLogScript(kDefaultLog2)));
   std::string log_message_2 =
       base::StringPrintf("kiosk_app_level_logs_saver.cc.*%s", kDefaultLog2);
