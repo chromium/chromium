@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/byte_count.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,15 +20,14 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr int64_t kMBytes = 1024 * 1024;
 constexpr double kUsageRatioToStartEviction = 0.7;
 constexpr int kThresholdOfErrorsToStopEviction = 5;
 constexpr base::TimeDelta kHistogramReportInterval = base::Minutes(60);
 constexpr double kDiskSpaceShortageAllowanceRatio = 0.5;
 
-void UmaHistogramMbytes(const std::string& name, int sample) {
-  base::UmaHistogramCustomCounts(name, sample / kMBytes, 1,
-                                 10 * 1024 * 1024 /* 10 TB */, 100);
+void UmaHistogramMbytes(const std::string& name, base::ByteCount sample) {
+  base::UmaHistogramCustomCounts(name, sample.InMiB(), 1, base::TiB(10).InMiB(),
+                                 100);
 }
 
 }  // namespace
@@ -66,11 +66,13 @@ void QuotaTemporaryStorageEvictor::ReportPerRoundHistogram() {
   base::Time now = base::Time::Now();
   base::UmaHistogramTimes("Quota.TimeSpentToAEvictionRound",
                           now - round_statistics_.start_time);
-  UmaHistogramMbytes("Quota.DiskspaceShortage",
-                     round_statistics_.diskspace_shortage_at_round);
-  UmaHistogramMbytes("Quota.EvictedBytesPerRound",
-                     round_statistics_.usage_on_beginning_of_round -
-                         round_statistics_.usage_on_end_of_round);
+  UmaHistogramMbytes(
+      "Quota.DiskspaceShortage",
+      base::ByteCount(round_statistics_.diskspace_shortage_at_round));
+  UmaHistogramMbytes(
+      "Quota.EvictedBytesPerRound",
+      base::ByteCount(round_statistics_.usage_on_beginning_of_round -
+                      round_statistics_.usage_on_end_of_round));
   base::UmaHistogramCounts1M("Quota.NumberOfEvictedBucketsPerRound",
                              round_statistics_.num_evicted_buckets);
 }
