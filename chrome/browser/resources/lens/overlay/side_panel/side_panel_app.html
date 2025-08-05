@@ -189,6 +189,12 @@
     position: absolute;
     width: 100%;
     z-index: 2;
+    display: none;
+  }
+
+  /* Show the composebox when enabled. */
+  :host([enable-aim-searchbox]) #composeboxContainer {
+    display: block;
   }
 
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,
