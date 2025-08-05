@@ -132,6 +132,7 @@ export interface PageElementTypes {
   fetchPinned: HTMLButtonElement;
   shareCandidateQuery: HTMLInputElement;
   shareCandidates: HTMLElement;
+  enableShareCandidates: HTMLInputElement;
   unpin: HTMLButtonElement;
   viewChangedBtn: HTMLButtonElement;
   viewChangedCurrentView: HTMLSelectElement;

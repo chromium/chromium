@@ -260,8 +260,34 @@ class WebClientImpl implements WebClientInterface {
 }
 
 class PinCandidatesObserverImpl implements PinCandidatesObserver {
+  receiver?: PinCandidatesObserverReceiver;
   constructor(
-      private sender: PostMessageRequestSender, public observationId: number) {}
+      private sender: PostMessageRequestSender,
+      private handler: WebClientHandlerInterface,
+      private options: GetPinCandidatesOptions, public observationId: number) {
+    this.connectToSource();
+  }
+
+  // Stops requesting updates. This should be called on destruction, as well as
+  // when the panel is hidden to avoid incurring unnecessary costs.
+  disconnectFromSource() {
+    if (!this.receiver) {
+      return;
+    }
+    this.receiver.$.close();
+    this.receiver = undefined;
+  }
+
+  // Start/resume requesting updates.
+  connectToSource() {
+    if (this.receiver) {
+      return;
+    }
+    this.receiver = new PinCandidatesObserverReceiver(this);
+    this.handler.subscribeToPinCandidates(
+        getPinCandidatesOptionsFromClient(this.options),
+        this.receiver.$.bindNewPipeAndPassRemote());
+  }
 
   onPinCandidatesChanged(candidates: PinCandidateMojo[]): void {
     const extras = new ResponseExtras();
@@ -819,13 +845,9 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     options: GetPinCandidatesOptions,
     observationId: number,
   }): void {
-    const observer =
-        new PinCandidatesObserverImpl(this.sender, request.observationId);
-    const receiver = new PinCandidatesObserverReceiver(observer);
-    this.host.pinCandidatesObserver = {receiver, observer};
-    this.handler.subscribeToPinCandidates(
-        getPinCandidatesOptionsFromClient(request.options),
-        receiver.$.bindNewPipeAndPassRemote());
+    this.host.pinCandidatesObserver?.disconnectFromSource();
+    this.host.pinCandidatesObserver = new PinCandidatesObserverImpl(
+        this.sender, this.handler, request.options, request.observationId);
   }
 
   glicBrowserUnsubscribeFromPinCandidates(request: {observationId: number}):
@@ -833,9 +855,9 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     if (!this.host.pinCandidatesObserver) {
       return;
     }
-    if (this.host.pinCandidatesObserver.observer.observationId ===
+    if (this.host.pinCandidatesObserver.observationId ===
         request.observationId) {
-      this.host.pinCandidatesObserver.receiver.$.close();
+      this.host.pinCandidatesObserver.disconnectFromSource();
       this.host.pinCandidatesObserver = undefined;
     }
   }
@@ -929,10 +951,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private browserIsActive = true;
   private hasShownDebuggerAttachedWarning = false;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
-  pinCandidatesObserver?: {
-    receiver: PinCandidatesObserverReceiver,
-    observer: PinCandidatesObserverImpl,
-  };
+  // Present while the client is monitoring pin candidates.
+  pinCandidatesObserver?: PinCandidatesObserverImpl;
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
@@ -965,7 +985,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.postMessageReceiver.destroy();
     this.messageHandler.destroy();
     this.sender.destroy();
-    this.closePinCandidatesObserver();
+    this.pinCandidatesObserver?.disconnectFromSource();
   }
 
   // Called when the webview page is loaded.
@@ -988,7 +1008,9 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.panelOpenState = state;
     this.clientActiveObs.assignAndSignal(this.isClientActive());
     if (state === PanelOpenState.CLOSED) {
-      this.closePinCandidatesObserver();
+      this.pinCandidatesObserver?.disconnectFromSource();
+    } else {
+      this.pinCandidatesObserver?.connectToSource();
     }
   }
 
@@ -1223,13 +1245,6 @@ export class GlicApiHost implements PostMessageRequestHandler {
     chrome.metricsPrivate.recordEnumerationValue(
         `Glic.Api.RequestCounts.${suffix}`, event,
         GlicRequestEvent.MAX_VALUE + 1);
-  }
-
-  closePinCandidatesObserver() {
-    if (this.pinCandidatesObserver) {
-      this.pinCandidatesObserver.receiver.$.close();
-      this.pinCandidatesObserver = undefined;
-    }
   }
 }
 

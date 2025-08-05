@@ -605,8 +605,8 @@ export declare interface GlicBrowserHost {
    * `ObservableValue` instances. So if a previous one existed, it will stop
    * receiving updates when a new one is obtained.
    *
-   * Dynamic updates can be a costly operation so the observable value should be
-   * released/destroyed as soon as it's not useful anymore.
+   * Dynamic updates can be a costly operation so the observable should be
+   * subscribed only while it is required.
    */
   getPinCandidates?
       (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]>;

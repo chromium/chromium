@@ -45,9 +45,10 @@ class SequencedSubscriber<T> {
     this.current = await waitFor(this.getSignal(this.readIndex++).promise);
     return this.current;
   }
+
   /** Returns true if all values have been read. */
   isEmpty(): boolean {
-    return this.readIndex === this.writeIndex;
+    return this.readIndex >= this.writeIndex;
   }
   unsubscribe() {
     this.subscriber.unsubscribe();
@@ -1323,6 +1324,27 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.pinTabs([checkDefined(focus.hasFocus?.tabData.tabId)]);
 
     await getCandidatesEquals({maxCandidates: 1}, '');
+  }
+
+  async testGetPinCandidatesWithPanelClosed() {
+    assertTrue(!!this.host.pinTabs);
+    assertTrue(!!this.host.getPinCandidates);
+
+    const sequence =
+        observeSequence(this.host.getPinCandidates!({maxCandidates: 10}));
+    sequence.waitFor(tabs => tabs.length === 1);
+    this.host.closePanel!();
+
+    // Open a tab. The client should not receive any updates.
+    await this.advanceToNextStep();
+    await sleep(500);
+    while (!sequence.isEmpty()) {
+      assertEquals((await sequence.next()).length, 1);
+    }
+
+    // Show the panel again. The client should receive an update.
+    await this.advanceToNextStep();
+    sequence.waitFor(tabs => tabs.length === 2);
   }
 
   async testGetModelQualityClientId() {
