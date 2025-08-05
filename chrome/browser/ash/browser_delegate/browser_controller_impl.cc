@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -89,6 +90,13 @@ BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleOnTheRecordBrowser() {
     }
   }
   return nullptr;
+}
+
+BrowserDelegate* BrowserControllerImpl::GetBrowserForWindow(
+    aura::Window* window) {
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(window);
+  return GetDelegate(browser_view ? browser_view->browser() : nullptr);
 }
 
 BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,

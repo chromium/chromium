@@ -16,6 +16,10 @@
 class AccountId;
 class Browser;
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -68,6 +72,10 @@ class BrowserController {
   // Returns (the delegate for) the most recently used browser that is
   // currently visible and on-the-record. Returns nullptr if there's none.
   virtual BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() = 0;
+
+  // Returns (the delegate for) the browser associated with the given native
+  // window, if any. This can be nullptr when the browser is shutting down.
+  virtual BrowserDelegate* GetBrowserForWindow(aura::Window* window) = 0;
 
   // Returns (the delegate for) the most recently activated web app browser
   // that matches the given parameters. Returns nullptr if there's none.

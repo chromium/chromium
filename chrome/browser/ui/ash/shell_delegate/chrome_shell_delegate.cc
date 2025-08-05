@@ -36,6 +36,8 @@
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -72,7 +74,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
@@ -112,22 +113,11 @@ const char kKeyboardShortcutHelpPageUrl[] =
 // independent option here.
 std::optional<bool> disable_logging_redirect_for_testing;
 
-// Returns the TabStripModel that associates with |window| if the given |window|
-// contains a browser frame, otherwise returns nullptr.
-TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  return browser_view ? browser_view->browser()->tab_strip_model() : nullptr;
-}
-
 content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
     gfx::NativeWindow window) {
-  if (!window) {
-    return nullptr;
-  }
-
-  TabStripModel* tab_strip_model = GetTabstripModelForWindowIfAny(window);
-  return tab_strip_model ? tab_strip_model->GetActiveWebContents() : nullptr;
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+  return browser ? browser->GetActiveWebContents() : nullptr;
 }
 
 feedback::FeedbackSource ToChromeFeedbackSource(
@@ -535,10 +525,10 @@ version_info::Channel ChromeShellDelegate::GetChannel() {
 void ChromeShellDelegate::ForceSkipWarningUserOnClose(
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
   for (aura::Window* window : windows) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForNativeWindow(window);
-    if (browser_view) {
-      browser_view->browser()->set_force_skip_warning_user_on_close(true);
+    ash::BrowserDelegate* browser =
+        ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+    if (browser) {
+      browser->GetBrowser().set_force_skip_warning_user_on_close(true);
     }
   }
 }
