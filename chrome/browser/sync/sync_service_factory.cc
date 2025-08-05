@@ -149,9 +149,7 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
   return service;
 #elif BUILDFLAG(IS_ANDROID)
   const bool enable_tab_group_sync =
-      tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) &&
-      !base::FeatureList::IsEnabled(
-          tab_groups::kTabGroupSyncDisableNetworkLayer);
+      tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs());
   tab_groups::TabGroupTrial::OnTabGroupSyncEnabled(enable_tab_group_sync);
   if (!enable_tab_group_sync) {
     return nullptr;

@@ -5355,11 +5355,6 @@ const char kHistoryPaneAndroidName[] = "History Pane Android";
 const char kHistoryPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays History.";
 
-const char kTabGroupSyncDisableNetworkLayerName[] =
-    "Tab Group Sync Disable Network Layer";
-const char kTabGroupSyncDisableNetworkLayerDescription[] =
-    "Disables network layer of tab group sync.";
-
 const char kTabStripDensityChangeAndroidName[] = "Tab Strip Density Change";
 const char kTabStripDensityChangeAndroidDescription[] =
     "Enables tab UI to switch to a denser layout when a peripheral(keyboard, "

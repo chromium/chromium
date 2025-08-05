@@ -11076,11 +11076,6 @@ const FeatureEntry kFeatureEntries[] = {
              kAndroidTabHighlightingVariations,
              "AndroidTabHighlightingVariations")},
 
-    {"tab-group-sync-disable-network-layer",
-     flag_descriptions::kTabGroupSyncDisableNetworkLayerName,
-     flag_descriptions::kTabGroupSyncDisableNetworkLayerDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncDisableNetworkLayer)},
-
     {"swap-new-tab-and-new-tab-in-group-android",
      flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidName,
      flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidDescription,

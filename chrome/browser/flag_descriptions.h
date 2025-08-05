@@ -3098,9 +3098,6 @@ extern const char kSwapNewTabAndNewTabInGroupAndroidDescription[];
 extern const char kHistoryPaneAndroidName[];
 extern const char kHistoryPaneAndroidDescription[];
 
-extern const char kTabGroupSyncDisableNetworkLayerName[];
-extern const char kTabGroupSyncDisableNetworkLayerDescription[];
-
 extern const char kAndroidPinnedTabsName[];
 extern const char kAndroidPinnedTabsDescription[];
 

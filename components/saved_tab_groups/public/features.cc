@@ -18,12 +18,6 @@ const int kDefaultGroupCleanUpTimeInternalInSeconds = 60 * 60;
 constexpr char kGroupCleanUpTimeIntervalInSecondsFinchKey[] =
     "group_clean_up_time_internal_seconds";
 
-// Feature flag used to determine whether the network layer is disabled for
-// tab group sync.
-BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
-             "TabGroupSyncDisableNetworkLayer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag specific to Desktop platforms. When enabled, desktop platforms
 // will use the TabGroupSyncService. When disabled, desktop platforms will
 // continue to use SavedTabGroupKeyedService.
