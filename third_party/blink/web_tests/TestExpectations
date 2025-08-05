@@ -6897,12 +6897,6 @@ crbug.com/1452191 [ Mac Release ] accessibility/notification-listeners.html [ Fa
 # Sheriff 2022-06-30
 crbug.com/1340781 fullscreen/full-screen-table-section.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disable to land https://crrev.com/c/6802805/
-crbug.com/435147582 http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-patterns.js [ Failure Pass ]
-crbug.com/435147582 http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-by-source-code.js [ Failure Pass ]
-crbug.com/435147582 http/tests/devtools/bindings/ignore-listed-sourcemap-detach.js [ Failure Pass ]
-crbug.com/435147582 http/tests/devtools/console/console-linkify-message-location.js [ Failure Pass ]
-
 # Sheriff 2022-07-05
 crbug.com/1340763 external/wpt/pointerevents/pointerevent_capture_mouse.html [ Failure Pass ]
 crbug.com/1341090 external/wpt/webmessaging/with-ports/021.html [ Failure Pass ]

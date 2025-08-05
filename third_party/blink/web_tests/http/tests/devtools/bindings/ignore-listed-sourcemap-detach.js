@@ -7,6 +7,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -15,7 +16,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     `console.log(1);
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXZhbC1pbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImV2YWwtaW4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImNvbnNvbGUubG9nKDEpOyJdfQ==`;
 
-  TestRunner.addSniffer(BindingsModule.IgnoreListManager.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step1);
+  TestRunner.addSniffer(Workspace.IgnoreListManager.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step1);
   var frameworkRegexString = '.*';
   Common.Settings.settingForTest('skip-stack-frames-pattern').set('.*');
 
@@ -30,4 +31,3 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     TestRunner.completeTest();
   }
 })();
-
