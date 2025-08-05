@@ -11,9 +11,6 @@ chrome.runtime.onMessageExternal.addListener(
       case "set_input_method":
         runSetInputMethod(data, sendResponse);
         return true;
-      case "version":
-        sendResponse("1.3");
-        return false;
     }
     sendResponse('unknown message "' + message + '"');
     return false;
@@ -31,5 +28,5 @@ function runSetInputMethod(data, sendResponse) {
   );
 }
 
-// Trigger `kReadyMessageReceived` in `extension_force_install_mixin.cc`.
+// Report back to the browsertest that the extension is ready.
 chrome.test?.sendMessage && chrome.test.sendMessage('ready')
