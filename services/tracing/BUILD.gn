@@ -93,6 +93,7 @@ source_set("tests") {
     "public/cpp/perfetto/perfetto_config_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
+    "public/cpp/perfetto/track_name_recorder_unittest.cc",
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
     "public/cpp/trace_startup_shared_memory_unittest.cc",
   ]
