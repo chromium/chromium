@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/gni_impl/rustc_print_cfg.gni")
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_macro.gni")
 import("//build/rust/rust_static_library.gni")
@@ -438,10 +439,12 @@ template("cargo_crate") {
         "//build/action_helpers.py",
         "//build/gn_helpers.py",
         _rustflags_txt,
+        rustc_print_cfg_path,
       ]
       build_script_target = ":${_build_script_name}($rust_macro_toolchain)"
       deps = [
         ":${_build_script_name}_write_rustflags",
+        "//build/rust/gni_impl:rustc_print_cfg",
         build_script_target,
       ]
       testonly = _testonly
@@ -480,6 +483,8 @@ template("cargo_crate") {
         rebase_path(get_path_info(invoker.build_root, "dir"), root_build_dir),
         "--target",
         rust_abi_target,
+        "--rustc-print-cfg-path",
+        rebase_path(rustc_print_cfg_path, root_build_dir),
         "--rustflags",
         rebase_path(_rustflags_txt, root_build_dir),
       ]

@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/rust.gni")
+import("//build/rust/gni_impl/rustc_print_cfg.gni")
+
 # The `allow_all_warnings` is meant to be used for suppressing warnings in
 # third-party crates coming from crates.io (ones under `//third_party/rust`).
 # Note that Chromium still wants to deny most warnings in some notionally
@@ -26,4 +29,24 @@ config("allow_all_warnings") {
   _path = rebase_path("allow_all_warnings.rsp", root_build_dir)
   rustflags += [ "@${_path}" ]
   inputs = [ "allow_all_warnings.rsp" ]
+}
+
+# This `action` is meant to be run *once* per build and stashes the output
+# of `rustc --print=cfg --target=$rust_abi_target` into `rustc_print_cfg_path`.
+#
+# Scripts that need to be aware of Rust configuration (e.g. is `target_family =
+# "unix"` set) should 1) depend on this target, and 2) use
+# `rustc_print_cfg_path` as one of their `inputs` (after `import`-ing that
+# variable from `//build/rust/gni_impl/rustc_print_cfg.gni`).
+action("rustc_print_cfg") {
+  script = "rustc_print_cfg.py"
+  args = [
+    "--rust-prefix",
+    rebase_path("${rust_sysroot}/bin", root_build_dir),
+    "--target",
+    rust_abi_target,
+    "--output-path",
+    rebase_path(rustc_print_cfg_path, root_build_dir),
+  ]
+  outputs = [ rustc_print_cfg_path ]
 }

@@ -5,6 +5,7 @@
 import("//build/config/clang/clang.gni")
 import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
+import("//build/rust/gni_impl/rustc_print_cfg.gni")
 
 set_defaults("rust_cxx") {
   native_header_deps = []
@@ -111,12 +112,16 @@ template("rust_cxx") {
     inputs = [
       cxxbridge_executable,
       script,
+      rustc_print_cfg_path,
     ]
     outputs = [
       output_h,
       output_cc,
     ]
-    deps = [ cxxbridge_target ]
+    deps = [
+      "//build/rust/gni_impl:rustc_print_cfg",
+      cxxbridge_target,
+    ]
 
     args = [
       "--exe",
@@ -125,10 +130,8 @@ template("rust_cxx") {
       output_h,
       "--cc",
       output_cc,
-      "--rust-prefix",
-      rebase_path("${rust_sysroot}/bin", root_build_dir),
-      "--target",
-      rust_abi_target,
+      "--rustc-print-cfg-path",
+      rebase_path(rustc_print_cfg_path, root_build_dir),
       "{{source}}",
       "--",
     ]
