@@ -16,6 +16,7 @@ import org.chromium.url.GURL;
 public class AutocompleteInput {
     private GURL mPageUrl;
     private int mPageClassification;
+    private String mPageTitle;
     private String mUserText;
     private boolean mAllowExactKeywordMatch;
 
@@ -23,9 +24,15 @@ public class AutocompleteInput {
         reset();
     }
 
-    /** Set the PageClassification for the input. */
-    public void setPageClassification(int pageClassification) {
+    /**
+     * Set the PageClassification for the input.
+     *
+     * @param pageClassification The page classification to be used for this input.
+     * @return The AutocompleteInput object.
+     */
+    public AutocompleteInput setPageClassification(int pageClassification) {
         mPageClassification = pageClassification;
+        return this;
     }
 
     /** Returns the current page classification. */
@@ -33,9 +40,15 @@ public class AutocompleteInput {
         return mPageClassification;
     }
 
-    /** Set the page URL for the input. */
-    public void setPageUrl(GURL pageUrl) {
+    /**
+     * Set the page URL for the input.
+     *
+     * @param pageUrl The URL of the page the user is currently on.
+     * @return The AutocompleteInput object.
+     */
+    public AutocompleteInput setPageUrl(GURL pageUrl) {
         mPageUrl = pageUrl;
+        return this;
     }
 
     /** Returns the current page URL. */
@@ -43,8 +56,30 @@ public class AutocompleteInput {
         return mPageUrl;
     }
 
-    /** Set the text as currently typed by the User. */
-    public void setUserText(String text) {
+    /**
+     * Set the page title for the input.
+     *
+     * @param pageTitle The title of the page the user is currently on.
+     * @return The AutocompleteInput object.
+     */
+    public AutocompleteInput setPageTitle(String pageTitle) {
+        mPageTitle = pageTitle;
+        return this;
+    }
+
+    /** Returns the current page title. */
+    public String getPageTitle() {
+        return mPageTitle;
+    }
+
+    /**
+     * Set the text as currently typed by the User. This also updates the state for keyword
+     * matching.
+     *
+     * @param text The user-typed text.
+     * @return The AutocompleteInput object.
+     */
+    public AutocompleteInput setUserText(String text) {
         boolean oldTextUsesKeywordActivator =
                 !TextUtils.isEmpty(mUserText) && TextUtils.indexOf(mUserText, ' ') > 0;
         boolean newTextUsesKeywordActivator =
@@ -56,6 +91,7 @@ public class AutocompleteInput {
         mAllowExactKeywordMatch &= !(oldTextUsesKeywordActivator && !newTextUsesKeywordActivator);
 
         mUserText = text;
+        return this;
     }
 
     /** Returns whether exact keyword match is allowed with current input. */
@@ -94,11 +130,19 @@ public class AutocompleteInput {
         }
     }
 
+    /**
+     * Resets the AutocompleteInput to its default state.
+     *
+     * @return The reset AutocompleteInput object.
+     */
     @Initializer
-    public void reset() {
+    public AutocompleteInput reset() {
         mUserText = "";
         mAllowExactKeywordMatch = false;
         mPageUrl = GURL.emptyGURL();
+        mPageTitle = "";
         mPageClassification = PageClassification.BLANK_VALUE;
+
+        return this;
     }
 }

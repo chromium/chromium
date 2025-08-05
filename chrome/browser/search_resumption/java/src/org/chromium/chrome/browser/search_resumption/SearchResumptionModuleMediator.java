@@ -210,10 +210,9 @@ public class SearchResumptionModuleMediator
 
                                 var input = new AutocompleteInput();
                                 input.setPageUrl(mTabToTrackSuggestion.getUrl());
+                                input.setPageTitle(mTabToTrackSuggestion.getTitle());
                                 input.setPageClassification(pageClassification);
-
-                                mAutoComplete.startZeroSuggest(
-                                        input, mTabToTrackSuggestion.getTitle());
+                                mAutoComplete.startZeroSuggest(input);
                             });
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);

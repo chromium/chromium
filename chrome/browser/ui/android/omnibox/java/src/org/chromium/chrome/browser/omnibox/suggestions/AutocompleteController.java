@@ -125,24 +125,15 @@ public class AutocompleteController {
      * Issue a prefetch request for zero prefix suggestions. Prefetch is a fire-and-forget operation
      * that yields no results.
      *
-     * @param url The URL of the current tab, used to suggest query refinements.
-     * @param pageClassification The page classification of the current tab.
-     */
-    void startPrefetch(GURL url, int pageClassification) {
-        if (mNativeController == 0) return;
-        AutocompleteControllerJni.get()
-                .startPrefetch(mNativeController, url.getSpec(), pageClassification);
-    }
-
-    /**
-     * Issue a prefetch request for zero prefix suggestions. Prefetch is a fire-and-forget operation
-     * that yields no results. This overload gets the page URL and classification from the
-     * AutocompleteInput.
-     *
      * @param input The AutocompleteInput containing page URL and classification.
      */
     void startPrefetch(AutocompleteInput input) {
-        startPrefetch(input.getPageUrl(), input.getPageClassification());
+        if (mNativeController == 0) return;
+        AutocompleteControllerJni.get()
+                .startPrefetch(
+                        mNativeController,
+                        input.getPageUrl().getSpec(),
+                        input.getPageClassification());
     }
 
     /**
@@ -167,9 +158,8 @@ public class AutocompleteController {
      * Starts a query for suggestions before any input is available from the user.
      *
      * @param input The AutocompleteInput describing current input context.
-     * @param title The title of the currently loaded web page.
      */
-    public void startZeroSuggest(AutocompleteInput input, String title) {
+    public void startZeroSuggest(AutocompleteInput input) {
         if (mNativeController == 0) return;
 
         AutocompleteControllerJni.get()
@@ -178,7 +168,7 @@ public class AutocompleteController {
                         input.getUserText(),
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
-                        title);
+                        input.getPageTitle());
     }
 
     /**

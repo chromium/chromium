@@ -342,7 +342,7 @@ public class SearchActivityTest {
 
         // Suggestions requests are always delayed. Rather than check for the request itself
         // confirm that any prior requests have been canceled.
-        verify(mAutocompleteController, times(1)).resetSession();
+        verify(mAutocompleteController).resetSession();
 
         waitForChromeTabbedActivityToStart(
                 () -> {
@@ -429,7 +429,7 @@ public class SearchActivityTest {
         Assert.assertNotNull(mTestDelegate.onSearchEngineFinalizedCallback);
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
         // Native initialization is finished, but we don't have a DSE elected yet.
-        verify(mAutocompleteController, times(1)).addOnSuggestionsReceivedListener(any());
+        verify(mAutocompleteController).addOnSuggestionsReceivedListener(any());
 
         // Set some text in the search box, then continue startup.
         mOmnibox.requestFocus();
@@ -449,7 +449,7 @@ public class SearchActivityTest {
 
         // Omnibox suggestions should be requested now.
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-        verify(mAutocompleteController, times(1)).startZeroSuggest(captor.capture(), any());
+        verify(mAutocompleteController).startZeroSuggest(captor.capture());
         Assert.assertEquals("", captor.getValue().getUserText());
         Assert.assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,

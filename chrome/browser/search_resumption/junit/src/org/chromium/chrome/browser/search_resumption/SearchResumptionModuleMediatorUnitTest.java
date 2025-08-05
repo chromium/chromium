@@ -295,7 +295,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
             var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-            verify(mAutocompleteController, times(1)).startZeroSuggest(captor.capture(), any());
+            verify(mAutocompleteController, times(1)).startZeroSuggest(captor.capture());
             Assert.assertEquals(mUrlToTrack.getSpec(), captor.getValue().getPageUrl().getSpec());
         }
 
