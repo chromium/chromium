@@ -34,6 +34,10 @@ declare_args() {
     # package name. This currently only affects builds with `android_channel =
     # "beta"`.
     use_stable_package_name_for_trichrome = false
+
+    # Set to true to enable new logic for setting the package name and version
+    # code for standalone WebView targets.
+    enable_new_standalone_webview_settings = false
   }
 }
 
