@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_ui.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
@@ -55,6 +56,8 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
   map.AddUntrustedWebUIConfig(std::make_unique<BocaUIConfig>());
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<BocaReceiverUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
   map.AddUntrustedWebUIConfig(

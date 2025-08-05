@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+assert(is_chromeos, "Boca Receiver App is ChromeOS only")
+
+static_library("boca_receiver_app_ui") {
+  sources = [
+    "boca_receiver_untrusted_ui.cc",
+    "boca_receiver_untrusted_ui.h",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/webui/boca_receiver_app_ui/resources/untrusted:resources",
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/webui",
+  ]
+}

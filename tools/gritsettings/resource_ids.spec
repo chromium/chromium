@@ -804,6 +804,10 @@
   "chromeos/ash/resources/internal/ash_internal_strings.grd": {
     "messages": [5820],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/boca_receiver_app_ui/resources/untrusted/resources.grd": {
+    "META": {"sizes": {"includes": [120],}},
+    "includes": [5830],
+  },
   # Both boca_app_bundle_resources.grd and boca_app_bundle_mock_resources.grd
   # start with the same id because only one of them is built depending on if
   # actual app is available.
