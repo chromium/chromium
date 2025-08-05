@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_MEDIATOR_H_
+
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
+
+// Mediator for the AIM prototype.
+@interface AIMPrototypeMediator : NSObject
+
+@property(nonatomic, weak) id<AIMPrototypeConsumer> consumer;
+
+- (void)processImage:(UIImage*)image;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_MEDIATOR_H_

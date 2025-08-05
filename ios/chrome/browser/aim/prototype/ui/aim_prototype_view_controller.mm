@@ -8,7 +8,17 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-@implementation AIMPrototypeViewController
+namespace {
+NSString* const kImageCellReuseIdentifier = @"ImageCellReuseIdentifier";
+}
+
+@interface AIMPrototypeViewController () <UICollectionViewDataSource>
+@end
+
+@implementation AIMPrototypeViewController {
+  UICollectionView* _carouselView;
+  NSArray<UIImage*>* _images;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -41,6 +51,23 @@
   textView.text = @"Ask anything";
   textView.backgroundColor = UIColor.clearColor;
   [textView.heightAnchor constraintEqualToConstant:40].active = YES;
+
+  // Carousel view
+  UICollectionViewFlowLayout* layout =
+      [[UICollectionViewFlowLayout alloc] init];
+  layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+  layout.itemSize = CGSizeMake(48, 48);
+  layout.minimumLineSpacing = 12;
+  _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
+                                     collectionViewLayout:layout];
+  _carouselView.dataSource = self;
+  _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
+  _carouselView.hidden = YES;
+  _carouselView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  [_carouselView registerClass:[UICollectionViewCell class]
+      forCellWithReuseIdentifier:kImageCellReuseIdentifier];
+  [_carouselView.heightAnchor constraintEqualToConstant:48].active = YES;
+  _carouselView.showsHorizontalScrollIndicator = NO;
 
   // Action buttons
   UIButton* galleryButton =
@@ -83,7 +110,7 @@
 
   // Main vertical stack view
   UIStackView* mainStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ textView, buttonsStackView ]];
+      initWithArrangedSubviews:@[ textView, _carouselView, buttonsStackView ]];
   mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
   mainStackView.axis = UILayoutConstraintAxisVertical;
   mainStackView.spacing = 8;
@@ -122,6 +149,35 @@
   ]];
 }
 
+#pragma mark - AIMPrototypeConsumer
+
+- (void)setImages:(NSArray<UIImage*>*)images {
+  _images = images;
+  _carouselView.hidden = _images.count == 0;
+  [_carouselView reloadData];
+}
+
+#pragma mark - UICollectionViewDataSource
+
+- (NSInteger)collectionView:(UICollectionView*)collectionView
+     numberOfItemsInSection:(NSInteger)section {
+  return _images.count;
+}
+
+- (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
+                 cellForItemAtIndexPath:(NSIndexPath*)indexPath {
+  UICollectionViewCell* cell = [collectionView
+      dequeueReusableCellWithReuseIdentifier:kImageCellReuseIdentifier
+                                forIndexPath:indexPath];
+  UIImageView* imageView =
+      [[UIImageView alloc] initWithImage:_images[indexPath.row]];
+  imageView.contentMode = UIViewContentModeScaleAspectFill;
+  cell.backgroundView = imageView;
+  cell.layer.cornerRadius = 16;
+  cell.clipsToBounds = YES;
+  return cell;
+}
+
 #pragma mark - Actions
 
 - (void)closeButtonTapped {
@@ -129,7 +185,7 @@
 }
 
 - (void)galleryButtonTapped {
-  // TODO(crbug.com/40280872): Implement gallery action.
+  [self.delegate aimPrototypeViewControllerDidTapGalleryButton:self];
 }
 
 - (void)lensButtonTapped {

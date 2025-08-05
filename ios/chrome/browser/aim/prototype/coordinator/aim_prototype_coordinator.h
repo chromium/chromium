@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_COORDINATOR_H_
 
+#import <PhotosUI/PhotosUI.h>
+
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -17,7 +19,8 @@
 
 // LensOverlayCoordinator presents the public interface for the Lens Overlay.
 @interface AIMPrototypeCoordinator
-    : ChromeCoordinator <AIMPrototypeViewControllerDelegate>
+    : ChromeCoordinator <AIMPrototypeViewControllerDelegate,
+                         PHPickerViewControllerDelegate>
 
 @property(nonatomic, weak) id<AIMPrototypeCoordinatorDelegate> delegate;
 
