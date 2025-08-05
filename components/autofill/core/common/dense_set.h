@@ -119,7 +119,7 @@ class Bitset final {
   }
 
   // Returns the minimum value that is `>= index` and points to a set bit, or
-  // `kBitsPer<Word>` if none exists.
+  // `words_.size() * kBitsPer<Word>` if none exists.
   constexpr size_t next_set_bit(size_t index) const {
     DCHECK_LT(index, words_.size() * kBitsPer<Word>);
     size_t word = index / kBitsPer<Word>;
@@ -594,7 +594,7 @@ class DenseSet {
     return bitset_.get_bit(value_to_index(x));
   }
 
-  // Returns true if some element of |xs| is an element, else |false|.
+  // Returns true if no element of |xs| is an element, else |false|.
   constexpr bool contains_none(const DenseSet& xs) const {
     return (bitset_ & xs.bitset_) == Bitset{};
   }
