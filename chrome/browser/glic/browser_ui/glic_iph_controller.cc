@@ -80,7 +80,7 @@ void GlicIphController::OnShowPromoResult(
   if (result == user_education::FeaturePromoResult::Success()) {
     auto* profile = window_->GetProfile();
     auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    glic_service->TryPreloadFre();
+    glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kIph);
   }
 }
 

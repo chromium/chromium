@@ -84,7 +84,7 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
       auto* profile = browser_window_interface_->GetProfile();
       auto* glic_service =
           glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-      glic_service->TryPreloadFre();
+      glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kNudge);
 #endif
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
       scoped_window_call_to_action_ptr =

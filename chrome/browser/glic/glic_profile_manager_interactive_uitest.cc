@@ -136,7 +136,8 @@ class GlicProfileManagerUiTest
           GetTestEnvForSecondProfile().SetFRECompletion(
               prefs::FreStatus::kNotStarted);
         }
-        GetService(primary_profile)->TryPreloadFre();
+        GetService(primary_profile)
+            ->TryPreloadFre(glic::GlicPrewarmingFreSource::kTest);
       } else {
         GetService(primary_profile)->TryPreload();
       }

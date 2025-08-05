@@ -395,7 +395,7 @@ void BrowserCommandHandler::PrewarmGlicFre() {
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile_);
   if (glic_service) {
-    glic_service->TryPreloadFre();
+    glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kBrowserCommand);
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }

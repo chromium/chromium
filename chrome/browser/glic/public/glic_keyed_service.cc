@@ -540,17 +540,19 @@ void GlicKeyedService::TryPreloadAfterDelay() {
   }
 }
 
-void GlicKeyedService::TryPreloadFre() {
+void GlicKeyedService::TryPreloadFre(GlicPrewarmingFreSource source) {
   if (base::FeatureList::IsEnabled(features::kGlicDisableWarming) &&
       !base::FeatureList::IsEnabled(features::kGlicFreWarming)) {
+    base::UmaHistogramEnumeration(
+        "Glic.PrewarmingFre.DisabledShouldNotPreloadFreForSource", source);
     return;
   }
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   CHECK(glic_profile_manager);
 
   glic_profile_manager->ShouldPreloadFreForProfile(
-      profile_,
-      base::BindOnce(&GlicKeyedService::FinishPreloadFre, GetWeakPtr()));
+      profile_, base::BindOnce(&GlicKeyedService::FinishPreloadFre,
+                               GetWeakPtr(), source));
 }
 
 void GlicKeyedService::Reload() {
@@ -594,10 +596,16 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
   window_controller_->Preload();
 }
 
-void GlicKeyedService::FinishPreloadFre(bool should_preload) {
+void GlicKeyedService::FinishPreloadFre(GlicPrewarmingFreSource source,
+                                        bool should_preload) {
   if (!should_preload) {
+    base::UmaHistogramEnumeration(
+        "Glic.PrewarmingFre.ShouldNotPreloadFreForSource", source);
     return;
   }
+
+  base::UmaHistogramEnumeration("Glic.PrewarmingFre.ShouldPreloadFreForSource",
+                                source);
 
   window_controller_->PreloadFre();
 }
