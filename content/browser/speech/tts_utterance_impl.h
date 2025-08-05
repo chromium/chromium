@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SPEECH_TTS_UTTERANCE_IMPL_H_
 
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -72,11 +71,12 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
   void SetShouldClearQueue(bool value) override;
   bool GetShouldClearQueue() override;
 
-  void SetRequiredEventTypes(const std::set<TtsEventType>& types) override;
-  const std::set<TtsEventType>& GetRequiredEventTypes() override;
+  void SetRequiredEventTypes(
+      const base::flat_set<TtsEventType>& types) override;
+  const base::flat_set<TtsEventType>& GetRequiredEventTypes() override;
 
-  void SetDesiredEventTypes(const std::set<TtsEventType>& types) override;
-  const std::set<TtsEventType>& GetDesiredEventTypes() override;
+  void SetDesiredEventTypes(const base::flat_set<TtsEventType>& types) override;
+  const base::flat_set<TtsEventType>& GetDesiredEventTypes() override;
 
   void SetEngineId(const std::string& engine_id) override;
   const std::string& GetEngineId() override;
@@ -142,8 +142,8 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
   std::string lang_;
   UtteranceContinuousParameters continuous_parameters_;
   bool should_clear_queue_;
-  std::set<TtsEventType> required_event_types_;
-  std::set<TtsEventType> desired_event_types_;
+  base::flat_set<TtsEventType> required_event_types_;
+  base::flat_set<TtsEventType> desired_event_types_;
 
   // The index of the current char being spoken.
   int char_index_;

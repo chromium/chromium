@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 
@@ -134,7 +133,7 @@ class TtsExtensionEventHandler : public content::UtteranceEventDelegate {
       return;
     }
 
-    const std::set<content::TtsEventType>& desired_event_types =
+    const base::flat_set<content::TtsEventType>& desired_event_types =
         utterance->GetDesiredEventTypes();
     if (!desired_event_types.empty() &&
         desired_event_types.find(event_type) == desired_event_types.end()) {
@@ -233,7 +232,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(value->is_bool());
   }
 
-  std::set<content::TtsEventType> required_event_types;
+  base::flat_set<content::TtsEventType> required_event_types;
   if (options.contains(constants::kRequiredEventTypesKey)) {
     base::Value::List* list =
         options.FindList(constants::kRequiredEventTypesKey);
@@ -246,7 +245,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     }
   }
 
-  std::set<content::TtsEventType> desired_event_types;
+  base::flat_set<content::TtsEventType> desired_event_types;
   if (options.contains(constants::kDesiredEventTypesKey)) {
     base::Value::List* list =
         options.FindList(constants::kDesiredEventTypesKey);

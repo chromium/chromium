@@ -168,19 +168,19 @@ bool TtsUtteranceImpl::GetShouldClearQueue() {
 }
 
 void TtsUtteranceImpl::SetRequiredEventTypes(
-    const std::set<TtsEventType>& types) {
+    const base::flat_set<TtsEventType>& types) {
   required_event_types_ = types;
 }
 
-const std::set<TtsEventType>& TtsUtteranceImpl::GetRequiredEventTypes() {
+const base::flat_set<TtsEventType>& TtsUtteranceImpl::GetRequiredEventTypes() {
   return required_event_types_;
 }
 
 void TtsUtteranceImpl::SetDesiredEventTypes(
-    const std::set<TtsEventType>& types) {
+    const base::flat_set<TtsEventType>& types) {
   desired_event_types_ = types;
 }
-const std::set<TtsEventType>& TtsUtteranceImpl::GetDesiredEventTypes() {
+const base::flat_set<TtsEventType>& TtsUtteranceImpl::GetDesiredEventTypes() {
   return desired_event_types_;
 }
 
