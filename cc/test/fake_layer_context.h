@@ -16,7 +16,7 @@ class FakeLayerContext : public LayerContext {
 
   void SetVisible(bool visible) override;
 
-  void UpdateDisplayTreeFrom(
+  base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
       viz::RasterContextProvider& context_provider,

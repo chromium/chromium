@@ -40,7 +40,7 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
 
   // LayerContext:
   void SetVisible(bool visible) override;
-  void UpdateDisplayTreeFrom(
+  base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
       viz::RasterContextProvider& context_provider,

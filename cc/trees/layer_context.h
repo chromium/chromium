@@ -5,6 +5,7 @@
 #ifndef CC_TREES_LAYER_CONTEXT_H_
 #define CC_TREES_LAYER_CONTEXT_H_
 
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/trees/commit_state.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -35,7 +36,7 @@ class CC_EXPORT LayerContext {
   virtual void SetVisible(bool visible) = 0;
 
   // Pushes updates from `tree` into the context's display tree.
-  virtual void UpdateDisplayTreeFrom(
+  virtual base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
       viz::RasterContextProvider& context_provider,

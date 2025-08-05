@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
@@ -1242,7 +1243,7 @@ void VizLayerContext::SetVisible(bool visible) {
   service_->SetVisible(visible);
 }
 
-void VizLayerContext::UpdateDisplayTreeFrom(
+base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider,
@@ -1377,9 +1378,12 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     SerializeAnimationUpdates(tree, *update);
   }
+
+  base::TimeTicks time_sent_to_service = base::TimeTicks::Now();
   service_->UpdateDisplayTree(std::move(update));
 
   needs_full_sync_ = false;
+  return time_sent_to_service;
 }
 
 // Sends a single-tile update to the Viz service by serializing it as a tiling.
