@@ -85,19 +85,21 @@ NtpPromoController::NtpPromoController(
 
 NtpPromoController::~NtpPromoController() = default;
 
-bool NtpPromoController::HasShowablePromos(Profile* profile) const {
-  for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
-    if (const auto* spec = registry_->GetNtpPromoSpecification(id)) {
-      if (spec->eligibility_callback().Run(profile) !=
-          NtpPromoSpecification::Eligibility::kIneligible) {
-        return true;
-      }
-    }
-  }
-  return false;
+bool NtpPromoController::HasShowablePromos(Profile* profile) {
+  // Generate promo lists here, since the Eligibility callback results are
+  // insufficient. Promo callbacks may report Eligible or Completed, but be
+  // suppressed for several reasons.
+  auto promos = GenerateShowablePromos(profile, /*apply_ordering=*/false);
+  return !promos.pending.empty() || !promos.completed.empty();
 }
 
 NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
+  return GenerateShowablePromos(profile, /*apply_ordering=*/true);
+}
+
+NtpShowablePromos NtpPromoController::GenerateShowablePromos(
+    Profile* profile,
+    bool apply_ordering) {
   std::vector<NtpPromoIdentifier> pending_promo_ids;
   std::vector<NtpPromoIdentifier> completed_promo_ids;
   const auto now = base::Time::Now();
@@ -132,9 +134,11 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
         .push_back(id);
   }
 
-  pending_promo_ids = order_policy_->OrderPendingPromos(pending_promo_ids);
-  completed_promo_ids =
-      order_policy_->OrderCompletedPromos(completed_promo_ids);
+  if (apply_ordering) {
+    pending_promo_ids = order_policy_->OrderPendingPromos(pending_promo_ids);
+    completed_promo_ids =
+        order_policy_->OrderCompletedPromos(completed_promo_ids);
+  }
 
   NtpShowablePromos showable_promos;
   showable_promos.pending = MakeShowablePromos(pending_promo_ids);

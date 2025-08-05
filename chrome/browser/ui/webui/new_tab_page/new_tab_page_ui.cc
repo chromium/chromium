@@ -1059,7 +1059,7 @@ void NewTabPageUI::OnLoad() {
       module_id_details_, IdentityManagerFactory::GetForProfile(profile_));
   update.Set("modulesEnabled", modules_enabled);
 
-  const auto* ntp_promo_controller =
+  auto* ntp_promo_controller =
       UserEducationServiceFactory::GetForBrowserContext(profile_)
           ->ntp_promo_controller();
   const bool show_ntp_promos =

@@ -266,4 +266,10 @@ TEST_F(NtpPromoControllerTest, ShownCallbackInvoked) {
   controller_.OnPromosShown({kPromoId}, {});
 }
 
+TEST_F(NtpPromoControllerTest, HasShowablePromos) {
+  EXPECT_FALSE(controller_.HasShowablePromos(nullptr));
+  RegisterPromo(kPromoId, kEligible);
+  EXPECT_TRUE(controller_.HasShowablePromos(nullptr));
+}
+
 }  // namespace user_education
