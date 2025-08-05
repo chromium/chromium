@@ -65,6 +65,11 @@ const char kMonospaceCssClass[] = "monospace";
 
 // LINT.ThenChange(//components/dom_distiller/core/css/distilledpage_common.css)
 
+std::string GetVersionedCss() {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      IDR_DISTILLER_CSS);
+}
+
 std::string GetPlatformSpecificCss() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return "";
@@ -291,7 +296,7 @@ const std::string GetCss() {
   return base::StrCat(
       {ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
            IDR_DISTILLER_COMMON_CSS),
-       GetPlatformSpecificCss()});
+       GetVersionedCss(), GetPlatformSpecificCss()});
 }
 
 const std::string GetLoadingImage() {

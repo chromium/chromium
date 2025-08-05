@@ -1,0 +1,192 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+ /*
+  * This file contains style used across ALL platforms. It contains the legacy
+  * styling to A/B test against a new set of styles. Common styling has been
+  * refactored into distilledpage_common.css.
+  * Platform-specific styling should be placed in the corresponding file (e.g.
+  * desktop style goes in distilledpage_desktop.css).
+  */
+
+/* Remove most spacing between table cells. */
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: block;
+  overflow-x: auto;
+}
+
+td,
+th {
+  padding: 0.5rem;
+}
+
+/* Base typography. */
+
+html {
+  /* This has to be in sync with |baseSize| in dom_distiller_viewer.js. */
+  font-size: 14px;
+}
+
+body {
+  line-height: 1.714;
+}
+
+/* Define vertical rhythm (baseline grid of 4px). */
+
+blockquote,
+caption,
+code,
+dd,
+dl,
+fieldset,
+figure,
+form,
+hr,
+legend,
+ol,
+p,
+pre,
+q,
+table,
+td,
+th,
+ul {
+  margin-bottom: 1.143rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.417;
+  margin: 1em 0;
+}
+
+/* Margin and styling rules for various elements. */
+
+#content {
+  margin: 24px 16px 24px 16px;
+}
+
+#main-content {
+  flex: 1 1 auto;
+  margin: 0 auto;
+  width: 100%;
+}
+
+#article-header {
+  margin-top: 24px;
+  width: 100%;
+}
+
+#title-holder {
+  font-size: 1.714rem;
+  line-height: 1.417;
+  margin: 0 16px;
+}
+
+blockquote {
+  border-inline-start: 4px solid #888;
+  padding-inline-start: 1em;
+}
+
+cite {
+  font-style: italic;
+  opacity: .8;
+}
+
+hr {
+  border-style: solid;
+  height: 1px 0 0 0;
+  opacity: .5;
+  width: 75%;
+}
+
+
+q {
+  display: block;
+  font-style: italic;
+  font-weight: 600;
+  opacity: .8;
+}
+
+embed,
+img,
+object,
+video {
+  max-width: 100%;
+}
+
+/* TODO(sunangel): make images zoomable. */
+
+img {
+  display: block;
+  height: auto;
+  margin: 0.6rem auto 0.4rem auto;
+}
+
+/* TODO(nyquist): set these classes directly in the dom distiller. */
+
+embed+[class*='caption'],
+figcaption,
+img+[class*='caption'],
+object+[class*='caption'],
+video+[class*='caption'] {
+  display: table;
+  font-size: 0.857rem;
+  line-height: 1.667;
+  margin-bottom: 1rem;
+  opacity: .8;
+}
+
+ol,
+ul {
+  margin-inline-start: 1.296rem;
+}
+
+code,
+pre {
+  border: 1px solid;
+  border-radius: 2px;
+}
+
+pre code {
+  border: none;
+}
+
+pre {
+  line-height: 1.642;
+  padding: .5em;
+  white-space: pre-wrap;
+}
+
+body .hidden {
+  display: none;
+}
+
+.clear {
+  clear: both;
+}
+
+/* Iframe sizing. */
+.youtubeContainer {
+  height: 0;
+  /* This is the perecnt height of a standard HD video. */
+  padding-bottom: 56.25%;
+  position: relative;
+  width: 100%;
+}
+
+.youtubeIframe {
+  height: 100%;
+  position: absolute;
+  start: 0;
+  top: 0;
+  width: 100%;
+}
