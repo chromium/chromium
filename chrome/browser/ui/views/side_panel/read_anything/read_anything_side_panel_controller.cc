@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <climits>
 #include <memory>
+#include <optional>
 
 #include "base/check_is_test.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -29,7 +30,11 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "read_anything_side_panel_controller.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -120,6 +125,7 @@ void ReadAnythingSidePanelController::RemoveObserver(
 
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
+
   auto* service =
       ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   // At the moment, services are created for normal and incognito profiles but
@@ -130,11 +136,47 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
     service->OnReadAnythingSidePanelEntryShown();
   }
 
+  // Build and record UKM record for SidePanelShown to true on the current
+  // source Id
+  if (auto* contents = tab_->GetContents()) {
+    if (content::RenderFrameHost* main_frame =
+            contents->GetPrimaryMainFrame()) {
+      ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
+      ukm::builders::Accessibility_ReadAnything_SidePanel builder(source_id);
+      builder.SetShown(true);
+
+      // Get the trigger from the entry object
+      std::optional<SidePanelOpenTrigger> open_trigger =
+          entry->last_open_trigger();
+
+      if (open_trigger.has_value()) {
+        builder.SetEntryPoint(static_cast<int64_t>(open_trigger.value()));
+      }
+      builder.Record(ukm::UkmRecorder::Get());
+    }
+  }
+
   observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, true);
 }
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
+
+  // Get the object that represents the content of the current tab
+  content::WebContents* web_contents = tab_->GetContents();
+
+  // Build and record UKM record for SidePanelClosed to true on the current
+  // source id
+  if (web_contents) {
+    if (content::RenderFrameHost* main_frame =
+            web_contents->GetPrimaryMainFrame()) {
+      ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
+      ukm::builders::Accessibility_ReadAnything_SidePanel(source_id)
+          .SetClosed(true)
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+
   auto* service =
       ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   // At the moment, services are created for normal and incognito profiles but

@@ -442,6 +442,47 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ReadAnything.SidePanel">
+  <owner>gusmartin@google.com</owner>
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records Read Anything side panel events
+  </summary>
+  <metric name="Closed" enum="Boolean">
+    <summary>
+      A flag set to true when the Read Anything side panel is closed for a given
+      source ID.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EntryPoint" enum="SidePanelOpenTrigger">
+    <summary>
+      Records the UI entry point that the user clicked to open the Read Anything
+      side panel.
+    </summary>
+  </metric>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      A flag set to true when the Read Anything side panel is shown for a given
+      source ID.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Accessibility.Renderer">
   <owner>aleventhal@chromium.org</owner>
   <owner>nektar@chromium.org</owner>

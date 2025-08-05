@@ -181,6 +181,8 @@ source_set("side_panel") {
     "//components/web_modal",
     "//extensions/buildflags",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/common",

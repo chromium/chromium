@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
@@ -74,6 +75,14 @@ class SidePanelEntry final : public ui::PropertyHandler {
   void OnEntryHidden();
 
   const Key& key() const { return key_; }
+
+  void set_last_open_trigger(std::optional<SidePanelOpenTrigger> trigger) {
+    last_open_trigger_ = trigger;
+  }
+
+  std::optional<SidePanelOpenTrigger> last_open_trigger() const {
+    return last_open_trigger_;
+  }
 
   void AddObserver(SidePanelEntryObserver* observer);
   void RemoveObserver(SidePanelEntryObserver* observer);
@@ -139,6 +148,10 @@ class SidePanelEntry final : public ui::PropertyHandler {
   base::TimeTicks entry_shown_timestamp_;
 
   base::ObserverList<SidePanelEntryObserver> observers_;
+
+  // The last trigger that caused this side panel entry to be shown. This is
+  // used for metrics.
+  std::optional<SidePanelOpenTrigger> last_open_trigger_;
 
   // The default minimum content width for the side panel that can be overridden
   // for testing. This is used if the default_content_width_callback_ is not

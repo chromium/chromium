@@ -176,6 +176,7 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   void PopulateSidePanel(
       bool suppress_animations,
       const UniqueKey& unique_key,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view);
 
