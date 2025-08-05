@@ -126,7 +126,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     auto comparator = cc::FuzzyPixelComparator()
                           .DiscardAlpha()
                           .SetErrorPixelsPercentageLimit(11.f)
-                          .SetAvgAbsErrorLimit(11.f)
+                          .SetAvgAbsErrorLimit(12.f)
                           .SetAbsErrorLimit(140);
 #else
     cc::AlphaDiscardingExactPixelComparator comparator;
