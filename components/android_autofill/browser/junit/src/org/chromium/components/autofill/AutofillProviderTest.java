@@ -56,7 +56,8 @@ import java.util.Collections;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({
     AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME,
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME
 })
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
@@ -408,15 +409,18 @@ public class AutofillProviderTest {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mBounds =
                 new RectF(/* left= */ 10, /* top= */ 20, /* right= */ 300, /* bottom= */ 60);
+        field1Builder.mOrigin = "https://field.host.com/";
+
         FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
         field2Builder.mBounds =
                 new RectF(/* left= */ 20, /* top= */ 100, /* right= */ 400, /* bottom= */ 200);
+        field2Builder.mOrigin = "https://field2.host.com/";
 
         FormData formData =
                 new FormData(
                         sessionId,
                         /* name= */ null,
-                        /* host= */ null,
+                        /* host= */ "https://host.com/",
                         Arrays.asList(field1Builder.build(), field2Builder.build()));
         mAutofillProvider.sendPrefillRequest(formData);
 

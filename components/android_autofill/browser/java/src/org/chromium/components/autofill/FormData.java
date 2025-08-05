@@ -76,6 +76,9 @@ public class FormData {
                 child.setAutofillHints(field.mAutocompleteAttr.split(" +"));
             }
             child.setHint(field.mPlaceholder);
+            if (AndroidAutofillFeatures.ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN.isEnabled()) {
+                child.setWebDomain(field.mOrigin);
+            }
 
             RectF bounds = field.getBoundsInContainerViewCoordinates();
             // Field has no scroll.

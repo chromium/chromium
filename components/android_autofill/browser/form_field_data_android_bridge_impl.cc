@@ -99,7 +99,8 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ProjectOptions(field.datalist_options(), &SelectOption::value),
       /*datalistLabels=*/
       ProjectOptions(field.datalist_options(), &SelectOption::text),
-      /*visible=*/field.IsFocusable(), field.is_autofilled());
+      /*visible=*/field.IsFocusable(), field.is_autofilled(),
+      ConvertUTF8ToJavaString(env, field.origin().Serialize()));
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;
 }

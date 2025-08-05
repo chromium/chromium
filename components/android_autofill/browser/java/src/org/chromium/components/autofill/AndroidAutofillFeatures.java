@@ -25,6 +25,8 @@ public class AndroidAutofillFeatures extends Features {
             "AutofillVirtualViewStructureAndroidInCct";
     public static final String ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME =
             "AutofillVirtualViewStructureAndroidPasskeyLongPress";
+    public static final String ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME =
+            "AndroidAutofillForwardIframeOrigin";
 
     public static final AndroidAutofillFeatures
             ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT =
@@ -36,6 +38,9 @@ public class AndroidAutofillFeatures extends Features {
             ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS =
                     new AndroidAutofillFeatures(
                             2, ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME);
+
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN =
+            new AndroidAutofillFeatures(3, ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME);
 
     private final int mOrdinal;
 

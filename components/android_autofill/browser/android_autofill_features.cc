@@ -23,7 +23,8 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kAutofillVirtualViewStructureAndroidInCct,
     &kAndroidAutofillLazyFrameworkWrapper,
-    &kAutofillVirtualViewStructureAndroidPasskeyLongPress};
+    &kAutofillVirtualViewStructureAndroidPasskeyLongPress,
+    &kAndroidAutofillForwardIframeOrigin};
 
 }  // namespace
 
@@ -48,6 +49,12 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress,
 // issues.
 BASE_FEATURE(kAndroidAutofillLazyFrameworkWrapper,
              "AndroidAutofillLazyFrameworkWrapper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the origin of a field is forwarded to the Autofill framework if
+// it differs from the origin of the main frame.
+BASE_FEATURE(kAndroidAutofillForwardIframeOrigin,
+             "AndroidAutofillForwardIframeOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
