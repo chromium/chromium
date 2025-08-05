@@ -264,7 +264,7 @@ FakeSystemIdentityManager::CreateRefreshAccessTokenFailure(
       [storage_ detailsForGaiaID:identity.gaiaID];
   details.error = [[FakeRefreshAccessTokenError alloc]
          initWithIdentity:identity
-      isScopeLimitedError:false
+      isScopeLimitedError:NO
                  callback:std::move(callback)];
   return details.error;
 }
