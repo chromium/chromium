@@ -244,13 +244,6 @@ void FormEventLoggerBase::OnDestroyed() {
   RecordAblationMetrics();
 }
 
-void FormEventLoggerBase::OnFilledByFieldByFieldFilling(SuggestionType type) {
-  CHECK(type == SuggestionType::kAddressFieldByFieldFilling)
-      << base::to_underlying(type);
-  field_by_field_filled_form_types_.insert(
-      FormTypeNameForLogging::kAddressForm);
-}
-
 void FormEventLoggerBase::
     OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
         const FormStructure& form) {
@@ -582,13 +575,6 @@ FormEventLoggerBase::GetParsedFormTypesAsStringViews() const {
     result.push_back(FormTypeNameForLoggingToStringView(form_type));
   }
   return result;
-}
-
-DenseSet<FormTypeNameForLogging>
-FormEventLoggerBase::GetParsedAndFieldByFieldFormTypes() const {
-  DenseSet<FormTypeNameForLogging> all_form_types = identified_form_types_;
-  all_form_types.insert_all(field_by_field_filled_form_types_);
-  return all_form_types;
 }
 
 }  // namespace autofill::autofill_metrics

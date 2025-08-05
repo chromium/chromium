@@ -82,10 +82,6 @@ class FormEventLoggerBase {
   // impossible to dispatch virtual functions into the derived classes.
   virtual void OnDestroyed();
 
-  // Adds the appropriate form types based on `type` to
-  // `field_by_field_filled_form_types_` after a filling operation.
-  void OnFilledByFieldByFieldFilling(SuggestionType type);
-
   // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.
   void SetAblationStatus(AblationGroup ablation_group,
@@ -216,10 +212,6 @@ class FormEventLoggerBase {
   // Returns a vector of strings for all parsed form types.
   std::vector<std::string_view> GetParsedFormTypesAsStringViews() const;
 
-  // Returns a set of all parsed form types and form types of field-by-field
-  // filling operations.
-  DenseSet<FormTypeNameForLogging> GetParsedAndFieldByFieldFormTypes() const;
-
   // Constructor parameters.
   std::string form_type_name_;
 
@@ -261,9 +253,6 @@ class FormEventLoggerBase {
 
   // Form types of the submitted form.
   DenseSet<FormTypeNameForLogging> submitted_form_types_;
-
-  // Form types of field-by-field filling operations.
-  DenseSet<FormTypeNameForLogging> field_by_field_filled_form_types_;
 
   // A list of field types for which suggestions were shown and not accepted so
   // far. At any time, no field should be in both
