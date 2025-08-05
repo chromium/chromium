@@ -195,7 +195,7 @@ TEST_F(ProfilePickerTest,
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kCreateProfileEmailIfNotExists);
     EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
-              StartupProfileModeReason::kSingleProfile);
+              StartupProfileModeReason::kProfileEmailSwitch);
   }
 }
 
@@ -222,7 +222,7 @@ TEST_F(
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kCreateProfileEmailIfNotExists);
     EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
-              StartupProfileModeReason::kMultipleProfiles);
+              StartupProfileModeReason::kProfileEmailSwitch);
   }
 }
 
