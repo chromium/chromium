@@ -32,6 +32,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -75,6 +76,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -284,6 +286,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               commerce::ProductSpecificationsPageActionViewController>(
               tab, *page_action_controller_, *commerce_ui_tab_helper_);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
+    autofill_bubble_manager_ = autofill::BubbleManager::Create();
   }
 
   customize_chrome_side_panel_controller_ =

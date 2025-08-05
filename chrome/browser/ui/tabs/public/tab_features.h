@@ -31,6 +31,10 @@ class TranslatePageActionController;
 class QwacWebContentsObserver;
 class ManagePasswordsPageActionController;
 
+namespace autofill {
+class BubbleManager;
+}  // namespace autofill
+
 namespace actor::ui {
 class ActorUiTabControllerInterface;
 }  // namespace actor::ui
@@ -264,6 +268,10 @@ class TabFeatures {
     return tab_creation_metrics_controller_.get();
   }
 
+  autofill::BubbleManager* autofill_bubble_manager() {
+    return autofill_bubble_manager_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -407,6 +415,8 @@ class TabFeatures {
 
   std::unique_ptr<TabCaptureContentsBorderHelper>
       tab_capture_contents_border_helper_;
+
+  std::unique_ptr<autofill::BubbleManager> autofill_bubble_manager_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
