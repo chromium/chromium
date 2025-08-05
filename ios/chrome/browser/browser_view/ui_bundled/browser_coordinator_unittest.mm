@@ -202,13 +202,13 @@ class BrowserCoordinatorTest : public PlatformTest {
     urlLoadingBrowserAgent->Load(urlLoadParams);
 
     // Force the WebStateObserver callbacks that simulate a page load.
-    web::WebStateObserver* ntpHelper =
+    NewTabPageTabHelper* ntp_helper =
         NewTabPageTabHelper::FromWebState(web_state);
     web::FakeNavigationContext context;
     context.SetUrl(url);
     context.SetIsSameDocument(false);
-    ntpHelper->DidStartNavigation(web_state, &context);
-    ntpHelper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
+    ntp_helper->DidStartNavigation(web_state, &context);
+    ntp_helper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
   }
 
   web::WebTaskEnvironment task_environment_;

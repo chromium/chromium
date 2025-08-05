@@ -383,12 +383,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   void LoadNTP(web::WebState* web_state) {
     web::FakeWebState fake_web_state;
     fake_web_state.SetVisibleURL(GURL("chrome://newtab/"));
-    web::WebStateObserver* NTPHelper =
-        (web::WebStateObserver*)NewTabPageTabHelper::FromWebState(web_state);
     // Use the fake_web_state to fake the NTPHelper into believing that the NTP
     // has been loaded.
-    NTPHelper->PageLoaded(&fake_web_state,
-                          web::PageLoadCompletionStatus::SUCCESS);
+    NewTabPageTabHelper::FromWebState(web_state)->PageLoaded(
+        &fake_web_state, web::PageLoadCompletionStatus::SUCCESS);
   }
 
   void ExpectNewTabInsertionAnimation(bool animated, ProceduralBlock block) {

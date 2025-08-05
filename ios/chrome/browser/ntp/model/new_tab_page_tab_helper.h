@@ -46,13 +46,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Returns the saved state of the associated NTP.
   NewTabPageState* GetNTPState();
 
- private:
-  friend class web::WebStateUserData<NewTabPageTabHelper>;
-  // For access to IsActive(...) method.
-  friend bool IsVisibleURLNewTabPage(web::WebState*);
-
-  explicit NewTabPageTabHelper(web::WebState* web_state);
-
   // web::WebStateObserver overrides:
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
@@ -62,6 +55,13 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+
+ private:
+  // For access to IsActive(...) method.
+  friend bool IsVisibleURLNewTabPage(web::WebState*);
+  friend class web::WebStateUserData<NewTabPageTabHelper>;
+
+  explicit NewTabPageTabHelper(web::WebState* web_state);
 
   // Enable or disable the tab helper.
   void SetActive(bool active);
