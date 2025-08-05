@@ -181,8 +181,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
   ASSERT_FALSE(Manifest::IsUnpackedLocation(extension->location()));
 
   // Blocking the script load should emit a log.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern("Refused to load the script '*");
 

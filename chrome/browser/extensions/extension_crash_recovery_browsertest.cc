@@ -193,8 +193,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, ReloadIndependently) {
   SCOPED_TRACE("after reloading");
   CheckExtensionConsistency(first_extension_id_);
 
-  WebContents* current_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* current_tab = GetActiveWebContents();
   ASSERT_TRUE(current_tab);
 
   // The balloon should automatically hide after the extension is successfully
@@ -210,15 +209,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   CrashExtension(first_extension_id_);
   ASSERT_EQ(count_before, GetEnabledExtensionCount());
 
-  WebContents* original_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* original_tab = GetActiveWebContents();
   ASSERT_TRUE(original_tab);
   ASSERT_EQ(1U, CountNotifications());
 
   // Open a new tab, but the balloon will still be there.
   chrome::NewTab(browser());
-  WebContents* new_current_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* new_current_tab = GetActiveWebContents();
   ASSERT_TRUE(new_current_tab);
   ASSERT_NE(new_current_tab, original_tab);
   ASSERT_EQ(1U, CountNotifications());
@@ -241,8 +238,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   CrashExtension(first_extension_id_);
   ASSERT_EQ(count_before, GetEnabledExtensionCount());
 
-  WebContents* current_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* current_tab = GetActiveWebContents();
   ASSERT_TRUE(current_tab);
   ASSERT_EQ(1U, CountNotifications());
 
@@ -396,8 +392,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
 
   {
     SCOPED_TRACE("first: reload");
-    WebContents* current_tab =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    WebContents* current_tab = GetActiveWebContents();
     ASSERT_TRUE(current_tab);
     // At the beginning we should have one balloon displayed for each extension.
     ASSERT_EQ(2U, CountNotifications());
@@ -478,8 +473,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
 
   extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
   {
-    content::LoadStopObserver notification_observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    content::LoadStopObserver notification_observer(GetActiveWebContents());
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     notification_observer.Wait();
   }

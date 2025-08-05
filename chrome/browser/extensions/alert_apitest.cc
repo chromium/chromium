@@ -183,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   const GURL extension_url = extension->GetResourceURL("popup.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
 
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
 
   // Verify the title that would be used for a dialog spawned by extension.
   javascript_dialogs::AppModalDialogManager* dialog_manager =

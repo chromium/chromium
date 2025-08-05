@@ -748,10 +748,6 @@ class LazyBackgroundEventMetricsApiTest : public ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 };
 
 // Tests that if there is a listener in the extension renderer process, but that
@@ -813,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to page.html to get the content_script to load.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("page.html")));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(page_script_loaded.WaitUntilSatisfied());
 
   // Set storage value which should fire chrome.storage.onChanged listener in

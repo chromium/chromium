@@ -97,9 +97,7 @@ bool ClipboardApiTest::ExecuteCommandInIframeInSelectedTab(
 
 bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script,
                                                   int options) {
-  return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                         script, options)
-      .ExtractBool();
+  return content::EvalJs(GetActiveWebContents(), script, options).ExtractBool();
 }
 
 }  // namespace

@@ -520,8 +520,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("page.html")));
 
-  content::WebContents* extension_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* extension_contents = GetActiveWebContents();
 
   // So far, no events should have been received.
   EXPECT_EQ(0, content::EvalJs(extension_contents, "self.receivedEvents;"));
@@ -743,10 +742,6 @@ class NavigatingEventDispatchingApiTest : public EventDispatchingApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 };
 
 using PersistentBackgroundPageDispatchEventToSenderEventApiTest =
@@ -906,7 +901,7 @@ IN_PROC_BROWSER_TEST_P(NavigatingEventDispatchingApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(content_script_loaded.WaitUntilSatisfied());
 
   // Set storage value which should fire chrome.storage.onChanged listeners.

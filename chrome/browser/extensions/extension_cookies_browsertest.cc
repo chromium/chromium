@@ -137,8 +137,8 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   // RenderFrameHost of the main frame.
   content::RenderFrameHost* NavigateMainFrameToExtensionPage() {
     EXPECT_TRUE(content::NavigateToURL(
-        web_contents(), extension_->GetResourceURL("empty.html")));
-    return web_contents()->GetPrimaryMainFrame();
+        GetActiveWebContents(), extension_->GetResourceURL("empty.html")));
+    return GetActiveWebContents()->GetPrimaryMainFrame();
   }
 
   // Appends a child iframe via JS and waits for it to load. Returns a pointer
@@ -210,7 +210,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
                                          const std::string& host) {
     GURL cookie_url = test_server()->GetURL(host, kFetchCookiesPath);
     url::Origin initiator = frame->GetLastCommittedOrigin();
-    content::TestNavigationObserver nav_observer(web_contents());
+    content::TestNavigationObserver nav_observer(GetActiveWebContents());
     // We cache the parent here, and use it to get the RenderFrameHost again
     // later, in order to allow cross-site navigations. Cross-site navigations
     // cause `frame` to be freed (and use a new RFHI for the new document), so
@@ -298,10 +298,6 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   // The test server needs to be HTTPS because a SameSite=None cookie must be
   // Secure.
   net::EmbeddedTestServer* test_server() { return &test_server_; }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 
   net::test_server::ControllableHttpResponse& GetNextCookieResponse() {
     // If the DCHECK below fails, consider increasing the value of the
@@ -666,7 +662,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Do one pass of BrowserAction without granting activeTab permission,
   // extension still shouldn't have access to `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents())
+  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
       ->RunAction(extension, false);
   {
     SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
@@ -676,7 +672,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents())
+  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
       ->RunAction(extension, true);
   {
     // ActiveTab access (just like OOR-CORS access) extends to the background
@@ -752,18 +748,19 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   SetCookies(kActiveTabHost);
   content::RenderFrameHost* extension_subframe = nullptr;
   {
-    content::TestNavigationObserver subframe_nav_observer(web_contents());
+    content::TestNavigationObserver subframe_nav_observer(
+        GetActiveWebContents());
     constexpr char kSubframeInjectionScriptTemplate[] = R"(
         var f = document.createElement('iframe');
         f.src = $1;
         document.body.appendChild(f);
     )";
     ASSERT_TRUE(content::ExecJs(
-        web_contents(),
+        GetActiveWebContents(),
         content::JsReplace(kSubframeInjectionScriptTemplate,
                            extension->GetResourceURL("subframe.html"))));
     subframe_nav_observer.Wait();
-    extension_subframe = ChildFrameAt(web_contents(), 0);
+    extension_subframe = ChildFrameAt(GetActiveWebContents(), 0);
     ASSERT_TRUE(extension_subframe);
     ASSERT_EQ(extension->origin(),
               extension_subframe->GetLastCommittedOrigin());
@@ -779,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Do one pass of BrowserAction without granting activeTab permission,
   // extension still shouldn't have access to `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents())
+  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
       ->RunAction(extension, false);
   {
     SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
@@ -789,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents())
+  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
       ->RunAction(extension, true);
   {
     // ActiveTab should grant access to SameSite cookies to the
@@ -875,9 +872,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   GURL original_document_url =
       test_server()->GetURL(kActiveTabHost, "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_document_url));
-  EXPECT_EQ(
-      kActiveTabHost,
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().host());
+  EXPECT_EQ(kActiveTabHost, GetActiveWebContents()
+                                ->GetPrimaryMainFrame()
+                                ->GetLastCommittedURL()
+                                .host());
   SetCookies(kActiveTabHost);
   GURL extension_frame_url = extension->GetResourceURL("frame.html");
   ui_test_utils::NavigateToURLWithDisposition(
@@ -899,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Do one pass of BrowserAction without granting activeTab permission,
   // extension still shouldn't have access to `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents())
+  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
       ->RunAction(extension, false);
   {
     SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
@@ -910,7 +908,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents())
+  ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
       ->RunAction(extension, true);
   {
     // ActiveTab access (just like OOR-CORS access) extends to the service

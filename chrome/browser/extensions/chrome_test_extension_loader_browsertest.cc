@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -88,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTestExtensionLoaderUnitTest,
       browser(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(web_contents,
                                   "!!document.getElementById('script1');"));
   EXPECT_EQ(true, content::EvalJs(web_contents,

@@ -285,8 +285,7 @@ class CommandsApiTest : public ExtensionApiTest {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL("/extensions/test_file.txt")));
-    return sessions::SessionTabHelper::FromWebContents(
-               browser()->tab_strip_model()->GetActiveWebContents())
+    return sessions::SessionTabHelper::FromWebContents(GetActiveWebContents())
         ->session_id()
         .id();
   }
@@ -327,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, Basic) {
       browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   // activeTab shouldn't have been granted yet.
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetActiveWebContents();
   ASSERT_TRUE(tab);
 
   EXPECT_FALSE(IsGrantedForTab(extension, tab));
@@ -1015,8 +1014,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, TabParameter) {
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
   ResultCatcher catcher;
-  EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_Y, true, true,
                                               false, false));  // Ctrl+Shift+Y
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
