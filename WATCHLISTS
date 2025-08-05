@@ -1154,11 +1154,6 @@
     'disk_cache': {
       'filepath': 'net/disk_cache/|http_cache',
     },
-    'display': {
-      'filepath': 'ui/display/|'\
-                  'ash/display/|'\
-                  'chrome/browser/ui/webui/ash/settings/pages/device/display_settings/',
-    },
     'dom_storage': {
       'filepath': 'content/common/dom_storage/|'\
                   'content/browser/dom_storage/|'\
@@ -2490,7 +2485,6 @@
     'accelerators': ['jimmyxgong+watch-accelerators@chromium.org',
                      'cambickel+watch-accelerators@google.com',
                      'longbowei+watch-accelerators@google.com',
-                     'zhangwenyu+watch-accelerators@google.com',
                      'michaelcheco+watch-accelerators@google.com'],
     'accessibility': ['abigailbklein+watch@google.com',
                       'akihiroota@chromium.org',
@@ -2588,11 +2582,9 @@
     'assistive': ['croissant-eng+reviews@chromium.org'],
     'attribution_reporting': ['apaseltiner+watch@chromium.org'],
     'audio_service': ['marinaciocea+watch@chromium.org',
-                      'olka+watch@chromium.org',
-                      'zhangwenyu+watch@google.com'],
+                      'olka+watch@chromium.org'],
     'audio_settings': ['michaelcheco+audio-settings-watch@google.com',
-                       'owenzhang+audio-settings-watch@google.com',
-                       'zhangwenyu+audio-settings-watch@google.com'],
+                       'owenzhang+audio-settings-watch@google.com'],
     'aura': ['sadrul@chromium.org'],
     'aura_compositor': ['jbauman+watch@chromium.org'],
     'autofill': ['rouslan+autofillwatch@chromium.org'],
@@ -2932,16 +2924,13 @@
     'devtools': ['devtools-reviews@chromium.org'],
     'diagnostics_mojo': ['ashleydp+watch-diagnostics_mojo@google.com',
                          'gavindodd+watch-diagnostics_mojo@google.com',
-                         'michaelcheco+watch-diagnostics_mojo@google.com',
-                         'zhangwenyu+watch-diagnostics_mojo@google.com'],
+                         'michaelcheco+watch-diagnostics_mojo@google.com'],
     'diagnostics_ui': ['gavinwill+diagnostics-watch@chromium.org',
                        'michaelcheco+diagnostics-watch@google.com',
                        'gavindodd+diagnostics-watch@google.com',
-                       'ashleydp+diagnostics-watch@google.com',
-                       'zhangwenyu+diagnostics-watch@google.com'],
+                       'ashleydp+diagnostics-watch@google.com'],
     'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
-    'display': ['zhangwenyu+watch@google.com'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org',
                     'edgestoragedev@microsoft.com'],
     'download': ['dtrainor+watch@chromium.org'],
@@ -3164,8 +3153,7 @@
                        'longbowei+feedback-watch@google.com',
                        'wangdanny+feedback-watch@google.com',
                        'xiangdongkong+feedback-watch@google.com',
-                       'yyhyyh+feedback-watch@google.com',
-                       'zhangwenyu+feedback-watch@google.com'],
+                       'yyhyyh+feedback-watch@google.com'],
     'ozone': ['ozone-reviews@chromium.org'],
     'ozone_fuchsia': ['dworsham@google.com',
                       'emircan@google.com',
