@@ -32,6 +32,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -82,6 +83,7 @@ public class ReaderModeActionProviderTest {
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock private DomDistillerTabUtilsJni mDomDistillerTabUtilsJni;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private OneshotSupplier<Boolean> mButtonVisibilitySupplier;
 
     @Before
     public void setUp() {
@@ -124,7 +126,7 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testIsDistillableInvokesCallback() throws TimeoutException {
         HashMap<Integer, ActionProvider> providers = new HashMap<>();
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         providers.put(AdaptiveToolbarButtonVariant.READER_MODE, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setReaderModeBackendSignal(true);
@@ -136,7 +138,7 @@ public class ReaderModeActionProviderTest {
 
     @Test
     public void testWaitForDistillabilityResult() throws TimeoutException {
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         // Get action before distillability is determined.
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
@@ -152,7 +154,7 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testReaderModeSignalRecordsMetricsOnCPASuccess() {
         when(mMockSignalAccumulator.hasTimedOut()).thenReturn(false);
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -180,7 +182,7 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testReaderModeSignalRecordsMetricsOnCPATimeout() {
         when(mMockSignalAccumulator.hasTimedOut()).thenReturn(true);
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -207,7 +209,7 @@ public class ReaderModeActionProviderTest {
         DomDistillerTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.OG_ARTICLE);
         when(mMockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
 
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
 
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
@@ -228,7 +230,7 @@ public class ReaderModeActionProviderTest {
         when(mockWebContents.getNavigationController()).thenReturn(mockNavigationController);
         when(mMockTab.getWebContents()).thenReturn(mockWebContents);
 
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
 
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
@@ -239,22 +241,16 @@ public class ReaderModeActionProviderTest {
 
     @Test
     public void testReaderModeManagerNoUpdateUiShown() {
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
         shadowOf(Looper.getMainLooper()).runOneTask();
-        verify(mMockReaderModeManager).onContextualPageActionShown(true);
+        verify(mMockReaderModeManager).onContextualPageActionShown(mButtonVisibilitySupplier);
         clearInvocations(mMockReaderModeManager);
-
-        // Ensure adaptive button UI is not visible.
-        provider = new ReaderModeActionProvider(() -> false);
-        provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
-        shadowOf(Looper.getMainLooper()).runOneTask();
-        verify(mMockReaderModeManager).onContextualPageActionShown(false);
     }
 
     @Test
     public void testDestroy() {
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         provider.getAction(mMockTab, mMockSignalAccumulator);
         provider.destroy();
         ShadowLooper.idleMainLooper();
@@ -270,7 +266,7 @@ public class ReaderModeActionProviderTest {
         ArgumentCaptor<Callback<Boolean>> readabilityHeuristicCallbackCaptor =
                 ArgumentCaptor.forClass(Callback.class);
 
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
         verify(mDomDistillerTabUtilsJni)
@@ -292,7 +288,7 @@ public class ReaderModeActionProviderTest {
     @Test
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testActionAlwaysAvailableInReadingMode() {
-        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
 
         setReaderModeBackendSignal(false);
         provider.getAction(mMockTab, mMockSignalAccumulator);

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.os.Looper;
 import android.util.Pair;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -29,8 +30,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -98,6 +101,7 @@ public class ReaderModeManagerTest {
 
     private UserDataHost mUserDataHost;
     private ReaderModeManager mManager;
+    private OneshotSupplierImpl<Boolean> mButtonVisibilitySupplier;
 
     @Before
     public void setUp() throws TimeoutException {
@@ -143,6 +147,7 @@ public class ReaderModeManagerTest {
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         mWebContentsObserver = mWebContentsObserverCaptor.getValue();
         mManager.clearSavedSitesForTesting();
+        mButtonVisibilitySupplier = new OneshotSupplierImpl<Boolean>();
     }
 
     @Test
@@ -461,7 +466,41 @@ public class ReaderModeManagerTest {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
 
         // Simulate the button UI being displayed.
-        mManager.onContextualPageActionShown(/* isReaderMode= */ true);
+        mButtonVisibilitySupplier.set(true);
+        mManager.onContextualPageActionShown(mButtonVisibilitySupplier);
+
+        verify(mMessageDispatcher, never())
+                .enqueueMessage(any(), any(), eq(MessageScopeType.NAVIGATION), anyBoolean());
+
+        // Verify the histogram for fallback UI is NOT recorded when button gets shown.
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("CustomTab.AdaptiveToolbarButton.FallbackUi")
+                        .build();
+        mManager.activateReaderMode();
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures({
+        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+        DomDistillerFeatures.READER_MODE_DISTILL_IN_APP // Makes test mocking easier.
+    })
+    public void
+            testTryShowingPrompt_Cct_AdaptiveButtonOn_ButtonShowingDelayed_ShouldNotShowPrompt() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isCustomTab()).thenReturn(true);
+        when(mTab.isLoading()).thenReturn(false);
+
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        // Simulate the button UI being displayed.
+        mManager.onContextualPageActionShown(mButtonVisibilitySupplier);
+
+        // The visibility is determined in delayed fashion - after |onContextualPageActionShown|.
+        mButtonVisibilitySupplier.set(true);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         verify(mMessageDispatcher, never())
                 .enqueueMessage(any(), any(), eq(MessageScopeType.NAVIGATION), anyBoolean());
@@ -489,7 +528,42 @@ public class ReaderModeManagerTest {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
 
         // Simulate the button UI not being displayed.
-        mManager.onContextualPageActionShown(/* isReaderMode= */ false);
+        mButtonVisibilitySupplier.set(false);
+        mManager.onContextualPageActionShown(mButtonVisibilitySupplier);
+
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
+
+        // Verify the histogram for fallback UI is recorded when activating the reader mode page.
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTab.AdaptiveToolbarButton.FallbackUi",
+                        AdaptiveToolbarButtonVariant.READER_MODE);
+        mManager.activateReaderMode();
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures({
+        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+        DomDistillerFeatures.READER_MODE_DISTILL_IN_APP // Makes test mocking easier.
+    })
+    public void
+            testTryShowingPrompt_Cct_AdaptiveButtonOn_ButtonNotShowingDelayed_ShouldShowPrompt() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isCustomTab()).thenReturn(true);
+        when(mTab.isLoading()).thenReturn(false);
+
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+
+        // Simulate the button UI not being displayed.
+        mManager.onContextualPageActionShown(mButtonVisibilitySupplier);
+
+        // The visibility is determined in delayed fashion - after |onContextualPageActionShown|.
+        mButtonVisibilitySupplier.set(false);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         verify(mMessageDispatcher)
                 .enqueueMessage(

@@ -454,7 +454,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 () -> mAppMenuCoordinator != null ? mAppMenuCoordinator.getAppMenuHandler() : null,
                 mIntentDataProvider.get());
         var cpac = getContextualPageActionController();
-        if (cpac != null) cpac.setButtonVisibilitySupplier(toolbar::shouldShowOptionalButton);
+        if (cpac != null) cpac.setButtonVisibilitySupplier(toolbar.getShowOptionalButton());
         View coordinator = mActivity.findViewById(R.id.coordinator);
         mCustomTabHeightStrategy.onToolbarInitialized(
                 coordinator,

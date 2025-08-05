@@ -17,6 +17,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,7 +38,6 @@ import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
 
 import java.util.HashMap;
-import java.util.function.BooleanSupplier;
 
 /**
  * Central class for contextual page actions bridging between UI and backend. Registers itself with
@@ -76,7 +77,7 @@ public class ContextualPageActionController {
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private @Nullable CurrentTabObserver mCurrentTabObserver;
     private @Nullable SignalAccumulator mSignalAccumulator;
-    private BooleanSupplier mButtonVisibilitySupplier = () -> true;
+    private OneshotSupplier<Boolean> mButtonVisibilitySupplier;
 
     // The action provider backends.
     protected final HashMap<Integer, ActionProvider> mActionProviders = new HashMap<>();
@@ -98,6 +99,9 @@ public class ContextualPageActionController {
         mProfileSupplier = profileSupplier;
         mTabSupplier = tabSupplier;
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
+        var defaultButtonVis = new OneshotSupplierImpl<Boolean>();
+        defaultButtonVis.set(true);
+        mButtonVisibilitySupplier = defaultButtonVis; // true by default for tabbed browser.
         profileSupplier.addObserver(
                 profile -> {
                     if (profile.isOffTheRecord()) return;
@@ -135,7 +139,7 @@ public class ContextualPageActionController {
      *
      * @param buttonVisibilitySupplier The boolean supplier of the button visibility.
      */
-    public void setButtonVisibilitySupplier(BooleanSupplier buttonVisibilitySupplier) {
+    public void setButtonVisibilitySupplier(OneshotSupplier<Boolean> buttonVisibilitySupplier) {
         mButtonVisibilitySupplier = buttonVisibilitySupplier;
     }
 

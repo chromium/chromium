@@ -26,6 +26,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -541,9 +542,9 @@ public class ReaderModeManager extends EmptyTabObserver
         if (!shouldUseReaderModeMessages(mTab)) return;
 
         if (mTab.isCustomTab() && ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
-            // If the manager hasn't been notified of the CPA yet, or the reader mode button is
-            // already showing on the toolbar, don't show the prompt.
-            if (!mHasBeenNotifiedOfCpa || mIsReaderModeButtonShowingOnToolbar) return;
+            // If the manager hasn't been notified of the CPA yet, don't show the prompt for now.
+            // Later it will be shown if CPA is determined to be hidden.
+            if (!mHasBeenNotifiedOfCpa) return;
         }
 
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
@@ -901,24 +902,37 @@ public class ReaderModeManager extends EmptyTabObserver
      * contextual page action UI is enabled to update the rate limiting logic and to suppress the
      * message prompt if the current tab is a CCT.
      *
-     * @param isReaderMode Whether the reader mode UI is the current CPA being shown.
+     * @param showCpaButton Whether the reader mode UI is the current CPA being shown.
      */
-    public void onContextualPageActionShown(boolean isReaderMode) {
+    public void onContextualPageActionShown(OneshotSupplier<Boolean> showCpaButton) {
         // If the feature is enabled and the tab is a custom tab, the manager should be aware if the
         // displayed contextual page action is the reader one. Once determined, #tryShowingPrompt
         // can successfully decide between showing a message prompt or suppressing it in favor of
         // the contextual page action's UI.
         if (ChromeFeatureList.sCctAdaptiveButton.isEnabled() && mTab.isCustomTab()) {
             mHasBeenNotifiedOfCpa = true;
-            mIsReaderModeButtonShowingOnToolbar = isReaderMode;
-            tryShowingPrompt();
+            showCpaButton.runSyncOrOnAvailable(
+                    show -> {
+                        mIsReaderModeButtonShowingOnToolbar = show;
+                        if (show) {
+                            markUrlAsShown();
+                        } else {
+                            tryShowingPrompt();
+                        }
+                    });
         }
+        if (showCpaButton.hasValue() && showCpaButton.get()) {
+            markUrlAsShown();
+        }
+    }
+
+    private void markUrlAsShown() {
+        if (mMessageShown) return;
+
         // Contextual page actions can't be dismissed, so we consider an unused button as
         // "dismissed". Interacting with the button will undo this "mute" logic.
-        if (isReaderMode) {
-            addUrlToMutedSites(mDistillerUrl);
-            mMessageShown = true;
-        }
+        addUrlToMutedSites(mDistillerUrl);
+        mMessageShown = true;
     }
 
     // Describes the end-state of the distillation result, used for metrics reporting. Do not

@@ -67,6 +67,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -184,6 +185,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private final ObserverList<Callback<Integer>> mContainerVisibilityChangeObserverList =
             new ObserverList<>();
     private final boolean mIsRtl;
+    private final OneshotSupplierImpl<Boolean> mOptionalButtonVisibilitySupplier =
+            new OneshotSupplierImpl<>();
 
     // Whether the maximization button should be shown when it can. Set to {@code true}
     // while the side sheet is running with the maximize button option on.
@@ -813,15 +816,24 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 && MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
     }
 
-    /** Returns {@code true} if the optional button will be shown. */
-    public boolean shouldShowOptionalButton() {
-        // 1) Do not show the optional button if we already have 2 dev buttons.
-        if (hasMultipleDevButtons()) return false;
-
-        // 2) Optional button view may be made hidden due to width constraint.
-        View optionalButtonContainer = findViewById(R.id.optional_toolbar_button_container);
-        return optionalButtonContainer != null
-                && optionalButtonContainer.getVisibility() == View.VISIBLE;
+    /** Returns {@link OneshotSupplier} indicating if the optional button will be visible. */
+    public OneshotSupplier<Boolean> getShowOptionalButton() {
+        // If any of the following is already known, set the visibility ahead. Otherwise it will be
+        // determined the first time its visibility is examined in #initializeOptionalButton:
+        // 1) if we already have 2 dev buttons
+        // 2) Width constraint hides the optional button.
+        if (!mOptionalButtonVisibilitySupplier.hasValue()) {
+            if (hasMultipleDevButtons()) {
+                mOptionalButtonVisibilitySupplier.set(false);
+            } else {
+                View container = findViewById(R.id.optional_toolbar_button_container);
+                if (container != null) {
+                    mOptionalButtonVisibilitySupplier.set(
+                            container.getVisibility() == View.VISIBLE);
+                }
+            }
+        }
+        return mOptionalButtonVisibilitySupplier;
     }
 
     private boolean hasMultipleDevButtons() {
@@ -1660,6 +1672,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         CustomTabMtbHiddenReason.COUNT);
             }
             var buttonVariant = buttonData.getButtonSpec().getButtonVariant();
+            if (!mOptionalButtonVisibilitySupplier.hasValue()) {
+                mOptionalButtonVisibilitySupplier.set(showOptionalButton);
+            }
             if (showOptionalButton) {
                 RecordHistogram.recordEnumeratedHistogram(
                         "CustomTabs.AdaptiveToolbarButton.Shown",

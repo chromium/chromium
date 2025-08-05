@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.util.Pair;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -28,7 +29,6 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
 
 /** Provides reader mode signal for showing contextual page action for a given tab. */
 @NullMarked
@@ -144,9 +144,9 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     private @Nullable OneshotDistillabilityObserver mDistillabilityObserver;
     private @Nullable GURL mLastSeenUrl;
-    private final BooleanSupplier mButtonVisibilitySupplier;
+    private final OneshotSupplier<Boolean> mButtonVisibilitySupplier;
 
-    public ReaderModeActionProvider(BooleanSupplier buttonVisibilitySupplier) {
+    public ReaderModeActionProvider(OneshotSupplier<Boolean> buttonVisibilitySupplier) {
         mButtonVisibilitySupplier = buttonVisibilitySupplier;
     }
 
@@ -180,9 +180,6 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     @Override
     public void onActionShown(@Nullable Tab tab, @AdaptiveToolbarButtonVariant int action) {
         if (tab == null || tab.isLoading()) return;
-        final boolean isReaderMode =
-                action == AdaptiveToolbarButtonVariant.READER_MODE
-                        && mButtonVisibilitySupplier.getAsBoolean();
 
         // When on a distilled page, return immediately and don't set reader mode as shown
         if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
@@ -198,8 +195,10 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                             ReaderModeManager readerModeManager =
                                     tab.getUserDataHost()
                                             .getUserData(ReaderModeManager.USER_DATA_KEY);
-                            if (readerModeManager != null) {
-                                readerModeManager.onContextualPageActionShown(isReaderMode);
+                            if (readerModeManager != null
+                                    && action == AdaptiveToolbarButtonVariant.READER_MODE) {
+                                readerModeManager.onContextualPageActionShown(
+                                        mButtonVisibilitySupplier);
                             }
                         },
                         /* delayMillis= */ 500);
