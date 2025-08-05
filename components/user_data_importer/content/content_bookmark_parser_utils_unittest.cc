@@ -359,4 +359,62 @@ TEST_F(ContentBookmarkParserUtilsWithDataTest, ToolbarFolder) {
   EXPECT_EQ("http://www.google.com/", entry.url.spec());
 }
 
+TEST_F(ContentBookmarkParserUtilsWithDataTest, UuidAndSyncedImport) {
+  base::FilePath path = test_data_path_.AppendASCII("uuid_and_synced.html");
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(path, &content));
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
+
+  ASSERT_EQ(6U, result.bookmarks.size());
+
+  // 1. UUID and SYNCED="1".
+  const auto& bm1 = result.bookmarks[0];
+  EXPECT_EQ(u"Google", bm1.title);
+  EXPECT_TRUE(bm1.uuid.has_value());
+  EXPECT_EQ(
+      base::Uuid::ParseCaseInsensitive("B64522A7-222E-4553-986C-85F837E6B229"),
+      bm1.uuid);
+  EXPECT_TRUE(bm1.synced.has_value());
+  EXPECT_TRUE(bm1.synced.value());
+
+  // 2. UUID and SYNCED="0".
+  const auto& bm2 = result.bookmarks[1];
+  EXPECT_EQ(u"Chromium", bm2.title);
+  EXPECT_TRUE(bm2.uuid.has_value());
+  EXPECT_EQ(
+      base::Uuid::ParseCaseInsensitive("A64522A7-222E-4553-986C-85F837E6B221"),
+      bm2.uuid);
+  EXPECT_TRUE(bm2.synced.has_value());
+  EXPECT_FALSE(bm2.synced.value());
+
+  // 3. No optional attributes.
+  const auto& bm3 = result.bookmarks[2];
+  EXPECT_EQ(u"Example", bm3.title);
+  EXPECT_FALSE(bm3.uuid.has_value());
+  EXPECT_FALSE(bm3.synced.has_value());
+
+  // 4. Invalid UUID.
+  const auto& bm4 = result.bookmarks[3];
+  EXPECT_EQ(u"Invalid", bm4.title);
+  EXPECT_FALSE(bm4.uuid.has_value());
+  EXPECT_FALSE(bm4.synced.has_value());
+
+  // 5. SYNCED with non-bool value.
+  const auto& bm5 = result.bookmarks[4];
+  EXPECT_EQ(u"Not a bool", bm5.title);
+  EXPECT_FALSE(bm5.uuid.has_value());
+  EXPECT_FALSE(bm5.synced.has_value());
+
+  // 6. Folder with UUID and SYNCED="1".
+  const auto& bm6 = result.bookmarks[5];
+  EXPECT_TRUE(bm6.is_folder);
+  EXPECT_EQ(u"Synced Folder", bm6.title);
+  EXPECT_TRUE(bm6.uuid.has_value());
+  EXPECT_EQ(
+      base::Uuid::ParseCaseInsensitive("C64522A7-222E-4553-986C-85F837E6B229"),
+      bm6.uuid);
+  EXPECT_TRUE(bm6.synced.has_value());
+  EXPECT_TRUE(bm6.synced.value());
+}
+
 }  // namespace user_data_importer

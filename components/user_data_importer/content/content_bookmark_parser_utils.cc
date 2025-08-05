@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -70,7 +71,7 @@ bool GetAttribute(const std::string& attribute_list,
   return true;
 }
 
-// Fetches a time attribute from the |attribute_list| and returns it as a
+// Fetches a time attribute from the `attribute_list` and returns it as a
 // base::Time.
 std::optional<base::Time> GetTimeAttribute(const std::string& attribute_list,
                                            const std::string& attribute) {
@@ -82,6 +83,33 @@ std::optional<base::Time> GetTimeAttribute(const std::string& attribute_list,
     }
     if (time > 0) {
       return base::Time::UnixEpoch() + base::Seconds(time);
+    }
+  }
+  return std::nullopt;
+}
+
+// Fetches a UUID attribute from the `attribute_list` and returns it as a
+// base::Uuid.
+std::optional<base::Uuid> GetUuidAttribute(const std::string& attribute_list,
+                                           const std::string& attribute) {
+  std::string value;
+  if (GetAttribute(attribute_list, attribute, &value)) {
+    base::Uuid uuid = base::Uuid::ParseCaseInsensitive(value);
+    if (uuid.is_valid()) { return uuid; }
+  }
+  return std::nullopt;
+}
+
+// Fetches a boolean attribute from the `attribute_list` and returns it as a
+// bool.
+std::optional<bool> GetBoolAttribute(const std::string& attribute_list,
+                                     const std::string& attribute) {
+  std::string value;
+  if (GetAttribute(attribute_list, attribute, &value)) {
+    if (value == "1") {
+      return true;
+    } else if (value == "0") {
+      return false;
     }
   }
   return std::nullopt;
@@ -145,11 +173,15 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
                              const std::string& charset,
                              std::u16string* folder_name,
                              bool* is_toolbar_folder,
-                             base::Time* add_date) {
+                             base::Time* add_date,
+                             std::optional<base::Uuid>* uuid,
+                             std::optional<bool>* synced) {
   const char kFolderOpen[] = "<H3";
   const char kFolderClose[] = "</H3>";
   const char kToolbarFolderAttribute[] = "PERSONAL_TOOLBAR_FOLDER";
   const char kAddDateAttribute[] = "ADD_DATE";
+  const char kUuidAttribute[] = "UUID";
+  const char kSyncedAttribute[] = "SYNCED";
 
   std::string line = stripDt(lineDt);
 
@@ -176,6 +208,12 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   *add_date = GetTimeAttribute(attribute_list, kAddDateAttribute)
                   .value_or(base::Time::Now());
 
+  // UUID.
+  *uuid = GetUuidAttribute(attribute_list, kUuidAttribute);
+
+  // SYNCED.
+  *synced = GetBoolAttribute(attribute_list, kSyncedAttribute);
+
   if (GetAttribute(attribute_list, kToolbarFolderAttribute, &value) &&
       base::EqualsCaseInsensitiveASCII(value, "true")) {
     *is_toolbar_folder = true;
@@ -194,7 +232,9 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
                            std::u16string* shortcut,
                            base::Time* add_date,
                            std::optional<base::Time>* last_visit_date,
-                           std::u16string* post_data) {
+                           std::u16string* post_data,
+                           std::optional<base::Uuid>* uuid,
+                           std::optional<bool>* synced) {
   const char kItemOpen[] = "<A";
   const char kItemClose[] = "</A>";
   const char kFeedURLAttribute[] = "FEEDURL";
@@ -204,6 +244,8 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   const char kAddDateAttribute[] = "ADD_DATE";
   const char kLastVisitAttribute[] = "LAST_VISIT";
   const char kPostDataAttribute[] = "POST_DATA";
+  const char kUuidAttribute[] = "UUID";
+  const char kSyncedAttribute[] = "SYNCED";
 
   std::string line = stripDt(lineDt);
   title->clear();
@@ -211,6 +253,8 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   *favicon = GURL();
   shortcut->clear();
   post_data->clear();
+  *uuid = std::nullopt;
+  *synced = std::nullopt;
   *add_date = base::Time::Now();
   *last_visit_date = std::nullopt;
 
@@ -276,6 +320,12 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
                           base::OnStringConversionError::SKIP, post_data);
     *post_data = base::UnescapeForHTML(*post_data);
   }
+
+  // UUID.
+  *uuid = GetUuidAttribute(attribute_list, kUuidAttribute);
+
+  // SYNCED.
+  *synced = GetBoolAttribute(attribute_list, kSyncedAttribute);
 
   return true;
 }
@@ -350,6 +400,8 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
   bool has_subfolder = false;
   bool has_last_folder = false;
   base::Time last_folder_add_date;
+  std::optional<base::Uuid> last_folder_uuid;
+  std::optional<bool> last_folder_synced;
   std::vector<std::u16string> path;
   size_t toolbar_folder_index = 0;
   std::string charset = "UTF-8";  // If no charset is specified, assume utf-8.
@@ -374,8 +426,8 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
 
     // Get the folder name.
     if (ParseFolderNameFromLine(line, charset, &last_folder,
-                                &last_folder_on_toolbar,
-                                &last_folder_add_date)) {
+                                &last_folder_on_toolbar, &last_folder_add_date,
+                                &last_folder_uuid, &last_folder_synced)) {
       has_last_folder = true;
       continue;
     }
@@ -387,11 +439,14 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
     base::Time add_date;
     std::optional<base::Time> last_visit_date;
     std::u16string post_data;
+    std::optional<base::Uuid> uuid;
+    std::optional<bool> synced;
     bool is_bookmark;
     // TODO(crbug.com/40304654): We do not support POST based keywords yet.
     is_bookmark =
         ParseBookmarkFromLine(line, charset, &title, &url, &favicon, &shortcut,
-                              &add_date, &last_visit_date, &post_data) ||
+                              &add_date, &last_visit_date, &post_data, &uuid,
+                              &synced) ||
         ParseMinimumBookmarkFromLine(line, charset, &title, &url);
 
     // If bookmark contains a valid replaceable url and a keyword then import
@@ -420,6 +475,8 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
       user_data_importer::ImportedBookmarkEntry entry;
       entry.creation_time = add_date;
       entry.last_visit_time = last_visit_date;
+      entry.uuid = uuid;
+      entry.synced = synced;
       entry.url = url;
       entry.title = title;
 
@@ -474,6 +531,8 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
         entry.is_folder = true;
         entry.creation_time = last_folder_add_date;
         entry.title = folder_title;
+        entry.uuid = last_folder_uuid;
+        entry.synced = last_folder_synced;
         if (toolbar_folder_index) {
           // The toolbar folder should be at the top level.
           // Make sure we don't add the toolbar folder itself if it is empty.
