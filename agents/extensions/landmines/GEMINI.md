@@ -9,3 +9,6 @@ install. For Debian systems:
 ```
 sudo apt-get install ripgrep fd-find
 ```
+
+Do not use the `read_many_files` tool. Read files one at a time with
+`read_file`.
