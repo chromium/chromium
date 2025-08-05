@@ -4852,6 +4852,19 @@ const FeatureEntry::FeatureVariation
          std::size(kAndroidTabDeclutterAutoDeleteTesting), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kAndroidTabHighlightingForceCtrlClick[] = {
+    {"force_ctrl_click", "true"}};
+const FeatureEntry::FeatureParam kAndroidTabHighlightingForceShiftClick[] = {
+    {"force_shift_click", "true"}};
+const FeatureEntry::FeatureVariation
+    kAndroidTabHighlightingVariations[] = {
+        {"Force Ctrl Click", kAndroidTabHighlightingForceCtrlClick,
+         std::size(kAndroidTabHighlightingForceCtrlClick), nullptr},
+        {"Force Shift Click", kAndroidTabHighlightingForceShiftClick,
+         std::size(kAndroidTabHighlightingForceShiftClick), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kWebiumFlag[] = "webium";
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -11063,7 +11076,10 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-tab-highlighting", flag_descriptions::kAndroidTabHighlightingName,
      flag_descriptions::kAndroidTabHighlightingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabHighlighting)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+             chrome::android::kAndroidTabHighlighting,
+             kAndroidTabHighlightingVariations,
+             "AndroidTabHighlightingVariations")},
 
     {"tab-group-sync-disable-network-layer",
      flag_descriptions::kTabGroupSyncDisableNetworkLayerName,

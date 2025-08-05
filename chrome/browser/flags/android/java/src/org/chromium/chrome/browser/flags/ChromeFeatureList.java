@@ -1823,4 +1823,9 @@ public abstract class ChromeFeatureList {
             sShowNewTabAnimations.newBooleanParam("logs", false);
     public static final MutableBooleanParamWithSafeDefault sShowNewTabAnimationsListeners =
             sShowNewTabAnimations.newBooleanParam("listeners", false);
+
+    public static final MutableBooleanParamWithSafeDefault sAndroidTabHighlightingForceCtrlClick =
+            sAndroidTabHighlighting.newBooleanParam("force_ctrl_click", false);
+    public static final MutableBooleanParamWithSafeDefault sAndroidTabHighlightingForceShiftClick =
+            sAndroidTabHighlighting.newBooleanParam("force_shift_click", false);
 }

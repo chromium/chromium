@@ -3039,15 +3039,20 @@ public class StripLayoutHelper
 
         // Restrict modified clicks to mouse input only for a predictable experience.
         // If feature disabled, return to legacy behaviour.
-        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled() || !isMouseClick) {
+        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()
+                    || (!isMouseClick && !StripLayoutUtils.isTabHighlightingTestingEnabled())) {
             selectTab(tab);
             clearMultiSelection(/* clearAnchor= */ true, /* notifyObservers= */ true);
             mRenderHost.requestRender();
             return;
         }
 
-        boolean isShiftPressed = (modifiers & KeyEvent.META_SHIFT_ON) != 0;
-        boolean isCtrlPressed = (modifiers & KeyEvent.META_CTRL_ON) != 0;
+        // Force flags are required for testing on an emulator, as key presses don't seem to be
+        // propagated to the app.
+        boolean isShiftPressed = (modifiers & KeyEvent.META_SHIFT_ON) != 0
+                || StripLayoutUtils.isTabHighlightingForceShiftClick();
+        boolean isCtrlPressed = (modifiers & KeyEvent.META_CTRL_ON) != 0
+                || StripLayoutUtils.isTabHighlightingForceCtrlClick();
 
         if (isShiftPressed && isCtrlPressed) {
             handleShiftClick(tab, /* isDestructive= */ false);

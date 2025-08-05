@@ -385,4 +385,17 @@ public class StripLayoutUtils {
         return ChromeFeatureList.sTabStripDensityChangeAndroid.isEnabled()
                 && DeviceInfo.isDesktop();
     }
+
+    // Testing booleans
+    public static boolean isTabHighlightingForceCtrlClick() {
+        return ChromeFeatureList.sAndroidTabHighlightingForceCtrlClick.getValue();
+    }
+
+    public static boolean isTabHighlightingForceShiftClick() {
+        return ChromeFeatureList.sAndroidTabHighlightingForceShiftClick.getValue();
+    }
+
+    public static boolean isTabHighlightingTestingEnabled() {
+        return isTabHighlightingForceCtrlClick() || isTabHighlightingForceShiftClick();
+    }
 }
