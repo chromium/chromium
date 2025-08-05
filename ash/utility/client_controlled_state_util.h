@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_EXAMPLES_CLIENT_CONTROLLED_STATE_UTIL_H_
-#define ASH_EXAMPLES_CLIENT_CONTROLLED_STATE_UTIL_H_
+#ifndef ASH_UTILITY_CLIENT_CONTROLLED_STATE_UTIL_H_
+#define ASH_UTILITY_CLIENT_CONTROLLED_STATE_UTIL_H_
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
@@ -43,8 +43,8 @@ class ASH_EXPORT ClientControlledStateUtil {
   // state changes and bounds changes will be applied asynchronosly. Supplied
   // callbacks, which are responsible for applying changes, will be called in a
   // posted tasks, and they can use `ApplyWindowStateRequest` and
-  // `ApplyBoundsRequest` method to apply the change. When callbacks are omitted,
-  // they're called by default.
+  // `ApplyBoundsRequest` method to apply the change. When callbacks are
+  // omitted, they're called by default.
   static void BuildAndSet(
       aura::Window* window,
       StateChangeRequestCallback state_change_callback = base::NullCallback(),
@@ -69,4 +69,4 @@ class ASH_EXPORT ClientControlledStateUtil {
 
 }  // namespace ash
 
-#endif  // ASH_EXAMPLES_CLIENT_CONTROLLED_STATE_UTIL_H_
+#endif  // ASH_UTILITY_CLIENT_CONTROLLED_STATE_UTIL_H_

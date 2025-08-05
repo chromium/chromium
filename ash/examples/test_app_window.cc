@@ -7,8 +7,8 @@
 #include <memory>
 #include <optional>
 
-#include "ash/examples/client_controlled_state_util.h"
 #include "ash/shell.h"
+#include "ash/utility/client_controlled_state_util.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
