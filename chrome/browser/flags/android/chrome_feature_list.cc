@@ -194,6 +194,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &history_clusters::internal::kJourneys,
     &history_clusters::internal::kOmniboxAction,
     &media::kAutoPictureInPictureAndroid,
+    &media::kContextMenuPictureInPictureAndroid,
     &kAccountForSuppressedKeyboardInsets,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAdaptiveButtonInTopToolbarPageSummary,

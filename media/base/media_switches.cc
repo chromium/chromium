@@ -1124,6 +1124,11 @@ BASE_FEATURE(kAutoPictureInPictureAndroid,
              "AutoPictureInPictureAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Picture-in-Picture menu item on the video context menu on Android.
+BASE_FEATURE(kContextMenuPictureInPictureAndroid,
+             "ContextMenuPictureInPictureAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables block model (LinearBlock) on supported devices.
 BASE_FEATURE(kMediaCodecBlockModel,
              "MediaCodecBlockModel",
