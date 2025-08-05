@@ -10,7 +10,6 @@
 #include <memory>
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,10 +40,6 @@ namespace script_parsing {
 
 namespace {
 
-BASE_FEATURE(kValidateContentScriptMimeType,
-             "ValidateContentScriptMimeType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 size_t g_max_script_length_in_bytes = 1024u * 1024u * 500u;  // 500 MB.
 size_t g_max_scripts_length_per_extension_in_bytes =
     1024u * 1024u * 1024u;  // 1 GB.
@@ -64,12 +59,6 @@ constexpr char kForbiddenInlineCodeScriptError[] =
 // script type.
 bool IsMimeTypeValid(const base::FilePath& relative_path,
                      ContentScriptType content_script_type) {
-  // TODO(https://crbug.com/40059598): Remove this if-check and always validate
-  // the mime type in M139.
-  if (!base::FeatureList::IsEnabled(kValidateContentScriptMimeType)) {
-    return true;
-  }
-
   auto file_extension = relative_path.Extension();
   if (file_extension.empty()) {
     return false;

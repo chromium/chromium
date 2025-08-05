@@ -28,18 +28,8 @@ namespace errors = manifest_errors;
 
 namespace {
 
-BASE_FEATURE(kValidateThemeImageMimeType,
-             "ValidateThemeImageMimeType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsThemeImageMimeTypeValid(const base::FilePath& relative_path,
                                std::vector<std::string>* warnings) {
-  // TODO(crbug.com/40059598): Remove this if-check and always validate the mime
-  // type in M140.
-  if (!base::FeatureList::IsEnabled(kValidateThemeImageMimeType)) {
-    return true;
-  }
-
   // In case of an image with no file extension, issue a warning and allow it
   // for compatibility with existing themes.
   if (relative_path.Extension().empty()) {

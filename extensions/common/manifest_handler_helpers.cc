@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -30,14 +29,6 @@ namespace extensions {
 namespace errors = manifest_errors;
 
 namespace manifest_handler_helpers {
-
-namespace {
-
-BASE_FEATURE(kValidateIconMimeType,
-             "ValidateIconMimeType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}
 
 std::vector<std::string_view> TokenizeDictionaryPath(std::string_view path) {
   return base::SplitStringPiece(path, ".", base::TRIM_WHITESPACE,
@@ -106,12 +97,6 @@ bool IsSupportedExtensionImageMimeType(const base::FilePath& relative_path) {
 }
 
 bool IsIconMimeTypeValid(const base::FilePath& relative_path) {
-  // TODO(crbug.com/40059598): Remove this if-check and always validate the mime
-  // type in M140.
-  if (!base::FeatureList::IsEnabled(kValidateIconMimeType)) {
-    return true;
-  }
-
   return IsSupportedExtensionImageMimeType(relative_path);
 }
 
