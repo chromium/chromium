@@ -15,12 +15,7 @@ class CreateNavigationItemTitleViewTest : public PlatformTest {
   void SetUp() override;
 };
 
-void CreateNavigationItemTitleViewTest::SetUp() {
-  if (@available(iOS 17.0, *)) {
-  } else {
-    GTEST_SKIP() << "Does not apply on iOS 16 and below";
-  }
-}
+void CreateNavigationItemTitleViewTest::SetUp() {}
 
 // Tests creating a navigation item title view works.
 TEST_F(CreateNavigationItemTitleViewTest, Creation) {

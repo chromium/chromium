@@ -22,8 +22,7 @@ typedef void (^FetchSecurityDomainSecretCompletionBlock)(
 
 - (void)userSelectedPassword:(ASPasswordCredential*)credential;
 
-- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
-    API_AVAILABLE(ios(17.0));
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential;
 
 - (void)userSelectedPasskey:(id<Credential>)passkey
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails;

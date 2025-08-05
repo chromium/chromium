@@ -50,8 +50,7 @@
 
 - (instancetype)initWithParameters:(ASPasskeyCredentialRequestParameters*)
                                        passkeyCredentialRequestParameters
-    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled
-    API_AVAILABLE(ios(17.0)) {
+    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled {
   CHECK(passkeyCredentialRequestParameters);
 
   self = [super init];
@@ -79,8 +78,7 @@
 }
 
 - (instancetype)initWithRequest:(id<ASCredentialRequest>)credentialRequest
-    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled
-    API_AVAILABLE(ios(17.0)) {
+    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled {
   CHECK(credentialRequest);
 
   self = [super init];
@@ -132,10 +130,9 @@
   return self;
 }
 
-- (ASPasskeyRegistrationCredential*)createPasskeyForGaia:(NSString*)gaia
-                                   securityDomainSecrets:
-                                       (NSArray<NSData*>*)securityDomainSecrets
-    API_AVAILABLE(ios(17.0)) {
+- (ASPasskeyRegistrationCredential*)
+     createPasskeyForGaia:(NSString*)gaia
+    securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
   NSArray<NSData*>* prfInputs = nil;
   if (@available(iOS 18.0, *)) {
     if (_prf.inputValues) {
@@ -166,8 +163,7 @@
 
 - (ASPasskeyAssertionCredential*)
     assertPasskeyCredential:(id<Credential>)credential
-      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
-    API_AVAILABLE(ios(17.0)) {
+      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
   NSArray<NSData*>* prfInputs = nil;
   PRFInputValues* inputValues = nil;
   if (@available(iOS 18.0, *)) {

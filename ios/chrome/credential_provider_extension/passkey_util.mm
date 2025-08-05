@@ -115,8 +115,8 @@ NSData* GenerateSignature(NSData* authenticator_data,
   return [NSData dataWithBytes:signature->data() length:signature->size()];
 }
 
-void SaveToIdentityStore(id<Credential> credential, ProceduralBlock completion)
-    API_AVAILABLE(ios(17.0)) {
+void SaveToIdentityStore(id<Credential> credential,
+                         ProceduralBlock completion) {
   auto stateCompletion = ^(ASCredentialIdentityStoreState* state) {
     if (state.enabled) {
       // Update ASCredentialIdentityStore to make the passkey immediately
@@ -158,12 +158,10 @@ void SaveCredential(id<Credential> credential) {
       return;
     }
 
-    if (@available(iOS 17.0, *)) {
-      SaveToIdentityStore(credential, ^{
-        // Notify Chrome that a new passkey was created
-        [CredentialProviderCreationNotifier notifyCredentialCreated];
-      });
-    }
+    SaveToIdentityStore(credential, ^{
+      // Notify Chrome that a new passkey was created
+      [CredentialProviderCreationNotifier notifyCredentialCreated];
+    });
   }];
 }
 
@@ -237,7 +235,7 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSData* user_handle,
     NSString* gaia,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0)) {
+    NSArray<NSData*>* prf_inputs) {
   if ([security_domain_secrets count] == 0) {
     return {};
   }
@@ -295,7 +293,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0)) {
+    NSArray<NSData*>* prf_inputs) {
   if ([security_domain_secrets count] == 0) {
     return {};
   }

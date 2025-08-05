@@ -42,21 +42,19 @@ static __weak TooltipView* _active;
     [_tapBehindGesture setNumberOfTapsRequired:1];
     [_tapBehindGesture setCancelsTouchesInView:NO];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = @[
-        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
-        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
-        UITraitUserInterfaceLevel.class
-      ];
-      __weak TooltipView* weakSelf = self;
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        weakSelf.backgroundLayer.fillColor =
-            [UIColor colorNamed:kTextPrimaryColor].CGColor;
-      };
+    NSArray<UITrait>* traits = @[
+      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+      UITraitUserInterfaceLevel.class
+    ];
+    __weak TooltipView* weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      weakSelf.backgroundLayer.fillColor =
+          [UIColor colorNamed:kTextPrimaryColor].CGColor;
+    };
 
-      [self registerForTraitChanges:traits withHandler:handler];
-    }
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -146,21 +144,6 @@ static __weak TooltipView* _active;
 }
 
 #pragma mark - Private
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    self.backgroundLayer.fillColor =
-        [UIColor colorNamed:kTextPrimaryColor].CGColor;
-  }
-}
-#endif
 
 - (void)checkTap:(UITapGestureRecognizer*)sender {
   if (sender.state == UIGestureRecognizerStateEnded) {

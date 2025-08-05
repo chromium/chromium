@@ -12,8 +12,7 @@
 
 @property(nonatomic, strong) ASPasswordCredential* passwordCredential;
 
-@property(nonatomic, strong)
-    ASPasskeyAssertionCredential* passkeyCredential API_AVAILABLE(ios(17.0));
+@property(nonatomic, strong) ASPasskeyAssertionCredential* passkeyCredential;
 
 @property(nonatomic, strong) void (^receivedCredentialBlock)();
 

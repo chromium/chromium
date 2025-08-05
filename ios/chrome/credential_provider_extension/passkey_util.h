@@ -34,7 +34,7 @@ DecryptCredentialSecrets(id<Credential> credential,
                          NSArray<NSData*>* security_domain_secrets);
 
 // Credential and extension data returned by the passkey creation process.
-struct API_AVAILABLE(ios(17.0)) PasskeyCreationOutput {
+struct PasskeyCreationOutput {
   ASPasskeyRegistrationCredential* credential;
   NSMutableArray<NSData*>* prf_outputs;
 };
@@ -52,10 +52,10 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSData* user_handle,
     NSString* gaia,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0));
+    NSArray<NSData*>* prf_inputs);
 
 // Credential and extension data returned by the passkey assertion process.
-struct API_AVAILABLE(ios(17.0)) PasskeyAssertionOutput {
+struct PasskeyAssertionOutput {
   ASPasskeyAssertionCredential* credential;
   NSMutableArray<NSData*>* prf_outputs;
 };
@@ -72,7 +72,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0));
+    NSArray<NSData*>* prf_inputs);
 
 // Returns whether or not the user should be asked to re-authenticate depending
 // on the provided `user_verification_preference_string` and whether biometric

@@ -102,35 +102,20 @@ void SyncASIdentityStore(NSArray<id<Credential>>* credentials) {
             errorForReporting);
       }
     };
-    if (@available(iOS 17.0, *)) {
-      NSMutableArray<id<ASCredentialIdentity>>* storeIdentities =
-          [NSMutableArray arrayWithCapacity:credentials.count];
-      for (id<Credential> credential in credentials) {
-        if (credential.isPasskey) {
-          [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
-                                         cr_initWithCredential:credential]];
-        } else {
-          [storeIdentities addObject:[[ASPasswordCredentialIdentity alloc]
-                                         cr_initWithCredential:credential]];
-        }
-      }
-      [ASCredentialIdentityStore.sharedStore
-          replaceCredentialIdentityEntries:storeIdentities
-                                completion:replaceCompletion];
-    }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-    else {
-      NSMutableArray<ASPasswordCredentialIdentity*>* storeIdentities =
-          [NSMutableArray arrayWithCapacity:credentials.count];
-      for (id<Credential> credential in credentials) {
+    NSMutableArray<id<ASCredentialIdentity>>* storeIdentities =
+        [NSMutableArray arrayWithCapacity:credentials.count];
+    for (id<Credential> credential in credentials) {
+      if (credential.isPasskey) {
+        [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
+                                       cr_initWithCredential:credential]];
+      } else {
         [storeIdentities addObject:[[ASPasswordCredentialIdentity alloc]
                                        cr_initWithCredential:credential]];
       }
-      [ASCredentialIdentityStore.sharedStore
-          replaceCredentialIdentitiesWithIdentities:storeIdentities
-                                         completion:replaceCompletion];
     }
-#endif
+    [ASCredentialIdentityStore.sharedStore
+        replaceCredentialIdentityEntries:storeIdentities
+                              completion:replaceCompletion];
   };
   [ASCredentialIdentityStore.sharedStore
       getCredentialIdentityStoreStateWithCompletion:stateCompletion];

@@ -128,15 +128,13 @@
 }
 
 - (void)userSelectedCredential:(id<Credential>)credential {
-  if (@available(iOS 17.0, *)) {
-    if (credential.isPasskey) {
-      // Skip reauthentication if the credential is a passkey as it will be
-      // performed later on if needed.
-      [self.credentialResponseHandler
-            userSelectedPasskey:credential
-          passkeyRequestDetails:self.passkeyRequestDetails];
-      return;
-    }
+  if (credential.isPasskey) {
+    // Skip reauthentication if the credential is a passkey as it will be
+    // performed later on if needed.
+    [self.credentialResponseHandler
+          userSelectedPasskey:credential
+        passkeyRequestDetails:self.passkeyRequestDetails];
+    return;
   }
 
   [self

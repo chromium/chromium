@@ -113,20 +113,18 @@ TEST_F(CredentialListCoordinatorTest, CredentialResponseHandler) {
         return blockWaitCompleted;
       }));
 
-  if (@available(iOS 17.0, *)) {
-    blockWaitCompleted = NO;
-    credentialResponseHandler.receivedCredentialBlock = nil;
-    credentialResponseHandler.receivedPasskeyBlock = ^() {
-      blockWaitCompleted = YES;
-    };
+  blockWaitCompleted = NO;
+  credentialResponseHandler.receivedCredentialBlock = nil;
+  credentialResponseHandler.receivedPasskeyBlock = ^() {
+    blockWaitCompleted = YES;
+  };
 
-    credential = TestPasskeyCredential();
-    [credentialListUIHandler userSelectedCredential:credential];
-    EXPECT_TRUE(
-        WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, true, ^BOOL {
-          return blockWaitCompleted;
-        }));
-  }
+  credential = TestPasskeyCredential();
+  [credentialListUIHandler userSelectedCredential:credential];
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, true, ^BOOL {
+        return blockWaitCompleted;
+      }));
 }
 
 }  // namespace credential_provider_extension

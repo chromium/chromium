@@ -90,97 +90,80 @@ class PasskeyUtilTest : public PlatformTest {
   void TearDown() override;
 };
 
-void PasskeyUtilTest::SetUp() {
-  if (@available(iOS 17.0, *)) {
-  } else {
-    GTEST_SKIP() << "Does not apply on iOS 16 and below";
-  }
-}
+void PasskeyUtilTest::SetUp() {}
 
 void PasskeyUtilTest::TearDown() {}
 
 // Tests assertion returns valid authenticator data.
 TEST_F(PasskeyUtilTest, AssertionAuthenticatorDataIsValid) {
-  if (@available(iOS 17.0, *)) {
-    NSData* clientDataHash = ClientDataHash();
-    id<Credential> credential = TestPasskeyCredential();
+  NSData* clientDataHash = ClientDataHash();
+  id<Credential> credential = TestPasskeyCredential();
 
-    // An empty allowedCredentials list means all credentials are accepted.
-    NSArray<NSData*>* allowedCredentials = [NSArray array];
+  // An empty allowedCredentials list means all credentials are accepted.
+  NSArray<NSData*>* allowedCredentials = [NSArray array];
 
-    // Compute the SHA256 of rpId, which is included in the assertion
-    // credential.
-    NSRange rpIdRange = NSMakeRange(0, 32);
-    NSData* rpIdSha =
-        Sha256([credential.rpId dataUsingEncoding:NSUTF8StringEncoding]);
+  // Compute the SHA256 of rpId, which is included in the assertion
+  // credential.
+  NSRange rpIdRange = NSMakeRange(0, 32);
+  NSData* rpIdSha =
+      Sha256([credential.rpId dataUsingEncoding:NSUTF8StringEncoding]);
 
-    PasskeyAssertionOutput passkeyAssertionOutput =
-        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
-                                SecurityDomainSecrets(), /*prf_inputs=*/nil);
+  PasskeyAssertionOutput passkeyAssertionOutput =
+      PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
+                              SecurityDomainSecrets(), /*prf_inputs=*/nil);
 
-    EXPECT_NSEQ(clientDataHash,
-                passkeyAssertionOutput.credential.clientDataHash);
-    EXPECT_NSEQ(credential.credentialId,
-                passkeyAssertionOutput.credential.credentialID);
-    EXPECT_NSEQ(credential.rpId,
-                passkeyAssertionOutput.credential.relyingParty);
-    EXPECT_NSEQ(credential.userId,
-                passkeyAssertionOutput.credential.userHandle);
+  EXPECT_NSEQ(clientDataHash, passkeyAssertionOutput.credential.clientDataHash);
+  EXPECT_NSEQ(credential.credentialId,
+              passkeyAssertionOutput.credential.credentialID);
+  EXPECT_NSEQ(credential.rpId, passkeyAssertionOutput.credential.relyingParty);
+  EXPECT_NSEQ(credential.userId, passkeyAssertionOutput.credential.userHandle);
 
-    // Verify that the first 32 bytes of the authenticator data are the SHA256
-    // of rpId.
-    EXPECT_NSEQ([passkeyAssertionOutput.credential.authenticatorData
-                    subdataWithRange:rpIdRange],
-                rpIdSha);
-  }
+  // Verify that the first 32 bytes of the authenticator data are the SHA256
+  // of rpId.
+  EXPECT_NSEQ([passkeyAssertionOutput.credential.authenticatorData
+                  subdataWithRange:rpIdRange],
+              rpIdSha);
 }
 
 // Tests assertion fails if the credential is not allowed.
 TEST_F(PasskeyUtilTest, AssertionFailsOnCredentialId) {
-  if (@available(iOS 17.0, *)) {
-    NSData* clientDataHash = ClientDataHash();
-    id<Credential> credential = TestPasskeyCredential();
+  NSData* clientDataHash = ClientDataHash();
+  id<Credential> credential = TestPasskeyCredential();
 
-    NSArray<NSData*>* allowedCredentials =
-        [NSArray arrayWithObject:StringToData("otherCredentialId")];
-    PasskeyAssertionOutput passkeyAssertionOutput =
-        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
-                                SecurityDomainSecrets(), /*prf_inputs=*/nil);
-    EXPECT_NSEQ(passkeyAssertionOutput.credential, nil);
-  }
+  NSArray<NSData*>* allowedCredentials =
+      [NSArray arrayWithObject:StringToData("otherCredentialId")];
+  PasskeyAssertionOutput passkeyAssertionOutput =
+      PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
+                              SecurityDomainSecrets(), /*prf_inputs=*/nil);
+  EXPECT_NSEQ(passkeyAssertionOutput.credential, nil);
 }
 
 // Tests assertion succeeds if the credential is allowed.
 TEST_F(PasskeyUtilTest, AssertionSucceedsOnCredentialId) {
-  if (@available(iOS 17.0, *)) {
-    NSData* clientDataHash = ClientDataHash();
-    id<Credential> credential = TestPasskeyCredential();
+  NSData* clientDataHash = ClientDataHash();
+  id<Credential> credential = TestPasskeyCredential();
 
-    NSArray<NSData*>* allowedCredentials =
-        [NSArray arrayWithObject:credential.credentialId];
-    PasskeyAssertionOutput passkeyAssertionOutput =
-        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
-                                SecurityDomainSecrets(), /*prf_inputs=*/nil);
-    EXPECT_NSNE(passkeyAssertionOutput.credential, nil);
-  }
+  NSArray<NSData*>* allowedCredentials =
+      [NSArray arrayWithObject:credential.credentialId];
+  PasskeyAssertionOutput passkeyAssertionOutput =
+      PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
+                              SecurityDomainSecrets(), /*prf_inputs=*/nil);
+  EXPECT_NSNE(passkeyAssertionOutput.credential, nil);
 }
 
 // Tests that creating a passkey works properly.
 TEST_F(PasskeyUtilTest, CreationSucceeds) {
-  if (@available(iOS 17.0, *)) {
-    NSData* clientDataHash = ClientDataHash();
-    id<Credential> credential = TestPasskeyCredential();
+  NSData* clientDataHash = ClientDataHash();
+  id<Credential> credential = TestPasskeyCredential();
 
-    PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
-        clientDataHash, credential.rpId, credential.username, credential.userId,
-        /*gaia=*/nil, SecurityDomainSecrets(), /*prf_inputs=*/nil);
+  PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
+      clientDataHash, credential.rpId, credential.username, credential.userId,
+      /*gaia=*/nil, SecurityDomainSecrets(), /*prf_inputs=*/nil);
 
-    EXPECT_NSEQ(clientDataHash,
-                passkeyCreationOutput.credential.clientDataHash);
-    EXPECT_EQ(passkeyCreationOutput.credential.credentialID.length, 16u);
-    EXPECT_NSEQ(credential.rpId, passkeyCreationOutput.credential.relyingParty);
-    EXPECT_NSNE(passkeyCreationOutput.credential.attestationObject, nil);
-  }
+  EXPECT_NSEQ(clientDataHash, passkeyCreationOutput.credential.clientDataHash);
+  EXPECT_EQ(passkeyCreationOutput.credential.credentialID.length, 16u);
+  EXPECT_NSEQ(credential.rpId, passkeyCreationOutput.credential.relyingParty);
+  EXPECT_NSNE(passkeyCreationOutput.credential.attestationObject, nil);
 }
 
 // Tests assertion succeeds with PRF data.

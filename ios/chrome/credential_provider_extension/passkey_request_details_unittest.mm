@@ -67,12 +67,7 @@ class PasskeyRequestDetailsTest : public PlatformTest {
   void TearDown() override;
 };
 
-void PasskeyRequestDetailsTest::SetUp() {
-  if (@available(iOS 17.0, *)) {
-  } else {
-    GTEST_SKIP() << "Does not apply on iOS 16 and below";
-  }
-}
+void PasskeyRequestDetailsTest::SetUp() {}
 
 void PasskeyRequestDetailsTest::TearDown() {}
 

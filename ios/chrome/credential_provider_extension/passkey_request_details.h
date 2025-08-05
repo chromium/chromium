@@ -16,26 +16,22 @@
 
 - (instancetype)initWithParameters:(ASPasskeyCredentialRequestParameters*)
                                        passkeyCredentialRequestParameters
-    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled
-    API_AVAILABLE(ios(17.0));
+    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled;
 
 - (instancetype)initWithRequest:(id<ASCredentialRequest>)credentialRequest
-    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled
-    API_AVAILABLE(ios(17.0));
+    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Performs passkey creation and returns the new credential.
 - (ASPasskeyRegistrationCredential*)createPasskeyForGaia:(NSString*)gaia
                                    securityDomainSecrets:
-                                       (NSArray<NSData*>*)securityDomainSecrets
-    API_AVAILABLE(ios(17.0));
+                                       (NSArray<NSData*>*)securityDomainSecrets;
 
 // Performs passkey assertion and returns the assertion response.
 - (ASPasskeyAssertionCredential*)
     assertPasskeyCredential:(id<Credential>)credential
-      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
-    API_AVAILABLE(ios(17.0));
+      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets;
 
 // Returns whether the list of credentials contains a password of the same
 // domain and username as the passkey request.
