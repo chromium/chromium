@@ -23489,6 +23489,21 @@
             ]
         }
     ],
+    "SkipDefaultBrowserPromoInFirstRun": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipDefaultBrowserPromoInFirstRun"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipModerateMemoryPressureLevelMac": [
         {
             "platforms": [
