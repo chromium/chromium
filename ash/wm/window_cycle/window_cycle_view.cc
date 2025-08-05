@@ -166,11 +166,10 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
-  SetBackground(views::CreateRoundedRectBackground(
+  SetBackground(views::CreateSolidBackground(
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysScrim2
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque,
-      kBackgroundCornerRadius));
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBackgroundCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));

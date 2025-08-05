@@ -226,8 +226,7 @@ AppListToastView::AppListToastView(const std::u16string& title,
         chromeos::features::IsSystemBlurEnabled()
             ? cros_tokens::kCrosSysSystemBaseElevated
             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-    SetBackground(
-        views::CreateRoundedRectBackground(background_color_id, kCornerRadius));
+    SetBackground(views::CreateSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
   } else {

@@ -512,8 +512,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateRoundedRectBackground(
-      background_color_id, mahi_constants::kPanelCornerRadius));
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   // Create a layer for the view for background blur and rounded corners.
   SetPaintToLayer();
