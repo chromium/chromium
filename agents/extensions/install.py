@@ -349,8 +349,11 @@ def main() -> None:
             elif args.command == 'remove':
                 remove_extension(extension, target_extensions_dir)
 
-    elif args.command == 'list' or args.command is None:
+    elif args.command == 'list':
         list_extensions(extensions_dirs)
+    else:
+        parser.print_help()
+        sys.exit(1)
 
 
 if __name__ == '__main__':
