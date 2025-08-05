@@ -123,9 +123,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
 
   int num_tabs = indices.size();
-  AddItemWithStringId(TabStripModel::CommandNewTabToRight,
-                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_NEWTABTOLEFT
-                                          : IDS_TAB_CXMENU_NEWTABTORIGHT);
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab) &&
@@ -162,8 +159,14 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_GLIC_STOP_SHARE,
                                                num_tabs));
     }
+
+    AddSeparator(ui::NORMAL_SEPARATOR);
   }
 #endif
+
+  AddItemWithStringId(TabStripModel::CommandNewTabToRight,
+                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_NEWTABTOLEFT
+                                          : IDS_TAB_CXMENU_NEWTABTORIGHT);
 
   // Reading list is moved lower when Split View is enabled.
   if (tab_strip->delegate()->SupportsReadLater() &&
