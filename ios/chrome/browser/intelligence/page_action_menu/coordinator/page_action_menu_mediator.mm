@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/web_state.h"
 
 @implementation PageActionMenuMediator {
@@ -48,9 +49,11 @@
 
 #pragma mark - PageActionMenuMutator
 
-- (BOOL)isLensAvailable {
+- (BOOL)isLensAvailableForTraitCollection:(UITraitCollection*)traitCollection {
+  BOOL isLandscape = IsCompactHeight(traitCollection);
   return IsLensOverlayAvailable(_profilePrefs) &&
-         search::DefaultSearchProviderIsGoogle(_templateURLService);
+         search::DefaultSearchProviderIsGoogle(_templateURLService) &&
+         !isLandscape;
 }
 
 - (BOOL)isGeminiAvailable {
