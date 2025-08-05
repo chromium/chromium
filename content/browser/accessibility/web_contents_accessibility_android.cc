@@ -1321,19 +1321,21 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes(
       env, obj, info, unique_id, node->IsCheckable(), node->IsClickable(),
-      node->IsContentInvalid(), node->IsEnabled(), node->IsFocusable(),
-      node->IsFocused(), node->HasImage(), node->IsPasswordField(),
-      node->IsScrollable(), node->IsSelected(), node->IsVisibleToUser(),
-      node->HasCharacterLocations(), node->IsRequired(), node->IsHeading());
+      node->IsContentInvalid(), node->IsEnabled(), node->IsEditable(),
+      node->IsFocusable(), node->IsFocused(), node->HasImage(),
+      node->IsPasswordField(), node->IsScrollable(), node->IsSelected(),
+      node->IsVisibleToUser(), node->HasCharacterLocations(),
+      node->IsRequired(), node->IsHeading());
 
   Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions(
       env, obj, info, unique_id, node->CanScrollForward(),
       node->CanScrollBackward(), node->CanScrollUp(), node->CanScrollDown(),
       node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
-      node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
-      node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
-      node->HasNonEmptyValue(), !node->GetAccessibleNameUTF16().empty(),
-      node->IsSeekControl(), node->IsFormDescendant());
+      node->IsTextField(), node->IsEnabled(), node->IsEditable(),
+      node->IsFocusable(), node->IsFocused(), node->IsCollapsed(),
+      node->IsExpanded(), node->HasNonEmptyValue(),
+      !node->GetAccessibleNameUTF16().empty(), node->IsSeekControl(),
+      node->IsFormDescendant());
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
       env, obj, info, unique_id, parent_id,

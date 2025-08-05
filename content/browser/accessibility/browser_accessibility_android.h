@@ -59,6 +59,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsContentInvalid() const;
   bool IsDisabledDescendant() const;
   bool IsEnabled() const;
+  bool IsEditable() const;
   bool IsExpanded() const;
   bool IsFocusable() const override;
   bool IsFormDescendant() const;
@@ -324,6 +325,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   void AccumulateSubstringTextContentUTF16(std::u16string* accumulated_text,
                                            std::optional<size_t> min_length,
                                            AXStyleData* style_data) const;
+
+  // This method determines if a node should expose its editable value.
+  bool ShouldExposeEditableValue() const;
 
   std::u16string old_value_;
   std::u16string new_value_;

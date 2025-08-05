@@ -203,6 +203,7 @@ public class AccessibilityNodeInfoBuilder {
             boolean clickable,
             boolean contentInvalid,
             boolean enabled,
+            boolean editable,
             boolean focusable,
             boolean focused,
             boolean hasImage,
@@ -215,6 +216,7 @@ public class AccessibilityNodeInfoBuilder {
             boolean isHeading) {
         node.setCheckable(checkable);
         node.setClickable(clickable);
+        node.setEditable(editable);
         node.setEnabled(enabled);
         node.setFocusable(focusable);
         node.setFocused(focused);
@@ -258,8 +260,9 @@ public class AccessibilityNodeInfoBuilder {
             boolean canScrollLeft,
             boolean canScrollRight,
             boolean clickable,
-            boolean editableText,
+            boolean isText,
             boolean enabled,
+            boolean editable,
             boolean focusable,
             boolean focused,
             boolean isCollapsed,
@@ -285,16 +288,17 @@ public class AccessibilityNodeInfoBuilder {
             node.addAction(ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
         }
 
-        if (editableText && enabled) {
-            // TODO: don't support actions that modify it if it's read-only (but
-            // SET_SELECTION and COPY are okay).
-            node.addAction(ACTION_SET_TEXT);
-            node.addAction(ACTION_PASTE);
-            node.addAction(ACTION_IME_ENTER);
-
+        if (isText && enabled) {
+            if (editable) {
+                node.addAction(ACTION_SET_TEXT);
+                node.addAction(ACTION_PASTE);
+                node.addAction(ACTION_IME_ENTER);
+            }
             if (hasNonEmptyValue) {
                 node.addAction(ACTION_SET_SELECTION);
-                node.addAction(ACTION_CUT);
+                if (editable) {
+                    node.addAction(ACTION_CUT);
+                }
                 node.addAction(ACTION_COPY);
             }
         }
@@ -672,7 +676,6 @@ public class AccessibilityNodeInfoBuilder {
     @CalledByNative
     protected void setAccessibilityNodeInfoSelectionAttrs(
             AccessibilityNodeInfoCompat node, int startIndex, int endIndex) {
-        node.setEditable(true);
         node.setTextSelection(startIndex, endIndex);
     }
 
