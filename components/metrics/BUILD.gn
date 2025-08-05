@@ -99,10 +99,7 @@ source_set("client_info") {
 
 # Used by the Chrome installer, which doesn't need the whole metrics library.
 source_set("metrics_pref_names") {
-  sources = [
-    "metrics_pref_names.cc",
-    "metrics_pref_names.h",
-  ]
+  sources = [ "metrics_pref_names.h" ]
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
