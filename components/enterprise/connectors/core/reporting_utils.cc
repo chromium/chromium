@@ -231,6 +231,26 @@ GetTriggerRulesFromContentAnalysisResult(
   return triggered_rules;
 }
 
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+google::protobuf::RepeatedPtrField<proto::TriggeredRuleInfo>
+GetTriggerRulesFromDataControlsRules(
+    const data_controls::Verdict::TriggeredRules& data_control_rules) {
+  google::protobuf::RepeatedPtrField<proto::TriggeredRuleInfo> triggered_rules;
+  for (const auto& [index, rule] : data_control_rules) {
+    proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_name(rule.rule_name);
+
+    int rule_id_int = 0;
+    if (base::StringToInt(rule.rule_id, &rule_id_int)) {
+      triggered_rule.set_rule_id(rule_id_int);
+    }
+    *triggered_rules.Add() = triggered_rule;
+  }
+
+  return triggered_rules;
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
 }  // namespace
 
 std::string MaskUsername(const std::u16string& username) {
@@ -571,7 +591,7 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
     const std::string& trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
-    const std::string& source_email,
+    const std::string& source_active_user_email,
     const std::string& content_area_account_email,
     const std::string& profile_identifier,
     const std::string& profile_username,
@@ -599,8 +619,8 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
     event.set_web_app_signed_in_account(content_area_account_email);
   }
 
-  if (!source_email.empty()) {
-    event.set_source_web_app_signed_in_account(source_email);
+  if (!source_active_user_email.empty()) {
+    event.set_source_web_app_signed_in_account(source_active_user_email);
   }
 
   event.set_profile_identifier(profile_identifier);
@@ -631,6 +651,55 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
 
   return event;
 }
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+chrome::cros::reporting::proto::DlpSensitiveDataEvent
+GetDataControlsSensitiveDataEvent(
+    const GURL& url,
+    const GURL& tab_url,
+    const std::string& source,
+    const std::string& destination,
+    const std::string& mime_type,
+    const std::string& trigger,
+    const std::string& source_active_user_email,
+    const std::string& content_area_account_email,
+    const std::string& profile_identifier,
+    const std::string& profile_username,
+    int64_t content_size,
+    const data_controls::Verdict::TriggeredRules& triggered_rules,
+    EventResult event_result) {
+  proto::DlpSensitiveDataEvent event;
+  event.set_url(url.spec());
+  event.set_tab_url(tab_url.spec());
+  event.set_source(source);
+  event.set_destination(destination);
+  event.set_content_type(mime_type);
+  event.set_trigger(ToProtoDataTransferEventTrigger(trigger));
+
+  if (!content_area_account_email.empty()) {
+    event.set_web_app_signed_in_account(content_area_account_email);
+  }
+
+  if (!source_active_user_email.empty()) {
+    event.set_source_web_app_signed_in_account(source_active_user_email);
+  }
+
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
+
+  // |content_size| can be set to -1 to indicate an unknown size, in
+  // which case the field is not set.
+  if (content_size >= 0) {
+    event.set_content_size(content_size);
+  }
+
+  *event.mutable_triggered_rule_info() =
+      GetTriggerRulesFromDataControlsRules(triggered_rules);
+  event.set_event_result(GetEventResult(event_result));
+
+  return event;
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 std::vector<std::string> GetLocalIpAddresses() {
   net::NetworkInterfaceList list;

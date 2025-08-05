@@ -278,7 +278,7 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
       /*mime_type=*/"application/zip", /*trigger=*/"FILE_UPLOAD",
       /*scan_id=*/"123",
       /*content_transfer_method=*/"CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
-      /*source_email=*/"source@gmail.com",
+      /*source_active_user_email=*/"source@gmail.com",
       /*content_area_account_email=*/"content@gmail.com",
       /*profile_identifier=*/"identifier",
       /*profile_username=*/"profile_username", /*content_size=*/-1,
@@ -323,6 +323,44 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
     ASSERT_EQ(event.referrers_size(), 0);
   }
 }
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+TEST(ReportingUtilsTest, GetDataControlsSensitiveDataEvent) {
+  data_controls::Verdict::TriggeredRules triggered_rules = {
+      {0, {"1", "rule_1_name"}}};
+
+  auto event = GetDataControlsSensitiveDataEvent(
+      /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),
+      /*source=*/"CLIPBOARD", /*destination=*/"about:blank",
+      /*mime_type=*/"text/plain", /*trigger=*/"WEB_CONTENT_UPLOAD",
+      /*source_active_user_email=*/"source@gmail.com",
+      /*content_area_account_email=*/"content@gmail.com",
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username", /*content_size=*/-1,
+      /*triggered_rules*/ triggered_rules,
+      /*event_result=*/EventResult::BLOCKED);
+
+  ASSERT_EQ(event.url(), "https://google.com/");
+  ASSERT_EQ(event.tab_url(), "about:blank");
+  ASSERT_EQ(event.source(), "CLIPBOARD");
+  ASSERT_EQ(event.destination(), "about:blank");
+  ASSERT_EQ(event.content_type(), "text/plain");
+  ASSERT_EQ(event.trigger(), chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::WEB_CONTENT_UPLOAD);
+  ASSERT_EQ(event.source_web_app_signed_in_account(), "source@gmail.com");
+  ASSERT_EQ(event.web_app_signed_in_account(), "content@gmail.com");
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
+  ASSERT_FALSE(event.content_size());
+  ASSERT_EQ(event.event_result(),
+            chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+
+  ASSERT_EQ(event.triggered_rule_info_size(), 1);
+  auto triggered_rule = event.triggered_rule_info()[0];
+  ASSERT_EQ(triggered_rule.rule_id(), 1);
+  ASSERT_EQ(triggered_rule.rule_name(), "rule_1_name");
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 TEST(ReportingUtilsTest, TestEventLocalIp) {
   std::vector<std::string> local_ips = GetLocalIpAddresses();
