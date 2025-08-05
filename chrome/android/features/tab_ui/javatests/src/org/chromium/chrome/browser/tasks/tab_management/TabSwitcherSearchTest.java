@@ -381,6 +381,43 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
+    public void testTypedSuggestionsFromTabGroupsPane_OpenTabGroupSearchSuggestion() {
+        String tabGroupTitle = "Test";
+        int firstTabId = mPage.loadedTabElement.get().getId();
+        RegularNewTabPageStation secondPage = mPage.openNewTabFast();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+        editor = editor.addTabToSelection(1, secondTabId);
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
+        dialog = dialog.inputName(tabGroupTitle);
+        dialog.pressDone();
+
+        TabSwitcherSearchStation tabSwitcherSearchStation =
+                tabSwitcher.selectTabGroupsPane().openTabGroupsPaneSearch();
+        tabSwitcherSearchStation.typeInOmnibox("test");
+        SuggestionFacility suggestion =
+                tabSwitcherSearchStation.findSuggestion(
+                        /* index= */ 0,
+                        /* title= */ "   Test",
+                        /* text= */ "chrome://newtab/, chrome://newtab/");
+        Pair<RegularTabSwitcherStation, TabGroupDialogFacility> pair =
+                suggestion.openTabGroup(
+                        mCtaTestRule.getActivity(),
+                        List.of(firstTabId, secondTabId),
+                        tabGroupTitle);
+        assertEquals(tabGroupTitle, pair.second.getTitle());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount("TabGroups.HubSearchTabGroupSuggestionClicked"));
+    }
+
+    @Test
+    @MediumTest
     public void testTypedSuggestions_OpenSearchSuggestion_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));

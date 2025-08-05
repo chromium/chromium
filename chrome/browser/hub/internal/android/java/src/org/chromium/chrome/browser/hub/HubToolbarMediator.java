@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -86,7 +87,8 @@ public class HubToolbarMediator {
                     // Only show the search box visuals in the tab switcher and incognito panes.
                     @PaneId int focusedPaneId = pane.getPaneId();
                     if (focusedPaneId != PaneId.TAB_SWITCHER
-                            && focusedPaneId != PaneId.INCOGNITO_TAB_SWITCHER) {
+                            && focusedPaneId != PaneId.INCOGNITO_TAB_SWITCHER
+                            && maybeExcludeHubSearchForTabGroupsPane(focusedPaneId)) {
                         mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, true);
                         mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
                         mPropertyModel.set(SEARCH_LOUPE_VISIBLE, false);
@@ -288,6 +290,8 @@ public class HubToolbarMediator {
         boolean enabled = hubSearchEnabledState == null ? true : hubSearchEnabledState;
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, enabled);
 
+        // TODO(crbug.com/436529097): Decouple the search loupe from the menu button container on
+        // the tab groups pane so it can be displayed.
         mPropertyModel.set(MENU_BUTTON_VISIBLE, focusedPane.getMenuButtonVisible());
 
         boolean isIncognito = focusedPaneId == PaneId.INCOGNITO_TAB_SWITCHER;
@@ -348,6 +352,12 @@ public class HubToolbarMediator {
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.HubSearch.SearchBoxEntrypointV2", action, HubSearchEntrypoint.NUM_ENTRIES);
+    }
+
+    private boolean maybeExcludeHubSearchForTabGroupsPane(@PaneId int focusedPaneId) {
+        if (!OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()) return true;
+
+        return focusedPaneId != PaneId.TAB_GROUPS;
     }
 
     /** Test-only method to trigger configuration change for testing purposes. */
