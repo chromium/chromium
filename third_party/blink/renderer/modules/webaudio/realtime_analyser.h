@@ -41,16 +41,10 @@ class RealtimeAnalyser final {
   DISALLOW_NEW();
 
  public:
-  static constexpr double kDefaultSmoothingTimeConstant = 0.8;
-  static constexpr double kDefaultMinDecibels = -100.0;
-  static constexpr double kDefaultMaxDecibels = -30.0;
-
-  static constexpr unsigned kDefaultFFTSize = 2048;
   // All FFT implementations are expected to handle power-of-two sizes
   // MinFFTSize <= size <= MaxFFTSize.
   static constexpr unsigned kMinFFTSize = 32;
   static constexpr unsigned kMaxFFTSize = 32768;
-  static constexpr unsigned kInputBufferSize = kMaxFFTSize * 2;
 
   explicit RealtimeAnalyser(unsigned render_quantum_frames);
 
@@ -62,14 +56,14 @@ class RealtimeAnalyser final {
 
   unsigned FrequencyBinCount() const { return fft_size_ / 2; }
 
-  void SetMinDecibels(double k) { min_decibels_ = k; }
   double MinDecibels() const { return min_decibels_; }
+  void SetMinDecibels(double k) { min_decibels_ = k; }
 
-  void SetMaxDecibels(double k) { max_decibels_ = k; }
   double MaxDecibels() const { return max_decibels_; }
+  void SetMaxDecibels(double k) { max_decibels_ = k; }
 
-  void SetSmoothingTimeConstant(double k) { smoothing_time_constant_ = k; }
   double SmoothingTimeConstant() const { return smoothing_time_constant_; }
+  void SetSmoothingTimeConstant(double k) { smoothing_time_constant_ = k; }
 
   void GetFloatFrequencyData(DOMFloat32Array*, double);
   void GetByteFrequencyData(DOMUint8Array*, double);
@@ -89,18 +83,9 @@ class RealtimeAnalyser final {
 
   void DoFFTAnalysis();
 
-  // Convert the contents of `magnitude_buffer_` to byte values, saving the
-  // result in `destination`.
-  void ConvertToByteData(DOMUint8Array* destination);
-
-  // Convert `magnitude_buffer_` to dB, saving the result in `destination`
-  void ConvertFloatToDb(DOMFloat32Array* destination);
-
-  AudioFloatArray& MagnitudeBuffer() { return magnitude_buffer_; }
-
   // The audio thread writes the input audio here.
   AudioFloatArray input_buffer_;
-  std::atomic_uint write_index_{0};
+  std::atomic_uint write_index_ = 0;
 
   // Input audio is downmixed to this bus before copying to m_inputBuffer.
   scoped_refptr<AudioBus> down_mix_bus_;
@@ -112,14 +97,14 @@ class RealtimeAnalyser final {
 
   // A value between 0 and 1 which averages the previous version of
   // m_magnitudeBuffer with the current analysis magnitude data.
-  double smoothing_time_constant_;
+  double smoothing_time_constant_ = 0.8;
 
   // The range used when converting when using getByteFrequencyData().
-  double min_decibels_;
-  double max_decibels_;
+  double min_decibels_ = -100.0;
+  double max_decibels_ = -30.0;
 
   // Time at which the FFT was last computed.
-  double last_analysis_time_ = -1;
+  double last_analysis_time_ = -1.0;
 };
 
 }  // namespace blink
