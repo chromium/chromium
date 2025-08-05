@@ -477,7 +477,10 @@
 
   <div id="firstRunContainer">
     <div id="firstRunTopText">$i18n{firstRunMainTop}</div>
-    <div id="firstRunMidText">$i18n{firstRunMainMid}</div>
+    <div id="firstRunMidText" hidden="[[enterprise_]]">
+        $i18nRaw{firstRunMainMid}</div>
+    <div id="firstRunMidTextEnterprise" hidden="[[!enterprise_]]">
+        $i18nRaw{firstRunMainMidEnterprise}</div>
     <div id="firstRunBottomText" on-click="onFirstRunBottomTextClick_">
       $i18nRaw{firstRunMainBottom}
     </div>
@@ -611,9 +614,10 @@
 
     <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
       <div class="footer-text">
-        <div on-click="onFooterClick_">
-          $i18nRaw{inputFooter}
-        </div>
+        <div on-click="onFooterClick_" hidden="[[enterprise_]]">
+            $i18nRaw{inputFooter}</div>
+        <div on-click="onFooterClick_" hidden="[[!enterprise_]]">
+            $i18nRaw{inputFooterEnterprise}</div>
       </div>
       <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
         disabled="[[!isSubmitEnabled_]]">

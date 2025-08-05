@@ -17,6 +17,7 @@ export interface ComposeApiProxy {
   getRouter(): ComposeUntrustedDialogCallbackRouter;
   openBugReportingLink(): void;
   openComposeLearnMorePage(): void;
+  openEnterpriseComposeLearnMorePage(): void;
   openComposeSettings(): void;
   openFeedbackSurveyLink(): void;
   openSignInPage(): void;
@@ -97,6 +98,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   openComposeLearnMorePage() {
     this.composeSessionPageHandler.openComposeLearnMorePage();
+  }
+
+  openEnterpriseComposeLearnMorePage() {
+    this.composeSessionPageHandler.openEnterpriseComposeLearnMorePage();
   }
 
   openFeedbackSurveyLink() {

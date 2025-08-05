@@ -83,6 +83,9 @@ const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
 const char kOnDeviceComposeBugReportURL[] = "https://goto.google.com/ccbrfdod";
 const char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
+// TODO(crbug.com/40500621): Replace with p-link
+const char kEnterpriseComposeLearnMorePageURL[] =
+    "https://support.google.com/chrome/a/answer/14443058";
 const char kComposeFeedbackSurveyURL[] = "https://goto.google.com/ccfsfd";
 const char kSignInPageURL[] = "https://accounts.google.com";
 const char kOnDeviceComposeFeedbackSurveyURL[] =
@@ -947,6 +950,15 @@ void ComposeSession::OpenComposeLearnMorePage() {
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(kComposeLearnMorePageURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          /* is_renderer_initiated= */ false),
+      /*navigation_handle_callback=*/{});
+}
+
+void ComposeSession::OpenEnterpriseComposeLearnMorePage() {
+  web_contents_->OpenURL(
+      content::OpenURLParams(
+          GURL(kEnterpriseComposeLearnMorePageURL), content::Referrer(),
           WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
           /* is_renderer_initiated= */ false),
       /*navigation_handle_callback=*/{});

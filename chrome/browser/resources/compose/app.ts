@@ -215,6 +215,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
       textSelected_: {
         type: Boolean,
       },
+      enterprise_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('useEnterpriseWithoutLoggingPolicy'),
+      },
       showMainAppDialog_: {
         type: Boolean,
         value: false,
@@ -335,6 +339,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   declare private elaborateChipIcon_: string;
   declare private formalizeChipIcon_: string;
   declare private textSelected_: boolean;
+  declare private enterprise_: boolean;
   declare private submitted_: boolean;
   declare private undoEnabled_: boolean;
   declare private redoEnabled_: boolean;
@@ -497,7 +502,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
     // Embedded links do not work in WebUI so handle in the parent event
     // listener.
     if ((e.target as HTMLElement).tagName === 'A') {
-      this.apiProxy_.openComposeLearnMorePage();
+      if (this.enterprise_) {
+        this.apiProxy_.openEnterpriseComposeLearnMorePage();
+      } else {
+        this.apiProxy_.openComposeLearnMorePage();
+      }
     }
   }
 
@@ -688,6 +697,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
         break;
       case 'signInLink':
         this.apiProxy_.openSignInPage();
+        break;
+      case 'enterpriseLearnMore':
+        this.apiProxy_.openEnterpriseComposeLearnMorePage();
         break;
       default:
         this.apiProxy_.openComposeLearnMorePage();

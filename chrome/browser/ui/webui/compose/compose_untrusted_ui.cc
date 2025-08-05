@@ -18,6 +18,8 @@
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -57,6 +59,7 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
       {"firstRunTitle", IDS_COMPOSE_FRE_TITLE},
       {"firstRunMainTop", IDS_COMPOSE_FRE_MAIN_TOP},
       {"firstRunMainMid", IDS_COMPOSE_FRE_MAIN_MID},
+      {"firstRunMainMidEnterprise", IDS_COMPOSE_FRE_MAIN_MID_ENTERPRISE},
       {"firstRunMainBottom", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
       {"firstRunOkButton", IDS_COMPOSE_FRE_OK_BUTTON},
       {"dialogTitle", IDS_COMPOSE_DIALOG_TITLE},
@@ -68,6 +71,7 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
       {"inputModeChipElaborate", IDS_COMPOSE_INPUT_MODE_ELABORATE},
       {"inputModeChipFormalize", IDS_COMPOSE_INPUT_MODE_FORMALIZE},
       {"inputFooter", IDS_COMPOSE_INPUT_FOOTER},
+      {"inputFooterEnterprise", IDS_COMPOSE_INPUT_FOOTER_ENTERPRISE},
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"onDeviceUsedFooter", IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED},
       {"resultFooter", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
@@ -139,6 +143,16 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
   raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(
                                            profile, /*serve_untrusted=*/true));
+
+  PrefService* pref_service = profile->GetPrefs();
+  bool is_enterprise_without_logging =
+      pref_service->GetInteger(
+          optimization_guide::prefs::kComposeEnterprisePolicyAllowed) ==
+      static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+  source->AddBoolean("useEnterpriseWithoutLoggingPolicy",
+                     is_enterprise_without_logging);
 }
 
 ComposeUntrustedUI::~ComposeUntrustedUI() = default;

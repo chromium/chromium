@@ -73,6 +73,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       'logEditInput',
       'openBugReportingLink',
       'openComposeLearnMorePage',
+      'openEnterpriseComposeLearnMorePage',
       'openFeedbackSurveyLink',
       'openSignInPage',
       'requestInitialState',
@@ -147,6 +148,10 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
 
   openComposeLearnMorePage() {
     this.methodCalled('openComposeLearnMorePage');
+  }
+
+  openEnterpriseComposeLearnMorePage() {
+    this.methodCalled('openEnterpriseComposeLearnMorePage');
   }
 
   openFeedbackSurveyLink() {
