@@ -1008,21 +1008,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.DataTypeUndecryptablePendingUpdatesDropped{SyncDataType}"
-    units="SyncEntity" expires_after="2025-08-10">
-  <owner>mastiz@chromium.org</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records the number of entities dropped when the data type decided that a
-    certain encryption key was lost and dropped all pending updates encrypted
-    with it. Future updates encrypted with such key will also be ignored by the
-    data type, but those are *not* counted in this metric.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Sync.DataTypeUniquePositionError" enum="SyncDataTypes"
     expires_after="2025-09-22">
   <owner>rushans@google.com</owner>

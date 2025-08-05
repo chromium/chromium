@@ -1500,8 +1500,6 @@ TEST_F(DataTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
 }
 
 TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
-  base::HistogramTester histogram_tester;
-
   NormalInitialize();
 
   // Send an update encrypted with a key that shall remain unknown.
@@ -1526,21 +1524,10 @@ TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // longer blocked.
   EXPECT_FALSE(worker()->BlockForEncryption());
 
-  // Should have recorded that 1 entity was dropped.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUndecryptablePendingUpdatesDropped", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUndecryptablePendingUpdatesDropped.PREFERENCE", 1, 1);
-
   // From now on, incoming updates encrypted with the missing key don't block
   // the worker.
   TriggerUpdateFromServer(10, kTag2, kValue2);
   EXPECT_FALSE(worker()->BlockForEncryption());
-
-  // Should have recorded that 1 incoming update was ignored.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUpdateDrop.DecryptionPendingForTooLong",
-      DataTypeForHistograms::kPreferences, 1);
 }
 
 // Test that processor has been disconnected from Sync when worker got

@@ -51,8 +51,6 @@ namespace syncer {
 
 namespace {
 
-const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
-    "Sync.DataTypeUndecryptablePendingUpdatesDropped";
 const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.DataTypeBlockedDueToUndecryptableUpdate";
 const char kPasswordNotesStateHistogramName[] =
@@ -1184,22 +1182,9 @@ void DataTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
     return;
   }
 
-  size_t updates_before_dropping = entries_pending_decryption_.size();
   std::erase_if(entries_pending_decryption_, [&](const auto& id_and_update) {
     return key_name == GetEncryptionKeyName(id_and_update.second);
   });
-
-  // If updates were dropped, record how many.
-  const size_t dropped_updates =
-      updates_before_dropping - entries_pending_decryption_.size();
-  if (dropped_updates > 0) {
-    base::UmaHistogramCounts1000(
-        kUndecryptablePendingUpdatesDroppedHistogramName, dropped_updates);
-    base::UmaHistogramCounts1000(
-        base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramName, ".",
-                      DataTypeToHistogramSuffix(type_)}),
-        dropped_updates);
-  }
 }
 
 void DataTypeWorker::RemoveKeysNoLongerUnknown() {
