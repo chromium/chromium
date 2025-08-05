@@ -4368,6 +4368,10 @@ const ComputedStyle* Element::StyleForLayoutObject(
     style = HasCustomStyleCallbacks()
                 ? CustomStyleForLayoutObject(new_style_recalc_context)
                 : OriginalStyleForLayoutObject(new_style_recalc_context);
+    if (!style) {
+      DCHECK(IsPseudoElement());
+      return nullptr;
+    }
   }
 
   DisplayLockContext* context = GetDisplayLockContext();
