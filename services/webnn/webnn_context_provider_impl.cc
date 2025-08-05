@@ -219,7 +219,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_WIN)
   if (ort::ShouldCreateOrtContext(*options)) {
     base::expected<scoped_refptr<ort::Environment>, std::string>
-        env_creation_results = ort::Environment::Create(gpu_info_);
+        env_creation_results = ort::Environment::GetInstance(gpu_info_);
     if (!env_creation_results.has_value()) {
       LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime context: "
                  << env_creation_results.error();
