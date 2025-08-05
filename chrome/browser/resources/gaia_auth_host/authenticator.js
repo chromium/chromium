@@ -457,6 +457,7 @@ export class Authenticator extends EventTarget {
     this.syncTrustedVaultKeys_ = null;
     this.closeViewReceived_ = false;
     this.gaiaStartTime = null;
+    this.samlRedirectionInProgress = false;
 
     window.addEventListener(
         'message', e => this.onMessageFromWebview_(e), false);
@@ -992,7 +993,7 @@ export class Authenticator extends EventTarget {
 
   /**
    * Invoked when headers are received in the main frame of the webview. It
-   * reads the authenticated user info from a signin header.
+   * reads the authenticated user info from a sign-in header.
    * @param {OnHeadersReceivedDetails} details
    * @private
    */
@@ -1015,6 +1016,12 @@ export class Authenticator extends EventTarget {
       const header = headers[i];
       const headerName = header.name.toLowerCase();
       if (headerName === SIGN_IN_HEADER) {
+        if (this.samlRedirectionInProgress) {
+          console.warn(
+              `Authenticator: sign-in header received during ongoing SAML ' +
+              'redirection, it will be ignored`)
+          return;
+        }
         const headerValues = header.value.toLowerCase().split(',');
         const signinDetails = {};
         headerValues.forEach(function(e) {
@@ -1359,8 +1366,8 @@ export class Authenticator extends EventTarget {
    * @private
    */
   onIsSamlFlowChanged_(e) {
-    const isSamlFlow = e.detail.isSamlFlow;
-    if (isSamlFlow) {
+    this.samlRedirectionInProgress = e.detail.isSamlFlow;
+    if (this.samlRedirectionInProgress) {
       this.authFlow = AuthFlow.SAML;
     }
   }
