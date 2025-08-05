@@ -11,7 +11,7 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 
-/** The utility class for PaymentRequestFactory and WebLayerPaymentRequestFactory. */
+/** The utility class for PaymentRequestFactory. */
 @NullMarked
 public final class PaymentRequestServiceUtil {
     /**

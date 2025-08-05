@@ -60,7 +60,7 @@ import java.util.Set;
  * {@link PaymentRequestService}, {@link MojoPaymentRequestGateKeeper} and
  * ChromePaymentRequestService together make up the PaymentRequest service defined in
  * third_party/blink/public/mojom/payments/payment_request.mojom. This class provides the parts
- * shareable between Clank and WebLayer. The Clank specific logic lives in
+ * shareable between Clank and other content embedders. The Clank specific logic lives in
  * org.chromium.chrome.browser.payments.ChromePaymentRequestService.
  *
  * <p>TODO(crbug.com/40138829): ChromePaymentRequestService is under refactoring, with the purpose
