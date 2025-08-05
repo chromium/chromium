@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -534,7 +535,8 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
   if (!skip_launching_terminal_for_testing_) {
     // kInvalidDisplayId will launch terminal on the current active display.
     const guest_os::GuestId* container_id;
-    if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    if (CrostiniManager::GetTerminaFlavor(profile_) ==
+        CrostiniManager::TerminaFlavor::BAGUETTE) {
       container_id = &crostini::DefaultBaguetteContainerId();
     } else {
       container_id = &crostini::DefaultContainerId();
@@ -577,8 +579,22 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
 
   UpdateInstallingState(InstallerState::kInstallImageLoader);
 
+  // In general, we should always try to start the guest that exists on the
+  // device. We should also only try to install baguette if the flag is enabled
+  // (for now).
+  //
+  // After this point, we can assume that the current local state is correct and
+  // no longer need concern ourself with the feature flag value.
+  CrostiniManager::TerminaFlavor termina_flavor =
+      CrostiniManager::GetTerminaFlavor(profile_);
+  bool baguette_enabled =
+      base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless);
+  bool start_baguette =
+      (baguette_enabled &&
+       !(termina_flavor == CrostiniManager::TerminaFlavor::CROSTINI)) ||
+      termina_flavor == CrostiniManager::TerminaFlavor::BAGUETTE;
   const guest_os::GuestId* container_id;
-  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+  if (start_baguette) {
     container_id = &crostini::DefaultBaguetteContainerId();
   } else {
     container_id = &crostini::DefaultContainerId();

@@ -185,6 +185,13 @@ class CrostiniManager : public KeyedService,
   using RestartId = int;
   static const RestartId kUninitializedRestartId = -1;
 
+  enum class TerminaFlavor {
+    UNKNOWN,
+    UNINSTALLED,
+    BAGUETTE,
+    CROSTINI,
+  };
+
   // Observer class for the Crostini restart flow.
   class RestartObserver {
    public:
@@ -226,6 +233,9 @@ class CrostiniManager : public KeyedService,
   ~CrostiniManager() override;
 
   base::WeakPtr<CrostiniManager> GetWeakPtr();
+
+  // Returns 'flavor' of termina installed - if any.
+  static TerminaFlavor GetTerminaFlavor(Profile* profile);
 
   // Returns true if the /dev/kvm directory is present.
   static bool IsDevKvmPresent();
