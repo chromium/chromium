@@ -26,11 +26,13 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 
 import java.util.Collections;
+import java.util.List;
 
 /** Tests for {@link SourceViewDragDropReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
@@ -48,6 +50,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     // Data
     private MockTab mTabForInteractingView;
+    private StripLayoutTab mOtherSelectedTab;
 
     // Target
     private SourceViewDragDropReorderStrategy mStrategy;
@@ -83,6 +86,17 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         mTabForInteractingView = (MockTab) mModel.getTabById(TAB_ID1);
     }
 
+    private void setupForMultiTabDrag() {
+        mInteractingTab = buildStripTab(TAB_ID1, 0);
+        mTabForInteractingView = (MockTab) mModel.getTabById(TAB_ID1);
+        mOtherSelectedTab = buildStripTab(TAB_ID2, 1);
+        mStripTabs = new StripLayoutTab[] {mInteractingTab, mOtherSelectedTab};
+
+        when(mModel.isTabMultiSelected(TAB_ID1)).thenReturn(true);
+        when(mModel.isTabMultiSelected(TAB_ID2)).thenReturn(true);
+        when(mModel.getMultiSelectedTabsCount()).thenReturn(2);
+    }
+
     private void setupForGroupDrag() {
         mInteractingGroupTitle = buildGroupTitle(TAB_ID1, GROUP_ID1, TAB_WIDTH);
     }
@@ -97,6 +111,23 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mTabStripDragHandler)
                 .startTabDragAction(
                         Mockito.eq(mContainerView),
+                        eq(mTabForInteractingView),
+                        eq(DRAG_START_POINT),
+                        anyFloat(),
+                        anyFloat());
+    }
+
+    @Test
+    public void testStartReorder_multiTabDragStarted() {
+        // Call
+        startMultiTabReorder();
+
+        // Verify
+        assertNotNull("Dragged view should not be null", mStrategy.getViewBeingDraggedForTesting());
+        verify(mTabStripDragHandler)
+                .startMultiTabDragAction(
+                        eq(mContainerView),
+                        any(List.class),
                         eq(mTabForInteractingView),
                         eq(DRAG_START_POINT),
                         anyFloat(),
@@ -173,6 +204,35 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     @Test
+    public void testUpdateReorder_multiTab_dragOntoStrip() {
+        // Call
+        startMultiTabReorder();
+        mStrategy.updateReorderPosition(
+                mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
+
+        // Verify tab properties
+        assertFalse("DraggedOffStrip should be false", mInteractingTab.isDraggedOffStrip());
+        assertFalse("DraggedOffStrip should be false", mOtherSelectedTab.isDraggedOffStrip());
+        assertEquals("OffsetX should be 0", 0f, mInteractingTab.getOffsetX(), EPSILON);
+        assertEquals("OffsetY should be 0", 0f, mInteractingTab.getOffsetY(), EPSILON);
+        assertEquals("OffsetX should be 0", 0f, mOtherSelectedTab.getOffsetX(), EPSILON);
+        assertEquals("OffsetY should be 0", 0f, mOtherSelectedTab.getOffsetY(), EPSILON);
+
+        // Verify
+        verify(mStripUpdateDelegate).setCompositorButtonsVisible(false);
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
+        verify(mMultiTabStrategy)
+                .startReorderMode(
+                        eq(mStripViews),
+                        eq(mStripTabs),
+                        eq(mGroupTitles),
+                        eq(mInteractingTab),
+                        eq(new PointF(END_X, 0f)));
+        verifyNoMoreInteractions(mMultiTabStrategy);
+    }
+
+    @Test
     public void testUpdateReorder_dragWithinStrip() {
         // Start reorder before dragging within strip.
         startTabReorder();
@@ -205,6 +265,89 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         DELTA_X,
                         ReorderType.DRAG_WITHIN_STRIP);
         verifyNoMoreInteractions(mTabStrategy);
+    }
+
+    @Test
+    public void testUpdateReorder_multiTab_dragWithinStrip() {
+        // Start reorder before dragging within strip.
+        startMultiTabReorder();
+        mStrategy.updateReorderPosition(
+                mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
+        verify(mMultiTabStrategy)
+                .startReorderMode(
+                        eq(mStripViews),
+                        eq(mStripTabs),
+                        eq(mGroupTitles),
+                        eq(mInteractingTab),
+                        eq(new PointF(END_X, 0f)));
+
+        // Call - drag within strip.
+        mStrategy.updateReorderPosition(
+                mStripViews,
+                mGroupTitles,
+                mStripTabs,
+                END_X,
+                DELTA_X,
+                ReorderType.DRAG_WITHIN_STRIP);
+
+        // Verify
+        verify(mMultiTabStrategy)
+                .updateReorderPosition(
+                        mStripViews,
+                        mGroupTitles,
+                        mStripTabs,
+                        END_X,
+                        DELTA_X,
+                        ReorderType.DRAG_WITHIN_STRIP);
+        verifyNoMoreInteractions(mMultiTabStrategy);
+    }
+
+    @Test
+    public void testUpdateReorder_multiTab_dragOutOfStrip() {
+        startMultiTabReorder();
+        // Set properties for dragged tab.
+        float drawX = 24f; // Arbitrary value.
+        mInteractingTab.setIdealX(drawX);
+
+        // Call
+        mStrategy.updateReorderPosition(
+                mStripViews,
+                mGroupTitles,
+                mStripTabs,
+                END_X,
+                DELTA_X,
+                ReorderType.DRAG_OUT_OF_STRIP);
+
+        // Verify tab properties
+        assertTrue("DraggedOffStrip should be true", mInteractingTab.isDraggedOffStrip());
+        assertTrue("DraggedOffStrip should be true", mOtherSelectedTab.isDraggedOffStrip());
+        assertEquals(
+                "DrawY should match height",
+                mInteractingTab.getHeight(),
+                mInteractingTab.getDrawY(),
+                EPSILON);
+        assertEquals(
+                "OffsetY should match height",
+                mInteractingTab.getHeight(),
+                mInteractingTab.getOffsetY(),
+                EPSILON);
+        assertEquals(
+                "DrawY should match height",
+                mOtherSelectedTab.getHeight(),
+                mOtherSelectedTab.getDrawY(),
+                EPSILON);
+        assertEquals(
+                "OffsetY should match height",
+                mOtherSelectedTab.getHeight(),
+                mOtherSelectedTab.getOffsetY(),
+                EPSILON);
+
+        // Verify
+        verify(mStripUpdateDelegate).setCompositorButtonsVisible(true);
+        verify(mMultiTabStrategy).stopReorderMode(mStripViews, mGroupTitles);
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
+        verifyNoMoreInteractions(mMultiTabStrategy);
     }
 
     @Test
@@ -405,6 +548,25 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verifyNoMoreInteractions(mTabStrategy);
     }
 
+    @Test
+    public void testStopReorder_multiTab_withRestore() {
+        // Start reorder. Simulate drag off strip.
+        startMultiTabReorder();
+        mInteractingTab.setIsDraggedOffStrip(true);
+        mOtherSelectedTab.setIsDraggedOffStrip(true);
+
+        // Call
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
+
+        // Verify restore.
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
+        assertFalse("DraggedOffStrip should be false", mInteractingTab.isDraggedOffStrip());
+        assertFalse("DraggedOffStrip should be false", mOtherSelectedTab.isDraggedOffStrip());
+        assertEquals("offsetY should be 0", 0f, mInteractingTab.getOffsetY(), EPSILON);
+        assertEquals("offsetY should be 0", 0f, mOtherSelectedTab.getOffsetY(), EPSILON);
+    }
+
     private void startTabReorder() {
         setupForTabDrag();
         when(mTabStripDragHandler.startTabDragAction(
@@ -413,6 +575,15 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         eq(DRAG_START_POINT),
                         anyFloat(),
                         anyFloat()))
+                .thenReturn(true);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+    }
+
+    private void startMultiTabReorder() {
+        setupForMultiTabDrag();
+        when(mTabStripDragHandler.startMultiTabDragAction(
+                        any(), any(), any(), any(), anyFloat(), anyFloat()))
                 .thenReturn(true);
         mStrategy.startReorderMode(
                 mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);

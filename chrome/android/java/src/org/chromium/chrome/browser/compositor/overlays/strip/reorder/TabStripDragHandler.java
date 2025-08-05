@@ -54,6 +54,7 @@ import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Manages initiating tab drag and drop and handles the events that are received during drag and
@@ -160,6 +161,40 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         initShadowView(dragSourceView);
         if (mShadowView != null) {
             mShadowView.prepareForTabDrag(tabBeingDragged, (int) (tabWidthDp / mPxToDp));
+        }
+        return startDragInternal(dropData, startPoint, tabPositionX, dragSourceView);
+    }
+
+    /**
+     * Starts the multi-tab drag action by initiating the process by calling View.startDragAndDrop.
+     *
+     * @param dragSourceView View used to create the drag shadow.
+     * @param tabsBeingDragged List of {@link Tab}s being dragged.
+     * @param primaryTab The primary {@link Tab} that the user is interacting with.
+     * @param startPoint Position of the drag start point in view coordinates.
+     * @param tabPositionX Horizontal position of the dragged tab in view coordinates. Used to
+     *     calculate the relative position of the touch point in the tab strip.
+     * @param tabWidthDp Width of the source strip tab container in dp.
+     * @return true if the drag action was initiated successfully.
+     */
+    public boolean startMultiTabDragAction(
+            View dragSourceView,
+            List<Tab> tabsBeingDragged,
+            Tab primaryTab,
+            PointF startPoint,
+            float tabPositionX,
+            float tabWidthDp) {
+        if (!canStartMultiTabDrag()) {
+            return false;
+        }
+
+        ChromeDropDataAndroid dropData = prepareMultiTabDropData(tabsBeingDragged);
+
+        // Initialize drag shadow.
+        initShadowView(dragSourceView);
+        if (mShadowView != null) {
+            mShadowView.prepareForMultiTabDrag(
+                    primaryTab, tabsBeingDragged, (int) (tabWidthDp / mPxToDp));
         }
         return startDragInternal(dropData, startPoint, tabPositionX, dragSourceView);
     }

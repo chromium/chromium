@@ -395,25 +395,11 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         }
     }
 
-    private static class MultiTabReorderSubStrategy extends ReorderSubStrategy {
-        MultiTabReorderSubStrategy(ReorderStrategy multiTabReorderStrategy) {
-            super(multiTabReorderStrategy);
-        }
-
-        @Override
-        boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
-            // Do not start a system-level drag and drop for multi-tab reorder.
-            // Return false to indicate that the drag should be handled internally.
-            // TODO(crbug.com/404074503): Add drag and drop functionality.
-            return false;
-        }
-    }
-
-    private class GroupReorderSubStrategy extends ReorderSubStrategy {
+    private abstract class MultiViewTearingSubStrategy extends ReorderSubStrategy {
         final List<StripLayoutView> mViewsBeingDragged = new ArrayList<>();
 
-        GroupReorderSubStrategy(ReorderStrategy groupReorderStrategy) {
-            super(groupReorderStrategy);
+        MultiViewTearingSubStrategy(ReorderStrategy reorderStrategy) {
+            super(reorderStrategy);
         }
 
         @Override
@@ -457,6 +443,66 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             }
             mStripUpdateDelegate.resizeTabStrip(
                     /* animate= */ false, /* tabToAnimate= */ null, /* animateTabAdded= */ false);
+        }
+    }
+
+    private class MultiTabReorderSubStrategy extends MultiViewTearingSubStrategy {
+        MultiTabReorderSubStrategy(ReorderStrategy multiTabReorderStrategy) {
+            super(multiTabReorderStrategy);
+        }
+
+        @Override
+        boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
+            // Populate the list of views being dragged.
+            mViewsBeingDragged.clear();
+            List<Tab> selectedTabs = new ArrayList<>();
+            for (StripLayoutTab stripTab : stripTabs) {
+                if (stripTab != null && mModel.isTabMultiSelected(stripTab.getTabId())) {
+                    mViewsBeingDragged.add(stripTab);
+                    selectedTabs.add(mModel.getTabById(stripTab.getTabId()));
+                }
+            }
+            if (mViewsBeingDragged.isEmpty()) return false;
+
+            // The primary tab is the one being interacted with.
+            Tab primaryTab = mModel.getTabById(((StripLayoutTab) mViewBeingDragged).getTabId());
+            assert primaryTab != null : "No matching Tab found.";
+
+            return mTabStripDragHandler.startMultiTabDragAction(
+                    mContainerView,
+                    selectedTabs,
+                    primaryTab,
+                    startPoint,
+                    mViewBeingDragged.getDrawX(),
+                    mViewBeingDragged.getWidth());
+        }
+
+        @Override
+        void onStopViewDragAction(
+                StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+            // If the dragged views were re-parented, they will no longer be present in model.
+            // If this is not the case, attempt to restore views to their original position.
+            StripLayoutTab draggedTab = (StripLayoutTab) mViewBeingDragged;
+            if (draggedTab != null
+                    && mModel.getTabById(draggedTab.getTabId()) != null
+                    && draggedTab.isDraggedOffStrip()) {
+                mAnimationHost.finishAnimationsAndPushTabUpdates();
+                for (StripLayoutView view : mViewsBeingDragged) {
+                    bringViewOntoStrip(view);
+                }
+                mStripUpdateDelegate.resizeTabStrip(
+                        /* animate= */ false,
+                        /* tabToAnimate= */ null,
+                        /* animateTabAdded= */ false);
+            }
+            mViewsBeingDragged.clear();
+            super.onStopViewDragAction(stripViews, groupTitles);
+        }
+    }
+
+    private class GroupReorderSubStrategy extends MultiViewTearingSubStrategy {
+        GroupReorderSubStrategy(ReorderStrategy groupReorderStrategy) {
+            super(groupReorderStrategy);
         }
 
         @Override

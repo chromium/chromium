@@ -1116,6 +1116,12 @@
           other {Add to group named <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT1">%2$d<ex>12</ex></ph> tabs}
         }
       </message>
+      <message name="IDS_NUMBER_OF_SELECTED_ITEMS" desc="String to display the number of selected items">
+        {ITEMS_COUNT, plural,
+          =1 {<ph name="ITEMS_COUNT_ONE">%1$d<ex>1</ex></ph> selected}
+          other {<ph name="ITEMS_COUNT_MANY">%1$d<ex>8</ex></ph> selected}
+        }
+      </message>
     </messages>
   </release>
 </grit>
