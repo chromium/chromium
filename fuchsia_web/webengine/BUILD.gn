@@ -17,6 +17,11 @@ import("//tools/grit/repack.gni")
 # Only allow use by targets in this directory unless explicitly specified.
 visibility = [ ":*" ]
 
+declare_args() {
+  # A temporary gn arg to enable the push messaging apis.
+  enable_push_messaging_api = false
+}
+
 config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
 }
@@ -182,6 +187,7 @@ component("web_engine_core") {
     ":web_engine_export_from_implementation",
     "//base",
     "//base:base_static",
+    "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//components/cdm/renderer",
     "//components/client_hints/browser:in_memory",
@@ -191,6 +197,7 @@ component("web_engine_core") {
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/fuchsia_component_support",
+    "//components/gcm_driver",
     "//components/keyed_service/content",
     "//components/media_control/browser",
     "//components/media_control/renderer",
@@ -317,6 +324,8 @@ component("web_engine_core") {
     "browser/navigation_policy_handler.h",
     "browser/navigation_policy_throttle.cc",
     "browser/navigation_policy_throttle.h",
+    "browser/push_messaging_service_impl.cc",
+    "browser/push_messaging_service_impl.h",
     "browser/theme_manager.cc",
     "browser/theme_manager.h",
     "browser/trace_event.h",
@@ -373,9 +382,9 @@ component("web_engine_core") {
     ]
   }
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  if (enable_push_messaging_api) {
+    defines = [ "WEB_ENGINE_ENABLE_PUSH_MESSAGING_API" ]
+  }
 }
 
 source_set("context_provider") {

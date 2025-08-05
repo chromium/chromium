@@ -5,6 +5,7 @@ include_rules = [
   "+components/client_hints/browser",
   "+components/favicon/content",
   "+components/favicon/core",
+  "+components/gcm_driver",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/on_load_script_injector/browser",

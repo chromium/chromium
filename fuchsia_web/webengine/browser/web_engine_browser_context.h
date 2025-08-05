@@ -12,6 +12,7 @@
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/reduce_accept_language/browser/in_memory_reduce_accept_language_service.h"
 #include "content/public/browser/browser_context.h"
+#include "fuchsia_web/webengine/browser/push_messaging_service_impl.h"
 #include "fuchsia_web/webengine/browser/web_engine_permission_delegate.h"
 
 class WebEngineNetLogObserver;
@@ -76,6 +77,9 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   client_hints::InMemoryClientHintsControllerDelegate client_hints_delegate_;
   reduce_accept_language::InMemoryReduceAcceptLanguageService
       reduce_accept_language_delegate_;
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+  PushMessagingServiceImpl push_messaging_service_;
+#endif
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_BROWSER_CONTEXT_H_

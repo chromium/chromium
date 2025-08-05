@@ -123,7 +123,11 @@ WebEngineBrowserContext::GetPlatformNotificationService() {
 
 content::PushMessagingService*
 WebEngineBrowserContext::GetPushMessagingService() {
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+  return &push_messaging_service_;
+#else
   return nullptr;
+#endif
 }
 
 content::StorageNotificationService*
@@ -194,7 +198,12 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       client_hints_delegate_(network_quality_tracker,
                              IsJavaScriptAllowedCallback(),
                              embedder_support::GetUserAgentMetadata()),
-      reduce_accept_language_delegate_(GetAcceptLanguages()) {
+      reduce_accept_language_delegate_(GetAcceptLanguages())
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+      ,
+      push_messaging_service_(*this)
+#endif
+{
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 
   profile_metrics::SetBrowserProfileType(
