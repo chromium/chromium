@@ -1204,6 +1204,8 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"find", "true"},
     {"intent_picker", "true"},
     {"lens_overlay", "true"},
+    {"manage_passwords", "true"},
+    {"mandatory_reauth", "true"},
     {"memory_saver", "true"},
     {"offer_notification", "true"},
     {"price_insights", "true"},
