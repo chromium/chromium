@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,8 +134,12 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         int firstTabIndex =
                 StripLayoutUtils.findIndexForTab(stripTabs, mFirstTabInGroup.getTabId());
         int lastTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, mLastTabInGroup.getTabId());
-        if (firstTabIndex == 0) offset = Math.max(0, offset);
-        if (lastTabIndex == stripTabs.length - 1) offset = Math.min(0, offset);
+        if (firstTabIndex == 0) {
+            offset = LocalizationUtils.isLayoutRtl() ? Math.min(0, offset) : Math.max(0, offset);
+        }
+        if (lastTabIndex == stripTabs.length - 1) {
+            offset = LocalizationUtils.isLayoutRtl() ? Math.max(0, offset) : Math.min(0, offset);
+        }
         for (StripLayoutView view : mInteractingViews) {
             view.setOffsetX(offset);
         }
