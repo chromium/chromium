@@ -14,14 +14,6 @@
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 
-enum class SessionState {
-  kNone = 0,
-  kSessionStarted = 1,
-  kSessionAbandoned = 2,
-  kQuerySubmitted = 3,
-  kNavigationOccurred = 4,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Describes the query submission details.
@@ -33,6 +25,16 @@ enum class NtpComposeboxMultimodalState {
 };
 
 using FileUploadStatus = composebox_query::mojom::FileUploadStatus;
+
+namespace composebox {
+
+enum class SessionState {
+  kNone = 0,
+  kSessionStarted = 1,
+  kSessionAbandoned = 2,
+  kQuerySubmitted = 3,
+  kNavigationOccurred = 4,
+};
 
 struct SessionMetrics {
   SessionMetrics();
@@ -54,6 +56,8 @@ struct SessionMetrics {
   int num_query_submissions = 0;
 };
 
+}  // namespace composebox
+
 class ComposeboxMetricsRecorder {
  public:
   explicit ComposeboxMetricsRecorder(std::string metric_component_name);
@@ -61,7 +65,8 @@ class ComposeboxMetricsRecorder {
 
   // Should be called when there are session state changes to keep track of
   // session state metrics. Virtual for testing.
-  virtual void NotifySessionStateChanged(SessionState session_state);
+  virtual void NotifySessionStateChanged(
+      composebox::SessionState session_state);
 
   void OnFileUploadStatusChanged(
       lens::MimeType file_mime_type,
@@ -104,8 +109,8 @@ class ComposeboxMetricsRecorder {
   // Resets all session metrics at the end of a session.
   void ResetSessionMetrics();
   std::string metric_category_name_;
-  std::unique_ptr<SessionMetrics> session_metrics_;
-  SessionState session_state_ = SessionState::kNone;
+  std::unique_ptr<composebox::SessionMetrics> session_metrics_;
+  composebox::SessionState session_state_ = composebox::SessionState::kNone;
 };
 
 #endif  // COMPONENTS_OMNIBOX_COMPOSEBOX_COMPOSEBOX_METRICS_RECORDER_H_

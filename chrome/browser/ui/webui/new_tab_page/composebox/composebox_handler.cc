@@ -12,6 +12,8 @@
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
 
+using composebox::SessionState;
+
 namespace {
 class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
  public:

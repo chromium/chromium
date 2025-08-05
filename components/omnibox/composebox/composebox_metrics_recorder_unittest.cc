@@ -10,6 +10,8 @@
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using composebox::SessionState;
+
 namespace {
 const char kTestMetricName[] = "Test.";
 const char kComposeboxFileDeleted[] =

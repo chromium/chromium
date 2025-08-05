@@ -41,6 +41,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
+using composebox::SessionState;
+
 namespace {
 constexpr int kImageCompressionQuality = 30;
 constexpr int kImageMaxArea = 1000000;

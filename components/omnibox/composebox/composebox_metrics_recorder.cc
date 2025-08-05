@@ -9,6 +9,9 @@
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 
+using composebox::SessionMetrics;
+using composebox::SessionState;
+
 namespace {
 const char kComposeboxFileDeleted[] = "Composebox.Session.File.DeletedCount";
 const char kComposeboxSessionDuration[] = "Composebox.Session.Duration.Total";
