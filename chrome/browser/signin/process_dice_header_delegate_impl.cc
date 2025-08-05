@@ -177,8 +177,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   OnSigninHeaderReceived on_signin_header_received;
   ShowSigninErrorCallback show_signin_error_callback;
 
-  DiceTabHelper* tab_helper =
-      web_contents ? DiceTabHelper::FromWebContents(web_contents) : nullptr;
+  DiceTabHelper* tab_helper = GetDiceTabHelperFromWebContents(web_contents);
   if (tab_helper) {
     is_sync_signin_tab = tab_helper->IsSyncSigninInProgress();
     redirect_url = tab_helper->redirect_url();
@@ -302,7 +301,7 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
                                        access_point_, is_new_account,
                                        is_sync_signin_tab_);
   DiceTabHelper* tab_helper =
-      DiceTabHelper::FromWebContents(web_contents_.get());
+      GetDiceTabHelperFromWebContents(web_contents_.get());
   if (tab_helper) {
     base::OnceClosure retry_interception_bubble_callback = base::BindOnce(
         &RetryInterceptionBubble, web_contents_->GetWeakPtr(),
