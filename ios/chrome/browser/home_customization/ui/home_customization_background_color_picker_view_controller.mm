@@ -14,22 +14,22 @@
 // Define constants within the namespace
 namespace {
 // The width and height of each color palette cell in the collection view.
-const CGFloat kColorCellSize = 54.0;
+const CGFloat kColorCellSize = 60.0;
 
 // The vertical spacing between rows of cells.
-const CGFloat kLineSpacing = 28.0;
+const CGFloat kLineSpacing = 23.0;
 
 // The horizontal spacing between cells in the same row.
-const CGFloat kItemSpacing = 8.0;
+const CGFloat kItemSpacing = 2.0;
 
 // The top padding for the section in the collection view.
 const CGFloat kSectionInsetTop = 20.0;
 
 // The left and right padding for the section in the collection view.
-const CGFloat kSectionInsetSides = 27.0;
+const CGFloat kSectionInsetSides = 25.0;
 
 // The bottom padding for the section in the collection view.
-const CGFloat kSectionInsetBottom = 20.0;
+const CGFloat kSectionInsetBottom = 27.0;
 }  // namespace
 
 @interface HomeCustomizationBackgroundColorPickerViewController () {
