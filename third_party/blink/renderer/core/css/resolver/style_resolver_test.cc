@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -1425,6 +1426,71 @@ TEST_F(StyleResolverTest, QuietlySwapActiveStyleSheets) {
     EXPECT_EQ("1", matched_properties.back().properties->GetPropertyValue(
                        CSSPropertyID::kZIndex));
   }
+}
+
+TEST_F(StyleResolverTest, QuietlySwapActiveStyleSheets_ImplicitScope) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer>
+      Test
+      <style id=inner></style>
+    </div>
+    <div id=aside>
+      <style>
+        @scope {
+          .foo {}
+        }
+      </style>
+      <style>
+        @scope {
+          .bar {}
+        }
+      </style>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  ASSERT_TRUE(outer);
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  ASSERT_TRUE(inner);
+  Element* aside = GetDocument().getElementById(AtomicString("aside"));
+  ASSERT_TRUE(aside);
+
+  // Before swap:
+  ASSERT_TRUE(aside->GetStyleScopeData());
+  EXPECT_EQ(2u, aside->GetStyleScopeData()->GetTriggeredScopes().size());
+
+  // Create a "fake" stylesheet owned by #inner, and quietly swap to that.
+  const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* contents = MakeGarbageCollected<StyleSheetContents>(context);
+
+  contents->ParseString(R"CSS(
+    @scope {
+      div {}
+    }
+  )CSS",
+                        /*allow_imports=*/false);
+
+  auto* sheet =
+      MakeGarbageCollected<CSSStyleSheet>(contents, /*owner_node=*/*inner);
+
+  MediaQueryEvaluator* mq_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(&GetFrame());
+  RuleSet& rule_set = contents->EnsureRuleSet(*mq_evaluator);
+
+  ActiveStyleSheetVector active_stylesheets;
+  active_stylesheets.push_back(std::make_pair(sheet, &rule_set));
+
+  ScopedStyleResolver* scoped_resolver = GetDocument().GetScopedStyleResolver();
+  ASSERT_TRUE(scoped_resolver);
+  scoped_resolver->QuietlySwapActiveStyleSheets(active_stylesheets);
+
+  // After swap:
+  ASSERT_TRUE(aside->GetStyleScopeData());
+  EXPECT_EQ(0u, aside->GetStyleScopeData()->GetTriggeredScopes().size());
+
+  ASSERT_TRUE(outer->GetStyleScopeData());
+  EXPECT_EQ(1u, outer->GetStyleScopeData()->GetTriggeredScopes().size());
 }
 
 TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {

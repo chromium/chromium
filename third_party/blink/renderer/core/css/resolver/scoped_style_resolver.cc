@@ -484,10 +484,16 @@ void ScopedStyleResolver::RemoveImplicitScopeTrigger(
 
 void ScopedStyleResolver::QuietlySwapActiveStyleSheets(
     ActiveStyleSheetVector& other) {
+  // The new stylesheets may change which implicit @scope rules apply;
+  // various StyleScopeData objects (stored on ElementRareData) need
+  // to be updated.
+  RemoveImplicitScopeTriggers();
+
   std::swap(active_style_sheets_, other);
   rule_set_groups_.clear();
   for (auto& [style_sheet, rule_set] : active_style_sheets_) {
     AddRuleSetToRuleSetGroupList(rule_set, rule_set_groups_);
+    AddImplicitScopeTriggers(*style_sheet, *rule_set);
   }
   // Any @layer rules within the new list of active stylesheets
   // must be collected in the cross-sheet layer map. Otherwise,
