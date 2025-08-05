@@ -18,7 +18,9 @@ from util import manifest_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
 _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
-
+_MIN_SDK_LIBS_OVERRIDE = [
+    "androidx.lifecycle.process", 'androidx.emoji2', 'androidx.pdf'
+]
 
 @contextlib.contextmanager
 def _ProcessMainManifest(manifest_path, min_sdk_version, target_sdk_version,
@@ -50,11 +52,12 @@ def _ProcessOtherManifest(manifest_path, min_sdk_version, target_sdk_version,
   changed_api = manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
 
   package_name = manifest_utils.GetPackage(manifest)
-  # Ignore minSdkVersion from androidx.pdf library. The client code will ensure
-  # not to call into the library API on older Android versions.
-  if package_name.startswith('androidx.pdf'):
-    manifest_utils.OverrideMinSdkVersionIfPresent(manifest, min_sdk_version)
-    changed_api = True
+  # Ignore minSdkVersion from some andriodx libraries. The client code will
+  # ensure not to call into the library API on older Android versions.
+  for lib in _MIN_SDK_LIBS_OVERRIDE:
+    if package_name.startswith(lib):
+      manifest_utils.OverrideMinSdkVersionIfPresent(manifest, min_sdk_version)
+      changed_api = True
   package_count = seen_package_names[package_name]
   seen_package_names[package_name] += 1
   if package_count > 0:
