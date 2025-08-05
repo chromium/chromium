@@ -90,8 +90,7 @@ class ShadowController::Impl :
   void OnWindowInitialized(aura::Window* window) override;
 
   // aura::WindowObserver overrides:
-  void OnWindowParentChanged(aura::Window* window,
-                             aura::Window* parent) override;
+  void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
@@ -165,17 +164,25 @@ void ShadowController::Impl::UpdateShadowForWindow(aura::Window* window) {
 }
 
 void ShadowController::Impl::OnWindowInitialized(aura::Window* window) {
-  // During initialization, the window can't reliably tell whether it will be a
-  // root window. That must be checked in the first visibility change
   DCHECK(!window->parent());
   DCHECK(!window->TargetVisibility());
   observation_manager_.AddObservation(window);
 }
 
-void ShadowController::Impl::OnWindowParentChanged(aura::Window* window,
-                                                   aura::Window* parent) {
-  if (parent && window->IsVisible())
-    HandlePossibleShadowVisibilityChange(window);
+void ShadowController::Impl::OnWindowHierarchyChanged(
+    const HierarchyChangeParams& params) {
+  // Skip if the parent is null there is no need to update it during
+  // destruction.
+  if (!params.new_parent) {
+    return;
+  }
+  // Update the shadow if the observing window is visible and its parent has
+  // changed.
+  const bool parent_changed = params.target == params.receiver &&
+                              params.new_parent != params.old_parent;
+  if (parent_changed && params.target->IsVisible()) {
+    HandlePossibleShadowVisibilityChange(params.target);
+  }
 }
 
 void ShadowController::Impl::OnWindowPropertyChanged(aura::Window* window,
