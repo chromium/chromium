@@ -801,6 +801,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that only the "Cancel", "Delete All Read" and "Mark All…" buttons are
 // showing when not editing.
 - (void)testVisibleButtonsEditingModeEmptySelection {
+// TODO(crbug.com/429610821): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
   AddEntriesAndEnterEdit();
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);

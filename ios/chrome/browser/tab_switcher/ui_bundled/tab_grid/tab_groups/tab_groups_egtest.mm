@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/data_sharing/public/features.h"
@@ -866,6 +867,12 @@ void TapTabGridEditButton() {
 // Tests cancelling of the deletion of a group from the overflow menu in the
 // group view.
 - (void)testCancellingActionToGroupFromGroupView {
+// TODO(crbug.com/429592748): Re-enable the test on iOS26.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
