@@ -329,8 +329,8 @@ std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     chromeos::AppType app_type,
     int shell_window_id,
     views::WidgetDelegate* delegate) {
-  TestWidgetBuilder builder;
-  builder.SetWindowTitle(u"Window " + base::NumberToString16(shell_window_id));
+  TestWidgetBuilder builder(
+      {.window_title = u"Window " + base::NumberToString16(shell_window_id)});
   if (app_type != chromeos::AppType::NON_APP) {
     builder.SetWindowProperty(chromeos::kAppTypeKey, app_type);
   }

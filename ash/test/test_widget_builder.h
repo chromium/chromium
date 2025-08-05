@@ -17,6 +17,12 @@
 
 namespace ash {
 
+struct WidgetBuilderParams {
+  int window_id = aura::Window::kInitialId;
+  std::u16string window_title = std::u16string();
+  bool show = true;
+};
+
 // A builder to create a views::Widget for testing purpose. There are three
 // ways to create a widget: `BuildOwnedByNativeWidget()`,
 // `BuildOwnsNativeWidget()`, and `BuildClientOwnsWidget()`.  Please refer
@@ -24,7 +30,7 @@ namespace ash {
 // test cases as there are subtle differences.
 class ASH_EXPORT TestWidgetBuilder {
  public:
-  TestWidgetBuilder();
+  explicit TestWidgetBuilder(WidgetBuilderParams params = {});
   TestWidgetBuilder(const TestWidgetBuilder& other) = delete;
   TestWidgetBuilder& operator=(const TestWidgetBuilder& other) = delete;
   ~TestWidgetBuilder();
@@ -101,11 +107,11 @@ class ASH_EXPORT TestWidgetBuilder {
   [[nodiscard]] std::unique_ptr<views::Widget> BuildWidgetWithOwnership(
       views::Widget::InitParams::Ownership ownership);
 
+  // Note: ownership is a placeholder. It is overridden when building
+  // a widget.
   views::Widget::InitParams widget_init_params_{
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET};
-  int window_id_ = aura::Window::kInitialId;
-  std::u16string window_title_ = std::u16string();
-  bool show_ = true;
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET};
+  WidgetBuilderParams params_;
   bool built_ = false;
 };
 

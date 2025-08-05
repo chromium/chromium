@@ -37,7 +37,8 @@ class TestWidgetBuilderDelegate : public views::WidgetDelegateView {
   }
 };
 
-TestWidgetBuilder::TestWidgetBuilder() = default;
+TestWidgetBuilder::TestWidgetBuilder(WidgetBuilderParams params)
+    : params_(std::move(params)) {}
 
 TestWidgetBuilder::~TestWidgetBuilder() = default;
 
@@ -96,20 +97,20 @@ TestWidgetBuilder& TestWidgetBuilder::SetShowState(
 
 TestWidgetBuilder& TestWidgetBuilder::SetWindowId(int window_id) {
   DCHECK(!built_);
-  window_id_ = window_id;
+  params_.window_id = window_id;
   return *this;
 }
 
 TestWidgetBuilder& TestWidgetBuilder::SetWindowTitle(
     const std::u16string& title) {
   DCHECK(!built_);
-  window_title_ = title;
+  params_.window_title = title;
   return *this;
 }
 
 TestWidgetBuilder& TestWidgetBuilder::SetShow(bool show) {
   DCHECK(!built_);
-  show_ = show;
+  params_.show = show;
   return *this;
 }
 
@@ -136,13 +137,15 @@ std::unique_ptr<views::Widget> TestWidgetBuilder::BuildWidgetWithOwnership(
   std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
   widget_init_params_.ownership = ownership;
   widget->Init(std::move(widget_init_params_));
-  if (window_id_ != aura::Window::kInitialId)
-    widget->GetNativeWindow()->SetId(window_id_);
-  if (!window_title_.empty()) {
-    widget->GetNativeWindow()->SetTitle(window_title_);
+  if (params_.window_id != aura::Window::kInitialId) {
+    widget->GetNativeWindow()->SetId(params_.window_id);
   }
-  if (show_)
+  if (!params_.window_title.empty()) {
+    widget->GetNativeWindow()->SetTitle(params_.window_title);
+  }
+  if (params_.show) {
     widget->Show();
+  }
   return widget;
 }
 
@@ -154,13 +157,15 @@ views::Widget* TestWidgetBuilder::BuildOwnedByNativeWidget() {
   widget_init_params_.ownership =
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   widget->Init(std::move(widget_init_params_));
-  if (window_id_ != aura::Window::kInitialId)
-    widget->GetNativeWindow()->SetId(window_id_);
-  if (!window_title_.empty()) {
-    widget->GetNativeWindow()->SetTitle(window_title_);
+  if (params_.window_id != aura::Window::kInitialId) {
+    widget->GetNativeWindow()->SetId(params_.window_id);
   }
-  if (show_)
+  if (!params_.window_title.empty()) {
+    widget->GetNativeWindow()->SetTitle(params_.window_title);
+  }
+  if (params_.show) {
     widget->Show();
+  }
   return widget;
 }
 
