@@ -94,7 +94,7 @@ def main():
   parser.add_argument('--output',
                       required=True,
                       help='where to write output rustc flags')
-  parser.add_argument('--target', help='rust target triple')
+  parser.add_argument('--target', required=True, help='rust target triple')
   parser.add_argument('--target-abi', help='rust target_abi')
   parser.add_argument(
       '--rustc-print-cfg-path',
@@ -130,10 +130,7 @@ def main():
     env["OUT_DIR"] = tempdir
     env["CARGO_MANIFEST_DIR"] = os.path.abspath(args.src_dir)
     env["HOST"] = host_triple(rustc_path)
-    if args.target is None:
-      env["TARGET"] = env["HOST"]
-    else:
-      env["TARGET"] = args.target
+    env["TARGET"] = args.target
     set_cargo_cfg_target_env_variables(args.rustc_print_cfg_path, env)
     if args.features:
       for f in args.features:
