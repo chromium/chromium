@@ -237,12 +237,9 @@ TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
     NetLogWithSource net_log;
     ProxyChain proxy_chain(
         ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
     list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
     list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, ERR_PROXY_CONNECTION_FAILED,
-                                   net_log);
+                                   ERR_PROXY_CONNECTION_FAILED, net_log);
     EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
     EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
               retry_info_map[proxy_chain].net_error);
@@ -261,11 +258,9 @@ TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
     NetLogWithSource net_log;
     ProxyChain proxy_chain(
         ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
     list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, OK, net_log);
+    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true, OK,
+                                   net_log);
     EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
     EXPECT_THAT(retry_info_map[proxy_chain].net_error, IsOk());
     EXPECT_TRUE(retry_info_map.end() ==
@@ -275,43 +270,16 @@ TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
                 retry_info_map.find(ProxyUriToProxyChain(
                     "foopy3:80", ProxyServer::SCHEME_HTTP)));
   }
-  // Including another bad proxy should put both the first and the specified
-  // proxy on the retry list.
-  {
-    ProxyList list;
-    ProxyRetryInfoMap retry_info_map;
-    NetLogWithSource net_log;
-    ProxyChain proxy_chain(
-        ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, ERR_NAME_RESOLUTION_FAILED,
-                                   net_log);
-    EXPECT_TRUE(retry_info_map.end() !=
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy1:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_EQ(ERR_NAME_RESOLUTION_FAILED,
-              retry_info_map[proxy_chain].net_error);
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy2:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
-  }
-  // If the first proxy is DIRECT, nothing is added to the retry list, even
-  // if another bad proxy is specified.
+  // If the first proxy is DIRECT, nothing is added to the retry list.
   {
     ProxyList list;
     ProxyRetryInfoMap retry_info_map;
     NetLogWithSource net_log;
     ProxyChain proxy_chain(
         ProxyUriToProxyChain("foopy2:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
     list.SetFromPacString("DIRECT;PROXY foopy2:80;PROXY foopy3:80");
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, OK, net_log);
+    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true, OK,
+                                   net_log);
     EXPECT_TRUE(retry_info_map.end() == retry_info_map.find(proxy_chain));
     EXPECT_TRUE(retry_info_map.end() ==
                 retry_info_map.find(ProxyUriToProxyChain(
@@ -328,13 +296,12 @@ TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
 
     // First, mark the proxy as bad for 60 seconds.
     list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   std::vector<ProxyChain>(),
                                    ERR_PROXY_CONNECTION_FAILED, net_log);
     // Next, mark the same proxy as bad for 1 second. This call should have no
     // effect, since this would cause the bad proxy to be retried sooner than
     // the existing retry info.
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(1), false,
-                                   std::vector<ProxyChain>(), OK, net_log);
+    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(1), false, OK,
+                                   net_log);
     ProxyChain proxy_chain(
         ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
     EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
@@ -361,12 +328,11 @@ TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
     list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
 
     // First, mark the proxy as bad for 1 second.
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(1), false,
-                                   std::vector<ProxyChain>(), OK, net_log);
+    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(1), false, OK,
+                                   net_log);
     // Next, mark the same proxy as bad for 60 seconds. This call should replace
     // the existing retry info with the new 60 second retry info.
     list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   std::vector<ProxyChain>(),
                                    ERR_PROXY_CONNECTION_FAILED, net_log);
     ProxyChain proxy_chain(
         ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
