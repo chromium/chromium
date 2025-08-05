@@ -729,27 +729,12 @@ int SSLClientSocketImpl::Init() {
 
   SSL_set_early_data_enabled(ssl_.get(), ssl_config_.early_data_enabled);
 
-  // OpenSSL defaults some options to on, others to off. To avoid ambiguity,
-  // set everything we care about to an absolute value.
-  SslSetClearMask options;
-  options.ConfigureFlag(SSL_OP_NO_COMPRESSION, true);
+  // TODO(crbug.com/41393419): Make this option not a no-op in BoringSSL and
+  // then disable it.
+  SSL_set_options(ssl_.get(), SSL_OP_LEGACY_SERVER_CONNECT);
 
-  // TODO(joth): Set this conditionally, see http://crbug.com/55410
-  options.ConfigureFlag(SSL_OP_LEGACY_SERVER_CONNECT, true);
-
-  SSL_set_options(ssl_.get(), options.set_mask);
-  SSL_clear_options(ssl_.get(), options.clear_mask);
-
-  // Same as above, this time for the SSL mode.
-  SslSetClearMask mode;
-
-  mode.ConfigureFlag(SSL_MODE_RELEASE_BUFFERS, true);
-  mode.ConfigureFlag(SSL_MODE_CBC_RECORD_SPLITTING, true);
-
-  mode.ConfigureFlag(SSL_MODE_ENABLE_FALSE_START, true);
-
-  SSL_set_mode(ssl_.get(), mode.set_mask);
-  SSL_clear_mode(ssl_.get(), mode.clear_mask);
+  SSL_set_mode(ssl_.get(),
+               SSL_MODE_CBC_RECORD_SPLITTING | SSL_MODE_ENABLE_FALSE_START);
 
   // Use BoringSSL defaults, but disable 3DES and HMAC-SHA1 ciphers in ECDSA.
   // These are the remaining CBC-mode ECDSA ciphers.

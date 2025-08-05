@@ -24,14 +24,6 @@
 
 namespace net {
 
-SslSetClearMask::SslSetClearMask() = default;
-
-void SslSetClearMask::ConfigureFlag(long flag, bool state) {
-  (state ? set_mask : clear_mask) |= flag;
-  // Make sure we haven't got any intersection in the set & clear options.
-  DCHECK_EQ(0, set_mask & clear_mask) << flag << ":" << state;
-}
-
 namespace {
 
 class OpenSSLNetErrorLibSingleton {

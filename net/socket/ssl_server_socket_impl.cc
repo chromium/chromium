@@ -1031,22 +1031,6 @@ void SSLServerContextImpl::Init() {
   CHECK(SSL_CTX_set_max_proto_version(ssl_ctx_.get(),
                                       ssl_server_config_.version_max));
 
-  // OpenSSL defaults some options to on, others to off. To avoid ambiguity,
-  // set everything we care about to an absolute value.
-  SslSetClearMask options;
-  options.ConfigureFlag(SSL_OP_NO_COMPRESSION, true);
-
-  SSL_CTX_set_options(ssl_ctx_.get(), options.set_mask);
-  SSL_CTX_clear_options(ssl_ctx_.get(), options.clear_mask);
-
-  // Same as above, this time for the SSL mode.
-  SslSetClearMask mode;
-
-  mode.ConfigureFlag(SSL_MODE_RELEASE_BUFFERS, true);
-
-  SSL_CTX_set_mode(ssl_ctx_.get(), mode.set_mask);
-  SSL_CTX_clear_mode(ssl_ctx_.get(), mode.clear_mask);
-
   if (ssl_server_config_.cipher_suite_for_testing.has_value()) {
     const SSL_CIPHER* cipher =
         SSL_get_cipher_by_value(*ssl_server_config_.cipher_suite_for_testing);

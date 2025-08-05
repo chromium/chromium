@@ -33,16 +33,6 @@ class NetLogWithSource;
 // extracted from |posted_from|. The function code of the error is left as 0.
 void OpenSSLPutNetError(const base::Location& posted_from, int err);
 
-// Utility to construct the appropriate set & clear masks for use the OpenSSL
-// options and mode configuration functions. (SSL_set_options etc)
-struct SslSetClearMask {
-  SslSetClearMask();
-  void ConfigureFlag(long flag, bool state);
-
-  long set_mask = 0;
-  long clear_mask = 0;
-};
-
 // Converts an OpenSSL error code into a net error code, walking the OpenSSL
 // error stack if needed.
 //
