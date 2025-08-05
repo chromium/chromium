@@ -17,12 +17,16 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -204,12 +208,24 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   auto* app_banner_manager =
       webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
   app_banner_manager->WaitForInstallableCheck();
+  // TODO(crbug.com/376283433): The legacy page action has a bug that prevents
+  // it from displaying in "chip" mode (just the icon shows). We force the
+  // migrated page action to be collapsed for now to ensure consistency in the
+  // snapshot.
+  // This can be removed once the page action migration path is fully rolled
+  // out.
+  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
+    browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->page_action_controller()
+        ->HideSuggestionChip(kActionInstallPwa);
+  }
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->toolbar()
-                  ->location_bar()
-                  ->page_action_icon_controller()
-                  ->GetIconView(PageActionIconType::kPwaInstall)
+                  ->toolbar_button_provider()
+                  ->GetPageActionView(kActionInstallPwa)
                   ->GetVisible());
+
   browser()->window()->Activate();
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
 

@@ -57,12 +57,14 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -167,6 +169,7 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -1353,10 +1356,23 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
       web_app::SetDontCloseOnDeactivateForTesting();
 
   BrowserAddedWaiter browser_added_waiter;
+  views::test::PropertyWaiter(
+      base::BindRepeating(&views::View::GetVisible,
+                          base::Unretained(pwa_install_view())),
+      /*expected_value=*/true)
+      .Wait();
   ASSERT_TRUE(pwa_install_view()->GetVisible());
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
-  pwa_install_view()->ExecuteForTesting();
+  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
+    actions::ActionManager::Get()
+        .FindAction(kActionInstallPwa,
+                    browser()->GetActions()->root_action_item())
+        ->InvokeAction();
+  } else {
+    browser()->window()->ExecutePageActionIconForTesting(
+        PageActionIconType::kPwaInstall);
+  }
 
   WaitForAndAcceptInstallDialogForSite(InstallableSiteToSite(site));
 
@@ -3260,6 +3276,11 @@ void WebAppIntegrationTestDriver::CheckInstallIconShown() {
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     app_banner_manager->WaitForInstallableCheck();
   }
+  views::test::PropertyWaiter(
+      base::BindRepeating(&views::View::GetVisible,
+                          base::Unretained(pwa_install_view())),
+      /*expected_value=*/true)
+      .Wait();
   EXPECT_TRUE(pwa_install_view()->GetVisible());
   AfterStateCheckAction();
 }
@@ -4713,11 +4734,11 @@ std::vector<Profile*> WebAppIntegrationTestDriver::GetAllProfiles() {
   return profiles;
 }
 
-PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
-  PageActionIconView* pwa_install_view =
+IconLabelBubbleView* WebAppIntegrationTestDriver::pwa_install_view() {
+  IconLabelBubbleView* pwa_install_view =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kPwaInstall);
+          ->GetPageActionView(kActionInstallPwa);
   CHECK(pwa_install_view);
   return pwa_install_view;
 }

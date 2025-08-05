@@ -16800,6 +16800,7 @@
                         "price_insights": "true",
                         "price_tracking": "true",
                         "product_specifications": "true",
+                        "pwa_install": "true",
                         "translate": "true",
                         "zoom": "true"
                     },
