@@ -307,6 +307,7 @@ source_set("impl") {
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/user_education",
       "//components/headless/policy",
