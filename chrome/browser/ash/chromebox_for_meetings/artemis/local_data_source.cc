@@ -270,7 +270,8 @@ void LocalDataSource::BuildLogEntryFromLogLine(
     entry.set_timestamp_micros(time_since_epoch);
     entry.set_severity(severity.empty() ? default_severity
                                         : SeverityStringToEnum(severity));
-    entry.set_text_payload(log_msg);
+    entry.set_text_payload((severity.empty() ? "DEFAULT" : severity) + " " +
+                           log_msg);
   }
 }
 
