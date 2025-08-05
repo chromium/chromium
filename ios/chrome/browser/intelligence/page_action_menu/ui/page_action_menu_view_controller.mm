@@ -260,7 +260,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
   horizontalStackView.clipsToBounds = YES;
   horizontalStackView.backgroundColor =
-      [[UIColor colorNamed:kPrimaryBackgroundColor]
+      [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
           colorWithAlphaComponent:kSmallButtonOpacity];
   horizontalStackView.layer.cornerRadius = kButtonsCornerRadius;
 
