@@ -154,6 +154,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Experiment has an invalid name"/>
   <int value="13" label="Feature has an invalid name"/>
   <int value="14" label="Forcing flag has an invalid name"/>
+  <int value="15" label="Unsupported study consistency"/>
+  <int value="16" label="Unsupported study activation type"/>
 </enum>
 
 <enum name="VariationsLimitedEntropySeedRejectionReason">

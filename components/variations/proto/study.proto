@@ -36,6 +36,11 @@ message Study {
 
   // Consistency setting for a study.
   enum Consistency {
+    // OPEN enum type causes unknown values get preserved in the field directly,
+    // as opposed to the field defaulting to the first value. We then validate
+    // this explicitly in processed_study.cc.
+    option features.enum_type = OPEN;
+
     SESSION = 0;    // Can't change within a session.
     PERMANENT = 1;  // Can't change for a given user.
   }
@@ -46,7 +51,7 @@ message Study {
 
   // Optionally specifies which layer the study is a part of. A study must
   // specify both the ID of the layer and the ID(s) of the layer member(s)
-  // within that layer that the study should be constrained to.
+  // within that layer to which the study should be constrained.
   LayerMemberReference layer = 16;
 
   // Name of the experiment that gets the default experience. This experiment
@@ -485,6 +490,11 @@ message Study {
   // Specifies whether the study starts as active initially, or whether it
   // requires the client to query its state before it is marked as active.
   enum ActivationType {
+    // OPEN enum type causes unknown values get preserved in the field directly,
+    // as opposed to the field defaulting to the first value. We then validate
+    // this explicitly in processed_study.cc.
+    option features.enum_type = OPEN;
+
     // The study will be activated when its state is queried by the client.
     // This is recommended for most studies that include client code.
     ACTIVATE_ON_QUERY = 0;

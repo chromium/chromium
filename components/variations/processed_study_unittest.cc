@@ -420,4 +420,48 @@ TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
   EXPECT_FALSE(processed_study.all_assignments_to_one_group());
 }
 
+TEST(ProcessedStudyTest, InitWithInvalidStudyConsistency) {
+  Study study = CreateValidStudy();
+  // See also InvalidEnumValuesArePreserved.
+  // Set to 100, which isn't a valid enum value.
+  study.set_consistency(Study::Consistency(100));
+
+  base::HistogramTester histogram_tester;
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram,
+      InvalidStudyReason::kUnsupportedStudyConsistency, 1);
+}
+
+TEST(ProcessedStudyTest, InitWithInvalidStudyActivationType) {
+  Study study = CreateValidStudy();
+  // See also InvalidEnumValuesArePreserved.
+  // Set to 100, which isn't a valid enum value.
+  study.set_activation_type(Study::ActivationType(100));
+
+  base::HistogramTester histogram_tester;
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram,
+      InvalidStudyReason::kUnsupportedStudyActivationType, 1);
+}
+
+TEST(ProcessedStudyTest, InvalidEnumValuesArePreserved) {
+  // This checks that the proto uses `features.enum_type = OPEN` for these
+  // enums, which causes unknown enum values to be preserved as integers.
+  Study study = CreateValidStudy();
+  // Set both to 100, which isn't a valid enum value for either one.
+  study.set_consistency(Study::Consistency(100));
+  study.set_activation_type(Study::ActivationType(100));
+  auto serialized_study = study.SerializeAsString();
+  Study parsed_study;
+  parsed_study.ParseFromString(serialized_study);
+  EXPECT_EQ(parsed_study.consistency(), 100);
+  EXPECT_FALSE(Study::Consistency_IsValid(parsed_study.consistency()));
+  EXPECT_EQ(parsed_study.activation_type(), 100);
+  EXPECT_FALSE(Study::ActivationType_IsValid(parsed_study.activation_type()));
+}
+
 }  // namespace variations

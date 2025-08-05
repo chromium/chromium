@@ -195,6 +195,29 @@ bool ValidateAndComputeTotalProbability(
   return true;
 }
 
+// Validates the study type enums.
+bool ValidateStudyTypeEnums(const Study& study) {
+  // Note: These enums are specifically defined as `features.enum_type = OPEN`,
+  // meaning unknown values are present as integers on the original field. This
+  // allows us to validate them using IsValid() without needing to use proto
+  // reflection (which is more expensive) on unknown values.
+  if (study.has_consistency() &&
+      !Study::Consistency_IsValid(study.consistency())) {
+    LogInvalidReason(InvalidStudyReason::kUnsupportedStudyConsistency);
+    DVLOG(1) << study.name()
+             << " has an unsupported consistency: " << study.consistency();
+    return false;
+  }
+  if (study.has_activation_type() &&
+      !Study::ActivationType_IsValid(study.activation_type())) {
+    LogInvalidReason(InvalidStudyReason::kUnsupportedStudyActivationType);
+    DVLOG(1) << study.name() << " has an unsupported activation type: "
+             << study.activation_type();
+    return false;
+  }
+  return true;
+}
+
 // Validates the sanity of |study| and computes the total probability and
 // whether all assignments are to a single group.
 bool ValidateStudyAndComputeTotalProbability(
@@ -222,6 +245,10 @@ bool ValidateStudyAndComputeTotalProbability(
   }
 
   if (!ValidateFeatureNames(study)) {
+    return false;
+  }
+
+  if (!ValidateStudyTypeEnums(study)) {
     return false;
   }
 
@@ -270,16 +297,18 @@ bool ProcessedStudy::Init(const Study* study) {
 
 int ProcessedStudy::GetExperimentIndexByName(const std::string& name) const {
   for (int i = 0; i < study_->experiment_size(); ++i) {
-    if (study_->experiment(i).name() == name)
+    if (study_->experiment(i).name() == name) {
       return i;
+    }
   }
 
   return -1;
 }
 
 const std::string_view ProcessedStudy::GetDefaultExperimentName() const {
-  if (study_->default_experiment_name().empty())
+  if (study_->default_experiment_name().empty()) {
     return kGenericDefaultExperimentName;
+  }
 
   return study_->default_experiment_name();
 }

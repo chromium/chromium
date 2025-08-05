@@ -276,6 +276,15 @@ const std::string& GetClientCountryForStudy(
       // effects, this helps to avoid annoying users with experimental group
       // churn while traveling.
       return client_state.permanent_consistency_country;
+    // Note: Study_Consistency is an OPEN proto enum, so the below values appear
+    // in the generated code to indicate the field could have other values.
+    // However, we validate this in processed_study.cc to reject such studies,
+    // so in practice, only the cases above will be seen. We list them here
+    // instead of a "default" case to still get the benefit of the compiler
+    // reminding us to update this code if a new enum value is added.
+    case Study_Consistency_Study_Consistency_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case Study_Consistency_Study_Consistency_INT_MAX_SENTINEL_DO_NOT_USE_:
+      break;
   }
 
   // Unless otherwise specified, use an empty country that won't pass any
