@@ -48,6 +48,8 @@ class ChromeLabsCoordinator : public PinnedToolbarActionsModel::Observer {
 
   ChromeLabsBubbleView* GetChromeLabsBubbleView();
 
+  void OnChromeLabsBubbleClosing();
+
   void MaybeInstallDotIndicator();
 
   views::DotIndicator* GetDotIndicator();
@@ -73,6 +75,7 @@ class ChromeLabsCoordinator : public PinnedToolbarActionsModel::Observer {
   raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
   std::unique_ptr<ChromeLabsViewController> controller_;
   views::ViewTracker chrome_labs_bubble_view_tracker_;
+  raw_ptr<actions::ActionItem> chrome_labs_action_item_;
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       pinned_actions_observation_{this};

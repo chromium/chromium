@@ -21,18 +21,17 @@ MemorySaverBubbleController::MemorySaverBubbleController(
     BrowserWindowInterface* bwi) {
   // Associate the bubble with its ActionItem, to ensure that any future
   // invocations come from the expected ActionItem.
-  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+  action_item_ = actions::ActionManager::Get().FindAction(
       kActionShowMemorySaverChip,
       /*scope=*/bwi->GetActions()->root_action_item());
-  CHECK(action);
-  action_item_ = action->GetAsWeakPtr();
+  CHECK(action_item_);
 }
 
 MemorySaverBubbleController::~MemorySaverBubbleController() = default;
 
 void MemorySaverBubbleController::InvokeAction(BrowserWindowInterface* bwi,
                                                actions::ActionItem* item) {
-  CHECK(item == action_item_.get());
+  CHECK(item == action_item_);
 
   // Open the dialog bubble.
   BrowserView* browser_view =
@@ -45,15 +44,11 @@ void MemorySaverBubbleController::InvokeAction(BrowserWindowInterface* bwi,
 }
 
 void MemorySaverBubbleController::OnBubbleShown() {
-  if (action_item_) {
-    action_item_->SetIsShowingBubble(true);
-  }
+  action_item_->SetIsShowingBubble(true);
 }
 
 void MemorySaverBubbleController::OnBubbleHidden() {
-  if (action_item_) {
-    action_item_->SetIsShowingBubble(false);
-  }
+  action_item_->SetIsShowingBubble(false);
   bubble_ = nullptr;
 }
 

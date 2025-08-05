@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
@@ -117,7 +116,7 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
   // The action item associated with showing a Translate UI.
   // The bubbles use this to appropriately configure its "IsBubbleShowing"
   // property.
-  const base::WeakPtr<actions::ActionItem> action_item_;
+  const raw_ptr<actions::ActionItem> action_item_;
 
   base::WeakPtrFactory<TranslateBubbleController> weak_ptr_factory_{this};
 };

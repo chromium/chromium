@@ -21,7 +21,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -135,7 +134,6 @@ void OpenLanguageSettings(TranslateBubbleModel* model_,
 }  // namespace
 
 TranslateBubbleView::TranslateBubbleView(
-    base::WeakPtr<actions::ActionItem> action_item,
     views::View* anchor_view,
     std::unique_ptr<TranslateBubbleModel> model,
     translate::TranslateErrors error_type,
@@ -146,7 +144,6 @@ TranslateBubbleView::TranslateBubbleView(
                                     /*autosize=*/true),
       model_(std::move(model)),
       error_type_(error_type),
-      translate_action_item_(action_item),
       is_in_incognito_window_(
           web_contents && web_contents->GetBrowserContext()->IsOffTheRecord()),
       on_closing_(std::move(on_closing)) {
@@ -180,9 +177,6 @@ TranslateBubbleView::~TranslateBubbleView() {
   advanced_done_button_source_ = nullptr;
   advanced_done_button_target_ = nullptr;
   RemoveAllChildViews();
-  if (translate_action_item_.get()) {
-    translate_action_item_.get()->SetIsShowingBubble(false);
-  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kIdentifier);
@@ -238,10 +232,6 @@ void TranslateBubbleView::Init() {
 
   if (GetViewState() == TranslateBubbleModel::VIEW_STATE_ERROR) {
     model_->ShowError(error_type_);
-  }
-
-  if (translate_action_item_.get()) {
-    translate_action_item_->SetIsShowingBubble(true);
   }
 }
 

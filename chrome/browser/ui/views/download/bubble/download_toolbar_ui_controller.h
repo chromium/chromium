@@ -186,7 +186,7 @@ class DownloadToolbarUIController
 
   raw_ptr<BrowserView> browser_view_;
   bool is_primary_partial_view_ = false;
-  base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
+  raw_ptr<actions::ActionItem> action_item_ = nullptr;
   // Controller for the DownloadToolbarButton UI.
   std::unique_ptr<DownloadDisplayController> controller_;
   // Controller for keeping track of items for both main view and partial view.

@@ -77,8 +77,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenLanguageSettings);
 
-  TranslateBubbleView(const base::WeakPtr<actions::ActionItem> action_item,
-                      views::View* anchor_view,
+  TranslateBubbleView(views::View* anchor_view,
                       std::unique_ptr<TranslateBubbleModel> model,
                       translate::TranslateErrors error_type,
                       content::WebContents* web_contents,
@@ -307,8 +306,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<TranslateBubbleModel> model_;
 
   translate::TranslateErrors error_type_;
-
-  base::WeakPtr<actions::ActionItem> translate_action_item_ = nullptr;
 
   // Whether the window is an incognito window.
   const bool is_in_incognito_window_;
