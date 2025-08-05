@@ -649,6 +649,9 @@ static std::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     return DocumentMarker::kActiveSuggestion;
   if (EqualIgnoringASCIICase(marker_type, "Suggestion"))
     return DocumentMarker::kSuggestion;
+  if (EqualIgnoringASCIICase(marker_type, "Glic")) {
+    return DocumentMarker::kGlic;
+  }
   return std::nullopt;
 }
 
@@ -1334,20 +1337,33 @@ void Internals::setMarker(Document* document,
     return;
   }
 
-  if (type != DocumentMarker::kSpelling && type != DocumentMarker::kGrammar) {
+  if (type != DocumentMarker::kSpelling && type != DocumentMarker::kGrammar &&
+      type != DocumentMarker::kGlic) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "internals.setMarker() currently only "
-                                      "supports spelling and grammar markers; "
-                                      "attempted to add marker of type '" +
+                                      "supports spelling, grammar and glic "
+                                      " markers; attempted to add marker of "
+                                      " type '" +
                                           marker_type + "'.");
     return;
   }
 
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  if (type == DocumentMarker::kSpelling)
+  if (type == DocumentMarker::kSpelling) {
     document->Markers().AddSpellingMarker(EphemeralRange(range));
-  else
+  } else if (type == DocumentMarker::kGrammar) {
     document->Markers().AddGrammarMarker(EphemeralRange(range));
+  } else {
+    // GLIC markers animate their color and start off transparent. So
+    // we need to start the animation and update it to the end in order to
+    // see the marker appearance.
+    document->Markers().AddGlicMarker(EphemeralRange(range));
+    document->Markers().StartGlicMarkerAnimationIfNeeded();
+    base::TimeTicks ticks;
+    document->Markers().ContinueGlicMarkerAnimation(ticks);
+    ticks += base::TimeDelta::Max();
+    document->Markers().ContinueGlicMarkerAnimation(ticks);
+  }
 }
 
 void Internals::removeMarker(Document* document,
