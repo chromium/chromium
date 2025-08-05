@@ -59,8 +59,10 @@ public class EditorProperties {
             new ReadableObjectPropertyKey<>("custom_done_button_text");
     public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TITLE =
             new ReadableObjectPropertyKey<>("delete_confirmation_title");
-    public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TEXT =
+    public static final ReadableObjectPropertyKey<CharSequence> DELETE_CONFIRMATION_TEXT =
             new ReadableObjectPropertyKey<>("delete_confirmation_text");
+    public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT =
+            new ReadableObjectPropertyKey<>("delete_confirmation_primary_button_text");
 
     public static final WritableObjectPropertyKey<ListModel<EditorItem>> EDITOR_FIELDS =
             new WritableObjectPropertyKey<>("editor_fields");
@@ -89,6 +91,7 @@ public class EditorProperties {
         CUSTOM_DONE_BUTTON_TEXT,
         DELETE_CONFIRMATION_TITLE,
         DELETE_CONFIRMATION_TEXT,
+        DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT,
         EDITOR_FIELDS,
         DONE_RUNNABLE,
         CANCEL_RUNNABLE,

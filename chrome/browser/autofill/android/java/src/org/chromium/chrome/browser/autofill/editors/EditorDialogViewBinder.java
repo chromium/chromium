@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getInputTypeF
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_RUNNABLE;
@@ -71,6 +72,9 @@ public class EditorDialogViewBinder {
             view.setDeleteConfirmationTitle(model.get(DELETE_CONFIRMATION_TITLE));
         } else if (propertyKey == DELETE_CONFIRMATION_TEXT) {
             view.setDeleteConfirmationText(model.get(DELETE_CONFIRMATION_TEXT));
+        } else if (propertyKey == DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT) {
+            view.setDeleteConfirmationPrimaryButtonText(
+                    model.get(DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT));
         } else if (propertyKey == EDITOR_FIELDS) {
             view.setEditorFields(model.get(EDITOR_FIELDS));
         } else if (propertyKey == DONE_RUNNABLE) {

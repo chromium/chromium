@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLO
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_RUNNABLE;
@@ -74,6 +75,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -213,6 +215,9 @@ class AddressEditorMediator {
                         .with(CUSTOM_DONE_BUTTON_TEXT, mCustomDoneButtonText)
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
+                        .with(
+                                DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT,
+                                getDeleteConfirmationPrimaryButtonText())
                         .with(
                                 EDITOR_FIELDS,
                                 mProfileToEdit.isHomeOrWorkProfile()
@@ -484,10 +489,41 @@ class AddressEditorMediator {
         return CoreAccountInfo.getEmailFrom(accountInfo);
     }
 
-    private @Nullable String getDeleteConfirmationText() {
+    private String getDeleteConfirmationTitle() {
+        if (mProfileToEdit.getRecordType() == RecordType.ACCOUNT_HOME) {
+            return mContext.getString(
+                    R.string.autofill_remove_home_profile_suggestion_confirmation_title);
+        }
+        if (mProfileToEdit.getRecordType() == RecordType.ACCOUNT_WORK) {
+            return mContext.getString(
+                    R.string.autofill_remove_work_profile_suggestion_confirmation_title);
+        }
+        return mContext.getString(R.string.autofill_delete_address_confirmation_dialog_title);
+    }
+
+    private CharSequence createMessageWithLink(String body) {
+        // TODO(crbug.com/430218067): Add clickable links.
+        return SpanApplier.applySpans(body, new SpanApplier.SpanInfo("<link>", "</link>"));
+    }
+
+    private CharSequence getDeleteConfirmationText() {
         if (isAccountAddressProfile()) {
             @Nullable String email = getUserEmail();
-            if (email == null) return null;
+            if (email == null) return "";
+            if (mProfileToEdit.getRecordType() == RecordType.ACCOUNT_HOME) {
+                return createMessageWithLink(
+                        mContext.getString(
+                                        R.string
+                                                .autofill_remove_home_profile_suggestion_confirmation_body)
+                                .replace("$1", email));
+            }
+            if (mProfileToEdit.getRecordType() == RecordType.ACCOUNT_WORK) {
+                return createMessageWithLink(
+                        mContext.getString(
+                                        R.string
+                                                .autofill_remove_work_profile_suggestion_confirmation_body)
+                                .replace("$1", email));
+            }
             return mContext.getString(R.string.autofill_delete_account_address_record_type_notice)
                     .replace("$1", email);
         }
@@ -495,6 +531,13 @@ class AddressEditorMediator {
             return mContext.getString(R.string.autofill_delete_sync_address_record_type_notice);
         }
         return mContext.getString(R.string.autofill_delete_local_address_record_type_notice);
+    }
+
+    private String getDeleteConfirmationPrimaryButtonText() {
+        if (mProfileToEdit.isHomeOrWorkProfile()) {
+            return mContext.getString(R.string.autofill_remove_suggestion_button);
+        }
+        return mContext.getString(R.string.autofill_delete_suggestion_button);
     }
 
     private @Nullable String getRecordTypeNoticeText() {
@@ -516,10 +559,6 @@ class AddressEditorMediator {
         return mContext.getString(
                         R.string.autofill_address_will_be_saved_in_account_record_type_notice)
                 .replace("$1", email);
-    }
-
-    private String getDeleteConfirmationTitle() {
-        return mContext.getString(R.string.autofill_delete_address_confirmation_dialog_title);
     }
 
     private boolean isAlreadySavedInAccount() {

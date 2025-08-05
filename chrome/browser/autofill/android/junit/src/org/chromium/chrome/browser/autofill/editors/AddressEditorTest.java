@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordina
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
@@ -94,6 +95,7 @@ import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -313,11 +315,16 @@ public class AddressEditorTest {
     }
 
     private static void checkModelHasExpectedValues(
-            PropertyModel editorModel, String expectedDeleteTitle, String expectedDeleteText) {
+            PropertyModel editorModel,
+            String expectedDeleteTitle,
+            String expectedDeleteText,
+            String expectedDeleteButtonText) {
         assertNotNull(editorModel);
 
         assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
-        assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT));
+        assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT).toString());
+        assertEquals(
+                expectedDeleteButtonText, editorModel.get(DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT));
     }
 
     private void validateShownFields(
@@ -474,9 +481,14 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -496,9 +508,14 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -520,9 +537,14 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -547,9 +569,14 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_sync_address_record_type_notice);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -571,9 +598,14 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -598,9 +630,14 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_sync_address_record_type_notice);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -625,9 +662,14 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -654,9 +696,14 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -680,9 +727,14 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -706,9 +758,14 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_delete_suggestion_button);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                deleteButtonText);
     }
 
     @Test
@@ -1249,7 +1306,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_HomeAddressProfile() {
+    public void edit_HomeAddressProfile_showsReadOnlyUIAndExternalLink() {
         AutofillProfile homeProfile = new AutofillProfile(sHomeProfile);
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -1265,37 +1322,31 @@ public class AddressEditorTest {
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        assertEquals(false, editorModel.get(SHOW_BUTTONS));
+        // Buttons should be hidden for home address profiles.
+        assertFalse(editorModel.get(SHOW_BUTTONS));
 
         ListModel<EditorItem> model = editorModel.get(EDITOR_FIELDS);
+        // The model should contain: [description, notice, external link].
         assertEquals(3, model.size());
 
+        // Validate the description text.
         EditorItem descriptionItem = model.get(0);
         assertEquals(NON_EDITABLE_TEXT, descriptionItem.type);
-        assertEquals(true, descriptionItem.isFullLine);
-
+        assertTrue(descriptionItem.isFullLine);
         assertEquals("Profile description", descriptionItem.model.get(TEXT));
 
-        final String deleteTitle =
-                mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
-        final String deleteText =
-                mActivity
-                        .getString(R.string.autofill_delete_account_address_record_type_notice)
-                        .replace("$1", USER_EMAIL);
+        // Validate notices.
         final String recordTypeNotice =
                 mActivity
                         .getString(R.string.autofill_address_home_and_work_record_type_notice)
                         .replace("$1", USER_EMAIL);
+        validateRecordTypeNotice(editorModel, recordTypeNotice);
+        validateRequiredNotice(editorModel);
 
-        checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
-        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
-        validateRecordTypeNotice(mAddressEditor.getEditorModelForTesting(), recordTypeNotice);
-
+        // Validate the external edit link's appearance.
         EditorItem linkItem = model.get(2);
         assertEquals(NON_EDITABLE_TEXT, linkItem.type);
-        assertEquals(true, linkItem.isFullLine);
-
+        assertTrue(linkItem.isFullLine);
         assertEquals(
                 mActivity.getString(R.string.autofill_edit_address_label),
                 linkItem.model.get(TEXT));
@@ -1303,8 +1354,71 @@ public class AddressEditorTest {
         assertEquals(
                 mActivity.getString(R.string.autofill_edit_address_label_content_description),
                 linkItem.model.get(CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    @SmallTest
+    public void edit_HomeAddressProfile_setsDeleteConfirmationStrings() {
+        AutofillProfile homeProfile = new AutofillProfile(sHomeProfile);
+        mAddressEditor =
+                new AddressEditorCoordinator(
+                        mActivity,
+                        mDelegate,
+                        mProfile,
+                        new AutofillAddress(mActivity, homeProfile, mPersonalDataManager),
+                        UPDATE_EXISTING_ADDRESS_PROFILE,
+                        /* saveToDisk= */ false);
+        mAddressEditor.setEditorDialogForTesting(mEditorDialog);
+        mAddressEditor.showEditorDialog();
+
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
+
+        // Validate delete confirmation dialog strings.
+        final String deleteTitle =
+                mActivity.getString(
+                        R.string.autofill_remove_home_profile_suggestion_confirmation_title);
+        final String deleteText =
+                mActivity
+                        .getString(
+                                R.string.autofill_remove_home_profile_suggestion_confirmation_body)
+                        .replace("$1", USER_EMAIL);
+        final String deleteTextReplaced =
+                SpanApplier.applySpans(deleteText, new SpanApplier.SpanInfo("<link>", "</link>"))
+                        .toString();
+        final String deleteButtonText =
+                mActivity.getString(R.string.autofill_remove_suggestion_button);
+        checkModelHasExpectedValues(editorModel, deleteTitle, deleteTextReplaced, deleteButtonText);
+    }
+
+    @Test
+    @SmallTest
+    public void edit_HomeAddressProfile_clickingExternalLinkNotifiesDelegate() {
+        AutofillProfile homeProfile = new AutofillProfile(sHomeProfile);
+        mAddressEditor =
+                new AddressEditorCoordinator(
+                        mActivity,
+                        mDelegate,
+                        mProfile,
+                        new AutofillAddress(mActivity, homeProfile, mPersonalDataManager),
+                        UPDATE_EXISTING_ADDRESS_PROFILE,
+                        /* saveToDisk= */ false);
+        mAddressEditor.setEditorDialogForTesting(mEditorDialog);
+        mAddressEditor.showEditorDialog();
+
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
+        assertNotNull(editorModel);
+
+        ListModel<EditorItem> model = editorModel.get(EDITOR_FIELDS);
+        assertEquals(3, model.size());
+        EditorItem linkItem = model.get(2);
+
+        // Click the external edit link.
         linkItem.model.get(CLICK_RUNNABLE).run();
 
+        // Verify that the delegate was notified to handle the external edit action.
         verify(mDelegate, times(1)).onExternalEdit(homeProfile);
+        // Verify no other actions were triggered.
+        verify(mDelegate, times(0)).onDone(any());
+        verify(mDelegate, times(0)).onCancel();
     }
 }
