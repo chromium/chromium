@@ -97,9 +97,11 @@ found in the LICENSE file.
     <dimen name="list_menu_popup_min_width">112dp</dimen>
     <dimen name="list_menu_popup_max_width">280dp</dimen>
     <!-- Provide enough space for radio buttons -->
-    <dimen name="list_menu_item_icon_width">36dp</dimen>
+    <dimen name="list_menu_item_start_view_width">36dp</dimen>
     <!-- This determines the actual size of the icon -->
     <dimen name="list_menu_item_icon_size">24dp</dimen>
+    <!-- (list_menu_item_start_view_width - list_menu_item_icon_size)/2 -->
+    <dimen name="list_menu_item_icon_horizontal_padding">6dp</dimen>
     <dimen name="list_menu_item_start_icon_end_margin">16dp</dimen>
     <dimen name="list_menu_item_horizontal_padding">16dp</dimen>
     <dimen name="list_menu_item_text_size">16sp</dimen>

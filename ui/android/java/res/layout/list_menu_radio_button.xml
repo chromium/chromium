@@ -17,6 +17,7 @@ found in the LICENSE file.
     <RadioButton
         android:id="@+id/radio_button"
         android:clickable="false"
+        android:paddingHorizontal="0dp"
         style="@style/ListMenuItemIconStyle.Start" />
 
     <TextView
