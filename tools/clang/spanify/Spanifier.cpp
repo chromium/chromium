@@ -88,6 +88,78 @@ enum Precedence {
   // Higher priority (stronger ties to the target)
 };
 
+// Returns true if the `loc` is inside a macro expansion, except for the case
+// that the `loc` is at a macro argument of the exceptional macros (EXPECT_ and
+// ASSERT_ family).
+// Tests are in: gtest-macro-original.cc
+static bool IsInExcludedMacro(clang::SourceLocation loc,
+                              const clang::ASTContext& ast_context,
+                              const clang::SourceManager& source_manager) {
+  if (!loc.isMacroID()) [[likely]] {
+    return false;
+  }
+
+  // Get the outermost macro name which takes a macro argument at `loc`. Macros
+  // are often implemented with nested macros, and the outermost macro is the
+  // most interesting for us.
+  //
+  // Example:
+  //     #define TOP_MACRO(arg) do { INNER_MACRO(arg); } while (false)
+  //     #define INNER_MACRO(arg2) arg2 += 1
+  //     TOP_MACRO(var);
+  // then, the macro expansion will be
+  //     do { var += 1; } while (false);
+  // When `loc` is at "var" (of "var += 1"), we're interested in the macro name
+  // "TOP_MACRO" rather than "INNER_MACRO".
+  std::string outermost_macro_name;
+  while (source_manager.isMacroArgExpansion(loc)) {
+    outermost_macro_name = std::string(clang::Lexer::getImmediateMacroName(
+        loc, source_manager, ast_context.getLangOpts()));
+    loc = source_manager.getImmediateSpellingLoc(loc);
+  }
+
+  if (loc.isMacroID()) {
+    // This branch handles the following case:
+    //     #define EXPECT_TRUE(expect_arg) if (expect_arg) ; else Crash()
+    //     #define MY_MACRO() EXPECT_TRUE(immediate_value)
+    //     MY_MACRO();
+    // The macro expansion will be:
+    //     if (immediate_value) ; else Crash();
+    // When (the original value of) `loc` was at "immediate_value" (of
+    // "if (immediate_value)"), it was inside a macro expansion of MY_MACRO,
+    // which should be excluded (at least for now).
+    return true;
+  }
+
+  // When `loc` is at a macro argument of the following macros, we'll attempt
+  // the regular rewriting.
+  if (outermost_macro_name.starts_with("ASSERT_") ||
+      outermost_macro_name == "CHECK" ||
+      outermost_macro_name.starts_with("CHECK_") ||
+      outermost_macro_name == "DCHECK" ||
+      outermost_macro_name.starts_with("DCHECK_") ||
+      outermost_macro_name.starts_with("EXPECT_")) {
+    return false;
+  }
+
+  return true;
+}
+
+// Returns true if the Node is inside a macro expansion, except for the case
+// that the Node is inside a macro argument of the exceptional macros (EXPECT_
+// and ASSERT_ family).
+// Tests are in: gtest-macro-original.cc
+AST_POLYMORPHIC_MATCHER(isInExcludedMacroLocation,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  auto loc = Node.getBeginLoc();
+  const clang::ASTContext& ast_context = Finder->getASTContext();
+  const clang::SourceManager& source_manager = ast_context.getSourceManager();
+
+  return IsInExcludedMacro(std::move(loc), ast_context, source_manager);
+}
+
 // This iterates over function parameters and matches the ones that match
 // parm_var_decl_matcher.
 AST_MATCHER_P(clang::FunctionDecl,
@@ -490,37 +562,76 @@ const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
 // and defaults to returning the range of token `expr`.
 clang::SourceRange getExprRange(const clang::Expr* expr,
                                 const clang::SourceManager& source_manager,
-                                const clang::LangOptions& lang_options) {
+                                const clang::LangOptions& lang_opts) {
+  // When the given `loc` is inside a macro expansion, tries to get the spelling
+  // location (= the original code location before the macro expansion).
+  // Tests are in: gtest-macro-original.cc
+  auto ToSpellingLoc = [&](clang::SourceLocation loc) -> clang::SourceLocation {
+    if (!loc.isMacroID()) [[likely]] {
+      return loc;
+    }
+    clang::SourceLocation original_loc = loc;
+    while (source_manager.isMacroArgExpansion(loc)) {
+      loc = source_manager.getImmediateSpellingLoc(loc);
+    }
+    return loc.isValid() && loc.isFileID() ? loc : original_loc;
+  };
+
   if (const auto* member_expr = clang::dyn_cast<clang::MemberExpr>(expr)) {
-    clang::SourceLocation begin_loc = member_expr->getMemberLoc();
+    clang::SourceLocation member_loc =
+        ToSpellingLoc(member_expr->getMemberLoc());
     size_t member_name_length = member_expr->getMemberDecl()->getName().size();
-    clang::SourceLocation end_loc =
-        begin_loc.getLocWithOffset(member_name_length);
-    return {begin_loc, end_loc};
+    return {member_loc, member_loc.getLocWithOffset(member_name_length)};
   }
 
   if (const auto* decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+    assert(decl_ref->getBeginLoc() == decl_ref->getEndLoc() &&
+           "DeclRefExpr doesn't have the expected end loc.");
+    clang::SourceLocation begin_loc = ToSpellingLoc(decl_ref->getBeginLoc());
     auto name = decl_ref->getNameInfo().getName().getAsString();
-    return {decl_ref->getBeginLoc(),
-            decl_ref->getEndLoc().getLocWithOffset(name.size())};
+    return {begin_loc, begin_loc.getLocWithOffset(name.size())};
   }
 
   if (const auto* call_expr = clang::dyn_cast<clang::CallExpr>(expr)) {
-    return {call_expr->getBeginLoc(),
-            call_expr->getRParenLoc().getLocWithOffset(1)};
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MY_MACRO(func) func
+    //     MY_MACRO(func)(arg1, arg2);
+    //     // The returned range will be `func)(arg1, arg2)`.
+    return {ToSpellingLoc(call_expr->getBeginLoc()),
+            ToSpellingLoc(call_expr->getRParenLoc()).getLocWithOffset(1)};
   }
 
-  if (auto* binary_op = clang::dyn_cast_or_null<clang::BinaryOperator>(expr)) {
-    return {expr->getBeginLoc(),
-            getExprRange(binary_op->getRHS(), source_manager, lang_options)
-                .getEnd()};
+  if (auto* binary_op = clang::dyn_cast<clang::BinaryOperator>(expr)) {
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MY_MACRO(arg) arg
+    //     MY_MACRO(1) + 2;  // The returned range will be `1) + 2`.
+    //     MY_MACRO(1 +) 2;  // The returned range will be `1 +) 2`.
+    return {
+        ToSpellingLoc(expr->getBeginLoc()),
+        getExprRange(binary_op->getRHS(), source_manager, lang_opts).getEnd()};
   }
 
-  return {
-      expr->getBeginLoc(),
-      clang::Lexer::getLocForEndOfToken(expr->getEndLoc(), 0u, source_manager,
-                                        lang_options),
-  };
+  if (auto* uett_expr =
+          clang::dyn_cast<clang::UnaryExprOrTypeTraitExpr>(expr)) {
+    if (uett_expr->getKind() == clang::UETT_SizeOf) {
+      // Somehow in case of sizeof expr, the last token is not included in the
+      // source range. So skip the next token after the end loc.
+      assert(expr->getBeginLoc() != expr->getEndLoc());
+      clang::SourceLocation begin_loc = ToSpellingLoc(expr->getBeginLoc());
+      clang::SourceLocation end_loc = ToSpellingLoc(expr->getEndLoc());
+      size_t token_length =
+          clang::Lexer::MeasureTokenLength(end_loc, source_manager, lang_opts);
+      return {begin_loc, end_loc.getLocWithOffset(token_length)};
+    }
+  }
+
+  // Somehow single token expressions do not have the expected end location.
+  assert(expr->getBeginLoc() == expr->getEndLoc() &&
+         "Defaults to a single token expr.");
+  clang::SourceLocation begin_loc = ToSpellingLoc(expr->getBeginLoc());
+  size_t token_length =
+      clang::Lexer::MeasureTokenLength(begin_loc, source_manager, lang_opts);
+  return {begin_loc, begin_loc.getLocWithOffset(token_length)};
 }
 
 std::string GetTypeAsString(const clang::QualType& qual_type,
@@ -1011,6 +1122,7 @@ static std::string CreateSubspanCloser(
 }
 
 static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
+  const clang::ASTContext& ast_context = *result.Context;
   const clang::SourceManager& source_manager = *result.SourceManager;
   const auto* binary_operation =
       GetNodeOrCrash<clang::Expr>(result, "binary_operation", __FUNCTION__);
@@ -1020,8 +1132,9 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
 
   // If `binary_operation` and `rhs_expr` appear inside a macro expansion, then
   // add ".data()" call in the call site instead of adding ".subspan(offset)".
-  if (binary_operation->getBeginLoc().isMacroID() &&
-      rhs_expr->getBeginLoc().isMacroID()) {
+  if (IsInExcludedMacro(binary_operation->getBeginLoc(), ast_context,
+                        source_manager) &&
+      IsInExcludedMacro(rhs_expr->getBeginLoc(), ast_context, source_manager)) {
     AdaptBinaryOpInMacro(result, key);
     return;
   }
@@ -2832,8 +2945,7 @@ class Spanifier {
         isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
         raw_ptr_plugin::isInThirdPartyLocation(),
         raw_ptr_plugin::isInGeneratedLocation(),
-        raw_ptr_plugin::ImplicitFieldDeclaration(),
-        raw_ptr_plugin::isInMacroLocation(),
+        raw_ptr_plugin::ImplicitFieldDeclaration(), isInExcludedMacroLocation(),
         raw_ptr_plugin::isInLocationListedInFilterFile(&paths_to_exclude_));
 
     // Standard exclusions include `raw_ptr` and `span`.
@@ -3019,7 +3131,7 @@ class Spanifier {
                                qualType(isInteger())
                                    .bind("reinterpret_cast_to_integral_type")))
                     .bind("target_type")))),
-            unless(raw_ptr_plugin::isInMacroLocation()))
+            unless(isInExcludedMacroLocation()))
             .bind("reinterpret_cast")));
 
     // Defines nodes that contain size information, these include:
@@ -3076,9 +3188,9 @@ class Spanifier {
         expr(ignoringParenCasts(anyOf(
                  rhs_expr,
                  binaryOperation(
-                     binary_plus_or_minus_operation(binaryOperation(
-                         hasLHS(rhs_expr), hasOperatorName("+"),
-                         unless(raw_ptr_plugin::isInMacroLocation()))),
+                     binary_plus_or_minus_operation(
+                         binaryOperation(hasLHS(rhs_expr), hasOperatorName("+"),
+                                         unless(isInExcludedMacroLocation()))),
                      hasRHS(expr(hasType(isInteger())).bind("binary_op_rhs")),
                      unless(hasParent(binaryOperation(
                          anyOf(hasOperatorName("+"), hasOperatorName("-"))))))
@@ -3141,7 +3253,7 @@ class Spanifier {
                    cxxOperatorCallExpr(
                        hasOverloadedOperatorName("*"),
                        hasArgument(0, rhs_exprs_without_size_nodes))),
-             unless(raw_ptr_plugin::isInMacroLocation()))
+             unless(isInExcludedMacroLocation()))
             .bind("deref_expr"));
     Match(deref_expression, DecaySpanToPointer);
 
