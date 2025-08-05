@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] convTranspose2d float32 4D both input and filter constant tensors default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0 should be close enough to expected 0.1933533400297165 by ULP distance: expected a number less than or equal to 8n but got 1044774507n
 [FAIL] convTranspose2d float32 4D input and filter tensors options.groups
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d doesn't support dilations and groups."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2]
@@ -13,6 +15,8 @@ This is a testharness.js-based test.
   assert_less_than_equal: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 18n but got 1065353216n
 [FAIL] convTranspose2d same output size different padding (padding=2, outputPadding=2))
   assert_less_than_equal: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 18n but got 1065353216n
+[FAIL] convTranspose2d float16 4D both input and filter constant tensors default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test convTranspose2d float16 actual 0 should be close enough to expected 0.1934814453125 by ULP distance: expected a number less than or equal to 8 but got 12849
 [FAIL] convTranspose2d float16 4D input and filter tensors options.padding
   assert_less_than_equal: assert_array_approx_equals_ulp: test convTranspose2d float16 actual 0 should be close enough to expected 0.27880859375 by ULP distance: expected a number less than or equal to 8 but got 13430
 [FAIL] convTranspose2d float16 input tensors options.padding is the same upper padding
