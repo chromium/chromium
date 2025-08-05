@@ -1019,15 +1019,6 @@ static_library("ui") {
       "confirm_bubble_model.h",
       "focus_tab_after_navigation_helper.cc",
       "focus_tab_after_navigation_helper.h",
-      "web_applications/web_app_dialog_utils.cc",
-      "web_applications/web_app_dialog_utils.h",
-
-      # TODO(crbug.com/369756821): this file includes //c/b/ash/crosapi headers,
-      # and hence needs to depend on //c/b/ash/crosapi GN target. This causes a circular
-      # dependency that is not trivial to sort out.
-      # When crosapi code gets deleted during the lacros sunset, move this file to the
-      # appropriated build target.
-      "global_media_controls/media_notification_service.cc",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
       "layout_constants.cc",
@@ -1097,6 +1088,8 @@ static_library("ui") {
       "views/file_system_access/file_system_access_scroll_panel.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
+      "web_applications/web_app_dialog_utils.cc",
+      "web_applications/web_app_dialog_utils.h",
       "webui/bookmarks/bookmark_prefs.cc",
       "webui/bookmarks/bookmark_prefs.h",
       "webui/bookmarks/bookmarks_message_handler.cc",
