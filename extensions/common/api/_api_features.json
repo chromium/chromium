@@ -690,7 +690,6 @@
   },{
     "contexts": ["webui"],
     "matches": [
-      "chrome://password-change/*",
       "chrome://file-manager/*"
     ]
   },{

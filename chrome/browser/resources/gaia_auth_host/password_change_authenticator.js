@@ -26,12 +26,6 @@ import {WebviewEventManager} from './webview_event_manager.js';
 export const oktaInjectedScriptName = 'oktaInjected';
 
 /**
- * "SAML password change extension" which helps detect password change
- *  @type {string}
- */
-export const extensionId = 'mkmjngkgbjeljoblnahkagdlcdeiiped';
-
-/**
  * The script to inject into Okta user settings page.
  * @type {string}
  */
@@ -48,24 +42,8 @@ const BLANK_PAGE_URL = 'about:blank';
 export let PasswordChangeEventData;
 
 /**
- * @param {string} extensionId The ID of the extension to send the message to.
- * @param {Object} message The message to send. This message should be a
- *     JSON-ifiable object.
- * @param {function(?)} callback the response callback function
- * @private
- * @see: https://developer.chrome.com/extensions/runtime#method-sendMessage
- */
-function sendMessage_(extensionId, message, callback) {
-  // Sending message to extension and callback will be used to receive
-  // response from extension. This way is used to send one time request :
-  // https://developer.chrome.com/extensions/messaging#simple
-  chrome.runtime.sendMessage(extensionId, message, callback);
-}
-
-/**
  * The different providers of password-change pages that we support, or are
  * working on supporting.
- * Should match the enum in SAML password change extension
  * @enum {number}
  */
 export const PasswordChangePageProvider = {
@@ -360,28 +338,10 @@ export class PasswordChangeAuthenticator extends EventTarget {
    * @private
    */
   onBeforeRedirect_(details) {
-    if (details.method === 'POST') {
-      const message = {
-        name: 'detectPasswordChangeSuccess',
-        url: details.url,
-        redirectUrl: details.redirectUrl,
-      };
-      sendMessage_(extensionId, message, (passwordChangeSuccess) => {
-        // SAML change password extension will be used to detect the password
-        // change success from url passed.
-        // 'passwordChangeSuccess' will be equal to undefined in case
-        // extension isn't installed or disabled, In this case normal flow
-        // will be used.
-        // Otherwise 'passwordChangeSuccess' will indcate whether extension
-        // detected password change successfully.
-        if (passwordChangeSuccess ||
-            (typeof passwordChangeSuccess === 'undefined' &&
-             detectPasswordChangeSuccess(
-                 safeParseUrl_(details.url),
-                 safeParseUrl_(details.redirectUrl)))) {
-          this.onPasswordChangeSuccess_(false /* isOkta */);
-        }
-      });
+    if (details.method === 'POST' &&
+        detectPasswordChangeSuccess(
+            safeParseUrl_(details.url), safeParseUrl_(details.redirectUrl))) {
+      this.onPasswordChangeSuccess_(false /* isOkta */);
     }
   }
 
@@ -408,20 +368,10 @@ export class PasswordChangeAuthenticator extends EventTarget {
    */
   onMessageReceived_(event) {
     if (event.data === 'passwordChangeSuccess') {
-      const message = {name: 'detectProvider', url: event.origin};
-      sendMessage_(extensionId, message, (provider) => {
-        // SAML change password extension will be used to detect provider
-        // from url passed.
-        // 'provider' will be equal to undefined in case
-        // extension isn't installed or disabled, In this case normal flow
-        // will be used.
-        if (provider === PasswordChangePageProvider.OKTA ||
-            (typeof provider === 'undefined' &&
-             detectProvider_(safeParseUrl_(event.origin)) ===
-                 PasswordChangePageProvider.OKTA)) {
-          this.onPasswordChangeSuccess_(true /* isOkta */);
-        }
-      });
+      const pageProvider = detectProvider_(safeParseUrl_(event.origin));
+      if (pageProvider === PasswordChangePageProvider.OKTA) {
+        this.onPasswordChangeSuccess_(true /* isOkta */);
+      }
     }
   }
 }

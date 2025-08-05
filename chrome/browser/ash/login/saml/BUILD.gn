@@ -137,7 +137,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "password_change_extension_browsertest.cc",
     "password_change_success_detection_browsertest.cc",
     "saml_browsertest.cc",
     "saml_lockscreen_browsertest.cc",
