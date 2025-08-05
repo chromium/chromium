@@ -13,8 +13,13 @@ visibility = [
   "//third_party/freetype:*",
   "//third_party/libpng/*",
   "//third_party/libwebp:*",
-  "//third_party/pdfium/third_party:*",
   "//third_party/weston/*",
   "//tools/imagediff:*",
   "//ui/gfx:*",
+]
+
+# PDFium dependency.
+visibility += [
+  "//third_party:png",  # In standalone PDFium
+  "//third_party/pdfium/third_party:png",  # In Chromium
 ]
