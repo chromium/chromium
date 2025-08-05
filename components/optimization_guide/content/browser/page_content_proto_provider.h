@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/unguessable_token.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -32,16 +33,19 @@ class DocumentIdentifierUserData
  public:
   explicit DocumentIdentifierUserData(content::RenderFrameHost* rfh)
       : DocumentUserData<DocumentIdentifierUserData>(rfh),
-        serialized_token_(base::UnguessableToken::Create().ToString()) {}
+        token_(base::UnguessableToken::Create()),
+        serialized_token_(token_.ToString()) {}
   ~DocumentIdentifierUserData() override = default;
 
+  const base::UnguessableToken& token() const { return token_; }
   std::string serialized_token() const { return serialized_token_; }
 
   static std::optional<std::string> GetDocumentIdentifier(
       content::GlobalRenderFrameHostToken token);
 
  private:
-  std::string serialized_token_;
+  const base::UnguessableToken token_;
+  const std::string serialized_token_;
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();

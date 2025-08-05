@@ -124,8 +124,7 @@ GetVerifiedAnnotationTargetFrame(content::WebContents* focused_contents,
         optimization_guide::DocumentIdentifierUserData::GetForCurrentDocument(
             focused_rfh);
     if (!document_identifier_user_data ||
-        document_identifier_user_data->serialized_token() !=
-            params.document_id) {
+        document_identifier_user_data->token() != params.document_id) {
       return base::unexpected(mojom::ScrollToErrorReason::kNoMatchingDocument);
     }
   }

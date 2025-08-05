@@ -9,6 +9,7 @@ import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -291,7 +292,7 @@ struct ScrollToParams {
   // that the document in the primary main frame of the currently focused tab
   // matches the ID (and fails the operation if it doesn't). The verification
   // does not happen for PDFs.
-  string? document_id;
+  mojo_base.mojom.UnguessableToken? document_id;
 
   // The URL of the document targeted by this operation. If the currently
   // focused tab has a PDF loaded, this url is matched and verified against the
