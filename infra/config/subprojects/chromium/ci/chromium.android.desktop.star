@@ -267,11 +267,17 @@ ci.thin_tester(
         targets = [
             "android_desktop_junit_tests",
             targets.bundle(
-                targets = "android_desktop_tests",
+                targets = "android_desktop_gtests",
                 mixins = [
                     "15-desktop-x64-emulator",
                     "emulator-8-cores",
-                    "force-android-desktop",
+                ],
+            ),
+            targets.bundle(
+                targets = "android_desktop_isolated_script_tests",
+                mixins = [
+                    "15-desktop-x64-emulator",
+                    "emulator-8-cores",
                 ],
             ),
         ],
@@ -291,6 +297,11 @@ ci.thin_tester(
                     "--gtest_filter=-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop",
                 ],
                 ci_only = True,
+            ),
+            # TODO(crbug.com/436488951): Promote out of experimental.
+            "android_chrome_wpt_tests": targets.mixin(
+                ci_only = True,
+                experiment_percentage = 100,
             ),
             "unit_tests": targets.mixin(
                 args = [

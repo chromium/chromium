@@ -417,6 +417,14 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "android_desktop_wpt_args",
+    generate_pyl_entry = False,
+    args = [
+        "--additional-driver-flag=--force-android-desktop",
+    ],
+)
+
+targets.mixin(
     name = "arm64",
     # All references have been moved to starlark
     generate_pyl_entry = False,

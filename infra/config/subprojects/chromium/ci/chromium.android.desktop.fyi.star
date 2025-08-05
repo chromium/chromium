@@ -75,7 +75,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = "android_desktop_fyi_tests",
+        targets = "android_desktop_fyi_gtests",
         mixins = [
             "15-desktop-x64-emulator",
             "emulator-8-cores",
