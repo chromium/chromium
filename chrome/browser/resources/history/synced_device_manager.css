@@ -14,7 +14,7 @@
   overflow: auto;
 }
 
-#illustration {
+#sync-promo-illustration {
   background: url(images/sign_in_promo.svg) no-repeat center center;
   background-size: contain;
   height: 222px;
@@ -22,10 +22,55 @@
   width: 594.5px;
 }
 
+.sync-history-illustration {
+  content: url(images/sync_history_promo.svg);
+  width: 100%;
+}
+
+.sync-history-promo-avatar-illustration {
+  content: url(./images/avatar_surrounding_illustration_light.svg);
+  width: 100%;
+}
+
 @media (prefers-color-scheme: dark) {
-  #illustration {
+  #sync-promo-illustration {
     background-image: url(images/sign_in_promo_dark.svg);
   }
+
+  .sync-history-illustration  {
+    content: url(images/sync_history_promo_dark.svg);
+  }
+
+  .sync-history-promo-avatar-illustration  {
+    content: url(images/avatar_surrounding_illustration_dark.svg);
+  }
+}
+
+#avatar {
+  /** The user avatar may be transparent, add a background */
+  background-color: var(--md-background-color);
+  border: solid var(--md-background-color);
+  border-radius: 50%;
+  height: 64px;
+  /* To place the avatar at the center of the background image,
+     place it at top left point of its parent,
+     then shift it back by half its width and height. */
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+}
+
+#imageContainer {
+  align-self: center;
+  display: flex;
+  /* The height must be set so that the height of this relatively positioned
+  container is taken into account in the height calculator of the entire screen. */
+  height: 162px;
+  justify-content: center;
+  /* Establishes a positioning context for absolute children. */
+  position: relative;
 }
 
 #no-synced-tabs {
@@ -33,6 +78,15 @@
 }
 
 #sign-in-guide {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+.history-sync-optin {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -53,6 +107,24 @@
 }
 
 #turn-on-sync-button {
+  margin: 24px 0;
+}
+
+/* TODO:  crbug.com/418144047 - align the style with the Figma mockups. */
+.sync-history-promo {
+  font-size: 215%;
+  font-weight: 500;
+  margin-top: 40px;
+}
+
+.sync-history-promo-desc {
+  color: var(--cr-secondary-text-color);
+  font-size: 123%;
+  margin-top: 10px;
+  width: 80ch;
+}
+
+#sync-history-button {
   margin: 24px 0;
 }
 

@@ -17,6 +17,10 @@ build_webui("build") {
     "images/list.svg",
     "images/sign_in_promo.svg",
     "images/sign_in_promo_dark.svg",
+    "images/sync_history_promo.svg",
+    "images/sync_history_promo_dark.svg",
+    "images/avatar_surrounding_illustration_light.svg",
+    "images/avatar_surrounding_illustration_dark.svg",
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.

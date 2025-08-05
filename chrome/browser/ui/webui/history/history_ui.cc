@@ -24,6 +24,7 @@
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -58,6 +59,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,6 +72,10 @@ namespace {
 content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistoryHost);
+
+  source->AddBoolean(
+      "useHistorySyncOptinScreen",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
 
   HistoryUtil::PopulateSourceForSidePanelHistory(source, profile);
 
@@ -85,8 +91,19 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
       {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
+      {"turnOnSyncHistoryPromo", IDS_HISTORY_SYNC_HISTORY_PROMO},
+      {"turnOnSyncHistoryPromoDesc", IDS_HISTORY_SYNC_HISTORY_PROMO_DESC},
+      {"turnOnSignedInSyncHistoryPromo",
+       IDS_HISTORY_SIGNED_IN_SYNC_HISTORY_PROMO},
   };
   source->AddLocalizedStrings(kStrings);
+
+  source->AddLocalizedString("turnOnSyncHistoryButton",
+                             IDS_HISTORY_SYNC_HISTORY_BUTTON);
+  source->AddLocalizedString("turnOnSignedInSyncHistoryPromoDesc",
+                             IDS_HISTORY_SIGNED_IN_SYNC_HISTORY_PROMO_DESC);
+  source->AddString("accountPictureUrl",
+                    profiles::GetPlaceholderAvatarIconUrl());
 
   source->AddString(
       "sidebarFooter",

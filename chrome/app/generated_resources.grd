@@ -495,6 +495,24 @@ are declared in tools/grit/grit_args.gni.
         To get your tabs from your other devices, turn on sync
       </message>
 
+<!-- TODO: crbug.com/418144047 - Remove translateable="false" once strings are finalized. -->
+      <message translateable="false" name="IDS_HISTORY_SYNC_HISTORY_PROMO" desc="Text of the sync hystory promo. This will show up if a user is not logged in and has no synced tabs.">
+        Browse across devices
+      </message>
+      <message translateable="false" name="IDS_HISTORY_SYNC_HISTORY_PROMO_DESC" desc="Description of the sync hystory promo. Further tells users to sign in and sync hystory to see synced tabs from other devices.">
+        To get your tabs from your other devices, sign in and sync history. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+      </message>
+      <message translateable="false" name="IDS_HISTORY_SIGNED_IN_SYNC_HISTORY_PROMO" desc="Text of the sync hystory promo. This will show up if a user is not logged in and has no synced tabs.">
+        Continue from another device
+      </message>
+      <message translateable="false" name="IDS_HISTORY_SIGNED_IN_SYNC_HISTORY_PROMO_DESC" desc="Description of the sync hystory promo. Further tells users to sign in and sync hystory to see synced tabs from other devices.">
+        To get your tabs from your other devices, sync your tabs and History to . You can stop syncing anytime in settings. Google may personalize Search and other services based on your History.
+      </message>
+
+      <message translateable="false" name="IDS_HISTORY_SYNC_HISTORY_BUTTON" desc="Label displayed on a button to let user turn on sync history or sign in to Chrome to get synced tab history.">
+        Sync history
+      </message>
+
       <!-- Generic terms -->
       <message name="IDS_EDIT" desc="Edit menu item">
         &amp;Edit

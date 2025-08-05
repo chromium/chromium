@@ -79,6 +79,10 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
        * The session ID referring to the currently active action menu.
        */
       actionMenuModel_: {type: String},
+
+      useHistorySyncOptinScreen_: {type: Boolean},
+
+      accountImageSrc_: {type: String},
     };
   }
 
@@ -92,6 +96,10 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
       loadTimeData.getBoolean('isGuestSession');
   private accessor signInAllowed_: boolean =
       loadTimeData.getBoolean('isSignInAllowed');
+  protected accessor useHistorySyncOptinScreen_: boolean =
+      loadTimeData.getBoolean('useHistorySyncOptinScreen');
+  protected accessor accountImageSrc_: string =
+      loadTimeData.getString('accountPictureUrl');
 
   accessor signInState: boolean = false;
   accessor searchTerm: string = '';

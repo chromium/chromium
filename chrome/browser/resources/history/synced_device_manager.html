@@ -18,8 +18,9 @@
     ?hidden="${!this.showNoSyncedMessage_()}">
   ${this.noSyncedTabsMessage_()}
 </div>
-<div id="sign-in-guide" ?hidden="${!this.showSignInGuide_()}">
-  <div id="illustration"></div>
+<div id="sign-in-guide"
+    ?hidden="${!this.showSignInGuide_() || this.useHistorySyncOptinScreen_}">
+  <div id="sync-promo-illustration"></div>
   <div id="turn-on-sync-promo">$i18n{turnOnSyncPromo}</div>
   <div id="turn-on-sync-promo-desc">$i18n{turnOnSyncPromoDesc}</div>
   <cr-button id="turn-on-sync-button" class="action-button"
@@ -27,6 +28,34 @@
     $i18n{turnOnSyncButton}
   </cr-button>
 </div>
+
+${this.useHistorySyncOptinScreen_ ? html `
+  <div class="history-sync-optin">
+    ${!this.signInState ? html`
+      <!-- not signed in case -->
+      <div id="imageContainer">
+        <img class="sync-history-illustration" alt="" />
+      </div>
+      <div class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</div>
+      <div class="sync-history-promo-desc">
+        $i18n{turnOnSyncHistoryPromoDesc}
+      </div>
+      <!-- for "account aware" case here will be a div with the account info -->
+    ` : html`
+      <!-- signed in case -->
+      <div id="imageContainer">
+        <img class="sync-history-promo-avatar-illustration" alt="" />
+        <img id="avatar" alt="" src="${this.accountImageSrc_}" />
+      </div>
+      <div class="sync-history-promo">$i18n{turnOnSignedInSyncHistoryPromo}</div>
+      <div class="sync-history-promo-desc">
+        $i18n{turnOnSignedInSyncHistoryPromoDesc}
+      </div>
+    `}
+    <cr-button id="sync-history-button" class="action-button">
+      $i18n{turnOnSyncHistoryButton}
+    </cr-button>
+  </div>` : ''}
 
 <cr-lazy-render-lit id="menu" .template='${() => html`
   <cr-action-menu role-description="$i18n{menu}">
