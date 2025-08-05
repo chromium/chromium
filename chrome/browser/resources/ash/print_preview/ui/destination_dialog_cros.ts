@@ -375,6 +375,12 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
     this.$.dialog.showModal();
 
+    // Workaround to force the iron-list in print-preview-destination-list to
+    // render all destinations and resize to fill dialog body.
+    if (this.uiState_ === UiState.DESTINATION_LIST) {
+      window.dispatchEvent(new CustomEvent('resize'));
+    }
+
     // Display throbber for a minimum period of time while destinations are
     // still loading to avoid empty state UI flashing.
     if (!this.minLoadingTimeElapsed_) {
