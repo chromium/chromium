@@ -4650,7 +4650,9 @@ public class StripLayoutHelper
         float viewsWidth = (getNumLiveTabs() * getEffectiveTabWidth()) + TAB_OVERLAP_WIDTH_DP;
         for (int i = 0; i < mStripViews.length; ++i) {
             final StripLayoutView view = mStripViews[i];
-            if (!(view instanceof StripLayoutTab)) viewsWidth += view.getWidth();
+            if (view instanceof StripLayoutGroupTitle) {
+                viewsWidth += (view.getWidth() - mGroupTitleOverlapWidth);
+            }
         }
 
         boolean rtl = LocalizationUtils.isLayoutRtl();
