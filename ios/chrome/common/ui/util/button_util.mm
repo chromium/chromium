@@ -128,7 +128,7 @@ void UpdateButtonToMatchEqualWeightAction(UIButton* button) {
   button.configurationUpdateHandler = EqualWeightConfigurationUpdateHandler();
 }
 
-UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
+UIButton* PrimaryActionButton() {
   UIButton* button = CreateCommonButton();
   UpdateButtonToMatchPrimaryAction(button);
   return button;

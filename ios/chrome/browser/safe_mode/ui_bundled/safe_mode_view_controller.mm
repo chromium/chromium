@@ -207,7 +207,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   [self centerView:description afterView:awSnap];
   [_innerView addSubview:description];
 
-  _startButton = PrimaryActionButton(YES);
+  _startButton = PrimaryActionButton();
   NSString* startText =
       NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
   SetConfigurationTitle(_startButton, startText);

@@ -231,8 +231,7 @@ UIFont* GetNavigationBarTitleFont() {
         constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
   // Add the primary button (the "Continue as"/"Sign in" button).
-  self.primaryButton =
-      PrimaryActionButton(/* pointer_interaction_enabled */ YES);
+  self.primaryButton = PrimaryActionButton();
   UIButtonConfiguration* buttonConfiguration = self.primaryButton.configuration;
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
       kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);

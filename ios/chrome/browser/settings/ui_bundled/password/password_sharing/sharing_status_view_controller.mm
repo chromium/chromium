@@ -692,7 +692,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
 // Helper for creating the done button.
 - (UIButton*)createDoneButton {
-  UIButton* doneButton = PrimaryActionButton(YES);
+  UIButton* doneButton = PrimaryActionButton();
   [doneButton addTarget:self
                  action:@selector(doneButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];

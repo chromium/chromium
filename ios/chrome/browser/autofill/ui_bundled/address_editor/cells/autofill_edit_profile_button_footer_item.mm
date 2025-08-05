@@ -41,7 +41,7 @@
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
     // Create button.
-    self.button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+    self.button = PrimaryActionButton();
     [self.button addTarget:self
                     action:@selector(didTapButton)
           forControlEvents:UIControlEventTouchUpInside];

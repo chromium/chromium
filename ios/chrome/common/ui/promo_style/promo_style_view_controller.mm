@@ -1568,7 +1568,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (equallyWeightedButton) {
     button = EqualWeightButton();
   } else {
-    button = primary ? PrimaryActionButton(YES) : SecondaryActionButton();
+    button = primary ? PrimaryActionButton() : SecondaryActionButton();
   }
   UIButtonConfiguration* buttonConfiguration = button.configuration;
   buttonConfiguration.titlePadding = kMoreArrowMargin;

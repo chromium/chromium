@@ -565,7 +565,7 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
 }
 
 UIButton* CreateAutofillFormButton() {
-  UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  UIButton* button = PrimaryActionButton();
   button.accessibilityIdentifier =
       manual_fill::kExpandedManualFillAutofillFormButtonID;
   UIButtonConfiguration* buttonConfiguration = button.configuration;

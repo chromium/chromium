@@ -839,7 +839,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
 // Helper to create the primary action button.
 - (UIButton*)createPrimaryActionButton {
-  UIButton* primaryActionButton = PrimaryActionButton(YES);
+  UIButton* primaryActionButton = PrimaryActionButton();
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];

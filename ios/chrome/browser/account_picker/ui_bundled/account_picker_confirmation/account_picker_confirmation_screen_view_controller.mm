@@ -395,7 +395,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   ]];
 
   // Add the primary button (the "Continue as"/"Sign in" button).
-  _primaryButton = PrimaryActionButton(/* pointer_interaction_enabled */ YES);
+  _primaryButton = PrimaryActionButton();
   UIButtonConfiguration* buttonConfiguration = _primaryButton.configuration;
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
       kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);

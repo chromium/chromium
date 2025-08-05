@@ -20,8 +20,7 @@ void UpdateButtonToMatchSecondaryAction(UIButton* button);
 void UpdateButtonToMatchEqualWeightAction(UIButton* button);
 
 // Returns primary action button.
-// TODO(crbug.com/435383086): Remove the argument.
-UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled);
+UIButton* PrimaryActionButton();
 
 // Returns secondary action button.
 UIButton* SecondaryActionButton();

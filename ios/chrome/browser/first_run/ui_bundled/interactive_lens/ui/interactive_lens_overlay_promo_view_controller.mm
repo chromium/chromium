@@ -466,7 +466,7 @@ const CGFloat kButtonBottomMargin = 45.0;
   _buttonTransformed = YES;
 
   // Create a temporary primary action button to copy its configuration.
-  UIButton* primaryButton = PrimaryActionButton(YES);
+  UIButton* primaryButton = PrimaryActionButton();
   _actionButton.configuration = primaryButton.configuration;
   NSString* continueButtonTitle = l10n_util::GetNSString(
       IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_START_BROWSING_BUTTON);

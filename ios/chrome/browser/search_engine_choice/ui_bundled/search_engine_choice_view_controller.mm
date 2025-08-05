@@ -108,7 +108,7 @@ void SetPillButtonTitle(UIButton* pill_button, int string_id) {
 
 // Creates a "Set as Default" button. The button is returned as disabled.
 UIButton* CreateSetAsDefaultButton() {
-  UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  UIButton* button = PrimaryActionButton();
   SetConfigurationTitle(
       button, l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -121,8 +121,7 @@ UIButton* CreateSetAsDefaultButton() {
 
 // Create a more pill button.
 UIButton* CreateMorePillButton() {
-  UIButton* morePillButton =
-      PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  UIButton* morePillButton = PrimaryActionButton();
   morePillButton.layer.cornerRadius = kMorePillButtonCornerRadius;
   morePillButton.layer.masksToBounds = YES;
   UIButtonConfiguration* configuration = morePillButton.configuration;

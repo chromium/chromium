@@ -63,8 +63,7 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
   [self.view addSubview:tableView];
   [_tableViewController didMoveToParentViewController:self];
   // Create the save in account button.
-  _saveInAccountButton =
-      PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  _saveInAccountButton = PrimaryActionButton();
   _saveInAccountButton.accessibilityIdentifier =
       kBulkUploadSaveButtonAccessibilityIdentifer;
   SetConfigurationTitle(
