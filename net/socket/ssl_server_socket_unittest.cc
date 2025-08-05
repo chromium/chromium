@@ -42,7 +42,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/evp.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
@@ -375,10 +375,9 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
     server_private_key_ = ReadTestKey("unittest.key.bin");
     ASSERT_TRUE(server_private_key_);
 
-    std::unique_ptr<crypto::RSAPrivateKey> key =
-        ReadTestKey("unittest.key.bin");
+    bssl::UniquePtr<EVP_PKEY> key = ReadTestKey("unittest.key.bin");
     ASSERT_TRUE(key);
-    server_ssl_private_key_ = WrapOpenSSLPrivateKey(bssl::UpRef(key->key()));
+    server_ssl_private_key_ = WrapOpenSSLPrivateKey(std::move(key));
 
     // Certificate provided by the host doesn't need authority.
     client_ssl_config_.allowed_bad_certs.emplace_back(
@@ -397,7 +396,7 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
     channel_1_.reset();
     channel_2_.reset();
     server_context_ = CreateSSLServerContext(
-        server_cert_.get(), *server_private_key_, server_ssl_config_);
+        server_cert_.get(), server_private_key_.get(), server_ssl_config_);
   }
 
   void CreateContextSSLPrivateKey() {
@@ -439,13 +438,12 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
         ImportCertFromFile(GetTestCertsDirectory(), cert_file_name);
     ASSERT_TRUE(client_cert);
 
-    std::unique_ptr<crypto::RSAPrivateKey> key =
-        ReadTestKey(private_key_file_name);
+    bssl::UniquePtr<EVP_PKEY> key = ReadTestKey(private_key_file_name);
     ASSERT_TRUE(key);
 
     client_context_->SetClientCertificate(
         GetHostAndPort(), std::move(client_cert),
-        WrapOpenSSLPrivateKey(bssl::UpRef(key->key())));
+        WrapOpenSSLPrivateKey(std::move(key)));
   }
 
   void ConfigureClientCertsForServer() {
@@ -469,16 +467,14 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 #endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
-  std::unique_ptr<crypto::RSAPrivateKey> ReadTestKey(std::string_view name) {
+  bssl::UniquePtr<EVP_PKEY> ReadTestKey(std::string_view name) {
     base::FilePath certs_dir(GetTestCertsDirectory());
     base::FilePath key_path = certs_dir.AppendASCII(name);
-    std::string key_string;
-    if (!base::ReadFileToString(key_path, &key_string))
+    std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(key_path);
+    if (!pkcs8.has_value()) {
       return nullptr;
-    std::unique_ptr<crypto::RSAPrivateKey> key(
-        crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(
-            base::as_byte_span(key_string)));
-    return key;
+    }
+    return crypto::evp::PrivateKeyFromBytes(*pkcs8);
   }
 
   void PumpServerToClient() {
@@ -519,7 +515,7 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<SSLServerContext> server_context_;
   std::unique_ptr<SSLClientSocket> client_socket_;
   std::unique_ptr<SSLServerSocket> server_socket_;
-  std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
+  bssl::UniquePtr<EVP_PKEY> server_private_key_;
   scoped_refptr<SSLPrivateKey> server_ssl_private_key_;
   scoped_refptr<X509Certificate> server_cert_;
 };
