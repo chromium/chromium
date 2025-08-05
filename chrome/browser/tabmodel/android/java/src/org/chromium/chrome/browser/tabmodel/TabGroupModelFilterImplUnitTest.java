@@ -2955,4 +2955,56 @@ public class TabGroupModelFilterImplUnitTest {
                                                     .destinationGroupTitleCollapsed;
                                 }));
     }
+
+    @Test
+    public void testCreateSingleTabGroup_UnpinsTab() {
+        when(mTab1.getIsPinned()).thenReturn(true);
+        mTabGroupModelFilter.createSingleTabGroup(mTab1);
+        verify(mTabModel).unpinTab(mTab1.getId());
+    }
+
+    @Test
+    public void testMergeTabsToGroup_UnpinsDestinationTab() {
+        when(mTab1.getIsPinned()).thenReturn(true);
+        mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab1.getId());
+        verify(mTabModel).unpinTab(mTab1.getId());
+    }
+
+    @Test
+    public void testMergeTabsToGroup_UnpinsSourceTab() {
+        when(mTab1.getIsPinned()).thenReturn(true);
+        mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab2.getId());
+        verify(mTabModel).unpinTab(mTab1.getId());
+    }
+
+    @Test
+    public void testMergeListOfTabsToGroup_UnpinsMultiplePinnedTabs() {
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, /* trailing= */ true);
+
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+
+        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToMerge, mTab5, /* indexInGroup= */ null, false);
+
+        verify(mTabModel).unpinTab(mTab1.getId());
+        verify(mTabModel).unpinTab(mTab2.getId());
+    }
+
+    @Test
+    public void testMergeListOfTabsToGroup_UnpinsPinnedSourceAndDestination() {
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, /* trailing= */ true);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB5_ID, /* trailing= */ true);
+
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab5.getIsPinned()).thenReturn(true);
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1));
+
+        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToMerge, mTab5, /* indexInGroup= */ null, false);
+
+        verify(mTabModel).unpinTab(mTab1.getId());
+        verify(mTabModel).unpinTab(mTab5.getId());
+    }
 }

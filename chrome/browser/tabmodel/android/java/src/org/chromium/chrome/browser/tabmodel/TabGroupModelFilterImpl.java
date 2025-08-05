@@ -277,6 +277,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     private void createSingleTabGroupInternal(Tab tab, Token tabGroupId) {
         assert tab.getTabGroupId() == null;
+        unpinTabIfNeeded(tab);
 
         int rootId = tab.getRootId();
         mGroupIdToRootIdMap.put(tabGroupId, rootId);
@@ -347,6 +348,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             }
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
+                unpinTabIfNeeded(tab);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                     observer.willMergeTabToGroup(tab, destinationRootId, destinationTabGroupId);
                 }
@@ -372,6 +374,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             resetFilterState();
 
             if (!wasDestinationTabInAGroup) {
+                unpinTabIfNeeded(destinationTab);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                     observer.didMergeTabToGroup(destinationTab, /* isDestinationTab= */ true);
                 }
@@ -460,6 +463,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         if (wasDestinationTabInAGroup) {
             destinationTabGroupId = destinationTab.getTabGroupId();
         } else {
+            unpinTabIfNeeded(destinationTab);
             Token mergedTabGroupId = null;
             for (Tab tab : tabs) {
                 mergedTabGroupId = tab.getTabGroupId();
@@ -507,6 +511,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // Iterate through all tabs to set the proper new group creation status.
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
+            unpinTabIfNeeded(tab);
 
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.willMergeTabToGroup(tab, destinationRootId, destinationTabGroupId);
@@ -920,6 +925,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         Tab parentTab = getParentTab(tab);
         if (!fromUndo && shouldGroupWithParent(tab, parentTab)) {
             if (parentTab != null) {
+                unpinTabIfNeeded(tab);
                 Token oldTabGroupId = parentTab.getTabGroupId();
                 Token newTabGroupId = getOrCreateTabGroupId(parentTab);
                 if (!Objects.equals(oldTabGroupId, newTabGroupId)) {
@@ -1485,6 +1491,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     private boolean isIncognito() {
         return getTabModel().isIncognito();
+    }
+
+    private void unpinTabIfNeeded(@Nullable Tab tab) {
+        if (tab == null) return;
+
+        if (tab.getIsPinned()) {
+            getTabModel().unpinTab(tab.getId());
+        }
     }
 
     @Override
