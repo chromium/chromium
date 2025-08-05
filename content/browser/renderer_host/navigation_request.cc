@@ -2762,16 +2762,12 @@ void NavigationRequest::BeginNavigationImpl() {
           frame_tree_node_->frame_tree().is_prerendering(),
           ui::PageTransitionFromInt(common_params_->transition),
           &should_override_url_loading)) {
-    if (prerender_frame_tree_node_id_.has_value() &&
-        !prerender_frame_tree_node_id_.value().is_null()) {
+    if (reserved_prerender_host_info_.has_value()) {
       // Prerender activation must not fail but some reports imply it can
       // actually be failing: crbug.com/408969974. This dump is useful for
       // debugging it.
-      PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
       std::string prerender_type = GeneratePrerenderHistogramSuffix(
-          registry.GetPrerenderTriggerType(prerender_frame_tree_node_id()),
-          registry.GetPrerenderEmbedderHistogramSuffix(
-              prerender_frame_tree_node_id()));
+          GetPrerenderTriggerType(), GetPrerenderEmbedderHistogramSuffix());
       SCOPED_CRASH_KEY_STRING64("Bug411566699", "prerender_type",
                                 prerender_type);
       base::debug::DumpWithoutCrashing();
@@ -5129,16 +5125,12 @@ void NavigationRequest::OnRequestFailedInternal(
            error_page_content.has_value()));
   ScopedCrashKeys crash_keys(*this);
 
-  if (prerender_frame_tree_node_id_.has_value() &&
-      !prerender_frame_tree_node_id_.value().is_null()) {
+  if (reserved_prerender_host_info_.has_value()) {
     // Prerender activation must not fail but some reports imply it can actually
     // be failing: crbug.com/411566699, crbug.com/408969974. This dump is useful
     // for debugging it.
-    PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
     std::string prerender_type = GeneratePrerenderHistogramSuffix(
-        registry.GetPrerenderTriggerType(prerender_frame_tree_node_id()),
-        registry.GetPrerenderEmbedderHistogramSuffix(
-            prerender_frame_tree_node_id()));
+        GetPrerenderTriggerType(), GetPrerenderEmbedderHistogramSuffix());
     SCOPED_CRASH_KEY_STRING64("Bug411566699", "prerender_type", prerender_type);
     base::debug::DumpWithoutCrashing();
   }

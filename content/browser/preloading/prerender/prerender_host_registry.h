@@ -245,15 +245,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Cancels all hosts.
   void CancelAllHostsForTesting();
 
-  // Gets the trigger type from the reserved PrerenderHost.
-  PreloadingTriggerType GetPrerenderTriggerType(
-      FrameTreeNodeId frame_tree_node_id);
-
-  // Gets the embedder histogram suffix from the reserved PrerenderHost. Only
-  // used for metrics.
-  const std::string& GetPrerenderEmbedderHistogramSuffix(
-      FrameTreeNodeId frame_tree_node_id);
-
   // Represents the group of prerender limit calculated by PreloadingTriggerType
   // and SpeculationEagerness on GetPrerenderLimitGroup.
   enum class PrerenderLimitGroup {

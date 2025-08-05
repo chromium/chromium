@@ -1874,20 +1874,6 @@ void PrerenderHostRegistry::NotifyCancel(
   }
 }
 
-PreloadingTriggerType PrerenderHostRegistry::GetPrerenderTriggerType(
-    FrameTreeNodeId frame_tree_node_id) {
-  CHECK(reserved_prerender_host_);
-  CHECK_EQ(reserved_prerender_host_->frame_tree_node_id(), frame_tree_node_id);
-  return reserved_prerender_host_->trigger_type();
-}
-
-const std::string& PrerenderHostRegistry::GetPrerenderEmbedderHistogramSuffix(
-    FrameTreeNodeId frame_tree_node_id) {
-  CHECK(reserved_prerender_host_);
-  CHECK_EQ(reserved_prerender_host_->frame_tree_node_id(), frame_tree_node_id);
-  return reserved_prerender_host_->embedder_histogram_suffix();
-}
-
 PrerenderHostRegistry::PrerenderLimitGroup
 PrerenderHostRegistry::GetPrerenderLimitGroup(
     PreloadingTriggerType trigger_type,
