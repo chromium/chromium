@@ -17,7 +17,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/win/scoped_safearray.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -467,6 +466,10 @@ bool AXFragmentRootWin::HasEventListenerForEvent(EVENTID event_id) {
 
 bool AXFragmentRootWin::HasEventListenerForProperty(PROPERTYID property_id) {
   return base::Contains(property_listener_count_, property_id);
+}
+
+IRawElementProviderSimple* AXFragmentRootWin::GetProvider() {
+  return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());
 }
 
 size_t AXFragmentRootWin::GetIndexInParentOfChild() const {

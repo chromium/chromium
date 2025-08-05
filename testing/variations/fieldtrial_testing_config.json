@@ -25089,6 +25089,21 @@
             ]
         }
     ],
+    "UiaDisconnectRootProviders": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UiaDisconnectRootProviders"
+                    ]
+                }
+            ]
+        }
+    ],
     "UiaProviderWin": [
         {
             "platforms": [

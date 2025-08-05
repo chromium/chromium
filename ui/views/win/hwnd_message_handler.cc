@@ -40,6 +40,7 @@
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_window_handle_event_info.pbzero.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -1897,11 +1898,21 @@ void HWNDMessageHandler::OnDestroy() {
     map.erase(i);
   }
 
-  // If we have ever returned a UIA object via WM_GETOBJECT, signal that all
-  // objects associated with this HWND can be discarded. See:
-  // https://docs.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiareturnrawelementprovider#remarks
+  if (ax_fragment_root_ &&
+      base::FeatureList::IsEnabled(features::kUiaDisconnectRootProviders)) {
+    // Note that the fragment root's element provider is being disconnected so
+    // that re-entrant WM_GETOBJECT messages are not serviced.
+    disconnecting_fragment_root_ = true;
+
+    // Clean up UIA resources associated with this window's fragment root; see
+    // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectprovider.
+    ::UiaDisconnectProvider(ax_fragment_root_->GetProvider());
+  }
+
   if (did_return_uia_object_) {
-    UiaReturnRawElementProvider(hwnd(), 0, 0, nullptr);
+    // Disassociate this window from MSAA clients that are observing events; see
+    // https://docs.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiareturnrawelementprovider#remarks
+    ::UiaReturnRawElementProvider(hwnd(), 0, 0, nullptr);
   }
 }
 
@@ -2074,6 +2085,14 @@ LRESULT HWNDMessageHandler::OnGetObject(UINT message,
   const bool is_uia_active =
       is_uia_request && ::ui::AXPlatform::GetInstance().IsUiaProviderEnabled();
   const bool is_msaa_request = static_cast<DWORD>(OBJID_CLIENT) == obj_id;
+
+  if (is_uia_active && disconnecting_fragment_root_) {
+    // An application that calls UiaDisconnectProvider should not respond to a
+    // re-entrant WM_GETOBJECT message by returning a pointer to the provider
+    // that it is trying to disconnect.
+    // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectprovider
+    return 0;
+  }
 
   if (is_uia_request) {
     ::ui::AXPlatform::GetInstance().OnUiaProviderRequested(is_uia_active);

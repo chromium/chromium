@@ -201,6 +201,11 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // cause re-entrancy during teardown. https://crbug.com/1087553
   bool did_return_uia_object_ = false;
 
+  // Set to true immediately before disconnecting the fragment root's element
+  // provider. From that point onward, any request for UiaRootObjectId via
+  // WM_GET_OBJECT will be ignored.
+  bool disconnecting_fragment_root_ = false;
+
   // This class provides functionality to register the legacy window as a
   // Direct Manipulation consumer. This allows us to support smooth scroll
   // in Chrome on Windows 10.
