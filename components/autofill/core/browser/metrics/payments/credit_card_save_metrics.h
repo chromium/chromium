@@ -14,10 +14,9 @@ namespace autofill::autofill_metrics {
 // updated each time a new value is added.
 const int kNumCardUploadDecisionMetrics = 19;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum CardUploadDecision {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // All the required conditions were satisfied using either the form fields
   // or we prompted the user to fix one or more conditions in the card upload
   // prompt.
@@ -78,10 +77,10 @@ enum CardUploadDecision {
 
 // Log all the scenarios that contribute to the decision of whether card
 // upload is enabled or not.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CardUploadEnabled {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   kSyncServiceNull = 0,
   kSyncServicePaused = 1,
   kSyncServiceMissingAutofillWalletDataActiveType = 2,
@@ -104,10 +103,10 @@ enum class CardUploadEnabled {
 // platforms.
 
 // Metrics to track event when the save card prompt is offered.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SaveCardPromptOffer {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // The prompt is actually shown.
   kShown = 0,
   // The prompt is not shown because the prompt has been declined by the user
@@ -122,10 +121,9 @@ enum class SaveCardPromptOffer {
   kMaxValue = kCvcMissingForPotentialUpdate,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SaveCardPromptResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // The user explicitly accepted the prompt by clicking the ok button.
   kAccepted = 0,
   // The user explicitly cancelled the prompt by clicking the cancel button.
@@ -143,10 +141,10 @@ enum class SaveCardPromptResult {
 };
 
 // Represents requesting expiration date reason.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SaveCardRequestExpirationDateReason {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Submitted card has empty month.
   kMonthMissingOnly = 0,
   // Submitted card has empty year.
@@ -159,10 +157,10 @@ enum class SaveCardRequestExpirationDateReason {
 };
 
 // Clank-specific metrics.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SaveCreditCardPromptResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // User accepted save.
   kAccepted = 0,
   // User declined to save card.

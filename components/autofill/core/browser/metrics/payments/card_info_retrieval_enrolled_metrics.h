@@ -8,6 +8,9 @@
 namespace autofill::autofill_metrics {
 
 // Enum for different types of form events. Used for metrics logging.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CardInfoRetrievalEnrolledLoggingEvent {
   // A dropdown with suggestions was shown.
   kSuggestionShown = 0,
@@ -29,6 +32,7 @@ enum class CardInfoRetrievalEnrolledLoggingEvent {
 };
 
 // Enum for different types of unmask results. Used for metrics logging.
+//
 // These values are used in enums.xml; do not reorder or renumber entries!
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

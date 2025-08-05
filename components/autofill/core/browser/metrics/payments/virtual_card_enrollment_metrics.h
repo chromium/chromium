@@ -18,10 +18,10 @@ namespace autofill {
 
 // Metrics to record user interaction with the virtual card enrollment
 // bubble/infobar/bottomsheet.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class VirtualCardEnrollmentBubbleResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // The reason why the bubble is closed is not clear. Possible reason is the
   // logging function is invoked before the closed reason is correctly set.
   VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN = 0,
@@ -40,10 +40,10 @@ enum class VirtualCardEnrollmentBubbleResult {
 
 // Metrics to record the source that prompted the virtual card enrollment
 // bubble/infobar/bottomsheet.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class VirtualCardEnrollmentBubbleSource {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // The source of the bubble is unknown.
   VIRTUAL_CARD_ENROLLMENT_UNKNOWN_SOURCE = 0,
   // Bubble began after an unenrolled VCN-eligible card was saved via credit
@@ -58,13 +58,14 @@ enum class VirtualCardEnrollmentBubbleSource {
   kMaxValue = VIRTUAL_CARD_ENROLLMENT_SETTINGS_PAGE_SOURCE,
 };
 
-// Used to determine the type of link that was clicked for logging purposes. A
-// java IntDef@ is generated from this.
+// Used to determine the type of link that was clicked for logging purposes.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// A java IntDef@ is generated from this.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum class VirtualCardEnrollmentLinkType {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // User selected the Google Payments terms of service link.
   VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK = 0,
   // User selected the issuer terms of service link.
@@ -85,10 +86,10 @@ void LogVirtualCardEnrollmentBubbleResultMetric(
     bool previous_declined);
 
 // Metrics to measure strikes logged or cleared in strike database.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class VirtualCardEnrollmentStrikeDatabaseEvent {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Strike logged as enrollment bubble/infobar/bottomsheet was not accepted.
   VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKE_LOGGED = 0,
   // All strikes cleared as user accepted virtual card enrollment.

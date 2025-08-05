@@ -13,6 +13,8 @@
 
 namespace autofill::autofill_metrics {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AmountExtractionComponentInstallationResult {
   // The component installation was successful.
   kSuccessful = 0,
@@ -29,6 +31,8 @@ enum class AmountExtractionComponentInstallationResult {
   kMaxValue = kEmptyGenericDetails,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AmountExtractionResult {
   // The amount extraction was successful.
   kSuccessful = 0,

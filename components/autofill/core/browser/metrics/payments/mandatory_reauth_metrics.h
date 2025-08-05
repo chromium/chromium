@@ -78,6 +78,8 @@ enum class MandatoryReauthOptInBubbleResult {
   kMaxValue = kLostFocus,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class MandatoryReauthOptInConfirmationBubbleMetric {
   // The user is shown the opt-in confirmation bubble.
   kShown = 0,
@@ -87,8 +89,11 @@ enum class MandatoryReauthOptInConfirmationBubbleMetric {
 };
 
 // Enum class to include all the possible auth flows that can occur for
-// mandatory reauth. These values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
+// mandatory reauth.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum class MandatoryReauthAuthenticationFlowEvent {
   kUnknown = 0,
@@ -105,6 +110,9 @@ enum class MandatoryReauthAuthenticationFlowEvent {
 
 // All the sources that can trigger the OptIn or OptOut flow for mandatory
 // reauth.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class MandatoryReauthOptInOrOutSource {
   kUnknown = 0,
   // The OptIn or OptOut process is triggered from the settings page.

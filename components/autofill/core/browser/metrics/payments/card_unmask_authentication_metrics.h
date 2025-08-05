@@ -12,10 +12,10 @@ namespace autofill::autofill_metrics {
 
 // Card unmasking CVC authentication-related metrics.
 // CVC authentication-related events.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CvcAuthEvent {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Unknown result. Should not happen.
   kUnknown = 0,
   // The CVC auth succeeded.
@@ -52,10 +52,10 @@ void LogCvcAuthRetryableError(CreditCard::RecordType card_type,
 
 // Card unmasking OTP authentication-related metrics.
 // OTP authentication-related events.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class OtpAuthEvent {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Unknown results. Should not happen.
   kUnknown = 0,
   // The OTP auth succeeded.
@@ -84,12 +84,10 @@ enum class OtpAuthEvent {
 
 // The result of how the OTP input dialog was closed. This dialog is used for
 // users to type in the received OTP value for card verification.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OtpInputDialogResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Unknown event, should not happen.
   kUnknown = 0,
   // The dialog was closed before the user entered any OTP and clicked the OK
@@ -107,12 +105,10 @@ enum class OtpInputDialogResult {
 };
 
 // The type of error message shown in the card unmask OTP input dialog.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OtpInputDialogError {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Unknown type, should not be used.
   kUnknown = 0,
   // The error indicating that the OTP is expired.
@@ -177,10 +173,10 @@ std::string GetOtpAuthType(CardUnmaskChallengeOptionType type);
 
 // Card unmasking risk-based authentication-related metrics.
 // Risk-based authentication-related events.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class RiskBasedAuthEvent {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // No further authentication is required.
   kNoAuthenticationRequired = 0,
   // The user needs to complete further authentication to retrieve the card.

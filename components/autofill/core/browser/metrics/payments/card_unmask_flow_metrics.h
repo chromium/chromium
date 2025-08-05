@@ -14,10 +14,10 @@
 namespace autofill::autofill_metrics {
 
 // All possible results of the card unmask flow.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ServerCardUnmaskResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Default value, should never be used in logging.
   kUnknown = 0,
   // Card unmask completed successfully because the data had already been
@@ -55,10 +55,9 @@ enum class CvcFillingFlowType {
   kMaxValue = kMandatoryReauth,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ServerCardUnmaskFlowType {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Flow type was unknown at time of logging.
   kUnspecified = 0,
   // Only FIDO auth was offered.

@@ -45,6 +45,7 @@ enum class BnplTosDialogResult {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplTosDialogResult)
 
 // The dialog close reason of select BNPL issuer dialog.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //

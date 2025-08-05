@@ -9,10 +9,10 @@ namespace autofill::autofill_metrics {
 
 // Metrics to measure user interaction with the filled card information
 // bubble after it has appeared upon unmasking and filling a virtual card.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FilledCardInformationBubbleResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // The reason why the bubble is closed is not clear. Possible reason is the
   // logging function is invoked before the closed reason is correctly set.
   kUnknown = 0,
@@ -26,10 +26,10 @@ enum class FilledCardInformationBubbleResult {
 
 // Metric to measure which field in the filled card information bubble
 // was selected by the user.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FilledCardInformationBubbleFieldClicked {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   kCardNumber = 0,
   kExpirationMonth = 1,
   kExpirationYear = 2,
