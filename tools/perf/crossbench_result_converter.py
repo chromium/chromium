@@ -140,15 +140,24 @@ def _loadline(crossbench_out_dir: pathlib.Path,
               results_label: Optional[str] = None) -> None:
   """Converts `loadline-*` benchmarks."""
 
-  crossbench_json_filename = crossbench_out_dir / 'loadline_probe.csv'
+  crossbench_json_filename = crossbench_out_dir / 'cb.results.json'
   if not crossbench_json_filename.exists():
     raise FileNotFoundError(
         f'Missing crossbench results file: {crossbench_json_filename}')
+
   with crossbench_json_filename.open() as f:
-    crossbench_result = next(csv.DictReader(f))
+    crossbench_result = json.load(f)
+
+  loadline_csv = pathlib.Path(
+      crossbench_result["probes"]["loadline_probe"]["csv"][0])
+  if not loadline_csv.exists():
+    raise FileNotFoundError(
+        f'Missing loadline CSV results file: {loadline_csv}')
+  with loadline_csv.open() as f:
+    loadline_result = next(csv.DictReader(f))
 
   results = histogram_set.HistogramSet()
-  for key, value in crossbench_result.items():
+  for key, value in loadline_result.items():
     data_point = None
     if key == 'browser':
       results.AddSharedDiagnosticToAllHistograms(
