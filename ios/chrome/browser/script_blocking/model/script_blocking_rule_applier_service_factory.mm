@@ -7,9 +7,6 @@
 #import <memory>
 
 #import "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/privacy_sandbox/tracking_protection_settings.h"
-#import "ios/chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #import "ios/chrome/browser/script_blocking/model/script_blocking_rule_applier_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/content_manager/content_rule_list_manager.h"
@@ -35,7 +32,6 @@ ScriptBlockingRuleApplierServiceFactory::
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests,
                                     ProfileSelection::kOwnInstanceInIncognito) {
-  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -48,8 +44,6 @@ ScriptBlockingRuleApplierServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<ScriptBlockingRuleApplierService>(
-      web::ContentRuleListManager::FromBrowserState(browser_state),
-      TrackingProtectionSettingsFactory::GetForProfile(profile));
+      web::ContentRuleListManager::FromBrowserState(browser_state));
 }

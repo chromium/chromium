@@ -35,7 +35,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
       is_incognito_(is_incognito) {
   CHECK(pref_service_);
   CHECK(host_content_settings_map_);
-  content_settings_observation_.Observe(host_content_settings_map_.get());
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
@@ -87,15 +86,6 @@ void TrackingProtectionSettings::Shutdown() {
   management_service_ = nullptr;
   pref_change_registrar_.Reset();
   pref_service_ = nullptr;
-}
-
-void TrackingProtectionSettings::OnContentSettingChanged(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsTypeSet content_type_set) {
-  if (content_type_set.Contains(ContentSettingsType::TRACKING_PROTECTION)) {
-    OnTrackingProtectionExceptionsChanged();
-  }
 }
 
 bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
@@ -159,20 +149,6 @@ bool TrackingProtectionSettings::HasTrackingProtectionException(
              info) == CONTENT_SETTING_ALLOW;
 }
 
-ContentSettingsForOneType
-TrackingProtectionSettings::GetTrackingProtectionExceptions() const {
-  ContentSettingsForOneType all_settings =
-      host_content_settings_map_->GetSettingsForOneType(
-          ContentSettingsType::TRACKING_PROTECTION);
-  ContentSettingsForOneType exceptions;
-  for (const auto& setting : all_settings) {
-    if (setting.GetContentSetting() == CONTENT_SETTING_ALLOW) {
-      exceptions.push_back(setting);
-    }
-  }
-  return exceptions;
-}
-
 bool TrackingProtectionSettings::IsIpProtectionDisabledForEnterprise() {
   if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
     return !pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
@@ -228,12 +204,6 @@ void TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged() {
     observer.OnTrackingProtection3pcdChanged();
     // 3PC blocking may change as a result of entering/leaving the experiment.
     observer.OnBlockAllThirdPartyCookiesChanged();
-  }
-}
-
-void TrackingProtectionSettings::OnTrackingProtectionExceptionsChanged() {
-  for (auto& observer : observers_) {
-    observer.OnTrackingProtectionExceptionsChanged();
   }
 }
 

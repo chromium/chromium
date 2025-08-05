@@ -11,7 +11,6 @@ source_set("model") {
   ]
   deps = [
     "//components/keyed_service/ios",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//ios/web/public/content_manager",
     "//ios/web/public/thread",
   ]
@@ -32,9 +31,6 @@ source_set("factory") {
     ":model",
     "//components/fingerprinting_protection_filter/common:features",
     "//components/keyed_service/ios",
-    "//components/privacy_sandbox:tracking_protection_settings",
-    "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/privacy_sandbox",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public/content_manager",
   ]
@@ -48,11 +44,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "script_blocking_rule_applier_service_unittest.mm" ]
   deps = [
-    ":factory",
     ":model",
-    "//base/test:test_support",
-    "//components/fingerprinting_protection_filter/browser:test_support",
-    "//components/privacy_sandbox:features",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
