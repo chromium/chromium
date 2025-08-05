@@ -111,8 +111,8 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion() override {
     base::MappedReadOnlyRegion mapped_region =
         base::ReadOnlySharedMemoryRegion::Create(client_side_model_.length());
-    UNSAFE_TODO(memcpy(mapped_region.mapping.memory(),
-                       client_side_model_.data(), client_side_model_.length()));
+    mapped_region.mapping.GetMemoryAsSpan<uint8_t>().copy_from(
+        base::as_byte_span(client_side_model_));
     return mapped_region.region.Duplicate();
   }
 
