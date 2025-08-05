@@ -295,7 +295,7 @@ ci.builder(
         ],
         mixins = [
             "fuchsia-persistent-emulator",
-            "linux-focal",
+            "linux-jammy",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
