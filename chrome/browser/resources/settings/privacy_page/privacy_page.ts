@@ -249,11 +249,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      searchFilter_: {
-        type: String,
-        value: '',
-        observer: 'updateAllSitesPageTitle_',
-      },
+      searchFilter_: String,
 
       /**
        * Expose ContentSettingsTypes enum to HTML bindings.
@@ -296,11 +292,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
       },
 
-      enableRelatedWebsiteSetsV2Ui_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
-      },
-
       enableLocalNetworkAccessSetting_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
@@ -328,8 +319,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value: false,
       },
-
-      allSitesPageTitle_: String,
     };
   }
 
@@ -370,8 +359,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   declare private enableKeyboardLockPrompt_: boolean;
-  declare private enableRelatedWebsiteSetsV2Ui_: boolean;
-  declare private allSitesPageTitle_: string;
   declare private enableIncognitoTrackingProtections_: boolean;
   declare private enableBundledSecuritySettings_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
@@ -393,8 +380,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         'onBlockAutoplayStatusChanged',
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
-
-    this.updateAllSitesPageTitle_();
   }
 
   override currentRouteChanged() {
@@ -535,19 +520,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         return this.i18n('thirdPartyCookiesLinkRowSublabelDisabled');
       default:
         assertNotReached();
-    }
-  }
-
-  private updateAllSitesPageTitle_(): void {
-    const rwsPrefix = 'related:';
-    if (this.enableRelatedWebsiteSetsV2Ui_ &&
-        this.searchFilter_.length > rwsPrefix.length &&
-        this.searchFilter_.startsWith(rwsPrefix)) {
-      this.allSitesPageTitle_ = loadTimeData.getStringF(
-          'allSitesRwsFilterViewTitle',
-          this.searchFilter_.substring(rwsPrefix.length));
-    } else {
-      this.allSitesPageTitle_ = this.i18n('siteSettingsAllSites');
     }
   }
 

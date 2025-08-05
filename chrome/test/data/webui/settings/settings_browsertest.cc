@@ -46,7 +46,6 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
             features::kGlic, features::kTabstripComboButton,
 #endif
-            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
             privacy_sandbox::kFingerprintingProtectionUx},
         /*disabled_features=*/{
 #if BUILDFLAG(ENABLE_GLIC)
@@ -1223,7 +1222,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
             blink::features::kWebPrinting,
 #endif
             browsing_data::features::kDbdRevampDesktop,
-            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
             permissions::features::kPermissionSiteSettingsRadioButton,
             privacy_sandbox::kFingerprintingProtectionUx,
             safe_browsing::kBundledSecuritySettings,
@@ -1277,10 +1275,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        IncognitoTrackingProtectionsSubpage) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('IncognitoTrackingProtectionsSubpage')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, AllSitesSubpage) {
-  RunTest("settings/privacy_page_test.js", "runMochaSuite('AllSitesSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {

@@ -468,11 +468,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("isPrivacySandboxRestrictedNoticeEnabled",
                           is_restricted_notice_enabled);
 
-  html_source->AddBoolean(
-      "isRelatedWebsiteSetsV2UiEnabled",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi));
-
   // Mode B UX
   html_source->AddBoolean(
       "is3pcdCookieSettingsRedesignEnabled",

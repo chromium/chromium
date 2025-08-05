@@ -237,8 +237,7 @@
       </template>
 
       <template is="dom-if" route-path="/content/all" no-search>
-        <settings-subpage id="allSites"
-            page-title$="[[allSitesPageTitle_]]"
+        <settings-subpage page-title="$i18n{siteSettingsAllSites}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}"
             preserve-search-term>

@@ -50,8 +50,7 @@
         white-space: nowrap;
       }
     </style>
-    <div id="sort"
-        hidden$="[[hasFilteredRwsSitesV2Ui_(filter, filteredList_)]]">
+    <div id="sort">
       <label id="sortLabel">$i18n{siteSettingsAllSitesSort}</label>
       <select id="sortMethod" class="md-select" aria-labelledby="sortLabel"
           on-change="onSortMethodChanged_">
@@ -66,10 +65,6 @@
         </option>
       </select>
     </div>
-    <div id="relatedWebsiteSetsDescription"
-        hidden$="[[!hasFilteredRwsSitesV2Ui_(filter, filteredList_)]]">
-      $i18nRaw{allSitesRwsFilterViewDescription}
-    </div>
     <div id="clearAllContainer">
       <div id="clearLabel">
           [[getClearStorageDescription_(totalUsage_, filter, filteredList_)]]
@@ -82,7 +77,7 @@
       </div>
     </div>
     <div id="relatedWebsiteSetsLearnMore"
-        hidden$="[[!shouldShowRwsV1LearnMore_(filter, filteredList_)]]">
+        hidden$="[[!hasFilteredRwsSites_(filter, filteredList_)]]">
       [[getRwsLearnMoreLabel_(filter)]]
       <a href="$i18n{relatedWebsiteSetsLearnMoreURL}"
           aria-label="$i18n{siteSettingsRelatedWebsiteSetsLearnMoreAccessibility}">
@@ -120,7 +115,7 @@
         <cr-action-menu role-description="$i18n{menu}">
           <button class="dropdown-item" role="menuitem"
               on-click="onShowRelatedSites_">
-            [[getShowRwsButtonLabel_()]]
+            $i18n{relatedWebsiteSetsShowRelatedSitesButton}
           </button>
           <button class="dropdown-item" role="menuitem" on-click="onRemove_">
             $i18n{relatedWebsiteSetsSiteDeleteStorageButton}
