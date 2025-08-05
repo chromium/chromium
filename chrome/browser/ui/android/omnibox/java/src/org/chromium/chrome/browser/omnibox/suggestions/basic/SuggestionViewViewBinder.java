@@ -64,6 +64,8 @@ public class SuggestionViewViewBinder {
             if (tv.getMaxLines() != maxLines) {
                 tv.setMaxLines(maxLines);
             }
+        } else if (propertyKey == SuggestionViewProperties.CONTENT_DESCRIPTION) {
+            view.setContentDescription(model.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
         }
     }
 

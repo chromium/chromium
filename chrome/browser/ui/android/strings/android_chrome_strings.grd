@@ -6983,6 +6983,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_SEARCH_LOUPE_TOOLTIP_TEXT" desc="Content description for opening up the tab search window, which allows users to search their tabs.">
         Open tab search
       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_SUGGESTION_DESCRIPTION" desc="Content description for a tab group suggestion. Clicking the suggestion will open the tab group. TITLE_OF_GROUP is the title of the group. COLOR_NAME is the color of this group. URL_LIST is the list of tab urls in the group.">
+        Open <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph> tab group, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, with sites <ph name="URL_LIST">%3$s<ex>amazon.com</ex></ph>.
+      </message>
 
       <!-- Default browser promo -->
       <message name="IDS_DEFAULT_BROWSER_PROMO_CARD_TITLE" desc="Title of a promotion about setting Chrome the default browser.">

@@ -34,9 +34,18 @@ public @interface SuggestionViewProperties {
     @VisibleForTesting
     static final WritableBooleanPropertyKey ALLOW_WRAP_AROUND = new WritableBooleanPropertyKey();
 
+    /** The custom content description for the suggestion view. */
+    @VisibleForTesting
+    static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
-                IS_SEARCH_SUGGESTION, TEXT_LINE_1_TEXT, TEXT_LINE_2_TEXT, ALLOW_WRAP_AROUND
+                IS_SEARCH_SUGGESTION,
+                TEXT_LINE_1_TEXT,
+                TEXT_LINE_2_TEXT,
+                ALLOW_WRAP_AROUND,
+                CONTENT_DESCRIPTION
             };
 
     static final PropertyKey[] ALL_KEYS =

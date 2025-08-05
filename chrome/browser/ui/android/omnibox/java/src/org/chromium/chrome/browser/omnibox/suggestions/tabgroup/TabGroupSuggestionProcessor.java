@@ -13,6 +13,7 @@ import android.text.Spannable;
 import android.text.style.ImageSpan;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -87,6 +88,7 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(
                 SuggestionViewProperties.TEXT_LINE_2_TEXT,
                 new SuggestionSpannable(suggestion.getDescription()));
+        model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, getContentDescription(suggestion));
     }
 
     private SuggestionSpannable getTitleSpannable(AutocompleteMatch suggestion) {
@@ -117,5 +119,21 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
                 /* end= */ 1,
                 /* flags= */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         return titleSpannable;
+    }
+
+    private String getContentDescription(AutocompleteMatch suggestion) {
+        int plainColorId = Integer.parseInt(assumeNonNull(suggestion.getImageDominantColor()));
+        @TabGroupColorId
+        int colorId = TabGroupColorPickerUtils.getTabGroupCardColorId(plainColorId);
+        @StringRes
+        int colorDescRes =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        colorId);
+        String colorDesc = mContext.getString(colorDescRes);
+        return mContext.getString(
+                R.string.accessibility_tab_group_suggestion_description,
+                suggestion.getDisplayText(),
+                colorDesc,
+                suggestion.getDescription());
     }
 }

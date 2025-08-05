@@ -129,5 +129,13 @@ public class TabGroupSuggestionProcessorUnitTest {
                         .subSequence(
                                 3, mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).length())
                         .toString());
+
+        String targetString =
+                mContext.getString(
+                        R.string.accessibility_tab_group_suggestion_description,
+                        TITLE,
+                        "Red",
+                        DESCRIPTION);
+        Assert.assertEquals(targetString, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
     }
 }

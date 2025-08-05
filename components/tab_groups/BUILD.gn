@@ -56,5 +56,6 @@ if (is_android) {
       "android/java/res/values/colors.xml",
       "android/java/res/values/dimens.xml",
     ]
+    deps = [ "//components/strings:components_strings_grd" ]
   }
 }
