@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
-#include "base/uuid.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "url/gurl.h"
 

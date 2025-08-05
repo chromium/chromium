@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_DATA_TYPE_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_DATA_TYPE_CONTROLLER_H_
 
-#include "base/scoped_observation.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/data_type_controller.h"
-#include "components/sync/service/sync_service_observer.h"
 
 namespace autofill {
 
