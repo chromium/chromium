@@ -6,7 +6,9 @@ package org.chromium.content_public.browser.media.capture;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
@@ -119,6 +121,8 @@ public class ScreenCapture implements ImageHandler.Delegate {
 
     private @Nullable WebContents mWebContents;
     private volatile @Nullable WebContentsObserver mWebContentsObserver;
+    private volatile @Nullable Context mContext;
+    private volatile @Nullable ComponentCallbacks mComponentCallbacks;
 
     private ScreenCapture(long nativeDesktopCapturerAndroid) {
         this(nativeDesktopCapturerAndroid, ImageHandler::new);
@@ -159,16 +163,16 @@ public class ScreenCapture implements ImageHandler.Delegate {
     }
 
     /**
-     * Gets the `Context` for the `Activity` the `WebContents` is associated with.
+     * Gets the `Context` for the `Activity` the given `WebContents` is associated with.
      *
      * <p>This can be called on either the UI thread or the desktop capture thread. If called on the
      * desktop capture thread, callers must only read values from the Context and not perform any
      * modifications. Reads may theoretically return stale values, so callers on the desktop capture
      * thread must be ok with receiving potentially old values.
      */
-    private @Nullable Context maybeGetContext() {
-        if (mWebContents == null) return null;
-        final WindowAndroid window = mWebContents.getTopLevelNativeWindow();
+    private static @Nullable Context maybeGetContext(@Nullable WebContents webContents) {
+        if (webContents == null) return null;
+        final WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return null;
         return window.getContext().get();
     }
@@ -191,6 +195,8 @@ public class ScreenCapture implements ImageHandler.Delegate {
         sLatch.block();
 
         mWebContents = pickState.mWebContents;
+        mContext = maybeGetContext(mWebContents);
+        if (mContext == null) return false;
 
         // `WebContentsObserver` modifies `WebContents` by adding an observer, and that observer
         // list is not thread safe to use. So, we do this on the UI thread. We also run this
@@ -203,16 +209,15 @@ public class ScreenCapture implements ImageHandler.Delegate {
                                 @Override
                                 public void onTopLevelNativeWindowChanged(
                                         @Nullable WindowAndroid windowAndroid) {
-                                    mHandler.post(() -> updateContext());
+                                    updateContext();
                                 }
                             };
+                    registerComponentCallbacks();
                 });
 
-        final Context context = maybeGetContext();
-        if (context == null) return false;
-
         final var manager =
-                (MediaProjectionManager) context.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+                (MediaProjectionManager)
+                        mContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         if (manager == null) return false;
 
         mMediaProjection =
@@ -222,7 +227,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
 
         mMediaProjection.registerCallback(new MediaProjectionCallback(), mHandler);
 
-        final var windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        final var windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         final var windowMetrics = windowManager.getMaximumWindowMetrics();
         final Rect bounds = windowMetrics.getBounds();
 
@@ -230,7 +235,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
                 new CaptureState(
                         bounds.width(),
                         bounds.height(),
-                        context.getResources().getConfiguration().densityDpi,
+                        mContext.getResources().getConfiguration().densityDpi,
                         PixelFormat.RGBA_8888));
 
         return true;
@@ -240,10 +245,12 @@ public class ScreenCapture implements ImageHandler.Delegate {
     void destroy() {
         mNativeDesktopCapturerAndroid = 0;
 
-        // No need to block here since `updateContext` will early exit since
-        // `mNativeDesktopCapturerAndroid` is now 0.
+        // No need to block here since `updateContext` and `onConfigurationChanged` will early exit
+        // since `mNativeDesktopCapturerAndroid` is now 0.
         ThreadUtils.runOnUiThread(
                 () -> {
+                    unregisterComponentCallbacks();
+                    mContext = null;
                     if (mWebContentsObserver != null) {
                         mWebContentsObserver.observe(null);
                         mWebContentsObserver = null;
@@ -272,13 +279,21 @@ public class ScreenCapture implements ImageHandler.Delegate {
     }
 
     private void updateContext() {
+        ThreadUtils.assertOnUiThread();
+        unregisterComponentCallbacks();
+
+        mContext = maybeGetContext(mWebContents);
+        if (mContext != null) {
+            registerComponentCallbacks();
+            final Configuration config = mContext.getResources().getConfiguration();
+            mHandler.post(() -> onConfigurationChanged(config));
+        }
+    }
+
+    private void onConfigurationChanged(Configuration config) {
         assert mHandler.getLooper().isCurrentThread();
         if (mNativeDesktopCapturerAndroid == 0) return;
         if (mImageHandlerQueue.isEmpty()) return;
-
-        final Context context = maybeGetContext();
-        // It's possible to not have a Context if the WebContents is not attached to a window.
-        if (context == null) return;
 
         final CaptureState captureState =
                 mImageHandlerQueue.get(mImageHandlerQueue.size() - 1).getCaptureState();
@@ -286,17 +301,40 @@ public class ScreenCapture implements ImageHandler.Delegate {
                 new CaptureState(
                         captureState.width,
                         captureState.height,
-                        context.getResources().getConfiguration().densityDpi,
+                        config.densityDpi,
                         captureState.format));
+    }
+
+    private void registerComponentCallbacks() {
+        ThreadUtils.assertOnUiThread();
+        assert mContext != null;
+        mComponentCallbacks =
+                new ComponentCallbacks() {
+                    @Override
+                    public void onConfigurationChanged(Configuration newConfig) {
+                        mHandler.post(() -> ScreenCapture.this.onConfigurationChanged(newConfig));
+                    }
+
+                    @Override
+                    public void onLowMemory() {}
+                };
+        mContext.registerComponentCallbacks(mComponentCallbacks);
+    }
+
+    private void unregisterComponentCallbacks() {
+        ThreadUtils.assertOnUiThread();
+        if (mComponentCallbacks != null) {
+            assert mContext != null;
+            mContext.unregisterComponentCallbacks(mComponentCallbacks);
+            mComponentCallbacks = null;
+        }
     }
 
     private class MediaProjectionCallback extends MediaProjection.Callback {
         @Override
         public void onCapturedContentResize(int width, int height) {
             if (mNativeDesktopCapturerAndroid == 0) return;
-
-            final Context context = maybeGetContext();
-            if (context == null) return;
+            if (mContext == null) return;
 
             final int format =
                     mImageHandlerQueue.get(mImageHandlerQueue.size() - 1).getCaptureState().format;
@@ -304,7 +342,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
                     new CaptureState(
                             width,
                             height,
-                            context.getResources().getConfiguration().densityDpi,
+                            mContext.getResources().getConfiguration().densityDpi,
                             format));
         }
 
