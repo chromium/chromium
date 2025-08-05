@@ -465,8 +465,7 @@ class PrerenderBookmarkBarOnPressedNavigationTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kBookmarkTriggerForPrerender2,
-             {{"prerender_bookmarkbar_on_mouse_pressed_trigger", "true"},
-              {"prerender_bookmarkbar_on_mouse_hover_trigger", "false"}}},
+             {{"prerender_bookmarkbar_on_mouse_pressed_trigger", "true"}}},
         },
         /*disabled_features=*/{});
   }
@@ -674,8 +673,7 @@ class PrerenderBookmarkBarDisabledNavigationTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kBookmarkTriggerForPrerender2,
-             {{"prerender_bookmarkbar_on_mouse_pressed_trigger", "false"},
-              {"prerender_bookmarkbar_on_mouse_hover_trigger", "false"}}},
+             {{"prerender_bookmarkbar_on_mouse_pressed_trigger", "false"}}},
         },
         /*disabled_features=*/{});
   }
