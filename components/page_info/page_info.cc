@@ -1313,6 +1313,11 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 
 // Determines whether to show permission |type| in the Page Info UI. Only
 // applies to permissions listed in |kPermissionType|.
+// By default permissions are shown if they have a non-default value that is
+// verified via `IsPermissionFactoryDefault`. `IsPermissionFactoryDefault`
+// should be kept as the last check in this function. Additionally, permissions
+// can be shown if a user changed the permission via Page Info, it is verified
+// via `HasContentSettingChangedViaPageInfo(type)`.
 bool PageInfo::ShouldShowPermission(
     const PageInfo::PermissionInfo& info) const {
   // Note |ContentSettingsType::ADS| will show up regardless of its default
@@ -1374,7 +1379,9 @@ bool PageInfo::ShouldShowPermission(
     return false;
   }
 
-  // Hide camera if camera PTZ is granted or blocked.
+  // Hide camera if camera PTZ is granted or blocked. `CAMERA_PAN_TILT_ZOOM` can
+  // be used only if `MEDIASTREAM_CAMERA` were previously granted but we don't
+  // want to show both in the UI.
   if (info.type == ContentSettingsType::MEDIASTREAM_CAMERA) {
     ContentSetting camera_ptz_setting = GetContentSettings()->GetContentSetting(
         site_url_, site_url_, ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
@@ -1396,7 +1403,8 @@ bool PageInfo::ShouldShowPermission(
   // permissions.
 
   // Show the content setting if it has been changed by the user since the last
-  // page load.
+  // page load. E.g. if the user has reset the permission via Page Info, the
+  // permission should still be shown despite its state is default.
   if (HasContentSettingChangedViaPageInfo(info.type)) {
     return true;
   }
@@ -1410,6 +1418,8 @@ bool PageInfo::ShouldShowPermission(
     return true;
   }
 
+  // Attention: Keep this check at the end of the function!
+  //
   // Show the content setting when it has a non-default value.
   if (!PageInfo::IsPermissionFactoryDefault(info, is_incognito)) {
     return true;
