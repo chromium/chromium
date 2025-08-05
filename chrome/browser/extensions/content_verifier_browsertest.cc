@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "crypto/keypair.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/content_verifier/content_verify_job.h"
 #include "extensions/browser/content_verifier/test_utils.h"
@@ -263,13 +264,10 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     std::string private_key_bytes;
     EXPECT_TRUE(
         Extension::ParsePEMKeyBytes(private_key_contents, &private_key_bytes));
-    auto signing_key =
-        crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
-            private_key_bytes.begin(), private_key_bytes.end()));
-    std::vector<uint8_t> public_key;
-    signing_key->ExportPublicKey(&public_key);
-    const std::string public_key_str(public_key.begin(), public_key.end());
-    return crx_file::id_util::GenerateId(public_key_str);
+    auto signing_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+        base::as_byte_span(private_key_bytes));
+    std::vector<uint8_t> public_key = signing_key->ToSubjectPublicKeyInfo();
+    return crx_file::id_util::GenerateId(base::as_string_view(public_key));
   }
 
   // Creates a random signing key and sets |extension_id| according to it.
@@ -277,7 +275,6 @@ class ContentVerifierTest : public ExtensionBrowserTest {
       std::string& extension_id) {
     auto signing_key = crypto::keypair::PrivateKey::GenerateRsa2048();
     std::vector<uint8_t> public_key = signing_key.ToSubjectPublicKeyInfo();
-    const std::string public_key_str(public_key.begin(), public_key.end());
     extension_id =
         crx_file::id_util::GenerateId(base::as_string_view(public_key));
     return signing_key;
