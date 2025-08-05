@@ -965,6 +965,16 @@ public class InstanceSwitcherCoordinatorTest {
         onView(withId(R.id.active_instance_list))
                 .inRoot(isDialog())
                 .check(matches(atPosition(1, hasDescendant(withText(newName)))));
+
+        // Reopen the name window dialog.
+        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+        onView(withText(R.string.instance_switcher_name_window))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Check that the input text field is updated.
+        onView(withId(R.id.title_input_text)).inRoot(isDialog()).check(matches(withText(newName)));
     }
 
     @Test
