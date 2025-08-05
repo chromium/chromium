@@ -126,7 +126,7 @@ GetSchedulerLoopQuarantineConfiguration(
   }
 
   if (!config_entry) {
-    LOG(ERROR) << "No entry found.";
+    VLOG(1) << "No entry found for " << branch_name << ".";
     return config;  // No config found; disabled.
   }
 
