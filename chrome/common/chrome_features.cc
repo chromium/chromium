@@ -362,6 +362,8 @@ const char kGlicActorUiOverlayMagicCursorName[] =
 const char kGlicActorUiToastName[] = "glic-actor-ui-toast";
 const char kGlicActorUiHandoffButtonName[] = "glic-actor-ui-handoff-button";
 const char kGlicActorUiTabIndicatorName[] = "glic-actor-ui-tab-indicator";
+const char kGlicActorUiCompletedTaskExpiryDelaySecondsName[] =
+    "glic-actor-completed-task-expiry-delay-seconds";
 
 // Controls whether the task icon in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiTaskIcon{
@@ -381,6 +383,9 @@ const base::FeatureParam<bool> kGlicActorUiHandoffButton{
 // Controls whether the tab indicator in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiTabIndicator{
     &kGlicActorUi, kGlicActorUiTabIndicatorName, true};
+// Controls the expiry delay for completed tasks in the actor ui.
+const base::FeatureParam<int> kGlicActorUiCompletedTaskExpiryDelaySeconds{
+    &kGlicActorUi, kGlicActorUiCompletedTaskExpiryDelaySecondsName, 10};
 
 // Controls renderer tool observation timeout when waiting on local
 // (non-network) work.

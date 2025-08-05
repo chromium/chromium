@@ -140,7 +140,9 @@ void ActorUiStateManager::OnActorTaskStateChange(
     case ActorTask::State::kFinished:
       ui_tab_state = GetCompletedUiTabState();
       completed_tasks_expiry_timer_.Start(
-          FROM_HERE, kCompletedTaskExpiryDelay,
+          FROM_HERE,
+          base::Seconds(
+              features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()),
           base::BindOnce(&ActorUiStateManager::MaybeUpdateProfileScopedUiState,
                          weak_factory_.GetWeakPtr()));
       break;
@@ -333,7 +335,9 @@ std::vector<TaskId> ActorUiStateManager::GetCompletedTasks(
   std::vector<TaskId> completed_tasks;
   for (const auto& [task_id, task] : actor_service_->GetInactiveTasks()) {
     if (task->GetState() == ActorTask::State::kFinished &&
-        (current_time - task->GetEndTime() < kCompletedTaskExpiryDelay)) {
+        (current_time - task->GetEndTime() <
+         base::Seconds(
+             features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()))) {
       completed_tasks.push_back(task_id);
     }
   }

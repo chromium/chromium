@@ -36,6 +36,11 @@ using ::testing::ValuesIn;
 
 using enum HandoffButtonState::ControlOwnership;
 
+base::TimeDelta CompletedtaskExpiryDelay() {
+  return base::Seconds(
+      features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get());
+}
+
 class ActorUiStateManagerFake : public ActorUiStateManager {
  public:
   explicit ActorUiStateManagerFake(ActorKeyedService& actor_service)
@@ -238,7 +243,7 @@ TEST_F(ActorUiStateManagerTest, SingleTask_ReturnsCorrectUiState) {
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
-  task_environment().FastForwardBy(kCompletedTaskExpiryDelay);
+  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kInactive);
 }
@@ -315,13 +320,13 @@ TEST_F(ActorUiStateManagerTest,
             ActorUiStateManager::UiState::kCheckTasks);
 
   // The state should still be active due to task2 after the expiry period.
-  task_environment().FastForwardBy(kCompletedTaskExpiryDelay);
+  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
   // When both tasks stop, then the state should be inactive.
   StopActorTask(task_id2);
-  task_environment().FastForwardBy(kCompletedTaskExpiryDelay);
+  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kInactive);
 }
@@ -344,11 +349,11 @@ TEST_F(ActorUiStateManagerTest,
   // Stop both tasks within delay of each other.
   base::Time task1_finish_time = base::Time::Now();
   StopActorTask(task_id);
-  task_environment().FastForwardBy(base::Minutes(1));
+  task_environment().FastForwardBy(base::Seconds(1));
   StopActorTask(task_id2);
 
   base::TimeDelta delay =
-      kCompletedTaskExpiryDelay - (base::Time::Now() - task1_finish_time);
+      CompletedtaskExpiryDelay() - (base::Time::Now() - task1_finish_time);
   task_environment().FastForwardBy((delay.is_positive()) ? delay
                                                          : base::TimeDelta());
   // Even though the first task expired, we should still be in the correct
@@ -357,7 +362,7 @@ TEST_F(ActorUiStateManagerTest,
             ActorUiStateManager::UiState::kCheckTasks);
 
   // After both tasks expire, the state should be inactive.
-  task_environment().FastForwardBy(kCompletedTaskExpiryDelay);
+  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kInactive);
 }

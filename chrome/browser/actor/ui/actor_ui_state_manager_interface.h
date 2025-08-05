@@ -19,10 +19,6 @@ namespace actor::ui {
 using UiCompleteCallback =
     base::OnceCallback<void(::actor::mojom::ActionResultPtr)>;
 
-// ExpiryPeriod from when the user completes a task and when it should no longer
-// show on the ui
-// TODO(crbug.com/428014205): This is a placeholder value atm.
-static constexpr base::TimeDelta kCompletedTaskExpiryDelay = base::Minutes(3);
 static constexpr base::TimeDelta kProfileScopedUiUpdateDebounceDelay =
     base::Milliseconds(500);
 
@@ -36,7 +32,7 @@ class ActorUiStateManagerInterface {
     // There are active Actor tasks on this profile.
     kActive,
     // There are Actor tasks that need attention, this includes Actor pause &
-    // completed tasks within the kCompletedTaskExpiryDelay.
+    // completed tasks within the Completed Task Expiry Delay.
     kCheckTasks,
   };
   virtual ~ActorUiStateManagerInterface() = default;

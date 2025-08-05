@@ -57,7 +57,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void MaybeUpdateProfileScopedUiState();
   void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
-  // Returns completed tasks within the kCompletedTaskExpiryDelay of the
+  // Returns completed tasks within the Completed Task Expiry Delay of the
   // `current_time`.
   std::vector<TaskId> GetCompletedTasks(base::Time current_time) const;
 
