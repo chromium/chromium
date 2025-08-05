@@ -222,6 +222,9 @@
 [submodule "third_party/fast_float/src"]
 	path = third_party/fast_float/src
 	url = https://chromium.googlesource.com/external/github.com/fastfloat/fast_float
+[submodule "third_party/federated_compute/src"]
+	path = third_party/federated_compute/src
+	url = https://chromium.googlesource.com/external/github.com/google-parfait/federated-compute
 [submodule "third_party/ffmpeg"]
 	path = third_party/ffmpeg
 	url = https://chromium.googlesource.com/chromium/third_party/ffmpeg
