@@ -196,7 +196,6 @@
 #include "components/webui/flags/flags_ui_metrics.h"
 #include "components/webui/flags/flags_ui_switches.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
-#include "content/public/common/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
@@ -12269,12 +12268,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsProjectSettingsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDevToolsWellKnown)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
-    {"devtools-pwa-handler", "DevTools PWA Handler",
-     "Enables creating PWA handler for DevTools.", kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kDevToolsPwaHandler)},
-#endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
 
 #if BUILDFLAG(IS_ANDROID)
     {"malicious-apk-download-check",

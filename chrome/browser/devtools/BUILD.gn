@@ -369,7 +369,10 @@ static_library("devtools") {
       "protocol/target_handler.h",
     ]
     if (is_chromeos) {
-      deps += [ "//ash" ]
+      deps += [
+        "//ash",
+        "//chromeos/dbus/constants",
+      ]
       sources += [
         "protocol/window_manager_handler.cc",
         "protocol/window_manager_handler.h",

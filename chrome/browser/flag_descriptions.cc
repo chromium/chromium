@@ -501,13 +501,6 @@ const char kDevToolsProjectSettingsDescription[] =
     "on local debugging targets.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
-const char kDevToolsPwaHandlerName[] = "DevTools PWA Handler";
-const char kDevToolsPwaHandlerDescription[] =
-    "If enabled, DevTools will allow creating pwa_handler, to enable executing "
-    "CDP methods (i.e. PWA.install) on browsers connected remotely";
-#endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
-
 #if BUILDFLAG(IS_ANDROID)
 const char kForceHistoryOptInScreenName[] = "Force history opt-in screen";
 const char kForceHistoryOptInScreenDescription[] =

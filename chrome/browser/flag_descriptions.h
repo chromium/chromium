@@ -16,7 +16,6 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/webui/flags/feature_entry.h"
-#include "content/public/common/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -328,11 +327,6 @@ extern const char kDevToolsPrivacyUIDescription[];
 extern const char kDevToolsProjectSettingsName[];
 extern const char kDevToolsProjectSettingsDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
-extern const char kDevToolsPwaHandlerName[];
-extern const char kDevToolsPwaHandlerDescription[];
-#endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kDisableInstanceLimitName[];

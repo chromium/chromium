@@ -261,6 +261,12 @@ const char kEnableBookmarkUndo[] = "enable-bookmark-undo";
 // Proxy component within the service process.
 const char kEnableCloudPrintProxy[] = "enable-cloud-print-proxy";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// If enabled, DevTools will allow creating pwa_handler, to enable executing
+// CDP methods (i.e. PWA.install) on browsers connected remotely
+const char kEnableDevToolsPwaHandler[] = "enable-devtools-pwa-handler";
+#endif
+
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 
