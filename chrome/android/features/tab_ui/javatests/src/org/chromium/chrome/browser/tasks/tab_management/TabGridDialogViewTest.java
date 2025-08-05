@@ -46,6 +46,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.tab_ui.R;
@@ -53,6 +54,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeoutException;
@@ -166,6 +168,34 @@ public class TabGridDialogViewTest {
                 allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
         assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
         assertEquals(View.VISIBLE, mTabGridDialogView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Restriction({DeviceFormFactor.PHONE}) // Fails on tablets.
+    public void testUpdateDialogWithOrientation_NewOrientationFetchedEachTime() {
+        mockDialogStatus(false);
+        int appHeaderHeight = 10;
+        mTabGridDialogView.setAppHeaderHeight(appHeaderHeight);
+
+        // Setup the initial orientation and assert the margins are correct.
+        sActivity.getResources().getConfiguration().orientation =
+                Configuration.ORIENTATION_PORTRAIT;
+        mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_PORTRAIT);
+        assertThat(
+                mContainerParams.topMargin,
+                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
+        assertEquals(mContainerParams.leftMargin, mMinMargin);
+
+        // Update the orientation and assert the margins are updated.
+        sActivity.getResources().getConfiguration().orientation =
+                Configuration.ORIENTATION_LANDSCAPE;
+        mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        assertThat(
+                mContainerParams.leftMargin,
+                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
+        assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
     }
 
     @Test
