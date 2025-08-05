@@ -38,6 +38,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
@@ -291,7 +292,6 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -965,19 +965,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   tab_strip_region_view_ = top_container_->AddChildView(
       std::make_unique<TabStripRegionView>(std::move(tabstrip)));
 
-  // Create WebViews early so |webui_tab_strip_| can observe their size.
-  auto devtools_web_view =
-      std::make_unique<views::WebView>(browser_->profile());
-  devtools_web_view->SetID(VIEW_ID_DEV_TOOLS_DOCKED);
-  devtools_web_view->SetVisible(false);
-
   auto contents_container = std::make_unique<views::View>();
-  devtools_web_view_ =
-      contents_container->AddChildView(std::move(devtools_web_view));
-
-  devtools_scrim_view_ =
-      contents_container->AddChildView(std::make_unique<ScrimView>());
-  devtools_scrim_view_->layer()->SetName("DevtoolsScrimView");
 
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
@@ -1010,8 +998,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       std::make_unique<enterprise_watermark::WatermarkView>());
 
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, watermark_view_));
+      contents_view, lens_overlay_view_, watermark_view_));
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
@@ -1146,8 +1133,6 @@ BrowserView::~BrowserView() {
   multi_contents_view_ = nullptr;
   contents_container_view_ = nullptr;
   lens_overlay_view_ = nullptr;
-  devtools_web_view_ = nullptr;
-  devtools_scrim_view_ = nullptr;
   window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
   contents_container_ = nullptr;
@@ -1681,8 +1666,16 @@ void BrowserView::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
                      BookmarkBarController::ForceShowFlag::kTabGroupSaved));
 }
 
-void BrowserView::UpdateDevTools() {
-  UpdateDevToolsForContents(GetActiveWebContents(), true);
+void BrowserView::UpdateDevTools(content::WebContents* inspected_web_contents) {
+  ContentsContainerView* contents_container_view =
+      multi_contents_view_ ? multi_contents_view_->GetContentsContainerViewFor(
+                                 inspected_web_contents)
+                           : GetActiveContentsContainerView();
+  if (!contents_container_view) {
+    return;
+  }
+  browser_->GetFeatures().devtools_ui_controller()->UpdateDevtools(
+      contents_container_view, inspected_web_contents, true);
   DeprecatedLayoutImmediately();
 }
 
@@ -1752,33 +1745,6 @@ gfx::Point BrowserView::GetThemeOffsetFromBrowserView() const {
   return gfx::Point(
       -browser_view_origin.x(),
       ThemeProperties::kFrameHeightAboveTabs - browser_view_origin.y());
-}
-
-// static:
-BrowserView::DevToolsDockedPlacement BrowserView::GetDevToolsDockedPlacement(
-    const gfx::Rect& contents_webview_bounds,
-    const gfx::Rect& local_webview_container_bounds) {
-  // If contents_webview has the same bounds as webview_container, it either
-  // means that devtools are not open or devtools are open in a separate
-  // window (not docked).
-  if (contents_webview_bounds == local_webview_container_bounds) {
-    return BrowserView::DevToolsDockedPlacement::kNone;
-  }
-
-  if (contents_webview_bounds.x() > 0 && contents_webview_bounds.y() == 0 &&
-      contents_webview_bounds.x() + contents_webview_bounds.width() ==
-          local_webview_container_bounds.width()) {
-    return BrowserView::DevToolsDockedPlacement::kLeft;
-  } else if (contents_webview_bounds.origin().IsOrigin() &&
-             contents_webview_bounds.height() ==
-                 local_webview_container_bounds.height()) {
-    return BrowserView::DevToolsDockedPlacement::kRight;
-  } else if (contents_webview_bounds.width() ==
-             local_webview_container_bounds.width()) {
-    return BrowserView::DevToolsDockedPlacement::kBottom;
-  }
-
-  return BrowserView::DevToolsDockedPlacement::kUnknown;
 }
 
 bool BrowserView::IsLoadingAnimationRunning() const {
@@ -1864,7 +1830,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
     }
     active_contents_view->SetWebContents(nullptr);
-    devtools_web_view_->SetWebContents(nullptr);
   }
 
   // Do this before updating InfoBarContainer as the InfoBarContainer may
@@ -1886,10 +1851,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
 
   UpdateUIForContents(new_contents);
   RevealTabStripIfNeeded();
-
-  // Layout for DevTools _before_ setting the both main and devtools WebContents
-  // to avoid toggling the size of any of them.
-  UpdateDevToolsForContents(new_contents, !change_tab_contents);
 
   if (change_tab_contents) {
     // When the location bar or other UI focus will be restored, first focus the
@@ -1942,10 +1903,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (sad_tab_helper) {
       sad_tab_helper->ReinstallInWebView();
     }
-
-    // The second layout update should be no-op. It will just set the
-    // DevTools WebContents.
-    UpdateDevToolsForContents(new_contents, true);
+    contents_container_->DeprecatedLayoutImmediately();
   } else if (tab_change_in_split_view) {
     UpdateActiveTabInSplitView();
   }
@@ -2012,7 +1970,6 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   GetContentsWebView()->SetWebContents(nullptr);
   infobar_container_->ChangeInfoBarManager(nullptr);
   app_banner_manager_observation_.Reset();
-  UpdateDevToolsForContents(nullptr, true);
 }
 
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
@@ -2385,13 +2342,15 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 
 void BrowserView::SetContentScrimVisibility(bool visible) {
   if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
-    contents_scrim_view()->SetVisible(visible);
+    GetActiveContentsContainerView()->GetContentsScrimView()->SetVisible(
+        visible);
   }
 }
 
 void BrowserView::SetDevToolsScrimVisibility(bool visible) {
   if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
-    devtools_scrim_view()->SetVisible(visible);
+    GetActiveContentsContainerView()->GetDevtoolsScrimView()->SetVisible(
+        visible);
   }
 }
 
@@ -4818,14 +4777,14 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (unified_side_panel_) {
     panes->push_back(unified_side_panel_);
   }
-  for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
-    panes->push_back(contents_web_view);
-  }
-  if (devtools_web_view_->GetVisible()) {
-    panes->push_back(devtools_web_view_);
-  }
-  if (devtools_scrim_view_->GetVisible()) {
-    panes->push_back(devtools_scrim_view_);
+  if (multi_contents_view_) {
+    for (views::View* pane : multi_contents_view_->GetAccessiblePanes()) {
+      panes->push_back(pane);
+    }
+  } else {
+    for (views::View* pane : contents_container_view_->GetAccessiblePanes()) {
+      panes->push_back(pane);
+    }
   }
 }
 
@@ -5521,74 +5480,31 @@ bool BrowserView::MaybeUpdateSplitView(content::WebContents* contents) {
   return true;
 }
 
-void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
-                                            bool update_devtools_web_contents) {
-  DevToolsContentsResizingStrategy strategy;
-  WebContents* devtools =
-      DevToolsWindow::GetInTabWebContents(web_contents, &strategy);
+bool BrowserView::MaybeUpdateDevtools(content::WebContents* contents) {
+  const tabs::TabInterface* const new_tab =
+      contents ? tabs::TabInterface::GetFromContents(contents) : nullptr;
 
-  if (!devtools_web_view_->web_contents() && devtools &&
-      !devtools_focus_tracker_.get()) {
-    // Install devtools focus tracker when dev tools window is shown for the
-    // first time.
-    devtools_focus_tracker_ = std::make_unique<views::ExternalFocusTracker>(
-        devtools_web_view_, GetFocusManager());
-  }
-
-  // Restore focus to the last focused view when hiding devtools window.
-  if (devtools_web_view_->web_contents() && !devtools &&
-      devtools_focus_tracker_.get()) {
-    devtools_focus_tracker_->FocusLastFocusedExternalView();
-    devtools_focus_tracker_.reset();
-  }
-
-  // Replace devtools WebContents.
-  if (devtools_web_view_->web_contents() != devtools &&
-      update_devtools_web_contents) {
-    devtools_web_view_->SetWebContents(devtools);
-  }
-
-  if (devtools) {
-    devtools_web_view_->SetVisible(true);
-    GetContentsLayoutManager()->SetContentsResizingStrategy(strategy);
-  } else {
-    devtools_web_view_->SetVisible(false);
-    GetContentsLayoutManager()->SetContentsResizingStrategy(
-        DevToolsContentsResizingStrategy());
-  }
-  contents_container_->DeprecatedLayoutImmediately();
-
-  views::View* contents_view;
-  if (multi_contents_view_) {
-    contents_view = multi_contents_view_;
-  } else {
-    contents_view = contents_container_view_;
-  }
-  if (devtools) {
-    // When strategy.hide_inspected_contents() returns true, we are hiding the
-    // WebContents behind the devtools_web_view_. Otherwise, the WebContents
-    // should be right above the devtools_web_view_.
-    size_t devtools_index =
-        contents_container_->GetIndexOf(devtools_web_view_).value();
-    size_t contents_index =
-        contents_container_->GetIndexOf(contents_view).value();
-    bool devtools_is_on_top = devtools_index > contents_index;
-    if (strategy.hide_inspected_contents() != devtools_is_on_top) {
-      contents_container_->ReorderChildView(contents_view, devtools_index);
+  bool devtools_layout_updated = false;
+  if (IsInSplitView()) {
+    std::optional<split_tabs::SplitTabId> split_tab_id = new_tab->GetSplit();
+    CHECK(split_tab_id.has_value());
+    split_tabs::SplitTabData* split_data =
+        browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
+    std::vector<tabs::TabInterface*> split_tabs = split_data->ListTabs();
+    for (size_t i = 0; tabs::TabInterface* tab : split_tabs) {
+      ContentsContainerView* contents_container_view =
+          multi_contents_view_->contents_container_views()[i++];
+      bool updated =
+          browser_->GetFeatures().devtools_ui_controller()->UpdateDevtools(
+              contents_container_view, tab->GetContents(), false);
+      devtools_layout_updated |= updated;
     }
+  } else {
+    devtools_layout_updated =
+        browser_->GetFeatures().devtools_ui_controller()->UpdateDevtools(
+            GetActiveContentsContainerView(), contents, false);
   }
-
-  DevToolsDockedPlacement new_placement = GetDevToolsDockedPlacement(
-      contents_view->bounds(), contents_container_->GetLocalBounds());
-
-  // When browser window is resizing, the contents_container and web_contents
-  // bounds can be out of sync, resulting in a state, where it is impossible to
-  // infer docked placement based on contents webview bounds. In this case, use
-  // the last known docked placement, since resizing a window does not change
-  // the devtools dock placement.
-  if (new_placement != DevToolsDockedPlacement::kUnknown) {
-    current_devtools_docked_placement_ = new_placement;
-  }
+  return devtools_layout_updated;
 }
 
 void BrowserView::UpdateUIForContents(WebContents* contents) {
@@ -5600,6 +5516,8 @@ void BrowserView::UpdateUIForContents(WebContents* contents) {
   needs_layout |= MaybeShowInfoBar(contents);
 
   needs_layout |= MaybeUpdateSplitView(contents);
+
+  needs_layout |= MaybeUpdateDevtools(contents);
 
   if (needs_layout) {
     DeprecatedLayoutImmediately();

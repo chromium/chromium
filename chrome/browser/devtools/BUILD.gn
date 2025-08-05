@@ -302,6 +302,8 @@ static_library("devtools") {
       "devtools_infobar_delegate.h",
       "devtools_targets_ui.cc",
       "devtools_targets_ui.h",
+      "devtools_ui_controller.cc",
+      "devtools_ui_controller.h",
       "devtools_window_views.cc",
       "global_confirm_info_bar.cc",
       "global_confirm_info_bar.h",

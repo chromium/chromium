@@ -7,28 +7,14 @@
 #include "base/check.h"
 #include "ui/views/view.h"
 
-ContentsLayoutManager::ContentsLayoutManager(views::View* devtools_view,
-                                             views::View* devtools_scrim_view,
-                                             views::View* contents_view,
+ContentsLayoutManager::ContentsLayoutManager(views::View* contents_view,
                                              views::View* lens_overlay_view,
                                              views::View* watermark_view)
-    : devtools_view_(devtools_view),
-      devtools_scrim_view_(devtools_scrim_view),
-      contents_view_(contents_view),
+    : contents_view_(contents_view),
       lens_overlay_view_(lens_overlay_view),
       watermark_view_(watermark_view) {}
 
 ContentsLayoutManager::~ContentsLayoutManager() = default;
-
-void ContentsLayoutManager::SetContentsResizingStrategy(
-    const DevToolsContentsResizingStrategy& strategy) {
-  if (strategy_.Equals(strategy)) {
-    return;
-  }
-
-  strategy_.CopyFrom(strategy);
-  InvalidateHost(true);
-}
 
 views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
@@ -42,30 +28,14 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   int width = size_bounds.width().value();
 
   gfx::Size container_size(width, height);
-  gfx::Rect new_devtools_bounds;
-  gfx::Rect new_contents_bounds;
-  gfx::Size devtools_and_content_size = container_size;
+  gfx::Rect contents_bounds(0, 0, container_size.width(),
+                            container_size.height());
 
-  ApplyDevToolsContentsResizingStrategy(strategy_, devtools_and_content_size,
-                                        &new_devtools_bounds,
-                                        &new_contents_bounds);
-
-  // DevTools cares about the specific position, so we have to compensate RTL
-  // layout here.
-  layouts.child_layouts.emplace_back(
-      devtools_view_.get(), devtools_view_->GetVisible(),
-      host_view()->GetMirroredRect(new_devtools_bounds),
-      views::SizeBounds(container_size));
-  layouts.child_layouts.emplace_back(
-      devtools_scrim_view_.get(), devtools_scrim_view_->GetVisible(),
-      host_view()->GetMirroredRect(new_devtools_bounds),
-      views::SizeBounds(container_size));
-
-  const auto& contents_rect = host_view()->GetMirroredRect(new_contents_bounds);
+  const auto& contents_rect = host_view()->GetMirroredRect(contents_bounds);
   views::SizeBounds optional_size_bound = views::SizeBounds(container_size);
   layouts.child_layouts.emplace_back(contents_view_.get(),
                                      contents_view_->GetVisible(),
-                                     contents_rect, optional_size_bound);
+                                     contents_bounds, optional_size_bound);
 
   // The Lens overlay view bounds are the same as the contents view.
   CHECK(lens_overlay_view_);

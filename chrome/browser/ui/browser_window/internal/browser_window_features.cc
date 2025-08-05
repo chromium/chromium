@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -544,6 +545,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             browser_view->GetContentsContainerViews());
   }
 
+  devtools_ui_controller_ = std::make_unique<DevtoolsUIController>(
+      browser_view->GetContentsContainerViews());
+
 #if BUILDFLAG(IS_WIN)
   windows_taskbar_icon_updater_ =
       std::make_unique<WindowsTaskbarIconUpdater>(*browser_view);
@@ -600,6 +604,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   if (new_tab_footer_controller_) {
     new_tab_footer_controller_->TearDown();
+  }
+
+  if (devtools_ui_controller_) {
+    devtools_ui_controller_->TearDown();
   }
 
   desktop_browser_window_capabilities_.reset();

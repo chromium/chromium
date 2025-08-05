@@ -114,11 +114,25 @@ ContentsWebView* MultiContentsView::GetActiveContentsView() {
 }
 
 ContentsWebView* MultiContentsView::GetInactiveContentsView() {
-  return contents_container_views_[GetInactiveIndex()]->GetContentsView();
+  return GetInactiveContentsContainerView()->GetContentsView();
 }
 
 ContentsContainerView* MultiContentsView::GetActiveContentsContainerView() {
   return contents_container_views_[active_index_];
+}
+
+ContentsContainerView* MultiContentsView::GetInactiveContentsContainerView() {
+  return contents_container_views_[GetInactiveIndex()];
+}
+
+ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
+    content::WebContents* web_contents) {
+  for (auto* container_view : contents_container_views_) {
+    if (container_view->GetContentsView()->web_contents() == web_contents) {
+      return container_view;
+    }
+  }
+  return nullptr;
 }
 
 bool MultiContentsView::IsInSplitView() const {
@@ -225,6 +239,18 @@ int MultiContentsView::GetMinViewWidth() const {
                                   ? min_contents_width_for_testing_.value()
                                   : kMinWebContentsWidth;
   return std::min(min_fixed_value, min_percentage);
+}
+
+std::vector<views::View*> MultiContentsView::GetAccessiblePanes() {
+  std::vector<views::View*> accessible_panes;
+  for (auto* contents_container_view : contents_container_views_) {
+    auto contents_accessible_panes =
+        contents_container_view->GetAccessiblePanes();
+    accessible_panes.insert(accessible_panes.end(),
+                            contents_accessible_panes.begin(),
+                            contents_accessible_panes.end());
+  }
+  return accessible_panes;
 }
 
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {

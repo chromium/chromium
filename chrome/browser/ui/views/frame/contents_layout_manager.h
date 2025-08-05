@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_LAYOUT_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 
@@ -18,9 +17,7 @@
 // Please consult estalin@ and corising@ for any additional guidance.
 class ContentsLayoutManager : public views::LayoutManagerBase {
  public:
-  ContentsLayoutManager(views::View* devtools_view,
-                        views::View* devtools_scrim_view,
-                        views::View* contents_view,
+  ContentsLayoutManager(views::View* contents_view,
                         views::View* lens_overlay_view,
                         views::View* watermark_view = nullptr);
 
@@ -29,23 +26,15 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
 
   ~ContentsLayoutManager() override;
 
-  // Sets the contents resizing strategy.
-  void SetContentsResizingStrategy(
-      const DevToolsContentsResizingStrategy& strategy);
-
  protected:
   // views::LayoutManagerBase overrides:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
  private:
-  const raw_ptr<views::View> devtools_view_;
-  const raw_ptr<views::View> devtools_scrim_view_;
   const raw_ptr<views::View> contents_view_;
   const raw_ptr<views::View> lens_overlay_view_;
   const raw_ptr<views::View> watermark_view_;
-
-  DevToolsContentsResizingStrategy strategy_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_LAYOUT_MANAGER_H_

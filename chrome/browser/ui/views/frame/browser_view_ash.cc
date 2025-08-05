@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -51,7 +52,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
     side_panel->SetBackgroundRadii(side_panel_radii);
   }
 
-  views::WebView* devtools_webview = devtools_web_view();
+  views::WebView* devtools_webview =
+      GetActiveContentsContainerView()->GetDevtoolsWebView();
   CHECK(devtools_webview);
   CHECK(devtools_webview->holder());
 
@@ -64,14 +66,15 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       0, 0, right_aligned_side_panel_showing ? 0 : window_radii.lower_right(),
       left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
 
-  if (devtools_webview_radii_ != devtools_webview_radii) {
+  if (!IsInSplitView() && devtools_webview_radii_ != devtools_webview_radii) {
     devtools_webview_radii_ = devtools_webview_radii;
     devtools_webview->holder()->SetCornerRadii(devtools_webview_radii_);
   }
 
-  const DevToolsDockedPlacement devtools_placement =
-      devtools_docked_placement();
-  CHECK_NE(devtools_placement, DevToolsDockedPlacement::kUnknown);
+  const ContentsContainerView::DevToolsDockedPlacement devtools_placement =
+      GetActiveContentsContainerView()->GetDevtoolsDockedPlacement();
+  CHECK_NE(devtools_placement,
+           ContentsContainerView::DevToolsDockedPlacement::kUnknown);
 
   // Rounded the contents webview.
   std::vector<ContentsWebView*> contents_views =
@@ -98,12 +101,14 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       round_content_webview_top_corner ? window_radii.upper_right() : 0,
       right_aligned_side_panel_showing ||
               (devtools_showing &&
-               devtools_placement != DevToolsDockedPlacement::kLeft)
+               devtools_placement !=
+                   ContentsContainerView::DevToolsDockedPlacement::kLeft)
           ? 0
           : window_radii.lower_right(),
       left_aligned_side_panel_showing ||
               (devtools_showing &&
-               devtools_placement != DevToolsDockedPlacement::kRight)
+               devtools_placement !=
+                   ContentsContainerView::DevToolsDockedPlacement::kRight)
           ? 0
           : window_radii.lower_left());
 
@@ -138,6 +143,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
 
   // Ensure that browser scrims are rounded as well.
   window_scrim_view()->SetRoundedCorners(window_radii);
-  contents_scrim_view()->SetRoundedCorners(contents_webview_radii);
-  devtools_scrim_view()->SetRoundedCorners(devtools_webview_radii);
+  GetActiveContentsContainerView()->GetContentsScrimView()->SetRoundedCorners(
+      contents_webview_radii);
+  GetActiveContentsContainerView()->GetDevtoolsScrimView()->SetRoundedCorners(
+      devtools_webview_radii);
 }

@@ -102,7 +102,9 @@ class BrowserViewTest : public InProcessBrowserTest {
   }
 
   views::WebView* devtools_web_view() {
-    return browser_view()->GetDevToolsWebViewForTest();
+    return browser_view()
+        ->GetActiveContentsContainerView()
+        ->GetDevtoolsWebView();
   }
 
   ContentsContainerView* contents_container_view() {
@@ -111,6 +113,16 @@ class BrowserViewTest : public InProcessBrowserTest {
 
   views::WebView* contents_web_view() {
     return browser_view()->contents_web_view();
+  }
+
+  content::WebContents* active_web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  ScrimView* active_contents_scrim_view() {
+    return browser_view()
+        ->GetActiveContentsContainerView()
+        ->GetContentsScrimView();
   }
 
   SidePanel* side_panel() { return browser_view()->unified_side_panel(); }
@@ -278,10 +290,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsDockedUpdatesBrowserWindow) {
       browser_view()->GetContentsContainerForTest()->GetLocalBounds();
   gfx::Rect small_bounds(10, 20, 30, 40);
 
-  browser_view()->UpdateDevTools();
+  browser_view()->UpdateDevTools(active_web_contents());
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 
   // Docked.
   OpenDevToolsWindow(true);
@@ -291,22 +303,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsDockedUpdatesBrowserWindow) {
   SetDevToolsBounds(small_bounds);
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
 
-  browser_view()->UpdateDevTools();
+  browser_view()->UpdateDevTools(active_web_contents());
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
 
   CloseDevToolsWindow();
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 
-  browser_view()->UpdateDevTools();
+  browser_view()->UpdateDevTools(active_web_contents());
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 }
 
 // Verifies that page and devtools WebViews are being correctly laid out
@@ -330,22 +342,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsUndockedUpdatesBrowserWindow) {
   SetDevToolsBounds(small_bounds);
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
 
-  browser_view()->UpdateDevTools();
+  browser_view()->UpdateDevTools(active_web_contents());
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
 
   CloseDevToolsWindow();
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 
-  browser_view()->UpdateDevTools();
+  browser_view()->UpdateDevTools(active_web_contents());
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 }
 
 void SetDevToolsWindowSizePrefs(Browser* browser,
@@ -623,18 +635,18 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
 
   // Showing a tab modal dialog will enable the content scrim.
   TabModalConfirmDialog::Create(std::move(delegate), contents);
-  EXPECT_TRUE(browser_view()->contents_scrim_view()->GetVisible());
+  EXPECT_TRUE(active_contents_scrim_view()->GetVisible());
 
   // Goes to a second tab will disable the content scrim.
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
-  EXPECT_FALSE(browser_view()->contents_scrim_view()->GetVisible());
+  EXPECT_FALSE(active_contents_scrim_view()->GetVisible());
 
   // Switch back to the page that has a modal dialog.
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kMouse));
-  EXPECT_TRUE(browser_view()->contents_scrim_view()->GetVisible());
+  EXPECT_TRUE(active_contents_scrim_view()->GetVisible());
 
   // Closing the tab disables the content scrim.
   chrome::CloseWebContents(browser(),
@@ -688,6 +700,18 @@ class SideBySideBrowserViewTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
+  ContentsContainerView* active_contents_container_view() {
+    return browser_view()
+        ->multi_contents_view()
+        ->GetActiveContentsContainerView();
+  }
+
+  ContentsContainerView* inactive_contents_container_view() {
+    return browser_view()
+        ->multi_contents_view()
+        ->GetInactiveContentsContainerView();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -724,6 +748,101 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
   EXPECT_EQ(
       browser_view()->multi_contents_view()->GetActiveContentsView(),
       browser_view()->multi_contents_view()->end_contents_view_for_testing());
+}
+
+// Verifies that page and devtools WebViews are being correctly laid out
+// when DevTools is opened/closed/updated while docked.
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
+                       DevToolsDockedRemainsOpenInWithFocusInSplit) {
+  // Add enough tabs to create two split views.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  // Add tabs to splits.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Verify neither devtools is visible.
+  EXPECT_FALSE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_FALSE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+
+  // Open devtools for the active side of the split and verify it exists only
+  // for the active side.
+  DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
+  EXPECT_TRUE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_FALSE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+
+  // Activate to the inactive side and verify it stayed open on the appropriate
+  // side of the split.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_FALSE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_TRUE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+
+  // Activate to the other split and verify no devtools are seen.
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  EXPECT_FALSE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_FALSE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+
+  // Switch back to the split where devtools is open and verify is is still
+  // visible.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_FALSE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_TRUE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+
+  // Verify two devtools can be seen at once (one for each side of a split).
+  DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
+  EXPECT_TRUE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_TRUE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+}
+
+// Verifies that page and devtools WebViews are being correctly laid out
+// when DevTools is opened/closed/updated while docked.
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
+                       DevToolsRemainsCorrectlyDockedAfterSwappingSplit) {
+  // Add enough tabs to create two split views.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  // Add tabs to splits.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Open devtools for the active side of the split and verify it exists only
+  // for the active side.
+  DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
+  EXPECT_TRUE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_FALSE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+
+  // Reverse the split and verify the correct side has devtools.
+  browser_view()->multi_contents_view()->OnSwap();
+  EXPECT_TRUE(
+      active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+  EXPECT_FALSE(
+      inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1076,7 +1195,8 @@ class BrowserViewScrimPixelTest : public UiBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     browser()->window()->Show();
     BrowserView::GetBrowserViewForBrowser(browser())
-        ->contents_scrim_view()
+        ->GetActiveContentsContainerView()
+        ->GetContentsScrimView()
         ->SetVisible(true);
   }
 

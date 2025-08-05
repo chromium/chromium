@@ -67,6 +67,9 @@ class MultiContentsView : public views::View,
   ~MultiContentsView() override;
 
   ContentsContainerView* GetActiveContentsContainerView();
+  ContentsContainerView* GetInactiveContentsContainerView();
+  ContentsContainerView* GetContentsContainerViewFor(
+      content::WebContents* web_contents);
 
   // Returns the currently active ContentsWebView.
   ContentsWebView* GetActiveContentsView();
@@ -117,6 +120,10 @@ class MultiContentsView : public views::View,
   // Returns the minimum width for a single view within the `MultiContentsView`.
   // Returns 0 if not in a split view.
   int GetMinViewWidth() const;
+
+  // Returns accessible panes to be used in BrowserView to create the order of
+  // pane traversal.
+  std::vector<views::View*> GetAccessiblePanes();
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;

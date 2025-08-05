@@ -33,6 +33,7 @@ source_set("internal") {
 
     deps += [
       "//chrome/browser/actor/ui",
+      "//chrome/browser/devtools",
       "//chrome/browser/extensions",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",

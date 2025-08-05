@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -51,8 +53,18 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
   // The default z-order is the order in which children were added to the
-  // parent view. So first added the content view and new tab page footer.
-  // This should be followed by scrims, borders and lastly mini-toolbar.
+  // parent view. So first added devtools and the devtools scrim view (as it
+  // exists behind the content view), then the content view and new tab page
+  // footer. This should be followed by scrims, borders and lastly mini-toolbar.
+
+  auto devtools_web_view =
+      std::make_unique<views::WebView>(browser_view->GetProfile());
+  devtools_web_view->SetID(VIEW_ID_DEV_TOOLS_DOCKED);
+  devtools_web_view->SetVisible(false);
+  devtools_web_view_ = AddChildView(std::move(devtools_web_view));
+
+  devtools_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
+  devtools_scrim_view_->layer()->SetName("DevtoolsScrimView");
 
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
@@ -105,6 +117,22 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   }
 }
 
+ContentsContainerView::~ContentsContainerView() = default;
+
+std::vector<views::View*> ContentsContainerView::GetAccessiblePanes() {
+  std::vector<views::View*> accessible_panes;
+  if (contents_view_->GetVisible()) {
+    accessible_panes.push_back(contents_view_);
+  }
+  if (devtools_web_view_->GetVisible()) {
+    accessible_panes.push_back(devtools_web_view_);
+  }
+  if (devtools_scrim_view_->GetVisible()) {
+    accessible_panes.push_back(devtools_scrim_view_);
+  }
+  return accessible_panes;
+}
+
 void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
                                                    bool is_active,
                                                    bool show_scrim) {
@@ -142,19 +170,49 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
 }
 
 void ContentsContainerView::UpdateBorderRoundedCorners() {
-  constexpr gfx::RoundedCornersF kContentUpperRoundedCorners =
-      gfx::RoundedCornersF{kContentCornerRadius, kContentCornerRadius, 0, 0};
-  constexpr gfx::RoundedCornersF kContentLowerRoundedCorners =
-      gfx::RoundedCornersF{0, 0, kContentCornerRadius, kContentCornerRadius};
+  // Update devtools rounded corners. Note, devtools exists behind the contents
+  // view so all devtools corners are rounded.
+  devtools_web_view_->holder()->SetCornerRadii(kContentRoundedCorners);
+  devtools_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
+
+  const bool devtools_in_upper_left =
+      devtools_web_view_->GetVisible() &&
+      current_devtools_docked_placement_ == DevToolsDockedPlacement::kLeft;
+  const bool devtools_in_upper_right =
+      devtools_web_view_->GetVisible() &&
+      current_devtools_docked_placement_ == DevToolsDockedPlacement::kRight;
+  const bool devtools_in_lower_left =
+      devtools_web_view_->GetVisible() &&
+      (current_devtools_docked_placement_ == DevToolsDockedPlacement::kBottom ||
+       current_devtools_docked_placement_ == DevToolsDockedPlacement::kLeft);
+  const bool devtools_in_lower_right =
+      devtools_web_view_->GetVisible() &&
+      (current_devtools_docked_placement_ == DevToolsDockedPlacement::kBottom ||
+       current_devtools_docked_placement_ == DevToolsDockedPlacement::kRight);
+
+  const gfx::RoundedCornersF content_upper_rounded_corners =
+      gfx::RoundedCornersF{devtools_in_upper_left ? 0 : kContentCornerRadius,
+                           devtools_in_upper_right ? 0 : kContentCornerRadius,
+                           0, 0};
+  const gfx::RoundedCornersF content_lower_rounded_corners =
+      gfx::RoundedCornersF{0, 0,
+                           devtools_in_lower_left ? 0 : kContentCornerRadius,
+                           devtools_in_lower_right ? 0 : kContentCornerRadius};
+  const gfx::RoundedCornersF content_rounded_corners =
+      gfx::RoundedCornersF{devtools_in_upper_left ? 0 : kContentCornerRadius,
+                           devtools_in_upper_right ? 0 : kContentCornerRadius,
+                           devtools_in_lower_left ? 0 : kContentCornerRadius,
+                           devtools_in_lower_right ? 0 : kContentCornerRadius};
 
   auto radii = new_tab_footer_view_ && new_tab_footer_view_->GetVisible()
-                   ? kContentUpperRoundedCorners
-                   : kContentRoundedCorners;
+                   ? content_upper_rounded_corners
+                   : content_rounded_corners;
 
   contents_view_->holder()->SetCornerRadii(radii);
 
   if (new_tab_footer_view_) {
-    new_tab_footer_view_->holder()->SetCornerRadii(kContentLowerRoundedCorners);
+    new_tab_footer_view_->holder()->SetCornerRadii(
+        content_lower_rounded_corners);
   }
 
   if (contents_scrim_view_->layer()->rounded_corner_radii() !=
@@ -166,6 +224,9 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
 void ContentsContainerView::ClearBorderRoundedCorners() {
   constexpr gfx::RoundedCornersF kNoRoundedCorners = gfx::RoundedCornersF{0};
 
+  devtools_web_view_->holder()->SetCornerRadii(kNoRoundedCorners);
+  devtools_scrim_view_->SetRoundedCorners(kNoRoundedCorners);
+
   contents_view_->holder()->SetCornerRadii(kNoRoundedCorners);
 
   if (new_tab_footer_view_) {
@@ -176,8 +237,59 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
 }
 
 void ContentsContainerView::ChildVisibilityChanged(View* child) {
-  if (child == new_tab_footer_view_ && is_in_split_) {
+  if ((child == new_tab_footer_view_ || child == devtools_web_view_) &&
+      is_in_split_) {
     UpdateBorderRoundedCorners();
+  }
+}
+
+void ContentsContainerView::SetContentsResizingStrategy(
+    const DevToolsContentsResizingStrategy& strategy) {
+  if (strategy_.Equals(strategy)) {
+    return;
+  }
+
+  strategy_.CopyFrom(strategy);
+  InvalidateLayout();
+}
+
+void ContentsContainerView::UpdateDevToolsDockedPlacement() {
+  DevToolsDockedPlacement placement = DevToolsDockedPlacement::kUnknown;
+  gfx::Rect contents_view_bounds = contents_view_->bounds();
+  // Include ntp footer bounds so that we don't mistakenly believe devtools is
+  // bottom docked when the footer is showing.
+  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
+    CHECK(new_tab_footer_view_separator_);
+    contents_view_bounds.set_height(contents_view_bounds.height() +
+                                    new_tab_footer_view_->height() +
+                                    new_tab_footer_view_separator_->height());
+  }
+  const gfx::Rect& container_bounds = GetLocalBounds();
+  // If contents_webview has the same bounds as webview_container, it either
+  // means that devtools are not open or devtools are open in a separate
+  // window (not docked).
+  if (contents_view_bounds == container_bounds) {
+    placement = DevToolsDockedPlacement::kNone;
+  }
+
+  if (contents_view_bounds.x() > 0 && contents_view_bounds.y() == 0 &&
+      contents_view_bounds.x() + contents_view_bounds.width() ==
+          container_bounds.width()) {
+    placement = DevToolsDockedPlacement::kLeft;
+  } else if (contents_view_bounds.origin().IsOrigin() &&
+             contents_view_bounds.height() == container_bounds.height()) {
+    placement = DevToolsDockedPlacement::kRight;
+  } else if (contents_view_bounds.width() == container_bounds.width()) {
+    placement = DevToolsDockedPlacement::kBottom;
+  }
+
+  // When browser window is resizing, the contents_container and web_contents
+  // bounds can be out of sync, resulting in a state, where it is impossible to
+  // infer docked placement based on contents webview bounds. In this case, use
+  // the last known docked placement, since resizing a window does not change
+  // the devtools dock placement.
+  if (placement != DevToolsDockedPlacement::kUnknown) {
+    current_devtools_docked_placement_ = placement;
   }
 }
 
@@ -191,22 +303,40 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   int height = size_bounds.height().value();
   int width = size_bounds.width().value();
 
-  // |contents_view_| and |new_tab_footer_view_| (if it exists) should fill the
-  // contents bounds.
-  gfx::Rect contents_bounds = GetContentsBounds();
-  gfx::Rect contents_rect = contents_bounds;
+  gfx::Rect full_contents_bounds = GetContentsBounds();
+  gfx::Rect devtools_bounds;
+  // The area contents excluding devtools is drawn (ie |contents_view_|,
+  // |new_tab_footer_view_|, etc).
+  gfx::Rect non_devtools_contents_bounds;
+
+  ApplyDevToolsContentsResizingStrategy(strategy_, full_contents_bounds,
+                                        &devtools_bounds,
+                                        &non_devtools_contents_bounds);
+  gfx::Rect contents_view_bounds = non_devtools_contents_bounds;
+
+  // DevTools cares about the specific position, so we have to compensate RTL
+  // layout here.
+  layouts.child_layouts.emplace_back(
+      devtools_web_view_.get(), devtools_web_view_->GetVisible(),
+      GetMirroredRect(devtools_bounds),
+      views::SizeBounds(full_contents_bounds.size()));
+  layouts.child_layouts.emplace_back(
+      devtools_scrim_view_.get(), devtools_scrim_view_->GetVisible(),
+      GetMirroredRect(devtools_bounds),
+      views::SizeBounds(full_contents_bounds.size()));
 
   if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
-    // Shrink contents rect if the ntp footer is visible.
-    contents_rect.set_height(contents_rect.height() - kNewTabFooterHeight -
-                             kNewTabFooterSeparatorHeight);
+    // Shrink the rect for the contents view if the ntp footer is visible.
+    contents_view_bounds.set_height(non_devtools_contents_bounds.height() -
+                                    kNewTabFooterHeight -
+                                    kNewTabFooterSeparatorHeight);
 
     gfx::Rect footer_separator_rect =
-        gfx::Rect(contents_bounds.x(), contents_rect.bottom(),
-                  contents_bounds.width(), kNewTabFooterSeparatorHeight);
+        gfx::Rect(contents_view_bounds.x(), contents_view_bounds.bottom(),
+                  contents_view_bounds.width(), kNewTabFooterSeparatorHeight);
     gfx::Rect footer_rect =
-        gfx::Rect(contents_bounds.x(), footer_separator_rect.bottom(),
-                  contents_bounds.width(), kNewTabFooterHeight);
+        gfx::Rect(contents_view_bounds.x(), contents_view_bounds.bottom(),
+                  contents_view_bounds.width(), kNewTabFooterHeight);
 
     layouts.child_layouts.emplace_back(
         new_tab_footer_view_separator_.get(),
@@ -217,27 +347,31 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
                                        footer_rect);
   }
 
+  const auto& contents_rect = GetMirroredRect(contents_view_bounds);
   layouts.child_layouts.emplace_back(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_border_) {
-    layouts.child_layouts.emplace_back(
-        glic_border_.get(), glic_border_->GetVisible(), contents_bounds);
+    // |glic_border_| should not be seen over devtools.
+    layouts.child_layouts.emplace_back(glic_border_.get(),
+                                       glic_border_->GetVisible(),
+                                       non_devtools_contents_bounds);
   }
 #endif
 
-  // The scrim view should cover the entire contents bounds.
+  // The content scrim view should cover the entire contents bounds.
   CHECK(contents_scrim_view_);
   layouts.child_layouts.emplace_back(contents_scrim_view_.get(),
                                      contents_scrim_view_->GetVisible(),
-                                     contents_bounds);
+                                     full_contents_bounds);
 
-  // The scrim view should cover the entire contents bounds.
+  // The inactive split scrim view should cover the entire contents bounds
+  // including over devtools and other views.
   if (inactive_split_scrim_view_) {
     layouts.child_layouts.emplace_back(inactive_split_scrim_view_.get(),
                                        inactive_split_scrim_view_->GetVisible(),
-                                       contents_bounds);
+                                       full_contents_bounds);
   }
 
   // Actor Overlay view bounds are the same as the contents view.

@@ -92,7 +92,7 @@ class TestBrowserWindow : public BrowserWindow {
   void BookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override {}
   void TemporarilyShowBookmarkBar(base::TimeDelta duration) override {}
-  void UpdateDevTools() override {}
+  void UpdateDevTools(content::WebContents* inspected_web_contents) override {}
   void UpdateLoadingAnimations(bool is_visible) override {}
   void SetStarredState(bool is_starred) override {}
   void OnActiveTabChanged(content::WebContents* old_contents,

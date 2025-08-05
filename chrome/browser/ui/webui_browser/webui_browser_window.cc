@@ -228,7 +228,8 @@ void WebUIBrowserWindow::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
   NOTIMPLEMENTED();
 }
 
-void WebUIBrowserWindow::UpdateDevTools() {
+void WebUIBrowserWindow::UpdateDevTools(
+    content::WebContents* inspected_web_contents) {
   NOTIMPLEMENTED();
 }
 

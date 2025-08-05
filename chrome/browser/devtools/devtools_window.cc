@@ -1028,7 +1028,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
         TabStripUserGestureDetails(
             TabStripUserGestureDetails::GestureType::kOther));
 
-    inspected_window->UpdateDevTools();
+    inspected_window->UpdateDevTools(inspected_web_contents);
     main_web_contents_->SetInitialFocus();
     inspected_window->Show();
     // On Aura, focusing once is not enough. Do it again.

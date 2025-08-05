@@ -108,7 +108,6 @@ enum class Channel;
 }
 
 namespace views {
-class ExternalFocusTracker;
 class WebView;
 }  // namespace views
 
@@ -291,20 +290,13 @@ class BrowserView : public BrowserWindow,
     return exclusive_access_bubble_.get();
   }
 
-  // Accessors for the contents and devtools WebViews.
+  // Accessors for the contents WebView.
   // Will return the single active contents view. If side by side is enabled,
   // it may make more sense to use GetAllVisibleContentsWebViews() depending on
   // the use case.
   ContentsWebView* contents_web_view() {
     return static_cast<ContentsWebView*>(GetContentsView());
   }
-  views::WebView* devtools_web_view() { return devtools_web_view_; }
-
-  ScrimView* contents_scrim_view() {
-    return GetActiveContentsContainerView()->GetContentsScrimView();
-  }
-
-  ScrimView* devtools_scrim_view() { return devtools_scrim_view_; }
 
   ScrimView* window_scrim_view() { return window_scrim_view_; }
 
@@ -503,7 +495,7 @@ class BrowserView : public BrowserWindow,
   void BookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override;
   void TemporarilyShowBookmarkBar(base::TimeDelta duration) override;
-  void UpdateDevTools() override;
+  void UpdateDevTools(content::WebContents* inspected_web_contents) override;
   void UpdateLoadingAnimations(bool is_visible) override;
   void SetStarredState(bool is_starred) override;
   void OnActiveTabChanged(content::WebContents* old_contents,
@@ -810,7 +802,6 @@ class BrowserView : public BrowserWindow,
 
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }
-  views::WebView* GetDevToolsWebViewForTest() { return devtools_web_view_; }
   FullscreenControlHost* fullscreen_control_host_for_test() {
     return fullscreen_control_host_.get();
   }
@@ -881,29 +872,6 @@ class BrowserView : public BrowserWindow,
   // This is used only for SWA/PWA scenario.
   void OnLockedForOnTaskUpdated();
 #endif
-
- protected:
-  // Enumerates where the devtools are docked relative to the browser's main
-  // web contents.
-  enum class DevToolsDockedPlacement {
-    kLeft,
-    kRight,
-    kBottom,
-    // Devtools are not docked.
-    kNone,
-    kUnknown
-  };
-
-  DevToolsDockedPlacement devtools_docked_placement() const {
-    return current_devtools_docked_placement_;
-  }
-
-  // Return the DevTools docked placement. It infers the docked placement from
-  // the bounds of contents_webview relative to the local bounds of the
-  // container that holds both contents_webview and devtools_webview.
-  static DevToolsDockedPlacement GetDevToolsDockedPlacement(
-      const gfx::Rect& contents_webview_bounds,
-      const gfx::Rect& local_webview_container_bounds);
 
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
@@ -995,14 +963,10 @@ class BrowserView : public BrowserWindow,
   // true if split view is updated and needs a layout.
   bool MaybeUpdateSplitView(content::WebContents* contents);
 
-  // Updates devtools window for given contents. This method will show docked
-  // devtools window for inspected |web_contents| that has docked devtools
-  // and hide it for null or not inspected |web_contents|. It will also make
-  // sure devtools window size and position are restored for given tab.
-  // This method will not update actual DevTools WebContents, if not
-  // |update_devtools_web_contents|. In this case, manual update is required.
-  void UpdateDevToolsForContents(content::WebContents* web_contents,
-                                 bool update_devtools_web_contents);
+  // Prepare and update devtools for the specified WebContents or any devtools
+  // in a split with the specified WebContents. Returns true if devtools is
+  // updated and needs a layout.
+  bool MaybeUpdateDevtools(content::WebContents* contents);
 
   // Updates various optional child Views, e.g. Bookmarks Bar, Info Bar
   // in response to a change notification from the specified
@@ -1160,8 +1124,6 @@ class BrowserView : public BrowserWindow,
   // |------------------------------------------------------------------|
   // | Contents container (contents_container_)                         |
   // |  --------------------------------------------------------------  |
-  // |  |  devtools_web_view_                                        |  |
-  // |  |------------------------------------------------------------|  |
   // |  |  contents_web_view_ (or multi_contents_view_ if defined)   |  |
   // |  --------------------------------------------------------------  |
   // --------------------------------------------------------------------
@@ -1243,13 +1205,6 @@ class BrowserView : public BrowserWindow,
   // The view that contains all visible WebContents.
   raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
 
-  // The view that contains devtools window for the selected WebContents.
-  raw_ptr<views::WebView> devtools_web_view_ = nullptr;
-
-  // The scrim view that covers the devtools area when a tab-modal dialog is
-  // open.
-  raw_ptr<ScrimView> devtools_scrim_view_ = nullptr;
-
   // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
   // that is shown on top of the web contents. It therefore must always have the
   // same bounds as the contents_web_view_, but also be above the
@@ -1259,7 +1214,7 @@ class BrowserView : public BrowserWindow,
   // The view that overlays a watermark on the contents container.
   raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;
 
-  // The view managing the devtools and contents positions.
+  // The view managing the content position.
   // Handled by ContentsLayoutManager.
   raw_ptr<views::View> contents_container_ = nullptr;
 
@@ -1287,11 +1242,6 @@ class BrowserView : public BrowserWindow,
 
   // The handler responsible for showing autofill bubbles.
   std::unique_ptr<autofill::AutofillBubbleHandler> autofill_bubble_handler_;
-
-  // Tracks and stores the last focused view which is not the
-  // devtools_web_view_ or any of its children. Used to restore focus once
-  // the devtools_web_view_ is hidden.
-  std::unique_ptr<views::ExternalFocusTracker> devtools_focus_tracker_;
 
   // The scrim view that covers the browser window when a window-modal dialog is
   // showing.
@@ -1413,9 +1363,6 @@ class BrowserView : public BrowserWindow,
   std::optional<bool> cached_can_resize_from_web_api_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
-
-  DevToolsDockedPlacement current_devtools_docked_placement_ =
-      DevToolsDockedPlacement::kNone;
 
   PrefChangeRegistrar registrar_;
 

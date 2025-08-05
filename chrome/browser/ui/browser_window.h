@@ -247,7 +247,7 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Inform the frame that the dev tools window for the selected tab has
   // changed.
-  virtual void UpdateDevTools() = 0;
+  virtual void UpdateDevTools(content::WebContents* inspected_web_contents) = 0;
 
   // Update any loading animations running in the window. |is_visible| is true
   // if the window is visible.

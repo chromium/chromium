@@ -42,6 +42,7 @@ class CommentsSidePanelCoordinator;
 class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
+class DevtoolsUIController;
 class ExclusiveAccessManager;
 class FindBarController;
 class HistoryClustersSidePanelCoordinator;
@@ -362,6 +363,10 @@ class BrowserWindowFeatures {
     return new_tab_footer_controller_.get();
   }
 
+  DevtoolsUIController* devtools_ui_controller() {
+    return devtools_ui_controller_.get();
+  }
+
   split_tabs::SplitTabScrimController* split_tab_scrim_controller() {
     return split_tab_scrim_controller_.get();
   }
@@ -556,6 +561,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<new_tab_footer::NewTabFooterController>
       new_tab_footer_controller_;
+
+  std::unique_ptr<DevtoolsUIController> devtools_ui_controller_;
 
   std::unique_ptr<ReadingListSidePanelCoordinator>
       reading_list_side_panel_coordinator_;
