@@ -701,7 +701,7 @@ public class ChromeTabUtils {
         final TabModelObserver observer =
                 new TabModelObserver() {
                     @Override
-                    public void multipleTabsPendingClosure(
+                    public void onTabClosePending(
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {

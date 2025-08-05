@@ -36,8 +36,8 @@ import java.util.Set;
 /**
  * A controller that listens to and visually represents cancelable tab closures.
  *
- * <p>Each time a tab is undoably closed via {@link TabModelObserver#tabPendingClosure(Tab)}, this
- * controller saves that tab id and title to the stack of SnackbarManager. It will then let
+ * <p>Each time a tab is undoably closed via {@link TabModelObserver#onTabClosurePending()},' this
+ * controller saves the tab ids and title to the stack of SnackbarManager. It will then let
  * SnackbarManager to show a snackbar representing the top entry in of stack. Each added entry
  * resets the timeout that tracks when to commit the undoable actions.
  *
@@ -88,12 +88,6 @@ public class TabUndoBarController extends UndoBarController {
                     }
 
                     @Override
-                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-                        if (disableUndo(true)) return;
-                        queueUndoBar(new TabClosureEvent(List.of(tab), /* isAllTabs= */ false));
-                    }
-
-                    @Override
                     public void tabClosureUndone(Tab tab) {
                         if (disableUndo(false)) return;
                         dropFromQueue(List.of(tab));
@@ -121,7 +115,7 @@ public class TabUndoBarController extends UndoBarController {
                     }
 
                     @Override
-                    public void multipleTabsPendingClosure(
+                    public void onTabClosePending(
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {

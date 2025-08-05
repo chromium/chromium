@@ -273,7 +273,8 @@ public class UndoTabModelUnitTest {
         model.addObserver(
                 new TabModelObserver() {
                     @Override
-                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
+                    public void onTabClosePending(
+                            List<Tab> tab, boolean isAllTabs, @TabClosingSource int closingSource) {
                         didReceivePendingClosureHelper.notifyCalled();
                     }
                 });
@@ -286,7 +287,7 @@ public class UndoTabModelUnitTest {
 
         boolean didMakePending = undoable && model.supportsPendingClosures();
 
-        // Make sure the TabModel throws a tabPendingClosure callback if necessary.
+        // Make sure the TabModel throws a onTabClosePending callback if necessary.
         if (didMakePending) didReceivePendingClosureHelper.waitForCallback(0);
 
         // Check post conditions
@@ -303,7 +304,7 @@ public class UndoTabModelUnitTest {
         model.addObserver(
                 new TabModelObserver() {
                     @Override
-                    public void multipleTabsPendingClosure(
+                    public void onTabClosePending(
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {
@@ -314,7 +315,7 @@ public class UndoTabModelUnitTest {
 
         boolean didMakePending = undoable && model.supportsPendingClosures();
 
-        // Make sure the TabModel throws a tabPendingClosure callback if necessary.
+        // Make sure the TabModel throws a onTabClosePending callback if necessary.
         if (didMakePending) didReceivePendingClosureHelper.waitForCallback(0);
     }
 

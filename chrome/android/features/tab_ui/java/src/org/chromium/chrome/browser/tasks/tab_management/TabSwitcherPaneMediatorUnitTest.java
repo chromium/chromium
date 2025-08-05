@@ -230,20 +230,16 @@ public class TabSwitcherPaneMediatorUnitTest {
         assertTrue(dialogVisibilitySupplier.get());
 
         when(mTabListEditorController.isVisible()).thenReturn(false);
-        observer.tabPendingClosure(null, TabClosingSource.UNKNOWN);
+        observer.onFinishingTabClosure(null, TabClosingSource.UNKNOWN);
         assertFalse(dialogVisibilitySupplier.get());
 
         when(mTabListEditorController.isVisible()).thenReturn(true);
-        observer.onFinishingTabClosure(null, TabClosingSource.UNKNOWN);
+        observer.tabRemoved(null);
         assertTrue(dialogVisibilitySupplier.get());
 
         when(mTabListEditorController.isVisible()).thenReturn(false);
-        observer.tabRemoved(null);
+        observer.onTabClosePending(null, false, TabClosingSource.UNKNOWN);
         assertFalse(dialogVisibilitySupplier.get());
-
-        when(mTabListEditorController.isVisible()).thenReturn(true);
-        observer.multipleTabsPendingClosure(null, false, TabClosingSource.UNKNOWN);
-        assertTrue(dialogVisibilitySupplier.get());
     }
 
     @Test

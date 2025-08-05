@@ -1576,7 +1576,7 @@ public class TabPersistentStoreTest {
         TabModelObserver closeObserver =
                 new TabModelObserver() {
                     @Override
-                    public void multipleTabsPendingClosure(
+                    public void onTabClosePending(
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {

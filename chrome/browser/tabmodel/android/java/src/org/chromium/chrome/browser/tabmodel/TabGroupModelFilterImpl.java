@@ -1985,17 +1985,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     // class.
 
     @Override
-    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-        for (TabModelObserver observer : mFilteredObservers) {
-            observer.tabPendingClosure(tab, closingSource);
-        }
-    }
-
-    @Override
-    public void multipleTabsPendingClosure(
+    public void onTabClosePending(
             List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.multipleTabsPendingClosure(tabs, isAllTabs, closingSource);
+            observer.onTabClosePending(tabs, isAllTabs, closingSource);
         }
     }
 

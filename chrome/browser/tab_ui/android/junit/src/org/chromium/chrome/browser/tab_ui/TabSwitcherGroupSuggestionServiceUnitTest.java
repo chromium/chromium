@@ -237,7 +237,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
-        observer.tabPendingClosure(mockTab, 0);
+        observer.onTabClosePending(Collections.singletonList(mockTab), /* isAllTabs= */ false, 0);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
     }
 

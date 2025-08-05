@@ -81,14 +81,9 @@ public class TabSwitcherPaneMediator
                 }
 
                 @Override
-                public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-                    notifyBackPressStateChangedInternal();
-                }
-
-                @Override
                 public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
                     // If tab is closed by the site itself rather than user's input,
-                    // tabPendingClosure & tabClosureCommitted won't be called.
+                    // onTabClosePending & tabClosureCommitted won't be called.
                     notifyBackPressStateChangedInternal();
                 }
 
@@ -98,7 +93,7 @@ public class TabSwitcherPaneMediator
                 }
 
                 @Override
-                public void multipleTabsPendingClosure(
+                public void onTabClosePending(
                         List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
                     notifyBackPressStateChangedInternal();
                 }

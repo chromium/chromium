@@ -518,18 +518,18 @@ public class TabModelImpl extends TabModelJniBridge {
         allowUndo &= supportsPendingClosures();
 
         startTabClosure(tabToClose, recommendedNextTab, uponExit, allowUndo, tabCloseType);
+        List<Tab> tabsToClose = Collections.singletonList(tabToClose);
         if (notifyPending && allowUndo) {
             assumeNonNull(mPendingTabClosureManager);
-            mPendingTabClosureManager.addTabClosureEvent(
-                    Collections.singletonList(tabToClose), undoRunnable);
+            mPendingTabClosureManager.addTabClosureEvent(tabsToClose, undoRunnable);
             for (TabModelObserver obs : mObservers) {
-                obs.tabPendingClosure(tabToClose, tabClosingSource);
+                obs.onTabClosePending(tabsToClose, /* isAllTabs= */ false, tabClosingSource);
             }
         }
         if (!allowUndo) {
             if (tabCloseType == TabCloseType.SINGLE) {
                 notifyOnFinishingMultipleTabClosure(
-                        Collections.singletonList(tabToClose), /* saveToTabRestoreService= */ true);
+                        tabsToClose, /* saveToTabRestoreService= */ true);
             }
             finalizeTabClosure(
                     tabToClose, /* notifyTabClosureCommitted= */ false, tabClosingSource);
@@ -575,7 +575,7 @@ public class TabModelImpl extends TabModelJniBridge {
             assumeNonNull(mPendingTabClosureManager);
             mPendingTabClosureManager.addTabClosureEvent(tabs, undoRunnable);
             for (TabModelObserver obs : mObservers) {
-                obs.multipleTabsPendingClosure(tabs, false, tabClosingSource);
+                obs.onTabClosePending(tabs, false, tabClosingSource);
             }
         }
     }
@@ -641,7 +641,7 @@ public class TabModelImpl extends TabModelJniBridge {
         if (supportsPendingClosures()) {
             mPendingTabClosureManager.addTabClosureEvent(closedTabs, undoRunnable);
             for (TabModelObserver obs : mObservers) {
-                obs.multipleTabsPendingClosure(closedTabs, true, tabClosingSource);
+                obs.onTabClosePending(closedTabs, true, tabClosingSource);
             }
         }
     }

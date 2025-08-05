@@ -815,16 +815,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         }
 
                         @Override
-                        public void tabPendingClosure(
-                                Tab tab, @TabClosingSource int closingSource) {
-                            closeIfNoTabsAndHomepageEnabled(
-                                    true,
-                                    /* shouldRemoveWindowWithZeroTabs= */ closingSource
-                                            == TabClosingSource.TABLET_TAB_STRIP);
-                        }
-
-                        @Override
-                        public void multipleTabsPendingClosure(
+                        public void onTabClosePending(
                                 List<Tab> tabs,
                                 boolean isAllTabs,
                                 @TabClosingSource int closingSource) {

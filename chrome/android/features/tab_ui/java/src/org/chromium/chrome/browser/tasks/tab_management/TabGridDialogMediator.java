@@ -416,17 +416,7 @@ public class TabGridDialogMediator
                     }
 
                     @Override
-                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-                        if (!isVisible()) return;
-
-                        // TODO(b/338447134): This shouldn't show a snackbar if the tab isn't in
-                        // this group. However, background closures are currently not-undoable so
-                        // this is fine for now...
-                        showSingleTabClosureSnackbar(tab);
-                    }
-
-                    @Override
-                    public void multipleTabsPendingClosure(
+                    public void onTabClosePending(
                             List<Tab> closedTabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {

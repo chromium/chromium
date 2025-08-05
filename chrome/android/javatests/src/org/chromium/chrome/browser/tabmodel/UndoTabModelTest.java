@@ -45,6 +45,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -134,8 +135,10 @@ public class UndoTabModelTest {
                     model.addObserver(
                             new TabModelObserver() {
                                 @Override
-                                public void tabPendingClosure(
-                                        Tab tab, @TabClosingSource int closingSource) {
+                                public void onTabClosePending(
+                                        List<Tab> tabs,
+                                        boolean isAllTabs,
+                                        @TabClosingSource int closingSource) {
                                     didReceivePendingClosureHelper.notifyCalled();
                                 }
                             });
@@ -149,7 +152,7 @@ public class UndoTabModelTest {
 
         boolean didMakePending = undoable && model.supportsPendingClosures();
 
-        // Make sure the TabModel throws a tabPendingClosure callback if necessary.
+        // Make sure the TabModel throws a onTabClosePending callback if necessary.
         if (didMakePending) didReceivePendingClosureHelper.waitForCallback(0);
 
         // Check post conditions

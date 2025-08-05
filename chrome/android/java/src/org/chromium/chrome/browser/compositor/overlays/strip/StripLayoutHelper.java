@@ -1571,6 +1571,7 @@ public class StripLayoutHelper
      */
     public void multipleTabsClosed(List<Tab> tabs) {
         rebuildStripTabs(/* deferAnimations= */ false);
+        clearPendingMouseTabClosureState();
     }
 
     /** Called when all tabs are closed at once. */

@@ -274,12 +274,7 @@ public class LayoutManagerImpl
         }
 
         @Override
-        public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-            tabClosed(tab.getId(), tab.isIncognito(), false);
-        }
-
-        @Override
-        public void multipleTabsPendingClosure(
+        public void onTabClosePending(
                 List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
             // Handled by willCloseAllTabs;
             if (isAllTabs) return;

@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <vector>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 
 class TabModel;
+class TabAndroid;
 
 // Bridges calls between the C++ and the Java TabModelObservers. Functions in
 // this class do little more than translating between Java TabModelObserver
@@ -66,8 +69,8 @@ class TabModelObserverJniBridge {
                   int new_index,
                   int cur_index);
 
-  void TabPendingClosure(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& jtab,
+  void OnTabClosePending(JNIEnv* env,
+                         const std::vector<TabAndroid*>& tabs,
                          int source);
 
   void TabClosureUndone(JNIEnv* env,
@@ -78,10 +81,6 @@ class TabModelObserverJniBridge {
 
   void TabClosureCommitted(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jtab);
-
-  void AllTabsPendingClosure(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& jtabs);
 
   void AllTabsClosureCommitted(JNIEnv* env);
 

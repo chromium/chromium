@@ -882,54 +882,34 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void tabPendingClosure_DialogVisible() {
-        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
-
-        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1, TabClosingSource.UNKNOWN);
-
-        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
-    }
-
-    @Test
-    public void tabPendingClosure_DialogInvisible() {
-        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
-
-        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1, TabClosingSource.UNKNOWN);
-
-        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
-    }
-
-    @Test
-    public void multipleTabsPendingClosure_DialogVisible() {
+    public void onTabClosePending_DialogVisible() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mTabModelObserverCaptor
                 .getValue()
-                .multipleTabsPendingClosure(
-                        Arrays.asList(mTab1, mTab2), false, TabClosingSource.UNKNOWN);
+                .onTabClosePending(Arrays.asList(mTab1, mTab2), false, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
 
     @Test
-    public void multipleTabsPendingClosure_singleTab_DialogVisible() {
+    public void onTabClosePending_singleTab_DialogVisible() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mTabModelObserverCaptor
                 .getValue()
-                .multipleTabsPendingClosure(Arrays.asList(mTab1), false, TabClosingSource.UNKNOWN);
+                .onTabClosePending(Arrays.asList(mTab1), false, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
 
     @Test
-    public void multipleTabsPendingClosure_DialogInvisible() {
+    public void onTabClosePending_DialogInvisible() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
 
         mTabModelObserverCaptor
                 .getValue()
-                .multipleTabsPendingClosure(
-                        Arrays.asList(mTab1, mTab2), false, TabClosingSource.UNKNOWN);
+                .onTabClosePending(Arrays.asList(mTab1, mTab2), false, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }

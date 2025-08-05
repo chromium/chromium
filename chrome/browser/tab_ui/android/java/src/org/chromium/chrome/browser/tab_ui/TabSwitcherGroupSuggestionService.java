@@ -98,7 +98,8 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
+                public void onTabClosePending(
+                        List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
                     clearSuggestions();
                 }
             };

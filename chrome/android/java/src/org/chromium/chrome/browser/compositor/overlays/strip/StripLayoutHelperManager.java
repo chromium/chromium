@@ -1405,14 +1405,7 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-                        getStripLayoutHelper(tab.isIncognitoBranded())
-                                .tabClosed(time(), tab.getId());
-                        updateModelSwitcherButton();
-                    }
-
-                    @Override
-                    public void multipleTabsPendingClosure(
+                    public void onTabClosePending(
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {

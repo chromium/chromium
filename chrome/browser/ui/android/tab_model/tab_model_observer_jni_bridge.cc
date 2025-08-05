@@ -140,15 +140,13 @@ void TabModelObserverJniBridge::DidMoveTab(JNIEnv* env,
   }
 }
 
-void TabModelObserverJniBridge::TabPendingClosure(
+void TabModelObserverJniBridge::OnTabClosePending(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jtab,
+    const std::vector<TabAndroid*>& tabs,
     int jsource) {
-  TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-  CHECK(tab);
   TabModel::TabClosingSource source = GetTabClosingSource(env, jsource);
   for (auto& observer : model_observers_) {
-    observer.TabPendingClosure(tab, source);
+    observer.OnTabClosePending(tabs, source);
   }
 }
 
@@ -180,17 +178,6 @@ void TabModelObserverJniBridge::TabClosureCommitted(
   CHECK(tab);
   for (auto& observer : model_observers_) {
     observer.TabClosureCommitted(tab);
-  }
-}
-
-void TabModelObserverJniBridge::AllTabsPendingClosure(
-    JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jtabs) {
-  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs =
-      TabAndroid::GetAllNativeTabs(env,
-                                   ScopedJavaLocalRef<jobjectArray>(jtabs));
-  for (auto& observer : model_observers_) {
-    observer.AllTabsPendingClosure(tabs);
   }
 }
 
