@@ -109,8 +109,12 @@
   margin: 8px 0;
 }
 
-.category-grid {
+.config-grid {
   display: grid;
+  gap: 2px 16px;
+  align-items: start;
+}
+.category-grid {
   /* Define column templates.
      - 80px for the checkbox
      - 1fr for the name (takes up 1 fraction of the remaining space)
@@ -118,15 +122,12 @@
      - 4fr for the description (takes up 4x the space of name/tags)
   */
   grid-template-columns: 40px 1fr 1fr 4fr;
-  gap: 2px 16px;
-  align-items: start;
 }
-
 .tags-grid {
-  display: grid;
   grid-template-columns: 40px 40px 1fr;
-  gap: 2px 16px;
-  align-items: start;
+}
+.etw-grid {
+  grid-template-columns: 40px 1fr 4fr;
 }
 
 .header-row-group {
@@ -136,8 +137,7 @@
 }
 
 .header-row-group,
-.category-row,
-.tag-row {
+.row {
   /*
     This allows the cells to refer back to the parent .category-grid
     for their layout instructions.

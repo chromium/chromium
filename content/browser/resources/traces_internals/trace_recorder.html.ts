@@ -3,6 +3,14 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+// clang-format off
+// <if expr="not is_win">
+import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
+// </if>
+// clang-format on
+
+
+
 import type {TraceRecorderElement} from './trace_recorder.js';
 
 function getPrivacyFilterHtml(this: TraceRecorderElement) {
@@ -25,8 +33,6 @@ function getPrivacyFilterHtml(this: TraceRecorderElement) {
  * UI card for configuring trace buffers.
  */
 function getBufferConfigurationCardHtml(this: TraceRecorderElement) {
-  const buffer = this.traceConfig?.buffers?.[0];
-
   // clang-format off
   return html`
     <div class="card">
@@ -35,34 +41,71 @@ function getBufferConfigurationCardHtml(this: TraceRecorderElement) {
         Buffer Configuration
       </cr-expand-button>
       <cr-collapse ?opened="${this.buffersExpanded_}">
-        ${buffer ? html`
-          <div class="buffer-config-container">
-            <div class="buffer-row-container growing-row">
-              <h3>In-memory buffer size: ${Math.floor(this.bufferSizeMb)}MB</h3>
-              <cr-slider
-                  min="4"
-                  max="512"
-                  .value="${this.bufferSizeMb}"
-                  @cr-slider-value-changed="${this.onSliderValueChanged_}">
-              </cr-slider>
-            </div>
-            <div class="buffer-row-container">
-              <h3>Recording mode</h3>
-              <select class="md-select" value="${buffer.fillPolicy}"
-                  @change="${this.onSelectValueChanged_}">
-                <option value=${this.fillPolicyEnum.RING_BUFFER}>
-                  RING BUFFER
-                </option>
-                <option value=${this.fillPolicyEnum.DISCARD}>
-                  DISCARD
-                </option>
-              </select>
-            </div>
+        <div class="buffer-config-container">
+          <div class="buffer-row-container growing-row">
+            <h3>In-memory buffer size: ${Math.floor(this.bufferSizeMb)}MB</h3>
+            <cr-slider
+                min="4"
+                max="512"
+                .value="${this.bufferSizeMb}"
+                @cr-slider-value-changed="${this.onBufferSizeChanged_}">
+            </cr-slider>
           </div>
-        ` : ''}
+          <div class="buffer-row-container">
+            <h3>Recording mode</h3>
+            <select class="md-select" value="${this.bufferFillPolicy}"
+                @change="${this.onBufferFillPolicyChanged_}">
+              <option value=${this.fillPolicyEnum.RING_BUFFER}>
+                RING BUFFER
+              </option>
+              <option value=${this.fillPolicyEnum.DISCARD}>
+                DISCARD
+              </option>
+            </select>
+          </div>
+        </div>
       </cr-collapse>
     </div>
   `;
+  // clang-format on
+}
+
+function getEtwConfigurationCardHtml(this: TraceRecorderElement) {
+  // clang-format off
+  // <if expr="is_win">
+  return html`
+    <div class="card">
+      <cr-expand-button class="cr-row" ?expanded="${this.etwExpanded_}"
+          @expanded-changed="${this.onEtwExpandedChanged_}">
+        System Event Tracing for Windows
+      </cr-expand-button>
+      <cr-collapse class="expanded-content" ?opened="${this.etwExpanded_}">
+        <div class="config-grid etw-grid">
+          <div class="header-row-group">
+            <div>Enable</div>
+            <div>Flag</div>
+            <div>Description</div>
+          </div>
+          ${this.etwProducers.map(producer => html`
+            <div class="row">
+              <cr-toggle
+                class="config-toggle"
+                ?checked="${this.isEtwProducerEnabled(producer.flag)}"
+                @change="${(e: CustomEvent<boolean>) =>
+                    this.onEtwProducerChange_(e, producer.flag)}">
+              </cr-toggle>
+              <div>${producer.name}</div>
+              <div>${producer.description}</div>
+            </div>
+          `)}
+        </div>
+      </cr-collapse>
+    </div>
+  `;
+  // </if>
+  // <if expr="not is_win">
+  return nothing;
+  // </if>
   // clang-format on
 }
 
@@ -79,14 +122,14 @@ function getTrackEventCategoriesCardHtml(this: TraceRecorderElement) {
       </cr-expand-button>
       <cr-collapse class="expanded-content" ?opened="${this.tagsExpanded_}">
         <p>Select the tags to enable or disable.</p>
-        <div class="tags-grid">
+        <div class="config-grid tags-grid">
           <div class="header-row-group">
             <div>Enable</div>
             <div>Disable</div>
             <div>Tag</div>
           </div>
           ${this.trackEventTags.map(tagName => html`
-            <div class="tag-row">
+            <div class="row">
               <input
                 type="checkbox"
                 .checked="${this.isTagEnabled(tagName)}"
@@ -112,7 +155,7 @@ function getTrackEventCategoriesCardHtml(this: TraceRecorderElement) {
           class="expanded-content"
           ?opened="${this.categoriesExpanded_}">
         <p>Select the categories to include in the trace config.</p>
-        <div class="category-grid">
+        <div class="config-grid category-grid">
           <div class="header-row-group">
             <div>Enabled</div>
             <div>Name</div>
@@ -120,7 +163,7 @@ function getTrackEventCategoriesCardHtml(this: TraceRecorderElement) {
             <div>Description</div>
           </div>
           ${this.trackEventCategories.map(category => html`
-            <div class="category-row">
+            <div class="row">
               <input
                 type="checkbox"
                 .disabled="${this.isCategoryForced(category)}"
@@ -180,6 +223,7 @@ export function getHtml(this: TraceRecorderElement) {
 
     ${getBufferConfigurationCardHtml.bind(this)()}
     ${getTrackEventCategoriesCardHtml.bind(this)()}
+    ${getEtwConfigurationCardHtml.bind(this)()}
 
     <cr-toast id="toast" duration="5000">
       <div>${this.toastMessage}</div>
