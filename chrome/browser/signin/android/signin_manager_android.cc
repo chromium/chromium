@@ -162,7 +162,7 @@ SigninManagerAndroid::SigninManagerAndroid(
 
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      profile_, identity_manager_,
+      profile_, profile_->GetPrefs()->GetJavaObject(), identity_manager_,
       identity_manager_->GetIdentityMutatorJavaObject());
 }
 

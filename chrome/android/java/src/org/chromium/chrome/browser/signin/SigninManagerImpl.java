@@ -56,7 +56,6 @@ import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.lang.annotation.Retention;
@@ -123,15 +122,21 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     static SigninManager create(
             long nativeSigninManagerAndroid,
             @JniType("Profile*") Profile profile,
+            PrefService prefService,
             @JniType("signin::IdentityManager*") IdentityManager identityManager,
             IdentityMutator identityMutator) {
         assert nativeSigninManagerAndroid != 0;
         assert profile != null;
+        assert prefService != null;
         assert identityManager != null;
         assert identityMutator != null;
         final SigninManagerImpl signinManager =
                 new SigninManagerImpl(
-                        nativeSigninManagerAndroid, profile, identityManager, identityMutator);
+                        nativeSigninManagerAndroid,
+                        profile,
+                        prefService,
+                        identityManager,
+                        identityMutator);
 
         AccountInfoServiceProvider.init(identityManager);
 
@@ -141,11 +146,13 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     private SigninManagerImpl(
             long nativeSigninManagerAndroid,
             Profile profile,
+            PrefService prefService,
             IdentityManager identityManager,
             IdentityMutator identityMutator) {
         ThreadUtils.assertOnUiThread();
         mNativeSigninManagerAndroid = nativeSigninManagerAndroid;
         mProfile = profile;
+        mPrefService = prefService;
         mIdentityManager = identityManager;
         mIdentityMutator = identityMutator;
 
@@ -159,7 +166,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                     CoreAccountInfo.getIdFrom(
                             identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         }
-        mPrefService = UserPrefs.get(profile);
         mPrefChangeRegistrar = new PrefChangeRegistrar(mPrefService);
         mPrefChangeRegistrar.addObserver(Pref.SIGNIN_ALLOWED, this::notifySignInAllowedChanged);
     }
