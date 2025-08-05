@@ -121,10 +121,7 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
   // Chrome OS memory pressure evaluator provides the memory reclaim target to
   // leave critical memory pressure. When Chrome OS is under heavy memory
   // pressure, discards multiple tabs to meet the memory reclaim target.
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(GetReclaimTarget),
-      base::BindOnce(&UrgentPageDiscardingPolicy::OnReclaimTarget,
-                     base::Unretained(this), on_memory_pressure_at));
+  OnReclaimTarget(on_memory_pressure_at, GetReclaimTarget());
 #else
   PageDiscardingHelper::GetFromGraph(GetOwningGraph())
       ->DiscardAPage(DiscardEligibilityPolicy::DiscardReason::URGENT);
