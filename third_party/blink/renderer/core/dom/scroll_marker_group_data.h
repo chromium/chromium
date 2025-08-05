@@ -131,8 +131,6 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
                         const HeapVector<Member<Element>>& candidates);
   Element* ChooseMarkerRecursively();
 
-  bool UpdateSnapshotInternal();
-
   // TODO(332396355): Add spec link, once it's created.
   HeapVector<Member<Element>> focus_group_;
 
