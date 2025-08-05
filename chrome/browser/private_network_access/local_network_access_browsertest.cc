@@ -40,6 +40,9 @@ constexpr char kWorkerHtmlPath[] =
 constexpr char kSharedWorkerHtmlPath[] =
     "/private_network_access/fetch-from-shared-worker-as-public-address.html";
 
+constexpr char kServiceWorkerHtmlPath[] =
+    "/private_network_access/fetch-from-service-worker-as-public-address.html";
+
 class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
  public:
   using WebFeature = blink::mojom::WebFeature;
@@ -265,6 +268,83 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
   CheckCounter(WebFeature::kLocalNetworkAccessWithinDedicatedWorker, 1);
+}
+
+// TODO(crbug.com/406991278): Adding counters for LNA accesses within workers in
+// third_party/blink/renderer/core/loader/resource_load_observer_for_worker.cc
+// works for shared and dedicated workers, but operates oddly for service
+// workers:
+//
+// * It counts the initial load of the service worker JS file
+// * It doesn't count LNA requests without permission
+// * It does count LNA request with permission (the AllowPermission test below)
+// * Trying to check the count via CheckCounter() or WebFeatureHistogramTester
+//   does not work.
+//
+// Figure out how to add use counters for service worker fetches.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ServiceWorkerNoPermissionSet) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kServiceWorkerHtmlPath)));
+
+  // Enable auto-accept of LNA permission requests (which shouldn't be checked).
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  EXPECT_EQ("ready", content::EvalJs(web_contents(), "setup();"));
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_service_worker($1);";
+  // Failure to fetch URL, as for service workers the permission is only
+  // checked; if its not present we don't pop up a permission prompt.
+  //
+  // See the comment in
+  // StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired for
+  // Context::kServiceWorker for more context.
+  EXPECT_EQ("TypeError: Failed to fetch",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ServiceWorkerDenyPermission) {
+  // Use enterprise policy to block LNA requests
+  policy::PolicyMap policies;
+  base::Value::List blocklist;
+  blocklist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessBlockedForUrls,
+            base::Value(std::move(blocklist)));
+  UpdateProviderPolicy(policies);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kServiceWorkerHtmlPath)));
+
+  EXPECT_EQ("ready", content::EvalJs(web_contents(), "setup();"));
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_service_worker($1);";
+  // Failure to fetch URL.
+  EXPECT_EQ("TypeError: Failed to fetch",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ServiceWorkerAllowPermission) {
+  // Use enterprise policy to allow LNA requests
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kServiceWorkerHtmlPath)));
+
+  EXPECT_EQ("ready", content::EvalJs(web_contents(), "setup();"));
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_service_worker($1);";
+  // Fetched URL
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
@@ -622,6 +702,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(),
                                      interceptor.EnabledHttpWorkerUrl()));
+  EXPECT_EQ(feature_histogram_tester.GetCount(
+                WebFeature::
+                    kLocalNetworkAccessNonSecureContextAllowedDeprecationTrial),
+            1);
 
   // Enable auto-accept of LNA permission request.
   bubble_factory()->set_response_type(
