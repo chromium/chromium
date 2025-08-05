@@ -3752,16 +3752,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-lacros-in-chrome-kiosk",
-    "owners": ["bfranz@chromium.org", "chromeos-kiosk-eng@google.com"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "enable-lacros-in-web-kiosk",
-    "owners": ["bfranz@chromium.org", "chromeos-kiosk-eng@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-lazy-load-image-for-invisible-pages",
     "owners": [
       "lingqi@chromium.org",
