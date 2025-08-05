@@ -182,6 +182,15 @@
     z-index: 2; /* Ensure that the progress bar is above the ghost loader. */
   }
 
+  #composeboxContainer {
+    /* Temporary CSS to make the composebox visible. */
+    --ntp-composebox-background-color: #F0F2F5;
+    inset-block-end: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+  }
+
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,
   :host([is-error-page-visible]) #uploadProgressBarContainer {
     visibility: hidden;
@@ -287,3 +296,8 @@
     $i18n{dismiss}
   </cr-button>
 </cr-toast>
+
+<div id="composeboxContainer">
+  <ntp-composebox id="composebox">
+  </ntp-composebox>
+</div>

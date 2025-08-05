@@ -1412,6 +1412,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
         .Add<lens::mojom::LensGhostLoaderPageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>()
+        .Add<composebox::mojom::PageHandlerFactory>()
         .Add<color_change_listener::mojom::PageHandler>();
   }
   if (lens::features::IsLensOverlayEnabled()) {

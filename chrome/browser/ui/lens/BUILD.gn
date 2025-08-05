@@ -24,6 +24,7 @@ source_set("lens") {
   ]
   friend = [ ":*" ]
   sources = [
+    "lens_composebox_handler.h",
     "lens_help_menu_utils.h",
     "lens_overlay_blur_layer_delegate.h",
     "lens_overlay_colors.h",
@@ -83,6 +84,7 @@ source_set("lens") {
 
 source_set("impl") {
   sources = [
+    "lens_composebox_handler.cc",
     "lens_help_menu_utils.cc",
     "lens_overlay_blur_layer_delegate.cc",
     "lens_overlay_controller.cc",
