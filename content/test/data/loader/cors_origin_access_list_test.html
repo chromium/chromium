@@ -32,7 +32,7 @@ function test(target) {
     '//',
     target,
     ':',
-    Number(location.port) + Number(queryMap.port_diff || 0),
+    Number(queryMap.target_port || location.port),
     '/loader/get.txt'
   ].join('');
 
