@@ -200,8 +200,7 @@ static_library("libwebp_dsp") {
     defines = [
       "WEBP_HAVE_SSE2",
       "WEBP_HAVE_SSE41",
-      # TODO: crbug.com/435213378 - reenable after crash is fixed.
-      # "WEBP_HAVE_AVX2",
+      "WEBP_HAVE_AVX2",
     ]
   }
   allow_circular_includes_from = [
