@@ -99,18 +99,20 @@ void ConvertToDawnType(const GPUTextureViewDescriptor* webgpu_desc,
     dawn_desc_info->dawn_desc.usage =
         static_cast<wgpu::TextureUsage>(webgpu_desc->usage());
   }
-  if (webgpu_desc->hasSwizzle()) {
+  auto* swizzle = webgpu_desc->getSwizzleOr(nullptr);
+  // Only pass the swizzle descriptor to Dawn if swizzle is non-default because
+  // the C API will produce validation errors if a chained struct is passed
+  // without its feature being enabled.
+  if (swizzle && (swizzle->r() != V8GPUComponentSwizzle::Enum::kR ||
+                  swizzle->g() != V8GPUComponentSwizzle::Enum::kG ||
+                  swizzle->b() != V8GPUComponentSwizzle::Enum::kB ||
+                  swizzle->a() != V8GPUComponentSwizzle::Enum::kA)) {
     dawn_desc_info->swizzle_desc =
         std::make_unique<wgpu::TextureComponentSwizzleDescriptor>();
-    dawn_desc_info->swizzle_desc->swizzle.r =
-        AsDawnEnum(webgpu_desc->swizzle()->r());
-    dawn_desc_info->swizzle_desc->swizzle.g =
-        AsDawnEnum(webgpu_desc->swizzle()->g());
-    dawn_desc_info->swizzle_desc->swizzle.b =
-        AsDawnEnum(webgpu_desc->swizzle()->b());
-    dawn_desc_info->swizzle_desc->swizzle.a =
-        AsDawnEnum(webgpu_desc->swizzle()->a());
-
+    dawn_desc_info->swizzle_desc->swizzle.r = AsDawnEnum(swizzle->r());
+    dawn_desc_info->swizzle_desc->swizzle.g = AsDawnEnum(swizzle->g());
+    dawn_desc_info->swizzle_desc->swizzle.b = AsDawnEnum(swizzle->b());
+    dawn_desc_info->swizzle_desc->swizzle.a = AsDawnEnum(swizzle->a());
     dawn_desc_info->dawn_desc.nextInChain = dawn_desc_info->swizzle_desc.get();
   }
 }
