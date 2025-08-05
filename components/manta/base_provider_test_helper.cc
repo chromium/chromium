@@ -21,7 +21,8 @@ constexpr base::TimeDelta kMockTimeout = base::Seconds(100);
 constexpr char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
 constexpr char kMockScope[] = "mock_scope";
 constexpr char kMockEndpoint[] = "https://my-endpoint.com";
-constexpr char kHttpMethod[] = "POST";
+constexpr endpoint_fetcher::HttpMethod kHttpMethod =
+    endpoint_fetcher::HttpMethod::kPost;
 constexpr char kMockContentType[] = "mock_content_type";
 constexpr char kEmail[] = "mock_email@gmail.com";
 }  // namespace
@@ -46,17 +47,18 @@ void FakeBaseProvider::RequestInternal(
         .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
     return;
   }
-
   auto fetcher = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
-      /*oauth_consumer_name=*/kMockOAuthConsumerName,
-      /*url=*/GURL{kMockEndpoint},
-      /*http_method=*/kHttpMethod, /*content_type=*/kMockContentType,
-      /*scopes=*/std::vector<std::string>{kMockScope},
-      /*timeout=*/kMockTimeout, /*post_data=*/request.SerializeAsString(),
-      /*annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*identity_manager=*/identity_manager_observation_.GetSource(),
-      /*consent_level=*/signin::ConsentLevel::kSync);
+      identity_manager_observation_.GetSource(),
+      EndpointFetcher::RequestParams::Builder(kHttpMethod, annotation_tag)
+          .SetConsentLevel(signin::ConsentLevel::kSync)
+          .SetContentType(kMockContentType)
+          .SetTimeout(kMockTimeout)
+          .SetUrl(GURL{kMockEndpoint})
+          .SetOauthScopes(std::vector<std::string>{kMockScope})
+          .SetOauthConsumerName(kMockOAuthConsumerName)
+          .SetPostData(request.SerializeAsString())
+          .Build());
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,

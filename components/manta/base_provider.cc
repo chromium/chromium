@@ -14,7 +14,6 @@ namespace manta {
 namespace {
 constexpr endpoint_fetcher::HttpMethod kHttpMethod =
     endpoint_fetcher::HttpMethod::kPost;
-constexpr char kHttpMethodString[] = "POST";
 constexpr char kHttpContentType[] = "application/x-protobuf";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
 constexpr char kAutopushEndpointUrl[] =
@@ -136,16 +135,18 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcher(
   const std::vector<std::string>& scopes{kOAuthScope};
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
-      /*oauth_consumer_name=*/oauth_consumer_name,
-      /*url=*/url,
-      /*http_method=*/kHttpMethodString,
-      /*content_type=*/kHttpContentType,
-      /*scopes=*/scopes,
-      /*timeout=*/timeout,
-      /*post_data=*/post_data,
-      /*annotation_tag=*/annotation_tag,
       /*identity_manager=*/identity_manager_observation_.GetSource(),
-      /*consent_level=*/signin::ConsentLevel::kSignin);
+      EndpointFetcher::RequestParams::Builder(/*method=*/kHttpMethod,
+                                              /*annotation_tag=*/annotation_tag)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetConsentLevel(signin::ConsentLevel::kSignin)
+          .SetContentType(kHttpContentType)
+          .SetTimeout(timeout)
+          .SetUrl(url)
+          .SetOauthScopes(scopes)
+          .SetOauthConsumerName(oauth_consumer_name)
+          .SetPostData(post_data)
+          .Build());
 }
 
 std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcherForDemoMode(
