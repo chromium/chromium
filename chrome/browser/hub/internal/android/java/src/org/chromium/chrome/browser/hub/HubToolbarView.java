@@ -48,6 +48,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -59,6 +60,7 @@ public class HubToolbarView extends LinearLayout {
     private TabLayout mPaneSwitcher;
     private LinearLayout mMenuButtonContainer;
     private ImageButton mMenuButton;
+    private MenuButton mMenuButtonWrapper;
     private View mSearchBoxLayout;
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
@@ -92,6 +94,7 @@ public class HubToolbarView extends LinearLayout {
         slidingTabIndicator.setClipChildren(false);
         mMenuButtonContainer = findViewById(R.id.menu_button_container);
         mMenuButton = mMenuButtonContainer.findViewById(R.id.menu_button);
+        mMenuButtonWrapper = mMenuButtonContainer.findViewById(R.id.menu_button_wrapper);
         mPaneSwitcherCard = findViewById(R.id.pane_switcher_card);
 
         // SearchBoxLayout is GONE by default, and enabled via the mediator.
@@ -104,7 +107,7 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setMenuButtonVisible(boolean visible) {
-        mMenuButtonContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        mMenuButtonWrapper.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     void setPaneSwitcherButtonData(
