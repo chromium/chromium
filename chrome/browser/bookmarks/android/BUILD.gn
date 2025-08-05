@@ -38,6 +38,10 @@ source_set("impl") {
   ]
 }
 
+android_resources("java_resources") {
+  sources = [ "java/res/values/dimens.xml" ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkAddNewFolderCoordinator.java",
@@ -94,6 +98,7 @@ android_library("java") {
   ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//base:base_shared_preferences_java",
     "//base:callback_java",
@@ -206,6 +211,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProviderTest.java",
   ]
