@@ -136,7 +136,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxMobileParityUpdate =
-            newFlag(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxMobileParityUpdateV2 =
             newFlag(
