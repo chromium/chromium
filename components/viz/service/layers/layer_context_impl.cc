@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/types/expected_macros.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
@@ -1627,13 +1628,14 @@ void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
   CHECK(receiver_);
 
   const BeginFrameArgs begin_frame_args = update->begin_frame_args;
+  auto start_update_display_tree = base::TimeTicks::Now();
   auto result = DoUpdateDisplayTree(std::move(update));
   if (!result.has_value()) {
     receiver_->ReportBadMessage(result.error());
   }
 
   // After a tree update, either Draw or schedule animations.
-  DoDraw(begin_frame_args);
+  DoDraw(begin_frame_args, start_update_display_tree);
 
   // We may have resources to return after a tree update and draw.
   DoReturnResources();
@@ -1903,7 +1905,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   return base::ok();
 }
 
-void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args) {
+void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args,
+                              base::TimeTicks start_update_display_tree) {
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     compositor_sink_->SetLayerContextWantsBeginFrames(true);
   } else {
@@ -1911,10 +1914,15 @@ void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args) {
       host_impl_->WillBeginImplFrame(begin_frame_args);
 
       cc::LayerTreeHostImpl::FrameData frame;
+      TreesInVizTiming stage_breakdown;
+      stage_breakdown.start_update_display_tree = start_update_display_tree;
       const bool has_damage = true;
       frame.begin_frame_ack = BeginFrameAck(begin_frame_args, has_damage);
       frame.origin_begin_main_frame_args = begin_frame_args;
+      stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
       host_impl_->PrepareToDraw(&frame);
+      stage_breakdown.start_draw_layers = base::TimeTicks::Now();
+      frame.set_trees_in_viz_timestamps(std::move(stage_breakdown));
       host_impl_->DrawLayers(&frame);
       host_impl_->DidDrawAllLayers(frame);
       host_impl_->DidFinishImplFrame(begin_frame_args);

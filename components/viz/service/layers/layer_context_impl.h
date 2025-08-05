@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/tile_display_layer_impl.h"
@@ -61,7 +62,8 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   base::expected<void, std::string> DoUpdateDisplayTiling(
       mojom::TilingPtr tiling,
       bool update_damage);
-  void DoDraw(const BeginFrameArgs& begin_frame_args);
+  void DoDraw(const BeginFrameArgs& begin_frame_args,
+              base::TimeTicks start_update_display_tree);
 
   // Receive exported resources returned from the frame sink.
   void ReceiveReturnsFromParent(std::vector<ReturnedResource> resources);

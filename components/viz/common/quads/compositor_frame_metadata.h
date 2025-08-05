@@ -19,6 +19,7 @@
 #include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "components/viz/common/quads/trees_in_viz_timing.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -228,6 +229,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Information used to compute overall ideal frame interval.
   FrameIntervalInputs frame_interval_inputs;
+
+  // Timestamps for TreesInViz metric reporting.
+  TreesInVizTiming trees_in_viz_timing_details;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

@@ -11,6 +11,7 @@ import "services/viz/public/mojom/compositing/offset_tag.mojom";
 import "services/viz/public/mojom/compositing/frame_deadline.mojom";
 import "services/viz/public/mojom/compositing/frame_interval_inputs.mojom";
 import "services/viz/public/mojom/compositing/region_capture_bounds.mojom";
+import "services/viz/public/mojom/compositing/trees_in_viz_timing.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
@@ -92,4 +93,6 @@ struct CompositorFrameMetadata {
   array<OffsetTagValue> offset_tag_values;
 
   FrameIntervalInputs frame_interval_inputs;
+
+  TreesInVizTiming trees_in_viz_timing;
 };

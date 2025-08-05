@@ -438,6 +438,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   class PendingFrameDetails : SurfaceObserver {
    public:
     PendingFrameDetails(base::TimeTicks frame_submit_timestamp,
+                        TreesInVizTiming frame_timing_details,
                         SurfaceManager* surface_manager);
     ~PendingFrameDetails() override;
 
@@ -449,6 +450,15 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
     base::TimeTicks frame_submit_timestamp() const {
       return frame_submit_timestamp_;
+    }
+    base::TimeTicks start_update_display_tree() const {
+      return trees_in_viz_timing_details_.start_update_display_tree;
+    }
+    base::TimeTicks start_prepare_to_draw() const {
+      return trees_in_viz_timing_details_.start_prepare_to_draw;
+    }
+    base::TimeTicks start_draw_layers() const {
+      return trees_in_viz_timing_details_.start_draw_layers;
     }
     base::TimeTicks frame_embed_timestamp() const {
       return frame_embed_timestamp_;
@@ -466,6 +476,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     void SetOrObserveFrameEmbedTimeStamp();
 
     const base::TimeTicks frame_submit_timestamp_;
+
+    // TreesInViz related timestamps.
+    const TreesInVizTiming trees_in_viz_timing_details_;
     base::TimeTicks frame_embed_timestamp_;
     // The surface ID that is associated with the frame.
     SurfaceId surface_id_;

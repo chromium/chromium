@@ -68,6 +68,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/trees_in_viz_timing.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
@@ -153,6 +154,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     FrameData& operator=(const FrameData&) = delete;
     void AsValueInto(base::trace_event::TracedValue* value) const;
     std::string ToString() const;
+    void set_trees_in_viz_timestamps(
+        const viz::TreesInVizTiming& timing_details);
 
     // frame_token is populated by the LayerTreeHostImpl when submitted.
     uint32_t frame_token = 0;
@@ -185,6 +188,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // that we clear pending copy requests after drawing a frame and request
     // a new tree commit.
     bool has_copy_requests = false;
+    // Only set when LTHI is in TreesInViz mode
+    std::optional<viz::TreesInVizTiming> trees_in_viz_timing_details;
   };
 
   // A struct of data for a single UIResource, including the backing

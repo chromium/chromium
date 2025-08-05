@@ -2390,6 +2390,56 @@ TEST_P(CompositorFrameSinkSupportTest,
               Eq(kThrottledFrameInterval));
 }
 
+TEST_P(CompositorFrameSinkSupportTest,
+       CompositorFrameMetadataSetsVizBreakdownTimestamps) {
+  // Request BeginFrames.
+  support_->SetNeedsBeginFrame(true);
+
+  base::TimeTicks frame_time = base::TimeTicks::Now();
+
+  // Issue a BeginFrame.
+  BeginFrameArgs args =
+      CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  // Client submits a compositor frame in response.
+  BeginFrameAck ack(args, true);
+  CompositorFrame frame = CompositorFrameBuilder()
+                              .AddDefaultRenderPass()
+                              .SetBeginFrameAck(ack)
+                              .SetValidTreesInVizTimestamps(frame_time)
+                              .Build();
+  auto token = frame.metadata.frame_token;
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
+    support_->SendCompositorFrameAck();
+  }
+
+  // The presentation-feedback from the last submitted frame arrives.
+  SendPresentationFeedback(support_.get(), token);
+
+  // Issue a new BeginFrame. The frame timing details with submitted
+  // presentation feedback should be received.
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 1, 2, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(), SizeIs(1));
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(),
+              Contains(Key(token)));
+  EXPECT_THAT(fake_support_client_.all_frame_timing_details()
+                  .at(token)
+                  .start_update_display_tree,
+              Eq(frame_time));
+  EXPECT_THAT(fake_support_client_.all_frame_timing_details()
+                  .at(token)
+                  .start_prepare_to_draw,
+              Eq(frame_time + base::Milliseconds(1)));
+  EXPECT_THAT(fake_support_client_.all_frame_timing_details()
+                  .at(token)
+                  .start_draw_layers,
+              Eq(frame_time + base::Milliseconds(2)));
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          CompositorFrameSinkSupportTest,
                          testing::Bool(),

@@ -185,6 +185,7 @@ viz_component("common") {
     "quads/texture_draw_quad.h",
     "quads/tile_draw_quad.cc",
     "quads/tile_draw_quad.h",
+    "quads/trees_in_viz_timing.h",
     "quads/video_hole_draw_quad.cc",
     "quads/video_hole_draw_quad.h",
     "resources/peak_gpu_memory_callback.cc",

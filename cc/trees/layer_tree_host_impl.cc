@@ -1207,6 +1207,10 @@ std::string LayerTreeHostImpl::FrameData::ToString() const {
   AsValueInto(&value);
   return value.ToFormattedJSON();
 }
+void LayerTreeHostImpl::FrameData::set_trees_in_viz_timestamps(
+    const viz::TreesInVizTiming& timing_details) {
+  trees_in_viz_timing_details = timing_details;
+}
 
 DrawMode LayerTreeHostImpl::GetDrawMode() const {
   if (resourceless_software_draw_) {
@@ -3199,6 +3203,13 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         {viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation,
          base::Hertz(20)});
     frame->damage_reasons.Remove(DamageReason::kScrollbarFadeOutAnimation);
+  }
+
+  // Propagate optioal timestamps for TreesInViz stages
+  if (frame->trees_in_viz_timing_details.has_value() &&
+      settings_.trees_in_viz_in_viz_process) {
+    metadata.trees_in_viz_timing_details =
+        std::move(frame->trees_in_viz_timing_details.value());
   }
 
   // If all RedrawReasons have been recorded in `content_interval_info` and

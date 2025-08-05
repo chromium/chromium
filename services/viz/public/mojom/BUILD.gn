@@ -39,6 +39,7 @@ mojom("mojom") {
     "compositing/thread.mojom",
     "compositing/tiling.mojom",
     "compositing/transferable_resource.mojom",
+    "compositing/trees_in_viz_timing.mojom",
     "compositing/vertical_scroll_direction.mojom",
     "compositing/video_detector_observer.mojom",
     "compositing/view_transition_element_resource_id.mojom",
@@ -222,6 +223,18 @@ mojom("mojom") {
       ]
       traits_sources = [ "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc" ]
       traits_headers = [ "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.TreesInVizTiming"
+          cpp = "::viz::TreesInVizTiming"
+          move_only = true
+        },
+      ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.cc" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {
@@ -502,6 +515,17 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "viz.mojom.TreesInVizTiming"
+          cpp = "::viz::TreesInVizTiming"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "viz.mojom.FrameTimingDetails"
           cpp = "::viz::FrameTimingDetails"
         },
@@ -537,6 +561,7 @@ mojom("mojom") {
         "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operation_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operations_mojom_traits.h",
