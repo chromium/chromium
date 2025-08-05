@@ -25200,21 +25200,7 @@
     "UpdateStateBeforeUnbinding": [
         {
             "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UpdateStateBeforeUnbinding"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UpdateStateBeforeUnbindingWebview": [
-        {
-            "platforms": [
+                "android",
                 "android_webview"
             ],
             "experiments": [
