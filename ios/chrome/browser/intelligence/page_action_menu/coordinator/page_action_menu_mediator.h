@@ -7,8 +7,29 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
+
+class BwgService;
+class PrefService;
+class ReaderModeTabHelper;
+class TemplateURLService;
+
+namespace web {
+class WebState;
+}
+
 // The mediator for the page action menu.
-@interface PageActionMenuMediator : NSObject
+@interface PageActionMenuMediator : NSObject <PageActionMenuMutator>
+
+// Designated initializer for the mediator.
+- (instancetype)initWithWebState:(web::WebState*)webState
+              profilePrefService:(PrefService*)profilePrefs
+              templateURLService:(TemplateURLService*)templateURLService
+                      BWGService:(BwgService*)BWGService
+             readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

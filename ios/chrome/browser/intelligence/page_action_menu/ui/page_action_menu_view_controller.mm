@@ -6,6 +6,7 @@
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
@@ -74,9 +75,6 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
 @interface PageActionMenuViewController ()
 
-// Whether reader mode is currently active.
-@property(nonatomic, assign) BOOL readerModeActive;
-
 // Label of the Reader mode options button. Lazily created.
 @property(nonatomic, strong) UILabel* readerModeOptionsButtonSubtitleLabel;
 
@@ -85,14 +83,6 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 @implementation PageActionMenuViewController {
   // Stack view containing the menu's main content.
   UIStackView* _contentStackView;
-}
-
-- (instancetype)initWithReaderModeActive:(BOOL)readerModeActive {
-  self = [super initWithNibName:nil bundle:nil];
-  if (self) {
-    _readerModeActive = readerModeActive;
-  }
-  return self;
 }
 
 - (void)viewDidLoad {
@@ -114,7 +104,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_contentStackView];
 
-  if (self.readerModeActive) {
+  if ([self.mutator isReaderModeActive]) {
     UIView* readerModeActiveSection = [self createReaderModeActiveSection];
     [_contentStackView addArrangedSubview:readerModeActiveSection];
     [_contentStackView setCustomSpacing:kStackViewMargins
@@ -138,7 +128,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   // If Reader Mode is available but inactive, we use a 3-button UI. Otherwise,
   // we just show the `buttonsStackView`, with an additional Reader mode section
   // (above) if Reader mode is available and active.
-  if (IsReaderModeAvailable() && !self.readerModeActive) {
+  if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
     // Adds the large Gemini entry point button.
     UIButton* BWGButton = [self createBWGButton];
     [_contentStackView addArrangedSubview:BWGButton];
@@ -420,13 +410,13 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
                                                           kSmallButtonIconSize)
                           title:l10n_util::GetNSString(
                                     IDS_IOS_AI_HUB_LENS_LABEL)
-                        enabled:[self isLensAvailable]];
+                        enabled:[self.mutator isLensAvailable]];
   [lensButton addTarget:self
                  action:@selector(handleLensEntryPointTapped:)
        forControlEvents:UIControlEventTouchUpInside];
   [stackView addArrangedSubview:lensButton];
 
-  if (IsReaderModeAvailable() && !self.readerModeActive) {
+  if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
     UIImage* readerModeImage = DefaultSymbolWithPointSize(
         GetReaderModeSymbolName(), kSmallButtonIconSize);
 
@@ -436,7 +426,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
     UIButton* readerModeButton =
         [self createSmallButtonWithIcon:readerModeImage
                                   title:readerModeLabelText
-                                enabled:[self isReaderModeAvailable]];
+                                enabled:[self.mutator isReaderModeAvailable]];
     [readerModeButton addTarget:self
                          action:@selector(handleReaderModeTapped:)
                forControlEvents:UIControlEventTouchUpInside];
@@ -446,7 +436,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
         [self createSmallButtonWithIcon:[self askGeminiIcon]
                                   title:l10n_util::GetNSString(
                                             IDS_IOS_AI_HUB_GEMINI_LABEL)
-                                enabled:[self isGeminiAvailable]];
+                                enabled:[self.mutator isGeminiAvailable]];
     [BWGSmallButton addTarget:self
                        action:@selector(handleBWGTapped:)
              forControlEvents:UIControlEventTouchUpInside];
@@ -558,21 +548,6 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 #endif
 }
 
-// Whether Ask Gemini is currently available.
-- (BOOL)isGeminiAvailable {
-  return self.BWGHandler != nil;
-}
-
-// Whether the Reader mode is currently available.
-- (BOOL)isReaderModeAvailable {
-  return self.readerModeHandler != nil;
-}
-
-// Whether the Lens overlay is currently available.
-- (BOOL)isLensAvailable {
-  return self.lensOverlayHandler != nil;
-}
-
 #pragma mark - Handlers
 
 // Dismisses this view controller and starts the BWG overlay.
@@ -615,7 +590,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
 // Toggles the visibility of the Reading mode UI on the current page.
 - (void)toggleReaderModeVisibility {
-  if (self.readerModeActive) {
+  if ([self.mutator isReaderModeActive]) {
     [self.readerModeHandler hideReaderMode];
   } else {
     [self.readerModeHandler
