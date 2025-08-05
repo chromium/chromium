@@ -153,7 +153,7 @@ ci_builder(
                     expiration_sec = 10800,
                 ),
             ),
-            "chromium_pixel_2_q",
+            "chromium_tests_pool",
             "has_native_resultdb_integration",
         ],
     ),

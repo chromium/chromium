@@ -665,6 +665,16 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chromium_tests_pool",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        dimensions = {
+            "pool": "chromium.tests",
+        },
+    ),
+)
+
+targets.mixin(
     name = "chromium-tester-dev-service-account",
     generate_pyl_entry = False,
     swarming = targets.swarming(
