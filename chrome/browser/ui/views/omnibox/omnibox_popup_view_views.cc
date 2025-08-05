@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
@@ -298,13 +296,6 @@ void OmniboxPopupViewViews::OnSelectionChanged(
     InvalidateLine(new_selection.line);
   }
   UpdateAccessibleActiveDescendantForInvokingView();
-}
-
-void OmniboxPopupViewViews::RequestAimButtonFocus() {
-  model()->SetFocusIsGoingToAimButton(true);
-  location_bar_view_->page_action_icon_controller()
-      ->GetIconView(PageActionIconType::kAiMode)
-      ->RequestFocus();
 }
 
 void OmniboxPopupViewViews::UpdatePopupAppearance() {

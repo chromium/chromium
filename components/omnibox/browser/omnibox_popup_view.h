@@ -50,12 +50,6 @@ class OmniboxPopupView {
   virtual void OnSelectionChanged(OmniboxPopupSelection old_selection,
                                   OmniboxPopupSelection new_selection) {}
 
-  // Requests focus for the AIM button in the omnibox text field. While the AIM
-  // button is actually hosted in the omnibox text field, logically it's
-  // considered part of the popup, which handles its focus management, so this
-  // method is defined here.
-  virtual void RequestAimButtonFocus() {}
-
   // Redraws the popup window to match any changes in the result set; this may
   // mean opening or closing the window.
   virtual void UpdatePopupAppearance() = 0;

@@ -1763,7 +1763,7 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
 
   // Special case for transferring focus to the AIM button.
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
-    popup_view_->RequestAimButtonFocus();
+    view_->RequestAimButtonFocus();
     return;
   }
 
@@ -2162,22 +2162,6 @@ void OmniboxEditModel::SetIconBitmap(const GURL& icon_url,
 
 void OmniboxEditModel::SetAutocompleteInput(AutocompleteInput input) {
   input_ = std::move(input);
-}
-
-bool OmniboxEditModel::FocusIsGoingToAimButton() const {
-  return focus_is_going_to_aim_button_;
-}
-
-void OmniboxEditModel::SetFocusIsGoingToAimButton(bool value) {
-  focus_is_going_to_aim_button_ = value;
-}
-
-bool OmniboxEditModel::FocusIsReturningFromAimButton() const {
-  return focus_is_returning_from_aim_button_;
-}
-
-void OmniboxEditModel::SetFocusIsReturningFromAimButton(bool value) {
-  focus_is_returning_from_aim_button_ = value;
 }
 
 PrefService* OmniboxEditModel::GetPrefService() {
