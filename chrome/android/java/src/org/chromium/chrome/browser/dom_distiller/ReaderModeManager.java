@@ -54,6 +54,9 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -666,7 +669,8 @@ public class ReaderModeManager extends EmptyTabObserver
     }
 
     /** Navigate the current tab to a Reader Mode URL. */
-    private void navigateToReaderMode() {
+    @VisibleForTesting
+    void navigateToReaderMode() {
         WebContents webContents = mTab.getWebContents();
         if (webContents == null) return;
 
@@ -688,7 +692,33 @@ public class ReaderModeManager extends EmptyTabObserver
             browserControlsVisibilityManager.getBrowserVisibilityDelegate().showControlsTransient();
         }
 
-        DomDistillerTabUtils.distillCurrentPageAndView(webContents);
+        DomDistillerTabUtils.distillCurrentPageAndViewIfSuccessful(
+                webContents,
+                (success) -> {
+                    // If successful, or any of the dependencies needed to show a bottom sheet
+                    // aren't available then return early.
+                    if (success || mTab == null || mTab.getWindowAndroid() == null) {
+                        return;
+                    }
+                    SnackbarManager snackbarManager =
+                            SnackbarManagerProvider.from(mTab.getWindowAndroid());
+                    if (snackbarManager == null) {
+                        return;
+                    }
+
+                    snackbarManager.showSnackbar(
+                            Snackbar.make(
+                                            mTab.getContext()
+                                                    .getString(
+                                                            R.string
+                                                                    .reader_mode_unavailable_snackbar_message),
+                                            new SnackbarManager.SnackbarController() {},
+                                            Snackbar.TYPE_NOTIFICATION,
+                                            Snackbar.UMA_UNKNOWN)
+                                    .setAction(
+                                            mTab.getContext().getString(R.string.chrome_dismiss),
+                                            null));
+                });
     }
 
     /**

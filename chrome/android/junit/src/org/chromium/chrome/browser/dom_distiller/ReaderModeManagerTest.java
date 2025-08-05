@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -32,6 +33,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
+import org.chromium.base.Callback;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,6 +52,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
@@ -65,6 +70,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -89,6 +95,8 @@ public class ReaderModeManagerTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private SnackbarManager mSnackbarManager;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     private TabObserver mTabObserver;
@@ -99,7 +107,10 @@ public class ReaderModeManagerTest {
     @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
     private WebContentsObserver mWebContentsObserver;
 
+    @Captor private ArgumentCaptor<Callback<Boolean>> mDistillationCallbackCaptor;
+
     private UserDataHost mUserDataHost;
+    private UnownedUserDataHost mUnownedUserDataHost;
     private ReaderModeManager mManager;
     private OneshotSupplierImpl<Boolean> mButtonVisibilitySupplier;
 
@@ -115,6 +126,11 @@ public class ReaderModeManagerTest {
         mUserDataHost = new UserDataHost();
         mUserDataHost.setUserData(TabDistillabilityProvider.USER_DATA_KEY, mDistillabilityProvider);
 
+        mUnownedUserDataHost = new UnownedUserDataHost();
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
+        SnackbarManagerProvider.attach(mWindowAndroid, mSnackbarManager);
+
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(MOCK_URL);
@@ -601,6 +617,34 @@ public class ReaderModeManagerTest {
         mManager.hideReaderMode();
         verify(mTab).goBack();
         assertEquals(1, userActionTester.getActionCount("MobileReaderModeHidden"));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
+    public void testDistillationSuccess_noSnackbar() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+
+        mManager.navigateToReaderMode();
+        verify(mDistillerTabUtilsJniMock)
+                .distillCurrentPageAndViewIfSuccessful(
+                        any(), mDistillationCallbackCaptor.capture());
+        mDistillationCallbackCaptor.getValue().onResult(true);
+        verify(mSnackbarManager, times(0)).showSnackbar(any());
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @EnableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
+    public void testDistillationFailure_showSnackbar() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+
+        mManager.navigateToReaderMode();
+        verify(mDistillerTabUtilsJniMock)
+                .distillCurrentPageAndViewIfSuccessful(
+                        any(), mDistillationCallbackCaptor.capture());
+        mDistillationCallbackCaptor.getValue().onResult(false);
+        verify(mSnackbarManager).showSnackbar(any());
     }
 
     /**

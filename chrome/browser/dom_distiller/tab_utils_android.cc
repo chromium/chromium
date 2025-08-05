@@ -39,7 +39,9 @@ void JNI_DomDistillerTabUtils_DistillCurrentPageAndViewIfSuccessful(
       base::BindOnce(
           [](const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
              bool success) {
-            base::android::RunBooleanCallbackAndroid(callback, success);
+            if (callback) {
+              base::android::RunBooleanCallbackAndroid(callback, success);
+            }
           },
           jni_zero::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
