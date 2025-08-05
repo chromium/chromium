@@ -13,6 +13,10 @@
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -30,6 +34,8 @@ enum class PageContextWrapperError {
   kPDFDataError,
   // The webpage is protected, PageContext was force-detached.
   kForceDetachError,
+  // The Page Context retrieval timed out.
+  kTimeout,
 };
 
 using PageContextWrapperCallbackResponse =
@@ -59,8 +65,11 @@ using PageContextWrapperCallbackResponse =
 // Initiates the asynchronous work of populating all the PageContext fields, and
 // executes the `completionCallback` when all async work is complete.
 // Relinquishes ownership of the PageContext proto back to the handler of the
-// callback.
+// callback. Uses a default timeout.
 - (void)populatePageContextFieldsAsync;
+
+// Same as `populatePageContextFieldsAsync`, but with a custom timeout.
+- (void)populatePageContextFieldsAsyncWithTimeout:(base::TimeDelta)timeout;
 
 // Enables force taking snapshots if none could be retrieved from storage, does
 // nothing if `shouldGetSnapshot` is NO.

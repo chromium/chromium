@@ -19,6 +19,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "base/token.h"
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -34,7 +36,11 @@
 
 namespace {
 
-// The key for whether the PageContext should be detached. The value is a bool.
+// The default Page Context execution timeout.
+base::TimeDelta kDefaultPageContextTimeout = base::Seconds(1);
+
+// The key for whether the PageContext should be detached. The value is a
+// bool.
 constexpr const char kShouldDetachPageContext[] = "shouldDetachPageContext";
 
 // The key for the current node's innerText in the JavaScript object. The value
@@ -172,6 +178,9 @@ result.links = linksArray;
   // needs to complete before executing the `completionCallback`.
   NSInteger _asyncTasksToComplete;
 
+  // The timer which keeps track of the overall execution timeout.
+  base::OneShotTimer _timeoutTimer;
+
   // The root node of the PageContext's AnnotatedPageContent (APC) tree. This
   // tree is constructed on the fly as values are returned from JavaScript.
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent> _rootAPCNode;
@@ -211,12 +220,23 @@ result.links = linksArray;
 }
 
 - (void)dealloc {
+  _timeoutTimer.Stop();
   [self stopTextHighlighting];
 }
 
 - (void)populatePageContextFieldsAsync {
+  [self populatePageContextFieldsAsyncWithTimeout:kDefaultPageContextTimeout];
+}
+
+- (void)populatePageContextFieldsAsyncWithTimeout:(base::TimeDelta)timeout {
   CHECK_GE(_asyncTasksToComplete, 0);
   _pageContextMetrics = [[PageContextWrapperMetrics alloc] init];
+  __weak PageContextWrapper* weakSelf = self;
+
+  // Start the timer.
+  _timeoutTimer.Start(FROM_HERE, timeout, base::BindOnce(^{
+                        [weakSelf onTimeout];
+                      }));
 
   if (_asyncTasksToComplete == 0) {
     [self asyncWorkCompletedForPageContext];
@@ -227,7 +247,6 @@ result.links = linksArray;
   // executing the overall completion callback. The BarrierClosure will wait
   // until the `pageContextBarrier` callback is itself run
   // `_asyncTasksToComplete` times.
-  __weak PageContextWrapper* weakSelf = self;
   base::RepeatingClosure pageContextBarrier =
       base::BarrierClosure(_asyncTasksToComplete, base::BindOnce(^{
                              [weakSelf asyncWorkCompletedForPageContext];
@@ -441,6 +460,12 @@ result.links = linksArray;
 // All async tasks are complete, execute the overall completion callback.
 // Relinquish ownership to the callback handler.
 - (void)asyncWorkCompletedForPageContext {
+  _timeoutTimer.Stop();
+
+  if (!_completionCallback) {
+    return;
+  }
+
   [self stopTextHighlighting];
 
   PageContextWrapperCallbackResponse response;
@@ -827,6 +852,25 @@ result.links = linksArray;
       web::FindInPageJavaScriptFeature::GetInstance();
 
   find_in_page_feature->Stop(mainFrame);
+}
+
+// Called when the overall execution times out. Cancels the timer and executes
+// the completion callback with `kTimeout`.
+- (void)onTimeout {
+  if (!_completionCallback) {
+    return;
+  }
+
+  [self stopTextHighlighting];
+
+  DLOG(WARNING) << "PageContextWrapper execution timed out.";
+
+  [_pageContextMetrics
+      executionFinishedForTask:PageContextTask::kOverall
+          withCompletionStatus:PageContextCompletionStatus::kTimeout];
+
+  std::move(_completionCallback)
+      .Run(base::unexpected(PageContextWrapperError::kTimeout));
 }
 
 @end
