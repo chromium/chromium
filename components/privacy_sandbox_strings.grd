@@ -1005,20 +1005,6 @@
         When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;link&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
 
-      <!-- RWS - PageInfo -->
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_TITLE" desc="Title for a button that goes to the related sites settings page where users can manage and delete their related sites data" formatter_data="android_java">
-        Manage related sites data
-      </message>
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE" desc="Describes how related website sets are relevant to the current website the user is on and which website owns the set that the current website is a member of">
-        This site belongs to a group of sites, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can share your activity across the group to help sites work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE_ANDROID" desc="Describes how related website sets are relevant to the current website the user is on and which website owns the set that the current website is a member of" formatter_data="android_java">
-        This site belongs to a group of sites, defined by <ph name="SET_OWNER">%1$s<ex>gannett.com</ex></ph>, that can share your activity across the group to help sites work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_TOOLTIP" desc="Tooltip for the related website sets settings button. The button will open the settings page in a new tab.">
-        Manage related sites data in a new tab
-      </message>
-
       <!-- RWS - All Sites -->
       <message name="IDS_ALL_SITES_RWS_LABEL" desc="A specific indication that this website has a list of related websites associated with it." formatter_data="android_java">
         Has related sites

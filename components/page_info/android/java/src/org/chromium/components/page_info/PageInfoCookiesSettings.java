@@ -19,7 +19,6 @@ import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,7 +31,6 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
-import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsState;
@@ -72,7 +70,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mIsModeBUi;
     private boolean mBlockAll3pc;
     private boolean mIsIncognito;
-    private PageInfoControllerDelegate mPageInfoControllerDelegate;
     // Sets a constant # of days until expiration to prevent test flakiness.
     private boolean mFixedExpirationForTesting;
     private int mDaysUntilExpirationForTesting;
@@ -166,7 +163,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
      */
     @Initializer
     public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
-        mPageInfoControllerDelegate = delegate;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         mOnIncognitoSettingsLinkClicked = params.onIncognitoSettingsLinkClicked;
         mFixedExpirationForTesting = params.fixedExpirationForTesting;
@@ -527,54 +523,18 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         mRwsInUse.setVisible(true);
         mRwsInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
-        if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
-            mRwsInUse.setTitle(R.string.page_info_rws_v2_button_title);
-            mRwsInUse.setSummary(
-                    String.format(
-                            getString(R.string.page_info_rws_v2_button_subtitle_android),
-                            rwsInfo.getOwner()));
-            mRwsInUse.setOnPreferenceClickListener(
-                    preference -> {
-                        Website currentWebsite = rwsInfo.findWebsiteForOrigin(currentOrigin);
-                        if (currentWebsite != null) {
-                            mPageInfoControllerDelegate.showSiteSettings(currentWebsite);
-                            RecordUserAction.record(
-                                    "PageInfo.CookiesSubpage.RwsSiteSettingsOpened");
-                        }
-                        return false;
-                    });
-            mRwsInUse.setManagedPreferenceDelegate(
-                    new ForwardingManagedPreferenceDelegate(
-                            getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                        @Override
-                        public boolean isPreferenceControlledByPolicy(Preference preference) {
-                            return getSiteSettingsDelegate()
-                                    .isPartOfManagedRelatedWebsiteSet(currentOrigin);
-                        }
-
-                        /*
-                         * The entrypoint to site settings should work even for sites in a
-                         * managed set.
-                         */
-                        @Override
-                        public boolean isPreferenceClickDisabled(Preference preference) {
-                            return false;
-                        }
-                    });
-        } else {
-            mRwsInUse.setTitle(R.string.cookie_info_rws_title);
-            mRwsInUse.setSummary(
-                    String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
-            mRwsInUse.setManagedPreferenceDelegate(
-                    new ForwardingManagedPreferenceDelegate(
-                            getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                        @Override
-                        public boolean isPreferenceControlledByPolicy(Preference preference) {
-                            return getSiteSettingsDelegate()
-                                    .isPartOfManagedRelatedWebsiteSet(currentOrigin);
-                        }
-                    });
-        }
+        mRwsInUse.setTitle(R.string.cookie_info_rws_title);
+        mRwsInUse.setSummary(
+                String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
+        mRwsInUse.setManagedPreferenceDelegate(
+                new ForwardingManagedPreferenceDelegate(
+                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return getSiteSettingsDelegate()
+                                .isPartOfManagedRelatedWebsiteSet(currentOrigin);
+                    }
+                });
 
         return true;
     }

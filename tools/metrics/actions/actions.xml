@@ -32917,6 +32917,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PageInfo.CookiesSubpage.RwsSiteSettingsOpened">
+  <obsolete>Deprecated. Never launched.</obsolete>
   <owner>mjenn@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
