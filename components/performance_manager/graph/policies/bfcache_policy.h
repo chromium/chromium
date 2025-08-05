@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_BFCACHE_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_BFCACHE_POLICY_H_
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -14,14 +15,18 @@ namespace performance_manager::policies {
 
 // Policies that automatically flush the BFCache of pages when the system is
 // under memory pressure.
-class BFCachePolicy : public GraphOwned, public SystemNodeObserver {
+class BFCachePolicy : public GraphOwned {
  public:
-  BFCachePolicy() = default;
+  BFCachePolicy();
   BFCachePolicy(const BFCachePolicy&) = delete;
   BFCachePolicy(BFCachePolicy&&) = delete;
   BFCachePolicy& operator=(const BFCachePolicy&) = delete;
   BFCachePolicy& operator=(BFCachePolicy&&) = delete;
-  ~BFCachePolicy() override = default;
+  ~BFCachePolicy() override;
+
+  // GraphOwned:
+  void OnPassedToGraph(Graph* graph) override;
+  void OnTakenFromGraph(Graph* graph) override;
 
  protected:
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
@@ -32,12 +37,9 @@ class BFCachePolicy : public GraphOwned, public SystemNodeObserver {
                                  MemoryPressureLevel memory_pressure_level);
 
  private:
-  // GraphOwned implementation:
-  void OnPassedToGraph(Graph* graph) override;
-  void OnTakenFromGraph(Graph* graph) override;
+  void OnMemoryPressure(MemoryPressureLevel new_level);
 
-  // SystemNodeObserver:
-  void OnMemoryPressure(MemoryPressureLevel new_level) override;
+  base::MemoryPressureListener memory_pressure_listener_;
 };
 
 }  // namespace performance_manager::policies

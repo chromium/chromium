@@ -37,13 +37,16 @@ std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
 
 }  // namespace
 
-UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy() = default;
+UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
+    : memory_pressure_listener_(
+          FROM_HERE,
+          base::BindRepeating(&UrgentPageDiscardingPolicy::OnMemoryPressure,
+                              base::Unretained(this))) {}
 UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
 
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!handling_memory_pressure_notification_);
-  graph->AddSystemNodeObserver(this);
   DCHECK(PageDiscardingHelper::GetFromGraph(graph))
       << "A PageDiscardingHelper instance should be registered against the "
          "graph in order to use this policy.";
@@ -51,7 +54,6 @@ void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
 
 void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph->RemoveSystemNodeObserver(this);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

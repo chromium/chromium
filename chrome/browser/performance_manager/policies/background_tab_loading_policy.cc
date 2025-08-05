@@ -150,7 +150,11 @@ BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
     base::RepeatingClosure all_restored_tabs_loaded_callback)
     : all_restored_tabs_loaded_callback_(
           std::move(all_restored_tabs_loaded_callback)),
-      page_loader_(std::make_unique<mechanism::PageLoader>()) {
+      page_loader_(std::make_unique<mechanism::PageLoader>()),
+      memory_pressure_listener_(
+          FROM_HERE,
+          base::BindRepeating(&BackgroundTabLoadingPolicy::OnMemoryPressure,
+                              base::Unretained(this))) {
   DCHECK(!g_background_tab_loading_policy);
   g_background_tab_loading_policy = this;
   max_simultaneous_tab_loads_ = CalculateMaxSimultaneousTabLoads(
@@ -165,14 +169,12 @@ BackgroundTabLoadingPolicy::~BackgroundTabLoadingPolicy() {
 
 void BackgroundTabLoadingPolicy::OnPassedToGraph(Graph* graph) {
   graph->AddPageNodeObserver(this);
-  graph->AddSystemNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
 }
 
 void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph->RemoveSystemNodeObserver(this);
   graph->RemovePageNodeObserver(this);
 }
 

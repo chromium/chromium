@@ -570,8 +570,9 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   ::testing::Mock::VerifyAndClear(loader());
 
   // Simulate memory pressure and expect the tab loader to disable loading.
-  system_node()->OnMemoryPressureForTesting(
+  base::MemoryPressureListener::SimulatePressureNotification(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  task_env().RunUntilIdle();
 
   PageNodeImpl* page_node_impl = page_nodes[0].get();
 

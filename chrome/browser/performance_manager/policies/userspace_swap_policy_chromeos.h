@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 
+#include <optional>
+
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/graph/system_node.h"
 
 namespace ash {
 namespace memory {
@@ -28,9 +29,7 @@ namespace policies {
 
 // UserspaceSwapPolicy is a policy which will trigger a renderer to swap itself
 // via userspace.
-class UserspaceSwapPolicy : public GraphOwned,
-                            public ProcessNodeObserver,
-                            public SystemNodeObserver {
+class UserspaceSwapPolicy : public GraphOwned, public ProcessNodeObserver {
  public:
   UserspaceSwapPolicy();
 
@@ -47,10 +46,6 @@ class UserspaceSwapPolicy : public GraphOwned,
   void OnAllFramesInProcessFrozen(const ProcessNode* process_node) override;
   void OnProcessNodeAdded(const ProcessNode* process_node) override;
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
-
-  // SystemNodeObserver:
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel new_level) override;
 
   // Returns true if running on a platform that supports the kernel features
   // necessary for userspace swapping, most important would be userfaultfd(2).
@@ -103,10 +98,15 @@ class UserspaceSwapPolicy : public GraphOwned,
   uint64_t backing_store_available_bytes_ = 0;
 
  private:
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel new_level);
+
   // A helper method which sets the last trim time to the specified time.
   void SetLastSwapTime(const ProcessNode* process_node, base::TimeTicks time);
 
   void PrintAllSwapMetrics();
+
+  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
   std::unique_ptr<base::RepeatingTimer> metrics_timer_ =
       std::make_unique<base::RepeatingTimer>();
