@@ -9748,6 +9748,11 @@
     "expiry_milestone" : 145
   },
   {
+    "name": "toolbar-snapshot-refactor",
+    "owners": [ "mschillaci@google.com", "wenyufu@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name" : "toolbar-tablet-resize-refactor",
     "owners": [ "clhager@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone" : 145

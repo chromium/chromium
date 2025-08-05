@@ -3122,6 +3122,9 @@ extern const char kTabStripMouseCloseResizeDelayDescription[];
 extern const char kTabStripTransitionInDesktopWindowName[];
 extern const char kTabStripTransitionInDesktopWindowDescription[];
 
+extern const char kToolbarSnapshotRefactorName[];
+extern const char kToolbarSnapshotRefactorDescription[];
+
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 

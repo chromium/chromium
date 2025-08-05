@@ -5383,6 +5383,10 @@ const char kTabStripTransitionInDesktopWindowDescription[] =
     "Allows hiding / showing the tab strip with varying desktop window widths "
     "by initiating a fade transition.";
 
+const char kToolbarSnapshotRefactorName[] = "Toolbar Snapshot Refactor";
+const char kToolbarSnapshotRefactorDescription[] =
+    "Updates the margin and snapshotting of the Toolbar on Android.";
+
 const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
     "Use recommended AHardwareBuffer usage flags from Vulkan";
 const char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =

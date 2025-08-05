@@ -13146,6 +13146,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCanvasDrawElementDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCanvasDrawElement)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"toolbar-snapshot-refactor",
+     flag_descriptions::kToolbarSnapshotRefactorName,
+     flag_descriptions::kToolbarSnapshotRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kToolbarSnapshotRefactor)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
