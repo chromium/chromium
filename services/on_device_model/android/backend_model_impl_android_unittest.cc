@@ -46,6 +46,12 @@ class BackendModelImplAndroidTest : public testing::Test {
     return params;
   }
 
+  mojom::GenerateOptionsPtr MakeGenerateOptions(int max_output_tokens) {
+    auto options = mojom::GenerateOptions::New();
+    options->max_output_tokens = max_output_tokens;
+    return options;
+  }
+
   mojom::AppendOptionsPtr MakeInput(std::vector<ml::InputPiece> input) {
     auto options = mojom::AppendOptions::New();
     options->input = mojom::Input::New(std::move(input));
@@ -66,7 +72,8 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithDefaultFactory) {
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   TestResponseHolder response_holder;
-  session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
+  session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                    response_holder.BindRemote(),
                     /*on_complete=*/base::DoNothing());
   response_holder.WaitForCompletion();
   EXPECT_TRUE(response_holder.responses().empty());
@@ -109,13 +116,16 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
   }
 
   TestResponseHolder response_holder;
-  session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
+  session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                    response_holder.BindRemote(),
                     /*on_complete=*/base::DoNothing());
   response_holder.WaitForCompletion();
   EXPECT_THAT(
       response_holder.responses(),
       ElementsAre(
           "<system>mock system input<end><user>mock user input<end><model>"));
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_verifyGenerateOptions(
+      env_, java_helper_, /*maxOutputTokens=*/100);
   histogram_tester_.ExpectUniqueSample(
       "OnDeviceModel.Android.GenerateResult",
       BackendSessionImplAndroid::GenerateResult::kSuccess, 1);
@@ -134,7 +144,8 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithUnknownError) {
           BackendSessionImplAndroid::GenerateResult::kUnknownError));
 
   TestResponseHolder response_holder;
-  session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
+  session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                    response_holder.BindRemote(),
                     /*on_complete=*/base::DoNothing());
   response_holder.WaitForCompletion();
   EXPECT_THAT(response_holder.responses(), ElementsAre(""));
@@ -169,7 +180,7 @@ TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
 
   {
     TestResponseHolder response_holder;
-    session->Generate(mojom::GenerateOptions::New(),
+    session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
                       response_holder.BindRemote(),
                       /*on_complete=*/base::DoNothing());
     response_holder.WaitForCompletion();
@@ -192,7 +203,8 @@ TEST_F(BackendModelImplAndroidTest, NativeSessionDeletionIsSafe) {
                                                                 java_helper_);
 
   TestResponseHolder response_holder;
-  session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
+  session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
+                    response_holder.BindRemote(),
                     /*on_complete=*/base::DoNothing());
 
   // Delete the native session manually and ensure async completion doesn't

@@ -20,11 +20,13 @@ interface AiCoreSession {
      *
      * @param nativeBackendSession The pointer to the native BackendSession. Used to deliver the
      *     result back to the native side.
+     * @param generateOptions The generate options to generate the response. Should always be an
+     *     instance of mojom::GenerateOptions.
      * @param inputPieces The input pieces to generate the response. Should always be an instance of
      *     mojom::InputPiece.
      */
     @CalledByNative
-    void generate(long nativeBackendSession, Object[] inputPieces);
+    void generate(long nativeBackendSession, Object generateOptions, Object[] inputPieces);
 
     /**
      * Called when the native session is destroyed. The implementation class should not call native

@@ -9,6 +9,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.components.optimization_guide.proto.ModelExecutionProto.ModelExecutionFeature;
+import org.chromium.on_device_model.mojom.GenerateOptions;
 import org.chromium.on_device_model.mojom.InputPiece;
 import org.chromium.on_device_model.mojom.SessionParams;
 import org.chromium.on_device_model.mojom.Token;
@@ -24,11 +25,14 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
      */
     public static class MockAiCoreSession implements AiCoreSession {
         // If true, the onComplete callback will be called asynchronously through
-        // resumeOnCompleteCallback.
+        // resumeOnCompleteCallback. This field should be set before generate() is called.
         private boolean mCompleteAsync;
         private @GenerateResult int mGenerateResult;
         private boolean mNativeDestroyed;
+        // Below are the params received in the generate() call.
         private long mNativeBackendSession;
+        private GenerateOptions mGenerateOptions;
+        // Below are the params received in the constructor.
         private final ModelExecutionFeature mFeature;
         private final SessionParams mParams;
 
@@ -39,7 +43,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         }
 
         @Override
-        public void generate(long nativeBackendSession, Object[] inputPieces) {
+        public void generate(
+                long nativeBackendSession, Object generateOptions, Object[] inputPieces) {
+            assert generateOptions instanceof GenerateOptions;
+            mGenerateOptions = (GenerateOptions) generateOptions;
+
             StringBuilder sb = new StringBuilder();
             for (Object piece : inputPieces) {
                 assert piece instanceof InputPiece;
@@ -111,6 +119,12 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         SessionParams params = mMockAiCoreSessionFactory.mSession.mParams;
         assertEquals(topK, params.topK);
         assertEquals(temperature, params.temperature, 0.01f);
+    }
+
+    @CalledByNative
+    public void verifyGenerateOptions(int maxOutputTokens) {
+        GenerateOptions generateOptions = mMockAiCoreSessionFactory.mSession.mGenerateOptions;
+        assertEquals(maxOutputTokens, generateOptions.maxOutputTokens);
     }
 
     @CalledByNative

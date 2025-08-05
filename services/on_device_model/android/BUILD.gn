@@ -46,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/on_device_model/AiCoreSession.java",
     "java/src/org/chromium/on_device_model/AiCoreSessionFactory.java",
     "java/src/org/chromium/on_device_model/AiCoreSessionUpstreamImpl.java",
+    "java/src/org/chromium/on_device_model/GenerateOptionsHelper.java",
     "java/src/org/chromium/on_device_model/InputPieceHelper.java",
     "java/src/org/chromium/on_device_model/OnDeviceModelBridge.java",
   ]
@@ -82,6 +83,7 @@ android_library("native_java_unittests_java") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/on_device_model/AiCoreSession.java",
+    "java/src/org/chromium/on_device_model/GenerateOptionsHelper.java",
     "java/src/org/chromium/on_device_model/InputPieceHelper.java",
     "java/src/org/chromium/on_device_model/OnDeviceModelBridge.java",
   ]
