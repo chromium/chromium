@@ -82,7 +82,9 @@ def parse_build(build_log, root_filter=None):
 
   for line in build_log:
     m = INCLUDE_RE.match(line)
-    if m:
+    # TODO(https://crbug.com/435303792): Ignore precompiled modules (.pcm) until
+    # an appropriate way to calculate their size for include analysis is found.
+    if m and not m.group(2).endswith('.pcm'):
       if skipping_root:
         continue
       prev_depth = len(file_stack) - 1
@@ -222,14 +224,17 @@ class TestParseBuild(unittest.TestCase):
     self.assertEqual(includes['a.cc'], set(['a.h']))
     self.assertEqual(includes['c.cc'], set(['c.h']))
 
-  def test_module(self):
+  def test_modules(self):
     x = [
         'ninja: Entering directory `out/foo\'',
         '[123/234] clang -c -x c++ -Xclang -emit-module ../../a.modulemap -o a.pcm',
+        '[124/234] clang -fmodule-file=a.pcm -c ../../a.cc -o a.o',
+        '. a.pcm',
+        '. ../../a.h',
     ]
     (roots, includes) = parse_build(x)
-    self.assertEqual(len(roots), 0)
-    self.assertEqual(len(includes), 0)
+    self.assertEqual(roots, {'a.cc'})
+    self.assertEqual(includes, {'a.cc': {'a.h'}, 'a.h': set()})
 
 
 def post_order_nodes(root, child_nodes):
