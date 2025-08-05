@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <queue>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -37,16 +37,29 @@ struct FilePathWithInfo {
   base::File::Info info;
 };
 
+// Comparator to be used with priority_queue to make sure that smallest times
+// representing the oldest files are at the top.
+class FilePathWithInfoComparator {
+ public:
+  bool operator()(const FilePathWithInfo& a, const FilePathWithInfo& b) {
+    return a.info.last_modified > b.info.last_modified;
+  }
+};
+
 const base::FilePath::CharType kDbFile[] = FILE_PATH_LITERAL(".db_file");
 const base::FilePath::CharType kJournalFile[] =
     FILE_PATH_LITERAL(".journal_file");
 
 constexpr size_t kLruCacheCapacity = 100;
 
+// Character not allowed in keys or filenames (by itself). Used to mark the
+// start of a replacement token.
+constexpr char kTokenMarker = '`';
+
 // All characters allowed in filenames.
 constexpr std::string_view kAllowedCharsInFilenames =
     "abcdefghijklmnopqrstuvwxyz0123456789-._~"
-    "#[]@!$&'()+,;=";
+    "#[]@!$&'()+,;= ";
 
 // Use to translate a character `c` viable for a filename into another arbitrary
 // but equally viable character. To reverse the process the function is called
@@ -81,20 +94,20 @@ std::optional<char> RotateChar(char c, bool forward) {
 // Mapping of characters illegal in filenames to a unique token to represent
 // them in filenames. This prevents collisions by avoiding two characters get
 // mapped to the same value. Ex:
-// "*/" --> " 9 2"
-// "><" --> " 5 4"
+// "*/" --> "`9`2"
+// "><" --> "`5`4"
 //
-// Mapping both strings to " 1 1" for example would result in a valid filename
+// Mapping both strings to "`1`1" for example would result in a valid filename
 // but in backing files being shared for two keys which is not correct.
-static_assert(kAllowedCharsInFilenames.find(' ') == std::string::npos,
+static_assert(kAllowedCharsInFilenames.find(kTokenMarker) == std::string::npos,
               "Space is not allowed in filenames by itself.");
 using ConstStringPair = std::pair<char, const char*>;
 std::array<ConstStringPair, 10> kCharacterToTokenMap{
-    ConstStringPair{'\\', " 1"}, ConstStringPair{'/', " 2"},
-    ConstStringPair{'|', " 3"},  ConstStringPair{'<', " 4"},
-    ConstStringPair{'>', " 5"},  ConstStringPair{':', " 6"},
-    ConstStringPair{'\"', " 7"}, ConstStringPair{'?', " 8"},
-    ConstStringPair{'*', " 9"},  ConstStringPair{'\n', " 0"}};
+    ConstStringPair{'\\', "`1"}, ConstStringPair{'/', "`2"},
+    ConstStringPair{'|', "`3"},  ConstStringPair{'<', "`4"},
+    ConstStringPair{'>', "`5"},  ConstStringPair{':', "`6"},
+    ConstStringPair{'\"', "`7"}, ConstStringPair{'?', "`8"},
+    ConstStringPair{'*', "`9"},  ConstStringPair{'\n', "`0"}};
 
 // Use to get a token to insert in a filename if `c` is a character
 // illegal in filenames and an empty string if it's not.
@@ -157,7 +170,7 @@ void BackendParamsManager::GetParamsSyncOrCreateAsync(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&BackendParamsManager::CreateParamsSync, top_directory_,
-                     backend_type, key, access_rights),
+                     backend_type, filename, access_rights),
       base::BindOnce(&BackendParamsManager::SaveParams,
                      weak_factory_.GetWeakPtr(), key, std::move(callback)));
 }
@@ -212,18 +225,21 @@ FootprintReductionResult BackendParamsManager::BringDownTotalFootprintOfFiles(
   backend_params_map_.Clear();
 
   int64_t total_footprint = 0;
-  std::vector<FilePathWithInfo> filepaths_with_info;
+
+  std::priority_queue<FilePathWithInfo, std::vector<FilePathWithInfo>,
+                      FilePathWithInfoComparator>
+      file_paths_with_info;
   base::FileEnumerator file_enumerator(top_directory_, /*recursive=*/false,
                                        base::FileEnumerator::FILES);
 
-  file_enumerator.ForEach([&total_footprint, &filepaths_with_info](
+  file_enumerator.ForEach([&total_footprint, &file_paths_with_info](
                               const base::FilePath& file_path) {
     base::File::Info info;
     base::GetFileInfo(file_path, &info);
 
     // Only target database files for deletion.
     if (file_path.MatchesFinalExtension(kDbFile)) {
-      filepaths_with_info.emplace_back(file_path, info);
+      file_paths_with_info.emplace(file_path, info);
     }
 
     // All files count towards measured footprint.
@@ -236,20 +252,15 @@ FootprintReductionResult BackendParamsManager::BringDownTotalFootprintOfFiles(
                                     .number_of_bytes_deleted = 0};
   }
 
-  // Order files from least to most recently modified to prioritize deleting
-  // older staler files.
-  std::sort(filepaths_with_info.begin(), filepaths_with_info.end(),
-            [](const FilePathWithInfo& left, const FilePathWithInfo& right) {
-              return left.info.last_modified < right.info.last_modified;
-            });
-
   int64_t size_of_necessary_deletes = total_footprint - target_footprint;
   int64_t deleted_size = 0;
 
-  for (const FilePathWithInfo& file_path_with_info : filepaths_with_info) {
+  while (!file_paths_with_info.empty()) {
     if (size_of_necessary_deletes <= deleted_size) {
       break;
     }
+
+    const FilePathWithInfo& file_path_with_info = file_paths_with_info.top();
 
     bool db_file_delete_success =
         base::DeleteFile(file_path_with_info.file_path);
@@ -276,6 +287,8 @@ FootprintReductionResult BackendParamsManager::BringDownTotalFootprintOfFiles(
         deleted_size += journal_file_info.size;
       }
     };
+
+    file_paths_with_info.pop();
   }
 
   return FootprintReductionResult{
@@ -313,10 +326,10 @@ std::string BackendParamsManager::KeyFromFileName(const std::string& filename) {
   key.reserve(filename.size());
 
   for (auto it = filename.begin(); it != filename.end(); ++it) {
-    if (*it == ' ') {
-      // Spaces cannot be by themselves in filenames. Return an empty string
-      // instead of CHECKing here because it's not advisable to have a crash
-      // because something renamed a file.
+    if (*it == kTokenMarker) {
+      // Token markers cannot be by themselves in filenames. Return an empty
+      // string instead of CHECKing here because it's not advisable to have a
+      // crash because something renamed a file.
       if (it + 1 == filename.end()) {
         return "";
       }
@@ -331,8 +344,9 @@ std::string BackendParamsManager::KeyFromFileName(const std::string& filename) {
         continue;
       }
 
-      // If executiion gets here it's that a space was followed by a character
-      // that didn't resolve to anything. This means the file name is invalid.
+      // If execution gets here it's that a token marker was followed by a
+      // character that didn't resolve to anything. This means the file name is
+      // invalid.
       return "";
     } else {
       std::optional<char> rotated_char = RotateChar(*it, false);

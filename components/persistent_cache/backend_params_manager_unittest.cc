@@ -309,8 +309,8 @@ TEST_F(BackendParamsManagerTest, FullAllowedCharacterSetHandled) {
 
 TEST(BackendParamsManager, KeyToFileName) {
   // Invalid tokens results in empty string and not a crash.
-  EXPECT_EQ(BackendParamsManager::KeyFromFileName(" "), "");
-  EXPECT_EQ(BackendParamsManager::KeyFromFileName("  "), "");
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName("`"), "");
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName("``"), "");
 
   // Invalid characters result in an empty string and not a crash.
   EXPECT_EQ(BackendParamsManager::KeyFromFileName("/"), "");
