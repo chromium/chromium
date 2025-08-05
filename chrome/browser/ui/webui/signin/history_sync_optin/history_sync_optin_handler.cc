@@ -95,6 +95,10 @@ void HistorySyncOptinHandler::AddHistorySyncConsent() {
   // if it's not already turned on.
   sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, /*is_type_on=*/true);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, /*is_type_on=*/true);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kSavedTabGroups, /*is_type_on=*/true);
 }
 
 void HistorySyncOptinHandler::OnAvatarChanged(const AccountInfo& info) {
