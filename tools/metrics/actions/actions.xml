@@ -3731,12 +3731,31 @@ should be able to be added at any place in this file.
   <description>The survey infobar was displayed.</description>
 </action>
 
+<action name="Android.WindowManager.ChangeWindowName">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>rathomas@google.com</owner>
+  <description>
+    User tapped 'Save' on the dialog opened via the 3-dot menu on the in-app
+    window manager to successfully save and change the name of a Chrome window
+    and dismiss the dialog.
+  </description>
+</action>
+
 <action name="Android.WindowManager.CloseWindow">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
     User tapped Close in the 3-dot menu from the in-app window manager to remove
     a Chrome window.
+  </description>
+</action>
+
+<action name="Android.WindowManager.NameWindow">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>rathomas@google.com</owner>
+  <description>
+    User tapped 'Name' on the 3-dot menu on the in-app window manager to name a
+    Chrome window.
   </description>
 </action>
 
@@ -3764,6 +3783,16 @@ should be able to be added at any place in this file.
   <description>
     User tapped on 'Restore' in Chrome's in-app window manager to restore an
     inactive Window and bring it to the foreground.
+  </description>
+</action>
+
+<action name="Android.WindowManager.SaveWindowName">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>rathomas@google.com</owner>
+  <description>
+    User tapped 'Save' on the dialog opened via the 3-dot menu on the in-app
+    window manager to successfully save the name of a Chrome window and dismiss
+    the dialog.
   </description>
 </action>
 

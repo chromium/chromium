@@ -710,6 +710,7 @@ public class InstanceSwitcherCoordinator {
     }
 
     private void showNameWindowDialog(InstanceInfo item) {
+        RecordUserAction.record("Android.WindowManager.NameWindow");
         int style = R.style.Theme_Chromium_Multiwindow_RenameWindowDialog;
         Dialog dialog = new Dialog(mContext, style);
         dialog.setCanceledOnTouchOutside(true);
@@ -733,17 +734,23 @@ public class InstanceSwitcherCoordinator {
                 v -> {
                     String newTitle = Objects.toString(editText.getText(), "").trim();
                     if (!TextUtils.isEmpty(newTitle)) {
-                        ModelList list =
-                                mIsInactiveListShowing ? mInactiveModelList : mActiveModelList;
-                        for (ListItem listItem : list) {
-                            if (listItem.model.get(InstanceSwitcherItemProperties.INSTANCE_ID)
-                                    == item.instanceId) {
-                                listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);
-                                break;
+                        RecordUserAction.record("Android.WindowManager.SaveWindowName");
+                        if (!newTitle.equals(mUiUtils.getItemTitle(item))) {
+                            ModelList list =
+                                    mIsInactiveListShowing ? mInactiveModelList : mActiveModelList;
+                            for (ListItem listItem : list) {
+                                if (listItem.model.get(InstanceSwitcherItemProperties.INSTANCE_ID)
+                                        == item.instanceId) {
+                                    listItem.model.set(
+                                            InstanceSwitcherItemProperties.TITLE, newTitle);
+                                    break;
+                                }
+                                mRenameWindowCallback.onResult(
+                                        new Pair<>(item.instanceId, newTitle));
                             }
+                            RecordUserAction.record("Android.WindowManager.ChangeWindowName");
                         }
                         dialog.dismiss();
-                        mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
                     } else {
                         textInputLayout.setError(
                                 mContext.getString(
