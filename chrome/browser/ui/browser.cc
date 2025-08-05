@@ -59,6 +59,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -173,6 +174,7 @@
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/find_in_page/find_tab_helper.h"
+#include "components/headless/console_message_logger/headless_console_message_logger.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -2277,6 +2279,22 @@ void Browser::ContentsZoomChange(bool zoom_in) {
 }
 
 bool Browser::TakeFocus(content::WebContents* source, bool reverse) {
+  return false;
+}
+
+bool Browser::DidAddMessageToConsole(
+    content::WebContents* source,
+    blink::mojom::ConsoleMessageLevel log_level,
+    const std::u16string& message,
+    int32_t line_no,
+    const std::u16string& source_id) {
+  static bool is_headless_mode = headless::IsHeadlessMode();
+  if (is_headless_mode) {
+    const bool is_builtin_component = !!source->GetWebUI();
+    headless::LogConsoleMessage(log_level, message, line_no,
+                                is_builtin_component, source_id);
+    return true;
+  }
   return false;
 }
 

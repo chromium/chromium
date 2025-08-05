@@ -1604,6 +1604,7 @@ static_library("ui") {
       "//components/endpoint_fetcher",
       "//components/enterprise/common:files_scan_data",
       "//components/feedback/proto",
+      "//components/headless/console_message_logger",
       "//components/headless/policy",
       "//components/history_embeddings",
       "//components/keep_alive_registry",

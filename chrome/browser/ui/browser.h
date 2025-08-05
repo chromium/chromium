@@ -933,6 +933,11 @@ class Browser : public TabStripModelObserver,
                           const ui::Event& event) override;
   void ContentsZoomChange(bool zoom_in) override;
   bool TakeFocus(content::WebContents* source, bool reverse) override;
+  bool DidAddMessageToConsole(content::WebContents* source,
+                              blink::mojom::ConsoleMessageLevel log_level,
+                              const std::u16string& message,
+                              int32_t line_no,
+                              const std::u16string& source_id) override;
   void BeforeUnloadFired(content::WebContents* source,
                          bool proceed,
                          bool* proceed_to_fire_unload) override;
