@@ -152,6 +152,17 @@ proto_library("device_bound_sessions_storage_proto") {
   sources = [ "device_bound_sessions/proto/storage.proto" ]
 }
 
+source_set("net_features") {
+  sources = [ "base/features.h" ]
+  deps = [
+    ":buildflags",
+    ":disk_cache_buildflags",
+    ":net_export_header",
+    "//base",
+    "//crypto:buildflags",
+  ]
+}
+
 component("net") {
   sources = [
     "base/address_family.cc",
@@ -183,7 +194,6 @@ component("net") {
     "base/elements_upload_data_stream.h",
     "base/expiring_cache.h",
     "base/features.cc",
-    "base/features.h",
     "base/file_stream.cc",
     "base/file_stream.h",
     "base/file_stream_context.cc",
@@ -1164,6 +1174,7 @@ component("net") {
   public_deps = [
     ":disk_cache_buildflags",
     ":net_export_header",
+    ":net_features",
     ":net_public_deps",
     "//base",
     "//net/dns",
@@ -1840,6 +1851,7 @@ source_set("net_deps") {
     ":cronet_buildflags",
     ":isolation_info_proto",
     ":net_export_header",
+    ":net_features",
     ":preload_decoder",
     "//base",
     "//net/base/registry_controlled_domains",
