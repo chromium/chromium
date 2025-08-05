@@ -294,15 +294,7 @@ FieldType AutofillType::GetAutofillAiTypeAndResolveTagTypes(
 }
 
 std::string AutofillType::ToString() const {
-  return std::visit(
-      absl::Overload{
-          [](const FieldTypeSet& field_types) {
-            return !field_types.empty()
-                       ? FieldTypeSetToString(field_types)
-                       : FieldTypeSetToString({NO_SERVER_DATA});
-          },
-          [](HtmlFieldType html_type) { return FieldTypeToString(html_type); }},
-      types_);
+  return FieldTypeSetToString(GetTypes());
 }
 
 }  // namespace autofill
