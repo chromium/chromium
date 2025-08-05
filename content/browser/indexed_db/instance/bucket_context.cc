@@ -51,7 +51,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/types/expected.h"
-#include "build/build_config.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
@@ -169,24 +168,6 @@ DatabaseError CreateDefaultError() {
       blink::mojom::IDBException::kUnknownError,
       u"Internal error opening backing store for indexedDB.open.");
 }
-
-#if !BUILDFLAG(IS_FUCHSIA)
-// Logs when a path was too long for the filesystem, or when it wasn't. This is
-// called twice for every call to Open() a database, once with true `is_sqlite`
-// and once with false. When the longest path that would be used for a given
-// backend is short enough to fit on the file system, this will be called with
-// `length` of 0. Otherwise, it's called with the length of the path that was
-// too long.
-void LogDatabasePathOverflow(size_t length, bool is_sqlite) {
-  if (is_sqlite) {
-    base::UmaHistogramCounts1000("IndexedDB.DatabasePathOverflow.SQLite",
-                                 length);
-  } else {
-    base::UmaHistogramCounts1000("IndexedDB.DatabasePathOverflow.LevelDB",
-                                 length);
-  }
-}
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 
@@ -588,38 +569,6 @@ void BucketContext::Open(
   IndexedDBDataLossInfo data_loss_info;
   std::tie(s, error, data_loss_info) =
       InitBackingStoreIfNeeded(/*create_if_missing=*/true);
-
-  // base::GetMaximumPathComponentLength() is hard-coded to return 1024 on
-  // Fuchsia, despite that filenames much shorter than that give "Filename too
-  // long (36)" errors when actual file operations are attempted on them.
-  // Therefore these histograms would be meaningless on Fuchsia.
-#if !BUILDFLAG(IS_FUCHSIA)
-  // Log some metrics to determine if the hypothetical SQLite database path may
-  // be problematic.
-  if (!in_memory()) {
-    const base::FilePath sqlite_directory_path =
-        data_path_.Append(GetSqliteDbDirectory(bucket_locator()));
-    // IsPathTooLong() will only work if the base directory exists, so we must
-    // create it if it doesn't already exist (as will be the case when this
-    // bucket is using LevelDB, or if the data path was too long).
-    const bool directory_path_existed = base::PathExists(sqlite_directory_path);
-    bool directory_path_exists = directory_path_existed ||
-                                 (!IsPathTooLong(sqlite_directory_path) &&
-                                  base::CreateDirectory(sqlite_directory_path));
-    base::FilePath sqlite_database_longest_path =
-        sqlite_directory_path.Append(DatabaseNameToFileName(name))
-            .InsertBeforeExtensionASCII("-wal");
-    const size_t sqlite_longest_path_length =
-        !directory_path_exists || IsPathTooLong(sqlite_database_longest_path)
-            ? sqlite_database_longest_path.value().length()
-            : 0;
-    if (!directory_path_existed) {
-      base::DeleteFile(sqlite_directory_path);
-    }
-    LogDatabasePathOverflow(sqlite_longest_path_length, /*is_sqlite=*/true);
-  }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-
   if (!backing_store_) {
     FactoryClient(std::move(factory_client)).OnError(error);
     if (s.IsCorruption()) {
@@ -1029,35 +978,11 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     }
 
     if (IsPathTooLong(database_path)) {
-#if !BUILDFLAG(IS_FUCHSIA)
-      if (!ShouldUseSqlite()) {
-        LogDatabasePathOverflow(database_path.value().length(),
-                                /*is_sqlite=*/false);
-      }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
       ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
                        bucket_locator());
       return {Status::IOError("File path too long"), CreateDefaultError(),
               IndexedDBDataLossInfo()};
     }
-
-#if !BUILDFLAG(IS_FUCHSIA)
-    if (!ShouldUseSqlite()) {
-      // The directory path must exist for the below IsPathTooLong() to work.
-      bool directory_exists = base::CreateDirectory(database_path);
-      // This is the longest filename that LevelDB uses inside its directory.
-      // This is logged for purposes of comparing to
-      // IndexedDB.DatabasePathOverflow.SQLite.
-      base::FilePath leveldb_longest_path =
-          database_path.Append(FILE_PATH_LITERAL("MANIFEST-123456"));
-      const size_t leveldb_path_length =
-          (!directory_exists || IsPathTooLong(leveldb_longest_path))
-              ? leveldb_longest_path.value().length()
-              : 0U;
-      LogDatabasePathOverflow(leveldb_path_length, /*is_sqlite=*/false);
-    }
-#endif
-
     if (ShouldUseSqlite() && !base::CreateDirectory(database_path)) {
       ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
                        bucket_locator());
