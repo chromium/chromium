@@ -202,7 +202,8 @@ void ContextMenuController::DocumentDetached(Document* document) {
 
 void ContextMenuController::HandleContextMenuEvent(MouseEvent* mouse_event) {
   DCHECK(mouse_event->type() == event_type_names::kContextmenu);
-  LocalFrame* frame = mouse_event->target()->ToNode()->GetDocument().GetFrame();
+  LocalFrame* frame =
+      mouse_event->RawTarget()->ToNode()->GetDocument().GetFrame();
   PhysicalOffset location =
       PhysicalOffset::FromPointFRound(mouse_event->AbsoluteLocation());
 
@@ -482,7 +483,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
           ->GetEditor());
 
   if (mouse_event && source_type == kMenuSourceKeyboard) {
-    Node* target_node = mouse_event->target()->ToNode();
+    Node* target_node = mouse_event->RawTarget()->ToNode();
     if (target_node && IsA<Element>(target_node)) {
       // Get the url from an explicitly set target, e.g. the focused element
       // when the context menu is evoked from the keyboard. Note: the innerNode

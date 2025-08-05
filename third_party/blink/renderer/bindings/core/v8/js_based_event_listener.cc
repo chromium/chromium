@@ -56,7 +56,7 @@ void JSBasedEventListener::Invoke(
     Event* event) {
   DCHECK(execution_context_of_event_target);
   DCHECK(event);
-  DCHECK(event->target());
+  DCHECK(event->RawTarget());
   DCHECK(event->currentTarget());
 
   v8::Isolate* isolate = GetIsolate();
@@ -142,7 +142,7 @@ void JSBasedEventListener::Invoke(
     // Step 8-2: If |struct|’s invocation-target-in-shadow-tree is false (i.e.,
     // event's target is in a shadow tree), then set |global|’s current
     // event to event.
-    Node* target_node = event->target()->ToNode();
+    Node* target_node = event->RawTarget()->ToNode();
     if (!(target_node && target_node->IsInShadowTree()))
       window->SetCurrentEvent(event);
   }

@@ -197,7 +197,7 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
     return MouseEvent::DispatchEvent(dispatcher);
   }
 
-  DCHECK(!target() || target() != relatedTarget());
+  DCHECK(!RawTarget() || RawTarget() != relatedTarget());
 
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 

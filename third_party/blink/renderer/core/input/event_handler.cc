@@ -2442,7 +2442,7 @@ bool EventHandler::HandleTextInputEvent(const String& text,
 
   EventTarget* target;
   if (underlying_event)
-    target = underlying_event->target();
+    target = underlying_event->RawTarget();
   else
     target = EventTargetNodeForDocument(frame_->GetDocument());
   if (!target)

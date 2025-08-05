@@ -200,7 +200,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
 
   if (frame && window) {
-    eventTiming = EventTiming::TryCreate(window, *event_, event_->target());
+    eventTiming = EventTiming::TryCreate(window, *event_, event_->RawTarget());
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
@@ -258,7 +258,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
-  DCHECK(event_->target());
+  DCHECK(event_->RawTarget());
   DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
                                 inspector_event_dispatch_event::Data, *event_,
                                 document.GetAgent().isolate());
@@ -373,7 +373,7 @@ inline void EventDispatcher::DispatchEventPostProcess(
     // Fire an accessibility event indicating a node was clicked on.  This is
     // safe if event_->target()->ToNode() returns null.
     if (AXObjectCache* cache = node_->GetDocument().ExistingAXObjectCache())
-      cache->HandleClicked(event_->target()->ToNode());
+      cache->HandleClicked(event_->RawTarget()->ToNode());
 
     // Pass the data from the PreDispatchEventHandler to the
     // PostDispatchEventHandler.
@@ -448,8 +448,9 @@ inline void EventDispatcher::DispatchEventPostProcess(
   // 16. If target's root is a shadow root, then set event's target attribute
   // and event's relatedTarget to null.
   event_->SetTarget(event_->GetEventPath().GetWindowEventContext().Target());
-  if (!event_->target())
+  if (!event_->RawTarget()) {
     event_->SetRelatedTargetIfExists(nullptr);
+  }
 }
 
 }  // namespace blink

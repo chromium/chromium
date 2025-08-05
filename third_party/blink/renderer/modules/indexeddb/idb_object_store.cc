@@ -729,7 +729,7 @@ class IndexPopulator final : public NativeEventListener {
 
     DCHECK_EQ(ExecutionContext::From(script_state_), execution_context);
     DCHECK_EQ(event->type(), event_type_names::kSuccess);
-    EventTarget* target = event->target();
+    EventTarget* target = event->RawTarget();
     IDBRequest* request = static_cast<IDBRequest*>(target);
 
     ScriptState::Scope scope(script_state_);

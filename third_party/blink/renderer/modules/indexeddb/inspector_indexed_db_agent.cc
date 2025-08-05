@@ -341,7 +341,7 @@ class OpenDatabaseCallback final : public NativeEventListener {
     }
 
     IDBOpenDBRequest* idb_open_db_request =
-        static_cast<IDBOpenDBRequest*>(event->target());
+        static_cast<IDBOpenDBRequest*>(event->RawTarget());
     IDBAny* request_result = idb_open_db_request->ResultAsAny();
     if (request_result->GetType() != IDBAny::kIDBDatabaseType) {
       executable_with_database_->GetRequestCallback()->sendFailure(
@@ -391,7 +391,7 @@ class UpgradeDatabaseCallback final : public NativeEventListener {
     // had previously been enumerated was deleted. We don't want to
     // implicitly re-create it here, so abort the transaction.
     IDBOpenDBRequest* idb_open_db_request =
-        static_cast<IDBOpenDBRequest*>(event->target());
+        static_cast<IDBOpenDBRequest*>(event->RawTarget());
     NonThrowableExceptionState exception_state;
     idb_open_db_request->transaction()->abort(exception_state);
     executable_with_database_->GetRequestCallback()->sendFailure(
@@ -644,7 +644,7 @@ class OpenCursorCallback final : public NativeEventListener {
       return;
     }
 
-    IDBRequest* idb_request = static_cast<IDBRequest*>(event->target());
+    IDBRequest* idb_request = static_cast<IDBRequest*>(event->RawTarget());
     IDBAny* request_result = idb_request->ResultAsAny();
     if (request_result->GetType() == IDBAny::kIDBValueType) {
       end(false);
@@ -945,7 +945,7 @@ class GetMetadataListener final : public NativeEventListener {
       return;
     }
 
-    IDBRequest* idb_request = static_cast<IDBRequest*>(event->target());
+    IDBRequest* idb_request = static_cast<IDBRequest*>(event->RawTarget());
     IDBAny* request_result = idb_request->ResultAsAny();
     if (request_result->GetType() != IDBAny::kIntegerType) {
       NotifySubtaskDone(owner_, "Unexpected result type.");

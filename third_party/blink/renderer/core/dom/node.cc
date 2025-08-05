@@ -3268,8 +3268,9 @@ void Node::DispatchSimulatedClick(const Event* underlying_event,
 }
 
 void Node::DefaultEventHandler(Event& event) {
-  if (event.target() != this)
+  if (event.RawTarget() != this) {
     return;
+  }
   const AtomicString& event_type = event.type();
   if (event_type == event_type_names::kKeydown ||
       event_type == event_type_names::kKeypress ||

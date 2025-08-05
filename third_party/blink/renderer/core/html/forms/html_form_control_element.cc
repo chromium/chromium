@@ -437,7 +437,7 @@ void HTMLFormControlElement::HandlePopoverActivation(Event& event,
   auto popover = popoverTargetElement(element);
   if (popover.popover) {
     bool event_target_was_nested_popover = false;
-    if (auto* target_node = event.target()->ToNode()) {
+    if (auto* target_node = event.RawTarget()->ToNode()) {
       bool button_is_ancestor_of_popover =
           element.IsShadowIncludingAncestorOf(*popover.popover);
       event_target_was_nested_popover =

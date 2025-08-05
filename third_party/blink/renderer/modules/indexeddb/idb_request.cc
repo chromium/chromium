@@ -880,7 +880,7 @@ DispatchEventResult IDBRequest::DispatchEventInternal(Event& event) {
     return DispatchEventResult::kCanceledBeforeDispatch;
   DCHECK_EQ(ready_state_, PENDING);
   DCHECK(has_pending_activity_);
-  DCHECK_EQ(event.target(), this);
+  DCHECK_EQ(event.RawTarget(), this);
 
   if (event.type() != event_type_names::kBlocked) {
     ready_state_ = DONE;

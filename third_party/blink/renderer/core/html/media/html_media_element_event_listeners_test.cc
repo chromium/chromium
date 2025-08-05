@@ -577,17 +577,17 @@ class CueEventListener final : public NativeEventListener {
  public:
   void Invoke(ExecutionContext* ctx, Event* event) override {
     if (event->type() == event_type_names::kEnter) {
-      EXPECT_TRUE(event->target()->GetWrapperTypeInfo()->Equals(
+      EXPECT_TRUE(event->RawTarget()->GetWrapperTypeInfo()->Equals(
           VTTCue::GetStaticWrapperTypeInfo()));
-      auto* const cue = static_cast<VTTCue*>(event->target());
+      auto* const cue = static_cast<VTTCue*>(event->RawTarget());
       auto* const media_element = cue->track()->MediaElement();
 
       OnCueEnter(media_element, cue);
       return;
     } else if (event->type() == event_type_names::kExit) {
-      EXPECT_TRUE(event->target()->GetWrapperTypeInfo()->Equals(
+      EXPECT_TRUE(event->RawTarget()->GetWrapperTypeInfo()->Equals(
           VTTCue::GetStaticWrapperTypeInfo()));
-      auto* const cue = static_cast<VTTCue*>(event->target());
+      auto* const cue = static_cast<VTTCue*>(event->RawTarget());
       auto* const media_element = cue->track()->MediaElement();
 
       OnCueExit(media_element, cue);

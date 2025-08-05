@@ -105,8 +105,8 @@ const AtomicString& BeforeInstallPromptEvent::InterfaceName() const {
 
 void BeforeInstallPromptEvent::preventDefault() {
   Event::preventDefault();
-  if (target()) {
-    UseCounter::Count(target()->GetExecutionContext(),
+  if (RawTarget()) {
+    UseCounter::Count(RawTarget()->GetExecutionContext(),
                       WebFeature::kBeforeInstallPromptEventPreventDefault);
   }
 }

@@ -127,7 +127,7 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
       is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RETURN ||
                       To<KeyboardEvent>(event).keyCode() == VKEY_SPACE);
   bool should_intercept =
-      event.target() == this && (is_click || is_enter_or_space);
+      event.RawTarget() == this && (is_click || is_enter_or_space);
   if (should_intercept) {
     HandleButtonActivation();
     event.SetDefaultHandled();
