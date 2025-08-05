@@ -7054,13 +7054,10 @@ crbug.com/1456384 external/wpt/event-timing/interactionid-keypress.html [ Failur
 crbug.com/1446711 [ Mac ] media/controls/playback-speed-menu.html [ Timeout ]
 crbug.com/1446711 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/accessibility-playback-speed-button.html [ Timeout ]
 crbug.com/1472813 [ Mac ] virtual/close-watcher/external/wpt/close-watcher/user-activation-shared.html?CloseWatcher [ Timeout ]
-crbug.com/1492172 [ Win ] external/wpt/soft-navigation-heuristics/softnav-before-lcp-paint.tentative.html [ Failure ]
 crbug.com/1491472 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/debugger-pause-on-first-script.js [ Skip Timeout ]
 crbug.com/1462683 [ Mac13-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
 crbug.com/1462683 [ Mac12-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
 
-crbug.com/1455262 virtual/threaded/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
-crbug.com/1455262 virtual/view-transition-mpa-serialization/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
 crbug.com/324293120 [ Debug Linux ] external/wpt/webstorage/event_case_sensitive.html [ Failure Pass ]
 
 # Sheriff 2022-10-07
@@ -7776,7 +7773,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/elements/styles-4/styles-source-lines-inline.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/printing/page-count-layout-overflow.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-2d-worker.html [ Skip Timeout ]
-[ Debug Mac13 ] external/wpt/soft-navigation-heuristics/back.tentative.html [ Skip Timeout ]
 [ Debug Mac13 ] fast/forms/label/label-event-order.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-snap/root-scroller-snap-behaviour/smooth-scroll-snaps-visual-viewport.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/animations/stability/keyframe-timing-function-unset-crash.html [ Skip Timeout ]
@@ -9409,7 +9405,6 @@ crbug.com/402564647 external/wpt/scroll-to-text-fragment/scroll-to-text-diretive
 # Gardener 2025-03-06
 crbug.com/400726001 [ Win ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
 crbug.com/400726001 [ Mac14 ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
-crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Failure Pass Timeout ]
 
 # Gardener 2025-03-07
 crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Pass Timeout ]
@@ -9554,7 +9549,6 @@ crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-se
 crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-allowed-by-hash-long-script.sub.html [ Pass ]
 
 # Gardener 2025-06-16
-crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentative/contracted-image.html [ Failure Pass ]
 crbug.com/420596996 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.serviceworker.html?gpu [ Failure Pass ]
 
 # <object> loaded HTML doesn't receive drag and drop events
@@ -9573,13 +9567,6 @@ crbug.com/426602897 external/wpt/screen-capture/delegate-request.https.sub.html 
 
 # Gardener 2025-06-26
 crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-text.tentative.html [ Failure Pass ]
-crbug.com/427766096 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/load-classic-script-history-push.tentative.html [ Failure Pass ]
-crbug.com/427679620 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/load-module-script-history-push.tentative.html [ Failure Pass ]
-crbug.com/427612820 external/wpt/soft-navigation-heuristics/load-module-script-history-push.tentative.html [ Failure Pass ]
-crbug.com/427612820 external/wpt/soft-navigation-heuristics/load-classic-script-history-push.tentative.html [ Failure Pass ]
-# Flaky soft-navigation-heuristics WPT test which was ported from LCP (under investigation)
-crbug.com/426391960 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
-crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
 
 # Gardener 2025-07-03
 crbug.com/429394126 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
@@ -9594,6 +9581,16 @@ crbug.com/429413927 [ Linux ] inspector-protocol/dom/dom-issue-disallowed-select
 # as [ Pass ] as the parsing tests should still pass.
 crbug.com/429392773 external/wpt/scroll-animations/animation-trigger/* [ Failure Timeout ]
 crbug.com/429392773 external/wpt/scroll-animations/animation-trigger/parsing/* [ Pass ]
+
+# Flaky Soft Navigation Heuristics tests
+crbug.com/1455262 virtual/threaded/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
+crbug.com/1455262 virtual/view-transition-mpa-serialization/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
+[ Debug Mac13 ] external/wpt/soft-navigation-heuristics/back.tentative.html [ Skip Timeout ]
+crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Failure Pass Timeout ]
+crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentative/contracted-image.html [ Failure Pass ]
+# Flaky soft-navigation-heuristics WPT test which was ported from LCP (under investigation)
+crbug.com/426391960 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
+crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
 
 # Gardener 2025-07-09
 crbug.com/430344948 [ Mac14-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?cpu [ Failure Pass ]
