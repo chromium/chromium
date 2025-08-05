@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -71,6 +72,24 @@ TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
   ExpectNotification(&MemoryPressureListener::NotifyMemoryPressure,
                      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
   ExpectNotification(&MemoryPressureListener::SimulatePressureNotification,
+                     MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
+  auto listener_to_be_deleted = std::make_unique<MemoryPressureListener>(
+      FROM_HERE, BindRepeating([](MemoryPressureListener::MemoryPressureLevel) {
+        FAIL() << "Async callback should not be called.";
+      }));
+
+  auto deleter_listener = std::make_unique<MemoryPressureListener>(
+      FROM_HERE, DoNothing(), BindLambdaForTesting([&](MemoryPressureLevel) {
+        // This should not deadlock.
+        listener_to_be_deleted.reset();
+      }));
+
+  // This should trigger the sync callback in |deleter_listener|, which will
+  // delete |listener_to_be_deleted|.
+  ExpectNotification(&MemoryPressureListener::NotifyMemoryPressure,
                      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 

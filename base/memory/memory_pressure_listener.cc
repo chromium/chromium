@@ -41,8 +41,11 @@ class MemoryPressureObserver {
 
   void RemoveObserver(MemoryPressureListener* listener) {
     async_observers_->RemoveObserver(listener);
-    AutoLock lock(sync_observers_lock_);
-    sync_observers_.RemoveObserver(listener);
+    if (listener->has_sync_callback()) {
+      sync_observers_lock_.AssertNotHeld();
+      AutoLock lock(sync_observers_lock_);
+      sync_observers_.RemoveObserver(listener);
+    }
   }
 
   void Notify(

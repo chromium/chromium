@@ -22,8 +22,13 @@ namespace base {
 // simply delete the listener object. The implementation guarantees
 // that the callback will always be called on the thread that created
 // the listener.
-// Note that even on the same thread, the callback is not guaranteed to be
-// called synchronously within the system memory pressure broadcast.
+//
+// Note that even on the same thread, the MemoryPressureCallback will not be
+// called within the system memory pressure broadcast. If synchronous
+// invocation is desired, a SyncMemoryPressureCallback can be provided.
+// However, deleting a listener with a synchronous callback from within a
+// synchronous callback is not supported and will deadlock.
+//
 // Please see notes in MemoryPressureLevel enum below: some levels are
 // absolutely critical, and if not enough memory is returned to the system,
 // it'll potentially kill the app, and then later the app will have to be
@@ -103,11 +108,15 @@ class BASE_EXPORT MemoryPressureListener {
   void Notify(MemoryPressureLevel memory_pressure_level);
   void SyncNotify(MemoryPressureLevel memory_pressure_level);
 
+  bool has_sync_callback() const {
+    return !sync_memory_pressure_callback_.is_null();
+  }
+
  private:
   static void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
-  MemoryPressureCallback callback_;
-  SyncMemoryPressureCallback sync_memory_pressure_callback_;
+  const MemoryPressureCallback callback_;
+  const SyncMemoryPressureCallback sync_memory_pressure_callback_;
 
   const base::Location creation_location_;
 };
