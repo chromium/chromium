@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_MOCK_LEAK_DETECTION_DELEGATE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_MOCK_LEAK_DETECTION_DELEGATE_H_
 
-#include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace password_manager {
 
@@ -23,6 +27,7 @@ class MockLeakDetectionDelegateInterface
   MOCK_METHOD1(OnError, void(LeakDetectionError));
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 class MockBulkLeakCheckDelegateInterface
     : public BulkLeakCheckDelegateInterface {
  public:
@@ -34,6 +39,7 @@ class MockBulkLeakCheckDelegateInterface
                void(LeakCheckCredential credential, IsLeaked is_leaked));
   MOCK_METHOD1(OnError, void(LeakDetectionError));
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager
 

@@ -6,13 +6,17 @@
 
 #include <utility>
 
-#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace password_manager {
 namespace {
@@ -47,6 +51,7 @@ LeakDetectionCheckFactoryImpl::TryCreateLeakCheck(
                 channel));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<BulkLeakCheck>
 LeakDetectionCheckFactoryImpl::TryCreateBulkLeakCheck(
     BulkLeakCheckDelegateInterface* delegate,
@@ -59,5 +64,6 @@ LeakDetectionCheckFactoryImpl::TryCreateBulkLeakCheck(
   return std::make_unique<BulkLeakCheckImpl>(delegate, identity_manager,
                                              std::move(url_loader_factory));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

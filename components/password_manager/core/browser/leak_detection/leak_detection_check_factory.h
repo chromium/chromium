@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 
 namespace signin {
 class IdentityManager;
@@ -23,8 +24,10 @@ enum class Channel;
 
 namespace password_manager {
 
+#if !BUILDFLAG(IS_ANDROID)
 class BulkLeakCheck;
 class BulkLeakCheckDelegateInterface;
+#endif  // !BUILDFLAG(IS_ANDROID)
 class LeakDetectionCheck;
 class LeakDetectionDelegateInterface;
 
@@ -54,6 +57,7 @@ class LeakDetectionCheckFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       version_info::Channel channel) const = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
   // The leak check is available only for signed-in users and if the feature is
   // available.
   // |delegate| gets the results for the fetch.
@@ -64,6 +68,7 @@ class LeakDetectionCheckFactory {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       const = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager
