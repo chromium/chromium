@@ -7,7 +7,6 @@
 
 #include <va/va.h>
 
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/h265_decoder.h"
@@ -72,7 +71,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
  private:
   void FillVAPicture(VAPictureHEVC* va_pic, scoped_refptr<H265Picture> pic);
   void FillVARefFramesFromRefList(const H265Picture::Vector& ref_pic_list,
-                                  base::span<VAPictureHEVC> va_pics);
+                                  VAPictureHEVC* va_pics);
 
   // Returns |kInvalidRefPicIndex| if it cannot find a picture.
   int GetRefPicIndex(int poc);

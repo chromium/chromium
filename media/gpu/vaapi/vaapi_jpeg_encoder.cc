@@ -17,7 +17,6 @@
 #include <type_traits>
 
 #include "base/check_op.h"
-#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -139,7 +138,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
                       const uint8_t* exif_buffer,
                       size_t exif_buffer_size,
                       int quality,
-                      base::span<uint8_t> header,
+                      uint8_t* header,
                       size_t* exif_offset) {
   unsigned int width = input_size.width();
   unsigned int height = input_size.height();
@@ -148,7 +147,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
 
   // Start Of Input.
   static const uint8_t kSOI[] = {0xFF, JPEG_SOI};
-  memcpy(header.data(), kSOI, sizeof(kSOI));
+  memcpy(header, kSOI, sizeof(kSOI));
   idx += sizeof(kSOI);
 
   if (exif_buffer_size > 0) {
@@ -157,10 +156,10 @@ size_t FillJpegHeader(const gfx::Size& input_size,
     const uint8_t kAppSegment[] = {
         0xFF, JPEG_APP1, static_cast<uint8_t>(exif_segment_size / 256),
         static_cast<uint8_t>(exif_segment_size % 256)};
-    memcpy(header.subspan(idx).data(), kAppSegment, sizeof(kAppSegment));
+    memcpy(header + idx, kAppSegment, sizeof(kAppSegment));
     idx += sizeof(kAppSegment);
     *exif_offset = idx;
-    memcpy(header.subspan(idx).data(), exif_buffer, exif_buffer_size);
+    memcpy(header + idx, exif_buffer, exif_buffer_size);
     idx += exif_buffer_size;
   } else {
     // Application Segment - JFIF standard 1.01.
@@ -183,7 +182,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
         0x00,  // Thumbnail width.
         0x00   // Thumbnail height.
     };
-    memcpy(header.subspan(idx).data(), kAppSegment, sizeof(kAppSegment));
+    memcpy(header + idx, kAppSegment, sizeof(kAppSegment));
     idx += sizeof(kAppSegment);
   }
 
@@ -205,7 +204,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
         static_cast<uint8_t>(i)  // Precision (4-bit high) = 0,
                                  // Index (4-bit low) = i.
     };
-    memcpy(header.subspan(idx).data(), kQuantSegment, sizeof(kQuantSegment));
+    memcpy(header + idx, kQuantSegment, sizeof(kQuantSegment));
     idx += sizeof(kQuantSegment);
 
     const JpegQuantizationTable& quant_table = kDefaultQuantTable[i];
@@ -238,7 +237,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
       static_cast<uint8_t>(width & 0xFF),
       0x03,  // Number of Components.
   };
-  memcpy(header.subspan(idx).data(), kStartOfFrame, sizeof(kStartOfFrame));
+  memcpy(header + idx, kStartOfFrame, sizeof(kStartOfFrame));
   idx += sizeof(kStartOfFrame);
   for (uint8_t i = 0; i < 3; ++i) {
     // These are the values for U and V planes.
@@ -271,7 +270,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
   // Huffman Tables.
   for (size_t i = 0; i < 2; ++i) {
     // DC Table.
-    memcpy(header.subspan(idx).data(), kDcSegment, sizeof(kDcSegment));
+    memcpy(header + idx, kDcSegment, sizeof(kDcSegment));
     idx += sizeof(kDcSegment);
 
     // Type (4-bit high) = 0:DC, Index (4-bit low).
@@ -284,7 +283,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
       header[idx++] = dcTable.code_value[j];
 
     // AC Table.
-    memcpy(header.subspan(idx).data(), kAcSegment, sizeof(kAcSegment));
+    memcpy(header + idx, kAcSegment, sizeof(kAcSegment));
     idx += sizeof(kAcSegment);
 
     // Type (4-bit high) = 1:AC, Index (4-bit low).
@@ -303,7 +302,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
       0x0C,  // Segment Length:12 (2-byte).
       0x03   // Number of components in scan.
   };
-  memcpy(header.subspan(idx).data(), kStartOfScan, sizeof(kStartOfScan));
+  memcpy(header + idx, kStartOfScan, sizeof(kStartOfScan));
   idx += sizeof(kStartOfScan);
 
   for (uint8_t i = 0; i < 3; ++i) {
@@ -380,7 +379,7 @@ bool VaapiJpegEncoder::Encode(const gfx::Size& input_size,
   std::vector<uint8_t> jpeg_header(jpeg_header_size);
   const size_t length_in_bits =
       FillJpegHeader(input_size, exif_buffer, exif_buffer_size, quality,
-                     jpeg_header, exif_offset);
+                     jpeg_header.data(), exif_offset);
 
   VAEncPackedHeaderParameterBuffer header_param;
   memset(&header_param, 0, sizeof(header_param));
