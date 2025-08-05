@@ -72,6 +72,7 @@ class OfferNotificationBubbleControllerImpl
 
   // BubbleControllerBase:
   BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
  protected:
   explicit OfferNotificationBubbleControllerImpl(
@@ -135,6 +136,9 @@ class OfferNotificationBubbleControllerImpl
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   const raw_ref<tabs::TabInterface> tab_interface_;
+
+  base::WeakPtrFactory<OfferNotificationBubbleControllerImpl> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

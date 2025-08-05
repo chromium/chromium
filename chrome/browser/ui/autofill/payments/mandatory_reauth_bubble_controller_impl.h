@@ -51,6 +51,7 @@ class MandatoryReauthBubbleControllerImpl
 
   // BubbleControllerBase:
   BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
  protected:
   explicit MandatoryReauthBubbleControllerImpl(
@@ -86,6 +87,9 @@ class MandatoryReauthBubbleControllerImpl
 
   // Whether the bubble is shown after user interacted with omnibox icon.
   bool is_reshow_ = false;
+
+  base::WeakPtrFactory<MandatoryReauthBubbleControllerImpl> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -103,6 +103,7 @@ class IbanBubbleControllerImpl
 
   // BubbleControllerBase:
   BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {

@@ -238,6 +238,11 @@ BubbleType AddressBubblesController::GetBubbleType() const {
   return BubbleType::kSaveUpdateAddress;
 }
 
+base::WeakPtr<BubbleControllerBase>
+AddressBubblesController::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AddressBubblesController::SetUpAndShowBubble(
     ShowBubbleViewCallback show_bubble_view_callback,
     std::u16string page_action_icon_tootip,

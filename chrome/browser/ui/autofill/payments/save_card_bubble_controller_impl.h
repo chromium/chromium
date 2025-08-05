@@ -160,6 +160,7 @@ class SaveCardBubbleControllerImpl
 
   // BubbleControllerBase:
   BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
   static base::AutoReset<bool> IgnoreWindowActivationForTesting();
 

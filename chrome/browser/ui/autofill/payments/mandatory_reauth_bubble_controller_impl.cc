@@ -242,6 +242,11 @@ BubbleType MandatoryReauthBubbleControllerImpl::GetBubbleType() const {
   return BubbleType::kMandatoryReauth;
 }
 
+base::WeakPtr<BubbleControllerBase>
+MandatoryReauthBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {

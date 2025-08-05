@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 
+#include "base/memory/weak_ptr.h"
+
 namespace autofill {
 
 enum class BubbleType {
@@ -40,6 +42,11 @@ class BubbleControllerBase {
 
   // Returns the corresponding `BubbleType` for the controller.
   virtual BubbleType GetBubbleType() const = 0;
+
+  // Subclasses need to implement this method so that the resulting weak
+  // pointers are invalidated as soon as the derived class is destroyed.
+  virtual base::WeakPtr<BubbleControllerBase>
+  GetBubbleControllerBaseWeakPtr() = 0;
 };
 
 }  // namespace autofill

@@ -468,6 +468,11 @@ BubbleType IbanBubbleControllerImpl::GetBubbleType() const {
   return BubbleType::kSaveIban;
 }
 
+base::WeakPtr<BubbleControllerBase>
+IbanBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 Profile* IbanBubbleControllerImpl::GetProfile() {
   if (!web_contents()) {
     return nullptr;

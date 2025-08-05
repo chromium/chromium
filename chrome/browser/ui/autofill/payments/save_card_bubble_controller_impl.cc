@@ -778,6 +778,11 @@ BubbleType SaveCardBubbleControllerImpl::GetBubbleType() const {
   return BubbleType::kSaveUpdateCard;
 }
 
+base::WeakPtr<BubbleControllerBase>
+SaveCardBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void SaveCardBubbleControllerImpl::SetupAndShowBubble() {
   CHECK(current_bubble_type_ != PaymentsBubbleType::INACTIVE);
   // Upload save callback should not be null for UPLOAD_SAVE or

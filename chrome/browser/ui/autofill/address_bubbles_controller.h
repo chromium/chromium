@@ -70,6 +70,7 @@ class AddressBubblesController
 
   // BubbleControllerBase:
   BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
   base::WeakPtr<AddressBubbleControllerDelegate> GetWeakPtr();
 

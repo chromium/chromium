@@ -57,6 +57,7 @@ class SaveOrUpdateAutofillAiDataControllerImpl
 
   // BubbleControllerBase:
   BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
  protected:
   explicit SaveOrUpdateAutofillAiDataControllerImpl(
