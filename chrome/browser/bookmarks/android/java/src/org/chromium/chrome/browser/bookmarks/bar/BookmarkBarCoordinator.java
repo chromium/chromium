@@ -125,9 +125,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
                         profileSupplier,
                         currentTab,
                         bookmarkOpener,
-                        bookmarkManagerOpenerSupplier,
-                        itemsContainer,
-                        mView);
+                        bookmarkManagerOpenerSupplier);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
 
         mTopControlsStacker = topControlsStacker;
