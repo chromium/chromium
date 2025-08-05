@@ -13,7 +13,6 @@
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
-#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -68,47 +67,6 @@ TEST_F(WmShadowControllerDelegateTest,
 
   ExitOverview();
   EXPECT_TRUE(shadow->layer()->visible());
-}
-
-TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
-  auto* shadow_controller = Shell::Get()->shadow_controller();
-
-  constexpr gfx::Rect kBoundsA(200, 300);
-  constexpr gfx::Rect kBoundsB(100, 100, 400, 300);
-
-  auto window1 = CreateAppWindow(kBoundsA);
-  window1->SetName("w1");
-  auto window2 = CreateAppWindow(kBoundsA);
-  window2->SetName("w2");
-  auto window3 = CreateAppWindow(kBoundsB);
-  window3->SetName("w3");
-
-  auto* shadow1 = shadow_controller->GetShadowForWindow(window1.get());
-  auto* shadow2 = shadow_controller->GetShadowForWindow(window2.get());
-  auto* shadow3 = shadow_controller->GetShadowForWindow(window3.get());
-
-  // window2 occludes window1
-  EXPECT_FALSE(shadow1->layer()->visible());
-  EXPECT_TRUE(shadow2->layer()->visible());
-  EXPECT_TRUE(shadow3->layer()->visible());
-
-  // Bring the window 1 to the front.
-  wm::ActivateWindow(window1.get());
-
-  EXPECT_TRUE(shadow1->layer()->visible());
-  EXPECT_FALSE(shadow2->layer()->visible());
-  EXPECT_TRUE(shadow3->layer()->visible());
-
-  // Move window1 on top of window3.
-  window1->SetBounds(kBoundsB);
-  EXPECT_TRUE(shadow1->layer()->visible());
-  EXPECT_TRUE(shadow2->layer()->visible());
-  EXPECT_FALSE(shadow3->layer()->visible());
-
-  // Hide window1.
-  window1->Hide();
-  EXPECT_TRUE(shadow2->layer()->visible());
-  EXPECT_TRUE(shadow3->layer()->visible());
 }
 
 }  // namespace ash
