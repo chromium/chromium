@@ -111,7 +111,6 @@ if (use_clang_modules) {
   libcxx_prefix = "//third_party/libc++/src"
 }
 libcxxabi_prefix = "//third_party/libc++abi/src"
-libcxx_module_prefix = "$root_gen_dir/libcxx"
 
 assert(!(is_ios && libcxx_is_shared),
        "Can't build libc++ as a shared library on iOS.")
