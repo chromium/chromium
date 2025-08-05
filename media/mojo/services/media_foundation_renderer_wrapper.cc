@@ -52,7 +52,7 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
   DCHECK(frame_interfaces_);
 
   renderer_ = std::make_unique<MediaFoundationRenderer>(
-      std::move(task_runner),
+      task_runner,
       std::make_unique<MojoMediaLog>(std::move(media_log_remote), task_runner),
       ChromeLuidToLuid(
           MediaFoundationGpuInfoMonitor::GetInstance()->gpu_luid()));
