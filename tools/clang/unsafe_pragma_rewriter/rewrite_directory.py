@@ -22,6 +22,10 @@ def main():
                       dest="build_dir",
                       default="out/Debug",
                       help="Specify the build directory, defaults to out/Debug")
+  parser.add_argument("-f",
+                      dest="force",
+                      action="store_true",
+                      help="skip conditional compilation checks.")
   parser.add_argument("-v",
                       dest="verbose",
                       action="store_true",
@@ -32,6 +36,7 @@ def main():
   args = parser.parse_args()
   build_dir = args.build_dir
   directory = args.directory
+  force = args.force
   verbose = args.verbose
 
   print("Checking GN build arg configuration ...")
@@ -87,23 +92,24 @@ def main():
     print("Files containing unsafe pragmas:")
     print("\n".join(source_files), "\n")
 
-  iffy_cmd = ["grep", "-Pc", "^#if(?! DCHECK_IS_ON\\(\\))"] + source_files
-  iffy = subprocess.check_output(iffy_cmd, text=True).strip()
-  iffy_lines = iffy.splitlines() if iffy else []
-  iffy_files = [x.split(":")[0] for x in iffy_lines if x.split(":")[1] != "1"]
-  if iffy_files:
+  if not force:
+    iffy_cmd = ["grep", "-Pc", "^#if(?! DCHECK_IS_ON\\(\\))"] + source_files
+    iffy = subprocess.check_output(iffy_cmd, text=True).strip()
+    iffy_lines = iffy.splitlines() if iffy else []
+    iffy_files = [x.split(":")[0] for x in iffy_lines if x.split(":")[1] != "1"]
+    if iffy_files:
+      if verbose:
+        print("Skipping conditionally-compiled files:")
+        print("\n".join(iffy_files), "\n")
+      source_files = [x for x in source_files if not x in set(iffy_files)]
+
+    if not source_files:
+      print("No remaining files")
+      sys.exit(1)
+
     if verbose:
-      print("Skipping conditionally-compiled files:")
-      print("\n".join(iffy_files), "\n")
-    source_files = [x for x in source_files if not x in set(iffy_files)]
-
-  if not source_files:
-    print("No remaining files")
-    sys.exit(1)
-
-  if verbose:
-    print("Remaining files after excluding #ifdefs:")
-    print("\n".join(source_files), "\n")
+      print("Remaining files after excluding #ifdefs:")
+      print("\n".join(source_files), "\n")
 
   # Starting with all files in the directory, find the ones that are
   # able to be compiled on this platform/configurarion by asking ninja
