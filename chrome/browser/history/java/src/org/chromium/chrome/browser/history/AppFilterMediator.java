@@ -54,6 +54,7 @@ class AppFilterMediator {
             mSelectedModel = null;
         }
         if (currentApp != null) {
+            assert currentApp.id != null : "App id should be non-null.";
             mSelectedModel = getModelForAppId(currentApp.id);
             assumeNonNull(mSelectedModel);
             mSelectedModel.set(AppFilterProperties.SELECTED, true);

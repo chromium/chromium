@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.history;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.TimedItem;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
@@ -15,6 +17,7 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 
 /** Contains information about a single browsing history item. */
+@NullMarked
 public class HistoryItem extends TimedItem {
     private final GURL mUrl;
     private final String mDomain;
@@ -23,9 +26,9 @@ public class HistoryItem extends TimedItem {
     private final boolean mWasBlockedVisit;
     private final long mMostRecentJavaTimestamp;
     private final long[] mNativeTimestampList;
-    private Long mStableId;
+    private @Nullable Long mStableId;
 
-    private HistoryContentManager mManager;
+    private @Nullable HistoryContentManager mManager;
 
     /**
      * @param url The url for this item.

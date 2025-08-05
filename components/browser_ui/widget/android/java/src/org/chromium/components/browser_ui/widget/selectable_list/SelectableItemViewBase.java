@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget.selectable_list;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -138,7 +140,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
      * @param item The given item.
      * @return Whether the item was in selected state after the toggle.
      */
-    protected boolean toggleSelectionForItem(@Nullable E item) {
+    protected boolean toggleSelectionForItem(E item) {
         if (mSelectionDelegate == null) return false;
         return mSelectionDelegate.toggleSelectionForItem(item);
     }
@@ -159,6 +161,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (mSelectionDelegate != null) {
+            assertNonNull(mItem);
             setChecked(mSelectionDelegate.isItemSelected(mItem));
         }
     }
@@ -251,6 +254,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     @Override
     public void onSelectionStateChange(List<E> selectedItems) {
         if (mSelectionDelegate == null) return;
+        assertNonNull(mItem);
         setChecked(mSelectionDelegate.isItemSelected(mItem));
     }
 
@@ -263,6 +267,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     }
 
     private void handleSelection() {
+        assertNonNull(mItem);
         boolean checked = toggleSelectionForItem(mItem);
         setChecked(checked);
     }

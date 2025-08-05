@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -12,12 +14,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
@@ -34,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Bridges the user's browsing history and the UI used to display it. */
+@NullMarked
 public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistoryObserver {
     private static final String EMPTY_QUERY = "";
 
@@ -44,18 +50,18 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     // TODO(crbug.com/388201374): Remove the nullability once the feature is launched.
     private @Nullable final SigninPromoCoordinator mHistorySyncPromoCoordinator;
 
-    private RecyclerView mRecyclerView;
-    private @Nullable HistoryProvider mHistoryProvider;
+    private @Nullable RecyclerView mRecyclerView;
+    private HistoryProvider mHistoryProvider;
 
     // Headers
     private TextView mPrivacyDisclaimerTextView;
     private View mPrivacyDisclaimerBottomSpace;
-    private Button mClearBrowsingDataButton;
-    private HeaderItem mPrivacyDisclaimerHeaderItem;
-    private HeaderItem mClearBrowsingDataButtonHeaderItem;
-    private HeaderItem mHistoryOpenInChromeHeaderItem;
-    private HeaderItem mHistorySyncPromoHeaderItem;
-    private HeaderItem mAppFilterHeaderItem;
+    private @Nullable Button mClearBrowsingDataButton;
+    private @Nullable HeaderItem mPrivacyDisclaimerHeaderItem;
+    private @Nullable HeaderItem mClearBrowsingDataButtonHeaderItem;
+    private @Nullable HeaderItem mHistoryOpenInChromeHeaderItem;
+    private @Nullable HeaderItem mHistorySyncPromoHeaderItem;
+    private @Nullable HeaderItem mAppFilterHeaderItem;
     private ChipView mAppFilterChip;
 
     // Footers
@@ -73,10 +79,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mClearBrowsingDataButtonVisible;
     private boolean mHistorySyncPromoVisible;
     private String mQueryText = EMPTY_QUERY;
-    private String mHostName;
+    private @Nullable String mHostName;
 
     // ID of the App currently chosen for app filtering. If null, ignored when querying history.
-    private String mAppId;
+    private @Nullable String mAppId;
     private boolean mDisableScrollToLoadForTest;
 
     // Whether we show the source app for each entry. We show it in BrApp in full history UI, but
@@ -99,6 +105,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     /** Called when the activity/native page is destroyed. */
+    @SuppressWarnings("NullAway")
     public void onDestroyed() {
         mIsDestroyed = true;
 
@@ -329,6 +336,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * Initialize a more progress button as footer items that will be re-used
      * during page loading.
      */
+    @Initializer
     void generateFooterItems() {
         mMoreProgressButton =
                 (MoreProgressButton)
@@ -364,6 +372,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * Initialize clear browsing data and privacy disclaimer header views and generate header items
      * for them.
      */
+    @Initializer
     void generateHeaderItems() {
         ViewGroup historyAppFilterContainer = getAppFilterContainer(null);
         ViewGroup privacyDisclaimerContainer = getPrivacyDisclaimerContainer(null);
@@ -397,7 +406,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         updateHistorySyncPromoVisibility();
     }
 
-    private ViewGroup getClearBrowsingDataButtonContainer(ViewGroup parent) {
+    private ViewGroup getClearBrowsingDataButtonContainer(@Nullable ViewGroup parent) {
         ViewGroup viewGroup =
                 (ViewGroup)
                         LayoutInflater.from(mManager.getContext())
@@ -408,7 +417,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return viewGroup;
     }
 
-    private ViewGroup getCctOpenInChromeButtonContainer(ViewGroup parent) {
+    private ViewGroup getCctOpenInChromeButtonContainer(@Nullable ViewGroup parent) {
         ViewGroup viewGroup =
                 (ViewGroup)
                         LayoutInflater.from(mManager.getContext())
@@ -419,7 +428,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return viewGroup;
     }
 
-    private ViewGroup getAppFilterContainer(ViewGroup parent) {
+    @EnsuresNonNull("mAppFilterChip")
+    private ViewGroup getAppFilterContainer(@Nullable ViewGroup parent) {
         ViewGroup historyAppFilterContainer =
                 (ViewGroup)
                         LayoutInflater.from(mManager.getContext())
@@ -432,12 +442,13 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     private View getHistorySyncPromoView() {
+        assumeNonNull(mHistorySyncPromoCoordinator);
         View promoView = mHistorySyncPromoCoordinator.buildPromoView(null);
         mHistorySyncPromoCoordinator.setView(promoView);
         return promoView;
     }
 
-    void updateHistory(AppInfo appInfo) {
+    void updateHistory(@Nullable AppInfo appInfo) {
         if (appInfo == null) {
             setAppId(null);
             resetAppFilterChip();
@@ -458,7 +469,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAppFilterChip.setIcon(ChipView.INVALID_ICON_ID, false);
     }
 
-    ViewGroup getPrivacyDisclaimerContainer(ViewGroup parent) {
+    @EnsuresNonNull("mPrivacyDisclaimerTextView")
+    ViewGroup getPrivacyDisclaimerContainer(@Nullable ViewGroup parent) {
         Context context = mManager.getContext();
         ViewGroup privacyDisclaimerContainer =
                 (ViewGroup)
@@ -584,14 +596,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     /** @param hostName The hostName to retrieve history entries for. */
-    public void setHostName(String hostName) {
+    public void setHostName(@Nullable String hostName) {
         mHostName = hostName;
     }
 
     /**
      * @param appId The app ID to retrieve history entries for.
      */
-    public void setAppId(String appId) {
+    public void setAppId(@Nullable String appId) {
         mAppId = appId;
     }
 
@@ -622,7 +634,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return getGroupAt(0).first;
     }
 
-    ItemGroup getLastGroupForTests() {
+    @Nullable ItemGroup getLastGroupForTests() {
         final int itemCount = getItemCount();
         return itemCount > 0 ? getGroupAt(itemCount - 1).first : null;
     }
@@ -638,6 +650,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return mItemViews;
     }
 
+    @SuppressWarnings("NullAway")
     void generateHeaderItemsForTest() {
         mPrivacyDisclaimerHeaderItem = new StandardHeaderItem(0, null);
         mClearBrowsingDataButtonHeaderItem = new StandardHeaderItem(1, null);
@@ -646,6 +659,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mHistorySyncPromoHeaderItem = new PersistentHeaderItem(2, null);
     }
 
+    @SuppressWarnings("NullAway")
     void generateFooterItemsForTest(MoreProgressButton mockButton) {
         mMoreProgressButton = mockButton;
         mMoreProgressButtonFooterItem = new FooterItem(-1, null);
@@ -681,7 +695,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return mShowSourceApp;
     }
 
-    String getAppIdForTest() {
+    @Nullable String getAppIdForTest() {
         return mAppId;
     }
 }

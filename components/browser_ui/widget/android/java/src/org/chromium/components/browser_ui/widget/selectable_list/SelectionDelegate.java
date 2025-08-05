@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.widget.selectable_list;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -67,7 +66,7 @@ public class SelectionDelegate<E> {
      * @param item The item to toggle.
      * @return Whether the item is selected.
      */
-    public boolean toggleSelectionForItem(@Nullable E item) {
+    public boolean toggleSelectionForItem(E item) {
         if (mSelectedItems.contains(item)) {
             mSelectedItems.remove(item);
         } else {
@@ -94,7 +93,7 @@ public class SelectionDelegate<E> {
      * @param item The item.
      * @return Whether the item is selected.
      */
-    public boolean isItemSelected(@Nullable E item) {
+    public boolean isItemSelected(E item) {
         return mSelectedItems.contains(item);
     }
 

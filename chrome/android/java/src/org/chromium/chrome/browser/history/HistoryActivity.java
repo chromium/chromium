@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
@@ -22,9 +24,10 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** Activity for displaying the browsing history manager. */
+@NullMarked
 public class HistoryActivity extends SnackbarActivity {
-    private HistoryManager mHistoryManager;
-    private ManagedBottomSheetController mBottomSheetController;
+    private @Nullable HistoryManager mHistoryManager;
+    private @Nullable ManagedBottomSheetController mBottomSheetController;
 
     @Override
     protected void onProfileAvailable(Profile profile) {
@@ -46,7 +49,7 @@ public class HistoryActivity extends SnackbarActivity {
                         getSnackbarManager(),
                         profile,
                         () -> mBottomSheetController,
-                        /* Supplier<Tab>= */ null,
+                        /* Supplier<@Nullable Tab>= */ null,
                         new BrowsingHistoryBridge(profile.getOriginalProfile()),
                         historyUmaRecorder,
                         clientPackageName,
@@ -86,12 +89,14 @@ public class HistoryActivity extends SnackbarActivity {
 
     @Override
     protected void onDestroy() {
-        mHistoryManager.onDestroyed();
-        mHistoryManager = null;
+        if (mHistoryManager != null) {
+            mHistoryManager.onDestroyed();
+            mHistoryManager = null;
+        }
         super.onDestroy();
     }
 
-    HistoryManager getHistoryManagerForTests() {
+    @Nullable HistoryManager getHistoryManagerForTests() {
         return mHistoryManager;
     }
 }

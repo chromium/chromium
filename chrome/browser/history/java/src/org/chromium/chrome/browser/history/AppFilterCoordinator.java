@@ -51,11 +51,11 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
 
     /** Data class for individual app item in the filter list. */
     public static class AppInfo {
-        public final String id;
+        public final @Nullable String id;
         public final @Nullable Drawable icon;
         public final CharSequence label;
 
-        public AppInfo(String id, @Nullable Drawable icon, CharSequence label) {
+        public AppInfo(@Nullable String id, @Nullable Drawable icon, CharSequence label) {
             this.id = id;
             this.icon = icon;
             this.label = label;

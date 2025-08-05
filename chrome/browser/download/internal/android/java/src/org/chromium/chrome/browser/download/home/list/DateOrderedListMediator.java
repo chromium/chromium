@@ -361,7 +361,7 @@ class DateOrderedListMediator implements BackPressHandler {
         return mTypeFilter;
     }
 
-    private void onSelection(@Nullable ListItem item) {
+    private void onSelection(ListItem item) {
         mSelectionDelegate.toggleSelectionForItem(item);
     }
 

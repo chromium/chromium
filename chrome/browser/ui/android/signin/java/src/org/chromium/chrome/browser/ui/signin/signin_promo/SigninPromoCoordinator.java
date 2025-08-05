@@ -81,7 +81,7 @@ public class SigninPromoCoordinator {
     }
 
     /** Builds a promo view object for the corresponding access point. */
-    public View buildPromoView(ViewGroup parent) {
+    public View buildPromoView(@Nullable ViewGroup parent) {
         return LayoutInflater.from(mContext)
                 .inflate(getLayoutResId(mDelegate.getAccessPoint()), parent, false);
     }

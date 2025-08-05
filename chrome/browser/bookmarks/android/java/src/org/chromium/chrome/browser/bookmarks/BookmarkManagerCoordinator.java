@@ -74,7 +74,7 @@ public class BookmarkManagerCoordinator
     private final SelectionDelegate<BookmarkId> mSelectionDelegate =
             new SelectionDelegate<>() {
                 @Override
-                public boolean toggleSelectionForItem(@Nullable BookmarkId bookmarkId) {
+                public boolean toggleSelectionForItem(BookmarkId bookmarkId) {
                     BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                     if (bookmarkItem != null && !bookmarkItem.isEditable()) {
                         return false;

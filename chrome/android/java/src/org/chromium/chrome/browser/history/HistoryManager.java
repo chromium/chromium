@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -16,8 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -25,6 +25,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -58,6 +60,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** Combines and manages the different UI components of browsing history. */
+@NullMarked
 public class HistoryManager
         implements OnMenuItemClickListener,
                 SelectionObserver<HistoryItem>,
@@ -74,14 +77,14 @@ public class HistoryManager
     private final boolean mLaunchedForApp;
     private final HistoryUmaRecorder mUmaRecorder;
     private final InfoHeaderPref mHeaderPref;
-    private final String mAppId;
+    private final @Nullable String mAppId;
 
     private final ViewGroup mRootView;
     private ViewGroup mContentView;
-    @Nullable private final SelectableListLayout<HistoryItem> mSelectableListLayout;
-    private HistoryContentManager mContentManager;
-    private SelectionDelegate<HistoryItem> mSelectionDelegate;
-    private HistoryManagerToolbar mToolbar;
+    private final @Nullable SelectableListLayout<HistoryItem> mSelectableListLayout;
+    private @Nullable HistoryContentManager mContentManager;
+    private @Nullable SelectionDelegate<HistoryItem> mSelectionDelegate;
+    private @Nullable HistoryManagerToolbar mToolbar;
     private TextView mEmptyView;
     private final SnackbarManager mSnackbarManager;
     private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
@@ -127,14 +130,14 @@ public class HistoryManager
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(
-            @NonNull Activity activity,
+            Activity activity,
             boolean isSeparateActivity,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull Profile profile,
-            @Nullable Supplier<BottomSheetController> bottomSheetController,
-            @Nullable Supplier<Tab> tabSupplier,
+            SnackbarManager snackbarManager,
+            Profile profile,
+            Supplier<@Nullable BottomSheetController> bottomSheetController,
+            @Nullable Supplier<@Nullable Tab> tabSupplier,
             HistoryProvider historyProvider,
-            @NonNull HistoryUmaRecorder umaRecorder,
+            HistoryUmaRecorder umaRecorder,
             @Nullable String clientPackageName,
             boolean shouldShowClearData,
             boolean launchedForApp,
@@ -144,7 +147,6 @@ public class HistoryManager
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
-        assert profile != null;
         mProfile = profile;
         mIsIncognito = profile.isOffTheRecord();
         mUmaRecorder = umaRecorder;
@@ -192,7 +194,7 @@ public class HistoryManager
                         mSelectionDelegate,
                         bottomSheetController,
                         tabSupplier,
-                        () -> mToolbar.hideKeyboard(),
+                        () -> assumeNonNull(mToolbar).hideKeyboard(),
                         mUmaRecorder,
                         historyProvider,
                         clientPackageName,
@@ -281,14 +283,22 @@ public class HistoryManager
                         ? R.string.history_manager_app_specific_empty_state_title
                         : R.string.history_manager_empty_state;
         Resources res = mActivity.getResources();
-        String descText =
-                mLaunchedForApp
-                        ? res.getString(
-                                R.string.history_manager_app_specific_empty_state_description,
-                                mContentManager.getAppInfoCache().get(mAppId).label)
-                        : res.getString(
-                                R.string.history_manager_empty_state_view_or_clear_page_visited);
-        mEmptyView = mSelectableListLayout.initializeEmptyStateView(imgResId, subjResId, descText);
+        String descText;
+        if (mLaunchedForApp) {
+            assert mAppId != null;
+            assumeNonNull(mContentManager);
+            descText =
+                    res.getString(
+                            R.string.history_manager_app_specific_empty_state_description,
+                            mContentManager.getAppInfoCache().get(mAppId).label);
+        } else {
+            descText =
+                    res.getString(R.string.history_manager_empty_state_view_or_clear_page_visited);
+        }
+
+        mEmptyView =
+                assumeNonNull(mSelectableListLayout)
+                        .initializeEmptyStateView(imgResId, subjResId, descText);
     }
 
     /**
@@ -301,6 +311,11 @@ public class HistoryManager
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        assumeNonNull(mToolbar);
+        assumeNonNull(mContentManager);
+        assumeNonNull(mSelectableListLayout);
+        assumeNonNull(mSelectionDelegate);
+
         mToolbar.hideOverflowMenu();
 
         if (item.getItemId() == R.id.close_menu_id && isDisplayedInSeparateActivity()) {
@@ -354,6 +369,8 @@ public class HistoryManager
     }
 
     private void toggleInfoHeaderVisibility() {
+        assumeNonNull(mToolbar);
+        assumeNonNull(mContentManager);
         boolean shouldShowInfoHeader =
                 !mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
         mHeaderPref.setVisible(shouldShowInfoHeader);
@@ -425,7 +442,7 @@ public class HistoryManager
 
         if (mSelectableListLayout != null) {
             mSelectableListLayout.onDestroyed();
-            mContentManager.onDestroyed();
+            assumeNonNull(mContentManager).onDestroyed();
         }
     }
 
@@ -441,24 +458,25 @@ public class HistoryManager
     }
 
     private void onBackPressStateChanged() {
+        assumeNonNull(mSelectableListLayout);
         mBackPressStateSupplier.set(
                 mSelectableListLayout.getHandleBackPressChangedSupplier().get());
     }
 
     @Override
     public void onSearchTextChanged(String query) {
-        mContentManager.search(query);
+        assumeNonNull(mContentManager).search(query);
     }
 
     @Override
     public void onEndSearch() {
-        mContentManager.onEndSearch();
-        mSelectableListLayout.onEndSearch();
+        assumeNonNull(mContentManager).onEndSearch();
+        assumeNonNull(mSelectableListLayout).onEndSearch();
         mIsSearching = false;
     }
 
     /** @return The SelectableListLayout that displays HistoryItems. */
-    public SelectableListLayout<HistoryItem> getSelectableListLayout() {
+    public @Nullable SelectableListLayout<HistoryItem> getSelectableListLayout() {
         return mSelectableListLayout;
     }
 
@@ -468,7 +486,7 @@ public class HistoryManager
 
     private void openItemsInNewTabs(List<HistoryItem> items, boolean isIncognito) {
         mUmaRecorder.recordOpenInTabs(mIsSearching, isIncognito);
-        mContentManager.openItemsInNewTab(items, isIncognito);
+        assumeNonNull(mContentManager).openItemsInNewTab(items, isIncognito);
     }
 
     /**
@@ -489,13 +507,17 @@ public class HistoryManager
      * @return True if info menu item should be shown on history toolbar, false otherwise.
      */
     boolean shouldShowInfoButton() {
+        assumeNonNull(mContentManager);
+        assumeNonNull(mSelectionDelegate);
+        assumeNonNull(mToolbar);
         LinearLayoutManager layoutManager =
                 (LinearLayoutManager) mContentManager.getRecyclerView().getLayoutManager();
         // Before the RecyclerView binds its items, LinearLayoutManager#firstVisibleItemPosition()
         // returns {@link RecyclerView#NO_POSITION}. If #findVisibleItemPosition() returns
         // NO_POSITION, the current adapter position should not prevent the info button from being
         // displayed if all of the other criteria is met. See crbug.com/756249#c3.
-        boolean firstAdapterItemScrolledOff = layoutManager.findFirstVisibleItemPosition() > 0;
+        boolean firstAdapterItemScrolledOff =
+                assumeNonNull(layoutManager).findFirstVisibleItemPosition() > 0;
 
         return !firstAdapterItemScrolledOff
                 && mContentManager.isInfoHeaderAvailable()
@@ -515,7 +537,7 @@ public class HistoryManager
      *     true even if there are currently no privacy disclaimers.
      */
     boolean shouldShowInfoHeaderIfAvailable() {
-        return mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
+        return assumeNonNull(mContentManager).getShouldShowPrivacyDisclaimersIfAvailable();
     }
 
     void recordSelectionEstablished() {
@@ -524,16 +546,17 @@ public class HistoryManager
 
     @Override
     public void onSelectionStateChange(List<HistoryItem> selectedItems) {
-        mContentManager.setSelectionActive(mSelectionDelegate.isSelectionEnabled());
+        assumeNonNull(mContentManager)
+                .setSelectionActive(assumeNonNull(mSelectionDelegate).isSelectionEnabled());
     }
 
     @Override
-    public void onAction(Object actionData) {
+    public void onAction(@Nullable Object actionData) {
         // Handler for the link copied snackbar. Do nothing.
     }
 
     @Override
-    public void onDismissNoAction(Object actionData) {
+    public void onDismissNoAction(@Nullable Object actionData) {
         // Handler for the link copied snackbar. Do nothing.
     }
 
@@ -542,7 +565,8 @@ public class HistoryManager
     public void onScrolledCallback(boolean loadedMore) {
         // Show info button if available if first visible position is close to info header;
         // otherwise hide info button.
-        mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
+        assumeNonNull(mToolbar)
+                .updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
         if (loadedMore) {
             mUmaRecorder.recordLoadMoreOnScroll(mIsSearching);
         }
@@ -558,6 +582,7 @@ public class HistoryManager
     @Override
     public void onItemRemoved(HistoryItem item) {
         mUmaRecorder.recordRemoveItem(mIsSearching);
+        assumeNonNull(mSelectionDelegate);
         if (mSelectionDelegate.isItemSelected(item)) {
             mSelectionDelegate.toggleSelectionForItem(item);
         }
@@ -577,6 +602,8 @@ public class HistoryManager
     // HistoryContentManager.Observer
     @Override
     public void onPrivacyDisclaimerHasChanged() {
+        assumeNonNull(mToolbar);
+        assumeNonNull(mContentManager);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
         mShouldShowPrivacyDisclaimerSupplier.set(
                 mContentManager.getShouldShowPrivacyDisclaimersIfAvailable()
@@ -596,8 +623,9 @@ public class HistoryManager
     // HistoryContentManager.Observer
     @Override
     public void onUserAccountStateChanged() {
-        mToolbar.onSignInStateChange();
-        mShouldShowClearBrowsingDataSupplier.set(mContentManager.getShouldShowClearData());
+        assumeNonNull(mToolbar).onSignInStateChange();
+        mShouldShowClearBrowsingDataSupplier.set(
+                assumeNonNull(mContentManager).getShouldShowClearData());
     }
 
     // HistoryContentManager.Observer
@@ -608,15 +636,15 @@ public class HistoryManager
         return mEmptyView;
     }
 
-    public HistoryContentManager getContentManagerForTests() {
+    public @Nullable HistoryContentManager getContentManagerForTests() {
         return mContentManager;
     }
 
-    SelectionDelegate<HistoryItem> getSelectionDelegateForTests() {
+    @Nullable SelectionDelegate<HistoryItem> getSelectionDelegateForTests() {
         return mSelectionDelegate;
     }
 
-    HistoryManagerToolbar getToolbarForTests() {
+    @Nullable HistoryManagerToolbar getToolbarForTests() {
         return mToolbar;
     }
 

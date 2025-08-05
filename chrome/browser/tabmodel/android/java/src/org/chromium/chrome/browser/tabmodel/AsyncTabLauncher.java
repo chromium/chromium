@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -18,5 +19,5 @@ public interface AsyncTabLauncher {
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      */
-    void launchNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent);
+    void launchNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent);
 }

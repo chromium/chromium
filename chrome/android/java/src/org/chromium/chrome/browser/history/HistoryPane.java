@@ -11,13 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
@@ -40,17 +39,18 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.
 import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing history. */
+@NullMarked
 public class HistoryPane implements Pane {
 
     // Below are dependencies of the pane itself.
     private final DoubleConsumer mOnToolbarAlphaChange;
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
+    private final ObservableSupplierImpl<@Nullable DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<View> mHubOverlayViewSupplier =
+    private final ObservableSupplierImpl<@Nullable View> mHubOverlayViewSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
@@ -61,11 +61,11 @@ public class HistoryPane implements Pane {
     private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final Supplier<BottomSheetController> mBottomSheetController;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable BottomSheetController> mBottomSheetController;
+    private final Supplier<@Nullable Tab> mTabSupplier;
 
-    private HistoryManager mHistoryManager;
-    private PaneHubController mPaneHubController;
+    private @Nullable HistoryManager mHistoryManager;
+    private @Nullable PaneHubController mPaneHubController;
 
     /**
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
@@ -76,12 +76,12 @@ public class HistoryPane implements Pane {
      * @param tabSupplier Used as a dependency to HistoryManager.
      */
     public HistoryPane(
-            @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull Activity activity,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull Supplier<BottomSheetController> bottomSheetController,
-            @NonNull Supplier<Tab> tabSupplier) {
+            DoubleConsumer onToolbarAlphaChange,
+            Activity activity,
+            SnackbarManager snackbarManager,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            Supplier<@Nullable BottomSheetController> bottomSheetController,
+            Supplier<@Nullable Tab> tabSupplier) {
         mOnToolbarAlphaChange = onToolbarAlphaChange;
         mReferenceButtonSupplier.set(
                 new ResourceButtonData(
@@ -100,15 +100,13 @@ public class HistoryPane implements Pane {
         return PaneId.HISTORY;
     }
 
-    @NonNull
     @Override
     public ViewGroup getRootView() {
         return mRootView;
     }
 
-    @Nullable
     @Override
-    public MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
+    public @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
         return null;
     }
 
@@ -159,52 +157,45 @@ public class HistoryPane implements Pane {
         }
     }
 
-    @NonNull
     @Override
     public ObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
         return mEmptyActionButtonSupplier;
     }
 
-    @NonNull
     @Override
-    public ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
+    public ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonSupplier;
     }
 
-    @NonNull
     @Override
     public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
         return mHairlineVisibilitySupplier;
     }
 
     @Override
-    public ObservableSupplier<View> getHubOverlayViewSupplier() {
+    public ObservableSupplier<@Nullable View> getHubOverlayViewSupplier() {
         return mHubOverlayViewSupplier;
     }
 
-    @Nullable
     @Override
-    public HubLayoutAnimationListener getHubLayoutAnimationListener() {
+    public @Nullable HubLayoutAnimationListener getHubLayoutAnimationListener() {
         return null;
     }
 
-    @NonNull
     @Override
     public HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView) {
+            HubContainerView hubContainerView) {
         return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                 hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
     }
 
-    @NonNull
     @Override
     public HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView) {
+            HubContainerView hubContainerView) {
         return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                 hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
     }
 
-    @NonNull
     @Override
     public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
         return mHubSearchEnabledStateSupplier;
