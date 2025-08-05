@@ -68,10 +68,6 @@
 
 namespace media {
 
-namespace {
-
-}  // namespace
-
 // Implementation of a pool of mappable shared images(MappableSI) used to back
 // VideoFrames.
 class GpuMemoryBufferVideoFramePool::PoolImpl
@@ -357,8 +353,9 @@ void CopyRowsToI420Buffer(int first_row,
   TRACE_EVENT2("media", "CopyRowsToI420Buffer", "bytes_per_row", bytes_per_row,
                "rows", rows);
 
-  if (!output)
+  if (!output) {
     return;
+  }
 
   DCHECK_NE(dest_stride, 0);
   DCHECK_LE(bytes_per_row, std::abs(dest_stride));
@@ -388,8 +385,9 @@ void CopyRowsToP010Buffer(int first_row,
                           int dest_stride_uv) {
   TRACE_EVENT2("media", "CopyRowsToP010Buffer", "width", width, "rows", rows);
 
-  if (!dest_y || !dest_uv)
+  if (!dest_y || !dest_uv) {
     return;
+  }
 
   DCHECK_NE(dest_stride_y, 0);
   DCHECK_NE(dest_stride_uv, 0);
@@ -430,8 +428,9 @@ void CopyRowsToNV12Buffer(int first_row,
                           int dest_stride_uv) {
   TRACE_EVENT2("media", "CopyRowsToNV12Buffer", "width", width, "rows", rows);
 
-  if (!dest_y || !dest_uv)
+  if (!dest_y || !dest_uv) {
     return;
+  }
 
   DCHECK_NE(dest_stride_y, 0);
   DCHECK_NE(dest_stride_uv, 0);
@@ -520,8 +519,9 @@ void CopyRowsToRGB10Buffer(bool is_rgba,
                            int dest_stride) {
   TRACE_EVENT2("media", "CopyRowsToRGB10Buffer", "bytes_per_row", width * 2,
                "rows", rows);
-  if (!output)
+  if (!output) {
     return;
+  }
 
   DCHECK_NE(dest_stride, 0);
   DCHECK_LE(width, std::abs(dest_stride / 2));
@@ -579,10 +579,12 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
     case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
       DCHECK_EQ(video_frame->visible_rect().y() % 2, 0);
-      if (!gfx::IsOddWidthMultiPlanarBuffersAllowed())
+      if (!gfx::IsOddWidthMultiPlanarBuffersAllowed()) {
         width = base::bits::AlignUp(width, size_t{2});
-      if (!gfx::IsOddHeightMultiPlanarBuffersAllowed())
+      }
+      if (!gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
         height = base::bits::AlignUp(height, size_t{2});
+      }
       output = gfx::Size(width, height);
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
@@ -641,8 +643,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
   // Lazily initialize |output_format_| since VideoFrameOutputFormat() has to be
   // called on the media_thread while this object might be instantiated on any.
   const VideoPixelFormat pixel_format = video_frame->format();
-  if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED)
+  if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED) {
     output_format_ = gpu_factories_->VideoFrameOutputFormat(pixel_format);
+  }
   // Bail if we have a change of GpuVideoAcceleratorFactories::OutputFormat;
   // such changes should not happen in general (see https://crbug.com/875158).
   if (output_format_ != gpu_factories_->VideoFrameOutputFormat(pixel_format)) {
@@ -657,8 +660,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
 
   bool passthrough = false;
 #if BUILDFLAG(IS_APPLE)
-  if (!IOSurfaceCanSetColorSpace(video_frame->ColorSpace()))
+  if (!IOSurfaceCanSetColorSpace(video_frame->ColorSpace())) {
     passthrough = true;
+  }
 #endif
 
   if (!video_frame->IsMappable()) {
@@ -666,8 +670,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     passthrough = true;
   }
 
-  if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED)
+  if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED) {
     passthrough = true;
+  }
 
   switch (pixel_format) {
     // Supported cases.
@@ -741,8 +746,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
 
   frame_copy_requests_.emplace_back(std::move(video_frame),
                                     std::move(frame_ready_cb), passthrough);
-  if (frame_copy_requests_.size() == 1u)
+  if (frame_copy_requests_.size() == 1u) {
     StartCopy();
+  }
 }
 
 bool GpuMemoryBufferVideoFramePool::PoolImpl::OnMemoryDump(
@@ -779,8 +785,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::Abort() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   // Abort any pending copy requests. If one is already in flight, we can't do
   // anything about it.
-  if (frame_copy_requests_.size() <= 1u)
+  if (frame_copy_requests_.size() <= 1u) {
     return;
+  }
   frame_copy_requests_.erase(frame_copy_requests_.begin() + 1,
                              frame_copy_requests_.end());
 }
@@ -821,15 +828,17 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
             : GetOrCreateFrameResource(
                   CodedSize(request.video_frame.get(), output_format_),
                   gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, output_color_space);
-    if (!frame_resource) {
+    if (!frame_resource || !frame_resource->shared_image ||
+        !(frame_resource->scoped_mapping =
+              frame_resource->shared_image->Map())) {
+      if (frame_resource) {
+        DLOG(ERROR) << "Could not get or map buffer.";
+      }
       std::move(request.frame_ready_cb).Run(std::move(request.video_frame));
       frame_copy_requests_.pop_front();
       continue;
     }
 
-    if (frame_resource->shared_image) {
-      frame_resource->scoped_mapping = frame_resource->shared_image->Map();
-    }
     worker_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&PoolImpl::CopyVideoFrameToGpuMemoryBuffer,
                                   this, request.video_frame, frame_resource));
@@ -845,11 +854,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffer(
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
   CHECK(frame_resource);
-  if (!frame_resource->shared_image || !frame_resource->scoped_mapping) {
-    DLOG(ERROR) << "Could not get or map buffer.";
-    OnCopiesDone(/*copy_failed=*/true, std::move(video_frame), frame_resource);
-    return;
-  }
+  CHECK(frame_resource->shared_image);
+  CHECK(frame_resource->scoped_mapping);
 
   auto on_copies_done =
       base::BindOnce(&PoolImpl::OnCopiesDone, this, /*copy_failed=*/false,
@@ -1247,8 +1253,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::
   std::move(frame_copy_requests_.front().frame_ready_cb)
       .Run(std::move(video_frame));
   frame_copy_requests_.pop_front();
-  if (!frame_copy_requests_.empty())
+  if (!frame_copy_requests_.empty()) {
     StartCopy();
+  }
 }
 
 // static
@@ -1322,8 +1329,9 @@ GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
 
 GpuMemoryBufferVideoFramePool::~GpuMemoryBufferVideoFramePool() {
   // May be nullptr in tests.
-  if (!pool_impl_)
+  if (!pool_impl_) {
     return;
+  }
 
   pool_impl_->Shutdown();
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
