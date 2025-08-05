@@ -3,14 +3,12 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Installs and manages configurations for MCP servers for the Gemini CLI.
+"""Installs and manages configurations for extensions for the Gemini CLI.
 
-This script allows you to install MCP server configurations from the
-'agents/mcp' directory into the Gemini CLI extensions directory. These
-configurations are used by the Gemini CLI to connect to and interact with
-MCP servers. You can install configurations at the project level (in the
-'.gemini/extensions' folder at the root of the git repository) or globally
-(in '~/.gemini/extensions').
+This script allows you to install extensions from the 'agents/extensions'
+directory into the Gemini CLI extensions directory. You can install
+configurations at the project level (in the '.gemini/extensions' folder at the
+root of the git repository) or globally (in '~/.gemini/extensions').
 """
 
 import argparse
@@ -22,18 +20,20 @@ import sys
 from pathlib import Path
 
 
-def get_mcp_servers_from_dir(mcp_dir: Path) -> list[str]:
-    """Returns a list of all MCP servers in the given directory.
+def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
+    """Returns a list of all extensions in the given directory.
 
     Args:
-        mcp_dir: The directory containing the MCP server configurations.
+        extensions_dir: The directory containing the extensions configurations.
 
     Returns:
-        A list of server names.
+        A list of extension names.
     """
-    if not mcp_dir.exists():
+    if not extensions_dir.exists():
         return []
-    return [p.parent.name for p in mcp_dir.glob('*/gemini-extension.json')]
+    return [
+        p.parent.name for p in extensions_dir.glob('*/gemini-extension.json')
+    ]
 
 
 def get_git_repo_root() -> Path | None:
@@ -46,27 +46,28 @@ def get_git_repo_root() -> Path | None:
         return None
 
 
-def get_mcp_dirs() -> list[Path]:
-    """Returns a list of all MCP directories."""
-    mcp_dirs = []
+def get_extensions_dirs() -> list[Path]:
+    """Returns a list of all extension directories."""
+    extensions_dirs = []
     # The primary extensions dir is the one containing this script.
-    primary_mcp_dir = Path(__file__).parent.resolve()
-    mcp_dirs.append(primary_mcp_dir)
+    primary_extensions_dir = Path(__file__).parent.resolve()
+    extensions_dirs.append(primary_extensions_dir)
 
     # Check for internal extensions.
     if repo_root := get_git_repo_root():
-        internal_mcp_dir = repo_root / 'internal' / 'agents' / 'extensions'
-        if internal_mcp_dir.exists():
-            mcp_dirs.append(internal_mcp_dir)
-    return mcp_dirs
+        internal_extensions_dir = (repo_root / 'internal' / 'agents' /
+                                   'extensions')
+        if internal_extensions_dir.exists():
+            extensions_dirs.append(internal_extensions_dir)
+    return extensions_dirs
 
 
-def find_mcp_dir_for_server(server_name: str,
-                            mcp_dirs: list[Path]) -> Path | None:
-    """Finds the MCP directory for a given server."""
-    for mcp_dir in mcp_dirs:
-        if (mcp_dir / server_name).exists():
-            return mcp_dir
+def find_extensions_dir_for_extension(
+        extension_name: str, extensions_dirs: list[Path]) -> Path | None:
+    """Finds the extensions directory for a given extension."""
+    for extensions_dir in extensions_dirs:
+        if (extensions_dir / extension_name).exists():
+            return extensions_dir
     return None
 
 
@@ -79,25 +80,25 @@ def get_extension_dir(use_global: bool = False) -> Path:
     return Path('.gemini/extensions')
 
 
-def get_installed_servers(extension_dir: Path) -> list[str]:
-    """Returns a list of all installed MCP servers.
+def get_installed_extensions(extensions_dir: Path) -> list[str]:
+    """Returns a list of all installed extensions.
 
     Args:
-        extension_dir: The extension directory to search.
+        extensions_dir: The extension directory to search.
 
     Returns:
-        A list of installed server names.
+        A list of installed extension names.
     """
-    if not extension_dir.exists():
+    if not extensions_dir.exists():
         return []
     return [
-        p.parent.name for p in extension_dir.glob('*/gemini-extension.json')
+        p.parent.name for p in extensions_dir.glob('*/gemini-extension.json')
     ]
 
 
-def get_server_version(server_path: Path) -> str:
-    """Returns the version of the server from its manifest file."""
-    manifest_path = server_path / 'gemini-extension.json'
+def get_extension_version(extension_path: Path) -> str:
+    """Returns the version of the extension from its manifest file."""
+    manifest_path = extension_path / 'gemini-extension.json'
     if not manifest_path.exists():
         return '-'
     with open(manifest_path, 'r', encoding='utf-8') as f:
@@ -144,11 +145,11 @@ def get_dir_hash(directory: Path) -> bytes | None:
         return hasher.hexdigest().encode('utf-8')
 
 
-def is_up_to_date(server_name: str, mcp_dir: Path,
-                  extension_dir: Path) -> bool:
-    """Checks if the installed server configuration is up to date."""
-    source_dir = mcp_dir / server_name
-    dest_dir = extension_dir / server_name
+def is_up_to_date(extension_name: str, source_extensions_dir: Path,
+                  target_extensions_dir: Path) -> bool:
+    """Checks if the installed extension configuration is up to date."""
+    source_dir = source_extensions_dir / extension_name
+    dest_dir = target_extensions_dir / extension_name
 
     if not dest_dir.exists():
         return False
@@ -159,125 +160,128 @@ def is_up_to_date(server_name: str, mcp_dir: Path,
     return source_hash == dest_hash
 
 
-def list_servers(mcp_dirs: list[Path]) -> None:
-    """Lists all available and installed MCP servers."""
-    # Get available, local, and global servers
-    available_servers = {}
-    for mcp_dir in mcp_dirs:
-        for name in get_mcp_servers_from_dir(mcp_dir):
-            available_servers[name] = get_server_version(mcp_dir / name)
+def list_extensions(extensions_dirs: list[Path]) -> None:
+    """Lists all available and installed extensions."""
+    # Get available, local, and global extensions
+    available_extensions = {}
+    for extensions_dir in extensions_dirs:
+        for name in get_extensions_from_dir(extensions_dir):
+            available_extensions[name] = get_extension_version(
+                extensions_dir / name)
 
-    local_servers = {
-        name: get_server_version(get_extension_dir(use_global=False) / name)
-        for name in get_installed_servers(get_extension_dir(use_global=False))
+    local_extensions_dir = get_extension_dir(use_global=False)
+    local_extensions = {
+        name: get_extension_version(local_extensions_dir / name)
+        for name in get_installed_extensions(local_extensions_dir)
     }
-    global_servers = {
-        name: get_server_version(get_extension_dir(use_global=True) / name)
-        for name in get_installed_servers(get_extension_dir(use_global=True))
+    global_extensions_dir = get_extension_dir(use_global=True)
+    global_extensions = {
+        name: get_extension_version(global_extensions_dir / name)
+        for name in get_installed_extensions(global_extensions_dir)
     }
 
-    all_server_names = sorted(
-        set(available_servers.keys())
-        | set(local_servers.keys())
-        | set(global_servers.keys()))
+    all_extension_names = sorted(
+        set(available_extensions.keys())
+        | set(local_extensions.keys())
+        | set(global_extensions.keys()))
 
     # Print table
-    print(f'{"MCP Server":<20} {"AVAILABLE":<12} {"LOCAL":<10} {"GLOBAL":<10}')
+    print(f'{"Extension":<20} {"AVAILABLE":<12} {"LOCAL":<10} {"GLOBAL":<10}')
     print(f'{"-"*19} {"-"*11} {"-"*9} {"-"*9}')
-    for name in all_server_names:
-        available = available_servers.get(name, '-')
-        local = local_servers.get(name, '-')
-        glob = global_servers.get(name, '-')
+    for name in all_extension_names:
+        available = available_extensions.get(name, '-')
+        local = local_extensions.get(name, '-')
+        glob = global_extensions.get(name, '-')
         print(f'{name:<20} {available:<12} {local:<10} {glob:<10}')
 
 
-def add_server(server_name: str, mcp_dir: Path, extension_dir: Path) -> None:
-    """Adds a new MCP server configuration."""
-    source_dir = mcp_dir / server_name
-    dest_dir = extension_dir / server_name
+def add_extension(extension_name: str, source_extensions_dir: Path,
+                  target_extensions_dir: Path) -> None:
+    """Adds an extension."""
+    source_dir = source_extensions_dir / extension_name
+    dest_dir = target_extensions_dir / extension_name
 
     if dest_dir.exists():
-        if not is_up_to_date(server_name, mcp_dir, extension_dir):
+        if not is_up_to_date(extension_name, source_extensions_dir,
+                             target_extensions_dir):
             response = input(
-                f"Server '{server_name}' is already installed but out of date. "
-                "Update it? [Y/n] ")
+                f"Extension '{extension_name}' is already installed but out "
+                "of date. Update it? [Y/n] ")
             if response.lower() == 'n':
                 return
         else:
-            print(
-                f"Server '{server_name}' is already installed and up to date.")
+            print(f"Extension '{extension_name}' is already installed and up "
+                  "to date.")
             return
 
     if dest_dir.exists():
         shutil.rmtree(dest_dir)
     shutil.copytree(source_dir, dest_dir)
-    print(f"Added/updated '{server_name}' to {dest_dir}")
+    print(f"Added/updated '{extension_name}' to {dest_dir}")
 
 
-def update_server(server_name: str, mcp_dir: Path,
-                  extension_dir: Path) -> None:
-    """Updates an existing MCP server configuration."""
-    source_dir = mcp_dir / server_name
-    dest_dir = extension_dir / server_name
+def update_extension(extension_name: str, source_extensions_dir: Path,
+                     target_extensions_dir: Path) -> None:
+    """Updates an existing extension."""
+    source_dir = source_extensions_dir / extension_name
+    dest_dir = target_extensions_dir / extension_name
 
     if not dest_dir.exists():
         print(
-            f"Server '{server_name}' is not installed in the specified "
+            f"Extension '{extension_name}' is not installed in the specified "
             "location. Use 'add' to install it.",
             file=sys.stderr)
         return
 
-    if is_up_to_date(server_name, mcp_dir, extension_dir):
-        print(f"Server '{server_name}' is already up to date.")
+    if is_up_to_date(extension_name, source_extensions_dir,
+                     target_extensions_dir):
+        print(f"Extension '{extension_name}' is already up to date.")
         return
 
     if dest_dir.exists():
         shutil.rmtree(dest_dir)
     shutil.copytree(source_dir, dest_dir)
-    print(f"Updated '{server_name}' in {dest_dir}")
+    print(f"Updated '{extension_name}' in {dest_dir}")
 
 
-def remove_server(server_name: str, extension_dir: Path) -> None:
-    """Removes an MCP server configuration.
-
-    Args:
-        server_name: The name of the server to remove.
-        extension_dir: The extension directory to remove the server from.
-    """
-    dest_dir = extension_dir / server_name
+def remove_extension(extension_name: str, target_extensions_dir: Path) -> None:
+    """Removes an extension."""
+    dest_dir = target_extensions_dir / extension_name
     if dest_dir.exists():
         shutil.rmtree(dest_dir)
-        print(f"Removed '{server_name}' from {extension_dir}")
+        print(f"Removed '{extension_name}' from {target_extensions_dir}")
     else:
-        print(f"Server '{server_name}' not found in {extension_dir}",
-              file=sys.stderr)
+        print(
+            f"Extension '{extension_name}' not found in "
+            f"{target_extensions_dir}",
+            file=sys.stderr)
 
 
 def main() -> None:
-    """Installs and manages MCP server configurations."""
-    mcp_dirs = get_mcp_dirs()
+    """Installs and manages extension."""
+    extensions_dirs = get_extensions_dirs()
 
     parser = argparse.ArgumentParser(
-        description='Install and manage MCP server configurations.')
+        description='Install and manage extensions.')
     subparsers = parser.add_subparsers(
         dest='command',
         help='Available commands.',
-        description='Install and manage MCP server configurations.'
+        description='Install and manage extensions.'
         ' To get help for a specific command, run "install.py <command> -h".')
 
     # Add command
-    add_parser = subparsers.add_parser('add', help='Add new MCP servers.')
+    add_parser = subparsers.add_parser('add', help='Add new extension.')
     add_parser.add_argument('-g',
                             '--global',
                             dest='use_global',
                             action='store_true',
                             help='Install to the global extensions directory.')
-    add_parser.add_argument('servers',
+    add_parser.add_argument('extensions',
                             nargs='+',
-                            help='A list of server directory names to add.')
+                            help='A list of extension directory names to add.')
 
     # Update command
-    update_parser = subparsers.add_parser('update', help='Update MCP servers.')
+    update_parser = subparsers.add_parser('update', help='Update extensions.')
     update_parser.add_argument(
         '-g',
         '--global',
@@ -285,13 +289,13 @@ def main() -> None:
         action='store_true',
         help='Update in the global extensions directory.')
     update_parser.add_argument(
-        'servers',
+        'extensions',
         nargs='*',
-        help='A list of server directory names to update. If not specified, '
-        'all installed servers will be updated.')
+        help='A list of extension directory names to update. If not specified, '
+        'all installed extensions will be updated.')
 
     # Remove command
-    remove_parser = subparsers.add_parser('remove', help='Remove MCP servers.')
+    remove_parser = subparsers.add_parser('remove', help='Remove extensions.')
     remove_parser.add_argument(
         '-g',
         '--global',
@@ -299,41 +303,45 @@ def main() -> None:
         action='store_true',
         help='Remove from the global extensions directory.')
     remove_parser.add_argument(
-        'servers',
+        'extensions',
         nargs='+',
-        help='A list of server directory names to remove.')
+        help='A list of extension directory names to remove.')
 
     # List command
     subparsers.add_parser('list',
-                          help='List all available and installed MCP servers.')
+                          help='List all available and installed extensions.')
 
     args = parser.parse_args()
 
     if args.command in ('add', 'update', 'remove'):
-        extension_dir = get_extension_dir(args.use_global)
+        target_extensions_dir = get_extension_dir(args.use_global)
         if args.command in ('add', 'update'):
-            extension_dir.mkdir(parents=True, exist_ok=True)
+            target_extensions_dir.mkdir(parents=True, exist_ok=True)
 
-        servers_to_process = args.servers
-        if args.command == 'update' and not servers_to_process:
-            servers_to_process = get_installed_servers(extension_dir)
+        extensions_to_process = args.extensions
+        if args.command == 'update' and not extensions_to_process:
+            extensions_to_process = get_installed_extensions(
+                target_extensions_dir)
 
-        for server in servers_to_process:
-            mcp_dir = find_mcp_dir_for_server(server, mcp_dirs)
-            if not mcp_dir:
-                print(f"Error: Server '{server}' not found. Skipping.",
+        for extension in extensions_to_process:
+            source_extensions_dir = find_extensions_dir_for_extension(
+                extension, extensions_dirs)
+            if not source_extensions_dir:
+                print(f"Error: Extension '{extension}' not found. Skipping.",
                       file=sys.stderr)
                 continue
 
             if args.command == 'add':
-                add_server(server, mcp_dir, extension_dir)
+                add_extension(extension, source_extensions_dir,
+                              target_extensions_dir)
             elif args.command == 'update':
-                update_server(server, mcp_dir, extension_dir)
+                update_extension(extension, source_extensions_dir,
+                                 target_extensions_dir)
             elif args.command == 'remove':
-                remove_server(server, extension_dir)
+                remove_extension(extension, target_extensions_dir)
 
     elif args.command == 'list' or args.command is None:
-        list_servers(mcp_dirs)
+        list_extensions(extensions_dirs)
 
 
 if __name__ == '__main__':

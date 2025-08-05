@@ -17,45 +17,47 @@ import install
 
 
 class InstallTest(unittest.TestCase):
-    """Tests for the MCP server installation script."""
+    """Tests for the extension installation script."""
 
     def setUp(self):
         """Sets up the test environment."""
         self.tmpdir = tempfile.mkdtemp()
-        self.mcp_dir = Path(self.tmpdir) / 'agents' / 'mcp'
-        self.mcp_dir.mkdir(parents=True)
-        self.extension_dir = Path(self.tmpdir) / '.gemini' / 'extensions'
-        self.extension_dir.mkdir(parents=True)
+        self.source_extensions_dir = Path(
+            self.tmpdir) / 'agents' / 'extensions'
+        self.source_extensions_dir.mkdir(parents=True)
+        self.target_extensions_dir = Path(
+            self.tmpdir) / '.gemini' / 'extensions'
+        self.target_extensions_dir.mkdir(parents=True)
         self.global_extension_dir = Path(
             self.tmpdir) / 'home' / '.gemini' / 'extensions'
         self.global_extension_dir.mkdir(parents=True)
 
-        # Create sample servers
-        self.server1_dir = self.mcp_dir / 'sample_server_1'
-        self.server1_dir.mkdir()
-        with open(self.server1_dir / 'gemini-extension.json',
+        # Create sample extensions
+        self.extension1_dir = self.source_extensions_dir / 'sample_1'
+        self.extension1_dir.mkdir()
+        with open(self.extension1_dir / 'gemini-extension.json',
                   'w',
                   encoding='utf-8') as f:
-            f.write('{"name": "sample_server_1", "version": "1.0.0"}')
-        with open(self.server1_dir / 'main.py', 'w', encoding='utf-8') as f:
+            f.write('{"name": "sample_1", "version": "1.0.0"}')
+        with open(self.extension1_dir / 'main.py', 'w', encoding='utf-8') as f:
             f.write('print("hello")')
 
-        self.server2_dir = self.mcp_dir / 'sample_server_2'
-        self.server2_dir.mkdir()
-        with open(self.server2_dir / 'gemini-extension.json',
+        self.extension2_dir = self.source_extensions_dir / 'sample_2'
+        self.extension2_dir.mkdir()
+        with open(self.extension2_dir / 'gemini-extension.json',
                   'w',
                   encoding='utf-8') as f:
-            f.write('{"name": "sample_server_2", "version": "2.0.0"}')
+            f.write('{"name": "sample_2", "version": "2.0.0"}')
 
-        self.internal_mcp_dir = Path(
+        self.internal_extensions_dir = Path(
             self.tmpdir) / 'internal' / 'agents' / 'extensions'
-        self.internal_mcp_dir.mkdir(parents=True)
-        self.server3_dir = self.internal_mcp_dir / 'sample_server_3'
-        self.server3_dir.mkdir()
-        with open(self.server3_dir / 'gemini-extension.json',
+        self.internal_extensions_dir.mkdir(parents=True)
+        self.extension3_dir = self.internal_extensions_dir / 'sample_3'
+        self.extension3_dir.mkdir()
+        with open(self.extension3_dir / 'gemini-extension.json',
                   'w',
                   encoding='utf-8') as f:
-            f.write('{"name": "sample_server_3", "version": "3.0.0"}')
+            f.write('{"name": "sample_3", "version": "3.0.0"}')
 
     def tearDown(self):
         """Tears down the test environment."""
@@ -63,43 +65,48 @@ class InstallTest(unittest.TestCase):
 
     def test_get_dir_hash(self):
         """Tests the get_dir_hash function."""
-        hash1 = install.get_dir_hash(self.server1_dir)
-        hash2 = install.get_dir_hash(self.server1_dir)
+        hash1 = install.get_dir_hash(self.extension1_dir)
+        hash2 = install.get_dir_hash(self.extension1_dir)
         self.assertEqual(hash1, hash2)
 
         # Test that a change in content changes the hash
-        with open(self.server1_dir / 'main.py', 'w', encoding='utf-8') as f:
+        with open(self.extension1_dir / 'main.py', 'w', encoding='utf-8') as f:
             f.write('print("world")')
-        hash3 = install.get_dir_hash(self.server1_dir)
+        hash3 = install.get_dir_hash(self.extension1_dir)
         self.assertNotEqual(hash1, hash3)
 
-    def test_find_mcp_dir_for_server(self):
-        """Tests the find_mcp_dir_for_server function."""
-        mcp_dirs = [self.mcp_dir, self.internal_mcp_dir]
+    def test_find_extensions_dir_for_extension(self):
+        """Tests the find_extensions_dir_for_extension function."""
+        extensions_dirs = [
+            self.source_extensions_dir, self.internal_extensions_dir
+        ]
         self.assertEqual(
-            install.find_mcp_dir_for_server('sample_server_1', mcp_dirs),
-            self.mcp_dir)
+            install.find_extensions_dir_for_extension('sample_1',
+                                                      extensions_dirs),
+            self.source_extensions_dir)
         self.assertEqual(
-            install.find_mcp_dir_for_server('sample_server_3', mcp_dirs),
-            self.internal_mcp_dir)
+            install.find_extensions_dir_for_extension('sample_3',
+                                                      extensions_dirs),
+            self.internal_extensions_dir)
         self.assertIsNone(
-            install.find_mcp_dir_for_server('non_existent_server', mcp_dirs))
+            install.find_extensions_dir_for_extension('non_existent_extension',
+                                                      extensions_dirs))
 
     @patch('install.get_git_repo_root')
     @patch('pathlib.Path.resolve')
-    def test_get_mcp_dirs(self, mock_resolve, mock_get_git_repo_root):
-        """Tests the get_mcp_dirs function."""
-        mock_resolve.return_value = self.mcp_dir
+    def test_get_extensions_dirs(self, mock_resolve, mock_get_git_repo_root):
+        """Tests the get_extensions_dirs function."""
+        mock_resolve.return_value = self.source_extensions_dir
         mock_get_git_repo_root.return_value = Path(self.tmpdir)
-        mcp_dirs = install.get_mcp_dirs()
-        self.assertIn(self.mcp_dir, mcp_dirs)
-        self.assertIn(self.internal_mcp_dir, mcp_dirs)
+        extensions_dirs = install.get_extensions_dirs()
+        self.assertIn(self.source_extensions_dir, extensions_dirs)
+        self.assertIn(self.internal_extensions_dir, extensions_dirs)
 
     @patch('subprocess.check_output', side_effect=FileNotFoundError)
     def test_get_dir_hash_fallback(self, mock_check_output):
         """Tests the get_dir_hash function's fallback mechanism."""
-        hash1 = install.get_dir_hash(self.server1_dir)
-        hash2 = install.get_dir_hash(self.server1_dir)
+        hash1 = install.get_dir_hash(self.extension1_dir)
+        hash2 = install.get_dir_hash(self.extension1_dir)
         self.assertEqual(hash1, hash2)
         self.assertIsNotNone(hash1)
 
@@ -108,95 +115,104 @@ class InstallTest(unittest.TestCase):
         """Tests the is_up_to_date() function."""
         mock_get_dir_hash.return_value = b'some_hash'
         self.assertFalse(
-            install.is_up_to_date('sample_server_1', self.mcp_dir,
-                                  self.extension_dir))
+            install.is_up_to_date('sample_1', self.source_extensions_dir,
+                                  self.target_extensions_dir))
 
-        install.add_server('sample_server_1', self.mcp_dir, self.extension_dir)
+        install.add_extension('sample_1', self.source_extensions_dir,
+                              self.target_extensions_dir)
         mock_get_dir_hash.side_effect = [b'some_hash', b'some_hash']
         self.assertTrue(
-            install.is_up_to_date('sample_server_1', self.mcp_dir,
-                                  self.extension_dir))
+            install.is_up_to_date('sample_1', self.source_extensions_dir,
+                                  self.target_extensions_dir))
 
         mock_get_dir_hash.side_effect = [b'new_hash', b'old_hash']
         self.assertFalse(
-            install.is_up_to_date('sample_server_1', self.mcp_dir,
-                                  self.extension_dir))
+            install.is_up_to_date('sample_1', self.source_extensions_dir,
+                                  self.target_extensions_dir))
 
     @patch('builtins.input', return_value='y')
-    def test_add_server(self, mock_input):
-        """Tests the add_server function."""
-        install.add_server('sample_server_1', self.mcp_dir, self.extension_dir)
-        self.assertTrue((self.extension_dir / 'sample_server_1').exists())
+    def test_add_extension(self, mock_input):
+        """Tests the add_extension function."""
+        install.add_extension('sample_1', self.source_extensions_dir,
+                              self.target_extensions_dir)
+        self.assertTrue((self.target_extensions_dir / 'sample_1').exists())
 
     @patch('builtins.input', return_value='n')
     @patch('install.is_up_to_date', return_value=False)
-    def test_add_server_decline_update(self, mock_is_up_to_date, mock_input):
-        """Tests that adding an existing server is skipped if the user
+    def test_add_extension_decline_update(self, mock_is_up_to_date,
+                                          mock_input):
+        """Tests that adding an existing extension is skipped if the user
         declines."""
-        install.add_server('sample_server_1', self.mcp_dir, self.extension_dir)
+        install.add_extension('sample_1', self.source_extensions_dir,
+                              self.target_extensions_dir)
         with patch('shutil.copytree') as mock_copy:
-            install.add_server('sample_server_1', self.mcp_dir,
-                               self.extension_dir)
+            install.add_extension('sample_1', self.source_extensions_dir,
+                                  self.target_extensions_dir)
             mock_copy.assert_not_called()
 
-    def test_update_server(self):
-        """Tests the update_server function."""
-        # Test updating a non-existent server
+    def test_update_extension(self):
+        """Tests the update_extension function."""
+        # Test updating a non-existent extension
         with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
-            install.update_server('sample_server_1', self.mcp_dir,
-                                  self.extension_dir)
+            install.update_extension('sample_1', self.source_extensions_dir,
+                                     self.target_extensions_dir)
             self.assertIn('not installed', mock_stderr.getvalue())
 
-        # Test updating an up-to-date server
-        install.add_server('sample_server_1', self.mcp_dir, self.extension_dir)
+        # Test updating an up-to-date extension
+        install.add_extension('sample_1', self.source_extensions_dir,
+                              self.target_extensions_dir)
         with patch('install.is_up_to_date', return_value=True):
             with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-                install.update_server('sample_server_1', self.mcp_dir,
-                                      self.extension_dir)
+                install.update_extension('sample_1',
+                                         self.source_extensions_dir,
+                                         self.target_extensions_dir)
                 self.assertIn('already up to date', mock_stdout.getvalue())
 
-    def test_remove_server_not_installed(self):
-        """Tests removing a server that is not installed."""
+    def test_remove_extension_not_installed(self):
+        """Tests removing a extension that is not installed."""
         with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
-            install.remove_server('sample_server_1', self.extension_dir)
+            install.remove_extension('sample_1', self.target_extensions_dir)
             self.assertIn('not found', mock_stderr.getvalue())
 
     @patch('install.get_extension_dir')
-    @patch('install.add_server')
-    @patch('install.find_mcp_dir_for_server')
-    def test_main_add_global(self, mock_find_mcp, mock_add_server,
+    @patch('install.add_extension')
+    @patch('install.find_extensions_dir_for_extension')
+    def test_main_add_global(self, mock_find_extensions, mock_add_extension,
                              mock_get_extension_dir):
         """Tests the main function with the add command and --global flag."""
-        mock_find_mcp.return_value = self.mcp_dir
+        mock_find_extensions.return_value = self.source_extensions_dir
         mock_get_extension_dir.return_value = self.global_extension_dir
-        with patch('sys.argv', ['install.py', 'add', '-g', 'sample_server_1']):
-            with patch('install.get_mcp_dirs', return_value=[self.mcp_dir]):
+        with patch('sys.argv', ['install.py', 'add', '-g', 'sample_1']):
+            with patch('install.get_extensions_dirs',
+                       return_value=[self.source_extensions_dir]):
                 install.main()
-        mock_add_server.assert_called_once_with('sample_server_1',
-                                                self.mcp_dir,
-                                                self.global_extension_dir)
+        mock_add_extension.assert_called_once_with('sample_1',
+                                                   self.source_extensions_dir,
+                                                   self.global_extension_dir)
 
-    @patch('install.update_server')
-    @patch('install.get_installed_servers', return_value=['sample_server_1'])
-    @patch('install.find_mcp_dir_for_server')
-    def test_main_update_all(self, mock_find_mcp, mock_get_installed,
-                             mock_update_server):
-        """Tests the main function with the update command and no servers."""
-        mock_find_mcp.return_value = self.mcp_dir
+    @patch('install.update_extension')
+    @patch('install.get_installed_extensions', return_value=['sample_1'])
+    @patch('install.find_extensions_dir_for_extension')
+    def test_main_update_all(self, mock_find_extensions, mock_get_installed,
+                             mock_update_extension):
+        """Tests the main function with the update command and no extensions."""
+        mock_find_extensions.return_value = self.source_extensions_dir
         with patch('sys.argv', ['install.py', 'update']):
-            with patch('install.get_mcp_dirs', return_value=[self.mcp_dir]):
+            with patch('install.get_extensions_dirs',
+                       return_value=[self.source_extensions_dir]):
                 install.main()
-        mock_update_server.assert_called_once()
+        mock_update_extension.assert_called_once()
 
     @patch('sys.stderr', new_callable=io.StringIO)
-    @patch('install.find_mcp_dir_for_server')
-    def test_main_invalid_server(self, mock_find_mcp, mock_stderr):
-        """Tests that main handles invalid server names gracefully."""
-        mock_find_mcp.return_value = None
-        with patch('sys.argv', ['install.py', 'add', 'invalid_server']):
-            with patch('install.get_mcp_dirs', return_value=[self.mcp_dir]):
+    @patch('install.find_extensions_dir_for_extension')
+    def test_main_invalid_extension(self, mock_find_extensions, mock_stderr):
+        """Tests that main handles invalid extension names gracefully."""
+        mock_find_extensions.return_value = None
+        with patch('sys.argv', ['install.py', 'add', 'invalid_extension']):
+            with patch('install.get_extensions_dirs',
+                       return_value=[self.source_extensions_dir]):
                 install.main()
-        self.assertIn("Error: Server 'invalid_server' not found",
+        self.assertIn("Error: Extension 'invalid_extension' not found",
                       mock_stderr.getvalue())
 
 
