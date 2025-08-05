@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
@@ -318,6 +319,11 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   UIView* _miaAnimationView;
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
+
+  // Location bar view for when it has a colored gradient.
+  GradientView* _fakeLocationBarGradientView;
+  // Location bar view to use for when it should have a blur effect.
+  UIVisualEffectView* _fakeLocationBarBlurEffectView;
 }
 
 #pragma mark - Public
@@ -354,8 +360,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       };
       [self registerForTraitChanges:traits withHandler:handler];
       if (IsNTPBackgroundCustomizationEnabled()) {
-        [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                           withAction:@selector(applyBackgroundColors)];
+        [self
+            registerForTraitChanges:
+                @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                         withAction:@selector(applyBackgroundTheme)];
       }
     }
   }
@@ -802,9 +810,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     [_customizationMenuButton removeFromSuperview];
   }
 
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    customizationMenuButton.configuration =
+        [self customizationButtonConfiguration];
+  }
+
   customizationMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  customizationMenuButton.layer.cornerRadius =
-      ntp_home::kCustomizationMenuButtonCornerRadius;
   customizationMenuButton.pointerInteractionEnabled = YES;
   customizationMenuButton.clipsToBounds = YES;
 
@@ -840,7 +851,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   _customizationNewFeatureBadge = newBadgeView;
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    [self applyBackgroundColors];
+    [self applyBackgroundTheme];
   }
 }
 
@@ -897,12 +908,31 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 - (UIView*)fakeLocationBar {
   if (!_fakeLocationBar) {
-    _fakeLocationBar =
-        [[GradientView alloc] initWithTopColor:FakeboxTopColor()
-                                   bottomColor:FakeboxBottomColor()];
+    _fakeLocationBar = [[UIView alloc] init];
     _fakeLocationBar.userInteractionEnabled = NO;
     _fakeLocationBar.clipsToBounds = YES;
     _fakeLocationBar.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _fakeLocationBarGradientView =
+        [[GradientView alloc] initWithTopColor:FakeboxTopColor()
+                                   bottomColor:FakeboxBottomColor()];
+    _fakeLocationBarGradientView.userInteractionEnabled = NO;
+    _fakeLocationBarGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_fakeLocationBar addSubview:_fakeLocationBarGradientView];
+    AddSameConstraints(_fakeLocationBar, _fakeLocationBarGradientView);
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      UIVisualEffect* blurEffect =
+          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+      _fakeLocationBarBlurEffectView =
+          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      _fakeLocationBarBlurEffectView.userInteractionEnabled = NO;
+      _fakeLocationBarBlurEffectView.translatesAutoresizingMaskIntoConstraints =
+          NO;
+      [_fakeLocationBar addSubview:_fakeLocationBarBlurEffectView];
+      AddSameConstraints(_fakeLocationBar, _fakeLocationBarBlurEffectView);
+    }
+
     _fakeLocationBarHighlightView = [[UIView alloc] init];
     _fakeLocationBarHighlightView.userInteractionEnabled = NO;
     _fakeLocationBarHighlightView.backgroundColor = UIColor.clearColor;
@@ -910,6 +940,14 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         NO;
     [_fakeLocationBar addSubview:_fakeLocationBarHighlightView];
     AddSameConstraints(_fakeLocationBar, _fakeLocationBarHighlightView);
+
+    // Make sure the correct background is visible.
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self applyBackgroundTheme];
+    } else {
+      _fakeLocationBarGradientView.hidden = NO;
+      _fakeLocationBarBlurEffectView.hidden = YES;
+    }
   }
   return _fakeLocationBar;
 }
@@ -943,18 +981,31 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 #pragma mark - Private
 
-// Sets the background using the current color palette, or defaults if none is
-// set.
-- (void)applyBackgroundColors {
+// Sets the background based on the current NTP background, current color
+// palette, or defaults if neither are set.
+- (void)applyBackgroundTheme {
+  BOOL hasBlurredBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+  if (hasBlurredBackground) {
+    _customizationMenuButton.configuration =
+        [self customizationButtonConfiguration];
+    _fakeLocationBarGradientView.hidden = YES;
+    _fakeLocationBarBlurEffectView.hidden = NO;
+    return;
+  }
+
+  _fakeLocationBarGradientView.hidden = NO;
+  _fakeLocationBarBlurEffectView.hidden = YES;
+
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
 
   if (colorPalette) {
-    [_fakeLocationBar setStartColor:colorPalette.omniboxColor
-                           endColor:colorPalette.omniboxColor];
+    [_fakeLocationBarGradientView setStartColor:colorPalette.omniboxColor
+                                       endColor:colorPalette.omniboxColor];
 
-    _customizationMenuButton.backgroundColor = colorPalette.secondaryColor;
-    _customizationMenuButton.tintColor = colorPalette.tintColor;
+    _customizationMenuButton.configuration =
+        [self customizationButtonConfiguration];
 
     _miaButton.tintColor = colorPalette.tintColor;
     _voiceSearchButton.tintColor = colorPalette.tintColor;
@@ -963,30 +1014,23 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     _voiceAndLensDivider.backgroundColor = colorPalette.omniboxIconDividerColor;
     _miaAndVoiceDivider.backgroundColor = colorPalette.omniboxIconDividerColor;
     _miaAnimationView.alpha = 0;
-  } else {
-    [_fakeLocationBar setStartColor:FakeboxTopColor()
-                           endColor:FakeboxBottomColor()];
-
-    UIColor* backgroundColor =
-        IsSignInButtonNoAvatarEnabled()
-            ? [[UIColor colorNamed:kSolidWhiteColor]
-                  colorWithAlphaComponent:0.75]
-            : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                  colorWithAlphaComponent:0.8];
-    _customizationMenuButton.backgroundColor = backgroundColor;
-    _customizationMenuButton.tintColor = [UIColor
-        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
-                                                    : kTextSecondaryColor)];
-
-    _miaButton.tintColor = [UIColor colorNamed:kGrey700Color];
-    _voiceSearchButton.tintColor = [UIColor colorNamed:kGrey700Color];
-    _lensButton.tintColor = [UIColor colorNamed:kGrey700Color];
-
-    _voiceAndLensDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
-    _miaAndVoiceDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
-    _miaAnimationView.alpha =
-        MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
+    return;
   }
+
+  [_fakeLocationBarGradientView setStartColor:FakeboxTopColor()
+                                     endColor:FakeboxBottomColor()];
+
+  _customizationMenuButton.configuration =
+      [self customizationButtonConfiguration];
+
+  _miaButton.tintColor = [UIColor colorNamed:kGrey700Color];
+  _voiceSearchButton.tintColor = [UIColor colorNamed:kGrey700Color];
+  _lensButton.tintColor = [UIColor colorNamed:kGrey700Color];
+
+  _voiceAndLensDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+  _miaAndVoiceDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+  _miaAnimationView.alpha =
+      MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
 }
 
 // Empties the fakebox buttons stack.
@@ -1169,7 +1213,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   // Use a quadratic curve interpolation.
   progress = progress * progress;
-  [_fakeLocationBar
+  [_fakeLocationBarGradientView
       setStartColor:BlendColors(colorPalette ? colorPalette.omniboxColor
                                              : FakeboxTopColor(),
                                 pinnedColor, progress)
@@ -1265,6 +1309,55 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       [self updateAnimationOnMIAButton];
     }
   }
+}
+
+// Creates the curret button configuration for the customization button.
+- (UIButtonConfiguration*)customizationButtonConfiguration {
+  UIImage* icon = DefaultSymbolTemplateWithPointSize(
+      kPencilSymbol,
+      IsSignInButtonNoAvatarEnabled()
+          ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
+          : ntp_home::kCustomizationMenuIconSize);
+
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.image = icon;
+  buttonConfiguration.background.cornerRadius =
+      ntp_home::kCustomizationMenuButtonCornerRadius;
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+      UIVisualEffect* blurEffect =
+          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+      UIVisualEffectView* blurBackgroundView =
+          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      buttonConfiguration.background.customView = blurBackgroundView;
+
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kTextPrimaryColor];
+      return buttonConfiguration;
+    }
+
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    if (colorPalette) {
+      buttonConfiguration.background.backgroundColor =
+          colorPalette.secondaryColor;
+      buttonConfiguration.baseForegroundColor = colorPalette.tintColor;
+      return buttonConfiguration;
+    }
+  }
+
+  UIColor* backgroundColor =
+      IsSignInButtonNoAvatarEnabled()
+          ? [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75]
+          : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+                colorWithAlphaComponent:0.8];
+  buttonConfiguration.background.backgroundColor = backgroundColor;
+  buttonConfiguration.baseForegroundColor = [UIColor
+      colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
+                                                  : kTextSecondaryColor)];
+  return buttonConfiguration;
 }
 
 #pragma mark - MIA

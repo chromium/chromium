@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
@@ -163,8 +164,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       };
       [self registerForTraitChanges:traits withHandler:handler];
       if (IsNTPBackgroundCustomizationEnabled()) {
-        [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                           withAction:@selector(applyBackgroundColors)];
+        [self
+            registerForTraitChanges:
+                @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                         withAction:@selector(applyBackgroundTheme)];
       }
     }
   }
@@ -373,7 +376,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
     if (IsNTPBackgroundCustomizationEnabled()) {
-      [self applyBackgroundColors];
+      [self applyBackgroundTheme];
     }
   }
 }
@@ -592,14 +595,14 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   UIButton* customizationMenuButton =
       [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
 
-  UIImage* icon = DefaultSymbolTemplateWithPointSize(
-      kPencilSymbol,
-      IsSignInButtonNoAvatarEnabled()
-          ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
-          : ntp_home::kCustomizationMenuIconSize);
-  [customizationMenuButton setImage:icon forState:UIControlStateNormal];
-
   if (!IsNTPBackgroundCustomizationEnabled()) {
+    UIImage* icon = DefaultSymbolTemplateWithPointSize(
+        kPencilSymbol,
+        IsSignInButtonNoAvatarEnabled()
+            ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
+            : ntp_home::kCustomizationMenuIconSize);
+    [customizationMenuButton setImage:icon forState:UIControlStateNormal];
+
     UIColor* backgroundColor =
         IsSignInButtonNoAvatarEnabled()
             ? [[UIColor colorNamed:kSolidWhiteColor]
@@ -612,6 +615,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
         colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
                                                     : kTextSecondaryColor)];
     customizationMenuButton.tintColor = tintColor;
+
+    customizationMenuButton.layer.cornerRadius =
+        ntp_home::kCustomizationMenuButtonCornerRadius;
+    customizationMenuButton.clipsToBounds = YES;
   }
 
   customizationMenuButton.accessibilityIdentifier =
@@ -868,18 +875,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   _searchEngineLogoMediator.consumer = self;
 }
 
-- (void)updateLogoColor:(UIColor*)logoTintColor {
-  CHECK(_searchEngineLogoMediator);
-
-  if (logoTintColor) {
-    _searchEngineLogoMediator.usesMonochromeLogo = YES;
-    _searchEngineLogoMediator.view.tintColor = logoTintColor;
-  } else {
-    _searchEngineLogoMediator.usesMonochromeLogo = NO;
-    _searchEngineLogoMediator.view.tintColor = nil;
-  }
-}
-
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
   if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
     return;
@@ -1017,8 +1012,27 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 // Sets the background using the current color palette, or defaults if none is
 // set.
-- (void)applyBackgroundColors {
+- (void)applyBackgroundTheme {
   [self updateIdentityDiscState];
+
+  BOOL hasBlurredBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+  if (hasBlurredBackground) {
+    _searchEngineLogoMediator.usesMonochromeLogo = YES;
+    _searchEngineLogoMediator.view.tintColor = UIColor.whiteColor;
+    return;
+  }
+
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  if (colorPalette) {
+    _searchEngineLogoMediator.usesMonochromeLogo = YES;
+    _searchEngineLogoMediator.view.tintColor = colorPalette.tintColor;
+    return;
+  }
+
+  _searchEngineLogoMediator.usesMonochromeLogo = NO;
+  _searchEngineLogoMediator.view.tintColor = nil;
 }
 
 - (void)setIsSignedIn:(BOOL)isSignedIn {

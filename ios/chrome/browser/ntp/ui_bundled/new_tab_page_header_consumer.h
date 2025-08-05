@@ -23,10 +23,6 @@ enum class SearchEngineLogoState;
 - (void)setSearchEngineLogoMediator:
     (SearchEngineLogoMediator*)searchEngineLogoMediator;
 
-// Sets the color for the monochrome logo. Pass `nil` to display the color
-// version.
-- (void)updateLogoColor:(UIColor*)logoTintColor;
-
 // Sets whether voice search is currently enabled.
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled;
 

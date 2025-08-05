@@ -409,7 +409,6 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
     [traitAccessor setObjectForNewTabPageTrait:colorPalette];
     [self.consumer setBackgroundImage:nil];
-    [self.headerConsumer updateLogoColor:colorPalette.tintColor];
     [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
     return;
   }
@@ -423,7 +422,6 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
   if (!background) {
     [self.consumer setBackgroundImage:nil];
-    [self.headerConsumer updateLogoColor:nil];
     return;
   }
 
@@ -622,7 +620,6 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 // image for the new tab page.
 - (void)handleBackgroundImageFetch:(const gfx::Image&)image {
   [self.consumer setBackgroundImage:image.ToUIImage()];
-  [self.headerConsumer updateLogoColor:UIColor.whiteColor];
 }
 
 @end

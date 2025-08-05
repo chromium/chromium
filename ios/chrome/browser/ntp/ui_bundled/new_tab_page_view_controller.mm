@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
@@ -175,6 +176,9 @@ CGFloat SpaceBetweenModules() {
   GradientView* _backgroundGradientView;
   // Container view surrounding the feed.
   UIView* _feedContainer;
+  // Extra container background visual effect view for when the feed should have
+  // a translucent background.
+  UIView* _feedVisualEffectBackgroundView;
   // YES if the view is in the process of appearing, but viewDidAppear hasn't
   // finished yet.
   BOOL _appearing;
@@ -275,9 +279,10 @@ CGFloat SpaceBetweenModules() {
     };
     [self registerForTraitChanges:traits withHandler:handler];
     if (IsNTPBackgroundCustomizationEnabled()) {
-      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                         withAction:@selector(applyBackgroundColors)];
-      [self applyBackgroundColors];
+      [self registerForTraitChanges:
+                @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                         withAction:@selector(applyBackgroundTheme)];
+      [self applyBackgroundTheme];
     }
   }
   [self.mutator checkNewBadgeEligibility];
@@ -500,6 +505,17 @@ CGFloat SpaceBetweenModules() {
         kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
     _feedContainer.layer.masksToBounds = YES;
     _feedContainer.layer.zPosition = -CGFLOAT_MAX;
+
+    UIVisualEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+    _feedVisualEffectBackgroundView =
+        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    _feedVisualEffectBackgroundView.translatesAutoresizingMaskIntoConstraints =
+        NO;
+    _feedVisualEffectBackgroundView.hidden = NO;
+    [_feedContainer addSubview:_feedVisualEffectBackgroundView];
+    AddSameConstraints(_feedContainer, _feedVisualEffectBackgroundView);
+
     [self.collectionView insertSubview:_feedContainer atIndex:0];
   }
 
@@ -1097,7 +1113,20 @@ CGFloat SpaceBetweenModules() {
 
 // Sets the background using the current color palette, or defaults if none is
 // set.
-- (void)applyBackgroundColors {
+- (void)applyBackgroundTheme {
+  BOOL hasImageBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+  if (hasImageBackground) {
+    _feedContainer.backgroundColor = UIColor.clearColor;
+    _feedVisualEffectBackgroundView.hidden = NO;
+    _backgroundGradientView.hidden = YES;
+    return;
+  }
+
+  _backgroundGradientView.hidden =
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight;
+  _feedVisualEffectBackgroundView.hidden = YES;
+
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
 
@@ -1598,7 +1627,9 @@ CGFloat SpaceBetweenModules() {
 // background color to this view's otherwise.
 - (void)updateModularHomeBackgroundColorForUserInterfaceStyle:
     (UIUserInterfaceStyle)style {
-  _backgroundGradientView.hidden = style == UIUserInterfaceStyleLight;
+  _backgroundGradientView.hidden =
+      style == UIUserInterfaceStyleLight &&
+      ![self.traitCollection boolForNewTabPageImageBackgroundTrait];
 }
 
 // Signal to the ViewController that the height above the feed needs to be

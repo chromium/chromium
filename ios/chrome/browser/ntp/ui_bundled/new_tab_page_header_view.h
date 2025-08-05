@@ -52,7 +52,7 @@
     NSLayoutConstraint* fakeLocationBarLeadingConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarTrailingConstraint;
-@property(nonatomic, strong) GradientView* fakeLocationBar;
+@property(nonatomic, strong) UIView* fakeLocationBar;
 @property(nonatomic, strong) UILabel* searchHintLabel;
 
 // View that contains tab group information.
