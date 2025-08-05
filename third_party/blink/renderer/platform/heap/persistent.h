@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
 
 #include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"

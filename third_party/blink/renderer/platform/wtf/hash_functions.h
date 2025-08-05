@@ -24,6 +24,7 @@
 #include <stdint.h>
 
 #include <concepts>
+#include <cstddef>
 #include <type_traits>
 
 #include "base/bit_cast.h"
