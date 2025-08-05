@@ -13,18 +13,13 @@
 
 namespace aura::test {
 
-TestWindowBuilder::TestWindowBuilder() = default;
+TestWindowBuilder::TestWindowBuilder(WindowBuilderParams params)
+    : params_(std::move(params)) {}
 
 TestWindowBuilder::TestWindowBuilder(TestWindowBuilder& others)
-    : parent_(others.parent_),
-      delegate_(others.delegate_),
-      window_type_(others.window_type_),
-      layer_type_(others.layer_type_),
-      bounds_(others.bounds_),
-      init_properties_(std::move(others.init_properties_)),
-      window_id_(others.window_id_),
-      window_title_(others.window_title_),
-      show_(others.show_) {
+    : params_(std::move(others.params_)),
+      delegate_(std::move(others.delegate_)),
+      init_properties_(std::move(others.init_properties_)) {
   DCHECK(!others.built_);
   others.built_ = true;
 }
@@ -33,37 +28,38 @@ TestWindowBuilder::~TestWindowBuilder() = default;
 
 TestWindowBuilder& TestWindowBuilder::SetParent(Window* parent) {
   DCHECK(!built_);
-  DCHECK(!parent_);
-  parent_ = parent;
+  DCHECK(!params_.parent);
+  params_.parent = parent;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetWindowType(client::WindowType type) {
   DCHECK(!built_);
-  window_type_ = type;
+  params_.window_type = type;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetWindowId(int id) {
   DCHECK(!built_);
-  window_id_ = id;
+  params_.window_id = id;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetWindowTitle(
     const std::u16string& title) {
   DCHECK(!built_);
-  window_title_ = title;
+  params_.window_title = title;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetBounds(const gfx::Rect& bounds) {
   DCHECK(!built_);
-  bounds_ = bounds;
+  params_.bounds = bounds;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetDelegate(WindowDelegate* delegate) {
+  DCHECK(!built_);
   DCHECK(!delegate_);
   delegate_ = delegate;
   return *this;
@@ -95,26 +91,26 @@ TestWindowBuilder& TestWindowBuilder::AllowAllWindowStates() {
 
 TestWindowBuilder& TestWindowBuilder::SetShow(bool show) {
   DCHECK(!built_);
-  show_ = show;
+  params_.show = show;
   return *this;
 }
 
 std::unique_ptr<Window> TestWindowBuilder::Build() {
   auto window = CreateWindowInternal();
-  if (parent_) {
-    if (!bounds_.IsEmpty()) {
-      window->SetBounds(bounds_);
+  if (parent()) {
+    if (!params_.bounds.IsEmpty()) {
+      window->SetBounds(params_.bounds);
     }
-    parent_->AddChild(window.get());
+    params_.parent->AddChild(window.get());
   } else {
     // Parent window is not specified. A parent window will be picked from
     // the context.
     aura::Window* context = window.get()->GetRootWindow();
     CHECK(context);
-    client::ParentWindowWithContext(window.get(), context, bounds_,
+    client::ParentWindowWithContext(window.get(), context, params_.bounds,
                                     display::kInvalidDisplayId);
   }
-  if (show_) {
+  if (params_.show) {
     window->Show();
   }
   return window;
@@ -124,14 +120,15 @@ std::unique_ptr<Window> TestWindowBuilder::CreateWindowInternal() {
   DCHECK(!built_);
   built_ = true;
   std::unique_ptr<Window> window =
-      std::make_unique<Window>(delegate_, window_type_);
-  window->Init(layer_type_);
+      std::make_unique<Window>(delegate_, params_.window_type);
+  delegate_ = nullptr;
+  window->Init(params_.layer_type);
   window->AcquireAllPropertiesFrom(std::move(init_properties_));
-  if (window_id_ != Window::kInitialId) {
-    window->SetId(window_id_);
+  if (params_.window_id != Window::kInitialId) {
+    window->SetId(params_.window_id);
   }
-  if (!window_title_.empty()) {
-    window->SetTitle(window_title_);
+  if (!params_.window_title.empty()) {
+    window->SetTitle(params_.window_title);
   }
   return window;
 }

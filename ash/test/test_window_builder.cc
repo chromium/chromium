@@ -52,7 +52,8 @@ CreateBoundsChangeCallback(SignalCallback signal_callback) {
 
 }  // namespace
 
-TestWindowBuilder::TestWindowBuilder() = default;
+TestWindowBuilder::TestWindowBuilder(aura::test::WindowBuilderParams params)
+    : aura::test::TestWindowBuilder(std::move(params)) {}
 
 TestWindowBuilder::TestWindowBuilder(TestWindowBuilder& others)
     : aura::test::TestWindowBuilder(others),
@@ -123,36 +124,36 @@ TestWindowBuilder& TestWindowBuilder::SetClientControlled(
 
 std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
   auto window = CreateWindowInternal();
-  if (parent_) {
-    if (!bounds().IsEmpty()) {
-      window->SetBounds(bounds());
+  if (parent()) {
+    if (!params().bounds.IsEmpty()) {
+      window->SetBounds(params().bounds);
     }
-    parent_->AddChild(window.get());
+    parent()->AddChild(window.get());
   } else {
     aura::Window* context = nullptr;
     // Resolve context to find a parent.
-    if (bounds().IsEmpty()) {
+    if (params().bounds.IsEmpty()) {
       context = Shell::GetPrimaryRootWindow();
     } else {
       display::Display display =
-          display::Screen::GetScreen()->GetDisplayMatching(bounds());
+          display::Screen::GetScreen()->GetDisplayMatching(params().bounds);
       aura::Window* root = Shell::GetRootWindowForDisplayId(display.id());
-      gfx::Point origin = bounds().origin();
+      gfx::Point origin = params().bounds.origin();
       ::wm::ConvertPointFromScreen(root, &origin);
       context = root;
-      window->SetBounds(gfx::Rect(origin, bounds().size()));
+      window->SetBounds(gfx::Rect(origin, params().bounds.size()));
     }
 
     DCHECK(context);
-    aura::client::ParentWindowWithContext(window.get(), context, bounds(),
-                                          display::kInvalidDisplayId);
+    aura::client::ParentWindowWithContext(
+        window.get(), context, params().bounds, display::kInvalidDisplayId);
   }
   if (operation_signal_callback_) {
     ClientControlledStateUtil::BuildAndSet(
         window.get(), CreateStateChangeCallback(*operation_signal_callback_),
         CreateBoundsChangeCallback(*operation_signal_callback_));
   }
-  if (show()) {
+  if (params().show) {
     window->Show();
   }
   return window;
@@ -161,9 +162,8 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
 TestWindowBuilder ChildTestWindowBuilder(aura::Window* parent,
                                          const gfx::Rect& bounds,
                                          int window_id) {
-  TestWindowBuilder builder;
-  builder.SetParent(parent).SetBounds(bounds).SetWindowId(window_id);
-  return builder;
+  return TestWindowBuilder(
+      {.parent = parent, .bounds = bounds, .window_id = window_id});
 }
 
 }  // namespace ash

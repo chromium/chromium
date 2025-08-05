@@ -16,6 +16,16 @@
 
 namespace aura::test {
 
+struct WindowBuilderParams {
+  raw_ptr<Window> parent = nullptr;
+  gfx::Rect bounds;
+  client::WindowType window_type = client::WINDOW_TYPE_NORMAL;
+  ui::LayerType layer_type = ui::LAYER_TEXTURED;
+  int window_id = Window::kInitialId;
+  std::u16string window_title = std::u16string();
+  bool show = true;
+};
+
 // A builder to create a aura::Window for testing purpose. Use this when you
 // simply need need a window without a meaningful content (except for a color)
 // or capability to drag a window or drag to resize a window. If you need these
@@ -25,7 +35,7 @@ namespace aura::test {
 // ownership of some parameters has to be transferred to a created window.
 class TestWindowBuilder {
  public:
-  TestWindowBuilder();
+  explicit TestWindowBuilder(WindowBuilderParams params = {});
   TestWindowBuilder(TestWindowBuilder& other);
   TestWindowBuilder& operator=(TestWindowBuilder& params) = delete;
   ~TestWindowBuilder();
@@ -73,21 +83,16 @@ class TestWindowBuilder {
  protected:
   std::unique_ptr<Window> CreateWindowInternal();
 
-  const gfx::Rect& bounds() const { return bounds_; }
-  bool show() const { return show_; }
+  const WindowBuilderParams& params() const { return params_; }
   bool built() const { return built_; }
 
-  raw_ptr<Window> parent_ = nullptr;
+  // Subclass needs a write access to the parent_.
+  Window* parent() { return params_.parent; }
 
  private:
-  raw_ptr<WindowDelegate, DanglingUntriaged> delegate_ = nullptr;
-  client::WindowType window_type_ = client::WINDOW_TYPE_NORMAL;
-  ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
-  gfx::Rect bounds_;
+  WindowBuilderParams params_;
+  raw_ptr<WindowDelegate> delegate_;
   ui::PropertyHandler init_properties_;
-  int window_id_ = Window::kInitialId;
-  std::u16string window_title_ = std::u16string();
-  bool show_ = true;
   bool built_ = false;
 };
 

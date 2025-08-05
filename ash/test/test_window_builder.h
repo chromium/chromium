@@ -16,7 +16,7 @@ namespace ash {
 
 class ASH_EXPORT TestWindowBuilder : public aura::test::TestWindowBuilder {
  public:
-  TestWindowBuilder();
+  explicit TestWindowBuilder(aura::test::WindowBuilderParams = {});
   TestWindowBuilder(TestWindowBuilder& other);
   TestWindowBuilder& operator=(TestWindowBuilder& params) = delete;
   ~TestWindowBuilder();

@@ -398,12 +398,12 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
     aura::client::WindowType type,
     int id,
     const gfx::Rect& bounds) {
-  return TestWindowBuilder()
-      .SetBounds(bounds)
+  return TestWindowBuilder(
+             {.bounds = bounds,
+              .window_type = type,
+              .window_id = id,
+              .window_title = u"Window " + base::NumberToString16(id)})
       .SetDelegate(delegate)
-      .SetWindowType(type)
-      .SetWindowId(id)
-      .SetWindowTitle(u"Window " + base::NumberToString16(id))
       .AllowAllWindowStates()
       .Build()
       .release();
