@@ -20,7 +20,20 @@ namespace autofill {
 
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Field;
+using ::testing::Truly;
+
+testing::Matcher<AutofillFieldWithAttributeType> FieldAndType(
+    const std::unique_ptr<AutofillField>& field,
+    AttributeType type) {
+  return AllOf(
+      Field(&AutofillFieldWithAttributeType::field,
+            Truly([ptr = field.get()](raw_ref<const AutofillField> field) {
+              return &*field == ptr;
+            })),
+      Field(&AutofillFieldWithAttributeType::type, type));
+}
 
 std::string GetEntityAttributesStringRepresentation(
     DenseSet<AttributeType> attributes) {
@@ -37,6 +50,11 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
         field->set_server_predictions({test::CreateFieldPrediction(type)});
         return field;
       });
+
+  size_t rank = 0;
+  for (auto& field : fields) {
+    field->set_rank(rank++);
+  }
 
   base::flat_map<LocalFrameToken, size_t> frame_tokens;
   for (auto& field : fields) {
@@ -157,6 +175,52 @@ TEST_F(AutofillAiFormRationalizationTest,
   std::vector<std::unique_ptr<AutofillField>> fields =
       CreateFields({PASSPORT_NAME_TAG});
   EXPECT_TRUE(GetRelevantEntityTypesForFields(fields).empty());
+}
+
+// Tests that adjacent vehicle license plate numbers are erased.
+TEST_F(AutofillAiFormRationalizationTest, ClearAdjacentVehiclePlateNumbers) {
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {// 1x: OK.
+       VEHICLE_LICENSE_PLATE,
+       // Separator.
+       VEHICLE_MAKE,
+       // 1x: OK.
+       VEHICLE_LICENSE_PLATE,
+       // Separator.
+       VEHICLE_MODEL,
+       // 2x: Rationalized.
+       VEHICLE_LICENSE_PLATE, VEHICLE_LICENSE_PLATE,
+       // Separator.
+       VEHICLE_VIN,
+       // 3x: Rationalized.
+       VEHICLE_LICENSE_PLATE, VEHICLE_LICENSE_PLATE, VEHICLE_LICENSE_PLATE,
+       // Separator.
+       NAME_FIRST,
+       // 2x: Rationalized.
+       VEHICLE_LICENSE_PLATE, UNKNOWN_TYPE, VEHICLE_LICENSE_PLATE,
+       // Separator.
+       NAME_MIDDLE,
+       // 2x: Rationalized, .
+       VEHICLE_LICENSE_PLATE, UNKNOWN_TYPE, UNKNOWN_TYPE, VEHICLE_LICENSE_PLATE,
+       // Separator.
+       NAME_LAST,
+       // 2x: Rationalized.
+       VEHICLE_LICENSE_PLATE, VEHICLE_LICENSE_PLATE});
+
+  using enum AttributeTypeName;
+  EXPECT_THAT(
+      RationalizeAndDetermineAttributeTypes(
+          fields, fields[0]->section(), EntityType(EntityTypeName::kVehicle)),
+      ElementsAre(FieldAndType(fields[0], AttributeType(kVehiclePlateNumber)),
+                  FieldAndType(fields[1], AttributeType(kVehicleMake)),
+                  FieldAndType(fields[2], AttributeType(kVehiclePlateNumber)),
+                  FieldAndType(fields[3], AttributeType(kVehicleModel)),
+                  FieldAndType(fields[6], AttributeType(kVehicleVin)),
+                  FieldAndType(fields[10], AttributeType(kVehicleOwner)),
+                  FieldAndType(fields[14], AttributeType(kVehicleOwner)),
+                  FieldAndType(fields[15], AttributeType(kVehiclePlateNumber)),
+                  FieldAndType(fields[18], AttributeType(kVehiclePlateNumber)),
+                  FieldAndType(fields[19], AttributeType(kVehicleOwner))));
 }
 
 }  // namespace
