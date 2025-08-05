@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.DocumentLoadedWithStorageAccess"
-    enum="Boolean" expires_after="2025-09-15">
+    enum="Boolean" expires_after="2026-09-15">
   <owner>cfredric@chromium.org</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>
@@ -172,14 +172,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccessHeader.ActivateStorageAccessRetryOutcome"
-    enum="ActivateStorageAccessRetryOutcome" expires_after="2025-09-15">
+    enum="ActivateStorageAccessRetryOutcome" expires_after="2026-09-15">
   <owner>sledoux@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <summary>
     Records instances of HTTP responses that include the
     `Activate-Storage-Access` header with a well-formed value indicating the
     server would like the request to be retried with an active storage access
-    persmission. Logs whether the header was honored, or the reason for its
+    permission. Logs whether the header was honored, or the reason for its
     rejection if it was not.
 
     Recorded for each HTTP response received that contains a
