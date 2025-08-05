@@ -207,13 +207,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
  protected:
   // For test class overrides.
-  // Validate the first |bytes_to_validate| bytes and write the next
-  // |bytes_to_write| bytes of data from the offset to the file.
+  // Validate that |to_validate| exists at |offset| in the file, then write
+  // |to_write| after it.
   virtual DownloadInterruptReason ValidateAndWriteDataToFile(
       int64_t offset,
-      const char* data,
-      size_t bytes_to_validate,
-      size_t bytes_to_write);
+      base::span<const uint8_t> to_validate,
+      base::span<const uint8_t> to_write);
 
   virtual base::TimeDelta GetRetryDelayForFailedRename(int attempt_number);
 

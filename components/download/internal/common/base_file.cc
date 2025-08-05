@@ -221,16 +221,6 @@ DownloadInterruptReason BaseFile::WriteDataToFile(
   return DOWNLOAD_INTERRUPT_REASON_NONE;
 }
 
-DownloadInterruptReason BaseFile::WriteDataToFile(int64_t offset,
-                                                  const char* data,
-                                                  size_t data_len) {
-  UNSAFE_BUFFERS(
-      // SAFETY TODO(https://crbug.com/435230896): get rid of this.
-      return WriteDataToFile(
-                 offset,
-                 base::span(reinterpret_cast<const uint8_t*>(data), data_len));)
-}
-
 bool BaseFile::ValidateDataInFile(int64_t offset,
                                   base::span<const uint8_t> data) {
   if (!file_.IsValid())

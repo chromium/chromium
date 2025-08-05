@@ -797,8 +797,8 @@ TEST_F(BaseFileTest, ValidateDataInFile) {
 
   ASSERT_TRUE(base_file_->ValidateDataInFile(0, "Let's", 5));
   ASSERT_TRUE(base_file_->ValidateDataInFile(1, "et's ", 5));
-  ASSERT_TRUE(base_file_->ValidateDataInFile(
-      0, "Let's write some data to the file!\n", kTestData1.size()));
+  ASSERT_TRUE(
+      base_file_->ValidateDataInFile(0, base::as_byte_span(kTestData1)));
   ASSERT_TRUE(base_file_->ValidateDataInFile(kTestData1.size() - 1, "\n", 1));
   ASSERT_FALSE(base_file_->ValidateDataInFile(kTestData1.size(), "\n", 1));
   ASSERT_FALSE(base_file_->ValidateDataInFile(kTestData1.size() - 1, "y\n", 2));

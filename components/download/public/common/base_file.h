@@ -126,9 +126,6 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   // indicating the result of the operation.
   DownloadInterruptReason WriteDataToFile(int64_t offset,
                                           base::span<const uint8_t> data);
-  DownloadInterruptReason WriteDataToFile(int64_t offset,
-                                          const char* data,
-                                          size_t data_len);
 
   // Validates that the content starting from |offset| matches that of |data|
   // with the given length.
