@@ -23,6 +23,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   struct PictureControlFlags {
     bool allow_screen_content_tools = false;
     bool allow_intrabc = false;
+    bool enable_auto_segmentation = false;
   };
 
   static std::vector<
@@ -66,12 +67,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   bool UpdateFrameHeaderPostEncode(
       const D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS& post_encode_flags,
       const D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES& post_encode_values,
-      AV1BitstreamBuilder::FrameHeader& frame_header);
-
-  // When loop restoration is enabled, updates frame header with loop
-  // restoration parameters submitted to driver.
-  void UpdateFrameHeaderLoopRestoration(
-      const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
       AV1BitstreamBuilder::FrameHeader& frame_header);
 
   uint32_t max_num_ref_frames_ = 0;

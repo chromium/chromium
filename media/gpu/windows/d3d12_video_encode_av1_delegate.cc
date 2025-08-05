@@ -80,7 +80,7 @@ AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
 AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
     const D3D12VideoEncodeAV1Delegate::PictureControlFlags& picture_ctrl,
     const D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA& pic_params,
-    const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS& enabled_features) {
+    const AV1BitstreamBuilder::SequenceHeader& sequence_header) {
   AV1BitstreamBuilder::FrameHeader frame_header{};
   frame_header.frame_type =
       pic_params.FrameType == D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_KEY_FRAME
@@ -125,13 +125,67 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
 
   frame_header.tx_mode = pic_params.TxMode;
   frame_header.reduced_tx_set = false;
-  frame_header.segmentation_enabled =
-      !!(enabled_features &
-         (D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_AUTO_SEGMENTATION |
-          D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CUSTOM_SEGMENTATION));
+  frame_header.segmentation_enabled = picture_ctrl.enable_auto_segmentation;
   frame_header.allow_screen_content_tools =
       picture_ctrl.allow_screen_content_tools;
   frame_header.allow_intrabc = picture_ctrl.allow_intrabc;
+
+  // When loop restoration is enabled, updates frame header with loop
+  // restoration parameters submitted to driver.
+  if (sequence_header.enable_restoration) {
+    const auto& restoration_config = pic_params.FrameRestorationConfig;
+    uint8_t lr_unit_shift = 0;
+    uint8_t lr_uv_shift = 0;
+
+    frame_header.restoration_type[0] =
+        static_cast<libgav1::LoopRestorationType>(
+            restoration_config.FrameRestorationType[0]);
+    frame_header.restoration_type[1] =
+        static_cast<libgav1::LoopRestorationType>(
+            restoration_config.FrameRestorationType[1]);
+    frame_header.restoration_type[2] =
+        static_cast<libgav1::LoopRestorationType>(
+            restoration_config.FrameRestorationType[2]);
+    // Calculate the lr_unit_shift that shall be used. 64 * 2^lr_unit_shift
+    // is the size of the loop restoration tile size in pixels.
+    auto restoration_y_tile_size =
+        restoration_config.LoopRestorationPixelSize[0];
+    auto restoration_u_tile_size =
+        restoration_config.LoopRestorationPixelSize[1];
+    auto resotration_v_tile_size =
+        restoration_config.LoopRestorationPixelSize[2];
+    auto restoration_size_max = std::max({
+        restoration_y_tile_size,
+        restoration_u_tile_size,
+        resotration_v_tile_size,
+    });
+    switch (restoration_size_max) {
+      case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_256x256:
+        lr_unit_shift = 2;
+        break;
+      case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128:
+        lr_unit_shift = 1;
+        break;
+      case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64:
+      case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED:
+        lr_unit_shift = 0;
+        break;
+      default:
+        NOTREACHED();
+    }
+    // Check if either restoration_u_tile_size or resotration_v_tile_size is
+    // equal to resotration_y_tile_size, if so, lr_uv_shift is 0; otherwise,
+    // lr_uv_shift should be 1.
+    if (restoration_u_tile_size == restoration_y_tile_size ||
+        resotration_v_tile_size == restoration_y_tile_size) {
+      lr_uv_shift = 0;
+    } else {
+      lr_uv_shift = 1;
+    }
+
+    frame_header.lr_unit_shift = lr_unit_shift;
+    frame_header.lr_uv_shift = lr_uv_shift;
+  }
 
   return frame_header;
 }
@@ -348,6 +402,8 @@ D3D12VideoEncodeAV1Delegate::PictureControlFlags GetAV1PictureControl(
       is_keyframe ? enabled_features &
                         D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_INTRA_BLOCK_COPY
                   : false;
+  picture_ctrl.enable_auto_segmentation =
+      enabled_features & D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_AUTO_SEGMENTATION;
   return picture_ctrl;
 }
 
@@ -630,8 +686,7 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
     picture_params_.Flags |=
         D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ALLOW_INTRA_BLOCK_COPY;
   }
-  if (enabled_features_ &
-      D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_AUTO_SEGMENTATION) {
+  if (picture_ctrl_.enable_auto_segmentation) {
     picture_params_.Flags |=
         D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_FRAME_SEGMENTATION_AUTO;
   }
@@ -933,16 +988,11 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
   DVLOG(4) << PrintPostEncodeValues(post_encode_values);
 
   auto frame_header = FillAV1BuilderFrameHeader(picture_ctrl_, picture_params_,
-                                                enabled_features_);
+                                                sequence_header_);
   if (!UpdateFrameHeaderPostEncode(config_support_limit_.PostEncodeValuesFlags,
                                    post_encode_values, frame_header)) {
     return {EncoderStatus::Codes::kEncoderHardwareDriverError,
             "D3D12VideoEncodeAV1Delegate: invalid post encode values."};
-  }
-
-  if (sequence_header_.enable_restoration) {
-    UpdateFrameHeaderLoopRestoration(picture_params_.FrameRestorationConfig,
-                                     frame_header);
   }
 
   D3D12_RANGE written_range{};
@@ -1186,58 +1236,6 @@ bool D3D12VideoEncodeAV1Delegate::UpdateFrameHeaderPostEncode(
   }
 
   return true;
-}
-
-void D3D12VideoEncodeAV1Delegate::UpdateFrameHeaderLoopRestoration(
-    const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
-    AV1BitstreamBuilder::FrameHeader& frame_header) {
-  uint8_t lr_unit_shift = 0;
-  uint8_t lr_uv_shift = 0;
-
-  frame_header.restoration_type[0] = static_cast<libgav1::LoopRestorationType>(
-      restoration_config.FrameRestorationType[0]);
-  frame_header.restoration_type[1] = static_cast<libgav1::LoopRestorationType>(
-      restoration_config.FrameRestorationType[1]);
-  frame_header.restoration_type[2] = static_cast<libgav1::LoopRestorationType>(
-      restoration_config.FrameRestorationType[2]);
-  // Calculate the lr_unit_shift that shall be used. 64 * 2^lr_unit_shift
-  // is the size of the loop restoration tile size in pixels.
-  auto restoration_y_tile_size = restoration_config.LoopRestorationPixelSize[0];
-  auto restoration_u_tile_size = restoration_config.LoopRestorationPixelSize[1];
-  auto resotration_v_tile_size = restoration_config.LoopRestorationPixelSize[2];
-
-  auto restoration_size_max = std::max({
-      restoration_y_tile_size,
-      restoration_u_tile_size,
-      resotration_v_tile_size,
-  });
-  switch (restoration_size_max) {
-    case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_256x256:
-      lr_unit_shift = 2;
-      break;
-    case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128:
-      lr_unit_shift = 1;
-      break;
-    case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64:
-    case D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED:
-      lr_unit_shift = 0;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  // Check if either restoration_u_tile_size or resotration_v_tile_size is equal
-  // to resotration_y_tile_size, if so, lr_uv_shift is 0; otherwise, lr_uv_shift
-  // should be 1.
-  if (restoration_u_tile_size == restoration_y_tile_size ||
-      resotration_v_tile_size == restoration_y_tile_size) {
-    lr_uv_shift = 0;
-  } else {
-    lr_uv_shift = 1;
-  }
-
-  frame_header.lr_unit_shift = lr_unit_shift;
-  frame_header.lr_uv_shift = lr_uv_shift;
 }
 
 }  // namespace media

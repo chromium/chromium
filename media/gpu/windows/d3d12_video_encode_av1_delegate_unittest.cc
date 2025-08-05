@@ -90,7 +90,10 @@ class D3D12VideoEncodeAV1DelegateTest
             av1_support->SupportedFeatureFlags =
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING |
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS |
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER |
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET;
+            av1_support->RequiredFeatureFlags =
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER;
             feature_data->IsSupported = true;
           } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1) {
             auto* feature_data =
@@ -132,13 +135,6 @@ class D3D12VideoEncodeAV1DelegateTest
       D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS& post_encode_flags) {
     GetMockDelegate()->UpdateFrameHeaderPostEncode(
         post_encode_flags, post_encode_values, frame_header_);
-  }
-
-  void UpdateLoopRestoration(
-      const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
-      AV1BitstreamBuilder::FrameHeader& frame_header) {
-    GetMockDelegate()->UpdateFrameHeaderLoopRestoration(restoration_config,
-                                                        frame_header);
   }
 
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
@@ -353,24 +349,6 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, UpdateFrameHeaderPostEncode) {
   UpdatePostEncodeValues(post_encode_values, post_encode_flags);
   EXPECT_EQ(frame_header_.reference_select,
             post_encode_values.CompoundPredictionType);
-
-  // Update loop restoration params.
-  D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG restoration_config{};
-  restoration_config.FrameRestorationType[0] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SGRPROJ;
-  restoration_config.FrameRestorationType[1] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_WIENER;
-  restoration_config.FrameRestorationType[2] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_DISABLED;
-  restoration_config.LoopRestorationPixelSize[0] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128;
-  restoration_config.LoopRestorationPixelSize[1] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64;
-  restoration_config.LoopRestorationPixelSize[2] =
-      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED;
-  UpdateLoopRestoration(restoration_config, frame_header_);
-  EXPECT_EQ(frame_header_.lr_unit_shift, 1u);
-  EXPECT_EQ(frame_header_.lr_uv_shift, 1u);
 }
 
 }  // namespace media
