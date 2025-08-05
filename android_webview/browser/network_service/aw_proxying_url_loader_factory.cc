@@ -1371,10 +1371,12 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   OptionalGetCookie get_cookie_header;
   OptionalSetCookie set_cookie_header;
   if (include_cookies_on_intercept) {
-    get_cookie_header = base::BindRepeating(
-        &AwProxyingURLLoaderFactory::GetCookieHeader, base::Unretained(this));
-    set_cookie_header = base::BindRepeating(
-        &AwProxyingURLLoaderFactory::SetCookieHeader, base::Unretained(this));
+    get_cookie_header =
+        base::BindRepeating(&AwProxyingURLLoaderFactory::GetCookieHeader,
+                            weak_factory_.GetWeakPtr());
+    set_cookie_header =
+        base::BindRepeating(&AwProxyingURLLoaderFactory::SetCookieHeader,
+                            weak_factory_.GetWeakPtr());
   }
 
   base::UmaHistogramMicrosecondsTimes(
