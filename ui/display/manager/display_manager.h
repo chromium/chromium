@@ -321,6 +321,9 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     return connected_display_id_list_.size();
   }
 
+  // Return the number of external displays that's currently connected.
+  size_t GetNumExternalDisplays() const;
+
   // Returns true if either software or hardware mirror mode is active.
   bool IsInMirrorMode() const;
 
