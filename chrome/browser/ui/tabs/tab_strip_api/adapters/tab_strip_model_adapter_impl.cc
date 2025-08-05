@@ -11,6 +11,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 
 namespace tabs_api {
 
@@ -32,6 +33,13 @@ std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() const {
 
 TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) const {
   return TabRendererData::FromTabInModel(tab_strip_model_, index);
+}
+
+const ui::ColorProvider& TabStripModelAdapterImpl::GetColorProvider() const {
+  content::WebContents* active_contents =
+      tab_strip_model_->GetActiveWebContents();
+  CHECK(active_contents);
+  return active_contents->GetColorProvider();
 }
 
 void TabStripModelAdapterImpl::CloseTab(size_t tab_index) {

@@ -25,6 +25,10 @@ TabRendererData ToyTabStripModelAdapter::GetTabRendererData(int index) const {
   return TabRendererData();
 }
 
+const ui::ColorProvider& ToyTabStripModelAdapter::GetColorProvider() const {
+  return color_provider_;
+}
+
 void ToyTabStripModelAdapter::CloseTab(size_t idx) {
   tab_strip_->CloseTab(idx);
 }

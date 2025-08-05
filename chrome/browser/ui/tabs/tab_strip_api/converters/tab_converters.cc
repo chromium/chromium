@@ -19,14 +19,14 @@
 namespace tabs_api::converters {
 
 tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
-                                     const TabRendererData& data) {
+                                     const TabRendererData& data,
+                                     const ui::ColorProvider& color_provider) {
   auto result = tabs_api::mojom::Tab::New();
 
   result->id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
                                base::NumberToString(handle.raw_value()));
   result->title = base::UTF16ToUTF8(data.title);
-  // TODO(crbug.com/414630734). Integrate the favicon_url after it is
-  // typemapped.
+  result->favicon = data.favicon.Rasterize(&color_provider);
   result->url = data.visible_url;
   result->network_state = data.network_state;
   if (handle.Get() != nullptr) {

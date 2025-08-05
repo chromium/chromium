@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
+#include "content/public/browser/web_contents.h"
 
 namespace tabs_api {
 
@@ -17,8 +18,14 @@ mojom::TabContainerPtr TabWalker::Walk() {
   auto idx = model_->GetIndexOfTab(target_);
   CHECK(idx != TabStripModel::kNoTab)
       << "tab disappeared while walking through the model";
+
+  content::WebContents* contents = model_->GetWebContentsAt(idx);
+  CHECK(contents);
+  const ui::ColorProvider& provider = contents->GetColorProvider();
+
   auto mojo_tab = tabs_api::converters::BuildMojoTab(
-      target_->GetHandle(), TabRendererData::FromTabInModel(model_, idx));
+      target_->GetHandle(), TabRendererData::FromTabInModel(model_, idx),
+      provider);
 
   mojo_tab_container->tab = std::move(mojo_tab);
   return mojo_tab_container;

@@ -15,17 +15,18 @@
 
 namespace tabs_api::events {
 
-mojom::OnTabsCreatedEventPtr ToEvent(const TabStripModelChange::Insert& insert,
-                                     TabStripModel* tab_strip_model) {
+mojom::OnTabsCreatedEventPtr ToEvent(
+    const TabStripModelChange::Insert& insert,
+    const tabs_api::TabStripModelAdapter* adapter) {
   auto event = mojom::OnTabsCreatedEvent::New();
   for (auto& content : insert.contents) {
     auto tab_created = tabs_api::mojom::TabCreatedContainer::New();
     auto pos = tabs_api::Position(content.index);
     tab_created->position = std::move(pos);
-    auto renderer_data =
-        TabRendererData::FromTabInModel(tab_strip_model, content.index);
+    auto renderer_data = adapter->GetTabRendererData(content.index);
+    const ui::ColorProvider& provider = adapter->GetColorProvider();
     auto mojo_tab = tabs_api::converters::BuildMojoTab(content.tab->GetHandle(),
-                                                       renderer_data);
+                                                       renderer_data, provider);
 
     tab_created->tab = std::move(mojo_tab);
     event->tabs.emplace_back(std::move(tab_created));
@@ -70,7 +71,9 @@ mojom::OnTabDataChangedEventPtr ToEvent(
   if (index < tabs.size()) {
     auto& handle = tabs.at(index);
     auto renderer_data = adapter->GetTabRendererData(index);
-    event->tab = tabs_api::converters::BuildMojoTab(handle, renderer_data);
+    const ui::ColorProvider& color_provider = adapter->GetColorProvider();
+    event->tab = tabs_api::converters::BuildMojoTab(handle, renderer_data,
+                                                    color_provider);
   }
 
   return event;

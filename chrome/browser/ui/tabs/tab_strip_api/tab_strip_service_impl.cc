@@ -114,7 +114,10 @@ void TabStripServiceImpl::GetTab(const tabs_api::NodeId& tab_mojom_id,
     auto& handle = tabs.at(i);
     if (tab_id == handle.raw_value()) {
       auto renderer_data = tab_strip_model_adapter_->GetTabRendererData(i);
-      tab_result = tabs_api::converters::BuildMojoTab(handle, renderer_data);
+      const ui::ColorProvider& color_provider =
+          tab_strip_model_adapter_->GetColorProvider();
+      tab_result = tabs_api::converters::BuildMojoTab(handle, renderer_data,
+                                                      color_provider);
     }
   }
 
@@ -164,7 +167,10 @@ void TabStripServiceImpl::CreateTabAt(
 
   auto renderer_data =
       tab_strip_model_adapter_->GetTabRendererData(tab_index.value());
-  auto mojo_tab = tabs_api::converters::BuildMojoTab(tab_handle, renderer_data);
+  const ui::ColorProvider& color_provider =
+      tab_strip_model_adapter_->GetColorProvider();
+  auto mojo_tab = tabs_api::converters::BuildMojoTab(tab_handle, renderer_data,
+                                                     color_provider);
   std::move(callback).Run(base::ok(std::move(mojo_tab)));
 }
 

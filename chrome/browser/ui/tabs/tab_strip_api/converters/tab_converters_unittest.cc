@@ -10,6 +10,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_provider.h"
 #include "url/gurl.h"
 
 namespace tabs_api::converters {
@@ -23,11 +24,12 @@ class FakeTabCollection : public tabs::TabCollection {
 
 TEST(TabStripServiceConverters, ConvertTab) {
   tabs::TabHandle handle(888);
+  ui::ColorProvider color_provider;
   TabRendererData data;
   data.visible_url = GURL("http://nowhere");
   data.title = std::u16string(u"title");
 
-  auto mojo = BuildMojoTab(handle, data);
+  auto mojo = BuildMojoTab(handle, data, color_provider);
 
   ASSERT_EQ("888", mojo->id.Id());
   ASSERT_EQ(NodeId::Type::kContent, mojo->id.Type());

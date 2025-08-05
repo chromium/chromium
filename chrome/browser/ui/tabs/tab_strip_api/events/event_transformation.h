@@ -18,8 +18,9 @@ namespace tabs_api::events {
 // some of the conversions are not covered by unit tests and must be covered in
 // integration tests.
 
-mojom::OnTabsCreatedEventPtr ToEvent(const TabStripModelChange::Insert& insert,
-                                     TabStripModel* tab_strip_model);
+mojom::OnTabsCreatedEventPtr ToEvent(
+    const TabStripModelChange::Insert& insert,
+    const tabs_api::TabStripModelAdapter* adapter);
 mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove);
 mojom::OnTabMovedEventPtr ToEvent(const TabStripModelChange::Move& move);
 mojom::OnTabDataChangedEventPtr ToEvent(

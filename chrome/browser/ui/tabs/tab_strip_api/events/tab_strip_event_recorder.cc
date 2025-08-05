@@ -54,7 +54,7 @@ void TabStripEventRecorder::OnTabStripModelChanged(
       NOTIMPLEMENTED();
       break;
     case TabStripModelChange::Type::kInserted:
-      Handle(ToEvent(*change.GetInsert(), tab_strip_model));
+      Handle(ToEvent(*change.GetInsert(), tab_strip_model_adapter_));
       break;
     case TabStripModelChange::Type::kRemoved:
       Handle(ToEvent(*change.GetRemove()));
