@@ -90,13 +90,7 @@ public abstract class StripStacker {
      * @param indexOrderedViews A list of views ordered by index.
      * @param xOffset The xOffset for the start of the strip.
      * @param visibleWidth The width of the visible space on the tab strip.
-     * @param tabClosing Whether a tab is being closed.
-     * @param cachedTabWidth Whether The ideal tab width.
      */
     public abstract void pushDrawPropertiesToViews(
-            StripLayoutView[] indexOrderedViews,
-            float xOffset,
-            float visibleWidth,
-            boolean tabClosing,
-            float cachedTabWidth);
+            StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth);
 }

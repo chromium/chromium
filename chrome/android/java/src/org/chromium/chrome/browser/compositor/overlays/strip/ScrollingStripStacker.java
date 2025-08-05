@@ -17,15 +17,12 @@ public class ScrollingStripStacker extends StripStacker {
 
     @Override
     public void pushDrawPropertiesToViews(
-            StripLayoutView[] indexOrderedViews,
-            float xOffset,
-            float visibleWidth,
-            boolean tabClosing,
-            float cachedTabWidth) {
+            StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth) {
         for (int i = 0; i < indexOrderedViews.length; i++) {
             StripLayoutView view = indexOrderedViews[i];
 
-            setDrawXAndY(view, tabClosing, cachedTabWidth);
+            view.setDrawX(view.getIdealX() + view.getOffsetX());
+            view.setDrawY(view.getOffsetY());
             // visibility is based drawX - call this after setting drawX / Y.
             setVisible(view, xOffset, visibleWidth);
         }
@@ -59,17 +56,5 @@ public class ScrollingStripStacker extends StripStacker {
         view.setVisible(
                 (drawXAccountingPadding + width) >= xOffset
                         && drawXAccountingPadding <= xOffset + visibleWidth);
-    }
-
-    private static void setDrawXAndY(
-            StripLayoutView view, boolean tabClosing, float cachedTabWidth) {
-        float newDrawX = view.getIdealX() + view.getOffsetX();
-        // Adjust the newDrawX to correctly animate container slide-out in RTL.
-        // TODO(crbug.com/375029950): Investigate if this is still needed.
-        if (view instanceof StripLayoutTab tab && LocalizationUtils.isLayoutRtl() && !tabClosing) {
-            newDrawX += (cachedTabWidth - tab.getWidth());
-        }
-        view.setDrawX(newDrawX);
-        view.setDrawY(view.getOffsetY());
     }
 }

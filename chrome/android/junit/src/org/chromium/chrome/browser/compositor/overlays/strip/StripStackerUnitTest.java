@@ -96,10 +96,6 @@ public class StripStackerUnitTest {
 
         @Override
         public void pushDrawPropertiesToViews(
-                StripLayoutView[] indexOrderedViews,
-                float xOffset,
-                float visibleWidth,
-                boolean mMultiStepTabCloseAnimRunning,
-                float mCachedTabWidth) {}
+                StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth) {}
     }
 }

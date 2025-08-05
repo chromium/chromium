@@ -4489,12 +4489,7 @@ public class StripLayoutHelper
 
         // 3. Calculate view stacking - update view draw properties and visibility.
         float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
-        mStripStacker.pushDrawPropertiesToViews(
-                mStripViews,
-                getVisibleLeftBound(),
-                stripWidth,
-                mMultiStepTabCloseAnimRunning,
-                getCachedTabWidth());
+        mStripStacker.pushDrawPropertiesToViews(mStripViews, getVisibleLeftBound(), stripWidth);
 
         // 4. Create render list.
         createRenderList();
@@ -4529,7 +4524,7 @@ public class StripLayoutHelper
                     + mScrollDelegate.getReorderStartMargin();
         } else {
             return mWidth
-                    - getCachedTabWidth()
+                    - TAB_OVERLAP_WIDTH_DP
                     - mScrollDelegate.getScrollOffset()
                     - mRightMargin
                     - mScrollDelegate.getReorderStartMargin();
@@ -4545,28 +4540,60 @@ public class StripLayoutHelper
             if (view instanceof StripLayoutTab tab) {
                 if (tab.isClosed()) continue;
                 // idealX represents where a tab should be placed in the tab strip.
-                view.setIdealX(startX);
+                setTabIdealX(tab, startX);
+
                 if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled() || !tab.isDying()) {
                     delta = (tab.getWidth() - TAB_OVERLAP_WIDTH_DP) * tab.getWidthWeight();
                 } else {
                     delta = getEffectiveTabWidth();
                 }
-            } else {
+            } else if (view instanceof StripLayoutGroupTitle groupTitle) {
                 // Offset to "undo" the tab overlap width as that doesn't apply to non-tab views.
                 // Also applies the desired overlap with the previous tab.
-                float drawXOffset = mGroupTitleDrawXOffset;
-                // Adjust for RTL.
-                if (LocalizationUtils.isLayoutRtl()) {
-                    drawXOffset = getCachedTabWidth() - view.getWidth() - drawXOffset;
-                }
+                float drawXOffset =
+                        MathUtils.flipSignIf(
+                                mGroupTitleDrawXOffset, LocalizationUtils.isLayoutRtl());
+                setGroupTitleIdealX(groupTitle, startX + drawXOffset);
 
-                view.setIdealX(startX + drawXOffset);
                 delta = (view.getWidth() - mGroupTitleOverlapWidth) * view.getWidthWeight();
+            } else {
+                assert false : "Unexpected view type in tab strip views.";
+                delta = 0;
             }
             // Trailing margins will only be nonzero during reorder mode.
             delta += view.getTrailingMargin();
             delta = MathUtils.flipSignIf(delta, LocalizationUtils.isLayoutRtl());
             startX += delta;
+        }
+    }
+
+    /**
+     * Sets the idealX for the given {@link StripLayoutTab}. For LTR, this is the same as the
+     * startX. For RTL, however, draw coordinates are still always anchored at the top-left of the
+     * screen. This means we need to set the idealX to the left-side of the tab. This is the startX
+     * minus the effective width of the tab.
+     *
+     * @param stripTab The {@link StripLayoutTab} to set the idealX for.
+     * @param startX The idealX of the tab's starting side. This is the left side in LTR and the
+     *     right side in RTL.
+     */
+    private void setTabIdealX(StripLayoutTab stripTab, float startX) {
+        if (LocalizationUtils.isLayoutRtl()) {
+            stripTab.setIdealX(startX - (stripTab.getWidth() - TAB_OVERLAP_WIDTH_DP));
+        } else {
+            stripTab.setIdealX(startX);
+        }
+    }
+
+    /** See {@link #setTabIdealX}. Same concept, but for group titles. */
+    private void setGroupTitleIdealX(StripLayoutGroupTitle groupTitle, float startX) {
+        if (LocalizationUtils.isLayoutRtl()) {
+            // Use the tab overlap width here. The group title's true width accounts for how much it
+            // overlaps previous tab (i.e. the tab overlap width). Note that this is different from
+            // the visual size, which can be found through StripLayoutGroupTitle#getPaddedWidth.
+            groupTitle.setIdealX(startX - (groupTitle.getWidth() - TAB_OVERLAP_WIDTH_DP));
+        } else {
+            groupTitle.setIdealX(startX);
         }
     }
 
@@ -4628,7 +4655,7 @@ public class StripLayoutHelper
 
         boolean rtl = LocalizationUtils.isLayoutRtl();
         float offset = getStartPositionForStripViews() + MathUtils.flipSignIf(viewsWidth, rtl);
-        if (rtl) offset += getCachedTabWidth() - mNewTabButtonWidth;
+        if (rtl) offset += TAB_OVERLAP_WIDTH_DP - mNewTabButtonWidth;
         offset = adjustNewTabButtonOffsetIfNotFull(offset);
 
         CompositorAnimator animator =
