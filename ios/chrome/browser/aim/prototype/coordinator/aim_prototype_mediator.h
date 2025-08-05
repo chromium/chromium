@@ -8,13 +8,29 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
+
+@class AIMPrototypeMediator;
+class TemplateURLService;
+class UrlLoadingBrowserAgent;
+
+// Delegate for the AIM prototype mediator.
+@protocol AIMPrototypeMediatorDelegate
+- (void)dismissAimPrototype;
+@end
 
 // Mediator for the AIM prototype.
-@interface AIMPrototypeMediator : NSObject
+@interface AIMPrototypeMediator : NSObject <AIMPrototypeMutator>
 
 @property(nonatomic, weak) id<AIMPrototypeConsumer> consumer;
+@property(nonatomic, weak) id<AIMPrototypeMediatorDelegate> delegate;
 
+- (instancetype)initWithUrlLoadingBrowserAgent:
+                    (UrlLoadingBrowserAgent*)urlLoadingBrowserAgent
+                            templateURLService:
+                                (TemplateURLService*)templateURLService;
 - (void)processImage:(UIImage*)image;
+- (void)disconnect;
 
 @end
 

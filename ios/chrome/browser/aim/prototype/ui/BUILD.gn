@@ -5,6 +5,7 @@
 source_set("ui") {
   sources = [
     "aim_prototype_consumer.h",
+    "aim_prototype_mutator.h",
     "aim_prototype_view_controller.h",
     "aim_prototype_view_controller.mm",
   ]

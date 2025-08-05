@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 
 @class AIMPrototypeViewController;
 
@@ -23,6 +24,7 @@
 @interface AIMPrototypeViewController : UIViewController <AIMPrototypeConsumer>
 
 @property(nonatomic, weak) id<AIMPrototypeViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<AIMPrototypeMutator> mutator;
 
 @end
 

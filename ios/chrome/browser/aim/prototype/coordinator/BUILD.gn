@@ -10,7 +10,12 @@ source_set("coordinator") {
     "aim_prototype_mediator.mm",
   ]
   deps = [
+    "//components/search_engines",
     "//ios/chrome/browser/aim/prototype/ui",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ui/base",
   ]
 }

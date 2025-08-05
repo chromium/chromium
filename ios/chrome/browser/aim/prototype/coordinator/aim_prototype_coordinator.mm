@@ -4,8 +4,14 @@
 
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
 
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+
+@interface AIMPrototypeCoordinator () <AIMPrototypeMediatorDelegate>
+@end
 
 @implementation AIMPrototypeCoordinator {
   AIMPrototypeViewController* _viewController;
@@ -17,8 +23,16 @@
   _viewController.delegate = self;
   _viewController.modalPresentationStyle = UIModalPresentationFullScreen;
 
-  _mediator = [[AIMPrototypeMediator alloc] init];
+  UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
+  _mediator = [[AIMPrototypeMediator alloc]
+      initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
+                  templateURLService:templateURLService];
   _mediator.consumer = _viewController;
+  _mediator.delegate = self;
+  _viewController.mutator = _mediator;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -29,6 +43,7 @@
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
+  [_mediator disconnect];
   _mediator = nil;
 }
 
@@ -73,4 +88,11 @@
               }];
   }
 }
+
+#pragma mark - AIMPrototypeMediatorDelegate
+
+- (void)dismissAimPrototype {
+  [self.delegate aimPrototypeCoordinatorDidFinish:self];
+}
+
 @end
