@@ -4093,6 +4093,11 @@ const char kTintCompositedContentDescription[] =
     "Tint contents composited using Viz with a shade of red to help debug and "
     "study overlay support.";
 
+const char kTLSTrustAnchorIDsName[] = "TLS Trust Anchor IDs";
+const char kTLSTrustAnchorIDsDescription[] =
+    "This option configures TLS Trust Anchor IDs, allowing compatible servers "
+    "to select between available certificates issued by different CAs.";
+
 #if !BUILDFLAG(IS_ANDROID)
 const char kPinnedTabToastOnCloseName[] = "Pinned Tab Toast On Close";
 const char kPinnedTabToastOnCloseDescription[] =

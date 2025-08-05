@@ -2341,6 +2341,9 @@ extern const char kThrottleMainTo60HzDescription[];
 extern const char kTintCompositedContentName[];
 extern const char kTintCompositedContentDescription[];
 
+extern const char kTLSTrustAnchorIDsName[];
+extern const char kTLSTrustAnchorIDsDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kPinnedTabToastOnCloseName[];
 extern const char kPinnedTabToastOnCloseDescription[];

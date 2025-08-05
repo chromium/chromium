@@ -16897,6 +16897,7 @@ from previous Chrome versions.
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>
+  <int value="1028485522" label="TLSTrustAnchorIDs:disabled"/>
   <int value="1028801420" label="RippleForEnhancedProtection:disabled"/>
   <int value="1029230610" label="UseWritePixelsYUV:disabled"/>
   <int value="1030531340"
@@ -17484,6 +17485,7 @@ from previous Chrome versions.
   <int value="1240335491"
       label="ExperimentalAccessibilityGoogleTtsLanguagePacks:disabled"/>
   <int value="1240539446" label="SplitKeyboardRefactor:disabled"/>
+  <int value="1240707048" label="TLSTrustAnchorIDs:enabled"/>
   <int value="1241162639" label="debug-chime-notification"/>
   <int value="1241399846"
       label="SegmentationPlatformAndroidHomeModuleRanker:enabled"/>
