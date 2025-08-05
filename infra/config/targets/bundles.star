@@ -6121,7 +6121,7 @@ targets.bundle(
     per_test_modifications = {
         "interactive_ui_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 6,
+                shards = 7,
             ),
         ),
     },

@@ -948,17 +948,19 @@ fyi_ios_builder(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
-            build_config = builder_config.build_config.DEBUG,
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = gn_args.config(
         configs = [
-            "debug_builder",
+            "release_builder",
             "remoteexec",
             "mac",
             "arm64",
+            "minimal_symbols",
         ],
     ),
     targets = targets.bundle(
