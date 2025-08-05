@@ -713,6 +713,8 @@ extern const char kContextualCueingName[];
 extern const char kContextualCueingDescription[];
 extern const char kGlicActorName[];
 extern const char kGlicActorDescription[];
+extern const char kGlicDetachedName[];
+extern const char kGlicDetachedDescription[];
 extern const char kGlicPanelResetTopChromeButtonName[];
 extern const char kGlicPanelResetTopChromeButtonDescription[];
 extern const char kGlicPanelResetOnStartName[];

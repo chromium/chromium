@@ -5472,6 +5472,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-detached",
+    "owners": [
+      "dewittj@chromium.org",
+      "perrier@chromium.org"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-fre-pre-warming",
     "owners": [ "carlosk@chromium.org", "vollick@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 146

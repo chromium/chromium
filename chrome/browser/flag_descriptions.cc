@@ -1334,6 +1334,10 @@ const char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";
 const char kGlicActorName[] = "Glic actor";
 const char kGlicActorDescription[] = "Enables the Glic actor.";
+const char kGlicDetachedName[] = "Glic detached-only mode";
+const char kGlicDetachedDescription[] =
+    "Detach only mode prevents any UI which drags along with an underlying "
+    "window.";
 const char kGlicPanelResetTopChromeButtonName[] =
     "Glic Panel Reset With Top Chrome Button";
 const char kGlicPanelResetTopChromeButtonDescription[] =
