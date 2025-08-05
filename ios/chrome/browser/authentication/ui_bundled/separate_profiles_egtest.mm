@@ -80,6 +80,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 - (void)tearDownHelper {
   ClearHistorySyncPrefs();
+  // Make sure any pending prefs changes are written to disk.
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
   [super tearDownHelper];
 }
 

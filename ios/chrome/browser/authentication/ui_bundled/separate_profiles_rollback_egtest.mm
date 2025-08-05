@@ -29,6 +29,18 @@
   [super tearDown];
 }
 
+- (void)setUp {
+  [super setUp];
+  ClearHistorySyncPrefs();
+}
+
+- (void)tearDownHelper {
+  ClearHistorySyncPrefs();
+  // Make sure any pending prefs changes are written to disk.
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
+  [super tearDownHelper];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 

@@ -29,6 +29,7 @@
 
 - (void)setUp {
   [super setUp];
+  ClearHistorySyncPrefs();
   // Reset the force migration timestamp pref.
   [ChromeEarlGrey
            setTimeValue:base::Time()
@@ -40,6 +41,9 @@
   [ChromeEarlGrey
            setTimeValue:base::Time()
       forLocalStatePref:prefs::kWaitingForMultiProfileForcedMigrationTimestamp];
+  ClearHistorySyncPrefs();
+  // Make sure any pending prefs changes are written to disk.
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
   [super tearDownHelper];
 }
 
