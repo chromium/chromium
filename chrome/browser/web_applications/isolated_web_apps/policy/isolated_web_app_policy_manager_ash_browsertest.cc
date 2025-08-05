@@ -421,8 +421,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   }
 }
+// TODO(crbug.com/436526657): Test is flaky.
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       InstallUpdateChannelVersion) {
+                       DISABLED_InstallUpdateChannelVersion) {
   AddUser();
 
   ASSERT_NO_FATAL_FAILURE(StartLogin());
