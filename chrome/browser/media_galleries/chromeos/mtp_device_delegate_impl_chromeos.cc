@@ -43,6 +43,18 @@
 
 namespace {
 
+using enum base::File::Error;
+
+void PostError(MTPDeviceTaskHelper::ErrorCallback callback,
+               std::string_view storage_name) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  LOG(ERROR) << "No MTP device task helper for '" << storage_name << "'";
+  if (callback) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), FILE_ERROR_FAILED));
+  }
+}
+
 // File path separator constant.
 const char kRootPath[] = "/";
 
@@ -135,7 +147,7 @@ void CreateDirectoryOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(error_callback), storage_name);
   }
   task_helper->CreateDirectory(parent_id, directory_name,
                                std::move(success_callback),
@@ -162,7 +174,7 @@ void ReadDirectoryOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(error_callback), storage_name);
   }
   task_helper->ReadDirectory(directory_id, success_callback,
                              std::move(error_callback));
@@ -188,7 +200,7 @@ void CheckDirectoryEmptyOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(error_callback), storage_name);
   }
   task_helper->CheckDirectoryEmpty(directory_id, std::move(success_callback),
                                    std::move(error_callback));
@@ -213,7 +225,7 @@ void GetFileInfoOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(error_callback), storage_name);
   }
   task_helper->GetFileInfo(file_id, std::move(success_callback),
                            std::move(error_callback));
@@ -241,7 +253,7 @@ void WriteDataIntoSnapshotFileOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(request_info.error_callback), storage_name);
   }
   task_helper->WriteDataIntoSnapshotFile(std::move(request_info),
                                          snapshot_file_info);
@@ -261,7 +273,7 @@ void ReadBytesOnUIThread(const std::string& storage_name,
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(request.error_callback), storage_name);
   }
   task_helper->ReadBytes(std::move(request));
 }
@@ -286,7 +298,7 @@ void RenameObjectOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(error_callback), storage_name);
   }
   task_helper->RenameObject(object_id, new_name, std::move(success_callback),
                             std::move(error_callback));
@@ -315,7 +327,7 @@ void CopyFileFromLocalOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(error_callback), storage_name);
   }
   task_helper->CopyFileFromLocal(
       storage_name, source_file_descriptor, parent_id, file_name,
@@ -342,7 +354,7 @@ void DeleteObjectOnUIThread(
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper) {
-    return;
+    return PostError(std::move(error_callback), storage_name);
   }
   task_helper->DeleteObject(object_id, std::move(success_callback),
                             std::move(error_callback));
