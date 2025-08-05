@@ -409,6 +409,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   titleLabel.text = titleText;
   titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
+  titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   titleLabel.numberOfLines = 0;
   [innerStackView addArrangedSubview:titleLabel];
@@ -447,6 +448,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   titleLabel.text = titleText;
   titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
+  titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   titleLabel.numberOfLines = 0;
   [innerStackView addArrangedSubview:titleLabel];
