@@ -702,6 +702,11 @@
       name: "BlinkRuntimeCallStats",
     },
     {
+      // https://chromestatus.com/feature/4830298126417920
+      name: "BlobBytes",
+      status: "experimental",
+    },
+    {
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
     },

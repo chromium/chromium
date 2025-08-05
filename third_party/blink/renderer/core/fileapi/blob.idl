@@ -44,4 +44,5 @@ typedef (ArrayBuffer or ArrayBufferView or Blob or USVString) BlobPart;
     [CallWith=ScriptState] ReadableStream stream();
     [CallWith=ScriptState] Promise<USVString> text();
     [CallWith=ScriptState] Promise<ArrayBuffer> arrayBuffer();
+    [RuntimeEnabled=BlobBytes, CallWith=ScriptState] Promise<Uint8Array> bytes();
 };
