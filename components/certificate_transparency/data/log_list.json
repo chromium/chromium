@@ -1,6 +1,6 @@
 {
-  "version": "62.4",
-  "log_list_timestamp": "2025-08-03T12:54:42Z",
+  "version": "63.1",
+  "log_list_timestamp": "2025-08-05T12:53:43Z",
   "operators": [
     {
       "name": "Google",
@@ -110,10 +110,7 @@
     {
       "name": "Cloudflare",
       "email": [
-        "ct-logs@cloudflare.com",
-        "mihir@cloudflare.com",
-        "dkozlov@cloudflare.com",
-        "leland@cloudflare.com"
+        "ct-logs@cloudflare.com"
       ],
       "logs": [
         {
