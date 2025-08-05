@@ -68,7 +68,7 @@ wtf_size_t CalculateAutomaticRepetitions(
     LayoutUnit available_size,
     LayoutUnit min_available_size,
     LayoutUnit max_available_size,
-    std::optional<LayoutUnit> auto_repeat_track_size) {
+    std::optional<LayoutUnit> intrinsic_repeat_track_size) {
   DCHECK(track_list.HasAutoRepeater());
 
   if (available_size == kIndefiniteSize) {
@@ -94,8 +94,9 @@ wtf_size_t CalculateAutomaticRepetitions(
       const GridTrackSize& track_size =
           track_list.RepeatTrackSize(repeater_index, i);
 
-      const bool is_track_size_auto = track_size.IsTrackDefinitionAuto();
-      if (is_track_size_auto && !auto_repeat_track_size) {
+      const bool is_track_size_intrinsic =
+          track_size.IsTrackDefinitionIntrinsic();
+      if (is_track_size_intrinsic && !intrinsic_repeat_track_size) {
         return 0;
       }
 
@@ -112,8 +113,8 @@ wtf_size_t CalculateAutomaticRepetitions(
       }
 
       LayoutUnit track_contribution;
-      if (is_track_size_auto) {
-        track_contribution = auto_repeat_track_size.value();
+      if (is_track_size_intrinsic) {
+        track_contribution = intrinsic_repeat_track_size.value();
       } else if (fixed_max_track_breadth && fixed_min_track_breadth) {
         track_contribution =
             std::max(*fixed_max_track_breadth, *fixed_min_track_breadth);

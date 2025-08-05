@@ -2086,10 +2086,10 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
       computed_grid_track_list.GetAutoRepeatInsertionPoint();
   const GridTrackList& track_list = computed_grid_track_list.GetTrackList();
 
-  // Treat repeat(auto-fill, auto) as none in Grid.
+  // Treat repeat(auto-fill, <intrinsic-track-size>) as none in Grid.
   //
   // TODO(almaher): Change this depending on if we allow this syntax in Grid.
-  if (!is_masonry && track_list.HasAutoSizedRepeater()) {
+  if (!is_masonry && track_list.HasIntrinsicSizedRepeater()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
@@ -2104,8 +2104,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   // `force_computed_value` is set (which is used for `grid-template`). Non
   // layout-grids will always report the computed value.
   //
-  // TODO(almaher): Consider if we should force repeat(auto-fill, auto) to the
-  // computed value instead of used value.
+  // TODO(almaher): Consider if we should force repeat(auto-fill,
+  // <intrinsic-track-size>) to the computed value instead of used value.
   if (grid && !force_computed_value) {
     // The number of auto repeat tracks. For 'repeat(auto-fill, [x][y])' this
     // will be 2, regardless of what auto-fill computes to. For subgrids, use

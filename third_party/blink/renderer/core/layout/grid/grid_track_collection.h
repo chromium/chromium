@@ -100,13 +100,13 @@ class CORE_EXPORT GridRangeBuilder {
                            wtf_size_t* grid_item_end_range_index);
 
   // Build the collection of ranges based on information provided through the
-  // specified tracks and `EnsureTrackCoverage`. If `needs_auto_track_size` is
-  // true, that means we are in a track sizing pass to computed a repeat tack
-  // defintion of auto sized tracks. If `collapsed_track_indexes` is
+  // specified tracks and `EnsureTrackCoverage`. If `needs_intrinsic_track_size`
+  // is true, that means we are in a track sizing pass to computed a repeat tack
+  // defintion of intrinsic sized tracks. If `collapsed_track_indexes` is
   // not nullptr, this method with populate it with the track indexes of all
   // collapsed tracks.
   GridRangeVector FinalizeRanges(
-      bool needs_auto_track_size = false,
+      bool needs_intrinsic_track_size = false,
       Vector<wtf_size_t>* collapsed_track_indexes = nullptr);
 
  private:
@@ -447,10 +447,10 @@ class CORE_EXPORT GridSizingTrackCollection final
   void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
   void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
 
-  // Return the index of the first auto sized track within an auto repeat
+  // Return the index of the first intrinsic sized track within an auto repeat
   // definition.
-  wtf_size_t GetAutoSizedRepeaterTrackIndex() const {
-    return auto_sized_repeater_track_index_;
+  wtf_size_t GetIntrinsicSizedRepeaterTrackIndex() const {
+    return intrinsic_sized_repeater_track_index_;
   }
 
  private:
@@ -465,7 +465,7 @@ class CORE_EXPORT GridSizingTrackCollection final
   void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize);
 
   wtf_size_t non_collapsed_track_count_{0};
-  wtf_size_t auto_sized_repeater_track_index_{kNotFound};
+  wtf_size_t intrinsic_sized_repeater_track_index_{kNotFound};
 
   // A vector of every set element that compose the entire collection's ranges;
   // track definitions from the same set are stored in consecutive positions,

@@ -28,41 +28,43 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     collapsed_track_indexes_.clear();
 
     auto masonry_items = algorithm.Node().ConstructMasonryItems(line_resolver);
-    bool needs_auto_track_size = false;
-    std::optional<LayoutUnit> auto_repeat_track_size = std::nullopt;
+    bool needs_intrinsic_track_size = false;
+    std::optional<LayoutUnit> intrinsic_repeat_track_size = std::nullopt;
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
-        SizingConstraint::kLayout, auto_repeat_track_size, masonry_items,
-        collapsed_track_indexes_, start_offset, needs_auto_track_size);
+        SizingConstraint::kLayout, intrinsic_repeat_track_size, masonry_items,
+        collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
 
-    // We have a repeat() track definition with an auto sized track(s). The
+    // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
-    // to the auto sized track(s). Retrieve that value, and re-run track
+    // to the intrinsic sized track(s). Retrieve that value, and re-run track
     // sizing to get the correct number of automatic repetitions for the
     // repeat() definition.
     //
     // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
-    if (needs_auto_track_size) {
-      CHECK_NE(grid_axis_tracks_->GetAutoSizedRepeaterTrackIndex(), kNotFound);
+    if (needs_intrinsic_track_size) {
+      CHECK_NE(grid_axis_tracks_->GetIntrinsicSizedRepeaterTrackIndex(),
+               kNotFound);
       CHECK(collapsed_track_indexes_.empty());
-      // Note that when `needs_auto_track_size` is true, we skip the steps to
-      // distribute free space during track sizing. This means that the base
+      // Note that when `needs_intrinsic_track_size` is true, we skip the steps
+      // to distribute free space during track sizing. This means that the base
       // track size at this point represents the size of the intrinsic track
       // without free space distribution.
-      auto_repeat_track_size =
+      intrinsic_repeat_track_size =
           grid_axis_tracks_
-              ->GetSetAt(grid_axis_tracks_->GetAutoSizedRepeaterTrackIndex())
+              ->GetSetAt(
+                  grid_axis_tracks_->GetIntrinsicSizedRepeaterTrackIndex())
               .BaseSize();
 
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
-          SizingConstraint::kLayout, auto_repeat_track_size, masonry_items,
-          collapsed_track_indexes_, start_offset, needs_auto_track_size);
+          SizingConstraint::kLayout, intrinsic_repeat_track_size, masonry_items,
+          collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
     }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
 
     for (const auto& masonry_item : algorithm.BuildVirtualMasonryItems(
-             line_resolver, masonry_items, needs_auto_track_size,
+             line_resolver, masonry_items, needs_intrinsic_track_size,
              SizingConstraint::kLayout,
              line_resolver.AutoRepetitions(grid_axis_direction),
              start_offset)) {
