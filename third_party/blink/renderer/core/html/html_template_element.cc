@@ -88,12 +88,32 @@ void HTMLTemplateElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-void HTMLTemplateElement::BeginPatch(ContainerNode& target, const String& src) {
+bool HTMLTemplateElement::ProcessPatch(ContainerNode& target) {
+  // We can't use GetElementAttribute here because the template is not attached
+  // to the DOM.
+  Element* start_after = FastHasAttribute(html_names::kPatchstartafterAttr)
+                             ? target.getElementById(FastGetAttribute(
+                                   html_names::kPatchstartafterAttr))
+                             : nullptr;
+  Element* end_before = FastHasAttribute(html_names::kPatchendbeforeAttr)
+                            ? target.getElementById(FastGetAttribute(
+                                  html_names::kPatchendbeforeAttr))
+                            : nullptr;
+  if ((start_after && start_after->parentElement() != &target) ||
+      (end_before && end_before->parentElement() != &target)) {
+    // TODO(nrosenthal): fire a patcherror event?
+    return false;
+  }
+
+  const KURL src = FastHasAttribute(html_names::kPatchsrcAttr)
+                       ? target.GetDocument().CompleteURL(
+                             FastGetAttribute(html_names::kPatchsrcAttr))
+                       : KURL();
   SetOverrideInsertionTarget(target);
-  patch_status_ = DOMPatchStatus::Create(
-      target, this,
-      src.empty() ? KURL() : target.GetDocument().CompleteURL(src));
+  patch_status_ =
+      DOMPatchStatus::Create(target, this, src, start_after, end_before);
   patch_status_->Start();
+  return true;
 }
 
 void HTMLTemplateElement::FinishParsingChildren() {

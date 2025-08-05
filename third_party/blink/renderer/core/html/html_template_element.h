@@ -79,7 +79,9 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
 
   void ResetOverrideInsertionTarget() { override_insertion_target_.Release(); }
 
-  void BeginPatch(ContainerNode& target, const String& src);
+  // This returns true if this template is a valid patch and the patch has been
+  // processed.
+  bool ProcessPatch(ContainerNode& target);
   DOMPatchStatus* OutgoingPatch() { return patch_status_; }
 
  private:

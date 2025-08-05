@@ -304,6 +304,8 @@
     "part",
     "patchfor",
     "patchsrc",
+    "patchstartafter",
+    "patchendbefore",
     "pattern",
     "placeholder",
     "playsinline",
