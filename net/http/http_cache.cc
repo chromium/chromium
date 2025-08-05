@@ -43,6 +43,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/task/task_runner.h"
 #include "net/base/upload_data_stream.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache_transaction.h"
@@ -71,6 +72,24 @@ bool g_init_cache = false;
 // True if split cache is enabled by default. Must be set before any HTTP cache
 // has been initialized.
 bool g_enable_split_cache = false;
+
+// Helper function to find the highest priority in a container of transactions.
+template <typename T>
+RequestPriority GetHighestPriority(const T& transactions) {
+  RequestPriority highest = RequestPriority::IDLE;
+  for (const auto tx : transactions) {
+    highest = std::max(highest, tx->priority());
+  }
+  return highest;
+}
+
+const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
+    net::RequestPriority priority) {
+  if (features::kNetTaskSchedulerHttpCache.Get()) {
+    return net::GetTaskRunner(priority);
+  }
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
+}
 
 }  // namespace
 
@@ -323,6 +342,21 @@ bool HttpCache::ActiveEntry::CanTransactionWriteResponseHeaders(
   }
 
   return true;
+}
+
+const scoped_refptr<base::SingleThreadTaskRunner>&
+HttpCache::ActiveEntry::GetTaskRunner() const {
+  // Calculate the highest request priority among all transactions in the entry.
+  RequestPriority highest = std::max(
+      {RequestPriority::IDLE, GetHighestPriority(done_headers_queue_),
+       GetHighestPriority(add_to_entry_queue_), GetHighestPriority(readers_)});
+  if (headers_transaction_) {
+    highest = std::max(highest, headers_transaction_->priority());
+  }
+  if (writers_) {
+    highest = std::max(highest, writers_->priority());
+  }
+  return TaskRunner(highest);
 }
 
 //-----------------------------------------------------------------------------
@@ -1263,9 +1297,9 @@ void HttpCache::DoomEntryValidationNoMatch(scoped_refptr<ActiveEntry> entry) {
   // for the transaction to not be found in this entry.
   for (HttpCache::Transaction* transaction : entry->add_to_entry_queue()) {
     transaction->ResetCachePendingState();
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(transaction->cache_io_callback(), ERR_CACHE_RACE));
+    TaskRunner(transaction->priority())
+        ->PostTask(FROM_HERE, base::BindOnce(transaction->cache_io_callback(),
+                                             ERR_CACHE_RACE));
   }
   entry->add_to_entry_queue().clear();
 }
@@ -1311,7 +1345,7 @@ void HttpCache::ProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry) {
 
   // Post a task instead of invoking the io callback of another transaction here
   // to avoid re-entrancy.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  entry->GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&HttpCache::OnProcessQueuedTransactions,
                                 GetWeakPtr(), std::move(entry)));
 }
@@ -1322,7 +1356,7 @@ void HttpCache::ProcessAddToEntryQueue(scoped_refptr<ActiveEntry> entry) {
     // Post a task to put the AddTransactionToEntry handling at the back of
     // the task queue. This allows other tasks (like network IO) to jump
     // ahead and simulate different callback ordering for testing.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    entry->GetTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&HttpCache::ProcessAddToEntryQueueImpl,
                                   GetWeakPtr(), std::move(entry)));
   } else {

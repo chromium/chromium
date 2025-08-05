@@ -458,6 +458,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                                             bool is_partial,
                                             bool is_match) const;
 
+    // Returns the priority-based task runner, considering request priority
+    // among all transactions.
+    const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner() const;
+
    private:
     friend class base::RefCounted<ActiveEntry>;
 

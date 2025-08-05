@@ -15637,6 +15637,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "http_cache": "true",
                         "http_cache_transaction": "true",
                         "http_proxy_connect_job": "true",
                         "http_stream_factory_job": "true",
