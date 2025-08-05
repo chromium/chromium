@@ -69,7 +69,7 @@ message EncryptedPrivateMetricReport {
 
 // A report containing unencrypted private metrics data. The unencrypted report
 // does not leave the client.
-// Next tag: 3
+// Next tag: 4
 message PrivateMetricReport {
   // A temporary unique identifier that changes every epoch. One epoch is a
   // period of 24 hours. This is generated and managed by the Private Metrics
@@ -96,4 +96,8 @@ message PrivateMetricReport {
 
   // Each report is composed of a collection of events.
   repeated Event events = 2;
+
+  // The epoch the report is associated with. Reports may only be processed with
+  // other reports from the same epoch.
+  optional fixed64 epoch_id = 3;
 }
