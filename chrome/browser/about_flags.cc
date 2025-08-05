@@ -13152,6 +13152,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kToolbarSnapshotRefactor)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    {"enforce-management-disclaimer",
+     flag_descriptions::kEnforceManagementDisclaimerName,
+     flag_descriptions::kEnforceManagementDisclaimerDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(switches::kEnforceManagementDisclaimer)},
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

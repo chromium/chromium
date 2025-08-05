@@ -12921,6 +12921,7 @@ from previous Chrome versions.
   <int value="-434474445" label="OmniboxSteadyStateBackgroundColor:enabled"/>
   <int value="-433879402"
       label="EnableAmbientAuthenticationInIncognito:disabled"/>
+  <int value="-433775463" label="EnforceManagementDisclaimer:enabled"/>
   <int value="-431617217" label="ArcGhostWindowNewStyle:disabled"/>
   <int value="-431553693" label="ChangePasswordAffiliationInfo:disabled"/>
   <int value="-430369215" label="AssistPersonalInfo:disabled"/>
@@ -17454,6 +17455,7 @@ from previous Chrome versions.
   <int value="1228054141"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:enabled"/>
   <int value="1228115769" label="SiteCharacteristicsDatabase:disabled"/>
+  <int value="1228384801" label="EnforceManagementDisclaimer:disabled"/>
   <int value="1228958037" label="FedCmWithStorageAccessAPI:enabled"/>
   <int value="1229299518" label="SingleTabMode:disabled"/>
   <int value="1229388323" label="AutofillEnableGoogleIssuedCard:disabled"/>

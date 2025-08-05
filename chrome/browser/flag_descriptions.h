@@ -1603,6 +1603,9 @@ extern const char kNotificationsSystemFlagName[];
 extern const char kNotificationsSystemFlagDescription[];
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+extern const char kEnforceManagementDisclaimerName[];
+extern const char kEnforceManagementDisclaimerDescription[];
+
 extern const char kOfferMigrationToDiceUsersName[];
 extern const char kOfferMigrationToDiceUsersDescription[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

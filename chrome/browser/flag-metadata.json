@@ -4710,6 +4710,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enforce-management-disclaimer",
+    "owners": ["ydago@google.com", "cec-growth-eng@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enforce-mono-audio-capture",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com"],
     "expiry_milestone": 147

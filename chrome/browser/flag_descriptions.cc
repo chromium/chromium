@@ -2767,6 +2767,14 @@ const char kNotificationsSystemFlagDescription[] =
     "center on platforms where these are available.";
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const char kEnforceManagementDisclaimerName[] =
+    "Enforce management disclaimer";
+const char kEnforceManagementDisclaimerDescription[] =
+    "When enabled, all signed in profiles that never saw the management "
+    "disclaimer will be shown the management disclaimer when they open Chrome. "
+    "Every time the primary signed in account changes to a managed account, "
+    "the management disclaimer will be shown.";
+
 const char kOfferMigrationToDiceUsersName[] = "Offer migration to Dice users";
 const char kOfferMigrationToDiceUsersDescription[] =
     "When enabled, offers the implicitly signed-in users a dialog to migrate "
