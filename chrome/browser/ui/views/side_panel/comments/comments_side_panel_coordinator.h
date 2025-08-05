@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 class BrowserWindowInterface;
 class SidePanelEntryScope;
@@ -19,7 +20,8 @@ class TabStripModelChange;
 struct TabStripSelectionChange;
 
 namespace tab_groups {
-class TabGroupSyncService;
+class SavedTabGroup;
+enum class TriggerSource;
 }  // namespace tab_groups
 
 namespace views {
@@ -28,7 +30,9 @@ class View;
 
 // CommentsSidePanelCoordinator handles the creation and registration of
 // the comments SidePanelEntry.
-class CommentsSidePanelCoordinator : public TabStripModelObserver {
+class CommentsSidePanelCoordinator
+    : public TabStripModelObserver,
+      public tab_groups::TabGroupSyncService::Observer {
  public:
   // TODO(crbug.com/434203413): Remove dependency on BrowserView by implementing
   // a PinnedToolbarActionsController.
@@ -45,6 +49,10 @@ class CommentsSidePanelCoordinator : public TabStripModelObserver {
                               std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabInterface* tab,
                               int index) override;
+
+  // TabGroupSyncService::Observer
+  void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group,
+                         tab_groups::TriggerSource source) override;
 
   // Returns whether CommentsSidePanelCoordinator is supported.
   // If this returns false, it should not be registered with the side

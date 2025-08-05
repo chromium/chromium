@@ -243,6 +243,8 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void MakeTabGroupSharedForTesting(
       const LocalTabGroupID& local_group_id,
       const syncer::CollaborationId& collaboration_id) = 0;
+  virtual void MakeTabGroupUnsharedForTesting(
+      const LocalTabGroupID& local_group_id) = 0;
 
   // Mutator methods for shared tab groups.
   // Starts the process of converting a shared tab group to saved tab group. Due

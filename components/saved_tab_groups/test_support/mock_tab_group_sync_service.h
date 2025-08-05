@@ -71,6 +71,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               MakeTabGroupSharedForTesting,
               (const LocalTabGroupID&, const syncer::CollaborationId&));
+  MOCK_METHOD(void, MakeTabGroupUnsharedForTesting, (const LocalTabGroupID&));
   MOCK_METHOD(void,
               AboutToUnShareTabGroup,
               (const LocalTabGroupID&, base::OnceClosure));

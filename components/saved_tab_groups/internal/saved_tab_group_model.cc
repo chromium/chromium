@@ -219,6 +219,12 @@ void SavedTabGroupModel::MakeTabGroupSharedForTesting(
   group->SetCollaborationId(std::move(collaboration_id));
 }
 
+void SavedTabGroupModel::MakeTabGroupUnsharedForTesting(
+    const LocalTabGroupID& local_group_id) {
+  SavedTabGroup* const group = GetMutableGroup(local_group_id);
+  group->SetCollaborationId(std::nullopt);
+}
+
 void SavedTabGroupModel::SetIsTransitioningToSaved(
     const LocalTabGroupID& local_group_id,
     bool is_transitioning_to_saved) {

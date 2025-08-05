@@ -122,6 +122,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void MakeTabGroupSharedForTesting(
       const LocalTabGroupID& local_group_id,
       const syncer::CollaborationId& collaboration_id) override;
+  void MakeTabGroupUnsharedForTesting(
+      const LocalTabGroupID& local_group_id) override;
 
   void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id,
                               base::OnceClosure on_complete_callback) override;

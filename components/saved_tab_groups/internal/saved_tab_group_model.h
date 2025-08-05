@@ -97,6 +97,7 @@ class SavedTabGroupModel {
   // updated group is retrieved from the service before use.
   void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
                                     CollaborationId collaboration_id);
+  void MakeTabGroupUnsharedForTesting(const LocalTabGroupID& local_group_id);
 
   // Mark whether the tab group identified by `local_group_id` is transitioning
   // to a saved group.

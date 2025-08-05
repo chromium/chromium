@@ -213,6 +213,11 @@ void TabGroupSyncServiceProxy::MakeTabGroupSharedForTesting(
   NOTIMPLEMENTED();
 }
 
+void TabGroupSyncServiceProxy::MakeTabGroupUnsharedForTesting(
+    const LocalTabGroupID& local_group_id) {
+  NOTIMPLEMENTED();
+}
+
 void TabGroupSyncServiceProxy::AboutToUnShareTabGroup(
     const LocalTabGroupID& local_group_id,
     base::OnceClosure on_complete_callback) {

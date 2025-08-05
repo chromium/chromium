@@ -246,6 +246,11 @@ void FakeTabGroupSyncService::MakeTabGroupSharedForTesting(
   // No op.
 }
 
+void FakeTabGroupSyncService::MakeTabGroupUnsharedForTesting(
+    const LocalTabGroupID& local_group_id) {
+  // No op.
+}
+
 void FakeTabGroupSyncService::AboutToUnShareTabGroup(
     const LocalTabGroupID& local_group_id,
     base::OnceClosure on_complete_callback) {

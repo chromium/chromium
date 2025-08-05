@@ -874,6 +874,12 @@ void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
   model_->MakeTabGroupSharedForTesting(local_group_id, collaboration_id);
 }
 
+void TabGroupSyncServiceImpl::MakeTabGroupUnsharedForTesting(
+    const LocalTabGroupID& local_group_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  model_->MakeTabGroupUnsharedForTesting(local_group_id);
+}
+
 bool TabGroupSyncServiceImpl::ShouldExposeSavedTabGroupInList(
     const SavedTabGroup& group) const {
   // TODO(crbug.com/395160538): Simplify the logic of filtering out groups

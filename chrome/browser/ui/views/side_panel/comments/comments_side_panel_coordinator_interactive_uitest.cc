@@ -25,6 +25,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -194,6 +195,53 @@ IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
                         tab_group_model->GetTabGroup(group_id)->tab_count(), 2);
                   }),
                   WaitForShow(kSharedTabGroupCommentsActionElementId));
+}
+
+// Verify the comments action is shown when a tab group becomes shared.
+IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
+                       CommentActionIsVisible_SharingGroup) {
+  tab_groups::TabGroupId group_id = CreateNewTabGroup();
+
+  const int non_shared_tab_index = 0;
+  browser()->tab_strip_model()->ActivateTabAt(non_shared_tab_index);
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId),
+      EnsureNotPresent(kSharedTabGroupCommentsActionElementId),
+      // Share the group.
+      Do([&] {
+        ShareTabGroup(
+            group_id, syncer::CollaborationId("fake_collaboration_id"),
+            data_sharing::MemberRole::kOwner, /*should_sign_in=*/false);
+
+        // Trigger observers to fire by updating the group's visual data.
+        tab_group_sync_service()->UpdateVisualData(group_id,
+                                                   browser()
+                                                       ->GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->visual_data());
+      }),
+      WaitForShow(kSharedTabGroupCommentsActionElementId),
+      // Unshare the group.
+      Do([&] {
+        EXPECT_TRUE(tab_group_sync_service()
+                        ->GetGroup(group_id)
+                        ->is_shared_tab_group());
+        tab_group_sync_service()->MakeTabGroupUnsharedForTesting(group_id);
+        EXPECT_FALSE(tab_group_sync_service()
+                         ->GetGroup(group_id)
+                         ->is_shared_tab_group());
+
+        // Trigger observers to fire by updating the group's visual data.
+        tab_group_sync_service()->UpdateVisualData(group_id,
+                                                   browser()
+                                                       ->GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->visual_data());
+      }),
+      WaitForHide(kSharedTabGroupCommentsActionElementId));
 }
 
 // Verify the comments side panel will resume visilibity when switching to a
