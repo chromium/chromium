@@ -19,7 +19,7 @@ public class NewDownloadTabProvider {
      * @param windowAndroid The {@link WindowAndroid} the {@link NewDownloadTab} is attached to.
      * @return The {@link NewDownloadTab} attached to a given {@link WindowAndroid}.
      */
-    public static @Nullable NewDownloadTab from(WindowAndroid windowAndroid) {
+    public static @Nullable NewDownloadTab from(@Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }

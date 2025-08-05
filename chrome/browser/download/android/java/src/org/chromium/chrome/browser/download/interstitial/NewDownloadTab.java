@@ -55,12 +55,12 @@ public class NewDownloadTab extends EmptyTabObserver
     }
 
     /**
-     * Identify the {@link NewDownloadTab} instance attached to the window android using
-     * {@link UnownedUserData} through the {@link NewDownloadTabProvider} and finish its parent
-     * activity.
+     * Identify the {@link NewDownloadTab} instance attached to the window android using {@link
+     * UnownedUserData} through the {@link NewDownloadTabProvider} and finish its parent activity.
+     *
      * @param windowAndroid The window android containing the new download tab.
      */
-    public static void closeExistingNewDownloadTab(WindowAndroid windowAndroid) {
+    public static void closeExistingNewDownloadTab(@Nullable WindowAndroid windowAndroid) {
         NewDownloadTab instance = NewDownloadTabProvider.from(windowAndroid);
         if (instance != null) {
             instance.onDownloadDialogCancelled();

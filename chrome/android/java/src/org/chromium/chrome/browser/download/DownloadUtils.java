@@ -436,8 +436,8 @@ public class DownloadUtils {
             @Nullable String mimeType,
             @Nullable String downloadGuid,
             @Nullable OtrProfileId otrProfileId,
-            String originalUrl,
-            String referrer,
+            @Nullable String originalUrl,
+            @Nullable String referrer,
             @DownloadOpenSource int source,
             Context context) {
         DownloadMetrics.recordDownloadOpen(source, mimeType);
@@ -525,11 +525,11 @@ public class DownloadUtils {
     @CalledByNative
     public static void openDownload(
             @JniType("std::string") String filePath,
-            @JniType("std::string") String mimeType,
-            @JniType("std::string") String downloadGuid,
+            @JniType("std::string") @Nullable String mimeType,
+            @JniType("std::string") @Nullable String downloadGuid,
             OtrProfileId otrProfileId,
-            @JniType("std::string") String originalUrl,
-            @JniType("std::string") String referer,
+            @JniType("std::string") @Nullable String originalUrl,
+            @JniType("std::string") @Nullable String referer,
             @DownloadOpenSource int source) {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
@@ -795,8 +795,8 @@ public class DownloadUtils {
     public static boolean openFileWithExternalApps(
             String filePath,
             @Nullable String mimeType,
-            String originalUrl,
-            String referrer,
+            @Nullable String originalUrl,
+            @Nullable String referrer,
             Context context,
             @OpenWithExternalAppsSource int source) {
         try {

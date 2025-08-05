@@ -8,9 +8,9 @@ import android.content.Context;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
  * Dialog for confirming that user want to download a file that already exists on disk, using the
  * default model dialog from ModalDialogManager.
  */
+@NullMarked
 public class DuplicateDownloadDialog {
     private ModalDialogManager mModalDialogManager;
     private PropertyModel mPropertyModel;
@@ -43,6 +44,7 @@ public class DuplicateDownloadDialog {
      * @param callback Callback to run when confirming the download, true for accept the download,
      *     false otherwise.
      */
+    @Initializer
     public void show(
             Context context,
             ModalDialogManager modalDialogManager,
@@ -90,7 +92,6 @@ public class DuplicateDownloadDialog {
         modalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
-    @NonNull
     private ModalDialogProperties.Controller getController(
             Context context, ModalDialogManager modalDialogManager, Callback<Boolean> callback) {
         return new ModalDialogProperties.Controller() {

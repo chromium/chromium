@@ -458,11 +458,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     /**
      * Returns true if the given download information matches an interstitial download.
+     *
      * @param originalUrl The URL of the download.
      * @param guid Unique GUID of the download.
      */
     @Override
-    public boolean isDownloadInterstitialItem(GURL originalUrl, String guid) {
+    public boolean isDownloadInterstitialItem(GURL originalUrl, @Nullable String guid) {
         if (mDownloadInterstitialSources != null
                 && mDownloadInterstitialSources.contains(originalUrl)) {
             return true;
