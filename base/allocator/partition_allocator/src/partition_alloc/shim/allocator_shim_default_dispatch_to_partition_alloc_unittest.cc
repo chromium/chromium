@@ -209,6 +209,12 @@ TEST(PartitionAllocAsMalloc, GoodSize) {
 }
 #endif  // PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+#if PA_BUILDFLAG(IS_APPLE)
+TEST(PartitionAllocAsMalloc, TryFreeDefaultFallbackToFindZoneAndFree_Nullptr) {
+  TryFreeDefaultFallbackToFindZoneAndFree(nullptr);
+}
+#endif  // PA_BUILDFLAG(IS_APPLE)
+
 }  // namespace allocator_shim::internal
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // PA_BUILDFLAG(USE_PARTITION_ALLOC)

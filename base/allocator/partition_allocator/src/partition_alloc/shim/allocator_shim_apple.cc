@@ -32,6 +32,10 @@
 namespace allocator_shim {
 
 void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
+  if (!ptr) [[unlikely]] {
+    return;
+  }
+
   unsigned int zone_count = 0;
   vm_address_t* zones = nullptr;
   kern_return_t result =
@@ -57,7 +61,8 @@ void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
   }
 
   // There must be an owner zone.
-  PA_CHECK(false);
+  PA_CHECK(false) << "Oops! No zone found for "
+                  << reinterpret_cast<uintptr_t>(ptr);
 }
 
 }  // namespace allocator_shim
