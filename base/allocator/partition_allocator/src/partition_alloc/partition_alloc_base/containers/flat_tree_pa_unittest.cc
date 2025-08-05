@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_alloc_base/containers/flat_tree.h"
 #include "partition_alloc/partition_alloc_base/cxx20_identity.h"
 
@@ -70,7 +65,7 @@ class InputIterator {
   pointer operator->() const { return it_; }
 
   InputIterator& operator++() {
-    ++it_;
+    PA_UNSAFE_TODO(++it_);
     return *this;
   }
   InputIterator operator++(int) {

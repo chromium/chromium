@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
@@ -26,12 +22,13 @@ namespace partition_alloc::internal::base {
 TEST(PartitionAllocBaseRandUtilTest, RandBytes) {
   const size_t buffer_size = 50;
   char buffer[buffer_size];
-  memset(buffer, 0, buffer_size);
+  PA_UNSAFE_TODO(memset(buffer, 0, buffer_size));
   base::RandBytes(buffer, buffer_size);
-  std::sort(buffer, buffer + buffer_size);
+  std::sort(buffer, PA_UNSAFE_TODO(buffer + buffer_size));
   // Probability of occurrence of less than 25 unique bytes in 50 random bytes
   // is below 10^-25.
-  EXPECT_GT(std::unique(buffer, buffer + buffer_size) - buffer, 25);
+  PA_UNSAFE_TODO(
+      EXPECT_GT(std::unique(buffer, buffer + buffer_size) - buffer, 25));
 }
 
 // Verify that calling base::RandBytes with an empty buffer doesn't fail.

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 #include <initializer_list>
 #include <vector>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/ranges/ranges.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,7 +49,8 @@ template <size_t N>
 constexpr std::array<int, N> GenerateArray() {
   std::array<int, N> arr{};
   int i = 0;
-  for (auto* it = ranges::begin(arr); it != ranges::end(arr); ++it) {
+  for (auto* it = ranges::begin(arr); it != ranges::end(arr);
+       PA_UNSAFE_TODO(++it)) {
     *it = i++;
   }
 
@@ -93,13 +90,13 @@ TEST(RangesTest, EndPrefersMember) {
 
 TEST(RangesTest, EndConstexprContainers) {
   int arr[1]{};
-  static_assert(arr + 1 == ranges::end(arr), "");
+  static_assert(PA_UNSAFE_TODO(arr + 1) == ranges::end(arr), "");
 
   static constexpr std::initializer_list<int> il = {1, 2, 3};
   static_assert(il.end() == ranges::end(il), "");
 
   static constexpr std::array<int, 3> array = {1, 2, 3};
-  static_assert(&array[0] + 3 == ranges::end(array), "");
+  static_assert(PA_UNSAFE_TODO(&array[0] + 3) == ranges::end(array), "");
 }
 
 TEST(RangesTest, EndRegularContainers) {

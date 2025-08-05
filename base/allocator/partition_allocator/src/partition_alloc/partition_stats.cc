@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_stats.h"
 
 #include <cstring>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+
 namespace partition_alloc {
 
 SimplePartitionStatsDumper::SimplePartitionStatsDumper() {
-  memset(&stats_, 0, sizeof(stats_));
+  PA_UNSAFE_TODO(memset(&stats_, 0, sizeof(stats_)));
 }
 
 void SimplePartitionStatsDumper::PartitionDumpTotals(

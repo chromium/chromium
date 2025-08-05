@@ -495,7 +495,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 
 // Annotates code indicating that it should be permanently exempted from
 // `-Wunsafe-buffer-usage`. For temporary cases such as migrating callers to
-// safer patterns, use `UNSAFE_TODO()` instead;
+// safer patterns, use `PA_UNSAFE_TODO()` instead;
 #if defined(__clang__)
 // Disabling `clang-format` allows each `_Pragma` to be on its own line, as
 // recommended by https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html.
