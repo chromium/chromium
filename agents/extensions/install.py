@@ -112,20 +112,28 @@ def get_extension_version(extension_path: Path) -> str:
 def get_dir_hash(directory: Path) -> bytes | None:
     """Calculates a hash for the contents of a directory."""
     hashes = []
-    for path in sorted(Path(directory).rglob('*')):
-        if path.is_file():
-            try:
-                hashes.append(
-                    subprocess.check_output(['git', 'hash-object',
-                                             str(path)]).strip())
-            except (subprocess.CalledProcessError, FileNotFoundError):
-                # Fallback for non-git environments
-                import hashlib
-                hasher = hashlib.sha1()
-                with open(path, 'rb') as f:
-                    while chunk := f.read(8192):
-                        hasher.update(chunk)
-                hashes.append(hasher.hexdigest().encode('utf-8'))
+    files_to_hash = []
+    for root, dirs, files in os.walk(directory):
+        # We do not want changes to test-only data to count as a change to
+        # the extension.
+        if 'tests' in dirs:
+            dirs.remove('tests')
+        for name in files:
+            files_to_hash.append(os.path.join(root, name))
+
+    for path in sorted(files_to_hash):
+        try:
+            hashes.append(
+                subprocess.check_output(['git', 'hash-object',
+                                         str(path)]).strip())
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            # Fallback for non-git environments
+            import hashlib
+            hasher = hashlib.sha1()
+            with open(path, 'rb') as f:
+                while chunk := f.read(8192):
+                    hasher.update(chunk)
+            hashes.append(hasher.hexdigest().encode('utf-8'))
 
     if not hashes:
         return None
@@ -219,7 +227,9 @@ def add_extension(extension_name: str, source_extensions_dir: Path,
     if symlink:
         os.symlink(source_dir, dest_dir)
     else:
-        shutil.copytree(source_dir, dest_dir)
+        shutil.copytree(source_dir,
+                        dest_dir,
+                        ignore=shutil.ignore_patterns('tests'))
     print(f"Added/updated '{extension_name}' to {dest_dir}")
 
 
@@ -243,7 +253,9 @@ def update_extension(extension_name: str, source_extensions_dir: Path,
 
     if dest_dir.exists():
         shutil.rmtree(dest_dir)
-    shutil.copytree(source_dir, dest_dir)
+    shutil.copytree(source_dir,
+                    dest_dir,
+                    ignore=shutil.ignore_patterns('tests'))
     print(f"Updated '{extension_name}' in {dest_dir}")
 
 

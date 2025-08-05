@@ -102,6 +102,30 @@ class InstallTest(unittest.TestCase):
         self.assertIn(self.source_extensions_dir, extensions_dirs)
         self.assertIn(self.internal_extensions_dir, extensions_dirs)
 
+    def test_get_dir_hash_ignores_tests(self):
+        """Tests that get_dir_hash ignores the 'tests' directory."""
+        # Create a tests directory and get the hash
+        (self.extension1_dir / 'tests').mkdir()
+        with open(self.extension1_dir / 'tests' / 'test.py',
+                  'w',
+                  encoding='utf-8') as f:
+            f.write('print("test")')
+        hash1 = install.get_dir_hash(self.extension1_dir)
+
+        # Modify a file in the tests directory and check the hash is the same
+        with open(self.extension1_dir / 'tests' / 'test.py',
+                  'w',
+                  encoding='utf-8') as f:
+            f.write('print("test2")')
+        hash2 = install.get_dir_hash(self.extension1_dir)
+        self.assertEqual(hash1, hash2)
+
+        # Modify a file outside the tests directory and check the hash changes
+        with open(self.extension1_dir / 'main.py', 'w', encoding='utf-8') as f:
+            f.write('print("new world")')
+        hash3 = install.get_dir_hash(self.extension1_dir)
+        self.assertNotEqual(hash1, hash3)
+
     @patch('subprocess.check_output', side_effect=FileNotFoundError)
     def test_get_dir_hash_fallback(self, mock_check_output):
         """Tests the get_dir_hash function's fallback mechanism."""

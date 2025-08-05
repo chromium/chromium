@@ -39,6 +39,11 @@ class InstallIntegrationTest(unittest.TestCase):
                   'w',
                   encoding='utf-8') as f:
             f.write('{"name": "sample_1", "version": "1.0.0"}')
+        (self.extension1_dir / 'tests').mkdir()
+        with open(self.extension1_dir / 'tests' / 'test.py',
+                  'w',
+                  encoding='utf-8') as f:
+            f.write('print("hello")')
 
         self.extension2_dir = self.source_extensions_dir / 'sample_2'
         self.extension2_dir.mkdir()
@@ -106,6 +111,8 @@ class InstallIntegrationTest(unittest.TestCase):
         with patch('sys.argv', ['install.py', 'add', 'sample_1']):
             install.main()
         self.assertTrue((self.target_extensions_dir / 'sample_1').exists())
+        self.assertFalse(
+            (self.target_extensions_dir / 'sample_1' / 'tests').exists())
 
         with patch('sys.argv', ['install.py', 'remove', 'sample_1']):
             install.main()
@@ -116,6 +123,17 @@ class InstallIntegrationTest(unittest.TestCase):
         with patch('sys.argv', ['install.py', 'add', 'sample_1']):
             install.main()
 
+        # Check that changes in the tests directory don't trigger an update
+        with open(self.extension1_dir / 'tests' / 'test.py',
+                  'w',
+                  encoding='utf-8') as f:
+            f.write('print("goodbye")')
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            with patch('sys.argv', ['install.py', 'update', 'sample_1']):
+                install.main()
+            self.assertIn('already up to date', mock_stdout.getvalue())
+
+        # Check that a legitimate change does trigger an update
         with open(self.extension1_dir / 'gemini-extension.json',
                   'w',
                   encoding='utf-8') as f:
