@@ -313,7 +313,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.StorageManager.RecordStatus"
-    enum="RecordStatus" expires_after="2025-11-30">
+    enum="RecordStatus" expires_after="2026-02-01">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -324,7 +324,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.UploadSize" units="bytes"
-    expires_after="2025-11-30">
+    expires_after="2026-02-01">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>

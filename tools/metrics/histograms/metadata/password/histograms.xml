@@ -1631,7 +1631,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.FillingAssistance{PasswordAccountStorageUsageLevelOrSecurityOrigin}"
-    enum="PasswordManagerFillingAssistance" expires_after="2025-11-30">
+    enum="PasswordManagerFillingAssistance" expires_after="2026-02-01">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
