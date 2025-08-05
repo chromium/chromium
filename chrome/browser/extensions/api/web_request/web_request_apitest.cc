@@ -57,6 +57,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -2011,7 +2012,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
               runner->GetBlockedActions(extension->id()));
 
     // Grant activeTab permission.
-    runner->accept_bubble_for_testing(true);
+    auto reload_page_dialog_reset =
+        ReloadPageDialogController::AcceptDialogForTesting(true);
     runner->RunAction(extension, true);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -2116,7 +2118,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // a.com), it should still see the request. This is necessary for extensions
   // with webRequest to work with runtime host permissions.
   // https://crbug.com/851722.
-  runner->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
   runner->RunAction(extension, true /* grant tab permissions */);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -3462,7 +3465,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   // Only records ACCESS_WITHHELD, not ACCESS_DENIED, this is why it matches
   // BLOCKED_ACTION_NONE.
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
-  runner->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
   runner->RunAction(extension, true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));

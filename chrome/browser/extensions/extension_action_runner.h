@@ -107,10 +107,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   int num_page_requests() const { return num_page_requests_; }
 
-  void accept_bubble_for_testing(bool accept_bubble) {
-    accept_bubble_for_testing_ = accept_bubble;
-  }
-
   // Handles mojom::LocalFrameHost::RequestScriptInjectionPermission(). It
   // replies back with `callback`.
   void OnRequestScriptInjectionPermission(
@@ -232,10 +228,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // TODO(crbug.com/424012380): reload page dialog ownership should be moved to
   // each caller.
   std::unique_ptr<ReloadPageDialogController> reload_page_dialog_controller_;
-
-  // If true, immediately accept the reload page dialog by running the
-  // callback.
-  std::optional<bool> accept_bubble_for_testing_;
 
   base::ObserverList<TestObserver> test_observers_;
 

@@ -396,18 +396,6 @@ void ExtensionActionRunner::ShowReloadPageBubble(
     const std::vector<const Extension*>& extensions) {
   reload_page_dialog_controller_ = std::make_unique<ReloadPageDialogController>(
       web_contents(), browser_context_);
-
-  // For testing, simulate the bubble being accepted by directly invoking the
-  // callback, or rejected by skipping the callback.
-  // TODO(crbug.com/424012380): move accept_bubble_for_testing_ to
-  // ReloadPageDialogController.
-  if (accept_bubble_for_testing_.has_value()) {
-    if (*accept_bubble_for_testing_) {
-      reload_page_dialog_controller_->OnAcceptSelected();
-    }
-    return;
-  }
-
   reload_page_dialog_controller_->TriggerShow(extensions);
 }
 

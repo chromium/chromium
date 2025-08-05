@@ -1413,19 +1413,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
   auto extension =
       InstallExtensionWithHostPermissions("All Urls Extension", "<all_urls>");
+  // Automatically accept the reload page dialog that appears when changing site
+  // access.
+  auto reload_page_dialog_reset =
+      extensions::ReloadPageDialogController::AcceptDialogForTesting(true);
 
   RunTestSequence(
       InstrumentTab(kTab),
       NavigateWebContents(
           kTab, embedded_test_server()->GetURL("example.com", "/title1.html")),
-      // Automatically accept the reload page dialog that appears when
-      // changing site access.
-      Do([&]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        extensions::ExtensionActionRunner::GetForWebContents(web_contents)
-            ->accept_bubble_for_testing(true);
-      }),
 
       OpenExtensionsMenu(),
       CheckView(

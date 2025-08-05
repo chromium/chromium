@@ -470,7 +470,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionRunnerRunActionBubbleBrowserTest,
   const bool kAcceptReload = GetParam();
   // Run the action and (accept or dismiss) the reload bubble depending on
   // `kAcceptReload`.
-  runner->accept_bubble_for_testing(kAcceptReload);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(kAcceptReload);
   runner->RunAction(extension, /*grant_tab_permissions=*/true);
 
   // Verify extension has granted site interaction (since it's immediately
@@ -592,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
 
-  runner->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();

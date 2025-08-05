@@ -282,10 +282,8 @@ TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
 
   // Open a site requested by both extensions.
   content::WebContents* site_contents = AddTab(requested_site);
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(site_contents);
-  ASSERT_TRUE(action_runner);
-  action_runner->accept_bubble_for_testing(false);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // Extension A should have 'on site' access for the site it requested and 'on
   // click' for a site it didn't request. Extension A should have 'on all sites'
@@ -406,12 +404,8 @@ TEST_F(SitePermissionsHelperWithUserHostControlsUnitTest,
 
   {
     // Switch the extension from on all sites to on-click.
-    ExtensionActionRunner* action_runner =
-        ExtensionActionRunner::GetForWebContents(non_user_permitted_contents);
-    ASSERT_TRUE(action_runner);
-    // Permissions for the site are still updated even if the tab is not
-    // reloaded.
-    action_runner->accept_bubble_for_testing(false);
+    auto reload_page_dialog_reset =
+        ReloadPageDialogController::AcceptDialogForTesting(true);
     PermissionsManagerWaiter waiter(permissions_manager());
     permissions_helper()->UpdateSiteAccess(
         *extension, non_user_permitted_contents, UserSiteAccess::kOnClick);

@@ -127,11 +127,9 @@ bool SitePermissionsHelperBrowserTest::ReloadPageAndWaitForLoad() {
 }
 
 bool SitePermissionsHelperBrowserTest::WaitForReloadToFinish() {
-  // This is needed in the instance where on site -> on-click revokes
-  // permissions. This is because when testing we run
-  // `ExtensionActionRunner::accept_bubble_for_testing(true)` which causes
-  // `ExtensionActionRunner::ShowReloadPageBubble(...)` to run the reload with
-  // a `base::SingleThreadTaskRunner` so we must wait for that to complete.
+  // This is needed when changing permissions triggers a page reload with a
+  // `base::SingleThreadTaskRunner`, so we must wait for that to
+  // complete.
   base::RunLoop().RunUntilIdle();
   return content::WaitForLoadStop(GetActiveWebContents());
 }
@@ -160,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
   // By default, test setup should set site access to be on all sites.
   ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnAllSites);
-  active_action_runner()->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // on all sites -> on site
   permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
@@ -233,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnAllSites);
   // Reload will not happen via the user reload bubble.
-  active_action_runner()->accept_bubble_for_testing(false);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // on all sites -> on site
   permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
@@ -347,7 +347,8 @@ IN_PROC_BROWSER_TEST_F(
     UpdateSiteAccess_RevokingSitePermission_AlsoClearsActiveTab) {
   // We want to control refreshes manually due to timing issues with permissions
   // being updated across browser/renderer.
-  active_action_runner()->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   {
     // on all sites -> on click (revokes access)
@@ -415,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SitePermissionsHelperExecuteSciptBrowserTest,
     UpdateSiteAccess_RevokingSitePermissionAfterGrantTab_AlsoClearsActiveTab) {
-  active_action_runner()->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   {
     // on all sites -> on click (revokes access)
@@ -488,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(
 // rest for b/324455951.
 IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
                        CrossOriginRenavigationClearsGrantedTabPermission) {
-  active_action_runner()->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // Withheld extension's site access.
   ScriptingPermissionsModifier(profile(), extension_.get())
@@ -593,7 +596,8 @@ IN_PROC_BROWSER_TEST_F(
     UpdateSiteAccess_RevokingSitePermission_AlsoClearsActiveTab) {
   // We want to control refreshes manually due to timing issues with permissions
   // being updated across browser/renderer.
-  active_action_runner()->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // on all sites -> on click (revokes access)
   permissions_helper_->UpdateSiteAccess(*extension_, GetActiveWebContents(),
@@ -692,7 +696,8 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
   // By default, test setup should set site access to be on all sites.
   ASSERT_EQ(permissions_manager_->GetUserSiteAccess(*extension_, original_url_),
             UserSiteAccess::kOnAllSites);
-  active_action_runner()->accept_bubble_for_testing(true);
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   {
     // on all sites -> on site.

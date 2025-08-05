@@ -26,6 +26,9 @@
 
 namespace {
 
+// Whether the dialog should be accepted without showing it on tests.
+std::optional<bool> g_accept_bubble_for_testing_ = std::nullopt;
+
 std::u16string GetTitle(
     const std::vector<extensions::ReloadPageDialogController::ExtensionInfo>&
         extensions_info) {
@@ -65,6 +68,15 @@ ReloadPageDialogController::~ReloadPageDialogController() = default;
 
 void ReloadPageDialogController::TriggerShow(
     const std::vector<const Extension*>& extensions) {
+  // For testing, callers can use AcceptDialogForTesting() to pre-determine
+  // the dialog's result. This bypasses showing the dialog.
+  if (g_accept_bubble_for_testing_.has_value()) {
+    if (*g_accept_bubble_for_testing_) {
+      OnAcceptSelected();
+    }
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     for (const Extension* extension : extensions) {
@@ -104,6 +116,13 @@ void ReloadPageDialogController::TriggerShow(
                          extension->name(), barrier_closure));
     }
   }
+}
+
+// static
+base::AutoReset<std::optional<bool>>
+ReloadPageDialogController::AcceptDialogForTesting(bool accept_dialog) {
+  return base::AutoReset<std::optional<bool>>(&g_accept_bubble_for_testing_,
+                                              accept_dialog);
 }
 
 void ReloadPageDialogController::Show() {

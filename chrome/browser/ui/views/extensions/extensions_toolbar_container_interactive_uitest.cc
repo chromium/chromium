@@ -802,7 +802,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
     // Allow the extension to run on this site. This should show a refresh page
     // bubble. Accept the bubble.
     content::TestNavigationObserver observer(web_contents);
-    runner->accept_bubble_for_testing(true);
+    auto reload_page_dialog_reset =
+        extensions::ReloadPageDialogController::AcceptDialogForTesting(true);
     extension_menu->ExecuteCommand(
         extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE,
         /*event_flags=*/0);
@@ -844,7 +845,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
 
     // Allow the extension to run on all sites this time. This should again show
     // a refresh bubble. Dismiss it.
-    runner->accept_bubble_for_testing(false);
+    auto reload_page_dialog_reset =
+        extensions::ReloadPageDialogController::AcceptDialogForTesting(false);
     extension_menu->ExecuteCommand(
         extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES,
         /*event_flags=*/0);
@@ -1072,10 +1074,10 @@ IN_PROC_BROWSER_TEST_P(
   // Click the request access button to always grants site access. A reload
   // page dialog will appear since extension A needs a page reload to run its
   // action.
-  auto* action_runner =
-      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   const bool kReloadBubbleAccepted = GetParam();
-  action_runner->accept_bubble_for_testing(kReloadBubbleAccepted);
+  auto reload_page_dialog_reset =
+      extensions::ReloadPageDialogController::AcceptDialogForTesting(
+          kReloadBubbleAccepted);
   ExtensionTestMessageListener script_injection_listener("injection succeeded");
   ClickButton(request_access_button());
   WaitForAnimation();

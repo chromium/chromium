@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -48,10 +49,9 @@ class ReloadPageDialogController {
   // Starts the process of showing the dialog for the given `extensions`.
   void TriggerShow(const std::vector<const Extension*>& extensions);
 
-  // Reloads the active page once the dialog is accepted.
-  // TODO(crbug.com/424012380): Move to a private function once
-  // accept_bubble_for_testing_ is moved here from ExtensionActionRunner.
-  void OnAcceptSelected();
+  // For testing:
+  [[nodiscard]] static base::AutoReset<std::optional<bool>>
+  AcceptDialogForTesting(bool accept_dialog);
 
  private:
   // Shows the reload page dialog with the extensions information gathered in
@@ -64,6 +64,9 @@ class ReloadPageDialogController {
                              const std::string& extension_name,
                              base::OnceClosure done_callback,
                              const gfx::Image& icon);
+
+  // Reloads the active page once the dialog is accepted.
+  void OnAcceptSelected();
 
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<content::BrowserContext> browser_context_;

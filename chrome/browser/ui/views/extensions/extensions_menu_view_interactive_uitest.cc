@@ -623,10 +623,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   {
     // Since we are revoking permissions, automatically accept the reload page
     // bubble to update the permissions.
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    extensions::ExtensionActionRunner::GetForWebContents(web_contents)
-        ->accept_bubble_for_testing(true);
+    auto reload_page_dialog_reset =
+        extensions::ReloadPageDialogController::AcceptDialogForTesting(true);
     extensions::PermissionsManagerWaiter waiter(
         extensions::PermissionsManager::Get(profile()));
     context_menu->ExecuteCommand(
