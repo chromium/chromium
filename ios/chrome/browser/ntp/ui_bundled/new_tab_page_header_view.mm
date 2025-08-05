@@ -752,6 +752,9 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     self.miaAndVoiceDivider.alpha = percent;
   }
 
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [self applyBackgroundTheme];
+  }
   _lastAnimationPercent = percent;
 }
 
