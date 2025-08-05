@@ -5119,12 +5119,6 @@
       status: "stable",
     },
     {
-      // Ensures symbols are treated as word boundaries during traversal.
-      // See https://crbug.com/40252642
-      name: "TreatSymbolsAsWordBoundary",
-      status: "stable",
-    },
-    {
       name: "TrustedTypeBeforePolicyCreationEvent",
       status: "experimental",
     },

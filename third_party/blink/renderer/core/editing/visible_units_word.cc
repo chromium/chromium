@@ -405,10 +405,7 @@ bool IsWordBreak(UChar ch) {
 }
 
 bool IsWordBoundary(UChar ch) {
-  return unicode::IsPunct(ch) ||
-         (RuntimeEnabledFeatures::TreatSymbolsAsWordBoundaryEnabled() &&
-          unicode::IsSymbol(ch)) ||
-         U16_IS_SURROGATE(ch);
+  return unicode::IsPunct(ch) || unicode::IsSymbol(ch) || U16_IS_SURROGATE(ch);
 }
 
 }  // namespace blink
