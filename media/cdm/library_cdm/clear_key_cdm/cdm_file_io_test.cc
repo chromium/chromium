@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/library_cdm/clear_key_cdm/cdm_file_io_test.h"
 
 #include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -615,10 +611,10 @@ bool FileIOTest::MatchesResult(const TestStep& a, const TestStep& b) {
   // If |a| specifies a data2, compare it first. If the size matches, compare
   // the contents.
   if (a.data2 && b.data_size == a.data2_size)
-    return std::equal(a.data2, a.data2 + a.data2_size, b.data);
+    return std::equal(a.data2, UNSAFE_TODO(a.data2 + a.data2_size), b.data);
 
   return (a.data_size == b.data_size &&
-          std::equal(a.data, a.data + a.data_size, b.data));
+          std::equal(a.data, UNSAFE_TODO(a.data + a.data_size), b.data));
 }
 
 void FileIOTest::RunNextStep() {

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/jpeg_parser.h"
 
 #include <cstring>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/logging.h"
@@ -228,10 +224,10 @@ static bool ParseDQT(base::span<const uint8_t> buffer,
       return false;
     }
 
-    if (!reader.ReadCopy(q_table[table_id].value)) {
+    if (!reader.ReadCopy(UNSAFE_TODO(q_table[table_id]).value)) {
       return false;
     }
-    q_table[table_id].valid = true;
+    UNSAFE_TODO(q_table[table_id]).valid = true;
   }
   return true;
 }
@@ -261,16 +257,16 @@ static bool ParseDHT(base::span<const uint8_t> buffer,
 
     JpegHuffmanTable* table;
     if (table_class == 1)
-      table = &ac_table[table_id];
+      table = &UNSAFE_TODO(ac_table[table_id]);
     else
-      table = &dc_table[table_id];
+      table = &UNSAFE_TODO(dc_table[table_id]);
 
     size_t count = 0u;
     if (!reader.ReadCopy(table->code_length)) {
       return false;
     }
     for (size_t i = 0; i < std::size(table->code_length); i++)
-      count += table->code_length[i];
+      count += UNSAFE_TODO(table->code_length[i]);
 
     if (!InRange(count, 0u, sizeof(table->code_value))) {
       DVLOG(1) << "Invalid code count " << count;

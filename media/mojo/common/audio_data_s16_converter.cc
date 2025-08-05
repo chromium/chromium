@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/common/audio_data_s16_converter.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -43,8 +39,8 @@ mojom::AudioDataS16Ptr AudioDataS16Converter::ConvertToAudioDataS16(
     signed_buffer->sample_rate = buffer->sample_rate();
     int16_t* audio_data = reinterpret_cast<int16_t*>(buffer->channel_data()[0]);
     signed_buffer->data.assign(
-        audio_data,
-        audio_data + buffer->frame_count() * buffer->channel_count());
+        audio_data, UNSAFE_TODO(audio_data + buffer->frame_count() *
+                                                 buffer->channel_count()));
     return signed_buffer;
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/midi/midi_manager_alsa.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -234,7 +230,7 @@ void MidiManagerAlsa::StartInitialization() {
 
   // Subscribe to the announce port.
   snd_seq_port_subscribe_t* subs;
-  snd_seq_port_subscribe_alloca(&subs);
+  UNSAFE_TODO(snd_seq_port_subscribe_alloca(&subs));
   snd_seq_addr_t announce_sender;
   snd_seq_addr_t announce_dest;
   announce_sender.client = SND_SEQ_CLIENT_SYSTEM;
@@ -811,7 +807,7 @@ void MidiManagerAlsa::SendMidiData(MidiManagerClient* client,
   ScopedSndMidiEventPtr encoder = CreateScopedSndMidiEventPtr(kSendBufferSize);
   for (const auto datum : data) {
     snd_seq_event_t event;
-    snd_seq_ev_clear(&event);
+    UNSAFE_TODO(snd_seq_ev_clear(&event));
     int result = snd_midi_event_encode_byte(encoder.get(), datum, &event);
     if (result == 1) {
       // Full event, send it.
@@ -950,7 +946,7 @@ void MidiManagerAlsa::ProcessClientStartEvent(int client_id) {
     return;
 
   snd_seq_client_info_t* client_info;
-  snd_seq_client_info_alloca(&client_info);
+  UNSAFE_TODO(snd_seq_client_info_alloca(&client_info));
   int err =
       snd_seq_get_any_client_info(in_client_.get(), client_id, client_info);
   if (err != 0)
@@ -971,7 +967,7 @@ void MidiManagerAlsa::ProcessClientStartEvent(int client_id) {
 
 void MidiManagerAlsa::ProcessPortStartEvent(const snd_seq_addr_t& addr) {
   snd_seq_port_info_t* port_info;
-  snd_seq_port_info_alloca(&port_info);
+  UNSAFE_TODO(snd_seq_port_info_alloca(&port_info));
   int err = snd_seq_get_any_port_info(in_client_.get(), addr.client, addr.port,
                                       port_info);
   if (err != 0)
@@ -1025,11 +1021,11 @@ void MidiManagerAlsa::ProcessUdevEvent(udev_device* dev) {
   if (!action)
     action = kUdevActionChange;
 
-  if (strcmp(action, kUdevActionChange) == 0) {
+  if (UNSAFE_TODO(strcmp(action, kUdevActionChange)) == 0) {
     AddCard(dev);
     // Generate Web MIDI events.
     UpdatePortStateAndGenerateEvents();
-  } else if (strcmp(action, kUdevActionRemove) == 0) {
+  } else if (UNSAFE_TODO(strcmp(action, kUdevActionRemove)) == 0) {
     RemoveCard(GetCardNumber(dev));
     // Generate Web MIDI events.
     UpdatePortStateAndGenerateEvents();
@@ -1045,8 +1041,8 @@ void MidiManagerAlsa::AddCard(udev_device* dev) {
 
   snd_ctl_card_info_t* card;
   snd_hwdep_info_t* hwdep;
-  snd_ctl_card_info_alloca(&card);
-  snd_hwdep_info_alloca(&hwdep);
+  UNSAFE_TODO(snd_ctl_card_info_alloca(&card));
+  UNSAFE_TODO(snd_hwdep_info_alloca(&hwdep));
   const std::string id = base::StringPrintf("hw:CARD=%i", number);
   snd_ctl_t* handle;
   int err = snd_ctl_open(&handle, id.c_str(), 0);
@@ -1211,9 +1207,9 @@ void MidiManagerAlsa::UpdatePortStateAndGenerateEvents() {
 // TODO(agoode): return false on failure.
 void MidiManagerAlsa::EnumerateAlsaPorts() {
   snd_seq_client_info_t* client_info;
-  snd_seq_client_info_alloca(&client_info);
+  UNSAFE_TODO(snd_seq_client_info_alloca(&client_info));
   snd_seq_port_info_t* port_info;
-  snd_seq_port_info_alloca(&port_info);
+  UNSAFE_TODO(snd_seq_port_info_alloca(&port_info));
 
   // Enumerate clients.
   snd_seq_client_info_set_client(client_info, -1);
@@ -1286,7 +1282,7 @@ bool MidiManagerAlsa::CreateAlsaOutputPort(uint32_t port_index,
 
     // Activate port subscription.
     snd_seq_port_subscribe_t* subs;
-    snd_seq_port_subscribe_alloca(&subs);
+    UNSAFE_TODO(snd_seq_port_subscribe_alloca(&subs));
     snd_seq_addr_t sender;
     sender.client = out_client_id_;
     sender.port = out_port;
@@ -1330,7 +1326,7 @@ bool MidiManagerAlsa::Subscribe(uint32_t port_index,
                                 int port_id) {
   // Activate port subscription.
   snd_seq_port_subscribe_t* subs;
-  snd_seq_port_subscribe_alloca(&subs);
+  UNSAFE_TODO(snd_seq_port_subscribe_alloca(&subs));
   snd_seq_addr_t sender;
   sender.client = client_id;
   sender.port = port_id;

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/gpu/vaapi/vaapi_image_decode_accelerator_worker.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -42,7 +38,7 @@ namespace {
 bool IsJpegImage(base::span<const uint8_t> encoded_data) {
   if (encoded_data.size() < 3u)
     return false;
-  return memcmp("\xFF\xD8\xFF", encoded_data.data(), 3u) == 0;
+  return UNSAFE_TODO(memcmp("\xFF\xD8\xFF", encoded_data.data(), 3u)) == 0;
 }
 
 }  // namespace

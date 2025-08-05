@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/multi_channel_resampler.h"
 
 #include <algorithm>
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
@@ -96,7 +92,7 @@ void MultiChannelResampler::ProvideInput(int channel,
                                          int frames,
                                          float* destination) {
   const size_t frames_to_provide = base::checked_cast<size_t>(frames);
-  auto dest_span = base::span(destination, frames_to_provide);
+  auto dest_span = UNSAFE_TODO(base::span(destination, frames_to_provide));
 
   // Get the data from the multi-channel provider when the first channel asks
   // for it.  For subsequent channels, we can just dish out the channel data

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/webm_cluster_parser.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -515,7 +511,7 @@ TEST_F(WebMClusterParserTest, ParseClusterWithMultipleCalls) {
 
     parse_size = default_parse_size;
 
-    data += result;
+    UNSAFE_TODO(data += result);
     size -= result;
   }
   ASSERT_TRUE(VerifyBuffers(

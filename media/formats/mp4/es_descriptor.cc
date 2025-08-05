@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/es_descriptor.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp4/rcheck.h"
@@ -84,7 +80,7 @@ std::vector<uint8_t> ESDescriptor::CreateEsds(
 #pragma pack(pop)
 
   std::vector<uint8_t> esds_data(sizeof(EsDescriptor) + aac_extra_data.size());
-  auto* esds = reinterpret_cast<EsDescriptor*>(esds_data.data());
+  auto* esds = UNSAFE_TODO(reinterpret_cast<EsDescriptor*>(esds_data.data()));
 
   esds->tag = kESDescrTag;
   EncodeDescriptorSize(

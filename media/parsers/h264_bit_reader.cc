@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/h264_bit_reader.h"
+
 #include "base/check.h"
+#include "base/compiler_specific.h"
 
 namespace media {
 
@@ -46,7 +43,7 @@ bool H264BitReader::UpdateCurrByte() {
   // If a sequence of 0x000003 is found, skip (ignore) the last byte (0x03).
   if (*data_ == 0x03 && (prev_two_bytes_ & 0xffff) == 0) {
     // Detected 0x000003, skip last byte.
-    ++data_;
+    UNSAFE_TODO(++data_);
     --bytes_left_;
     ++emulation_prevention_bytes_;
     // Need another full three bytes before we can detect the sequence again.
@@ -57,7 +54,7 @@ bool H264BitReader::UpdateCurrByte() {
   }
 
   // Load a new byte and advance pointers.
-  curr_byte_ = *data_++ & 0xff;
+  curr_byte_ = *UNSAFE_TODO(data_++) & 0xff;
   --bytes_left_;
   num_remaining_bits_in_curr_byte_ = 8;
 
@@ -113,8 +110,9 @@ bool H264BitReader::HasMoreRBSPData() {
   // don't handle emulation prevention sequences because HasMoreRBSPData() is
   // not used when parsing slices (where cabac_zero_word elements are legal).
   for (off_t i = 0; i < bytes_left_; i++) {
-    if (data_[i] != 0)
+    if (UNSAFE_TODO(data_[i]) != 0) {
       return true;
+    }
   }
 
   bytes_left_ = 0;

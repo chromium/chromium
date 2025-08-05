@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/cast/openscreen/remoting_proto_utils.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -162,13 +158,13 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   // NOTE: fields will all be initialized with 0xcd. Forcing the conversion to
   // properly assigned them. Since nested structs have strings, memsetting must
   // be done infividually for them.
-  memset(&converted, 0xcd,
-         sizeof(converted) - sizeof(media::AudioPipelineInfo) -
-             sizeof(media::VideoPipelineInfo));
-  memset(&converted.audio_pipeline_info, 0xcd,
-         sizeof(media::AudioPipelineInfo));
-  memset(&converted.video_pipeline_info, 0xcd,
-         sizeof(media::VideoPipelineInfo));
+  UNSAFE_TODO(memset(&converted, 0xcd,
+                     sizeof(converted) - sizeof(media::AudioPipelineInfo) -
+                         sizeof(media::VideoPipelineInfo)));
+  UNSAFE_TODO(memset(&converted.audio_pipeline_info, 0xcd,
+                     sizeof(media::AudioPipelineInfo)));
+  UNSAFE_TODO(memset(&converted.video_pipeline_info, 0xcd,
+                     sizeof(media::VideoPipelineInfo)));
 
   ConvertProtoToPipelineStatistics(pb_stats, &converted);
 

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 
 namespace {
@@ -39,7 +35,7 @@ FakeBuffer::FakeBuffer(IdType id,
       data_size_(CalculateDataSize(size_per_element, num_elements)),
       data_(std::make_unique<uint8_t[]>(data_size_)) {
   if (data) {
-    memcpy(data_.get(), data, data_size_);
+    UNSAFE_TODO(memcpy(data_.get(), data, data_size_));
   }
 }
 

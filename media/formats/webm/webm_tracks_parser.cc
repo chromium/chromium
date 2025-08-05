@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/webm_tracks_parser.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -292,7 +288,7 @@ bool WebMTracksParser::OnBinary(int id, const uint8_t* data, int size) {
           << "Multiple CodecPrivate fields in a track.";
       return false;
     }
-    codec_private_.assign(data, data + size);
+    codec_private_.assign(data, UNSAFE_TODO(data + size));
     return true;
   }
   return true;

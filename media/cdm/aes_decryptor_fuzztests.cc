@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <algorithm>
 #include <cstdint>
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -255,7 +251,8 @@ void DecryptDoesNotCrash(std::size_t clear_bytes,
   // encrypted buffer.
   auto encrypted_buffer =
       base::MakeRefCounted<media::DecoderBuffer>(data.size());
-  memcpy(encrypted_buffer->writable_data(), data.data(), data.size());
+  UNSAFE_TODO(
+      memcpy(encrypted_buffer->writable_data(), data.data(), data.size()));
   std::string key_id_string(std::begin(key_id), std::end(key_id));
   std::string iv_string(std::begin(kIv), std::end(kIv));
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCencConfig(

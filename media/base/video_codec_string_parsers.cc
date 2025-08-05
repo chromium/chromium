@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_codec_string_parsers.h"
 
 #include <array>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -681,9 +677,9 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   }
 
   std::array<uint8_t, 6> constraint_flags;
-  memset(constraint_flags.data(), 0,
-         (constraint_flags.size() *
-          sizeof(decltype(constraint_flags)::value_type)));
+  UNSAFE_TODO(memset(constraint_flags.data(), 0,
+                     (constraint_flags.size() *
+                      sizeof(decltype(constraint_flags)::value_type))));
 
   if (elem.size() > 10) {
     DVLOG(4) << __func__ << ": unexpected number of trailing bytes in HEVC "

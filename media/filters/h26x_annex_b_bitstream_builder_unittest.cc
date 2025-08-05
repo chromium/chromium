@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 
 #include <stdint.h>
 
 #include "base/bits.h"
-#include "media/filters/h26x_annex_b_bitstream_builder.h"
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -24,7 +21,7 @@ uint64_t GetDataFromBuffer(const uint8_t* ptr, uint64_t num_bits) {
     got |= (*ptr & 0xff);
     num_bits -= 8;
     got <<= (num_bits > 8 ? 8 : num_bits);
-    ptr++;
+    UNSAFE_TODO(ptr++);
   }
   if (num_bits > 0) {
     uint64_t temp = (*ptr & 0xff);

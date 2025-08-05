@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/ivf_parser.h"
 
 #include <cstring>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -27,7 +23,7 @@ bool IvfParser::Initialize(const uint8_t* stream,
   DCHECK(stream);
   DCHECK(file_header);
   ptr_ = stream;
-  end_ = stream + size;
+  end_ = UNSAFE_TODO(stream + size);
   CHECK_GE(end_, ptr_);
 
   if (size < sizeof(IvfFileHeader)) {
@@ -90,7 +86,7 @@ bool IvfParser::ParseNextFrame(IvfFrameHeader* frame_header,
   }
 
   *payload = ptr_;
-  ptr_ += frame_header->frame_size;
+  UNSAFE_TODO(ptr_ += frame_header->frame_size);
 
   return true;
 }

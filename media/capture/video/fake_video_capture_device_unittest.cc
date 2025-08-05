@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/capture/video/fake_video_capture_device.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -46,7 +42,7 @@ namespace media {
 
 bool operator==(const FakePhotoDeviceConfig& lhs,
                 const FakePhotoDeviceConfig& rhs) {
-  return std::memcmp(&lhs, &rhs, sizeof(lhs)) == 0;
+  return UNSAFE_TODO(std::memcmp(&lhs, &rhs, sizeof(lhs))) == 0;
 }
 
 namespace {

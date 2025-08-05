@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "video_bitrate_allocation.h"
 
 #include <array>
@@ -16,6 +11,7 @@
 #include <sstream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/bitrate.h"
 
@@ -176,9 +172,9 @@ bool VideoBitrateAllocation::operator==(
   if (sum_bitrate_ != other.sum_bitrate_) {
     return false;
   }
-  return memcmp(bitrates_.data(), other.bitrates_.data(),
-                (bitrates_.size() * sizeof(decltype(bitrates_)::value_type))) ==
-         0;
+  return UNSAFE_TODO(memcmp(bitrates_.data(), other.bitrates_.data(),
+                            (bitrates_.size() *
+                             sizeof(decltype(bitrates_)::value_type)))) == 0;
 }
 
 }  // namespace media

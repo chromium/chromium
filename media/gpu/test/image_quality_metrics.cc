@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <math.h>
+
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -54,9 +51,9 @@ double SSIM16BitPlane8x8(const uint8_t* src_a,
       // Read 16 bits and store it in a 32 bits value to avoid overflow in the
       // following calculations.
       const uint32_t a = static_cast<uint32_t>(
-          *reinterpret_cast<const uint16_t*>(src_a + 2 * j));
+          *reinterpret_cast<const uint16_t*>(UNSAFE_TODO(src_a + 2 * j)));
       const uint32_t b = static_cast<uint32_t>(
-          *reinterpret_cast<const uint16_t*>(src_b + 2 * j));
+          *reinterpret_cast<const uint16_t*>(UNSAFE_TODO(src_b + 2 * j)));
       sum_a += a;
       sum_b += b;
       sum_sq_a += a * a;
@@ -64,8 +61,8 @@ double SSIM16BitPlane8x8(const uint8_t* src_a,
       sum_axb += a * b;
     }
 
-    src_a += stride_a;
-    src_b += stride_b;
+    UNSAFE_TODO(src_a += stride_a);
+    UNSAFE_TODO(src_b += stride_b);
   }
 
   constexpr int64_t count = 64;
@@ -100,13 +97,13 @@ double Calc16bitPlaneSSIM(const uint8_t* src_a,
   for (int i = 0; i < height - 8; i += 4) {
     for (int j = 0; j < width - 8; j += 4) {
       // Double |j| because the color depth is 16 bits.
-      ssim_total +=
-          SSIM16BitPlane8x8(src_a + 2 * j, stride_a, src_b + 2 * j, stride_b);
+      ssim_total += SSIM16BitPlane8x8(UNSAFE_TODO(src_a + 2 * j), stride_a,
+                                      UNSAFE_TODO(src_b + 2 * j), stride_b);
       samples++;
     }
     // |stride_a| and |stride_b| are bytes. No need to double them.
-    src_a += stride_a * 4;
-    src_b += stride_b * 4;
+    UNSAFE_TODO(src_a += stride_a * 4);
+    UNSAFE_TODO(src_b += stride_b * 4);
   }
 
   ssim_total /= samples;
@@ -219,7 +216,7 @@ bool ComputeLogJointDistribution(const VideoFrame& frame,
   for (int i = 0; i < kJointDistributionDim; i++) {
     for (int j = 0; j < kJointDistributionDim; j++) {
       for (int k = 0; k < kJointDistributionDim; k++) {
-        log_joint_distribution[i][j][k] = kMinProbabilityValue;
+        UNSAFE_TODO(log_joint_distribution[i][j][k]) = kMinProbabilityValue;
       }
     }
   }
@@ -230,12 +227,13 @@ bool ComputeLogJointDistribution(const VideoFrame& frame,
   const uint8_t* row_ptr = frame.visible_data(0);
   for (int y = 0; y < frame.visible_rect().height(); y++) {
     for (int x = 0; x < frame.visible_rect().width(); x++) {
-      log_joint_distribution[row_ptr[4 * x + 1] >> kJointDistributionBitDepth]
-                            [row_ptr[4 * x + 2] >> kJointDistributionBitDepth]
-                            [row_ptr[4 * x + 3] >>
-                             kJointDistributionBitDepth] += 1.0;
+      UNSAFE_TODO(log_joint_distribution
+                      [row_ptr[4 * x + 1] >> kJointDistributionBitDepth]
+                      [row_ptr[4 * x + 2] >> kJointDistributionBitDepth]
+                      [row_ptr[4 * x + 3] >> kJointDistributionBitDepth]) +=
+          1.0;
     }
-    row_ptr += frame.stride(0);
+    UNSAFE_TODO(row_ptr += frame.stride(0));
   }
 
   // Normalize the joint distribution so that it sums to 1.0 and then take the
@@ -243,8 +241,9 @@ bool ComputeLogJointDistribution(const VideoFrame& frame,
   for (int i = 0; i < kJointDistributionDim; i++) {
     for (int j = 0; j < kJointDistributionDim; j++) {
       for (int k = 0; k < kJointDistributionDim; k++) {
-        log_joint_distribution[i][j][k] /= normalization_factor;
-        log_joint_distribution[i][j][k] = log(log_joint_distribution[i][j][k]);
+        UNSAFE_TODO(log_joint_distribution[i][j][k]) /= normalization_factor;
+        UNSAFE_TODO(log_joint_distribution[i][j][k]) =
+            log(UNSAFE_TODO(log_joint_distribution[i][j][k]));
       }
     }
   }
@@ -263,12 +262,13 @@ double ComputeLogProbability(const VideoFrame& frame,
   const uint8_t* row_ptr = frame.visible_data(0);
   for (int y = 0; y < frame.visible_rect().height(); y++) {
     for (int x = 0; x < frame.visible_rect().width(); x++) {
-      ret += log_joint_distribution
-          [row_ptr[4 * x + 1] >> kJointDistributionBitDepth]
-          [row_ptr[4 * x + 2] >> kJointDistributionBitDepth]
-          [row_ptr[4 * x + 3] >> kJointDistributionBitDepth];
+      ret +=
+          UNSAFE_TODO(log_joint_distribution
+                          [row_ptr[4 * x + 1] >> kJointDistributionBitDepth]
+                          [row_ptr[4 * x + 2] >> kJointDistributionBitDepth]
+                          [row_ptr[4 * x + 3] >> kJointDistributionBitDepth]);
     }
-    row_ptr += frame.stride(0);
+    UNSAFE_TODO(row_ptr += frame.stride(0));
   }
 
   return ret;
@@ -302,8 +302,8 @@ size_t CompareFramesWithErrorDiff(const VideoFrame& frame1,
     const int row_bytes = VideoFrame::RowBytes(i, format, visible_size.width());
     for (size_t r = 0; r < rows; ++r) {
       for (int c = 0; c < row_bytes; c++) {
-        uint8_t b1 = data1[(stride1 * r) + c];
-        uint8_t b2 = data2[(stride2 * r) + c];
+        uint8_t b1 = UNSAFE_TODO(data1[(stride1 * r) + c]);
+        uint8_t b2 = UNSAFE_TODO(data2[(stride2 * r) + c]);
         uint8_t diff = std::max(b1, b2) - std::min(b1, b2);
         diff_cnt += diff > tolerance;
       }
@@ -361,8 +361,8 @@ double ComputeAR30PSNR(const uint32_t* frame1_data,
 
   for (size_t y = 0; y < height; y++) {
     for (size_t x = 0; x < width; x++) {
-      const uint32_t pixel1 = frame1_data[y * frame1_stride + x];
-      const uint32_t pixel2 = frame2_data[y * frame2_stride + x];
+      const uint32_t pixel1 = UNSAFE_TODO(frame1_data[y * frame1_stride + x]);
+      const uint32_t pixel2 = UNSAFE_TODO(frame2_data[y * frame2_stride + x]);
       const int32_t r1 = (pixel1 >> 20) & 0x3FF;
       const int32_t g1 = (pixel1 >> 10) & 0x3FF;
       const int32_t b1 = pixel1 & 0x3FF;

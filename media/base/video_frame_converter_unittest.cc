@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_frame_converter.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
@@ -94,8 +90,8 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
     auto plane_size =
         VideoFrame::PlaneSize(frame.format(), i, frame.visible_rect().size());
     for (int y = 0; y < plane_size.height(); ++y) {
-      fwrite(frame.visible_data(i) + y * frame.stride(i), 1, plane_size.width(),
-             f);
+      UNSAFE_TODO(fwrite(frame.visible_data(i) + y * frame.stride(i), 1,
+                         plane_size.width(), f));
     }
   }
   fclose(f);

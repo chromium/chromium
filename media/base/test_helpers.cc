@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/test_helpers.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -73,15 +69,15 @@ void I4xxxRect(VideoFrame* dest_frame,
       << VideoPixelFormatToString(dest_frame->format());
 
   // Write known full size planes first.
-  libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kY) +
-                       y * dest_frame->stride(VideoFrame::Plane::kY) + x,
-                   dest_frame->stride(VideoFrame::Plane::kY), width, height,
-                   value_y);
+  libyuv::SetPlane(
+      UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kY) +
+                  y * dest_frame->stride(VideoFrame::Plane::kY) + x),
+      dest_frame->stride(VideoFrame::Plane::kY), width, height, value_y);
   if (num_planes == 4) {
-    libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kA) +
-                         y * dest_frame->stride(VideoFrame::Plane::kA) + x,
-                     dest_frame->stride(VideoFrame::Plane::kA), width, height,
-                     value_a);
+    libyuv::SetPlane(
+        UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kA) +
+                    y * dest_frame->stride(VideoFrame::Plane::kA) + x),
+        dest_frame->stride(VideoFrame::Plane::kA), width, height, value_a);
   }
 
   // Adjust rect start and offset.
@@ -92,15 +88,17 @@ void I4xxxRect(VideoFrame* dest_frame,
 
   // Write variable sized planes.
   libyuv::SetPlane(
-      dest_frame->GetWritableVisibleData(VideoFrame::Plane::kU) +
-          start_xy.height() * dest_frame->stride(VideoFrame::Plane::kU) +
-          start_xy.width(),
+      UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kU) +
+                  start_xy.height() *
+                      dest_frame->stride(VideoFrame::Plane::kU) +
+                  start_xy.width()),
       dest_frame->stride(VideoFrame::Plane::kU), uv_size.width(),
       uv_size.height(), value_u);
   libyuv::SetPlane(
-      dest_frame->GetWritableVisibleData(VideoFrame::Plane::kV) +
-          start_xy.height() * dest_frame->stride(VideoFrame::Plane::kV) +
-          start_xy.width(),
+      UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kV) +
+                  start_xy.height() *
+                      dest_frame->stride(VideoFrame::Plane::kV) +
+                  start_xy.width()),
       dest_frame->stride(VideoFrame::Plane::kV), uv_size.width(),
       uv_size.height(), value_v);
 }
@@ -582,7 +580,7 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
         reinterpret_cast<T*>(output->channel_data()[is_planar ? ch : 0]);
     const T v = static_cast<T>(start + ch * frames * increment);
     for (size_t i = 0; i < frames; ++i) {
-      buffer[is_planar ? i : ch + i * channels] =
+      UNSAFE_TODO(buffer[is_planar ? i : ch + i * channels]) =
           static_cast<T>(v + i * increment);
     }
   }
@@ -620,7 +618,7 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
         reinterpret_cast<float*>(output->channel_data()[is_planar ? ch : 0]);
     const float v = static_cast<float>(start + ch * frames * increment);
     for (size_t i = 0; i < frames; ++i) {
-      buffer[is_planar ? i : ch + i * channels] =
+      UNSAFE_TODO(buffer[is_planar ? i : ch + i * channels]) =
           static_cast<float>(v + i * increment) /
           std::numeric_limits<uint16_t>::max();
     }
@@ -649,7 +647,7 @@ scoped_refptr<AudioBuffer> MakeBitstreamAudioBuffer(
   //   start + 2 * increment, ...
   uint8_t* buffer = reinterpret_cast<uint8_t*>(output->channel_data()[0]);
   for (size_t i = 0; i < data_size; ++i) {
-    buffer[i] = static_cast<uint8_t>(start + i * increment);
+    UNSAFE_TODO(buffer[i]) = static_cast<uint8_t>(start + i * increment);
   }
 
   return output;

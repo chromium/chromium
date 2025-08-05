@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/cdm_adapter.h"
 
 #include <stddef.h>
@@ -742,7 +737,7 @@ void CdmAdapter::OnSessionKeysChange(const char* session_id,
   CdmKeysInfo keys;
   keys.reserve(keys_info_count);
   for (uint32_t i = 0; i < keys_info_count; ++i) {
-    const auto& info = keys_info[i];
+    const auto& info = UNSAFE_TODO(keys_info[i]);
     keys.push_back(std::make_unique<CdmKeyInformation>(
         info.key_id, info.key_id_size, ToMediaKeyStatus(info.status),
         info.system_code));
@@ -780,7 +775,7 @@ void CdmAdapter::OnSessionKeysChange(const char* session_id,
   CdmKeysInfo keys;
   keys.reserve(keys_info_count);
   for (uint32_t i = 0; i < keys_info_count; ++i) {
-    const auto& info = keys_info[i];
+    const auto& info = UNSAFE_TODO(keys_info[i]);
     keys.push_back(std::make_unique<CdmKeyInformation>(
         info.key_id, info.key_id_size, ToMediaKeyStatus(info.status),
         info.system_code));
@@ -906,7 +901,8 @@ void CdmAdapter::OnSessionMessage(const char* session_id,
   const uint8_t* message_ptr = reinterpret_cast<const uint8_t*>(message);
   session_message_cb_.Run(
       session_id_str, ToMediaMessageType(message_type),
-      std::vector<uint8_t>(message_ptr, message_ptr + message_size));
+      std::vector<uint8_t>(message_ptr,
+                           UNSAFE_TODO(message_ptr + message_size)));
 }
 
 void CdmAdapter::OnExpirationChange(const char* session_id,
@@ -1189,9 +1185,10 @@ bool CdmAdapter::AudioFramesDataToAudioFrames(
     if (bytes_left < kHeaderSize)
       return false;
 
-    memcpy(&timestamp, data, sizeof(timestamp));
-    memcpy(&frame_size, data + sizeof(timestamp), sizeof(frame_size));
-    data += kHeaderSize;
+    UNSAFE_TODO(memcpy(&timestamp, data, sizeof(timestamp)));
+    UNSAFE_TODO(
+        memcpy(&frame_size, data + sizeof(timestamp), sizeof(frame_size)));
+    UNSAFE_TODO(data += kHeaderSize);
     bytes_left -= kHeaderSize;
 
     // We should *not* have empty frames in the list.
@@ -1204,7 +1201,7 @@ bool CdmAdapter::AudioFramesDataToAudioFrames(
     // one in the case of interleaved data.
     const int size_per_channel = frame_size / audio_channel_count;
     for (int i = 0; i < audio_channel_count; ++i)
-      channel_ptrs[i] = data + i * size_per_channel;
+      channel_ptrs[i] = UNSAFE_TODO(data + i * size_per_channel);
 
     const int frame_count = frame_size / audio_bytes_per_frame;
     scoped_refptr<media::AudioBuffer> frame = media::AudioBuffer::CopyFrom(
@@ -1213,7 +1210,7 @@ bool CdmAdapter::AudioFramesDataToAudioFrames(
         base::Microseconds(timestamp), pool_);
     result_frames->push_back(frame);
 
-    data += frame_size;
+    UNSAFE_TODO(data += frame_size);
     bytes_left -= frame_size;
   } while (bytes_left > 0);
 

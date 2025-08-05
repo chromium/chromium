@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_bus.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
@@ -310,8 +306,9 @@ TEST_F(AudioBusTest, WrapMemory) {
   const float* backing_memory_end =
       backing_memory_start.subspan(total_frame_count).data();
   EXPECT_GE(bus->channel_span(0).data(), backing_memory_start.data());
-  EXPECT_LT(bus->channel_span(bus->channels() - 1).data() + bus->frames(),
-            backing_memory_end);
+  UNSAFE_TODO(
+      EXPECT_LT(bus->channel_span(bus->channels() - 1).data() + bus->frames(),
+                backing_memory_end));
 }
 
 // Simulate a shared memory transfer and verify results.
@@ -516,8 +513,8 @@ TEST_F(AudioBusTest, FromInterleavedPartial) {
     SCOPED_TRACE("SignedInt32SampleTypeTraits");
     bus->Zero();
     bus->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
-        kTestVectorInt32 + kPartialStart * bus->channels(), kPartialStart,
-        kPartialFrames);
+        UNSAFE_TODO(kTestVectorInt32 + kPartialStart * bus->channels()),
+        kPartialStart, kPartialFrames);
     VerifyAreEqual(bus.get(), expected.get());
   }
 }
@@ -535,15 +532,15 @@ TEST_F(AudioBusTest, ToInterleaved) {
     SCOPED_TRACE("UnsignedInt8SampleTypeTraits");
     uint8_t test_array[std::size(kTestVectorUint8)];
     bus->ToInterleaved<UnsignedInt8SampleTypeTraits>(bus->frames(), test_array);
-    ASSERT_EQ(0,
-              memcmp(test_array, kTestVectorUint8, sizeof(kTestVectorUint8)));
+    UNSAFE_TODO(ASSERT_EQ(
+        0, memcmp(test_array, kTestVectorUint8, sizeof(kTestVectorUint8))));
   }
   {
     SCOPED_TRACE("SignedInt16SampleTypeTraits");
     int16_t test_array[std::size(kTestVectorInt16)];
     bus->ToInterleaved<SignedInt16SampleTypeTraits>(bus->frames(), test_array);
-    ASSERT_EQ(0,
-              memcmp(test_array, kTestVectorInt16, sizeof(kTestVectorInt16)));
+    UNSAFE_TODO(ASSERT_EQ(
+        0, memcmp(test_array, kTestVectorInt16, sizeof(kTestVectorInt16))));
   }
   {
     SCOPED_TRACE("SignedInt32SampleTypeTraits");
@@ -553,23 +550,23 @@ TEST_F(AudioBusTest, ToInterleaved) {
     // Some compilers get better precision than others on the half-max test, so
     // let the test pass with an off by one check on the half-max.
     int32_t alternative_acceptable_result[std::size(kTestVectorInt32)];
-    memcpy(alternative_acceptable_result, kTestVectorInt32,
-           sizeof(kTestVectorInt32));
+    UNSAFE_TODO(memcpy(alternative_acceptable_result, kTestVectorInt32,
+                       sizeof(kTestVectorInt32)));
     ASSERT_EQ(alternative_acceptable_result[4],
               std::numeric_limits<int32_t>::max() / 2);
     alternative_acceptable_result[4]++;
 
-    ASSERT_TRUE(
+    UNSAFE_TODO(ASSERT_TRUE(
         memcmp(test_array, kTestVectorInt32, sizeof(kTestVectorInt32)) == 0 ||
         memcmp(test_array, alternative_acceptable_result,
-               sizeof(alternative_acceptable_result)) == 0);
+               sizeof(alternative_acceptable_result)) == 0));
   }
   {
     SCOPED_TRACE("Float32SampleTypeTraits");
     float test_array[std::size(kTestVectorFloat32)];
     bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array);
-    ASSERT_EQ(
-        0, memcmp(test_array, kTestVectorFloat32, sizeof(kTestVectorFloat32)));
+    UNSAFE_TODO(ASSERT_EQ(
+        0, memcmp(test_array, kTestVectorFloat32, sizeof(kTestVectorFloat32))));
   }
 }
 
@@ -583,7 +580,7 @@ TEST_F(AudioBusTest, ToInterleavedSanitized) {
   std::array<float, std::size(kTestVectorFloat32Sanitized)> test_array;
   bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array.data());
   for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i)
-    ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]);
+    UNSAFE_TODO(ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]));
 
   // Verify that Float32SampleTypeTraitsNoClip applied no sanity. Note: We don't
   // use memcmp() here since the NaN type may change on x86 platforms in certain
@@ -592,9 +589,9 @@ TEST_F(AudioBusTest, ToInterleavedSanitized) {
                                                     test_array.data());
   for (int i = 0; i < kTestVectorSize; ++i) {
     if (std::isnan(test_array[i]))
-      EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i]));
+      UNSAFE_TODO(EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i])));
     else
-      EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]);
+      UNSAFE_TODO(EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]));
   }
 }
 
@@ -644,10 +641,11 @@ TEST_F(AudioBusTest, ToInterleavedPartial) {
     float test_array[std::size(kTestVectorFloat32)];
     expected->ToInterleavedPartial<Float32SampleTypeTraits>(
         kPartialStart, kPartialFrames, test_array);
-    ASSERT_EQ(0, memcmp(test_array, kTestVectorFloat32 +
-                                        kPartialStart * kTestVectorChannelCount,
-                        kPartialFrames * sizeof(*kTestVectorFloat32) *
-                            kTestVectorChannelCount));
+    UNSAFE_TODO(ASSERT_EQ(
+        0, memcmp(test_array,
+                  kTestVectorFloat32 + kPartialStart * kTestVectorChannelCount,
+                  kPartialFrames * sizeof(*kTestVectorFloat32) *
+                      kTestVectorChannelCount)));
   }
 }
 

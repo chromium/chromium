@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_transformation.h"
 
 #include <math.h>
@@ -15,6 +10,7 @@
 #include <array>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -56,9 +52,9 @@ VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
     const int32_t* matrix3x3) {
   const int32_t matrix2x2[4] = {
       matrix3x3[0],
-      matrix3x3[1],
-      matrix3x3[3],
-      matrix3x3[4],
+      UNSAFE_TODO(matrix3x3[1]),
+      UNSAFE_TODO(matrix3x3[3]),
+      UNSAFE_TODO(matrix3x3[4]),
   };
   return VideoTransformation(matrix2x2);
 }
