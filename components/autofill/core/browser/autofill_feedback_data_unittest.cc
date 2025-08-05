@@ -35,7 +35,7 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
       "fields": [ {
          "autocompleteAttribute": "cc-given-name",
          "fieldSignature": "3879476562",
-         "fieldType": "NAME_FIRST",
+         "fieldTypes": [ "NAME_FIRST" ],
          "heuristicType": "CREDIT_CARD_NAME_FIRST",
          "hostFormSignature": "0",
          "htmlType": "HTML_TYPE_CREDIT_CARD_NAME_FIRST",
@@ -56,7 +56,7 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
       }, {
          "autocompleteAttribute": "cc-family-name",
          "fieldSignature": "3213606822",
-         "fieldType": "NAME_LAST",
+         "fieldTypes": [ "NAME_LAST" ],
          "heuristicType": "CREDIT_CARD_NAME_LAST",
          "hostFormSignature": "0",
          "htmlType": "HTML_TYPE_CREDIT_CARD_NAME_LAST",
@@ -77,7 +77,7 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
       }, {
          "autocompleteAttribute": "",
          "fieldSignature": "1029417091",
-         "fieldType": "EMAIL_ADDRESS",
+         "fieldTypes": [ "EMAIL_ADDRESS" ],
          "heuristicType": "EMAIL_ADDRESS",
          "hostFormSignature": "0",
          "htmlType": "HTML_TYPE_UNSPECIFIED",

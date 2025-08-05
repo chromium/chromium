@@ -53,7 +53,13 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("autocompleteAttribute", field->autocomplete_attribute());
   field_data.Set("labelAttribute", field->label());
   field_data.Set("placeholderAttribute", field->placeholder());
-  field_data.Set("fieldType", field->Type().ToString());
+  field_data.Set("fieldTypes", [&field] {
+    base::Value::List field_types;
+    for (FieldType field_type : field->Type().GetTypes()) {
+      field_types.Append(FieldTypeToString(field_type));
+    }
+    return field_types;
+  }());
   field_data.Set("heuristicType",
                  FieldTypeToStringView(field->heuristic_type()));
   field_data.Set("serverType", FieldTypeToStringView(field->server_type()));
