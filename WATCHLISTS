@@ -2178,6 +2178,10 @@
         '|chrome/browser/ui/views/tabs/tab_renderer_data'\
         '|media/audio/audio_(output_controller|power_monitor)',
     },
+    'tab_alerts': {
+      'filepath': 'chrome/browser/ui/tabs/alert/'\
+        '|chrome/browser/ui/views/tabs/tab_renderer_data'
+    },
     'tab_capture': {
       # TODO: Watch code in media/audio & audio service for tab audio capture
       'filepath': 'chrome/browser/extensions/api/tab_capture/'\
@@ -3307,6 +3311,7 @@
     'switch_access': ['anastasi+watch@google.com'],
     'syncfs': ['kinuko+fileapi@chromium.org'],
     'tab_alert_indicators': ['jophba+watch@chromium.org'],
+    'tab_alerts': ['stluong@chromium.org'],
     'tab_capture': ['jophba+watch@chromium.org',
                     'mfoltz+watch@chromium.org'],
     'tab_contents': ['ajwong+watch@chromium.org',
