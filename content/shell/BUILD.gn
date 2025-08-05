@@ -478,10 +478,6 @@ static_library("content_shell_lib") {
     deps += [ "//chromeos/ash/components/dbus" ]
   }
 
-  if (is_linux || is_chromeos) {
-    deps += [ "//build/config/freetype" ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -793,7 +789,6 @@ if (is_android) {
     }
 
     if ((is_linux || is_chromeos) && !is_component_build) {
-      # Set rpath to find our own libfreetype even in a non-component build.
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
   }
