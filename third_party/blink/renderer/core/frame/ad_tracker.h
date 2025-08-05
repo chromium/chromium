@@ -197,17 +197,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   virtual int ScriptAtTopOfStack();
   virtual ExecutionContext* GetCurrentExecutionContext();
 
-  // `script_name` will be empty in the case of a dynamically added script with
-  // no src attribute set. `script_id` won't be set for module scripts in an
-  // errored state or for non-source text modules. `top_level_execution` should
-  // be true if the top-level script is being run, as opposed to a function
-  // being called.
-  virtual void WillExecuteScript(ExecutionContext*,
-                                 const v8::Local<v8::Context>& v8_context,
-                                 const String& script_name,
-                                 int script_id,
-                                 bool top_level_execution);
-
  private:
   friend class FrameFetchContextSubresourceFilterTest;
   friend class AdTrackerSimTest;
@@ -238,6 +227,17 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       const v8::Local<v8::Context>& v8_context,
       const String& script_name,
       int script_id);
+
+  // `script_name` will be empty in the case of a dynamically added script with
+  // no src attribute set. `script_id` won't be set for module scripts in an
+  // errored state or for non-source text modules. `top_level_execution` should
+  // be true if the top-level script is being run, as opposed to a function
+  // being called.
+  void WillExecuteScript(ExecutionContext*,
+                         const v8::Local<v8::Context>& v8_context,
+                         const String& script_name,
+                         int script_id,
+                         bool top_level_execution);
 
   // Retrieves the ancestry chain of a given ad script (inclusive) and and the
   // triggering filterlist rule. See `AdScriptAncestry` for more details on the
