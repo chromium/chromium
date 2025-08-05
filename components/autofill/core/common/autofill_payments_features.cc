@@ -168,6 +168,12 @@ BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
              "AutofillEnableVirtualCardJavaPaymentsDataManager",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, Buy now pay later issuer allow lists will be loaded after
+// payment data syncing instead of credit card form parsing.
+BASE_FEATURE(kAutofillEnableLoadBnplAllowlistAfterSyncing,
+             "AutofillEnableLoadBnplAllowlistAfterSyncing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a form event will log to all of the parsed forms of the same
 // type on a webpage. This means credit card form events will log to all credit
 // card form types and address form events will log to all address form types."

@@ -60,6 +60,8 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableFlatRateCardBenefitsFromCurinos);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableLoadBnplAllowlistAfterSyncing);
 
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes);
