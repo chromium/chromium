@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.app.serial;
 import android.content.Intent;
 import android.os.IBinder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.serial.SerialNotificationManager;
 import org.chromium.chrome.browser.serial.SerialNotificationManagerDelegate;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
 /** Service that manages the WebSerial notification when a website is connected to a serial port. */
+@NullMarked
 public class SerialNotificationServiceImpl extends SerialNotificationService.Impl {
     private final SerialNotificationManagerDelegate mManagerDelegate =
             new SerialNotificationManagerDelegate() {
@@ -44,7 +47,7 @@ public class SerialNotificationServiceImpl extends SerialNotificationService.Imp
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         mManager.onStartCommand(intent, flags, startId);
         return super.onStartCommand(intent, flags, startId);
     }
@@ -62,7 +65,7 @@ public class SerialNotificationServiceImpl extends SerialNotificationService.Imp
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public @Nullable IBinder onBind(Intent intent) {
         return null;
     }
 }

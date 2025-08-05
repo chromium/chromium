@@ -10,12 +10,14 @@ import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.share.send_tab_to_self.NotificationManager;
 
 /** Handles changes to notifications based on user action or timeout. */
+@NullMarked
 public class SendTabToSelfNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

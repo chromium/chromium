@@ -69,7 +69,7 @@ public class UsbNotificationManager {
         return mNotificationIds.contains(notificationId);
     }
 
-    public void onStartCommand(Intent intent, int flags, int startId) {
+    public void onStartCommand(@Nullable Intent intent, int flags, int startId) {
         if (intent == null || intent.getExtras() == null) {
             cancelPreviousUsbNotifications();
             mDelegate.stopSelf();

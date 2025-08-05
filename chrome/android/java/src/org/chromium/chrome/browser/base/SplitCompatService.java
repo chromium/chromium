@@ -114,6 +114,7 @@ public class SplitCompatService extends Service {
             return mService;
         }
 
+        @Initializer
         public void onCreate() {}
 
         public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
