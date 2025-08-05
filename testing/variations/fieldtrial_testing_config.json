@@ -17200,7 +17200,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity": "1048576",
+                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"browser\":{\"main\":{\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false,\"branch-capacity-in-bytes\":1048576}}}",
                         "enabled-processes": "browser-only"
                     },
                     "enable_features": [
