@@ -252,7 +252,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * instance for that supplier, or creates a controller creator that will create and supply an
      * EdgeToEdgeController when all conditions are met for the device to draw edge-to-edge.
      */
-    protected ObservableSupplier<EdgeToEdgeController> getEdgeToEdgeSupplier() {
+    public ObservableSupplier<EdgeToEdgeController> getEdgeToEdgeSupplier() {
         if (ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) {
             if (mEdgeToEdgeControllerCreator == null) {
                 mEdgeToEdgeControllerCreator =

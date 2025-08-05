@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.history;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.CallbackUtils;
@@ -16,12 +17,17 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+
+import java.util.function.Function;
 
 /** Activity for displaying the browsing history manager. */
 @NullMarked
@@ -42,6 +48,13 @@ public class HistoryActivity extends SnackbarActivity {
         HistoryUmaRecorder historyUmaRecorder =
                 appSpecificHistory ? new AppHistoryUmaRecorder() : new HistoryUmaRecorder();
         boolean showAppFilter = !appSpecificHistory && !profile.isOffTheRecord();
+        Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator = null;
+        if (ChromeFeatureList.sDrawChromePagesEdgeToEdge.isEnabled()) {
+            edgeToEdgePadAdjusterGenerator =
+                    (view) ->
+                            EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                    view, getEdgeToEdgeSupplier());
+        }
         mHistoryManager =
                 new HistoryManager(
                         this,
@@ -57,8 +70,7 @@ public class HistoryActivity extends SnackbarActivity {
                         appSpecificHistory,
                         showAppFilter,
                         /* openHistoryItemCallback= */ null,
-                        // HistoryActivity doesn't support edge to edge yet.
-                        /* edgeToEdgePadAdjusterGenerator= */ null);
+                        edgeToEdgePadAdjusterGenerator);
         ViewGroup contentView = mHistoryManager.getView();
         setContentView(contentView);
         if (showAppFilter) createBottomSheetController(contentView);
