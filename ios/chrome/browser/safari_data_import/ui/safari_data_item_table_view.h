@@ -25,6 +25,9 @@
                         style:UITableViewStyle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+/// Notify the table view that user has initiated importing items.
+- (void)notifyImportStart;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_ITEM_TABLE_VIEW_H_
