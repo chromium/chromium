@@ -435,6 +435,11 @@ enum WebDXFeature {
   kDRAFT_IncomingCallNotifications = 373,
   kPopover = 374,
   kDRAFT_WebInstallAPI = 375,
+  kTopLevelAwait = 376,
+  kAtomicsPause = 377,
+  kLogicalAssignments = 378,
+  kNullishCoalescing = 379,
+
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

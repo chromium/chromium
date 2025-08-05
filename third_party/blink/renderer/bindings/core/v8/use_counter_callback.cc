@@ -484,6 +484,18 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmSignExtensionOps:
       webdx_feature = WebDXFeature::kWasmSignExtensionOperators;
       break;
+    case v8::Isolate::kTopLevelAwait:
+      webdx_feature = WebDXFeature::kTopLevelAwait;
+      break;
+    case v8::Isolate::kAtomicsPause:
+      webdx_feature = WebDXFeature::kAtomicsPause;
+      break;
+    case v8::Isolate::kLogicalAssignment:
+      webdx_feature = WebDXFeature::kLogicalAssignments;
+      break;
+    case v8::Isolate::kNullishCoalescing:
+      webdx_feature = WebDXFeature::kNullishCoalescing;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.
