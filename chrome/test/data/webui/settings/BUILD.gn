@@ -150,6 +150,7 @@ build_webui_tests("build") {
     "storage_access_site_list_entry_test.ts",
     "storage_access_site_list_test.ts",
     "storage_access_static_site_list_entry_test.ts",
+    "sync_encryption_options_test.ts",
     "sync_test_util.ts",
     "tab_discard_exception_dialog_test.ts",
     "test_about_page_browser_proxy.ts",

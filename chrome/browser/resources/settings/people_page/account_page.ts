@@ -9,12 +9,16 @@
  * controls and advanced sync settings.
  */
 import './sync_account_control.js';
+import './sync_encryption_options.js';
 import '../settings_page/settings_subpage.js';
 
-import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -24,8 +28,14 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './account_page.html.js';
 
+export interface SettingsAccountPageElement {
+  $: {
+    encryptionCollapse: CrCollapseElement,
+  };
+}
+
 const SettingsAccountPageElementBase =
-    SettingsViewMixin(WebUiListenerMixin(PolymerElement));
+    SettingsViewMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
   static get is() {
@@ -42,20 +52,71 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
        * The current sync status.
        */
       syncStatus_: {type: Object},
+
+      /**
+       * The current sync preferences, supplied by SyncBrowserProxy.
+       */
+      syncPrefs: Object,
+
+      isEeaChoiceCountry_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isEeaChoiceCountry');
+        },
+      },
+
+      personalizationCollapseExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      existingPassphraseLabel_: {
+        type: String,
+        computed: 'computeExistingPassphraseLabel_(syncPrefs.encryptAllData,' +
+            'syncPrefs.explicitPassphraseTime)',
+      },
+
+      dataEncrypted_: {
+        type: Boolean,
+        computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)',
+      },
+
+      encryptionExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+
     };
   }
 
+  static get observers() {
+    return [
+      'expandEncryptionIfNeeded_(dataEncrypted_)',
+    ];
+  }
+
+  private syncBrowserProxy_: SyncBrowserProxy =
+      SyncBrowserProxyImpl.getInstance();
   declare private syncStatus_: SyncStatus|null;
+  declare syncPrefs?: SyncPrefs;
+
+  declare private isEeaChoiceCountry_: boolean;
+  declare private personalizationCollapseExpanded_: boolean;
+  declare private dataEncrypted_: boolean;
+  declare private encryptionExpanded_: boolean;
+  declare private existingPassphraseLabel_: TrustedHTML;
 
   override connectedCallback() {
     super.connectedCallback();
 
     assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
 
-    SyncBrowserProxyImpl.getInstance().getSyncStatus().then(
+    this.syncBrowserProxy_.getSyncStatus().then(
         this.onSyncStatusChanged_.bind(this));
     this.addWebUiListener(
         'sync-status-changed', this.onSyncStatusChanged_.bind(this));
+    this.addWebUiListener(
+        'sync-prefs-changed', this.onSyncPrefsChanged_.bind(this));
   }
 
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
@@ -70,6 +131,64 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
         this.syncStatus_.signedInState !== SignedInState.SIGNED_IN) {
       Router.getInstance().navigateTo(routes.PEOPLE);
     }
+  }
+
+  /**
+   * Handler for when the sync preferences are updated.
+   */
+  private onSyncPrefsChanged_(syncPrefs: SyncPrefs) {
+    this.syncPrefs = syncPrefs;
+  }
+
+  private onActivityControlsClick_() {
+    this.syncBrowserProxy_.openActivityControlsUrl();
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('activityControlsUrl'));
+  }
+
+  private onLinkedServicesClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('linkedServicesUrl'));
+  }
+
+  private onSyncDashboardLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('syncDashboardUrl'));
+  }
+
+  private onResetSyncClick_(event: Event) {
+    if ((event.target as HTMLElement).tagName === 'A') {
+      // Stop the propagation of events as the |cr-expand-button|
+      // prevents the default which will prevent the navigation to the link.
+      event.stopPropagation();
+    }
+  }
+
+  private onManageGoogleAccountClicked_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('googleAccountUrl'));
+  }
+
+  private computeExistingPassphraseLabel_(): TrustedHTML {
+    if (!this.syncPrefs || !this.syncPrefs.encryptAllData) {
+      return window.trustedTypes!.emptyHTML;
+    }
+
+    if (!this.syncPrefs.explicitPassphraseTime) {
+      return this.i18nAdvanced('existingPassphraseLabel');
+    }
+
+    return this.i18nAdvanced('existingPassphraseLabelWithDate', {
+      substitutions: [this.syncPrefs.explicitPassphraseTime],
+    });
+  }
+
+  private computeDataEncrypted_(): boolean {
+    return !!this.syncPrefs && this.syncPrefs.encryptAllData;
+  }
+
+  private expandEncryptionIfNeeded_() {
+    this.encryptionExpanded_ = this.dataEncrypted_;
   }
 
   // SettingsViewMixin implementation.

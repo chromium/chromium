@@ -332,6 +332,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   // <if expr="not is_chromeos">
   private computeShouldShowGoogleAccount_(): boolean {
+    if (this.replaceSyncPromosWithSignInPromos_) {
+      return false;
+    }
+
     if (this.storedAccounts === undefined || this.syncStatus === undefined) {
       return false;
     }

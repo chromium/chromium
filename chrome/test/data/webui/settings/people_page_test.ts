@@ -489,9 +489,9 @@ suite('PeoplePageAccountSettings', function() {
     assertTrue(isChildVisible(peoplePage, '#google-services'));
     assertFalse(isChildVisible(peoplePage, '#sync-setup'));
 
-    // The other rows are shown correctly.
+    // The other rows are shown/hidden correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
-    assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
+    assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
   });
 
@@ -507,7 +507,7 @@ suite('PeoplePageAccountSettings', function() {
     assertTrue(isChildVisible(peoplePage, '#google-services'));
     assertFalse(isChildVisible(peoplePage, '#sync-setup'));
 
-    // The other rows are shown correctly.
+    // The other rows are shown/hidden correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
     assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
@@ -526,9 +526,9 @@ suite('PeoplePageAccountSettings', function() {
     assertFalse(isChildVisible(peoplePage, '#google-services'));
     assertTrue(isChildVisible(peoplePage, '#sync-setup'));
 
-    // The other rows are shown correctly.
+    // The other rows are shown/hidden correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
-    assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
+    assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
   });
 
@@ -544,9 +544,9 @@ suite('PeoplePageAccountSettings', function() {
     assertTrue(isChildVisible(peoplePage, '#google-services'));
     assertFalse(isChildVisible(peoplePage, '#sync-setup'));
 
-    // The other rows are shown correctly.
+    // The other rows are shown/hidden correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
-    assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
+    assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
   });
 
@@ -561,9 +561,9 @@ suite('PeoplePageAccountSettings', function() {
     assertTrue(isChildVisible(peoplePage, '#google-services'));
     assertFalse(isChildVisible(peoplePage, '#sync-setup'));
 
-    // The other rows are shown correctly.
+    // The other rows are shown/hidden correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
-    assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
+    assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
   });
 
