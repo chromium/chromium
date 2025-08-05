@@ -266,9 +266,9 @@ void RendererURLLoaderThrottle::OnActivationComputed(
   deferred_ = false;
 
   if (filter_) {
-    std::move(on_subresource_evaluated_callback_)
-        .Run(current_url_, devtools_request_id_, subresource_disallowed,
-             filter_->statistics());
+    on_subresource_evaluated_callback_.Run(current_url_, devtools_request_id_,
+                                           subresource_disallowed,
+                                           filter_->statistics());
   }
 }
 
