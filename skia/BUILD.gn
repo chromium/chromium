@@ -161,7 +161,6 @@ config("skia_library_config") {
   defines = [
     "IS_SKIA_IMPL=1",
     "SKIA_IMPLEMENTATION=1",
-    "SK_FONTMGR_ANDROID_IGNORE_FALLBACK_FIX=1",
   ]
 
   # Let Skia know whether to use `libpng`-based or Rust-based PNG decoder and

@@ -7074,15 +7074,22 @@ TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphCJK) {
 
 TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphSmallCaps) {
   RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // "ꟺ" and "Ｍ" are in the same script, but all OS's split them between
+  // different fonts. This test ensures that each glyph is not in its own
+  // run, but rather that the final rendered runs place adjacent runs with the
+  // same final fallback font in the same run.
   render_text->SetText(u"ꟺＭ");
 
-#if BUILDFLAG(IS_ANDROID)
-  // Android doesn't support either glyph, so they are both missing glyphs in
-  // the same run.
-  EXPECT_EQ(std::vector<std::u16string>({u"ꟺＭ"}), GetRunListStrings());
-  EXPECT_EQ("[0->1]", GetRunListStructureString());
-#else
+  // Must snapshot histograms before checking for missing glyphs.
   base::HistogramTester histograms;
+
+  // This test requires both glyphs to render for merging to occur. If there
+  // are still missing glyphs (this happens on some versions of Android),
+  // return early.
+  if (GetHarfBuzzRunList()->HasMissingGlyphs()) {
+    return;
+  }
   EXPECT_EQ(std::vector<std::u16string>({u"ꟺ", u"Ｍ"}), GetRunListStrings());
   EXPECT_EQ("[0][1]", GetRunListStructureString());
 
@@ -7090,7 +7097,6 @@ TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphSmallCaps) {
   histograms.ExpectTotalCount("RenderTextHarfBuzz.ShapeRunsFallback", 1);
   EXPECT_EQ(histograms.GetTotalSum("RenderTextHarfBuzz.ShapeRunsFallback"), 2);
 
-#endif  // BUILDFLAG(IS_ANDROID)
   CheckBoundsForCursorPositions();
 }
 
