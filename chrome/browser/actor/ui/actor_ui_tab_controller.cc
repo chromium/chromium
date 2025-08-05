@@ -157,12 +157,10 @@ void ActorUiTabController::MaybeUpdateState(const UiTabState& ui_tab_state,
 void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
                                        bool tab_active_status,
                                        UiResultCallback callback) {
-  // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (features::kGlicActorUiOverlay.Get()) {
     actor_overlay_view_controller_->UpdateState(
         current_ui_tab_state_.actor_overlay, ComputeActorOverlayVisibility());
   }
-  // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (features::kGlicActorUiHandoffButton.Get()) {
     handoff_button_controller_->UpdateState(
         current_ui_tab_state_.handoff_button, ComputeHandoffButtonVisibility());
