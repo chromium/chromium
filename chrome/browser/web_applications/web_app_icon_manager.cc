@@ -707,13 +707,17 @@ class WriteIconsJob {
 
   TypedResult<bool> Execute() {
     TRACE_EVENT0("ui", "web_app_icon_manager::WriteIconsJob::Execute");
+    TypedResult<bool> result(true);
     // Write product icons directly in the app's directory.
-    auto result = AtomicallyWriteIcons(
-        base::BindRepeating(&WriteIconsJob::WriteIcons, base::Unretained(this),
-                            icon_bitmaps_),
-        /*subdir_for_icons=*/{});
-    if (result.HasErrors())
-      return result;
+    if (!icon_bitmaps_.empty()) {
+      result = AtomicallyWriteIcons(
+          base::BindRepeating(&WriteIconsJob::WriteIcons,
+                              base::Unretained(this), icon_bitmaps_),
+          /*subdir_for_icons=*/{});
+      if (result.HasErrors()) {
+        return result;
+      }
+    }
 
     if (!trusted_icon_bitmaps_.empty()) {
       result = AtomicallyWriteIcons(

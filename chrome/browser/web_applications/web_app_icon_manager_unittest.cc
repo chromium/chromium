@@ -1278,6 +1278,145 @@ TEST_F(WebAppIconManagerTest, WritePendingTrustedAndPendingManifestIconsBoth) {
                              any_pending_manifest_icons[icon_size::k64]);
 }
 
+// Verify that pending update data can be written and it won't wipe out the
+// manifest icon data even if manifest_icons is empty.
+TEST_F(WebAppIconManagerTest, PendingIconsDoNotOverwriteManifestIcons) {
+  auto web_app = test::CreateWebApp();
+  const webapps::AppId app_id = web_app->app_id();
+  AddAppToRegistry(std::move(web_app));
+
+  IconBitmaps manifest_icons;
+  SkBitmap any_bitmap = CreateSquareIcon(icon_size::k64, SK_ColorBLUE);
+  manifest_icons.any[icon_size::k64] = any_bitmap;
+
+  IconBitmaps pending_trusted_icons;
+  SkBitmap any_trusted_bitmap1 = CreateSquareIcon(icon_size::k256, SK_ColorRED);
+  pending_trusted_icons.any[icon_size::k256] = any_trusted_bitmap1;
+
+  // Verify writing trusted icons to disk correctly.
+  {
+    base::RunLoop run_loop;
+    icon_manager().WriteData(app_id, {manifest_icons}, {}, {}, {},
+                             base::BindLambdaForTesting([&](bool success) {
+                               EXPECT_TRUE(success);
+                               run_loop.Quit();
+                             }));
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(file_utils().PathExists(GetAppIconsAnyDir(profile(), app_id)));
+  EXPECT_FALSE(
+      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+
+  {
+    base::RunLoop run_loop;
+    icon_manager().WritePendingIconData(
+        app_id, pending_trusted_icons, {},
+        base::BindLambdaForTesting([&](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(file_utils().PathExists(GetAppIconsAnyDir(profile(), app_id)));
+  EXPECT_TRUE(
+      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+
+  // Verify bitmaps of purpose `any` are written correctly to disk under the
+  // pending trusted icons folder.
+  base::FilePath any_pending_trusted_icons =
+      GetAppPendingTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
+  std::map<SquareSizePx, SkBitmap> any_icons =
+      ReadPngsFromDirectory(&file_utils(), any_pending_trusted_icons);
+  EXPECT_EQ(1u, any_icons.size());
+  EXPECT_THAT(any_icons[icon_size::k256],
+              gfx::test::EqualsBitmap(any_trusted_bitmap1));
+
+  // Verify bitmaps of purpose `any` are written correctly to disk under the
+  // manifest icons folder and are not wiped out by the double write call.
+  std::map<SquareSizePx, SkBitmap> disk_icons = ReadPngsFromDirectory(
+      &file_utils(), GetAppIconsAnyDir(profile(), app_id));
+  EXPECT_EQ(1u, disk_icons.size());
+  EXPECT_THAT(disk_icons[icon_size::k64], gfx::test::EqualsBitmap(any_bitmap));
+}
+
+// Creating shortcut icons but no manifest icons can cause the top level icon
+// storing directory to not be created. Verify storing of pending update images
+// works fine without that, and with other icons also working correctly.
+TEST_F(WebAppIconManagerTest, PendingIconsEmptyManifestIconDirShortcutIcons) {
+  auto web_app = test::CreateWebApp();
+  const webapps::AppId app_id = web_app->app_id();
+
+  // Writing shortcuts menu icons correctly to disk.
+  const int num_menu_items = 2;
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  WriteGeneratedShortcutsMenuIcons(app_id,
+                                   {{IconPurpose::ANY, sizes, colors},
+                                    {IconPurpose::MASKABLE, sizes, colors},
+                                    {IconPurpose::MONOCHROME, sizes, colors}},
+                                   num_menu_items);
+  IconSizes icon_sizes;
+  icon_sizes.any = sizes;
+  icon_sizes.maskable = sizes;
+  icon_sizes.monochrome = sizes;
+  web_app->SetShortcutsMenuInfo(
+      CreateShortcutsMenuItemInfos(num_menu_items, icon_sizes));
+
+  AddAppToRegistry(std::move(web_app));
+
+  // Verify no manifest icons exist for the app.
+  EXPECT_FALSE(file_utils().PathExists(GetAppIconsAnyDir(profile(), app_id)));
+
+  IconBitmaps pending_trusted_icons;
+  SkBitmap any_trusted_bitmap = CreateSquareIcon(icon_size::k256, SK_ColorRED);
+  pending_trusted_icons.any[icon_size::k256] = any_trusted_bitmap;
+
+  {
+    base::RunLoop run_loop;
+    icon_manager().WritePendingIconData(
+        app_id, pending_trusted_icons, {},
+        base::BindLambdaForTesting([&](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(
+      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+
+  // Verify pending icon bitmaps are correctly read from the pending icons
+  // directory.
+  base::FilePath any_pending_trusted_icons =
+      GetAppPendingTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
+  std::map<SquareSizePx, SkBitmap> any_icons =
+      ReadPngsFromDirectory(&file_utils(), any_pending_trusted_icons);
+  EXPECT_EQ(1u, any_icons.size());
+  EXPECT_THAT(any_icons[icon_size::k256],
+              gfx::test::EqualsBitmap(any_trusted_bitmap));
+
+  // Verify shortcut menu item infos are read correctly as well post operation.
+  ShortcutsMenuIconBitmaps shortcuts_menu_icons_map =
+      ReadAllShortcutsMenuIcons(app_id);
+  EXPECT_EQ(2u, shortcuts_menu_icons_map.size());
+
+  for (int i = 0; i < num_menu_items; ++i) {
+    for (IconPurpose purpose : kIconPurposes) {
+      const std::map<SquareSizePx, SkBitmap>& icon_bitmaps =
+          shortcuts_menu_icons_map[i].GetBitmapsForPurpose(purpose);
+
+      for (unsigned s = 0; s < sizes.size(); ++s) {
+        const SquareSizePx size_px = sizes[s];
+        const auto& size_and_bitmap = icon_bitmaps.find(size_px);
+        ASSERT_TRUE(size_and_bitmap != icon_bitmaps.end());
+        EXPECT_EQ(colors[s], size_and_bitmap->second.getColor(0, 0));
+      }
+    }
+  }
+}
+
 TEST_F(WebAppIconManagerTest, ReadIconsFailed) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
