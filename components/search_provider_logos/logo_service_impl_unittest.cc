@@ -38,7 +38,6 @@
 #include "components/search_provider_logos/fixed_logo_api.h"
 #include "components/search_provider_logos/google_logo_api.h"
 #include "components/search_provider_logos/logo_cache.h"
-#include "components/search_provider_logos/logo_observer.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"

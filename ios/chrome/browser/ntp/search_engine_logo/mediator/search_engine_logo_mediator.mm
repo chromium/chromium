@@ -12,7 +12,6 @@
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search/search.h"
-#import "components/search_provider_logos/logo_observer.h"
 #import "ios/chrome/browser/google/model/google_logo_service.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
