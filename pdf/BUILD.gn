@@ -258,6 +258,8 @@ if (enable_pdf) {
         "pdf_ink_undo_redo_model.h",
         "pdfium/pdfium_ink_reader.cc",
         "pdfium/pdfium_ink_reader.h",
+        "pdfium/pdfium_ink_transform.cc",
+        "pdfium/pdfium_ink_transform.h",
         "pdfium/pdfium_ink_writer.cc",
         "pdfium/pdfium_ink_writer.h",
       ]
@@ -543,6 +545,7 @@ if (enable_pdf) {
         "pdf_ink_transform_unittest.cc",
         "pdf_ink_undo_redo_model_unittest.cc",
         "pdfium/pdfium_ink_reader_unittest.cc",
+        "pdfium/pdfium_ink_transform_unittest.cc",
         "pdfium/pdfium_ink_writer_unittest.cc",
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",
