@@ -27,6 +27,7 @@
 #import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
@@ -119,6 +120,10 @@ bool WebFrameImpl::IsMainFrame() const {
 
 url::Origin WebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
+}
+
+GURL WebFrameImpl::GetUrl() const {
+  return net::GURLWithNSURL(frame_info_.request.URL);
 }
 
 BrowserState* WebFrameImpl::GetBrowserState() {
