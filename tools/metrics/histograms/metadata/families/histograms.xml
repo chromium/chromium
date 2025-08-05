@@ -380,9 +380,11 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
-    expires_after="2025-08-24">
+    expires_after="2025-11-30">
+<!-- TODO: crbug.com/431773019 - replace with Signin.ListFamilyMembersRequest.* -->
+
   <owner>ljjlee@google.com</owner>
-  <owner>fernandex@google.com</owner>
+  <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     The time spent waiting for the Kids Management API::ListMembers fetch done
@@ -393,9 +395,11 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchStatus"
-    enum="FamilyInfoLogSourceFetchStatus" expires_after="2025-08-24">
+    enum="FamilyInfoLogSourceFetchStatus" expires_after="2025-11-30">
+<!-- TODO: crbug.com/431773019 - replace with Signin.ListFamilyMembersRequest.* -->
+
   <owner>ljjlee@google.com</owner>
-  <owner>fernandex@google.com</owner>
+  <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     The result of the Kids Management API::ListMembers fetch done as part of
@@ -405,8 +409,10 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.ImmediatelyAvailable"
-    enum="Boolean" expires_after="2025-08-24">
-  <owner>fernandex@google.com</owner>
+    enum="Boolean" expires_after="2025-11-30">
+<!-- TODO: crbug.com/431773019 - replace with Signin.ListFamilyMembersRequest.* -->
+
+  <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Whether a fetch to the Kids Management API::ListMembers was necessary as a
