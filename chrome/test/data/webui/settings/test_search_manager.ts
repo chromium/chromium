@@ -15,7 +15,6 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestSearchManager extends TestBrowserProxy implements
     SearchManager {
   private matchesFound_: boolean = true;
-  private searchRequest_: SearchRequest|null = null;
 
   constructor() {
     super(['search']);
@@ -25,14 +24,17 @@ export class TestSearchManager extends TestBrowserProxy implements
     this.matchesFound_ = matchesFound;
   }
 
-  search(text: string, page: Element) {
+  search(text: string, node: Element) {
     this.methodCalled('search', text);
 
-    if (this.searchRequest_ == null || !this.searchRequest_.isSame(text)) {
-      this.searchRequest_ = new SearchRequest(text, page);
-      this.searchRequest_.updateMatchCount(this.matchesFound_ ? 1 : 0);
-      this.searchRequest_.resolver.resolve(this.searchRequest_);
-    }
-    return this.searchRequest_.resolver.promise;
+    const request = new SearchRequest(text, node);
+
+    const matchesFound = node.nodeType === Node.TEXT_NODE ?
+        this.matchesFound_ :
+        this.matchesFound_ && !node.hasAttribute('no-search');
+    request.updateMatchCount(matchesFound ? 1 : 0);
+    request.resolver.resolve(request);
+
+    return request.resolver.promise;
   }
 }

@@ -9,6 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../settings_page/settings_subpage.js';
 import './safety_hub_card.js';
 import './safety_hub_module.js';
 
@@ -24,6 +25,8 @@ import {MetricsBrowserProxyImpl, SafetyHubModuleType, SafetyHubSurfaces} from '.
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {CardInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {CardState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub_browser_proxy.js';
@@ -38,8 +41,8 @@ export interface SettingsSafetyHubPageElement {
   };
 }
 
-const SettingsSafetyHubPageElementBase = RouteObserverMixin(
-    RelaunchMixin(PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+const SettingsSafetyHubPageElementBase = RouteObserverMixin(SettingsViewMixin(
+    RelaunchMixin(PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsSafetyHubPageElement extends
     SettingsSafetyHubPageElementBase {
@@ -148,7 +151,9 @@ export class SettingsSafetyHubPageElement extends
     super.connectedCallback();
   }
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     if (Router.getInstance().getCurrentRoute() !== routes.SAFETY_HUB) {
       return;
     }
@@ -426,6 +431,11 @@ export class SettingsSafetyHubPageElement extends
     }
 
     this.metricsBrowserProxy_.recordSafetyHubDashboardAnyWarning(hasAnyWarning);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

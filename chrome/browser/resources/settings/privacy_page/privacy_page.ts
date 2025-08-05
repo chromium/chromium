@@ -275,13 +275,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: ChooserType,
       },
 
-      shouldShowSafetyHub_: {
-        type: Boolean,
-        value() {
-          return !loadTimeData.getBoolean('isGuest');
-        },
-      },
-
       enableKeyboardLockPrompt_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
@@ -345,7 +338,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private privateStateTokensEnabled_: boolean;
   declare private autoPictureInPictureEnabled_: boolean;
   declare private capturedSurfaceControlEnabled_: boolean;
-  declare private shouldShowSafetyHub_: boolean;
   declare private enableWebAppInstallation_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
   declare private focusConfig_: FocusConfig;

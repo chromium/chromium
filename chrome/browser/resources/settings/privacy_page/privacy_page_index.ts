@@ -135,6 +135,8 @@ export class SettingsPrivacyPageIndexElement extends
       case routes.SECURITY_KEYS:
         assert(this.enableSecurityKeysSubpage_);
         return ['securityKeys'];
+      case routes.SAFETY_HUB:
+        return ['safetyHub'];
       default: {
         if (this.isNonMigratedPrivacyRoute_(route)) {
           // Handle case where Privacy child route has not migrated to the new

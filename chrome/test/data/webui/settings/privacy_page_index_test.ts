@@ -59,23 +59,24 @@ suite('PrivacyPageIndex', function() {
     await waitBeforeNextRender(index);
     assertActiveViews(defaultViews);
 
-    // Non-exhaustive list of PRIVACY child routes that have not been migrated
-    // to the new architecture (crbug.com/424223101), therefore the contents
-    // still reside in the 'old' <settings-basic-page> view.
-    const nonMigratedRoutes: Route[] = [
-      routes.CLEAR_BROWSER_DATA,
-      routes.COOKIES,
-      routes.SAFETY_HUB,
-      routes.SECURITY,
-      routes.SITE_SETTINGS,
-      routes.SITE_SETTINGS_LOCATION,
+    // Non-exhaustive list of PRIVACY child routes to check.
+    // Some of these routs have not been migrated to the new architecture
+    // (crbug.com/424223101), therefore the contents still reside in the 'old'
+    // <settings-basic-page> view.
+    const routesToVisit: Array<{route: Route, viewId: string}> = [
+      {route: routes.CLEAR_BROWSER_DATA, viewId: 'old'},
+      {route: routes.COOKIES, viewId: 'old'},
+      {route: routes.SAFETY_HUB, viewId: 'safetyHub'},
+      {route: routes.SECURITY, viewId: 'old'},
+      {route: routes.SITE_SETTINGS_LOCATION, viewId: 'old'},
+      {route: routes.SITE_SETTINGS, viewId: 'old'},
     ];
 
-    for (const route of nonMigratedRoutes) {
+    for (const {route, viewId} of routesToVisit) {
       Router.getInstance().navigateTo(route);
       await flushTasks();
       await waitBeforeNextRender(index);
-      assertActiveViews(['old']);
+      assertActiveViews([viewId]);
     }
   });
 

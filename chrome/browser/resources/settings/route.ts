@@ -22,6 +22,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   if (visibility.safetyHub !== false) {
     r.SAFETY_HUB = r.PRIVACY.createChild('/safetyCheck');
+    r.SAFETY_HUB.hasMigratedToPlugin = true;
   }
 
   if (loadTimeData.getBoolean('showPrivacyGuide')) {

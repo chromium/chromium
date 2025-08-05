@@ -149,18 +149,6 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" if="[[shouldShowSafetyHub_]]">
-        <template is="dom-if" route-path="/safetyCheck">
-          <!-- TODO(crbug.com/40267370): Make the page searchable.-->
-          <settings-subpage id="safetyHub" page-title="$i18n{safetyHub}"
-              class="multi-card" no-search
-              learn-more-url="$i18n{safetyHubHelpCenterURL}">
-            <settings-safety-hub-page prefs="{{prefs}}">
-            </settings-safety-hub-page>
-          </settings-subpage>
-        </template>
-      </template>
-
       <template is="dom-if" route-path="/security">
         <settings-subpage id="security" page-title="$i18n{securityPageTitle}"
             associated-control="[[$$('#securityLinkRow')]]"
