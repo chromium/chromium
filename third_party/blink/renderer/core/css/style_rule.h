@@ -588,7 +588,9 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
     return MakeGarbageCollected<StyleRuleContainer>(*this);
   }
 
-  void SetConditionText(const ExecutionContext*, String);
+  void SetConditionText(const ExecutionContext*,
+                        StyleSheetContents* parent_contents,
+                        String);
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

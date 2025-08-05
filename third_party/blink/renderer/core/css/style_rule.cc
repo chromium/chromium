@@ -1005,6 +1005,7 @@ StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& other,
 
 void StyleRuleContainer::SetConditionText(
     const ExecutionContext* execution_context,
+    StyleSheetContents* parent_sheet_contents,
     String value) {
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
   ContainerQueryParser parser(*context);
@@ -1015,6 +1016,10 @@ void StyleRuleContainer::SetConditionText(
     ContainerSelector selector(container_query_->Selector().Name(), *exp_node);
     container_query_ =
         MakeGarbageCollected<ContainerQuery>(std::move(selector), exp_node);
+
+    if (parent_sheet_contents) {
+      parent_sheet_contents->NotifyRuleChanged(this);
+    }
   }
 }
 
