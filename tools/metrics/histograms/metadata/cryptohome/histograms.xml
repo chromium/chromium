@@ -627,21 +627,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cryptohome.VkToUssMigrationStatus"
-    enum="VkToUssMigrationStatus" expires_after="2025-09-14">
-  <owner>jadmanski@chromium.org</owner>
-  <owner>cros-security-cryptohome+uma@google.com</owner>
-  <summary>
-    Records a status value on every attempt to migrate a vault keyset backed
-    authentication factor to the User Secret Stash. The status will either
-    indicate success or an error, with different errors suggesting the general
-    class of failure that occured.
-
-    Migration of a factor is attempted whenever said factor is successfully used
-    to authenticate a session; usually when you login or unlock.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.WrappingKeyDerivation.Create"
     enum="WrappingKeyDerivation" expires_after="2023-05-01">
   <owner>tnagel@chromium.org</owner>

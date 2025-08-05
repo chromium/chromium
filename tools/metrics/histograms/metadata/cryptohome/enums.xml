@@ -4170,16 +4170,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Encode certificate failed"/>
 </enum>
 
-<enum name="VkToUssMigrationStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed persisting to USS"/>
-  <int value="2" label="Failed constructing input"/>
-  <int value="3" label="Failed creating USS"/>
-  <int value="4" label="Failed creating USS migration secret"/>
-  <int value="5" label="Failed decrypting USS"/>
-  <int value="6" label="Failed recording migrated tag in the VK"/>
-</enum>
-
 <enum name="WrappingKeyDerivation">
   <int value="0" label="Backed by scrypt"/>
   <int value="1" label="Backed by LECredential"/>
