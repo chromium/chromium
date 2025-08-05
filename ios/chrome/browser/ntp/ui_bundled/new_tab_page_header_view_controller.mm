@@ -84,6 +84,11 @@ const CGFloat kMarginMultiplier = 2;
 // The maximum point size of the font for the Identity Disc button.
 const CGFloat kIdentityDiscMaxFontSize = 24;
 
+// The extra space between the avatar icon and the background for the sign in
+// button. This is used when IsNTPBackgroundCustomizationEnabled() == YES and
+// IsSignInButtonNoAvatarEnabled() == NO;
+const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
+
 }  // namespace
 
 @interface NewTabPageHeaderViewController () <
@@ -405,7 +410,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   DCHECK(self.identityDiscImage);
   DCHECK(self.identityDiscButton.accessibilityLabel);
   if (!IsSignInButtonNoAvatarEnabled()) {
-    DCHECK([self.identityDiscButton imageForState:UIControlStateNormal]);
+    DCHECK([self.identityDiscButton imageForState:UIControlStateNormal] ||
+           self.identityDiscButton.configuration.image);
   }
 
   [self maybeShowSwitchAccountsIPH];
@@ -641,7 +647,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   DCHECK(self.identityDiscAccessibilityLabel);
 
   UIButton* button = self.identityDiscButton;
-  if (!IsSignInButtonNoAvatarEnabled() || self.isSignedIn) {
+
+  button.accessibilityLabel = self.identityDiscAccessibilityLabel;
+  button.clipsToBounds = YES;
+
+  BOOL useOldExperience = !IsNTPBackgroundCustomizationEnabled() &&
+                          !IsSignInButtonNoAvatarEnabled();
+  if (self.isSignedIn || useOldExperience) {
     UIImage* image = self.identityDiscImage;
     button.configuration = nil;
     [button setImage:image forState:UIControlStateNormal];
@@ -649,39 +661,102 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     button.imageView.layer.cornerRadius = image.size.width / 2;
     button.imageView.layer.masksToBounds = YES;
     button.layer.cornerRadius = image.size.width;
-  } else {
-    NewTabPageColorPalette* colorPalette =
-        IsNTPBackgroundCustomizationEnabled()
-            ? [self.traitCollection objectForNewTabPageTrait]
-            : nil;
-    button.layer.cornerRadius = 0;
+    return;
+  }
+
+  // Other configuration uses UIButtonConfiguration, not this property.
+  button.layer.cornerRadius = 0;
+
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    CHECK(IsSignInButtonNoAvatarEnabled());
     [button setImage:nil forState:UIControlStateNormal];
-    UIButtonConfiguration* config =
+    UIButtonConfiguration* buttonConfiguration =
         [UIButtonConfiguration plainButtonConfiguration];
-    config.background.backgroundColor =
-        colorPalette ? colorPalette.secondaryColor
-                     : [[UIColor colorNamed:kSolidWhiteColor]
-                           colorWithAlphaComponent:0.75];
+    buttonConfiguration.background.backgroundColor =
+        [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75];
     NSDictionary* attributes = @{
       NSFontAttributeName : PreferredFontForTextStyle(
           UIFontTextStyleSubheadline, UIFontWeightSemibold,
           kIdentityDiscMaxFontSize),
-      NSForegroundColorAttributeName : colorPalette
-          ? colorPalette.tintColor
-          : [UIColor colorNamed:kBlue600Color],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
     };
-    config.attributedTitle = [[NSAttributedString alloc]
+    buttonConfiguration.attributedTitle = [[NSAttributedString alloc]
         initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
             attributes:attributes];
-    config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-    config.contentInsets = NSDirectionalEdgeInsetsMake(
+    buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         kPillVerticalPadding, kPillHorizontalPadding, kPillVerticalPadding,
         kPillHorizontalPadding);
-    button.configuration = config;
+    button.configuration = buttonConfiguration;
+    return;
   }
 
-  button.accessibilityLabel = self.identityDiscAccessibilityLabel;
-  button.clipsToBounds = YES;
+  [button setImage:nil forState:UIControlStateNormal];
+
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  UIColor* foregroundColor;
+  if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+    UIVisualEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+    UIVisualEffectView* blurBackgroundView =
+        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    buttonConfiguration.background.customView = blurBackgroundView;
+
+    foregroundColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else {
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    foregroundColor = colorPalette ? colorPalette.tintColor
+                                   : [UIColor colorNamed:kBlue600Color];
+
+    UIColor* backgroundColor = colorPalette
+                                   ? colorPalette.secondaryColor
+                                   : [[UIColor colorNamed:kSolidWhiteColor]
+                                         colorWithAlphaComponent:0.75];
+    // The default avatar icon does not have a background.
+    if (colorPalette || IsSignInButtonNoAvatarEnabled()) {
+      buttonConfiguration.background.backgroundColor = backgroundColor;
+    }
+  }
+
+  if (IsSignInButtonNoAvatarEnabled()) {
+    buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kPillVerticalPadding, kPillHorizontalPadding, kPillVerticalPadding,
+        kPillHorizontalPadding);
+
+    NSDictionary* attributes = @{
+      NSFontAttributeName : PreferredFontForTextStyle(
+          UIFontTextStyleSubheadline, UIFontWeightSemibold,
+          kIdentityDiscMaxFontSize),
+      NSForegroundColorAttributeName : foregroundColor,
+    };
+    buttonConfiguration.attributedTitle = [[NSAttributedString alloc]
+        initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
+            attributes:attributes];
+  } else {
+    buttonConfiguration.image = self.identityDiscImage;
+    buttonConfiguration.baseForegroundColor = foregroundColor;
+
+    // UIBackgroundConfiguration requires a background inset, but it's easier to
+    // think about the amount of space desired between the avatar and the
+    // background, an "outset" from the avatar. So use that amount to calculate
+    // the inset from the button edges.
+    CGFloat rawInsetAmount = (_identityDiscWidthConstraint.constant -
+                              buttonConfiguration.image.size.width) /
+                                 2 -
+                             kIdentityDiscAvatarBackgroundSpacing;
+    // Make sure that the background isn't larger than the view.
+    CGFloat insetAmount = MAX(rawInsetAmount, 0);
+    buttonConfiguration.background.backgroundInsets =
+        NSDirectionalEdgeInsetsMake(insetAmount, insetAmount, insetAmount,
+                                    insetAmount);
+    buttonConfiguration.background.cornerRadius =
+        buttonConfiguration.image.size.width;
+  }
+
+  button.configuration = buttonConfiguration;
 }
 
 - (void)fakeTapViewTapped {
