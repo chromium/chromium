@@ -282,6 +282,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_EQ("TypeError: Failed to fetch",
             content::EvalJs(web_contents(),
                             content::JsReplace(script_template, fetch_url)));
+  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWithinSharedWorker, 1);
 }
 
 // Known to not work. See crbug.com/434744665.
@@ -306,6 +308,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_EQ("TypeError: Failed to fetch",
             content::EvalJs(web_contents(),
                             content::JsReplace(script_template, fetch_url)));
+  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWithinSharedWorker, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
