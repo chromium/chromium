@@ -229,11 +229,12 @@ class InstallIntegrationTest(unittest.TestCase):
             self.assertIn('not found', mock_stderr.getvalue())
 
     def test_default_command(self):
-        """Tests that the script defaults to the list command."""
+        """Tests that the script defaults to --help."""
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             with patch('sys.argv', ['install.py']):
-                install.main()
-            self.assertIn('Extension', mock_stdout.getvalue())
+                with self.assertRaises(SystemExit):
+                    install.main()
+            self.assertIn('usage:', mock_stdout.getvalue())
 
     def test_missing_extension_arguments(self):
         """Tests that missing extension arguments are handled."""
