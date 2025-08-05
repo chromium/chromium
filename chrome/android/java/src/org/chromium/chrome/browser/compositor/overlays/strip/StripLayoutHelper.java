@@ -244,6 +244,18 @@ public class StripLayoutHelper
                 public void didMoveTabGroup(
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
                     mMovingGroup = false;
+                    // The sequencing of #didMoveTabGroup and #didMoveTab is different with and
+                    // without Tab Collections. With Tab Collections enabled, the final event is
+                    // #didMoveTabGroup, meaning we need to trigger a rebuild here. With it
+                    // disabled, we instead need to trigger a rebuild after the final #didMoveTab
+                    // event, which is handled in #tabMoved.
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_COLLECTION_ANDROID)) {
+                        // Additionally rebuild the StripLayoutTabs here as well. This was
+                        // previously maintained by #tabMoved, but the old/new indices that are
+                        // provided are different with Tab Collections enabled.
+                        rebuildStripTabs(/* deferAnimations= */ true);
+                        rebuildStripViewsAfterMove();
+                    }
                 }
 
                 @Override
@@ -1519,20 +1531,7 @@ public class StripLayoutHelper
 
         // 2. Swap the tabs.
         StripLayoutUtils.moveElement(mStripTabs, index, newIndex);
-        if (!mMovingGroup) {
-            if (mReorderDelegate.isReorderingTab()) {
-                // Update strip start and end margins to create more space for first tab or last tab
-                // to drag out of group.
-                mReorderDelegate.setEdgeMarginsForReorder(mStripTabs);
-            }
-            // When tab groups are moved, each tab is moved one-by-one. During this process, the
-            // invariant that tab groups must be contiguous is temporarily broken, so we suppress
-            // rebuilding until the entire group is moved. See https://crbug.com/329318567.
-            // TODO(crbug.com/329335086): Investigate reordering (with #moveElement) instead of
-            // rebuilding here.
-            rebuildStripViews();
-            computeIdealViewPositions();
-        }
+        if (!mMovingGroup) rebuildStripViewsAfterMove();
     }
 
     /**
@@ -3952,6 +3951,21 @@ public class StripLayoutHelper
             copyTabs();
         }
         mUpdateHost.requestUpdate();
+    }
+
+    private void rebuildStripViewsAfterMove() {
+        if (mReorderDelegate.isReorderingTab()) {
+            // Update strip start and end margins to create more space for first tab or last tab
+            // to drag out of group.
+            mReorderDelegate.setEdgeMarginsForReorder(mStripTabs);
+        }
+        // When tab groups are moved, each tab is moved one-by-one. During this process, the
+        // invariant that tab groups must be contiguous is temporarily broken, so we suppress
+        // rebuilding until the entire group is moved. See https://crbug.com/329318567.
+        // TODO(crbug.com/329335086): Investigate reordering (with #moveElement) instead of
+        // rebuilding here.
+        rebuildStripViews();
+        computeIdealViewPositions();
     }
 
     private int getTabGroupCount() {

@@ -323,10 +323,10 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         List<Animator> animators = new ArrayList<>();
         if (!adjTitle.isCollapsed()) {
             // Only need to animate tabs when expanded.
-            int start = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
-            int end = start + adjTabs.size();
-            for (int i = start; i < end; i++) {
-                animators.add(getViewSlidingAnimator(stripTabs[i]));
+            for (Tab tab : adjTabs) {
+                // Find using the IDs, since the provided stripTabs may be stale.
+                StripLayoutTab stripTab = StripLayoutUtils.findTabById(stripTabs, tab.getId());
+                if (stripTab != null) animators.add(getViewSlidingAnimator(stripTab));
             }
         }
         animators.add(getViewSlidingAnimator(adjTitle));
