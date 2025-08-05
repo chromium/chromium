@@ -777,12 +777,10 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
   // Split URL into individual, unique words then add in the title words.
   const GURL& gurl(row.url());
   DCHECK(gurl.is_valid());
-  const std::u16string& url =
-      string_cleaning::CleanUpUrlForMatching(gurl, nullptr);
+  const std::u16string& url = omnibox::CleanUpUrlForMatching(gurl, nullptr);
   String16Set url_words = String16SetFromString16(
       url, word_starts ? &word_starts->url_word_starts_ : nullptr);
-  const std::u16string& title =
-      string_cleaning::CleanUpTitleForMatching(row.title());
+  const std::u16string& title = omnibox::CleanUpTitleForMatching(row.title());
   String16Set title_words = String16SetFromString16(
       title, word_starts ? &word_starts->title_word_starts_ : nullptr);
   for (const auto& word :

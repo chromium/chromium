@@ -11,7 +11,7 @@
 
 class GURL;
 
-namespace string_cleaning {
+namespace omnibox {
 
 // Truncates an overly-long URL, unescapes it and interprets the characters as
 // UTF-8 (both via `url_formatter::FormatUrl()`), and lower-cases it, returning
@@ -41,6 +41,6 @@ std::u16string CleanUpUrlForMatching(
 // overly-long.
 std::u16string CleanUpTitleForMatching(const std::u16string& title);
 
-}  // namespace string_cleaning
+}  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_STRING_CLEANING_H_

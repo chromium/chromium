@@ -293,7 +293,7 @@ std::set<std::u16string> GetWords(std::vector<std::u16string> strings) {
   std::set<std::u16string> words = {};
   for (const auto& string : strings) {
     auto string_words = String16VectorFromString16(
-        string_cleaning::CleanUpTitleForMatching(string), nullptr);
+        omnibox::CleanUpTitleForMatching(string), nullptr);
     std::move(string_words.begin(), string_words.end(),
               std::inserter(words, words.begin()));
   }

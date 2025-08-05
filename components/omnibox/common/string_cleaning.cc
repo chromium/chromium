@@ -12,7 +12,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "url/gurl.h"
 
-namespace string_cleaning {
+namespace omnibox {
 
 namespace {
 // The maximum length of URL or title returned by the Cleanup functions.
@@ -57,4 +57,4 @@ std::u16string CleanUpTitleForMatching(const std::u16string& title) {
   return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
 }
 
-}  // namespace string_cleaning
+}  // namespace omnibox

@@ -178,8 +178,8 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   base::OffsetAdjuster::Adjustments adjustments;
   GURL gurl = row.url();
   std::u16string cleaned_up_url_for_matching =
-      string_cleaning::CleanUpUrlForMatching(gurl, &adjustments);
-  std::u16string title = string_cleaning::CleanUpTitleForMatching(row.title());
+      omnibox::CleanUpUrlForMatching(gurl, &adjustments);
+  std::u16string title = omnibox::CleanUpTitleForMatching(row.title());
   int term_num = 0;
   for (const auto& term : terms_vector) {
     TermMatches url_term_matches =
