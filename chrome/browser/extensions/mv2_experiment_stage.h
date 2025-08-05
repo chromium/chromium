@@ -10,11 +10,9 @@ namespace extensions {
 // The current stage of the Manifest V2 deprecation. Note that for all stages,
 // these only refer to affected extensions.
 enum class MV2ExperimentStage {
-  // The user is not in any stage; that is, Manifest V2 extensions are fully
-  // supported.
-  kNone,
   // The user is warned that Manifest V2 extensions are deprecated and will
   // soon be unsupported.
+  // This is the lowest possible stage (launched by default).
   kWarning,
   // Unsupported Manifest V2 extensions will be disabled. The user is allowed
   // to re-enable them at any point.

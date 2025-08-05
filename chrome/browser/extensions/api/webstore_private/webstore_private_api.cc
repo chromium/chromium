@@ -1364,9 +1364,6 @@ WebstorePrivateGetMV2DeprecationStatusFunction::Run() {
   api::webstore_private::MV2DeprecationStatus api_status =
       api::webstore_private::MV2DeprecationStatus::kInactive;
   switch (current_stage) {
-    case MV2ExperimentStage::kNone:
-      api_status = api::webstore_private::MV2DeprecationStatus::kInactive;
-      break;
     case MV2ExperimentStage::kWarning:
       api_status = api::webstore_private::MV2DeprecationStatus::kWarning;
       break;

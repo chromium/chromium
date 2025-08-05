@@ -128,8 +128,6 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
 
     switch (experiment_stage) {
       case MV2ExperimentStage::kWarning:
-        enabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
@@ -139,20 +137,14 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
-        disabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
         disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
-        disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         break;
-      case MV2ExperimentStage::kNone:
-        NOTREACHED() << "Unhandled stage.";
     }
 
     PopulateAdditionalFeatures(enabled_features, disabled_features);

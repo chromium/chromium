@@ -476,9 +476,6 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
   MV2ExperimentStage experiment_stage =
       experiment_manager->GetCurrentExperimentStage();
   switch (experiment_stage) {
-    case MV2ExperimentStage::kNone:
-      NOTREACHED();
-
     case MV2ExperimentStage::kWarning: {
       // Immediately dismiss the notice.
       DismissExtensionNotice();

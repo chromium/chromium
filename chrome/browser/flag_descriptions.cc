@@ -2032,11 +2032,6 @@ const char kIPHExtensionsRequestAccessButtonFeatureDescription[] =
     "Enables In-Product-Help that appears when at least one extension is "
     "requesting access to the current page. This feature is gated by "
     "extensions-menu-access-control.";
-const char kExtensionManifestV2DeprecationWarningName[] =
-    "Extension Manifest V2 Deprecation Warning Stage";
-const char kExtensionManifestV2DeprecationWarningDescription[] =
-    "Displays a warning that affected MV2 extensions may no longer be "
-    "supported due to the Manifest V2 deprecation.";
 const char kExtensionManifestV2DeprecationDisabledName[] =
     "Extension Manifest V2 Deprecation Disabled Stage";
 const char kExtensionManifestV2DeprecationDisabledDescription[] =

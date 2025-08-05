@@ -1331,8 +1331,6 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
     experiment_stage_ = GetParam();
     switch (experiment_stage_) {
       case MV2ExperimentStage::kWarning:
-        enabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
@@ -1342,23 +1340,11 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Unsupported);
-        break;
-      case MV2ExperimentStage::kNone:
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Disabled);
-        disabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         break;
@@ -1380,14 +1366,11 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
-    testing::Values(MV2ExperimentStage::kNone,
-                    MV2ExperimentStage::kWarning,
+    testing::Values(MV2ExperimentStage::kWarning,
                     MV2ExperimentStage::kDisableWithReEnable,
                     MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kNone:
-          return "NoneExperiment";
         case MV2ExperimentStage::kWarning:
           return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
@@ -1398,7 +1381,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 // Tests that acknowledging the MV2 deprecation notice updates the extension
-// info when the experiment stage is different than 'kNone'.
+// info.
 TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
        DidAcknowledgeMv2DeprecationNotice) {
   scoped_refptr<const Extension> extension =
@@ -1408,13 +1391,8 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
 
-  if (experiment_stage() == MV2ExperimentStage::kNone) {
-    // Extensions are not affected by MV2 deprecation in this stage.
-    EXPECT_FALSE(experiment_manager->IsExtensionAffected(*extension));
-  } else {
-    // Extensions with manifest version 2 are affected in the other stages.
-    EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  }
+  // Extensions with manifest version 2 are affected in the other stages.
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
   EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 
   {
@@ -1428,10 +1406,9 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
   {
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    if (experiment_stage() == MV2ExperimentStage::kNone ||
-        experiment_stage() == MV2ExperimentStage::kUnsupported) {
-      // Cannot acknowledge a notice that doesn't exist (none stage) or cannot
-      // be dismissed (unsupported stage).
+    if (experiment_stage() == MV2ExperimentStage::kUnsupported) {
+      // Cannot acknowledge a notice that cannot be dismissed (unsupported
+      // stage).
       EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_notice);
     } else {
       EXPECT_TRUE(info->did_acknowledge_mv2_deprecation_notice);

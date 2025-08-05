@@ -184,8 +184,6 @@ class Mv2DisabledDialogControllerInteractiveUITest
 
     switch (experiment_stage) {
       case MV2ExperimentStage::kWarning:
-      case MV2ExperimentStage::kNone:
-        NOTREACHED() << "Unhandled stage.";
       case MV2ExperimentStage::kDisableWithReEnable:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
@@ -230,7 +228,6 @@ INSTANTIATE_TEST_SUITE_P(
                       MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kNone:
         case MV2ExperimentStage::kWarning:
           NOTREACHED();
         case MV2ExperimentStage::kDisableWithReEnable:

@@ -16,7 +16,6 @@ namespace extensions {
 class Extension;
 class ExtensionManagement;
 class HashedExtensionId;
-enum class MV2ExperimentStage;
 
 // A helper class to determine if an extension is affected by the MV2
 // deprecation experiments.
@@ -24,8 +23,8 @@ enum class MV2ExperimentStage;
 // ManifestV2ExperimentManager.
 class MV2DeprecationImpactChecker {
  public:
-  MV2DeprecationImpactChecker(MV2ExperimentStage experiment_stage,
-                              ExtensionManagement* extension_management);
+  explicit MV2DeprecationImpactChecker(
+      ExtensionManagement* extension_management);
   ~MV2DeprecationImpactChecker();
 
   // Returns true if the given `extension` is affected by the MV2 deprecation.
@@ -40,9 +39,6 @@ class MV2DeprecationImpactChecker {
                            const HashedExtensionId& hashed_id);
 
  private:
-  // The current stage of the MV2 deprecation experiments.
-  const MV2ExperimentStage experiment_stage_;
-
   // The associated `ExtensionManagement` class. Must be guaranteed to outlive
   // this class.
   raw_ptr<ExtensionManagement> extension_management_;

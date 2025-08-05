@@ -102,10 +102,6 @@ BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 // A replacement key for declaring icons, in addition to supporting dark mode.
 BASE_DECLARE_FEATURE(kExtensionIconVariants);
 
-// Controls displaying a warning that affected MV2 extensions may no longer be
-// supported.
-BASE_DECLARE_FEATURE(kExtensionManifestV2DeprecationWarning);
-
 // Controls disabling affected MV2 extensions that are no longer supported.
 // Users can re-enable these extensions.
 BASE_DECLARE_FEATURE(kExtensionManifestV2Disabled);
