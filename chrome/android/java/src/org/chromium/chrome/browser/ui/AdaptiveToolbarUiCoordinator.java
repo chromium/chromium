@@ -149,8 +149,7 @@ public class AdaptiveToolbarUiCoordinator {
                         mContext,
                         mProfileSupplier,
                         mActivityTabProvider,
-                        mModalDialogManagerSupplier.get(),
-                        mBottomSheetController);
+                        mModalDialogManagerSupplier.get());
         ReadAloudToolbarButtonController readAloudButtonController =
                 new ReadAloudToolbarButtonController(
                         mContext,

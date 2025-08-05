@@ -67,10 +67,19 @@ public class ReaderModeBottomSheetCoordinator {
         mBottomSheetContent = new ReaderModeBottomSheetContent(mReaderModeBottomSheetView);
     }
 
-    /** Shows the reader mode bottom sheet. */
-    public void show() {
+    /**
+     * Shows the reader mode bottom sheet.
+     *
+     * @param showFullSheet Whether the bottomsheet should be shown fully, if false it's shown in a
+     *     peeked state.
+     */
+    public void show(boolean showFullSheet) {
         mDestroyChecker.checkNotDestroyed();
-        mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
+        boolean success =
+                mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
+        if (success && showFullSheet) {
+            mBottomSheetController.expandSheet();
+        }
     }
 
     /** Destroys the coordinator. */
@@ -79,7 +88,7 @@ public class ReaderModeBottomSheetCoordinator {
         mChangeProcessor.destroy();
     }
 
-    private static class ReaderModeBottomSheetContent implements BottomSheetContent {
+    private class ReaderModeBottomSheetContent implements BottomSheetContent {
         private final View mContentView;
 
         ReaderModeBottomSheetContent(View contentView) {
@@ -103,7 +112,7 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public void destroy() {
-            // Note: This bottom sheet can be hidden/shown multiple times without re-creation.
+            ReaderModeBottomSheetCoordinator.this.destroy();
         }
 
         @Override

@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,11 +35,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -46,28 +49,36 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ReaderModeToolbarButtonControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Tab mMockTab;
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private ReaderModeManager mMockReaderModeManager;
     @Mock private ActivityTabProvider mMockActivityTabProvider;
     @Mock private ModalDialogManager mMockModalDialogManager;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private Profile mProfile;
-    @Mock private BottomSheetController mBottomSheetController;
     @Mock private DomDistillerService mDomDistillerService;
     @Mock private DomDistillerServiceFactoryJni mDomDistillerServiceFactoryJni;
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
 
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private UserDataHost mUserDataHost;
+    private UnownedUserDataHost mUnownedUserDataHost;
 
     @Before
     public void setUp() throws Exception {
         mUserDataHost = new UserDataHost();
+        mUnownedUserDataHost = new UnownedUserDataHost();
 
         Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
+        BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
+        when(mMockTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mMockTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mProfileSupplier.set(mProfile);
         when(mMockTab.getContext()).thenReturn(context);
@@ -88,8 +99,7 @@ public class ReaderModeToolbarButtonControllerTest {
                 mMockTab.getContext(),
                 mProfileSupplier,
                 mMockActivityTabProvider,
-                mMockModalDialogManager,
-                mBottomSheetController);
+                mMockModalDialogManager);
     }
 
     @Test

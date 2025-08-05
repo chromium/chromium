@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvide
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -40,12 +39,10 @@ import java.util.Objects;
 @NullMarked
 public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
     private final Context mContext;
-    private final ObservableSupplier<Profile> mProfileSupplier;
     private final ActivityTabProvider mActivityTabProvider;
     private final TabSupplierObserver mActivityTabObserver;
     private final ButtonSpec mEntryPointSpec;
     private final ButtonSpec mExitPointSpec;
-    private final BottomSheetController mBottomSheetController;
     // Created as needed.
     private @Nullable ReaderModeBottomSheetCoordinator mReaderModeBottomSheetCoordinator;
     // Only populated when the TabSupplierObserver events fire.
@@ -66,8 +63,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
             Context context,
             ObservableSupplier<Profile> profileSupplier,
             ActivityTabProvider activityTabProvider,
-            ModalDialogManager modalDialogManager,
-            BottomSheetController bottomSheetController) {
+            ModalDialogManager modalDialogManager) {
         super(
                 activityTabProvider,
                 modalDialogManager,
@@ -80,9 +76,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                 /* tooltipTextResId= */ Resources.ID_NULL);
 
         mContext = context;
-        mProfileSupplier = profileSupplier;
         mActivityTabProvider = activityTabProvider;
-        mBottomSheetController = bottomSheetController;
         mActivityTabObserver =
                 new TabSupplierObserver(mActivityTabProvider) {
                     @Override
@@ -178,12 +172,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
         if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) return;
         if (tab == null || !DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
 
-        if (mReaderModeBottomSheetCoordinator == null) {
-            mReaderModeBottomSheetCoordinator =
-                    new ReaderModeBottomSheetCoordinator(
-                            mContext, mProfileSupplier.get(), mBottomSheetController);
-        }
-        mReaderModeBottomSheetCoordinator.show();
+        DomDistillerUiUtils.openSettingsInBottomSheet(tab, /* showFullSheet= */ false);
     }
 
     // Testing-specific functions
