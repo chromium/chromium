@@ -4,24 +4,20 @@
 
 if (!is_android) {
   source_set("tab_group_home") {
-    sources = [ "tab_group_home_ui.h" ]
+    sources = [
+      "tab_group_home_ui.cc",
+      "tab_group_home_ui.h",
+    ]
     public_deps = [
       ":constants",
       "//base",
       "//chrome/browser/ui/webui/top_chrome",
       "//content/public/browser",
     ]
-  }
-  source_set("impl") {
-    sources = [ "tab_group_home_ui.cc" ]
     deps = [
-      ":tab_group_home",
-      "//base",
       "//chrome/browser/resources/tab_group_home:resources",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/webui",
-      "//chrome/browser/ui/webui/top_chrome",
-      "//content/public/browser",
       "//ui/webui",
     ]
   }

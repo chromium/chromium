@@ -4442,7 +4442,6 @@ static_library("browser") {
       "//chrome/browser/ui/tabs:tab_strip_impl",
       "//chrome/browser/ui/tabs/organization:impl",
       "//chrome/browser/ui/tabs/tab_group_home",
-      "//chrome/browser/ui/tabs/tab_group_home:impl",
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/browser/ui/tabs/tab_strip_api:impl",
       "//chrome/browser/ui/toasts",
