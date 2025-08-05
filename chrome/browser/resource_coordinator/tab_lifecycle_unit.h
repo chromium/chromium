@@ -156,7 +156,7 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   void CheckDeviceUsage(DecisionDetails* decision_details) const;
 
   // TabStripModel to which this tab belongs.
-  raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 
   // Last time ticks at which this tab was focused, or TimeTicks::Max() if it is
   // currently focused. For tabs that aren't currently focused this is
