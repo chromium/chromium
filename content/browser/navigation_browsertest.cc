@@ -9840,6 +9840,41 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   EXPECT_EQ(url_c, results[1].url);
 }
 
+// Verify that navigating from about:blank will defer the creation of the
+// speculative RFH until the network request is sent.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       NavigateFromAboutBlankDeferred) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  TestNavigationManager nav_manager(web_contents, url);
+  // Navigation from about:blank creates a new render frame host.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
+  // The speculative RFH shall be created after sending the request.
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_TRUE(navigation_request->HasLoader());
+  RenderFrameHostImplWrapper speculative_rfh(
+      GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(speculative_rfh);
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+  ASSERT_TRUE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+}
+
 class DeferSpeculativeRFHCreationReuseRFHTest : public NavigationBrowserTest {
  public:
   DeferSpeculativeRFHCreationReuseRFHTest() {
