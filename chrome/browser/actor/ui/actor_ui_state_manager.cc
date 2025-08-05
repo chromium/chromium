@@ -305,8 +305,10 @@ void ActorUiStateManager::MaybeUpdateProfileScopedUiState() {
       });
 
   UiState new_state;
-  if (!GetCompletedTasks(base::Time::Now()).empty() || has_paused_task) {
+  if (has_paused_task) {
     new_state = ActorUiStateManager::UiState::kCheckTasks;
+  } else if (!GetCompletedTasks(base::Time::Now()).empty()) {
+    new_state = ActorUiStateManager::UiState::kCompleteTasks;
   } else if (!active_tasks.empty()) {
     new_state = ActorUiStateManager::UiState::kActive;
   } else {

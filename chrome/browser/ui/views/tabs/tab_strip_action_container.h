@@ -144,6 +144,7 @@ class TabStripActionContainer : public views::View,
 
   // UI Controls for the GlicActorTaskIcon:
   void TriggerGlicActorTaskIconCheckTasksNudge();
+  void TriggerGlicActorTaskIconCompleteTasksNudge();
   void ShowGlicActorTaskIcon();
   void HideGlicActorTaskIcon();
   bool GetIsShowingGlicActorTaskIconNudge();

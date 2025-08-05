@@ -49,6 +49,9 @@ void GlicActorTaskIconController::OnStateUpdate(
     case actor::ui::ActorUiStateManagerInterface::UiState::kCheckTasks:
       tab_strip_action_container_->TriggerGlicActorTaskIconCheckTasksNudge();
       break;
+    case actor::ui::ActorUiStateManagerInterface::UiState::kCompleteTasks:
+      tab_strip_action_container_->TriggerGlicActorTaskIconCompleteTasksNudge();
+      break;
     case actor::ui::ActorUiStateManagerInterface::UiState::kInactive:
       tab_strip_action_container_->HideGlicActorTaskIcon();
       break;

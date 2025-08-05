@@ -36,7 +36,7 @@ using ::testing::ValuesIn;
 
 using enum HandoffButtonState::ControlOwnership;
 
-base::TimeDelta CompletedtaskExpiryDelay() {
+base::TimeDelta CompletedTaskExpiryDelay() {
   return base::Seconds(
       features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get());
 }
@@ -242,8 +242,8 @@ TEST_F(ActorUiStateManagerTest, SingleTask_ReturnsCorrectUiState) {
   StopActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
-            ActorUiStateManager::UiState::kCheckTasks);
-  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
+            ActorUiStateManager::UiState::kCompleteTasks);
+  task_environment().FastForwardBy(CompletedTaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kInactive);
 }
@@ -291,9 +291,22 @@ TEST_F(ActorUiStateManagerTest, MultiTask_OneTaskPaused_ReturnsCorrectUiState) {
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
 
-  // Resume the first task, the state should now be in kActive.
+  // Stop the second task, the state should still be in kCheckTasks.
+  StopActorTask(task_id2);
+  task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
+  EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
+            ActorUiStateManager::UiState::kCheckTasks);
+
+  // Resume the first task, the state should now be in kCompleteTasks due to the
+  // second task.
   ResumeActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
+  EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
+            ActorUiStateManager::UiState::kCompleteTasks);
+
+  // After the completed task delay, the state should be
+  // kActive due to the first task still being active.
+  task_environment().FastForwardBy(CompletedTaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 }
@@ -310,23 +323,23 @@ TEST_F(ActorUiStateManagerTest,
   StopActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
-            ActorUiStateManager::UiState::kCheckTasks);
+            ActorUiStateManager::UiState::kCompleteTasks);
 
   // Create another task.
   TaskId task_id2 = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event2(task_id2);
   actor_ui_state_manager()->OnUiEvent(start_task_event2);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
-            ActorUiStateManager::UiState::kCheckTasks);
+            ActorUiStateManager::UiState::kCompleteTasks);
 
   // The state should still be active due to task2 after the expiry period.
-  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
+  task_environment().FastForwardBy(CompletedTaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
   // When both tasks stop, then the state should be inactive.
   StopActorTask(task_id2);
-  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
+  task_environment().FastForwardBy(CompletedTaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kInactive);
 }
@@ -353,16 +366,16 @@ TEST_F(ActorUiStateManagerTest,
   StopActorTask(task_id2);
 
   base::TimeDelta delay =
-      CompletedtaskExpiryDelay() - (base::Time::Now() - task1_finish_time);
+      CompletedTaskExpiryDelay() - (base::Time::Now() - task1_finish_time);
   task_environment().FastForwardBy((delay.is_positive()) ? delay
                                                          : base::TimeDelta());
   // Even though the first task expired, we should still be in the correct
   // state.
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
-            ActorUiStateManager::UiState::kCheckTasks);
+            ActorUiStateManager::UiState::kCompleteTasks);
 
   // After both tasks expire, the state should be inactive.
-  task_environment().FastForwardBy(CompletedtaskExpiryDelay());
+  task_environment().FastForwardBy(CompletedTaskExpiryDelay());
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kInactive);
 }

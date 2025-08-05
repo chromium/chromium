@@ -24,16 +24,21 @@ static constexpr base::TimeDelta kProfileScopedUiUpdateDebounceDelay =
 
 class ActorUiStateManagerInterface {
  public:
-  // TODO(crbug.com/428014205): Once UX is determined for multiple tasks, states
-  // here may change.
+  // TODO(crbug.com/424495020): This behavior will need to be revisited once
+  // multiple tasks come into play. If there are multiple tasks where some tasks
+  // are complete but some tasks are paused, the current behavior is that
+  // kCheckTasks takes precedence over kCompleteTasks. For M3 this is not an
+  // issue since there are not multiple tasks.
   enum class UiState {
     // There are no active Actor tasks on this profile.
     kInactive,
     // There are active Actor tasks on this profile.
     kActive,
-    // There are Actor tasks that need attention, this includes Actor pause &
-    // completed tasks within the Completed Task Expiry Delay.
+    // There are Actor tasks that need attention, this includes Actor paused.
     kCheckTasks,
+    // There are Actor tasks that are complete within the
+    // kCompletedTaskExpiryDelay.
+    kCompleteTasks,
   };
   virtual ~ActorUiStateManagerInterface() = default;
 
