@@ -93,10 +93,6 @@
   _disableFileSelection = NO;
 }
 
-- (void)importItems {
-  [self continueToImportPasswords:[NSArray array]];
-}
-
 - (NSArray<PasswordImportItem*>*)conflictingPasswords {
   return
       [self passwordItemsWithFaviconDataSource:_importClient

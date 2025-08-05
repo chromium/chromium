@@ -74,6 +74,8 @@
       break;
     case SafariDataImportStage::kImporting:
       self.primaryButtonEnabled = NO;
+      self.navigationItem.hidesBackButton = YES;
+      self.navigationItem.rightBarButtonItem = nil;
       [self.itemTableView notifyImportStart];
       break;
     case SafariDataImportStage::kImported:

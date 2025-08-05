@@ -66,10 +66,6 @@ class ReadingListModel;
 /// Resets the mediator to the state before any file is selected or processed.
 - (void)reset;
 
-/// Imports the items that are ready for import, and increments the import stage
-/// . Should only be invoked when items are ready.
-- (void)importItems;
-
 /// List of password conflicts with the information retrieved from the source
 /// of import. Only available when passwords are ready.
 - (NSArray<PasswordImportItem*>*)conflictingPasswords;
