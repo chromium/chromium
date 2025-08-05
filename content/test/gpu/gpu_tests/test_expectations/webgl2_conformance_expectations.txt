@@ -781,6 +781,10 @@ crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/function
 
 crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
 
+## Linux AMD RX 7600 ##
+
+crbug.com/436274257 [ linux amd-0x7480 ] deqp/functional/gles3/uniformbuffers/multi_nested_struct.html [ Failure ]
+
 ## Linux Intel Mesa Version **
 
 crbug.com/329698340 [ linux intel angle-opengl passthrough mesa_ge_23.2 ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
