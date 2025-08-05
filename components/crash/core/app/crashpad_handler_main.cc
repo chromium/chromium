@@ -14,12 +14,6 @@
 #include "components/stability_report/user_stream_data_source_posix.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/40064248): Remove this once sufficient information is
-// collected.
-#include "components/crash/core/app/command_output_user_stream.h"
-#endif
-
 #if BUILDFLAG(ENABLE_GWP_ASAN)
 #include "components/gwp_asan/crash_handler/crash_handler.h"  // nogncheck
 #endif
@@ -42,13 +36,6 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
       std::make_unique<stability_report::UserStreamDataSourcePosix>());
 #endif
 
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40064248): Remove this once sufficient information is
-  // collected.
-  user_stream_data_sources.push_back(
-      std::make_unique<crash_reporter::CommandOutputUserStream>());
-#endif
-
 #if BUILDFLAG(ENABLE_GWP_ASAN)
   user_stream_data_sources.push_back(
       std::make_unique<gwp_asan::UserStreamDataSource>());
@@ -58,8 +45,8 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
   user_stream_data_sources.push_back(
       std::make_unique<allocation_recorder::crash_handler::
                            AllocationRecorderStreamDataSource>(
-          base::MakeRefCounted<
-              allocation_recorder::crash_handler::AllocationRecorderHolder>(),
+          base::MakeRefCounted<allocation_recorder::crash_handler::
+                                   AllocationRecorderHolder>(),
           base::MakeRefCounted<
               allocation_recorder::crash_handler::StreamDataSourceFactory>()));
 #endif
