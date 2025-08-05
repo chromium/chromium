@@ -28,6 +28,8 @@ body { font-size: 10px; }
     testGridDefinitionsSetJSValues("repeat(auto-fill, auto [foo bar] 10px)", "repeat(auto-fill, auto [foo bar] 10px)", "none", "none");
     testGridDefinitionsSetJSValues("repeat(auto-fit, [bar] auto)", "repeat(auto-fit, [bar] auto)", "none", "none");
     testGridDefinitionsSetJSValues("repeat(auto-fit, minmax(20px, 30px) auto)", "repeat(auto-fit, minmax(20px, 30px) auto)", "none", "none");
+    testGridDefinitionsSetJSValues("repeat(auto-fill, 20px min-content)", "repeat(auto-fill, 20px min-content)", "none", "none");
+    testGridDefinitionsSetJSValues("repeat(auto-fit, max-content 2em)", "repeat(auto-fit, max-content 2em)", "none", "none");
 
     debug("");
     debug("Test invalid repeat syntax.");
@@ -40,11 +42,9 @@ body { font-size: 10px; }
     }
 
     testInvalidSyntax("repeat(auto-fill, 1fr)");
-    testInvalidSyntax("repeat(auto-fill, 20px min-content)");
     testInvalidSyntax("repeat(auto-fill,)");
     testInvalidSyntax("repeat(auto-fill, [foo])");
     testInvalidSyntax("repeat(auto-fit, 1fr)");
-    testInvalidSyntax("repeat(auto-fit, max-content 2em)");
     testInvalidSyntax("repeat(auto-fit,)");
     testInvalidSyntax("repeat(auto-fit, [foo])");
 
