@@ -89,9 +89,10 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
 
   CountryToStateNamesListMapping country_to_state_names_map;
   for (const AutofillProfile* profile : profiles) {
-    const AlternativeStateNameMap::CountryCode country(base::UTF16ToUTF8(
-        profile->GetInfo(AutofillType(HtmlFieldType::kCountryCode),
-                         address_data_manager_->app_locale())));
+    const AlternativeStateNameMap::CountryCode country(
+        base::UTF16ToUTF8(profile->GetInfo(
+            AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true),
+            address_data_manager_->app_locale())));
 
     const AlternativeStateNameMap::StateName state_name(profile->GetInfo(
         ADDRESS_HOME_STATE, address_data_manager_->app_locale()));

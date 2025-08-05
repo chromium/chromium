@@ -195,12 +195,12 @@ std::u16string Address::GetInfo(const AutofillType& type,
                                 const std::string& locale) const {
   std::string country_code =
       base::UTF16ToUTF8(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY));
+  FieldType storable_type = type.GetAddressType();
 
-  if (type.html_type() == HtmlFieldType::kCountryCode) {
+  if (storable_type == ADDRESS_HOME_COUNTRY && type.is_country_code()) {
     return base::ASCIIToUTF16(country_code);
   }
 
-  FieldType storable_type = type.GetAddressType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !country_code.empty())
     return AutofillCountry(country_code, locale).name();
 
@@ -211,7 +211,8 @@ bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
                                             const std::u16string& value,
                                             const std::string& locale,
                                             VerificationStatus status) {
-  if (type.html_type() == HtmlFieldType::kCountryCode) {
+  FieldType storable_type = type.GetAddressType();
+  if (storable_type == ADDRESS_HOME_COUNTRY && type.is_country_code()) {
     std::string country_code =
         base::IsStringASCII(value)
             ? base::ToUpperASCII(base::UTF16ToASCII(value))
@@ -235,7 +236,6 @@ bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
     return !country_code.empty();
   }
 
-  FieldType storable_type = type.GetAddressType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !value.empty()) {
     std::string country_code =
         CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(

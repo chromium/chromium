@@ -32,7 +32,7 @@ CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
   address_data->recipient = get_info(AutofillType(NAME_FULL));
   address_data->organization = get_info(AutofillType(COMPANY_NAME));
   address_data->region_code =
-      get_info(AutofillType(HtmlFieldType::kCountryCode));
+      get_info(AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true));
   address_data->administrative_area =
       get_info(AutofillType(ADDRESS_HOME_STATE));
   address_data->locality = get_info(AutofillType(ADDRESS_HOME_CITY));

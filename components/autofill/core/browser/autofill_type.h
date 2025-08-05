@@ -21,7 +21,7 @@ namespace autofill {
 class AutofillField;
 
 // Represents which types of data an AutofillField may accept. These types are
-// encoded either as a set of FieldTypes or as a single HtmlFieldType.
+// encoded either as a set of FieldTypes.
 //
 // AutofillTypes are subject to constraints that govern which FieldTypes may
 // occur together. See TestConstraints() for details.
@@ -30,16 +30,24 @@ class AutofillField;
 // FieldType (e.g., it must not hold ADDRESS_HOME_LINE1 and ADDRESS_HOME_LINE2
 // at once), which can be retrieved using GetAddressType().
 //
-// TODO(crbug.com/432645177): Remove HtmlFieldType from this class.
+// TODO(crbug.com/436013479): Remove the hack that represents country codes.
 // TODO(crbug.com/432645177): Move ServerPredictions to AutofillField?
 class AutofillType {
  public:
   struct ServerPrediction;
 
   // `TestConstraints(field_types)` must be true.
+  //
+  // `is_country_code` is a hack to work around the fact that FieldType does not
+  // distinguish between country names and country codes. If `is_country_code`
+  // is true and `field_types.contains(ADDRESS_HOME_COUNTRY)`, it indicates
+  // that the ADDRESS_HOME_COUNTRY is a country code, not a country name.
+  //
+  // TODO(crbug.com/436013479): Remove `is_country_code`.
+  explicit AutofillType(FieldTypeSet field_types, bool is_country_code);
   explicit AutofillType(FieldTypeSet field_types);
+  explicit AutofillType(FieldType field_type, bool is_country_code);
   explicit AutofillType(FieldType field_type);
-  explicit AutofillType(HtmlFieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
   AutofillType& operator=(const AutofillType& autofill_type) = default;
   ~AutofillType() = default;
@@ -53,17 +61,13 @@ class AutofillType {
   // `AutofillType(s)` is admissible iff `TestConstraints(s)` is true.
   static bool TestConstraints(const FieldTypeSet& s);
 
-  // TODO(crbug.com/432645177): Remove HtmlFieldType from this class.
-  HtmlFieldType html_type() const;
-
   // Returns the FieldTypes held by this AutofillType.
-  //
-  // If this AutofillType holds an HtmlFieldType, it is mapped to a FieldType.
-  // Some HtmlFieldTypes have no FieldType equivalent and are mapped to
-  // UNKNOWN_TYPE. Additionally, the mapping is not injective. For example, both
-  // HtmlFieldTypes::kCountry and HtmlFieldTypes::kCountryName map to
-  // FieldType::ADDRESS_HOME_COUNTRY.
   FieldTypeSet GetTypes() const;
+
+  // Indicates that the `ADDRESS_HOME_COUNTRY` in GetTypes() represents country
+  // code. If GetTypes() does not contain `ADDRESS_HOME_COUNTRY`, it is false.
+  // TODO(crbug.com/436013479): Remove this hack.
+  bool is_country_code() const { return is_country_code_; }
 
   // Returns the FieldTypeGroups of the types in GetTypes().
   //
@@ -132,7 +136,8 @@ class AutofillType {
   std::string ToString() const;
 
  private:
-  std::variant<FieldTypeSet, HtmlFieldType> types_;
+  FieldTypeSet types_;
+  bool is_country_code_ = false;
 };
 
 // A collection of server prediction metadata related to a form field.

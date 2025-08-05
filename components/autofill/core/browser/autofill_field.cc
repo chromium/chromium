@@ -531,8 +531,8 @@ std::optional<AutofillPredictionSource> AutofillField::PredictionSource()
   return GetOverallPredictionResult().source;
 }
 
-AutofillType AutofillField::MakeAutofillType(
-    FieldType primary_field_type) const {
+AutofillType AutofillField::MakeAutofillType(FieldType primary_field_type,
+                                             bool is_country_code) const {
   // Indicates whether `ft` may be part of the union type.
   auto is_union_type_candidate = [](FieldType ft) {
     return GroupTypeOfFieldType(ft) == FieldTypeGroup::kAutofillAi &&
@@ -564,7 +564,7 @@ AutofillType AutofillField::MakeAutofillType(
         base::span(server_predictions_).first(prefix_length));
   } while (!AutofillType::TestConstraints(field_types) && prefix_length-- > 0);
   DCHECK(field_types.contains(primary_field_type));
-  return AutofillType(field_types);
+  return AutofillType(field_types, is_country_code);
 }
 
 AutofillField::PredictionResult AutofillField::GetOverallPredictionResult()
@@ -636,13 +636,10 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
     // and `HtmlFieldTypeToBestCorrespondingFieldType(html_type_local)` behave
     // differently (crbug.com/436013479). In all other cases, they are
     // identical, except for AutofillType::ToString().
-    // TODO(crbug.com/436013479): Remove HtmlFieldType from AutofillType.
+    // TODO(crbug.com/436013479): Remove AutofillType::is_country_code().
     AutofillType type = MakeAutofillType(
-        HtmlFieldTypeToBestCorrespondingFieldType(html_type_local));
-    if (type.GetTypes().size() <= 1 ||
-        html_type_local == HtmlFieldType::kCountryCode) {
-      type = AutofillType(html_type_local);
-    }
+        HtmlFieldTypeToBestCorrespondingFieldType(html_type_local),
+        /*is_country_code=*/html_type_local == HtmlFieldType::kCountryCode);
     return {type, AutofillPredictionSource::kAutocomplete};
   }
 

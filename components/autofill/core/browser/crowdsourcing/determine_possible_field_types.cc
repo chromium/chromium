@@ -442,8 +442,9 @@ std::set<FieldGlobalId> PreProcessStateMatchingTypes(
       continue;
     }
 
-    const std::u16string& country_code =
-        profile->GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
+    const std::u16string& country_code = profile->GetInfo(
+        AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true),
+        app_locale);
 
     for (auto& field : fields) {
       if (fields_that_match_state.contains(field->global_id())) {

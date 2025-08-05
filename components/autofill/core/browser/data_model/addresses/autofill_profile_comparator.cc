@@ -549,7 +549,8 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // TODO(crbug.com/40221178) `GetNonEmptyOf()` prefers `new_profile` in case
   // both are non empty.
   std::string region = base::UTF16ToUTF8(GetNonEmptyOf(
-      new_profile, old_profile, AutofillType(HtmlFieldType::kCountryCode)));
+      new_profile, old_profile,
+      AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true)));
   if (region.empty()) {
     region = AutofillCountry::CountryCodeForLocale(app_locale_);
   }

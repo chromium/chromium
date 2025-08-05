@@ -159,45 +159,29 @@ bool AutofillType::ServerPrediction::is_override() const {
   return server_predictions.empty() ? false : server_predictions[0].override();
 }
 
-AutofillType::AutofillType(FieldTypeSet field_types)
-    : types_(Normalize(field_types)) {
+AutofillType::AutofillType(FieldTypeSet field_types, bool is_country_code)
+    : types_(Normalize(field_types)),
+      is_country_code_(is_country_code &&
+                       types_.contains(ADDRESS_HOME_COUNTRY)) {
   DCHECK(TestConstraints(field_types)) << FieldTypeSetToString(field_types);
   DCHECK(TestConstraints(GetTypes())) << FieldTypeSetToString(GetTypes());
 }
 
+AutofillType::AutofillType(FieldTypeSet field_types)
+    : AutofillType(field_types, false) {}
+
+AutofillType::AutofillType(FieldType field_type, bool is_country_code)
+    : AutofillType(FieldTypeSet{field_type}, is_country_code) {}
+
 AutofillType::AutofillType(FieldType field_type)
-    : AutofillType(FieldTypeSet{field_type}) {}
-
-AutofillType::AutofillType(HtmlFieldType field_type) : types_(field_type) {
-  DCHECK(TestConstraints(GetTypes())) << FieldTypeSetToString(GetTypes());
-}
-
-HtmlFieldType AutofillType::html_type() const {
-  const HtmlFieldType* html_type = std::get_if<HtmlFieldType>(&types_);
-  return html_type ? *html_type : HtmlFieldType::kUnspecified;
-}
+    : AutofillType(field_type, false) {}
 
 FieldTypeSet AutofillType::GetTypes() const {
-  return std::visit(
-      absl::Overload{
-          [](FieldTypeSet field_types) { return field_types; },
-          [](HtmlFieldType html_type) {
-            return FieldTypeSet{
-                HtmlFieldTypeToBestCorrespondingFieldType(html_type)};
-          }},
-      types_);
+  return types_;
 }
 
 DenseSet<FieldTypeGroup> AutofillType::GetGroups() const {
-  FieldTypeGroupSet groups = std::visit(
-      absl::Overload{
-          [](const FieldTypeSet& field_types) {
-            return FieldTypeGroupSet(field_types, &GroupTypeOfFieldType);
-          },
-          [](HtmlFieldType html_type) {
-            return FieldTypeGroupSet{GroupTypeOfHtmlFieldType(html_type)};
-          }},
-      types_);
+  FieldTypeGroupSet groups = FieldTypeGroupSet(types_, &GroupTypeOfFieldType);
   groups.erase(FieldTypeGroup::kNoGroup);
   return groups;
 }
@@ -294,7 +278,7 @@ FieldType AutofillType::GetAutofillAiTypeAndResolveTagTypes(
 }
 
 std::string AutofillType::ToString() const {
-  return FieldTypeSetToString(GetTypes());
+  return FieldTypeSetToString(types_);
 }
 
 }  // namespace autofill
