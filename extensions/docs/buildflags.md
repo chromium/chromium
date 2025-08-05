@@ -24,5 +24,12 @@ same types of situations you'd see IS_WIN or other platforms. Also occasionally
 used to exclude code that is only supported under manifest V2, because desktop
 Android only supports manifest V3.
 
+`ENABLE_PLATFORM_APPS` - Rarely used. Typically used to exclude Chrome Platform
+Apps code from the rest of the extensions system. Platform Apps were app-like
+pieces of software built with JS/HTML/CSS and resembling Chrome extensions. The
+Chrome apps platform has been deprecated on Windows, Mac and Linux since ~2018.
+Chrome OS is in the process of deprecating it, with managed users reaching end
+of life in 2028.
+
 The plan in the long run is to convert almost everything to
 `ENABLE_EXTENSIONS_CORE`, then rename that flag back to `ENABLE_EXTENSIONS`.
