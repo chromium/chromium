@@ -1193,9 +1193,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       std::make_unique<IbanSuggestionGenerator>());
   suggestion_generators_.push_back(
       std::make_unique<MerchantPromoCodeSuggestionGenerator>());
-  suggestion_generators_.push_back(
-      std::make_unique<AutocompleteSuggestionGenerator>(
-          client().GetAutocompleteHistoryManager()->GetProfileDatabase()));
+  if (client().GetAutocompleteHistoryManager()) {
+    suggestion_generators_.push_back(
+        std::make_unique<AutocompleteSuggestionGenerator>(
+            client().GetAutocompleteHistoryManager()->GetProfileDatabase()));
+  }
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
