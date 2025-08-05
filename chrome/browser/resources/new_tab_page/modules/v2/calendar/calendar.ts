@@ -134,8 +134,7 @@ export class CalendarElement extends CrLitElement {
     // Find the indices of all meetings that are not over.
     let expandableEventIndices: number[] = this.events.map((_, i) => i);
     expandableEventIndices = expandableEventIndices.filter((eventIndex) => {
-      const expandableEvent = this.events[eventIndex];
-      assert(expandableEvent);
+      const expandableEvent = this.events[eventIndex]!;
       return toJsTimestamp(expandableEvent.endTime) > now;
     });
 
@@ -147,8 +146,7 @@ export class CalendarElement extends CrLitElement {
     expandableEventIndices.sort(
         (a, b) => this.compareEventPriority_(a, b, in5Minutes));
 
-    assert(expandableEventIndices[0]);
-    return expandableEventIndices[0];
+    return expandableEventIndices[0]!;
   }
 
   protected hasDoubleBooked_() {
