@@ -46,6 +46,7 @@ enum class DeleteDirection {
 };
 
 class CompositeEditCommand;
+class DataTransfer;
 class Document;
 class Element;
 class HTMLElement;
@@ -155,11 +156,13 @@ void ChangeSelectionAfterCommand(LocalFrame*,
 
 void DispatchEditableContentChangedEvents(Element* start_root,
                                           Element* end_root);
-void DispatchInputEventEditableContentChanged(Element* start_root,
-                                              Element* end_root,
-                                              InputEvent::InputType,
-                                              const String&,
-                                              InputEvent::EventIsComposing);
+void DispatchInputEventEditableContentChanged(
+    Element* start_root,
+    Element* end_root,
+    InputEvent::InputType,
+    const String&,
+    InputEvent::EventIsComposing,
+    DataTransfer* data_transfer = nullptr);
 InputEvent::EventIsComposing IsComposingFromCommand(
     const CompositeEditCommand*);
 

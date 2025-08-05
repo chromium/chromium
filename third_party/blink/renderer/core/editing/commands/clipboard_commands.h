@@ -39,6 +39,7 @@
 
 namespace blink {
 
+class DataTransfer;
 class DocumentFragment;
 class Element;
 class Event;
@@ -118,9 +119,12 @@ class CORE_EXPORT ClipboardCommands {
                               DocumentFragment*,
                               bool smart_replace,
                               bool match_style,
-                              EditorCommandSource);
+                              EditorCommandSource,
+                              DataTransfer* = nullptr);
   static void PasteAsPlainTextFromClipboard(LocalFrame&, EditorCommandSource);
-  static void PasteFromClipboard(LocalFrame&, EditorCommandSource);
+  static void PasteFromClipboard(LocalFrame&,
+                                 EditorCommandSource,
+                                 DataTransfer* = nullptr);
   static void PasteFromImageURL(LocalFrame&, EditorCommandSource, String);
 
   using FragmentAndPlainText = std::pair<DocumentFragment*, const bool>;

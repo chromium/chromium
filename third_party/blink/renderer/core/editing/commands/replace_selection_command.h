@@ -51,7 +51,8 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   ReplaceSelectionCommand(Document&,
                           DocumentFragment*,
                           CommandOptions,
-                          InputEvent::InputType = InputEvent::InputType::kNone);
+                          InputEvent::InputType = InputEvent::InputType::kNone,
+                          DataTransfer* = nullptr);
 
   EphemeralRange InsertedRange() const;
 

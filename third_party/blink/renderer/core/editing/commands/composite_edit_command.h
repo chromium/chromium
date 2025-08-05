@@ -37,6 +37,7 @@
 
 namespace blink {
 
+class DataTransfer;
 class DeleteSelectionOptions;
 class EditingStyle;
 class Element;
@@ -85,7 +86,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   void Trace(Visitor*) const override;
 
  protected:
-  explicit CompositeEditCommand(Document&);
+  explicit CompositeEditCommand(Document&, DataTransfer* = nullptr);
 
   VisibleSelection EndingVisibleSelection() const;
   //
@@ -231,6 +232,9 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   static bool IsNodeVisiblyContainedWithin(Node&, const EphemeralRange&);
 
   HeapVector<Member<EditCommand>> commands_;
+  // The data transfer will be used for the input event
+  // on contenteditables.
+  Member<DataTransfer> data_transfer_;
 
  private:
   bool IsCompositeEditCommand() const final { return true; }

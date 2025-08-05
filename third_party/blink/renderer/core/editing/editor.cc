@@ -184,7 +184,8 @@ bool Editor::HandleTextEvent(TextEvent* event) {
     if (event->PastingFragment()) {
       ReplaceSelectionWithFragment(
           event->PastingFragment(), false, event->ShouldSmartReplace(),
-          event->ShouldMatchStyle(), InputEvent::InputType::kInsertFromPaste);
+          event->ShouldMatchStyle(), InputEvent::InputType::kInsertFromPaste,
+          event->GetDataTransfer());
     } else {
       ReplaceSelectionWithText(event->data(), false,
                                event->ShouldSmartReplace(),
@@ -297,7 +298,8 @@ void Editor::ReplaceSelectionWithFragment(DocumentFragment* fragment,
                                           bool select_replacement,
                                           bool smart_replace,
                                           bool match_style,
-                                          InputEvent::InputType input_type) {
+                                          InputEvent::InputType input_type,
+                                          DataTransfer* data_transfer) {
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
   const VisibleSelection& selection =
       GetFrameSelection().ComputeVisibleSelectionInDOMTree();
@@ -314,8 +316,8 @@ void Editor::ReplaceSelectionWithFragment(DocumentFragment* fragment,
   if (match_style)
     options |= ReplaceSelectionCommand::kMatchStyle;
   DCHECK(GetFrame().GetDocument());
-  MakeGarbageCollected<ReplaceSelectionCommand>(*GetFrame().GetDocument(),
-                                                fragment, options, input_type)
+  MakeGarbageCollected<ReplaceSelectionCommand>(
+      *GetFrame().GetDocument(), fragment, options, input_type, data_transfer)
       ->Apply();
   RevealSelectionAfterEditingOperation();
 }

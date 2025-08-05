@@ -496,8 +496,9 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
     Document& document,
     DocumentFragment* fragment,
     CommandOptions options,
-    InputEvent::InputType input_type)
-    : CompositeEditCommand(document),
+    InputEvent::InputType input_type,
+    DataTransfer* data_transfer)
+    : CompositeEditCommand(document, data_transfer),
       select_replacement_(options & kSelectReplacement),
       smart_replace_(options & kSmartReplace),
       match_style_(options & kMatchStyle),

@@ -2745,6 +2745,12 @@
       status: "experimental",
     },
     {
+      // Enable DataTransfer propagation to input events for insertFromPaste,
+      // insertFromDrop, and insertReplacementText operations on content-editables.
+      name: "InputEventDataTransferForInsertCmd",
+      status: "test",
+    },
+    {
       // The HTML parser inserts a </select> end tag before inserting <input>
       // when parsing inside of a <select> tag. We want to allow <input> inside
       // <select>, but it isn't web compatible enough. This flag allows <input>

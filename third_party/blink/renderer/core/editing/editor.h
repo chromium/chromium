@@ -43,6 +43,7 @@
 namespace blink {
 
 class CompositeEditCommand;
+class DataTransfer;
 class DragData;
 class EditingBehavior;
 class EditorCommand;
@@ -194,7 +195,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
                                     bool select_replacement,
                                     bool smart_replace,
                                     bool match_style,
-                                    InputEvent::InputType);
+                                    InputEvent::InputType,
+                                    DataTransfer* = nullptr);
   void ReplaceSelectionWithText(const String&,
                                 bool select_replacement,
                                 bool smart_replace,
