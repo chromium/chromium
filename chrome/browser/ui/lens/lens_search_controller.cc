@@ -551,8 +551,15 @@ bool LensSearchController::RunLensEligibilityChecks(
 }
 
 void LensSearchController::NotifyOverlayOpened() {
-  CHECK(state() == State::kInitializing);
-  state_ = State::kActive;
+  CHECK(state() != State::kOff);
+  // The search controller could be backgrounded as the overlay controller
+  // is being initialized. If so, set the backgrounded state to active and
+  // record the invocation instead of setting the current state to active.
+  if (state_ == State::kBackground) {
+    backgrounded_state_ = State::kActive;
+  } else {
+    state_ = State::kActive;
+  }
 
   // Record the UMA for lens overlay invocation.
   lens_session_metrics_logger_->RecordInvocation();
@@ -671,7 +678,7 @@ void LensSearchController::TabForegrounded(tabs::TabInterface* tab) {
   // restore to the previous state.
   lens_overlay_controller_->TabForegrounded(tab);
 
-  state_ = State::kActive;
+  state_ = backgrounded_state_;
 }
 
 void LensSearchController::TabWillEnterBackground(tabs::TabInterface* tab) {
@@ -684,10 +691,20 @@ void LensSearchController::TabWillEnterBackground(tabs::TabInterface* tab) {
     return;
   }
 
+  // If the overlay is not active when the tab is backgrounded, then the entire
+  // Lens session should be closed. Note that the overlay is considered active
+  // when it is hidden and the side panel is open.
+  if (!lens_overlay_controller_->IsOverlayActive()) {
+    CloseLensSync(
+        lens::LensOverlayDismissalSource::kTabBackgroundedWhileScreenshotting);
+    return;
+  }
+
   // Notify the overlay controller of the tab will enter background event so
   // it can hide the overlay.
   lens_overlay_controller_->TabWillEnterBackground(tab);
 
+  backgrounded_state_ = state_;
   state_ = State::kBackground;
 }
 
