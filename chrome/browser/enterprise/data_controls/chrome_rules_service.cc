@@ -17,7 +17,8 @@ namespace data_controls {
 // ---------------------------------
 
 ChromeRulesService::ChromeRulesService(content::BrowserContext* browser_context)
-    : RulesService(Profile::FromBrowserContext(browser_context)->GetPrefs()),
+    : RulesServiceBase(
+          Profile::FromBrowserContext(browser_context)->GetPrefs()),
       profile_(Profile::FromBrowserContext(browser_context)) {}
 
 ChromeRulesService::~ChromeRulesService() = default;
@@ -102,9 +103,9 @@ ActionSourceOrDestination ChromeRulesService::ExtractPasteActionContext(
 // ChromeRulesServiceFactory implementation
 // ----------------------------------------
 
-RulesService* ChromeRulesServiceFactory::GetForBrowserContext(
+ChromeRulesService* ChromeRulesServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<RulesService*>(
+  return static_cast<ChromeRulesService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 

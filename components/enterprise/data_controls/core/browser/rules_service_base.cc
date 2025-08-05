@@ -1,26 +1,27 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/data_controls/content/browser/rules_service.h"
+#include "components/enterprise/data_controls/core/browser/rules_service_base.h"
 
 #include "components/enterprise/data_controls/core/browser/prefs.h"
+#include "components/prefs/pref_service.h"
 
 namespace data_controls {
 
-RulesService::RulesService(PrefService* pref_service) {
+RulesServiceBase::RulesServiceBase(PrefService* pref_service) {
   pref_registrar_.Init(pref_service);
   pref_registrar_.Add(
       kDataControlsRulesPref,
-      base::BindRepeating(&RulesService::OnDataControlsRulesUpdate,
+      base::BindRepeating(&RulesServiceBase::OnDataControlsRulesUpdate,
                           base::Unretained(this)));
   OnDataControlsRulesUpdate();
 }
 
-RulesService::~RulesService() = default;
+RulesServiceBase::~RulesServiceBase() = default;
 
-Verdict RulesService::GetVerdict(Rule::Restriction restriction,
-                                 const ActionContext& context) const {
+Verdict RulesServiceBase::GetVerdict(Rule::Restriction restriction,
+                                     const ActionContext& context) const {
   Rule::Level max_level = Rule::Level::kNotSet;
   Verdict::TriggeredRules triggered_rules;
   for (size_t i = 0; i < rules_.size(); ++i) {
@@ -51,7 +52,7 @@ Verdict RulesService::GetVerdict(Rule::Restriction restriction,
   }
 }
 
-void RulesService::OnDataControlsRulesUpdate() {
+void RulesServiceBase::OnDataControlsRulesUpdate() {
   DCHECK(pref_registrar_.prefs());
   rules_.clear();
 

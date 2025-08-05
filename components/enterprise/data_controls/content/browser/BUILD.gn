@@ -15,9 +15,6 @@ source_set("browser") {
     "last_replaced_clipboard_data.h",
     "reporting_service_base.h",
     "reporting_service_base_factory.h",
-    "rules_service.cc",
-    "rules_service.h",
-    "rules_service_factory.h",
   ]
   deps = [
     "//components/enterprise/data_controls/core/browser",

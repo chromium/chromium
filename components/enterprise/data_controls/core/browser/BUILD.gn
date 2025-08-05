@@ -43,6 +43,8 @@ source_set("browser") {
     "prefs.h",
     "rule.cc",
     "rule.h",
+    "rules_service_base.cc",
+    "rules_service_base.h",
     "verdict.cc",
     "verdict.h",
   ]
