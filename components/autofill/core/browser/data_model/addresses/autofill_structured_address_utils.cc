@@ -331,17 +331,12 @@ std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
                                    bool keep_white_space) {
   return AddressRewriter::RewriteForCountryCode(
       country_code->empty() ? AddressCountryCode("US") : country_code,
-      NormalizeValue(text, keep_white_space, country_code));
-}
-
-std::u16string NormalizeValue(std::u16string_view value,
-                              bool keep_white_space,
-                              const AddressCountryCode& country_code) {
-  return AutofillProfileComparator::NormalizeForComparison(
-      value,
-      keep_white_space ? AutofillProfileComparator::WhitespaceSpec::kRetain
-                       : AutofillProfileComparator::WhitespaceSpec::kDiscard,
-      country_code);
+      AutofillProfileComparator::NormalizeForComparison(
+          text,
+          keep_white_space
+              ? AutofillProfileComparator::WhitespaceSpec::kRetain
+              : AutofillProfileComparator::WhitespaceSpec::kDiscard,
+          country_code));
 }
 
 bool AreStringTokenEquivalent(const std::u16string& one,
@@ -351,9 +346,9 @@ bool AreStringTokenEquivalent(const std::u16string& one,
 
 bool AreStringTokenCompatible(const std::u16string& first,
                               const std::u16string& second) {
-  SortedTokenComparisonResult result =
-      CompareSortedTokens(TokenizeValue(NormalizeValue(first)),
-                          TokenizeValue(NormalizeValue(second)));
+  SortedTokenComparisonResult result = CompareSortedTokens(
+      TokenizeValue(AutofillProfileComparator::NormalizeForComparison(first)),
+      TokenizeValue(AutofillProfileComparator::NormalizeForComparison(second)));
   return result.status == SortedTokenComparisonStatus::kMatch ||
          result.status == SortedTokenComparisonStatus::kSubset;
 }
@@ -426,9 +421,11 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
     std::optional<std::vector<std::u16string>> parts =
         SplitByRegex(value, **regex, value.size());
     if (!parts.has_value()) {
-      return {AddressToken{.value = value,
-                           .normalized_value = NormalizeValue(value),
-                           .position = 0}};
+      return {AddressToken{
+          .value = value,
+          .normalized_value =
+              AutofillProfileComparator::NormalizeForComparison(value),
+          .position = 0}};
     }
     tokens.reserve(value.size());
     for (const std::u16string& part : parts.value()) {
@@ -443,10 +440,11 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
     for (const auto& token :
          base::SplitString(value, u", \n", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
-      tokens.emplace_back(
-          AddressToken{.value = token,
-                       .normalized_value = NormalizeValue(token),
-                       .position = index++});
+      tokens.emplace_back(AddressToken{
+          .value = token,
+          .normalized_value =
+              AutofillProfileComparator::NormalizeForComparison(token),
+          .position = index++});
     }
   }
   // Sort the tokens lexicographically by their normalized value.

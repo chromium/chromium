@@ -20,6 +20,7 @@
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -239,7 +240,7 @@ const std::u16string& AddressComponent::GetValue() const {
 std::u16string AddressComponent::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
-  return NormalizeValue(value);
+  return AutofillProfileComparator::NormalizeForComparison(value);
 }
 
 std::optional<std::u16string> AddressComponent::GetCanonicalizedValue() const {

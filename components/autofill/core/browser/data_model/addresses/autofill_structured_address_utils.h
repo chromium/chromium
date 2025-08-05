@@ -259,15 +259,6 @@ std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
                                    const std::u16string& text,
                                    bool keep_white_space);
 
-// Collapses white spaces and line breaks, converts the string to lower case and
-// handles diactrics using rules for `country_code`.
-// If |keep_white_spaces| is true, white spaces are collapsed. Otherwise,
-// white spaces are completely removed.
-std::u16string NormalizeValue(
-    std::u16string_view value,
-    bool keep_white_space = true,
-    const AddressCountryCode& country_code = AddressCountryCode(""));
-
 // Returns true of both vectors contain the same tokens in the same order.
 bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
                           const std::vector<AddressToken>& second);
