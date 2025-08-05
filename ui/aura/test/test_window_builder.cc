@@ -97,11 +97,12 @@ TestWindowBuilder& TestWindowBuilder::SetShow(bool show) {
 
 std::unique_ptr<Window> TestWindowBuilder::Build() {
   auto window = CreateWindowInternal();
-  if (parent()) {
+  auto* parent = release_parent();
+  if (parent) {
     if (!params_.bounds.IsEmpty()) {
       window->SetBounds(params_.bounds);
     }
-    params_.parent->AddChild(window.get());
+    parent->AddChild(window.get());
   } else {
     // Parent window is not specified. A parent window will be picked from
     // the context.

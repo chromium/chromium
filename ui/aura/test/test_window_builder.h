@@ -86,8 +86,13 @@ class TestWindowBuilder {
   const WindowBuilderParams& params() const { return params_; }
   bool built() const { return built_; }
 
-  // Subclass needs a write access to the parent_.
-  Window* parent() { return params_.parent; }
+  // Subclass needs a write access to parent. Reset it after it is returned to
+  // avoid dangling pointer.
+  Window* release_parent() {
+    auto* r = params_.parent.get();
+    params_.parent = nullptr;
+    return r;
+  }
 
  private:
   WindowBuilderParams params_;

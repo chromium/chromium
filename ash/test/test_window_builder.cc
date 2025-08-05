@@ -124,11 +124,13 @@ TestWindowBuilder& TestWindowBuilder::SetClientControlled(
 
 std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
   auto window = CreateWindowInternal();
-  if (parent()) {
+  auto* parent = release_parent();
+
+  if (parent) {
     if (!params().bounds.IsEmpty()) {
       window->SetBounds(params().bounds);
     }
-    parent()->AddChild(window.get());
+    parent->AddChild(window.get());
   } else {
     aura::Window* context = nullptr;
     // Resolve context to find a parent.
