@@ -30,8 +30,6 @@ source_set("audio") {
   # is a roll-up target which is part of the //media component. Most other DEPs
   # should be using //media and not directly DEP this roll-up target.
   visibility = [
-    ":flac_audio_handler_fuzzer",
-    ":wav_audio_handler_fuzzer",
     "//media",
     "//media/renderers",
 
@@ -564,7 +562,6 @@ source_set("unit_tests") {
 fuzzer_test("wav_audio_handler_fuzzer") {
   sources = [ "wav_audio_handler_fuzzer.cc" ]
   deps = [
-    ":audio",
     "//base",
     "//media:test_support",
   ]
@@ -573,7 +570,6 @@ fuzzer_test("wav_audio_handler_fuzzer") {
 fuzzer_test("flac_audio_handler_fuzzer") {
   sources = [ "flac_audio_handler_fuzzer.cc" ]
   deps = [
-    ":audio",
     "//base",
     "//media:test_support",
   ]
