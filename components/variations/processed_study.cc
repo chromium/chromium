@@ -215,6 +215,11 @@ bool ValidateStudyTypeEnums(const Study& study) {
              << study.activation_type();
     return false;
   }
+  if (study.activation_type() == Study::STICKY_AFTER_QUERY) {
+    // TODO: crbug.com/435630455 - STICKY_AFTER_QUERY studies are under
+    // development but not yet supported.
+    return false;
+  }
   return true;
 }
 

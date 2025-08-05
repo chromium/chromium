@@ -502,6 +502,14 @@ message Study {
     // The study will be automatically activated when it is created. This
     // is recommended for studies that do not have any client logic.
     ACTIVATE_ON_STARTUP = 1;
+
+    // The study is first activated when it is queried. On browser restarts, the
+    // study remains active unless the client would be assigned to a different
+    // group. This is recommended to avoid problems of differential triggering
+    // associated with ACTIVATE_ON_QUERY and for studying longer-term effects
+    // without activation on start up. Only valid for studies using PERMANENT
+    // consistency.
+    STICKY_AFTER_QUERY = 2;
   }
 
   // Activation type for this study. Defaults to ACTIVATE_ON_QUERY if omitted.
