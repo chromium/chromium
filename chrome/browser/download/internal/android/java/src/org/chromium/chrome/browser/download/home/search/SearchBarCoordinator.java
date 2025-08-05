@@ -20,13 +20,20 @@ import org.chromium.chrome.browser.download.internal.R;
 public class SearchBarCoordinator {
     private final View mView;
     private final EditText mEditText;
+    private final View mClearButton;
     private final Callback<String> mQueryCallback;
 
     public SearchBarCoordinator(
             Context context, Callback<String> queryCallback, boolean autoFocusSearchBox) {
         mView = LayoutInflater.from(context).inflate(R.layout.download_search_bar, null);
         mEditText = mView.findViewById(R.id.search_text);
+        mClearButton = mView.findViewById(R.id.clear_text_button);
         mQueryCallback = queryCallback;
+
+        mClearButton.setOnClickListener(
+                v -> {
+                    mEditText.setText("");
+                });
 
         mEditText.addTextChangedListener(
                 new TextWatcher() {
@@ -40,6 +47,7 @@ public class SearchBarCoordinator {
                     @Override
                     public void afterTextChanged(Editable s) {
                         mQueryCallback.onResult(s.toString());
+                        mClearButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
                     }
                 });
 
