@@ -198,6 +198,7 @@ ipcz_source_set("util") {
     "util/stack_trace.h",
     "util/strong_alias.h",
     "util/unique_ptr_comparator.h",
+    "util/unsafe_buffers.h",
   ]
 
   sources = [ "util/ref_counted.cc" ]
