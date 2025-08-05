@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.AggregatableDebugReport.ProcessResult"
     enum="ConversionAggregatableDebugReportProcessResult"
-    expires_after="2025-08-24">
+    expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Conversions.AggregatableDebugReporting.SourceRegistrationError"
     enum="ConversionAggregatableDebugReportingRegistrationError"
-    expires_after="2025-08-24">
+    expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Conversions.AggregatableDebugReporting.TriggerRegistrationError"
     enum="ConversionAggregatableDebugReportingRegistrationError"
-    expires_after="2025-08-24">
+    expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableKeysPerSource" units="keys"
-    expires_after="2025-08-24">
+    expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.DroppedKeysPercentage"
-    units="%" expires_after="2025-08-24">
+    units="%" expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.TotalBudgetPerReport"
-    units="budget consumed" expires_after="2025-08-20">
+    units="budget consumed" expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SourceDestinationLimitResult"
-    enum="AttributionSourceDestinationLimitResult" expires_after="2025-08-24">
+    enum="AttributionSourceDestinationLimitResult" expires_after="2026-02-04">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
