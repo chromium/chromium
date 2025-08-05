@@ -10,7 +10,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/ntp/model/features.h"
@@ -24,7 +27,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
 using set_up_list_prefs::SetUpListItemState;
@@ -34,7 +36,7 @@ namespace {
 bool GetIsItemComplete(SetUpListItemType type,
                        PrefService* prefs,
                        PrefService* local_state,
-                       AuthenticationService* auth_service) {
+                       signin::IdentityManager* identity_manager) {
   switch (type) {
     case SetUpListItemType::kDefaultBrowser:
       return IsChromeLikelyDefaultBrowser();
@@ -48,11 +50,10 @@ bool GetIsItemComplete(SetUpListItemType type,
           auth_status == UNAuthorizationStatusProvisional) {
         return false;
       }
-      id<SystemIdentity> identity =
-          auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      CoreAccountInfo account = identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
       return push_notification_settings::
-          IsMobileNotificationsEnabledForAnyClient(GaiaId(identity.gaiaID),
-                                                   prefs);
+          IsMobileNotificationsEnabledForAnyClient(account.gaia, prefs);
     }
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
@@ -63,14 +64,14 @@ bool GetIsItemComplete(SetUpListItemType type,
 SetUpListItem* BuildItem(SetUpListItemType type,
                          PrefService* prefs,
                          PrefService* local_state,
-                         AuthenticationService* auth_service) {
+                         signin::IdentityManager* identity_manager) {
   SetUpListItemState state = set_up_list_prefs::GetItemState(local_state, type);
   SetUpListItemState new_state = state;
   bool complete = false;
   switch (state) {
     case SetUpListItemState::kUnknown:
     case SetUpListItemState::kNotComplete:
-      complete = GetIsItemComplete(type, prefs, local_state, auth_service);
+      complete = GetIsItemComplete(type, prefs, local_state, identity_manager);
       // If complete, mark it as "not in list" for next time, but add to list
       // this time.
       new_state = complete ? SetUpListItemState::kCompleteInList
@@ -129,7 +130,7 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
 }
 
 + (instancetype)buildFromPrefs:(PrefService*)prefs
-         authenticationService:(AuthenticationService*)authService
+               identityManager:(signin::IdentityManager*)identityManager
                     localState:(PrefService*)localState {
   if (!prefs->GetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
     return nil;
@@ -138,7 +139,8 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
   NSMutableArray<SetUpListItem*>* items = [NSMutableArray array];
   std::vector<SetUpListItemType> itemTypeOrder = GetSetUpListItemTypeOrder();
   for (SetUpListItemType itemType : itemTypeOrder) {
-    AddItemIfNotNil(items, BuildItem(itemType, prefs, localState, authService));
+    AddItemIfNotNil(items,
+                    BuildItem(itemType, prefs, localState, identityManager));
   }
 
   // Once all items are complete, set them to disappear from the list the next

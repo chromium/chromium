@@ -12,6 +12,7 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -72,8 +74,11 @@ class SetUpListTest : public PlatformTest {
   // Builds a new instance of SetUpList.
   void BuildSetUpList() {
     [set_up_list_ disconnect];
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(GetProfile());
     set_up_list_ = [SetUpList buildFromPrefs:prefs_
-                       authenticationService:auth_service_
+                             identityManager:identity_manager
                                   localState:GetLocalState()];
   }
 

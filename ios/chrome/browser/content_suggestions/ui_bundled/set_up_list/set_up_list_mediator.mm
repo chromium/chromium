@@ -13,6 +13,8 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
@@ -34,7 +36,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
 using credential_provider_promo::IOSCredentialProviderPromoAction;
@@ -91,7 +92,7 @@ bool DefaultBrowserPromoCompleted() {
   raw_ptr<PrefService> _localState;
   raw_ptr<PrefService> _prefService;
   // Used by SetUpList to get signed-in status.
-  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<signin::IdentityManager> _identityManager;
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrars for pref changes notifications.
@@ -107,7 +108,7 @@ bool DefaultBrowserPromoCompleted() {
 #pragma mark - Public
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
-              authenticationService:(AuthenticationService*)authService
+                    identityManager:(signin::IdentityManager*)identityManager
                          sceneState:(SceneState*)sceneState
               isDefaultSearchEngine:(BOOL)isDefaultSearchEngine
                priceTrackingEnabled:(BOOL)priceTrackingEnabled {
@@ -115,7 +116,7 @@ bool DefaultBrowserPromoCompleted() {
   if (self) {
     _prefService = prefService;
     _localState = GetApplicationContext()->GetLocalState();
-    _authenticationService = authService;
+    _identityManager = identityManager;
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     _localStatePrefChangeRegistrar.Init(_localState);
     _prefChangeRegistrar.Init(prefService);
@@ -152,7 +153,7 @@ bool DefaultBrowserPromoCompleted() {
     [_sceneState addObserver:self];
 
     _setUpList = [SetUpList buildFromPrefs:prefService
-                     authenticationService:authService
+                           identityManager:identityManager
                                 localState:_localState];
     _setUpList.delegate = self;
 
@@ -164,7 +165,7 @@ bool DefaultBrowserPromoCompleted() {
 }
 
 - (void)disconnect {
-  _authenticationService = nullptr;
+  _identityManager = nullptr;
   if (_prefObserverBridge) {
     _localStatePrefChangeRegistrar.RemoveAll();
     _prefChangeRegistrar.RemoveAll();
@@ -411,10 +412,10 @@ bool DefaultBrowserPromoCompleted() {
 }
 
 - (BOOL)hasOptedInToNotifications {
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  CoreAccountInfo account =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   return push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
-      GaiaId(identity.gaiaID), _prefService);
+      account.gaia, _prefService);
 }
 
 // Returns YES if the current configs contains an item with the given `type`.

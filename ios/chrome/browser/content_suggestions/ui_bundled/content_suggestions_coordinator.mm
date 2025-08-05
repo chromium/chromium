@@ -483,7 +483,7 @@ using segmentation_platform::TipIdentifier;
                                      TemplateURLPrepopulateData::google.id;
     _setUpListMediator = [[SetUpListMediator alloc]
           initWithPrefService:prefs
-        authenticationService:self.authService
+              identityManager:identityManager
                    sceneState:self.browser->GetSceneState()
         isDefaultSearchEngine:isDefaultSearchEngine
          priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];

@@ -290,11 +290,11 @@ class MagicStackRankingModelTest : public PlatformTest {
         featureEngagementTracker:(feature_engagement::Tracker*)tracker
                  identityManager:identityManager];
     _setUpListMediator = [[FakeSetUpListMediator alloc]
-                   initWithPrefService:GetProfile()->GetPrefs()
-                 authenticationService:authenticationService
-                            sceneState:scene_state_
-                 isDefaultSearchEngine:NO
-                  priceTrackingEnabled:NO];
+          initWithPrefService:GetProfile()->GetPrefs()
+              identityManager:identityManager
+                   sceneState:scene_state_
+        isDefaultSearchEngine:NO
+         priceTrackingEnabled:NO];
     _setUpListMediator.shouldShowSetUpList = YES;
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
               initWithLocalState:GetLocalState()

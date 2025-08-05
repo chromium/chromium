@@ -9,7 +9,10 @@
 
 #import "base/ios/block_types.h"
 
-class AuthenticationService;
+namespace signin {
+class IdentityManager;
+}
+
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMetricsRecorder;
 @protocol ContentSuggestionsViewControllerAudience;
@@ -63,7 +66,7 @@ class PrefService;
 
 // Default initializer.
 - (instancetype)initWithPrefService:(PrefService*)prefService
-              authenticationService:(AuthenticationService*)authService
+                    identityManager:(signin::IdentityManager*)identityManager
                          sceneState:(SceneState*)sceneState
               isDefaultSearchEngine:(BOOL)isDefaultSearchEngine
                priceTrackingEnabled:(BOOL)priceTrackingEnabled

@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-class AuthenticationService;
+namespace signin {
+class IdentityManager;
+}
+
 class PrefService;
 @class SetUpListItem;
 @protocol SetUpListDelegate;
@@ -24,7 +27,7 @@ class PrefService;
 // `contentNotificationEnabled` is `YES` if the user is enabled to content
 // notifications.
 + (instancetype)buildFromPrefs:(PrefService*)prefs
-         authenticationService:(AuthenticationService*)authService
+               identityManager:(signin::IdentityManager*)identityManager
                     localState:(PrefService*)localState;
 
 // Initializes a SetUpList with the given `items`. `localState` is used to
