@@ -178,6 +178,7 @@ source_set("sync") {
     deps += [
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
     ]
   }
   if (enable_extensions_core) {

@@ -38,6 +38,7 @@ source_set("tab_groups") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_model",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/common/extensions",
     "//content/public/browser",
     "//extensions/common",

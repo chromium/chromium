@@ -8,7 +8,6 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "string.h"
 #include "ui/gfx/image/image.h"
