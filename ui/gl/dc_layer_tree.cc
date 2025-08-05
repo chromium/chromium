@@ -1295,52 +1295,36 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
               this, d3d11_device_, dcomp_device_);
         }
       }
-      gfx::Transform transform;
-      gfx::Rect clip_rect;
-      if (!video_swap_chain->PresentToSwapChain(overlay, &transform,
-                                                &clip_rect)) {
+
+      std::optional<SwapChainPresenter::OverlayPositionAdjustment>
+          overlay_position_adjustment;
+      if (std::optional<DCLayerOverlayImage> video_image =
+              video_swap_chain->PresentToSwapChain(
+                  overlay, overlay_position_adjustment)) {
+        overlay.overlay_image = std::move(video_image);
+        overlay.content_rect = gfx::RectF(overlay.overlay_image->size());
+
+        if (overlay_position_adjustment) {
+          overlay.transform = overlay_position_adjustment->transform;
+          overlay.quad_rect = overlay_position_adjustment->quad_rect;
+          if (overlay.clip_rect) {
+            overlay.clip_rect = overlay_position_adjustment->clip_rect;
+          }
+        }
+
+        if (overlay.video_params.is_full_screen_video &&
+            !overlay_position_adjustment &&
+            base::FeatureList::IsEnabled(
+                features::kEarlyFullScreenVideoOptimization)) {
+          // If we failed to disable the desktop plane, we need to manually add
+          // a solid color layer to act as the video background mat.
+          need_background_layer = true;
+        }
+      } else {
         DLOG(ERROR) << "PresentToSwapChain failed";
         return base::unexpected(
             CommitError{CommitError::Reason::kPresentToSwapChain});
       }
-
-      gfx::Size content_size = video_swap_chain->content_size();
-
-      if (base::FeatureList::IsEnabled(
-              features::kEarlyFullScreenVideoOptimization)) {
-        if (overlay.video_params.is_full_screen_video) {
-          const gfx::Size monitor_size = GetMonitorSizeForWindow(window());
-          if (video_swap_chain->TryDisablePrimaryPlane(monitor_size, overlay)) {
-            // If we successfully disable the primary plane, it means DWM's
-            // internal swap chain is now the size of the monitor. In this case
-            // we want to just treat it as an unscaled image that completely
-            // fills the screen.
-            overlay.transform = gfx::Transform();
-            overlay.quad_rect = gfx::Rect(monitor_size);
-            if (overlay.clip_rect.has_value()) {
-              overlay.clip_rect = gfx::Rect(monitor_size);
-            }
-            content_size = monitor_size;
-          } else {
-            need_background_layer = true;
-          }
-        }
-      } else {
-        CHECK(!overlay.video_params.is_full_screen_video);
-
-        // |SwapChainPresenter| may have changed the size of the overlay's quad
-        // rect, e.g. to present to a swap chain exactly the size of the display
-        // rect when the source video is larger.
-        overlay.transform = transform;
-        overlay.quad_rect.set_size(video_swap_chain->content_size());
-        if (overlay.clip_rect.has_value()) {
-          overlay.clip_rect = clip_rect;
-        }
-      }
-
-      overlay.overlay_image = DCLayerOverlayImage(
-          content_size, video_swap_chain->FinishPresentToSwapChain());
-      overlay.content_rect = gfx::RectF(content_size);
 
       if (tint_video_layer_) {
         SkColor4f tint_color;
@@ -1408,8 +1392,6 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   }
 
   if (need_background_layer) {
-    // If we failed to disable the desktop plane, we need to manually
-    // add a solid color layer to act as the video background mat.
     DCLayerOverlayParams background_mat;
     background_mat.quad_rect = gfx::Rect(GetMonitorSizeForWindow(window()));
     background_mat.z_order = INT_MIN;

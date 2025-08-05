@@ -33,6 +33,7 @@
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -1235,25 +1236,26 @@ INSTANTIATE_TEST_SUITE_P(,
                          DCompPresenterTest::GetValues(),
                          &DCompPresenterTest::GetParamName);
 
-class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
+template <class Param = std::monostate>
+class DCompPresenterPixelTestBase : public DCompPresenterTestBase<Param> {
  public:
   DCompPresenterPixelTestBase()
       : window_(&platform_delegate_, gfx::Rect(100, 100)) {
-    parent_window_ = window_.hwnd();
+    this->parent_window_ = window_.hwnd();
   }
 
  protected:
   void SetUp() override {
     static_cast<ui::PlatformWindow*>(&window_)->Show();
-    DCompPresenterTestBase::SetUp();
+    DCompPresenterTestBase<Param>::SetUp();
   }
 
   void TearDown() override {
     // Test harness times out without DestroyWindow() here.
-    if (IsWindow(parent_window_)) {
-      DestroyWindow(parent_window_);
+    if (IsWindow(this->parent_window_)) {
+      DestroyWindow(this->parent_window_);
     }
-    DCompPresenterTestBase::TearDown();
+    DCompPresenterTestBase<Param>::TearDown();
   }
 
   void InitializeForPixelTest(const gfx::Size& window_size,
@@ -1261,9 +1263,10 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
                               const gfx::Rect& content_rect,
                               const gfx::Rect& quad_rect,
                               const bool is_p010) {
-    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(
+        this->presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
-    InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
+    this->InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
         GetDirectCompositionD3D11Device();
@@ -1280,9 +1283,9 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
     params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     params.video_params.is_p010_content = is_p010;
-    ScheduleOverlay(std::move(params));
+    this->ScheduleOverlay(std::move(params));
 
-    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(this->PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     Sleep(1000);
   }
@@ -1292,9 +1295,10 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
   void RunNearestNeighborTest(bool scale_via_buffer) {
     const gfx::Size window_size(100, 100);
 
-    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(
+        this->presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
-    InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
+    this->InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
     auto dc_layer_params = CreateParamsFromImage(
         CreateDCompSurface(gfx::Size(2, 2), SkColors::kBlack,
@@ -1319,8 +1323,8 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
           window_size.height() / dc_layer_params.quad_rect.height());
     }
 
-    ScheduleOverlay(std::move(dc_layer_params));
-    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
+    this->ScheduleOverlay(std::move(dc_layer_params));
+    ASSERT_EQ(this->PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     SkBitmap pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
 
@@ -1367,19 +1371,20 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
                                     DCLayerOverlayParams fit_in_hole_overlay) {
     EXPECT_TRUE(gfx::Rect(window_size).Contains(root_surface_hole));
 
-    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(
+        this->presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
     auto root_surface = CreateParamsFromImage(
         CreateDCompSurface(window_size, kRootSurfaceInitialColor,
                            {{root_surface_hole, kRootSurfaceHiddenColor}}));
     root_surface.quad_rect = gfx::Rect(window_size);
     root_surface.z_order = 0;
-    root_surface.layer_id = GetRootSurfaceId();
-    ScheduleOverlay(std::move(root_surface));
+    root_surface.layer_id = this->GetRootSurfaceId();
+    this->ScheduleOverlay(std::move(root_surface));
 
-    ScheduleOverlay(std::move(fit_in_hole_overlay));
+    this->ScheduleOverlay(std::move(fit_in_hole_overlay));
 
-    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(this->PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     auto pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
 
@@ -1479,15 +1484,7 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
   ui::WinWindow window_;
 };
 
-class DCompPresenterPixelTest : public DCompPresenterPixelTestBase {
- protected:
-  void SetUp() override {
-    static_cast<ui::PlatformWindow*>(&window_)->Show();
-    DCompPresenterPixelTestBase::SetUp();
-  }
-};
-
-class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase {
+class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase<> {
  protected:
   void TestVideo(const gfx::ColorSpace& color_space,
                  SkColor expected_color,
@@ -1570,6 +1567,8 @@ TEST_P(DCompPresenterVideoPixelTest, InvalidColorSpace) {
   // Invalid color space should be treated as BT.709
   TestVideo(gfx::ColorSpace(), SkColorSetRGB(0xe1, 0x90, 0xeb), true);
 }
+
+class DCompPresenterPixelTest : public DCompPresenterPixelTestBase<> {};
 
 INSTANTIATE_TEST_SUITE_P(,
                          DCompPresenterPixelTest,
@@ -2285,6 +2284,222 @@ TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
            "frames";
   }
 }
+
+struct EarlyFullScreenVideoOptimizationParam {
+  bool use_early_full_screen_video_optimization = false;
+};
+
+void PrintTo(const EarlyFullScreenVideoOptimizationParam& param,
+             std::ostream* os) {
+  if (param.use_early_full_screen_video_optimization) {
+    *os << "EarlyFullScreenOptOn";
+  } else {
+    *os << "EarlyFullScreenOptOff";
+  }
+}
+
+class DCompPresenterFullScreenOptimizationPixelTest
+    : public DCompPresenterPixelTestBase<
+          EarlyFullScreenVideoOptimizationParam> {
+ public:
+  void SetUp() override {
+    static_cast<ui::PlatformWindow*>(&window_)->Show();
+    EnableFeature(features::kDirectCompositionLetterboxVideoOptimization);
+    if (GetTestParam().use_early_full_screen_video_optimization) {
+      EnableFeature(features::kEarlyFullScreenVideoOptimization);
+    } else {
+      DisableFeature(features::kEarlyFullScreenVideoOptimization);
+    }
+    DCompPresenterPixelTestBase::SetUp();
+  }
+
+  void SetMonitorSize(const gfx::Size& monitor_size) {
+    SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+    SetDirectCompositionMonitorInfoForTesting(1, monitor_size);
+    EXPECT_TRUE(
+        this->presenter_->Resize(monitor_size, 1.0, gfx::ColorSpace(), true));
+    static_cast<ui::PlatformWindow*>(&window_)->SetBoundsInPixels(
+        gfx::Rect(monitor_size));
+  }
+
+  void DoOneFrame(const gfx::Size& monitor_size,
+                  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+                  bool is_full_screen) {
+    ASSERT_NE(texture, nullptr);
+
+    // Use red for full screen because we expect the root surface to be fully
+    // occluded by the "full screen"-ed swap chain. We can use the presence of
+    // red as an indication that the full screening failed.
+    //
+    // We don't expect the video to be either of these background colors.
+    const SkColor4f expected_background_color = SkColors::kBlack;
+    const SkColor4f unexpected_background_color = SkColors::kRed;
+    const SkColor4f root_surface_color = is_full_screen
+                                             ? unexpected_background_color
+                                             : expected_background_color;
+    InitializeRootAndScheduleRootSurface(monitor_size, root_surface_color);
+
+    D3D11_TEXTURE2D_DESC desc;
+    texture->GetDesc(&desc);
+    const gfx::Size texture_size = gfx::Size(desc.Width, desc.Height);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
+    if (is_full_screen) {
+      const float scale_factor =
+          std::min(static_cast<float>(monitor_size.width()) /
+                       static_cast<float>(texture_size.width()),
+                   static_cast<float>(monitor_size.height()) /
+                       static_cast<float>(texture_size.height()));
+      params.quad_rect =
+          gfx::ScaleToEnclosingRect(gfx::Rect(texture_size), scale_factor);
+      params.transform = gfx::Transform::MakeTranslation(
+          (monitor_size.width() - params.quad_rect.width()) / 2.0,
+          (monitor_size.height() - params.quad_rect.height()) / 2.0);
+      if (GetTestParam().use_early_full_screen_video_optimization) {
+        params.video_params.is_full_screen_video = true;
+      } else {
+        params.video_params.possible_video_fullscreen_letterboxing = true;
+      }
+    } else {
+      // An arbitrary rect that is not the full screen.
+      params.quad_rect = gfx::Rect(gfx::ScaleToCeiledSize(monitor_size, 0.5));
+    }
+    const gfx::Rect expected_target_rect =
+        params.transform.MapRect(params.quad_rect);
+    params.clip_rect = expected_target_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
+
+    ASSERT_EQ(this->PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
+
+    const SkBitmap actual_pixels =
+        GLTestHelper::ReadBackWindow(window_.hwnd(), monitor_size);
+    gfx::Rect actual_video_bounds;
+    bool already_asserted_wrong_background_color = false;
+    for (int y = 0; y < actual_pixels.height(); y++) {
+      for (int x = 0; x < actual_pixels.width(); x++) {
+        const SkColor4f actual_color = actual_pixels.getColor4f(x, y);
+        if (actual_color == expected_background_color) {
+          // If the color matches the background mat color, no action.
+        } else if (actual_color == unexpected_background_color) {
+          // If `actual_color` is `root_surface_color`, then we are missing
+          // the video background mat.
+          if (!already_asserted_wrong_background_color) {
+            EXPECT_SKCOLOR_EQ(actual_color.toSkColor(),
+                              expected_background_color.toSkColor())
+                << "background mat is the wrong color!";
+            // Avoid spamming the log output for every pixel.
+            already_asserted_wrong_background_color = true;
+          }
+        } else {
+          // Any other color will be conservatively called "part of the video".
+          actual_video_bounds.Union(gfx::Rect(x, y, 1, 1));
+        }
+      }
+    }
+
+    // Check that the video appears in the center of the window. If something
+    // went wrong, the video may be stretched across the whole window or may
+    // appear un-centered at the top left.
+    EXPECT_EQ(actual_video_bounds, expected_target_rect);
+  }
+};
+
+// Check that the first frame of a full screen optimized swap chain appears in
+// the correct place.
+TEST_P(DCompPresenterFullScreenOptimizationPixelTest, FirstFrame) {
+  // Test a fraction of a 1920x1200 monitor to speed up the pixel readback.
+  const float scale_factor = 0.25;
+  const gfx::Size monitor_size(1920 * scale_factor, 1200 * scale_factor);
+  const gfx::Size texture_size(2, 2);
+
+  SetMonitorSize(monitor_size);
+
+  auto texture =
+      CreateNV12Texture(GetDirectCompositionD3D11Device(), texture_size);
+
+  DoOneFrame(monitor_size, texture, /*is_full_screen=*/true);
+}
+
+// Check that two contiguous frames that share a `SwapChainPresenter` but do not
+// update the video texture will maintain the full screen optimization.
+TEST_P(DCompPresenterFullScreenOptimizationPixelTest, KeepFullScreenSameImage) {
+  // Test a fraction of a 1920x1200 monitor to speed up the pixel readback.
+  const float scale_factor = 0.25;
+  const gfx::Size monitor_size(1920 * scale_factor, 1200 * scale_factor);
+  const gfx::Size texture_size(2, 2);
+
+  SetMonitorSize(monitor_size);
+
+  auto texture =
+      CreateNV12Texture(GetDirectCompositionD3D11Device(), texture_size);
+
+  DoOneFrame(monitor_size, texture, /*is_full_screen=*/true);
+  DoOneFrame(monitor_size, texture, /*is_full_screen=*/true);
+}
+
+// Check that two contiguous frames that share a `SwapChainPresenter` that
+// changes the video texture will maintain the full screen optimization.
+TEST_P(DCompPresenterFullScreenOptimizationPixelTest,
+       KeepFullScreenDifferentImage) {
+  // Test a fraction of a 1920x1200 monitor to speed up the pixel readback.
+  const float scale_factor = 0.25;
+  const gfx::Size monitor_size(1920 * scale_factor, 1200 * scale_factor);
+  const gfx::Size texture_size(2, 2);
+
+  SetMonitorSize(monitor_size);
+
+  DoOneFrame(monitor_size,
+             CreateNV12Texture(GetDirectCompositionD3D11Device(), texture_size),
+             /*is_full_screen=*/true);
+
+  DoOneFrame(monitor_size,
+             CreateNV12Texture(GetDirectCompositionD3D11Device(), texture_size),
+             /*is_full_screen=*/true);
+}
+
+// Check entering full screen mode succeeds when we do not change the video
+// texture.
+TEST_P(DCompPresenterFullScreenOptimizationPixelTest,
+       EnterFullScreenSameImage) {
+  // Test a fraction of a 1920x1200 monitor to speed up the pixel readback.
+  const float scale_factor = 0.25;
+  const gfx::Size monitor_size(1920 * scale_factor, 1200 * scale_factor);
+  const gfx::Size texture_size(2, 2);
+
+  SetMonitorSize(monitor_size);
+
+  auto texture =
+      CreateNV12Texture(GetDirectCompositionD3D11Device(), texture_size);
+
+  DoOneFrame(monitor_size, texture, /*is_full_screen=*/false);
+  DoOneFrame(monitor_size, texture, /*is_full_screen=*/true);
+}
+
+// Check exiting full screen mode succeeds when we do not change the video
+// texture.
+TEST_P(DCompPresenterFullScreenOptimizationPixelTest, ExitFullScreenSameImage) {
+  // Test a fraction of a 1920x1200 monitor to speed up the pixel readback.
+  const float scale_factor = 0.25;
+  const gfx::Size monitor_size(1920 * scale_factor, 1200 * scale_factor);
+  const gfx::Size texture_size(2, 2);
+
+  SetMonitorSize(monitor_size);
+
+  auto texture =
+      CreateNV12Texture(GetDirectCompositionD3D11Device(), texture_size);
+
+  DoOneFrame(monitor_size, texture, /*is_full_screen=*/true);
+  DoOneFrame(monitor_size, texture, /*is_full_screen=*/false);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DCompPresenterFullScreenOptimizationPixelTest,
+    DCompPresenterFullScreenOptimizationPixelTest::GetValues(
+        testing::ConvertGenerator(testing::Bool())),
+    &DCompPresenterFullScreenOptimizationPixelTest::GetParamName);
 
 class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
  protected:
