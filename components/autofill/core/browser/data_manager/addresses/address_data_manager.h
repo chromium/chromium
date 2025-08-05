@@ -42,6 +42,7 @@ class PrefService;
 
 namespace autofill {
 
+class AccountNameEmailStore;
 class AddressDataCleaner;
 class AlternativeStateNameMapUpdater;
 class ContactInfoPreconditionChecker;
@@ -460,6 +461,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   // Manages metadata sync for Home and Work addresses. Non-null if Home and
   // Work support is enabled and a pref service is available.
   std::unique_ptr<HomeAndWorkMetadataStore> home_and_work_metadata_;
+
+  // Manages Account Name Email autofill profile and prefs related to it.
+  // Non-null if Account Name Email support is enabled and pref service is
+  // available.
+  std::unique_ptr<AccountNameEmailStore> account_name_email_store_;
 
   // If true, new addresses imports are automatically accepted without a prompt.
   // Only to be used for testing.

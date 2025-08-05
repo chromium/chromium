@@ -96,11 +96,9 @@ executable("country_native_names_generator") {
 compiled_action("generate_country_native_names") {
   tool = ":country_native_names_generator"
   outputs = [ "$target_gen_dir/geo/country_native_names_inl.h" ]
-  args = [
-    "--output-file-path=" +
-        rebase_path("$target_gen_dir/geo/country_native_names_inl.h",
-                    root_build_dir),
-  ]
+  args = [ "--output-file-path=" +
+           rebase_path("$target_gen_dir/geo/country_native_names_inl.h",
+                       root_build_dir) ]
 }
 
 proto_library("amount_extraction_heuristic_regexes_proto") {
@@ -134,6 +132,8 @@ static_library("browser") {
     "crowdsourcing/randomized_encoder.h",
     "crowdsourcing/votes_uploader.cc",
     "crowdsourcing/votes_uploader.h",
+    "data_manager/addresses/account_name_email_store.cc",
+    "data_manager/addresses/account_name_email_store.h",
     "data_manager/addresses/address_data_cleaner.cc",
     "data_manager/addresses/address_data_cleaner.h",
     "data_manager/addresses/address_data_manager.cc",
@@ -1049,6 +1049,7 @@ static_library("test_support") {
     "crowdsourcing/test_votes_uploader.h",
     "crowdsourcing/votes_uploader_test_api.cc",
     "crowdsourcing/votes_uploader_test_api.h",
+    "data_manager/addresses/account_name_email_store_test_api.h",
     "data_manager/addresses/address_data_cleaner_test_api.h",
     "data_manager/addresses/address_data_manager_test_api.h",
     "data_manager/addresses/address_data_manager_test_utils.cc",
@@ -1361,6 +1362,7 @@ source_set("unit_tests") {
     "crowdsourcing/determine_possible_field_types_unittest.cc",
     "crowdsourcing/disambiguate_possible_field_types_unittest.cc",
     "crowdsourcing/randomized_encoder_unittest.cc",
+    "data_manager/addresses/account_name_email_store_unittest.cc",
     "data_manager/addresses/address_data_cleaner_unittest.cc",
     "data_manager/addresses/address_data_manager_unittest.cc",
     "data_manager/addresses/home_and_work_metadata_store_unittest.cc",

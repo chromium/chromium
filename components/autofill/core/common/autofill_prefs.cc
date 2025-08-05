@@ -49,6 +49,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kAutofillPaymentCardBenefits, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
+  registry->RegisterStringPref(kAutofillNameAndEmailProfileSignature, "",
+                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
   registry->RegisterDictionaryPref(kAutofillAiOptInStatus);
   registry->RegisterBooleanPref(kAutofillCreditCardFidoAuthEnabled, false);

@@ -1228,6 +1228,18 @@ TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+// Tests that any `kAccountNameEmail` is created on construction of
+// `AddressDataManager`.
+TEST_F(AddressDataManagerTest, CreateAccountNameEmailProfileAfterInitalLoad) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableSupportForNameAndEmail};
+  ResetAddressDataManager();
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(testing::Property(
+                  &AutofillProfile::record_type,
+                  AutofillProfile::RecordType::kAccountNameEmail)));
+}
+
 }  // namespace
 
 }  // namespace autofill

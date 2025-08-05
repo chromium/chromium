@@ -265,6 +265,14 @@ AutofillProfile::AutofillProfile(RecordType record_type,
 AutofillProfile::AutofillProfile(AddressCountryCode country_code)
     : AutofillProfile(RecordType::kLocalOrSyncable, country_code) {}
 
+AutofillProfile::AutofillProfile(const AccountInfo& info,
+                                 AddressCountryCode country_code)
+    : AutofillProfile(RecordType::kAccountNameEmail, country_code) {
+  SetRawInfo(NAME_FULL, base::UTF8ToUTF16(info.full_name));
+  SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(info.email));
+  FinalizeAfterImport();
+}
+
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
     : phone_number_(this),
       address_(profile.GetAddress()),
