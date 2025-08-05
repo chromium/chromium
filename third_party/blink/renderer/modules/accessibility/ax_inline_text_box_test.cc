@@ -778,4 +778,26 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterWidths_Ligature) {
 
 }  // namespace test
 
+TEST_F(AccessibilityTest, LoadInlineTextBoxesCrashsOnAndroid) {
+  SetBodyInnerHTML(R"HTML(
+    <p id="paragraph"></p>
+      )HTML");
+
+  AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, ax_paragraph);
+
+  // In lieu of a repro snippet, we force this paragraph, which has a
+  // LayoutBlock, to be a static text role.
+  ax_paragraph->role_ = ax::mojom::Role::kStaticText;
+
+  // Then, force a life cycle change.
+  ax_paragraph->AXObjectCache().CommitAXUpdates(*(ax_paragraph->GetDocument()),
+                                                true);
+
+  // Finally, this enables us to request a load of inline text boxes and trigger
+  // the CHECK for the node to be a LayoutText. This once crashed because
+  // Android had a slightly different codepath.
+  ax_paragraph->LoadInlineTextBoxes();
+}
+
 }  // namespace blink

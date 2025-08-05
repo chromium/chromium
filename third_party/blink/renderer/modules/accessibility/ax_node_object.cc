@@ -5750,7 +5750,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
       continue;
     }
 
-    if (CanHaveInlineTextBoxChildren(work_obj)) {
+    if (CanHaveInlineTextBoxChildren(work_obj) && HasLayoutText(work_obj)) {
       if (work_obj->CachedChildrenIncludingIgnored().empty()) {
         // We only need to add inline textbox children if they aren't present.
         // Although some platforms (e.g. Android), load inline text boxes

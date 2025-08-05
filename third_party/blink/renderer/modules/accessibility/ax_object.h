@@ -1758,6 +1758,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, GetParentNodeForComputeParent);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, NodesRequiringCacheUpdate);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           LoadInlineTextBoxesCrashsOnAndroid);
 };
 
 MODULES_EXPORT bool operator==(const AXObject& first, const AXObject& second);
