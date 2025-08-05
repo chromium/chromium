@@ -314,7 +314,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1521655867290435174">Google Táblázatok</translation>
 <translation id="1524669537550112617">Bútorozott kiadó lakások</translation>
 <translation id="1527263332363067270">Várakozás a kapcsolódásra…</translation>
-<translation id="1527490370616010873">Nem a Google az Ön automatikus kitöltési szolgáltatója. Ha engedélyezni szeretné ezeket a beállításokat, és használni szeretné a Google-fiókjában tárolt fizetési adatokat, látogasson el az <ph name="BEGIN_LINK" />Automatikus kitöltési szolgáltatások beállításai<ph name="END_LINK" /> oldalra.</translation>
 <translation id="1528311629279578926">A kapcsolat le van tiltva, mert egy nyilvános oldal kezdeményezte annak érdekében, hogy csatlakozhasson az Ön privát hálózatán lévő eszközökhöz vagy szerverekhez. A kapcsolat engedélyezéséhez töltse be újra ezt az oldalt.</translation>
 <translation id="1529789484829130889">8. tálca</translation>
 <translation id="1530707389502320859">Az éppen felkeresni kívánt webhely hamisnak tűnik. A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy apró, alig észrevehető változtatásokkal rendelkező URL-címeket használnak.</translation>
@@ -3279,6 +3278,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6457206614190510200">Gerinctűzés</translation>
 <translation id="6457455098507772300">Az árcsökkenésre vonatkozó értesítések előugró értesítésekként jelennek meg a számítógépen</translation>
 <translation id="6458606150257356946">Beillesztés mégis</translation>
+<translation id="6462438303393708881">Feltöltés megszakítása</translation>
 <translation id="6464094930452079790">képek</translation>
 <translation id="6465306955648956876">Jelszavak kezelése…</translation>
 <translation id="646789491285795429">Ön már nyomon követi ezt a terméket</translation>

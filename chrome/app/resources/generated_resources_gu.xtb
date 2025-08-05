@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">અપડેટ કરેલા નામનો રિવ્યૂ કરો</translation>
 <translation id="1166596238782048887"><ph name="DESK_TITLE" /> ડેસ્ક <ph name="TAB_TITLE" />ની માલિકી ધરાવે છે</translation>
 <translation id="1166644470305877068">આઇસોલેટેડ વેબ ઍપ ઑટોમૅટિક રીતે આ સેટિંગને અનુસરે છે</translation>
-<translation id="116712635768212829">જો Chromeને તમારો કોઈ પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળે, તો જો તમે સાઇન ઇન કર્યું હોય, તો Google Password Manager તમારા માટે તમારો પાસવર્ડ બદલવાની ઑફર કરી શકે છે.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> માં ખુલી રહ્યું છે...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> મૂડ ધરાવતી <ph name="STYLE" /> શૈલીમાં, <ph name="SUBJECT" />ની <ph name="INDEX" /> તાજેતરની AI થીમ.</translation>
 <translation id="116896278675803795">પસંદ કરેલા કન્ટેન્ટ સાથે મેળ કરવા માટે ઑટોમૅટિક રીતે ભાષા બદલો</translation>
@@ -403,6 +402,7 @@
 <translation id="1260810365552581339">Linuxમાં કદાચ પર્યાપ્ત ડિસ્ક સ્પેસ નથી. તમે તમારા Linuxમાં ડિસ્ક સ્પેસ વધારી શકો છો અને <ph name="LINK_START" />સેટિંગ<ph name="LINK_END" />માં જઈને ફરી રિસ્ટોર કરવાનો પ્રયાસ કરી શકો છો.</translation>
 <translation id="1261380933454402672">વિનમ્ર</translation>
 <translation id="126156426083987769">ડેમો મોડ ડિવાઇસ લાઇસન્સમાં સમસ્યા આવી.</translation>
+<translation id="1262395978737369974">JavaScript ઑપ્ટિમાઇઝેશનનો ઉપયોગ કરવાની હંમેશાં માટે મંજૂરી આપી છે</translation>
 <translation id="1262564987698748643">સાઇટ તમારા કીબોર્ડ ઇનપુટને ઓવરરાઇડ કરવા માટે કહી શકે છે</translation>
 <translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1263733306853729545">ઉમેદવારોની સૂચિનું પેજ બનાવવા માટે <ph name="MINUS" /> અને <ph name="EQUAL" /> કીનો ઉપયોગ કરો</translation>
@@ -1971,6 +1971,7 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> પર એક્સ્ટેન્શનને મંજૂરી નથી</translation>
 <translation id="2343390523044483367">રોકી માઉન્ટેન નેશનલ પાર્ક</translation>
 <translation id="2343747224442182863">આ ટૅબ પર ફોકસ કરો</translation>
+<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> ફોલ્ડરમાં તમારી ફાઇલ શોધો</translation>
 <translation id="2344032937402519675">સર્વર સાથે કનેક્ટ કરી શકાયું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. જો તમને હજી પણ મુશ્કેલી આવી રહી હોય, તો તમારી Chromebookને ફરી શરૂ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="234559068082989648">ડિસેમ્બર 2022 પછી Chrome ઍપના જૂના વર્ઝન ખૂલશે નહીં. નવા વર્ઝન પર અપડેટ કરવા અથવા આ ઍપને કાઢી નાખવા માટે, તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
 <translation id="2348176352564285430">ઍપ્લિકેશન: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2218,6 +2219,7 @@
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> માંથી <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="250704661983564564">ડિસ્પ્લેની ગોઠવણી</translation>
 <translation id="2507253002925770350">ટિકિટ કાઢી નાખી</translation>
+<translation id="2507339521369019923">તમારા એકાઉન્ટમાં સાચવો</translation>
 <translation id="2507491234071975894">સ્પીકર</translation>
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન માટે Google Drive ઉપલબ્ધ હોવી જરૂરી છે.</translation>
 <translation id="2509495747794740764">સ્કેલ પ્રમાણ, 10 અને 200 ની વચ્ચેની કોઈ સંખ્યા હોવી આવશ્યક છે.</translation>
@@ -7977,6 +7979,7 @@ USB ડિવાઇસ</translation>
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
 <translation id="6613267708691765962">માલવેર માટે સ્કૅન કરી રહ્યાં છીએ...</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
+<translation id="6618013221808317456">સાઇટને JavaScript ઑપ્ટિમાઇઝેશનનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="6619058681307408113">લાઇન પ્રિન્ટર ડેમન (LPD)</translation>
 <translation id="661907246513853610">સાઇટ તમારા સ્થાનને ટ્રૅક કરી શકે છે</translation>
 <translation id="6619243162837544323">નેટવર્કની સ્થિતિ</translation>
@@ -9837,6 +9840,7 @@ USB ડિવાઇસ</translation>
 <translation id="7920482456679570420">જોડણીની તપાસમાં તમે છોડવા માગતા હો તે શબ્દો ઉમેરો</translation>
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> ખોલી શકતા નથી</translation>
 <translation id="7921347341284348270">આ મેનેજ કરવામાં આવતા એકાઉન્ટથી તમે તમારા ફોનના નોટિફિકેશન જોઈ શકશો નહીં. કોઈ અલગ એકાઉન્ટ વડે ફરીથી પ્રયાસ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">સાઇટ JavaScript ઑપ્ટિમાઇઝેશનનો ઉપયોગ કરી શકે છે</translation>
 <translation id="7921901223958867679">આ એક્સ્ટેન્શન <ph name="HOST" />ને વાંચી અને તેમાં ફેરફાર કરી શકે છે</translation>
 <translation id="7922606348470480702">1 એક્સ્ટેન્શન</translation>
 <translation id="7923564237306226146">Linuxનું અપગ્રેડ પૂર્ણ થયું</translation>
@@ -10378,6 +10382,7 @@ USB ડિવાઇસ</translation>
 <translation id="8276560076771292512">કૅશ મેમરી ખાલી કરો અને સખત રીતે ફરીથી લોડ કરો</translation>
 <translation id="8276850948802942358">સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની હંગામી પરવાનગી આપવા વિશે વધુ જાણો</translation>
 <translation id="8277907305629781277">તમે પાસકી <ph name="DATE" />ના રોજ બનાવી હતી</translation>
+<translation id="8278702675516957539">JavaScript ઑપ્ટિમાઇઝેશનનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="827966378414194229">તમારી Chromebookને નિયંત્રિત કરવા માટે, માથાની હલનચલન અને ચહેરાના હાવભાવનો ઉપયોગ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">તમારી ભાષાઓમાં વેબસાઇટ</translation>
 <translation id="8280848878018088610">કોઈ વિષાદી મૂડમાં, બૅકગ્રાઉન્ડમાં કોઈ નયનરમ્ય શહેર અને કિલ્લાની નજીક સમુદ્રમાં રેલાતા મોજાઓનું દૃશ્ય.</translation>
@@ -10597,6 +10602,7 @@ USB ડિવાઇસ</translation>
 <translation id="8431190899827883166">ટૅપ બતાવો</translation>
 <translation id="843173223122814223">AI વડે બૅકગ્રાઉન્ડ બનાવો</translation>
 <translation id="8431977087510901105">કર્સરના સેટિંગ રીસેટ કર્યા</translation>
+<translation id="843210078733508372">સાઇન ઇન કરો અને પાસવર્ડ બદલવાની પ્રક્રિયા ચાલુ રહેશે</translation>
 <translation id="8433186206711564395">નેટવર્ક સેટિંગ</translation>
 <translation id="8434109185104929038">વાંચન માટે ખૂણાનું સ્થાન</translation>
 <translation id="8434837876193928924">ટૅબના ગ્રૂપની વિગતો</translation>
@@ -11351,6 +11357,7 @@ USB ડિવાઇસ</translation>
 <translation id="895347679606913382">પ્રારંભ કરે છે...</translation>
 <translation id="8954796993367253220">અતિથિ મોડનો ઇતિહાસ ડિલીટ કરવા માટે, અતિથિ માટેની તમામ વિન્ડો બંધ કરો.</translation>
 <translation id="8955174612586215829">થીમ શોધો</translation>
+<translation id="8957656266859671822">તમારું એકાઉન્ટ પસંદ કરો</translation>
 <translation id="8957757410289731985">પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="8959144235813727886">સાઇટ અને ઍપ</translation>
 <translation id="895944840846194039">JavaScript મેમરી</translation>
@@ -11663,6 +11670,7 @@ USB ડિવાઇસ</translation>
 <translation id="9153367754133725216">લૉન્ચર અને શોધ પરિણામોમાં નવી ઍપ અને વેબ કન્ટેન્ટ માટેના સૂચનો જુઓ. જો તમે ક્રૅશ રિપોર્ટ તેમજ ડાયગ્નોસ્ટિક્સ અને વપરાશનો ડેટા ChromeOS Flexને મોકલવાનું પસંદ કર્યું હોય, તો જ તે સૂચનોને બહેતર બનાવવા માટે આંકડા મોકલે છે.</translation>
 <translation id="9154194610265714752">અપડેટેડ</translation>
 <translation id="915485121129452731">પેન ટૅબ્લેટ</translation>
+<translation id="9155100833189043833">તમારા મોબાઇલ ડિવાઇસમાંથી IDનો સુરક્ષિત રીતે ઉપયોગ કરો</translation>
 <translation id="9155344700756733162">રંગ નાપસંદ કરો</translation>
 <translation id="9157096865782046368">0.8 સેકન્ડ</translation>
 <translation id="9157697743260533322">તમામ વપરાશકર્તાઓ માટે સ્વચલિત અપડેટ્સને સેટ કરવામાં નિષ્ફળ થયાં (પ્રીફ્લાઇટ લોંચની ભૂલ: <ph name="ERROR_NUMBER" />)</translation>

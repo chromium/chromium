@@ -273,6 +273,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1436185428532214179">Può chiedere di modificare file o cartelle sul dispositivo</translation>
 <translation id="1442386063175183758">Piegatura a finestra a destra</translation>
 <translation id="1442987760062738829">Perforatura</translation>
+<translation id="1445896388055045436">Mostra i premi e i vantaggi disponibili per la carta al momento del pagamento. Si applicano i termini dell'emittente.</translation>
 <translation id="1446396933673057385">Controllo accuratezza</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Impossibile impostare le chiavi "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" nello stesso dizionario delle chiavi "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
@@ -314,7 +315,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1521655867290435174">Fogli Google</translation>
 <translation id="1524669537550112617">Affitti di alloggi arredati</translation>
 <translation id="1527263332363067270">In attesa di connessione…</translation>
-<translation id="1527490370616010873">Google non è il tuo servizio di compilazione automatica. Per attivare queste impostazioni e utilizzare i dati di pagamento del tuo Account Google, visita le <ph name="BEGIN_LINK" />impostazioni dei servizi di compilazione automatica<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La connessione è bloccata perché è stata avviata da una pagina pubblica per connettersi a dispositivi o server sulla tua rete privata. Ricarica questa pagina per consentire la connessione.</translation>
 <translation id="1529789484829130889">Vassoio 8</translation>
 <translation id="1530707389502320859">Il sito che stai provando a visitare risulta contraffatto. A volte i malintenzionati imitano i siti modificando leggermente e in modo poco evidente l'URL.</translation>
@@ -1232,6 +1232,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3086579638707268289">La tua attività sul Web viene monitorata</translation>
 <translation id="3087734570205094154">In basso</translation>
 <translation id="3090667236485488075">Vetro</translation>
+<translation id="3094051226187213523">Apri AI Mode con questo suggerimento.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorata perché l'elenco disable contiene un pattern uguale a "*", che equivale a disattivare la policy.</translation>
 <translation id="3098944373717628099">I tuoi file locali verranno eliminati tra 1 ora</translation>
@@ -1769,7 +1770,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3959969108528118741">Proprietario</translation>
 <translation id="3961148744525529027">Il foglio per la gestione dei pagamenti è aperto nella parte inferiore dello schermo</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
-<translation id="3963721102035795474">Modalità Reader</translation>
+<translation id="3963721102035795474">Modalità Lettura</translation>
 <translation id="3965672182149944205">Salvare l'indirizzo?</translation>
 <translation id="3966044442021752214">Sicurezza del prodotto</translation>
 <translation id="396761677631735618">Carte fedeltà che è possibile compilare tramite tocco aperte nella parte inferiore dello schermo.</translation>
@@ -3278,6 +3279,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6457206614190510200">Pinzatura centrale</translation>
 <translation id="6457455098507772300">Gli avvisi relativi ai cali di prezzo vengono visualizzati come notifiche popup sul desktop</translation>
 <translation id="6458606150257356946">Incolla comunque</translation>
+<translation id="6462438303393708881">Annulla caricamento</translation>
 <translation id="6464094930452079790">immagini</translation>
 <translation id="6465306955648956876">Gestisci password…</translation>
 <translation id="646789491285795429">Stai già monitorando questo prodotto</translation>
@@ -4775,6 +4777,7 @@ Ulteriori dettagli:
 <translation id="9040341831873780534">Leggi i termini qui</translation>
 <translation id="9042617223719777575">Capacità elevata</translation>
 <translation id="9042827002460091668">Controlla la connessione a Internet e riprova</translation>
+<translation id="9043161870923715789">AI Mode</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> vuole cercare e connettersi a qualsiasi dispositivo sulla tua rete locale</translation>
 <translation id="9046864189129893978">Microfoni (<ph name="MICS_COUNT" />)</translation>

@@ -273,6 +273,7 @@
 <translation id="1436185428532214179">ଆପଣଙ୍କ ଡିଭାଇସରେ ଫାଇଲ୍ ଓ ଫୋଲ୍ଡରଗୁଡ଼ିକ ଏଡିଟ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1442386063175183758">ଡାହାଣ ପଟରେ ଗେଟ୍ ଫୋଲ୍ଡ</translation>
 <translation id="1442987760062738829">ପଞ୍ଚ୍</translation>
+<translation id="1445896388055045436">ଚେକଆଉଟ ସମୟରେ ଉପଲବ୍ଧ କାର୍ଡ ଲାଭ ଏବଂ ରିୱାର୍ଡଗୁଡ଼ିକ ଦେଖାନ୍ତୁ। ପ୍ରଦାନକାରୀ ସର୍ତ୍ତାବଳୀ ଲାଗୁ ହୁଏ।</translation>
 <translation id="1446396933673057385">ସଠିକତା ଯାଞ୍ଚ</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" କୀଗୁଡ଼ିକ ପରି "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" କୀଗୁଡ଼ିକୁ ସମାନ ଶବ୍ଦକୋଷରେ ସେଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -314,7 +315,6 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">ସୁସଜ୍ଜିତ ଭଡ଼ା</translation>
 <translation id="1527263332363067270">ସଂଯୋଗ ପାଇଁ ଅପେକ୍ଷାରତ…</translation>
-<translation id="1527490370616010873">Google ଆପଣଙ୍କର ଅଟୋଫିଲ ପ୍ରଦାନକାରୀ ନୁହେଁ। ଏହି ସେଟିଂସକୁ ସକ୍ଷମ କରିବା ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ପେମେଣ୍ଟ ସୂଚନାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />ଅଟୋଫିଲ ସେବା ସେଟିଂସ<ph name="END_LINK" />କୁ ଭିଜିଟ କରନ୍ତୁ।</translation>
 <translation id="1528311629279578926">ଏହା ଆପଣଙ୍କ ପ୍ରାଇଭେଟ ନେଟୱାର୍କରେ ଡିଭାଇସ କିମ୍ବା ସର୍ଭର ସହ କନେକ୍ଟ କରିବା ପାଇଁ ଏକ ପବ୍ଲିକ ପୃଷ୍ଠା ଦ୍ୱାରା ଆରମ୍ଭ କରାଯାଇଥିବା ଯୋଗୁଁ କନେକ୍ସନକୁ ବ୍ଲକ କରାଯାଇଛି। କନେକ୍ସନକୁ ଅନୁମତି ଦେବା ପାଇଁ ଏହି ପୃଷ୍ଠାକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="1529789484829130889">ଟ୍ରେ 8</translation>
 <translation id="1530707389502320859">ଆପଣ ଏବେ ଯେଉଁ ସାଇଟ୍‌କୁ ଯିବା ପାଇଁ ଚେଷ୍ଟା କରୁଛନ୍ତି ତାହା ନକଲି ଜଣାପଡୁଛି। URLରେ ଛୋଟ ପରିବର୍ତ୍ତନ କରି ଆକ୍ରମଣକାରୀମାନେ ବେଳେ ବେଳେ ସାଇଟ୍‍ଗୁଡ଼ିକର ନକଲ କରିଥାନ୍ତି ଯାହା ଜାଣିବା କଷ୍ଟକର ହୋଇଥାଏ।</translation>
@@ -1232,6 +1232,7 @@
 <translation id="3086579638707268289">ୱେବ୍‍‍ରେ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରାଯାଉଛି</translation>
 <translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
 <translation id="3090667236485488075">କାଚ</translation>
+<translation id="3094051226187213523">ଏହି ପରାମର୍ଶ ସହିତ AI ମୋଡ ଖୋଲନ୍ତୁ।</translation>
 <translation id="3095940652251934233">ବକ୍ତବ୍ୟ</translation>
 <translation id="3098513225387949945">ଅକ୍ଷମ ତାଲିକାରେ '*' ପରି ଏକ ପାଟର୍ନ ଅଛି, ଯାହା ନୀତିକୁ ଅକ୍ଷମ କରିବା ସହ ସମାନ ହୋଇଥିବା ଯୋଗୁଁ ଏହାକୁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="3098944373717628099">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ଫାଇଲଗୁଡ଼ିକ 1 ଘଣ୍ଟାରେ ଡିଲିଟ ହୋଇଯିବ</translation>
@@ -3278,6 +3279,7 @@
 <translation id="6457206614190510200">ସାଡାଲ୍ ଷ୍ଟିଚ୍</translation>
 <translation id="6457455098507772300">ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ଆପଣଙ୍କ ଡେସ୍କଟପରେ ପପଅପ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଭାବେ ଦେଖାଯିବ</translation>
 <translation id="6458606150257356946">ଯେ କୌଣସି ମତେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="6462438303393708881">ଅପଲୋଡ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="6464094930452079790">ଛବିଗୁଡ଼ିକ</translation>
 <translation id="6465306955648956876">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ…</translation>
 <translation id="646789491285795429">ଆପଣ ପୂର୍ବରୁ ଏହି ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ କରୁଛନ୍ତି</translation>
@@ -4774,6 +4776,7 @@
 <translation id="9040341831873780534">ଏଠାରେ ସର୍ତ୍ତାବଳୀ ଦେଖନ୍ତୁ</translation>
 <translation id="9042617223719777575">ଅଧିକ କ୍ଷମତା</translation>
 <translation id="9042827002460091668">ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
+<translation id="9043161870923715789">AI ମୋଡ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଯେ କୌଣସି ଡିଭାଇସକୁ ଖୋଜିବା ଏବଂ କନେକ୍ଟ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="9046864189129893978">ମାଇକ୍ରୋଫୋନ (<ph name="MICS_COUNT" />)</translation>

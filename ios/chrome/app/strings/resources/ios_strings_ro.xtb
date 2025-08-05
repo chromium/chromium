@@ -1002,7 +1002,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="496392417432935267">Deschisă în altă parte</translation>
 <translation id="4970724460420203313">Dacă folosești Chrome cu contul gestionat, poți să separi navigarea asociată organizației tale (inclusiv filele, istoricul și parolele) de celelalte activități de navigare</translation>
 <translation id="4971735654804503942">Protecție proactivă mai rapidă împotriva site-urilor, descărcărilor și extensiilor periculoase. Te avertizează cu privire la compromiterea parolelor. Necesită trimiterea datelor de navigare la Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} element din istoricul profilurilor privat și de serviciu din Safari}few{{count} elemente din istoricul profilurilor privat și de serviciu din Safari}other{{count} de elemente din istoricul profilurilor privat și de serviciu din Safari}}</translation>
 <translation id="4979397965658815378">Conectează-te folosind Contul Google pentru a accesa marcajele, parolele, istoricul și alte setări pe toate dispozitivele</translation>
 <translation id="4985921635659180565">După ce un fișier este programat pentru ștergere, nu mai poate fi anulat.</translation>
 <translation id="498624032394115435">Oricine are linkul poate să editeze toate filele.</translation>
@@ -1565,6 +1564,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7035825883570480307">Activezi notificările?</translation>
 <translation id="7039345315346323556">Recente</translation>
+<translation id="704692552158601232">Aplicația browser prestabilită</translation>
 <translation id="7055240621761583113">Completează automat parola</translation>
 <translation id="7058455400288852416">Accesează comutatorul de file</translation>
 <translation id="7063811929043357292">Contul tău este gestionat de un părinte.

@@ -273,6 +273,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1436185428532214179">Får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="1442386063175183758">Fönsterfalsning, höger flik</translation>
 <translation id="1442987760062738829">Hålslag</translation>
+<translation id="1445896388055045436">Visa tillgängliga förmåner och belöningar för kortet i kassan. Kortutgivarens villkor gäller.</translation>
 <translation id="1446396933673057385">Källkontroll</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Tangenterna <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> kan inte anges i samma ordlista som tangenterna <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
@@ -314,7 +315,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1521655867290435174">Google Kalkylark</translation>
 <translation id="1524669537550112617">Möblerade hyreslägenheter</translation>
 <translation id="1527263332363067270">Väntar på anslutning …</translation>
-<translation id="1527490370616010873">Google är inte din leverantör av autofyll. Du kan aktivera dessa inställningar och använda betalningsuppgifter från Google-kontot i <ph name="BEGIN_LINK" />inställningarna för autofylltjänster<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Anslutningen blockeras eftersom den initierades av en offentlig sida för att ansluta till enheter eller servrar i ditt privata nätverk. Läs in sidan igen för att tillåta anslutningen.</translation>
 <translation id="1529789484829130889">Fack 8</translation>
 <translation id="1530707389502320859">Webbplatsen du försöker öppna ser inte ut att vara äkta. Ibland försöker hackare efterlikna webbplatser genom att göra små, svårupptäckta ändringar i webbadressen.</translation>
@@ -1192,6 +1192,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3002501248619246229">Kontrollera inmatningsfack för media</translation>
 <translation id="3005723025932146533">Visa sparad kopia</translation>
 <translation id="300580149047131921">Användes nyligen</translation>
+<translation id="3006864083554020786">hemadress</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb för att bläddra bland tillgängliga åtgärder och sedan på Retur för att utföra den valda åtgärden.</translation>
 <translation id="3010991137650052245">Om du vill använda <ph name="PERMISSION" /> på den här webbplatsen ska du ge <ph name="SHORT_PRODUCT_NAME" /> åtkomst</translation>
 <translation id="3013711734159931232">Hushållsartiklar</translation>
@@ -1232,6 +1233,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3086579638707268289">Din aktivitet på webben övervakas</translation>
 <translation id="3087734570205094154">Nederst</translation>
 <translation id="3090667236485488075">Glas</translation>
+<translation id="3094051226187213523">Öppna AI-läget med det här förslaget.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignoreras, eftersom inaktiveringslistan innehåller ett mönster som är likvärdigt med * vilket är samma sak som att inaktivera principen.</translation>
 <translation id="3098944373717628099">Dina lokala filer raderas om 1 timme</translation>
@@ -1823,6 +1825,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="404831776305217138">Uppdateringsadressen för tillägget med id:t <ph name="EXTENSION_ID" /> är ogiltig eller använder ett schema som inte stöds. Följande scheman stöds: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> och <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Du kan använda den i Googles produkter.</translation>
 <translation id="4050599136622776556">Chromium försöker redigera betalningsmetoder.</translation>
+<translation id="4052683751389375539">Redigera, öppnar nytt fönster</translation>
 <translation id="405399507749852140">Få aviseringar när priset sjunker på en webbplats</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Läs mer om skydd av känsliga uppgifter</translation>
@@ -3282,6 +3285,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6457206614190510200">Rygghäftning</translation>
 <translation id="6457455098507772300">Aviseringar om prissänkning visas som popup-aviseringar på datorn</translation>
 <translation id="6458606150257356946">Klistra in ändå</translation>
+<translation id="6462438303393708881">Avbryta uppladdning</translation>
 <translation id="6464094930452079790">bilder</translation>
 <translation id="6465306955648956876">Hantera lösenord …</translation>
 <translation id="646789491285795429">Du bevakar redan den här produkten</translation>
@@ -3509,6 +3513,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6881240511396774766">Skapa snabbt ett nytt Google-dokument</translation>
 <translation id="6882210908253838664">Om en webbplats inte fungerar kan du testa att ge den tillfällig behörighet att använda tredjepartscookies. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Ett arbetsblad för autentisering av användaruppgifter för säker betalning har stängts</translation>
+<translation id="6883745783646124431">jobbadress</translation>
 <translation id="6884662655240309489">Storlek 1</translation>
 <translation id="6886283082988906333">ZIP-arkiv</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" />, <ph name="SHORT_URL" /></translation>
@@ -4780,6 +4785,7 @@ Mer information:
 <translation id="9040341831873780534">Se villkoren här</translation>
 <translation id="9042617223719777575">Stor kapacitet</translation>
 <translation id="9042827002460091668">Kontrollera internetanslutningen och försök igen</translation>
+<translation id="9043161870923715789">AI-läge</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> vill söka efter och ansluta till enheter i det lokala nätverket</translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>

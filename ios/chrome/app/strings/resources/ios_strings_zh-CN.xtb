@@ -1002,7 +1002,6 @@
 <translation id="496392417432935267">已在别处打开</translation>
 <translation id="4970724460420203313">使用受管理的账号登录 Chrome 有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
-<translation id="4975364841282576329">{count,plural, =1{Safari 不公开资料和工作资料中的 {count} 项历史记录}other{Safari 不公开资料和工作资料中的 {count} 项历史记录}}</translation>
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4985921635659180565">安排删除文件后便无法取消。</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
@@ -1565,6 +1564,7 @@
 <translation id="7029809446516969842">密码</translation>
 <translation id="7035825883570480307">开启通知？</translation>
 <translation id="7039345315346323556">最近用过</translation>
+<translation id="704692552158601232">默认浏览器应用</translation>
 <translation id="7055240621761583113">自动填充密码</translation>
 <translation id="7058455400288852416">打开标签页切换器</translation>
 <translation id="7063811929043357292">你的账号由家长管理。
@@ -1612,6 +1612,7 @@
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="728025568708172005">开始导览</translation>
+<translation id="7280980607183752256">无法导入此文件</translation>
 <translation id="7281202269687163394">您的隐私权与 Gemini。</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="7300448350764260141">增添一层额外的安全保障，防范在线威胁。</translation>

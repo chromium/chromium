@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">Прегледајте го ажурирањето на името</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> припаѓа на работната површина <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Изолираните веб-апликации ја следат поставкава автоматски</translation>
-<translation id="116712635768212829">Ако Chrome најде некоја од вашите лозинки во упад во податоци, Google Password Manager може да ви понуди да ја промени вашата лозинка за вас ако сте најавени.</translation>
 <translation id="1168020859489941584">Ќе се отвори за <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Неодамнешна AI-тема: <ph name="INDEX" /> од <ph name="SUBJECT" />, во стил: <ph name="STYLE" />, со расположение: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Автоматски променете го јазикот за да се совпаѓа со избраните содржини</translation>
@@ -403,6 +402,7 @@
 <translation id="1260810365552581339">Linux можеби нема доволно простор на дискот. Може да го зголемите просторот на дискот за Linux и да се обидете да извршите враќање повторно во <ph name="LINK_START" />Поставки<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Умерено</translation>
 <translation id="126156426083987769">Настана проблем со лиценците на уредот во демо-режим.</translation>
+<translation id="1262395978737369974">Сајтови на кои им е секогаш дозволено да користат оптимизација на JavaScript</translation>
 <translation id="1262564987698748643">Сајтовите може да бараат да го отфрлаат внесувањето преку тастатурата</translation>
 <translation id="1263231323834454256">Список за читање</translation>
 <translation id="1263733306853729545">Користи ги копчињата <ph name="MINUS" /> и <ph name="EQUAL" /> за прелистување список со кандидати</translation>
@@ -1987,6 +1987,7 @@
 <translation id="2343160676229467122">Екстензиите не се дозволени на <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Национален парк „Карпести Планини“</translation>
 <translation id="2343747224442182863">Фокусирајте ја картичкава</translation>
+<translation id="2343971313330854480">Најдете ја вашата датотека во папката <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">Не можеше да се поврзе со серверот. Проверете ја мрежната врска и обидете се повторно. Ако и понатаму имате проблем, рестартирајте го вашиот Chromebook.</translation>
 <translation id="234559068082989648">Старите верзии на апликациите на Chrome нема да се отвораат по декември 2022 година. Контактирајте со администраторот за да ажурирате на нова верзија или отстранете ја апликацијава.</translation>
 <translation id="2348176352564285430">Апликација: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2234,6 +2235,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> од <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Подредување на екранот</translation>
 <translation id="2507253002925770350">Билетот е отстранет</translation>
+<translation id="2507339521369019923">Зачувајте во вашата сметка</translation>
 <translation id="2507491234071975894">Звучник</translation>
 <translation id="2508747373511408451">Апликацијата <ph name="APPLICATION_NAME" /> бара Google Drive за да биде достапна.</translation>
 <translation id="2509495747794740764">Износот на скалирањето мора да биде број помеѓу 10 и 200.</translation>
@@ -7991,6 +7993,7 @@
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6613267708691765962">Се скенира за злонамерен софтвер…</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
+<translation id="6618013221808317456">Не дозволувај им на сајтовите да користат оптимизација на JavaScript</translation>
 <translation id="6619058681307408113">Линиски печатач Daemon (LPD)</translation>
 <translation id="661907246513853610">Сајтот може да ја следи вашата локација</translation>
 <translation id="6619243162837544323">Состојба на мрежа</translation>
@@ -9851,6 +9854,7 @@
 <translation id="7920482456679570420">Додајте ги зборовите што сакате проверката на правописот да ги прескокне</translation>
 <translation id="7920715534283810633">Не може да се отвори <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Не можете да ги прегледате известувањата од телефонот на оваа управувана сметка. Пробајте пак со различна сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Сајтовите може да користат оптимизација на JavaScript</translation>
 <translation id="7921901223958867679">Екстензијава може да го чита и променува сајтот <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 екстензија</translation>
 <translation id="7923564237306226146">Надградбата на Linux заврши</translation>
@@ -10399,6 +10403,7 @@
 <translation id="8276560076771292512">Испразни кеш и освежи</translation>
 <translation id="8276850948802942358">Дознајте повеќе за давањето привремена дозвола на сајт за да користи колачиња од трети страни</translation>
 <translation id="8277907305629781277">Го создадовте овој криптографски клуч на <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Сајтови на кои не им е дозволено да користат оптимизација на JavaScript</translation>
 <translation id="827966378414194229">Користете ги движењата на главата и изразите на ликот за да го контролирате вашиот Chromebook. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Веб-сајтови на вашите јазици</translation>
 <translation id="8280848878018088610">Разбранувано море, со фантастичен град и замок во заднината, во мрачно расположение.</translation>
@@ -10618,6 +10623,7 @@
 <translation id="8431190899827883166">Прикажувај допири</translation>
 <translation id="843173223122814223">Создавајте заднини со AI</translation>
 <translation id="8431977087510901105">Поставките за курсорот се ресетирани</translation>
+<translation id="843210078733508372">Најавете се и промената на лозинката ќе продолжи</translation>
 <translation id="8433186206711564395">Мрежни поставки</translation>
 <translation id="8434109185104929038">Катче за читање</translation>
 <translation id="8434837876193928924">Детали за групата картички</translation>
@@ -11372,6 +11378,7 @@
 <translation id="895347679606913382">Се стартува…</translation>
 <translation id="8954796993367253220">За да ја избришете историјата на „Режим на гостин“, затворете ги сите гостински прозорци.</translation>
 <translation id="8955174612586215829">Најдете теми</translation>
+<translation id="8957656266859671822">Изберете ја вашата сметка</translation>
 <translation id="8957757410289731985">Приспособете го профилот</translation>
 <translation id="8959144235813727886">Сајтови и апликации</translation>
 <translation id="895944840846194039">Меморија на JavaScript</translation>
@@ -11684,6 +11691,7 @@
 <translation id="9153367754133725216">Гледајте предлози за нови апликации и интернет-содржини во „Стартер“ и резултатите од пребарување. Статистикa за подобрување на предлозите се испраќа само ако сте избрале да се испраќаат извештаи за падови, како и дијагностички и податоци за користење до ChromeOS.</translation>
 <translation id="9154194610265714752">Ажурно</translation>
 <translation id="915485121129452731">Пенкало за таблет</translation>
+<translation id="9155100833189043833">Безбедно користете ID од вашиот мобилен уред</translation>
 <translation id="9155344700756733162">Поништување на изборот на бојата</translation>
 <translation id="9157096865782046368">0,8 секунди</translation>
 <translation id="9157697743260533322">Не успеа поставувањето автоматски ажурирања за сите корисници (грешка при стартување preflight: <ph name="ERROR_NUMBER" />)</translation>

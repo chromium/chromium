@@ -1002,7 +1002,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="496392417432935267">Otvorené inde</translation>
 <translation id="4970724460420203313">Ak používate Chrome so spravovaným účtom, budete môcť prehliadanie súvisiace s vašou organizáciou (vrátane kariet, histórie a hesiel) ponechať oddelené od ostatného prehliadania</translation>
 <translation id="4971735654804503942">Rýchlejšia a proaktívna ochrana pred nebezpečnými webmi, stiahnutým súbormi a rozšíreniami. Upozorní vás na porušenie ochrany hesla. Vyžaduje odoslanie dát prehliadania do Googlu.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} položka histórie zo súkromných a pracovných profilov prehliadača Safari}few{{count} položky histórie zo súkromných a pracovných profilov prehliadača Safari}many{{count} history items from Safari private and work profiles}other{{count} položiek histórie zo súkromných a pracovných profilov prehliadača Safari}}</translation>
 <translation id="4979397965658815378">Prihláste sa účtom Google a používajte svoje záložky, heslá, históriu a ďalšie nastavenia vo všetkých svojich zariadeniach</translation>
 <translation id="4985921635659180565">Po naplánovaní odstránenia súboru sa už táto akcia nedá zrušiť.</translation>
 <translation id="498624032394115435">Ktokoľvek s odkazom môže upravovať všetky karty.</translation>
@@ -1565,6 +1564,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7035825883570480307">Chcete zapnúť upozornenia?</translation>
 <translation id="7039345315346323556">Nedávne</translation>
+<translation id="704692552158601232">Predvolený prehliadač</translation>
 <translation id="7055240621761583113">Automaticky doplniť heslo</translation>
 <translation id="7058455400288852416">Prechod na prepínač kariet</translation>
 <translation id="7063811929043357292">Tvoj účet spravuje tvoj rodič.

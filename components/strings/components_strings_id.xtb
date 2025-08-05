@@ -314,7 +314,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1521655867290435174">Google Spreadsheet</translation>
 <translation id="1524669537550112617">Rumah Kontrakan Berperabot Lengkap</translation>
 <translation id="1527263332363067270">Menunggu koneksi internet...</translation>
-<translation id="1527490370616010873">Google bukan penyedia layanan isi otomatis Anda. Untuk mengaktifkan setelan ini dan menggunakan info pembayaran dari Akun Google Anda, buka <ph name="BEGIN_LINK" />Setelan layanan isi otomatis<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Koneksi diblokir karena dimulai oleh halaman publik untuk terhubung ke perangkat atau server di jaringan pribadi. Muat ulang halaman ini untuk mengizinkan koneksi.</translation>
 <translation id="1529789484829130889">Baki 8</translation>
 <translation id="1530707389502320859">Situs yang baru saja Anda coba kunjungi terlihat palsu. Penyerang terkadang meniru situs dengan membuat perubahan kecil dan sulit terlihat pada URL situs.</translation>
@@ -3282,6 +3281,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6457206614190510200">Jahitan kawat</translation>
 <translation id="6457455098507772300">Notifikasi diskon muncul sebagai notifikasi pop-up di desktop</translation>
 <translation id="6458606150257356946">Tetap tempelkan</translation>
+<translation id="6462438303393708881">Batalkan upload</translation>
 <translation id="6464094930452079790">gambar</translation>
 <translation id="6465306955648956876">Kelola sandi...</translation>
 <translation id="646789491285795429">Anda sudah memantau produk ini</translation>

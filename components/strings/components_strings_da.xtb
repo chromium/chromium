@@ -314,7 +314,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Møblerede lejeboliger</translation>
 <translation id="1527263332363067270">Venter på forbindelse…</translation>
-<translation id="1527490370616010873">Google er ikke din udbyder af autofyld. Hvis du vil aktivere disse indstillinger og bruge betalingsoplysninger fra din Google-konto, skal du gå til <ph name="BEGIN_LINK" />indstillingerne for tjenester til autofyld<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Forbindelsen er blokeret, fordi den blev startet af en offentlig side med henblik på at oprette forbindelse til enheder eller servere på dit private netværk. Genindlæs denne side for at tillade forbindelsen.</translation>
 <translation id="1529789484829130889">Bakke 8</translation>
 <translation id="1530707389502320859">Det website, du netop forsøgte at gå til, ser ud til at være falsk. Svindlere efterligner nogle gange websites ved at lave små ændringer af webadressen, som er svære at se.</translation>
@@ -3282,6 +3281,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6457206614190510200">Samlehæftning</translation>
 <translation id="6457455098507772300">Underretninger om prisfald vises som pop op-notifikationer på din computer</translation>
 <translation id="6458606150257356946">Indsæt alligevel</translation>
+<translation id="6462438303393708881">Annuller upload</translation>
 <translation id="6464094930452079790">billeder</translation>
 <translation id="6465306955648956876">Administrer adgangskoder...</translation>
 <translation id="646789491285795429">Du holder allerede øje med dette produkt</translation>

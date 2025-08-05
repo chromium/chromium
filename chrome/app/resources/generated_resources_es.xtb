@@ -253,7 +253,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1166583374608765787">Revisa la actualización del nombre</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Las aplicaciones web aisladas siguen esta configuración automáticamente</translation>
-<translation id="116712635768212829">Si Chrome detecta que una de tus contraseñas aparece en una brecha de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla si has iniciado sesión.</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema reciente generado por IA n.º <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estilo <ph name="STYLE" /> y el estado de ánimo <ph name="MOOD" /></translation>
 <translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
@@ -402,6 +401,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1260810365552581339">Es posible que Linux no tenga suficiente espacio en disco. Puedes aumentar el espacio en disco de Linux e intentar la restauración otra vez en <ph name="LINK_START" />Ajustes<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ha habido un problema con las licencias del modo Demo del dispositivo.</translation>
+<translation id="1262395978737369974">Siempre tiene permiso para usar la optimización de JavaScript</translation>
 <translation id="1262564987698748643">Los sitios pueden solicitar permiso para anular la entrada de tu teclado</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263733306853729545">Utilizar las teclas <ph name="MINUS" /> y <ph name="EQUAL" /> para mostrar la lista de caracteres disponibles</translation>
@@ -1974,6 +1974,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2343160676229467122">Las extensiones no están permitidas en <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parque Nacional de las Montañas Rocosas</translation>
 <translation id="2343747224442182863">Destacar esta pestaña</translation>
+<translation id="2343971313330854480">Busca tu archivo en la carpeta <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook.</translation>
 <translation id="234559068082989648">Las versiones antiguas de las aplicaciones de Chrome no se abrirán después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o para que la quite.</translation>
 <translation id="2348176352564285430">Aplicación: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2221,6 +2222,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Disposición de las pantallas</translation>
 <translation id="2507253002925770350">Ticket eliminado</translation>
+<translation id="2507339521369019923">Guarda en tu cuenta</translation>
 <translation id="2507491234071975894">Altavoz</translation>
 <translation id="2508747373511408451">La aplicación <ph name="APPLICATION_NAME" /> requiere que Google Drive esté disponible.</translation>
 <translation id="2509495747794740764">El valor de la escala debe ser un número entre 10 y 200.</translation>
@@ -7973,6 +7975,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6613267708691765962">Buscando malware...</translation>
 <translation id="6615455863669487791">Ver</translation>
+<translation id="6618013221808317456">No permitir que los sitios usen la optimización de JavaScript</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">El sitio web puede registrar tu ubicación</translation>
 <translation id="6619243162837544323">Estado de la red</translation>
@@ -9834,6 +9837,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7920482456679570420">Añade palabras que quieras que se omitan en el corrector ortográfico</translation>
 <translation id="7920715534283810633">No se puede abrir <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">No puedes ver las notificaciones de tu teléfono en esta cuenta gestionada. Vuelve a intentarlo con otra cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Los sitios pueden usar la optimización de JavaScript</translation>
 <translation id="7921901223958867679">Esta extensión puede leer y modificar <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extensión</translation>
 <translation id="7923564237306226146">Actualización de Linux completada</translation>
@@ -10380,6 +10384,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8276560076771292512">Vaciar la caché y volver a cargar de manera forzada</translation>
 <translation id="8276850948802942358">Más información sobre cómo dar permiso temporal a un sitio para que use cookies de terceros</translation>
 <translation id="8277907305629781277">Creaste esta llave de acceso el <ph name="DATE" /></translation>
+<translation id="8278702675516957539">No tiene permiso para usar la optimización de JavaScript</translation>
 <translation id="827966378414194229">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Sitios web en tus idiomas</translation>
 <translation id="8280848878018088610">Olas rompiendo en el mar con una ciudad fantástica y un castillo de fondo en un ambiente oscuro.</translation>
@@ -10599,6 +10604,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
 <translation id="8431977087510901105">Ajustes del cursor restablecidos</translation>
+<translation id="843210078733508372">Inicia sesión y el cambio de contraseña continuará</translation>
 <translation id="8433186206711564395">Configuración de red</translation>
 <translation id="8434109185104929038">Rincón de lectura</translation>
 <translation id="8434837876193928924">Detalles del grupo de pestañas</translation>
@@ -11352,6 +11358,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="895347679606913382">Iniciando...</translation>
 <translation id="8954796993367253220">Para eliminar el historial del modo Invitado, cierra todas las ventanas del modo Invitado.</translation>
 <translation id="8955174612586215829">Buscar temas</translation>
+<translation id="8957656266859671822">Selecciona tu cuenta</translation>
 <translation id="8957757410289731985">Personalizar perfil</translation>
 <translation id="8959144235813727886">Sitios y aplicaciones</translation>
 <translation id="895944840846194039">Memoria de JavaScript</translation>
@@ -11664,6 +11671,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9153367754133725216">Obtén sugerencias de aplicaciones y contenido web nuevos en el menú de aplicaciones y en los resultados de búsqueda. Envía estadísticas para mejorar las sugerencias solo si has elegido enviar informes sobre fallos y datos de uso y diagnóstico a ChromeOS.</translation>
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="915485121129452731">Tableta gráfica</translation>
+<translation id="9155100833189043833">Usa un ID de forma segura desde tu dispositivo móvil</translation>
 <translation id="9155344700756733162">Deseleccionar color</translation>
 <translation id="9157096865782046368">0,8 segundos</translation>
 <translation id="9157697743260533322">Se ha producido un error al configurar las actualizaciones automáticas para todos los usuarios (error de lanzamiento preliminar: <ph name="ERROR_NUMBER" />)</translation>

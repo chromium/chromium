@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">নামের আপডেট দেখে নিন</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" />-এ আছে</translation>
 <translation id="1166644470305877068">আইসোলেটেড ওয়েব অ্যাপ অটোমেটিক এই সেটিংস ফলো করে</translation>
-<translation id="116712635768212829">ডেটার নিরাপত্তা লঙ্ঘন হওয়ার ঘটনাতে, Chrome আপনার কোনও পাসওয়ার্ড দেখতে পেলে, আপনি সাইন-ইন করে থাকাকালীন, Google Password Manager আপনার হয়ে পাসওয়ার্ড পরিবর্তন করে দেওয়ার অফার দিতে পারে।</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />-এর মধ্যে খুলছে...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> মুড সহ <ph name="STYLE" /> স্টাইল, <ph name="SUBJECT" />-এর <ph name="INDEX" />টি সাম্প্রতিক AI থিম।</translation>
 <translation id="116896278675803795">বেছে নেওয়া কন্টেন্টের সাথে মেলানোর জন্য ভাষা অটোমেটিক পরিবর্তন করুন</translation>
@@ -403,6 +402,7 @@
 <translation id="1260810365552581339">Linux-এ ডিস্ক স্টোরেজে হয়ত পর্যাপ্ত খালি জায়গা নেই। Linux ডিস্ক স্টোরেজে খালি জায়গা বাড়িয়ে, <ph name="LINK_START" />সেটিংস<ph name="LINK_END" /> থেকে আবার ফিরিয়ে আনার চেষ্টা করুন।</translation>
 <translation id="1261380933454402672">মাঝারি রকমের</translation>
 <translation id="126156426083987769">ডেমো মোড ডিভাইস লাইসেন্স নিয়ে সমস্যা হয়েছে।</translation>
+<translation id="1262395978737369974">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ব্যবহার করার অনুমতি সবসময় আছে</translation>
 <translation id="1262564987698748643">সাইট আপনার কীবোর্ডের ইনপুট ওভাররাইড করার জন্য বলতে পারে</translation>
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1263733306853729545">প্রার্থী তালিকা পৃষ্ঠাতে সূচীবদ্ধ করার জন্য <ph name="MINUS" /> এবং <ph name="EQUAL" /> কী ব্যবহার করুন</translation>
@@ -1987,6 +1987,7 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" />-এ এক্সটেনশন অনুমোদিত নয়</translation>
 <translation id="2343390523044483367">রকি মাউন্টেন ন্যাশনাল পার্ক</translation>
 <translation id="2343747224442182863">এই ট্যাবে ফোকাস করুন</translation>
+<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> ফোল্ডারে আপনার ফাইল খুঁজুন</translation>
 <translation id="2344032937402519675">সার্ভারের সাথে কানেক্ট করা যাচ্ছে না। আপনার নেটওয়ার্ক কানেকশন চেক করে আবার চেষ্টা করুন। এর পরেও সমস্যা হলে, Chromebook রিস্টার্ট করে দেখুন।</translation>
 <translation id="234559068082989648">ডিসেম্বর ২০২২ এর পর থেকে Chrome অ্যাপের পুরনো ভার্সন আর খুলবে না। নতুন ভার্সনে আপডেট করার জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন বা এই অ্যাপটি সরিয়ে দিন।</translation>
 <translation id="2348176352564285430">অ্যাপ্লিকেশান: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2234,6 +2235,7 @@
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />-এর <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="250704661983564564">ডিসপ্লে সেট করা</translation>
 <translation id="2507253002925770350">টিকিট সরানো হয়েছে</translation>
+<translation id="2507339521369019923">নিজের অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="2507491234071975894">স্পিকার</translation>
 <translation id="2508747373511408451">ফাইলটি খুলতে <ph name="APPLICATION_NAME" /> অ্যাপ্লিকেশনের জন্য ডিভাইসে Google Drive উপলভ্য থাকতে হবে।</translation>
 <translation id="2509495747794740764">স্কেলের মাপকে অবশ্যই ১০ থেকে ১০০ এর মধ্যের একটি সংখ্যা হতে হবে।</translation>
@@ -7992,6 +7994,7 @@
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
 <translation id="6613267708691765962">ম্যালওয়্যারের জন্য স্ক্যান করা হচ্ছে...</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
+<translation id="6618013221808317456">সাইটকে জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ব্যবহার করার অনুমতি দেবেন না</translation>
 <translation id="6619058681307408113">লাইন প্রিন্টার ডেমন (LPD)</translation>
 <translation id="661907246513853610">সাইটটি আপনার লোকেশন ট্র্যাক করতে পারে</translation>
 <translation id="6619243162837544323">নেটওয়ার্ক স্ট্যাটাস</translation>
@@ -9852,6 +9855,7 @@
 <translation id="7920482456679570420">যেসব শব্দের বানান পরীক্ষা করতে দিতে চান না সেগুলি যোগ করুন</translation>
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> খোলা যাচ্ছে না</translation>
 <translation id="7921347341284348270">আপনি এই ম্যানেজ করা অ্যাকাউন্টে আপনার ফোনের বিজ্ঞপ্তি দেখতে পাবেন না। অন্য অ্যাকাউন্ট ব্যবহার করে আবার চেষ্টা করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">সাইট জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ব্যবহার করতে পারে</translation>
 <translation id="7921901223958867679">এই এক্সটেনশন <ph name="HOST" /> পড়তে ও পরিবর্তন করতে পারে</translation>
 <translation id="7922606348470480702">১টি এক্সটেনশন</translation>
 <translation id="7923564237306226146">Linux আপগ্রেড করা হয়ে গেছে</translation>
@@ -10398,6 +10402,7 @@
 <translation id="8276560076771292512">ক্যাশে খালি করুন ও কঠিন রলোড</translation>
 <translation id="8276850948802942358">কোনও সাইটকে থার্ড-পার্টি কুকি ব্যবহার করার জন্য সাময়িক অনুমতি দেওয়া সম্পর্কে আরও জানুন</translation>
 <translation id="8277907305629781277">আপনি <ph name="DATE" />-এ এই পাসকী তৈরি করেছেন</translation>
+<translation id="8278702675516957539">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ব্যবহার করার অনুমতি নেই</translation>
 <translation id="827966378414194229">Chromebook নিয়ন্ত্রণ করার জন্য মাথা ঘোরান এবং মুখের বিভিন্ন প্রকার এক্সপ্রেশন ব্যবহার করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">আপনার ভাষায় ওয়েবসাইট</translation>
 <translation id="8280848878018088610">ডার্ক মোডে, উত্তাল সমুদ্রের ঢেউ দেখানো হচ্ছে যার ব্যাকগ্রাউন্ডে দুর্দান্ত সুন্দর একটি শহর ও দুর্গ রয়েছে।</translation>
@@ -10617,6 +10622,7 @@
 <translation id="8431190899827883166">ট্যাপগুলি দেখুন</translation>
 <translation id="843173223122814223">AI-এর সাহায্যে ব্যাকগ্রাউন্ড তৈরি করুন</translation>
 <translation id="8431977087510901105">কার্সর সেটিংস রিসেট করা হয়েছে</translation>
+<translation id="843210078733508372">সাইন-ইন করুন এবং পাসওয়ার্ড পরিবর্তন চলতে থাকবে</translation>
 <translation id="8433186206711564395">নেটওয়ার্ক সেটিংস</translation>
 <translation id="8434109185104929038">রিডিং নুক</translation>
 <translation id="8434837876193928924">ট্যাব গ্রুপ সম্পর্কিত বিবরণ</translation>
@@ -11371,6 +11377,7 @@
 <translation id="895347679606913382">শুরু হচ্ছে...</translation>
 <translation id="8954796993367253220">গেস্ট মোডের ইতিহাস মুছে ফেলতে, সব গেস্ট উইন্ডো বন্ধ করুন।</translation>
 <translation id="8955174612586215829">থিম খুঁজুন</translation>
+<translation id="8957656266859671822">আপনার অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="8957757410289731985">প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="8959144235813727886">সাইট এবং অ্যাপ</translation>
 <translation id="895944840846194039">জাভাস্ক্রিপ্ট মেমোরি</translation>
@@ -11683,6 +11690,7 @@
 <translation id="9153367754133725216">লঞ্চার ও সার্চ ফলাফলে ওয়েব কন্টেন্ট ও নতুন অ্যাপের জন্য সাজেশন দেখুন। ChromeOS-এ ক্র্যাশ রিপোর্ট ও ডায়াগনস্টিকস এবং ব্যবহারের ডেটা পাঠানোর বিকল্প বেছে নিয়ে থাকলেই শুধুমাত্র সাজেশন উন্নত করতে পরিসংখ্যান পাঠান।</translation>
 <translation id="9154194610265714752">আপডেট রয়েছে</translation>
 <translation id="915485121129452731">পেন ট্যাবলেট</translation>
+<translation id="9155100833189043833">আপনার মোবাইল ডিভাইস থেকে নিরাপদে কোনও আইডি ব্যবহার করুন</translation>
 <translation id="9155344700756733162">রঙ বাদ দিন</translation>
 <translation id="9157096865782046368">০.৮ সেকেন্ড</translation>
 <translation id="9157697743260533322">সকল ব্যবহারকারীর জন্য স্বয়ংক্রিয় আপডেট সেট-আপ পারেনি (প্রিফ্লাইট লঞ্চ ত্রুটি: <ph name="ERROR_NUMBER" />)</translation>

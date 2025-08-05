@@ -1002,7 +1002,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="496392417432935267">Ouvert ailleurs</translation>
 <translation id="4970724460420203313">L'utilisation de Chrome avec votre compte géré vous permet de séparer la navigation liée à votre organisation (y compris les onglets, l'historique et les mots de passe) de vos autres navigations</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe. Pour ce faire, les données de navigation doivent être envoyées à Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} élément de l'historique des profils Safari privé et professionnel}one{{count} élément de l'historique des profils Safari privé et professionnel}other{{count} éléments de l'historique des profils Safari privé et professionnel}}</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="4985921635659180565">Une fois que la suppression d'un fichier est programmée, elle ne peut plus être annulée.</translation>
 <translation id="498624032394115435">Toute personne disposant du lien peut modifier tous les onglets.</translation>
@@ -1565,6 +1564,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7035825883570480307">Activer les notifications?</translation>
 <translation id="7039345315346323556">Récents</translation>
+<translation id="704692552158601232">Application de navigation par défaut</translation>
 <translation id="7055240621761583113">Remplir automatiquement le mot de passe</translation>
 <translation id="7058455400288852416">Accéder au Gestionnaire d'onglets</translation>
 <translation id="7063811929043357292">Ton compte est géré par ton parent.

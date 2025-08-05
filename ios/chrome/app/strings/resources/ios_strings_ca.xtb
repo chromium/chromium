@@ -1002,7 +1002,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="496392417432935267">S'ha obert en un altre lloc</translation>
 <translation id="4970724460420203313">Si utilitzes Chrome amb el compte gestionat, podràs mantenir la navegació relacionada amb la teva organització (incloses les pestanyes, l'historial i les contrasenyes) separada de la teva altra activitat de navegació</translation>
 <translation id="4971735654804503942">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos. T'avisa sobre violacions de les contrasenyes. Requereix que les dades de navegació s'enviïn a Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} element de l'historial dels perfils de treball i privat de Safari}other{{count} elements de l'historial dels perfils de treball i privat de Safari}}</translation>
 <translation id="4979397965658815378">Inicia la sessió amb el compte de Google per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
 <translation id="4985921635659180565">Un cop programada, la supressió d'un fitxer no es pot cancel·lar.</translation>
 <translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
@@ -1565,6 +1564,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7035825883570480307">Vols activar les notificacions?</translation>
 <translation id="7039345315346323556">Recents</translation>
+<translation id="704692552158601232">Aplicació de navegació predeterminada</translation>
 <translation id="7055240621761583113">Emplena automàticament la contrasenya</translation>
 <translation id="7058455400288852416">Ves al selector de pestanyes</translation>
 <translation id="7063811929043357292">El teu pare o mare gestiona el teu compte.
@@ -1612,6 +1612,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7266578100016339897">Això t'ajuda a mantenir l'organització. Pots canviar-ho en qualsevol moment a la configuració.</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="728025568708172005">Mostra'm la zona</translation>
+<translation id="7280980607183752256">Aquest fitxer no es pot importar</translation>
 <translation id="7281202269687163394">La teva privadesa i Gemini.</translation>
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
 <translation id="7300448350764260141">Afegeix una capa addicional de protecció contra les amenaces en línia.</translation>

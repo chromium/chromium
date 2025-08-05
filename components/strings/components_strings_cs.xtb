@@ -314,7 +314,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1521655867290435174">Tabulky Google</translation>
 <translation id="1524669537550112617">Pronájmy vybavených bytů</translation>
 <translation id="1527263332363067270">Čeká se na připojení…</translation>
-<translation id="1527490370616010873">Vaším poskytovatelem automatického vyplňování není Google. Pokud chcete zapnout tato nastavení a používat platební údaje ze svého účtu Google, přejděte do <ph name="BEGIN_LINK" />nastavení služeb automatického vyplňování<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Připojení je blokováno, protože bylo zahájeno veřejnou stránkou za účelem připojení k zařízením nebo serverům ve vaší privátní síti. Pokud ho chcete povolit, načtěte tuto stránku znovu.</translation>
 <translation id="1529789484829130889">Přihrádka 8</translation>
 <translation id="1530707389502320859">Web, který se pokoušíte navštívit, vypadá falešný. Útočníci někdy weby napodobují tak, že v adrese URL provádějí drobné, obtížně odhalitelné změny.</translation>
@@ -3277,6 +3276,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6457206614190510200">Sešitová vazba</translation>
 <translation id="6457455098507772300">Upozornění na pokles ceny se zobrazují na ploše jako vyskakovací oznámení</translation>
 <translation id="6458606150257356946">Přesto vložit</translation>
+<translation id="6462438303393708881">Zrušit nahrávání</translation>
 <translation id="6464094930452079790">obrázky</translation>
 <translation id="6465306955648956876">Spravovat hesla...</translation>
 <translation id="646789491285795429">Tento produkt už sledujete.</translation>

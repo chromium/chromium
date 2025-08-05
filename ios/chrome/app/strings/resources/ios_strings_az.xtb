@@ -1002,7 +1002,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="496392417432935267">Başqa yerdə açılıb</translation>
 <translation id="4970724460420203313">İdarə olunan hesabınız ilə Chrome-dan istifadə etmək təşkilatınızla əlaqəli axtarışı (tablar, tarixçə və parollar daxil olmaqla) digər axtarışdan ayırmağa kömək edir</translation>
 <translation id="4971735654804503942">Təhlükəli veb saytlar, endirmələr və artırmalara qarşı daha sürətli, fəal qoruma. Sizə parol aşkarlanmaları barədə xəbərdarlıq edir. Baxış datasının Google'a göndərilməsini tələb edir.</translation>
-<translation id="4975364841282576329">{count,plural, =1{Safari şəxsi və iş profillərindən {count} tarixçə elementi}other{Safari şəxsi və iş profillərindən {count} tarixçə elementi}}</translation>
 <translation id="4979397965658815378">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə etmək üçün Google Hesabınız ilə daxil olun.</translation>
 <translation id="4985921635659180565">Faylın silinməsi planlaşdırıldıqdan sonra onu ləğv etmək mümkün deyil.</translation>
 <translation id="498624032394115435">Keçidi olan hər kəs bütün tablara düzəliş edə bilər.</translation>
@@ -1565,6 +1564,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7035825883570480307">Bildirişlər aktiv edilsin?</translation>
 <translation id="7039345315346323556">Son</translation>
+<translation id="704692552158601232">Defolt brauzer tətbiqi</translation>
 <translation id="7055240621761583113">Parolu avtomatik doldurun</translation>
 <translation id="7058455400288852416">Tab keçiricisinə daxil olun</translation>
 <translation id="7063811929043357292">Hesabı valideyn idarə edir.

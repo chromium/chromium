@@ -273,6 +273,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1436185428532214179">Puwedeng hilinging mag-edit ng mga file at folder sa iyong device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
 <translation id="1442987760062738829">Punch</translation>
+<translation id="1445896388055045436">Ipakita sa pag-checkout ang mga available na benepisyo at reward ng card. May mga nalalapat na tuntunin ng nag-isyu.</translation>
 <translation id="1446396933673057385">Pagsusuri sa katumpakan</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Hindi puwedeng itakda sa iisang dictionary ang mga key na "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" bilang mga key na "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
@@ -314,7 +315,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Mga Pinaparentahang May Kagamitan</translation>
 <translation id="1527263332363067270">Naghihintay ng koneksyon…</translation>
-<translation id="1527490370616010873">Hindi Google ang iyong provider ng autofill. Para ma-enable ang mga setting na ito at magamit ang impormasyon sa pagbabayad mula sa iyong Google Account, bumisita sa <ph name="BEGIN_LINK" />Mga setting ng mga serbisyo ng autofill<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Na-block ang koneksyon dahil sinimulan ito ng isang pampublikong page para kumonekta sa mga device o server sa iyong pribadong network. I-reload ang page na ito para payagan ang koneksyon.</translation>
 <translation id="1529789484829130889">Tray 8</translation>
 <translation id="1530707389502320859">Mukhang peke ang site na sinubukan mong bisitahin. Kung minsan, ginagaya ng mga nang-aatake ang mga site sa pamamagitan ng paggawa ng mga pagbabago sa URL na maliit at mahirap makita.</translation>
@@ -1232,6 +1232,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3086579638707268289">Sinusubaybayan ang iyong aktibidad sa web</translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3090667236485488075">Glass</translation>
+<translation id="3094051226187213523">Buksan ang AI Mode sa suhestyong ito.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Binalewala ito dahil naglalaman ang listahan ng naka-disable ng pattern na katumbas ng '*', na katumbas ng pag-disable sa patakaran.</translation>
 <translation id="3098944373717628099">Made-delete ang iyong mga lokal na file sa loob ng 1 oras</translation>
@@ -3282,6 +3283,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6457206614190510200">Saddle stitch</translation>
 <translation id="6457455098507772300">Lumalabas ang mga alerto sa pagbaba ng presyo bilang mga popup na notification sa iyong desktop</translation>
 <translation id="6458606150257356946">I-paste pa rin</translation>
+<translation id="6462438303393708881">Kanselahin ang pag-upload</translation>
 <translation id="6464094930452079790">mga larawan</translation>
 <translation id="6465306955648956876">Pamahalaan ang mga password...</translation>
 <translation id="646789491285795429">Sinusubaybayan mo na ang produktong ito</translation>
@@ -4779,6 +4781,7 @@ Mga karagdagang detalye:
 <translation id="9040341831873780534">Tingnan ang mga tuntunin dito</translation>
 <translation id="9042617223719777575">Malaking Kapasidad</translation>
 <translation id="9042827002460091668">Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
+<translation id="9043161870923715789">AI Mode</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">Gusto ng <ph name="URL" /> na maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="9046864189129893978">Mga Mikropono (<ph name="MICS_COUNT" />)</translation>

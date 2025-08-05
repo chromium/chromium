@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">Katso nimen muutos</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> kuuluu tälle työpöydälle: <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Eristetyt verkkosovellukset noudattavat tätä asetusta automaattisesti</translation>
-<translation id="116712635768212829">Jos Chrome löytää yhden salasanoistasi tietosuojaloukkauksesta, Google Salasanat voi tarjota salasanan vaihtamista ollessasi sisäänkirjautuneena.</translation>
 <translation id="1168020859489941584">Avautuu ajassa <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Viimeaikainen AI-teema <ph name="INDEX" /> / <ph name="SUBJECT" />, tyyli: <ph name="STYLE" />, tunnelma: <ph name="MOOD" /></translation>
 <translation id="116896278675803795">Vaihda kieli automaattisesti vastaamaan valittua sisältöä</translation>
@@ -402,6 +401,7 @@
 <translation id="1260810365552581339">Linuxilla ei välttämättä ole riittävästi levytilaa. Voit lisätä Linuxin levytilaa ja kokeilla palautusta uudelleen <ph name="LINK_START" />Asetuksista<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Maltillinen</translation>
 <translation id="126156426083987769">Esittelytilan laitelisenssien kanssa tapahtui ongelma.</translation>
+<translation id="1262395978737369974">JavaScript-optimointi on aina sallittu</translation>
 <translation id="1262564987698748643">Sivustot voivat pyytää näppäimistösyötön ohittamista</translation>
 <translation id="1263231323834454256">Lukulista</translation>
 <translation id="1263733306853729545">Selaa vaihtoehtolistaa näppäimillä <ph name="MINUS" /> ja <ph name="EQUAL" /></translation>
@@ -1985,6 +1985,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2343160676229467122">Laajennuksia ei sallita sivustolla <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Kalliovuorten kansallispuisto</translation>
 <translation id="2343747224442182863">Aseta tämä välilehti aktiiviseksi</translation>
+<translation id="2343971313330854480">Etsi tiedosto kansiosta <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">Palvelimeen ei saatu yhteyttä. Tarkista verkkoyhteys ja yritä uudelleen. Jos ongelma ei ratkea, kokeile käynnistää Chromebook uudelleen.</translation>
 <translation id="234559068082989648">Chrome-sovellusten vanhoja versioita ei voi avata joulukuun 2022 jälkeen. Ota yhteyttä järjestelmänvalvojaan ja pyydä häntä päivittämään tai poistamaan sovellus.</translation>
 <translation id="2348176352564285430">Sovellus: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2232,6 +2233,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Näyttöasettelu</translation>
 <translation id="2507253002925770350">Tukipyyntö poistettu</translation>
+<translation id="2507339521369019923">Tallenna omalle tilille</translation>
 <translation id="2507491234071975894">Kaiutin</translation>
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> edellyttää, että Google Drive on käytettävissä.</translation>
 <translation id="2509495747794740764">Asteikon on oltava numero välillä 10–200.</translation>
@@ -7984,6 +7986,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6613267708691765962">Haittaohjelmien tarkistus käynnissä…</translation>
 <translation id="6615455863669487791">Näytä</translation>
+<translation id="6618013221808317456">Älä salli sivustojen käyttää JavaScript-optimointia</translation>
 <translation id="6619058681307408113">Line Printer Daemon ‑protokolla (LPD)</translation>
 <translation id="661907246513853610">Sivusto voi seurata sijaintiasi</translation>
 <translation id="6619243162837544323">Verkon tila</translation>
@@ -9844,6 +9847,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7920482456679570420">Lisää sanoja, jotka oikeinkirjoituksen tarkistuksen tulee ohittaa</translation>
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> ei avaudu</translation>
 <translation id="7921347341284348270">Et voi katsoa puhelimesi ilmoituksia hallinnoidulla tilillä. Yritä uudelleen eri tilillä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Sivustot voivat käyttää JavaScript-optimointia</translation>
 <translation id="7921901223958867679">Laajennus voi lukea ja muuttaa tätä: <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 laajennus</translation>
 <translation id="7923564237306226146">Linux-päivitys valmis</translation>
@@ -10390,6 +10394,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8276560076771292512">Tyhjennä välimuisti ja pakota päivitys</translation>
 <translation id="8276850948802942358">Lue, miten voit antaa sivustolle väliaikaisen luvan käyttää kolmannen osapuolen evästeitä</translation>
 <translation id="8277907305629781277">Loit tämän avainkoodin <ph name="DATE" /></translation>
+<translation id="8278702675516957539">JavaScript-optimointia ei sallita</translation>
 <translation id="827966378414194229">Ohjaa Chromebookia pään liikkeillä ja ilmeillä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Verkkosivustot kielilläsi</translation>
 <translation id="8280848878018088610">Iskeviä aaltoja meressä, taustalla pimeän tunnelmallinen fantasiakaupunki ja linna.</translation>
@@ -10609,6 +10614,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8431190899827883166">Näytä kosketus</translation>
 <translation id="843173223122814223">Luo taustoja tekoälyn avulla</translation>
 <translation id="8431977087510901105">Kohdistinasetukset nollattu</translation>
+<translation id="843210078733508372">Kirjaudu sisään, niin salasanan vaihtaminen jatkuu</translation>
 <translation id="8433186206711564395">Verkkoasetukset</translation>
 <translation id="8434109185104929038">Lukunurkka</translation>
 <translation id="8434837876193928924">Välilehtiryhmän tiedot</translation>
@@ -11362,6 +11368,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="895347679606913382">Käynnistää...</translation>
 <translation id="8954796993367253220">Voit poistaa vierastilan historian sulkemalla kaikki vierasikkunat.</translation>
 <translation id="8955174612586215829">Hae teemoja</translation>
+<translation id="8957656266859671822">Valitse tili</translation>
 <translation id="8957757410289731985">Muokkaa profiilia</translation>
 <translation id="8959144235813727886">Sivustot ja sovellukset</translation>
 <translation id="895944840846194039">JavaScriptin käyttämä muisti</translation>
@@ -11674,6 +11681,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9153367754133725216">Näytä ehdotuksia uusista sovelluksista ja verkkosisällöstä Käynnistysohjelmassa ja hakutuloksissa. Lähettää tilastoja ehdotusten parantamiseksi vain, jos olet valinnut virheraporttien sekä diagnostiikka- ja käyttödatan lähettämisen ChromeOS:ään.</translation>
 <translation id="9154194610265714752">Päivitetty</translation>
 <translation id="915485121129452731">Tablettikynä</translation>
+<translation id="9155100833189043833">Käytä henkilöllisyyskorttia turvallisesti mobiililaitteella</translation>
 <translation id="9155344700756733162">Poista värin valinta</translation>
 <translation id="9157096865782046368">0,8 sekuntia</translation>
 <translation id="9157697743260533322">Automaattisten päivitysten käyttöönotto kaikille käyttäjille epäonnistui (käynnistysvirhe valmistelun aikana: <ph name="ERROR_NUMBER" />).</translation>

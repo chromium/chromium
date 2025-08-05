@@ -273,6 +273,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1436185428532214179">Pot demanar permís per editar fitxers i carpetes del dispositiu</translation>
 <translation id="1442386063175183758">Plegat amb finestra a la dreta</translation>
 <translation id="1442987760062738829">Encunyació</translation>
+<translation id="1445896388055045436">Mostra els avantatges i les recompenses disponibles de la targeta en tramitar la compra. S'hi apliquen les condicions de l'emissor.</translation>
 <translation id="1446396933673057385">Comprovació de la precisió</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Les claus "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" no es poden establir en el mateix diccionari que les claus "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
@@ -314,7 +315,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1521655867290435174">Fulls de càlcul de Google</translation>
 <translation id="1524669537550112617">Lloguer de pisos moblats</translation>
 <translation id="1527263332363067270">S'està esperant que hi hagi connexió…</translation>
-<translation id="1527490370616010873">Google no és el teu proveïdor d'emplenament automàtic. Per activar aquestes opcions de configuració i utilitzar la informació de pagament del teu Compte de Google, ves a <ph name="BEGIN_LINK" />Configuració dels serveis d'emplenament automàtic<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La connexió s'ha bloquejat perquè una pàgina pública l'ha iniciat per connectar-se a dispositius o servidors de la teva xarxa privada. Torna a carregar aquesta pàgina per permetre la connexió.</translation>
 <translation id="1529789484829130889">Safata 8</translation>
 <translation id="1530707389502320859">El lloc web al qual acabes de provar d'accedir sembla fals. De vegades, els atacants imiten llocs web introduint petits canvis difícils de veure a l'URL.</translation>
@@ -1232,6 +1232,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3086579638707268289">La teva activitat al web s'està supervisant</translation>
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3090667236485488075">Vidre</translation>
+<translation id="3094051226187213523">Obre el mode IA amb aquest suggeriment.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">S'ha ignorat perquè la llista "disable" conté un patró igual a "*", que equival a la desactivació de la política.</translation>
 <translation id="3098944373717628099">Els teus fitxers locals se suprimiran d'aquí a 1 hora</translation>
@@ -3282,6 +3283,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6457206614190510200">Cosit al llom</translation>
 <translation id="6457455098507772300">Les alertes de baixada de preu es mostren com a notificacions emergents a l'ordinador</translation>
 <translation id="6458606150257356946">Enganxa igualment</translation>
+<translation id="6462438303393708881">Cancel·la la pujada</translation>
 <translation id="6464094930452079790">imatges</translation>
 <translation id="6465306955648956876">Gestiona les contrasenyes...</translation>
 <translation id="646789491285795429">Ja estàs fent el seguiment d'aquest producte</translation>
@@ -4779,6 +4781,7 @@ Detalls addicionals:
 <translation id="9040341831873780534">Consulta'n les condicions aquí</translation>
 <translation id="9042617223719777575">Gran capacitat</translation>
 <translation id="9042827002460091668">Comprova la connexió a Internet i torna-ho a provar</translation>
+<translation id="9043161870923715789">Mode IA</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> vol cercar qualsevol dispositiu de la teva xarxa local i connectar-s'hi</translation>
 <translation id="9046864189129893978">Micròfons (<ph name="MICS_COUNT" />)</translation>

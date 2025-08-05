@@ -253,7 +253,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1166583374608765787">Naamupdate bekijken</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> hoort bij bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Geïsoleerde web-apps volgen deze instelling automatisch</translation>
-<translation id="116712635768212829">Als Chrome een van je wachtwoorden vindt bij een gegevenslek, kan Google Wachtwoordmanager aanbieden om je wachtwoord te wijzigen als je bent ingelogd.</translation>
 <translation id="1168020859489941584">Openen in <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Recent AI-thema <ph name="INDEX" /> van <ph name="SUBJECT" />, in de stijl <ph name="STYLE" />, met de stemming <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Taal automatisch wijzigen in overeenkomst met geselecteerde content</translation>
@@ -402,6 +401,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1260810365552581339">Linux heeft mogelijk niet voldoende schijfruimte. Je kunt de Linux-schijfruimte vergroten en opnieuw proberen de back-up terug te zetten via <ph name="LINK_START" />Instellingen<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Normaal</translation>
 <translation id="126156426083987769">Er is een probleem opgetreden met apparaatlicenties voor de demomodus.</translation>
+<translation id="1262395978737369974">JavaScript-optimalisatie mag altijd worden gebruikt</translation>
 <translation id="1262564987698748643">Sites kunnen vragen of ze je toetsenbordinvoer mogen overschrijven</translation>
 <translation id="1263231323834454256">Leeslijst</translation>
 <translation id="1263733306853729545">De toetsen <ph name="MINUS" /> en <ph name="EQUAL" /> gebruiken om door een kandidatenlijst te bladeren</translation>
@@ -1973,6 +1973,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2343160676229467122">Extensies zijn niet toegestaan op <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Rocky Mountains National Park</translation>
 <translation id="2343747224442182863">Focus op dit tabblad plaatsen</translation>
+<translation id="2343971313330854480">Zoek je bestand in de map <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">Kan geen verbinding maken met de server. Check je netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op.</translation>
 <translation id="234559068082989648">Oude versies van Chrome-apps worden na december 2022 niet meer geopend. Neem contact op met je beheerder als je wilt updaten naar een nieuwe versie of verwijder deze app.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2220,6 +2221,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> van <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Schermindeling</translation>
 <translation id="2507253002925770350">Ticket verwijderd</translation>
+<translation id="2507339521369019923">Opslaan in je account</translation>
 <translation id="2507491234071975894">Speaker</translation>
 <translation id="2508747373511408451">De app <ph name="APPLICATION_NAME" /> vereist dat Google Drive beschikbaar is.</translation>
 <translation id="2509495747794740764">De waarde voor de schaal moet een getal tussen de 10 en 200 zijn.</translation>
@@ -7967,6 +7969,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="661266467055912436">Verbetert de beveiliging voor jou en alle andere internetgebruikers.</translation>
 <translation id="6613267708691765962">Scannen op malware...</translation>
 <translation id="6615455863669487791">Tonen</translation>
+<translation id="6618013221808317456">Niet toestaan dat sites JavaScript-optimalisatie gebruiken</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site kan je locatie bijhouden</translation>
 <translation id="6619243162837544323">Netwerkstatus</translation>
@@ -9826,6 +9829,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7920482456679570420">Woorden toevoegen waarvan je wilt dat de spellingcontrole deze overslaat</translation>
 <translation id="7920715534283810633">Kan <ph name="FILE_NAMES" /> niet openen</translation>
 <translation id="7921347341284348270">Je kunt de meldingen van je telefoon niet bekijken in dit beheerde account. Probeer het opnieuw met een ander account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Sites kunnen JavaScript-optimalisatie gebruiken</translation>
 <translation id="7921901223958867679">Deze extensie kan <ph name="HOST" /> lezen en wijzigen</translation>
 <translation id="7922606348470480702">1 extensie</translation>
 <translation id="7923564237306226146">Linux-upgrade afgerond</translation>
@@ -10372,6 +10376,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8276560076771292512">Cache wissen en geforceerd opnieuw laden</translation>
 <translation id="8276850948802942358">Meer informatie over hoe je een site tijdelijk toestemming geeft om cookies van derden te gebruiken</translation>
 <translation id="8277907305629781277">Je hebt deze toegangssleutel op <ph name="DATE" /> gemaakt</translation>
+<translation id="8278702675516957539">Geen toestemming om JavaScript-optimalisatie te gebruiken</translation>
 <translation id="827966378414194229">Gebruik hoofdbewegingen en gezichtsuitdrukkingen om je Chromebook te bedienen. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Websites in jouw talen</translation>
 <translation id="8280848878018088610">Beukende golven in de zee, met een fantasiestad en -kasteel op de achtergrond, in een donkere sfeer.</translation>
@@ -10591,6 +10596,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8431190899827883166">Tikken bekijken</translation>
 <translation id="843173223122814223">Achtergronden maken met AI</translation>
 <translation id="8431977087510901105">Cursorinstellingen gereset</translation>
+<translation id="843210078733508372">Log in en de wachtwoordwijziging gaat door</translation>
 <translation id="8433186206711564395">Netwerkinstellingen</translation>
 <translation id="8434109185104929038">Leeshoek</translation>
 <translation id="8434837876193928924">Tabbladgroepgegevens</translation>
@@ -11345,6 +11351,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="895347679606913382">Starten...</translation>
 <translation id="8954796993367253220">Sluit alle gastvensters om de geschiedenis van de gastmodus te verwijderen.</translation>
 <translation id="8955174612586215829">Thema's vinden</translation>
+<translation id="8957656266859671822">Kies je account</translation>
 <translation id="8957757410289731985">Profiel aanpassen</translation>
 <translation id="8959144235813727886">Sites en apps</translation>
 <translation id="895944840846194039">JavaScript-geheugen</translation>
@@ -11657,6 +11664,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9153367754133725216">Bekijk suggesties voor nieuwe apps en webcontent in de Launcher en zoekresultaten. Hiermee worden alleen statistieken verstuurd om suggesties te verbeteren als je ervoor hebt gekozen crashrapporten en diagnostische en gebruiksgegevens naar ChromeOS te sturen.</translation>
 <translation id="9154194610265714752">Bijgewerkt</translation>
 <translation id="915485121129452731">Pentablet</translation>
+<translation id="9155100833189043833">Gebruik een ID beter beveiligd vanaf je mobiele apparaat</translation>
 <translation id="9155344700756733162">Kleur deselecteren</translation>
 <translation id="9157096865782046368">0,8 seconden</translation>
 <translation id="9157697743260533322">Kan automatische updates niet instellen voor alle gebruikers (lanceringsfout bij pre-flight-procedure: <ph name="ERROR_NUMBER" />)</translation>

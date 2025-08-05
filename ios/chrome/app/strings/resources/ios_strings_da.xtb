@@ -1002,7 +1002,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="496392417432935267">Blev åbnet et andet sted</translation>
 <translation id="4970724460420203313">Når du bruger Chrome med din administrerede konto, kan du adskille browserdata, der er relateret til din organisation (herunder faner, historik og adgangskoder), fra dine øvrige browserdata</translation>
 <translation id="4971735654804503942">Hurtigere proaktiv beskyttelse mod skadelige websites, downloads og udvidelser. Advarer dig om læk af adgangskoder. Kræver, at browserdata sendes til Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} historikelement fra private profiler og arbejdsprofiler i Safari}one{{count} historikelement fra private profiler og arbejdsprofiler i Safari}other{{count} historikelementer fra private profiler og arbejdsprofiler i Safari}}</translation>
 <translation id="4979397965658815378">Log ind med din Google-konto for at få adgang til dine bogmærker, dine adgangskoder, din historik og andre indstillinger på alle dine enheder.</translation>
 <translation id="4985921635659180565">Når en fil er planlagt til at blive slettet, kan den ikke annulleres.</translation>
 <translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
@@ -1565,6 +1564,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7035825883570480307">Vil du aktivere notifikationer?</translation>
 <translation id="7039345315346323556">Seneste</translation>
+<translation id="704692552158601232">Standardapp til browsing</translation>
 <translation id="7055240621761583113">Udfyld adgangskoden automatisk</translation>
 <translation id="7058455400288852416">Gå til Faneskift</translation>
 <translation id="7063811929043357292">Din konto administreres af din forælder.

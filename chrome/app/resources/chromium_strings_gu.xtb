@@ -285,6 +285,7 @@
 <translation id="4598116752460667024">સૂચિમાંથી કોઈપણ પ્રક્રિયા શોધો.</translation>
 <translation id="4613863813562375431">ChromiumOSનું વર્ઝન</translation>
 <translation id="4621240073146040695">અપ ટૂ ડેટ થવામાં છે! અપડેટ સમાપ્ત કરવા માટે Chromium ને ફરીથી લોંચ કરો.</translation>
+<translation id="4625064703209785397">Chromiumના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromiumને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે</translation>
 <translation id="4654936675281451226">Chromium ફોર્મને વધુ સારી રીતે સમજે છે અને તમારા માટે ઑટોમૅટિક રીતે તેમને વધુ ઝડપથી ભરી શકે છે. આ સેટિંગ ચાલુ છે.</translation>
 <translation id="4665829708273112819">ચેતવણી: એક્સ્ટેન્શનને તમારો બ્રાઉઝિંગ ઇતિહાસ રેકોર્ડ કરવાથી Chromium અટકાવી શકતું નથી. છૂપા મોડમાં આ એક્સ્ટેન્શનને બંધ કરવા માટે, આ વિકલ્પની પસંદગી નાપસંદ કરો.</translation>
 <translation id="4673151026126227699">જો તમે Chromiumના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
@@ -330,6 +331,7 @@
 <translation id="5386450000063123300">Chromium અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="5405650547142096840">Chromium માંથી દૂર કરો</translation>
+<translation id="5424544524441439284">પર્ફોર્મન્સ ઘટાડે છે પરંતુ Chromiumને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે</translation>
 <translation id="5427571867875391349">Chromiumને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium બીટા</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}one{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}other{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યાં હોય એવા ટૅબને થોભાવી દો}}</translation>

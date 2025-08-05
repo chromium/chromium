@@ -1002,7 +1002,6 @@
 <translation id="496392417432935267">ሌላ ቦታ ተከፍቷል</translation>
 <translation id="4970724460420203313">በሚተዳደረው መለያዎ Chrome መጠቀም ከድርጅትዎ ጋር ተዛማጅ አሰሳን (ትሮች፣ ታሪክ እና የይለፍ ቃላትን ጨምሮ) ከሌላ አሰሳዎ ጋር ለይተው እንዲያቆዩ ያግዝዎታል።</translation>
 <translation id="4971735654804503942">ይበልጥ ፈጣን፣ ከአደገኛ ድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አስቀድሞ የሚደረግ ጥበቃ። ስለይለፍ ቃል ጥሰቶች ያስጠነቅቅዎታል። ወደ Google የአሰሳ ውሂብን መላክ ያስፈልጋል።</translation>
-<translation id="4975364841282576329">{count,plural, =1{ከSafari የግል እና የሥራ መገለጫ የመጣ {count} ታሪክ ንጥል}one{ከSafari የግል እና የሥራ መገለጫ የመጣ {count} ታሪክ ንጥል}other{ከSafari የግል እና የሥራ መገለጫ የመጡ {count} ታሪክ ንጥሎች}}</translation>
 <translation id="4979397965658815378">የእርስዎን ዕልባቶች፣ የይለፍ ቃላት፣ ታሪክ እና ሌሎች ቅንብሮችን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በGoogle መለያዎ ይግቡ</translation>
 <translation id="4985921635659180565">አንዴ ፋይል እንዲሰረዝ መርሐግብር ከተያዘለት በኋላ ሊቀር አይችልም።</translation>
 <translation id="498624032394115435">አገናኙ ያለው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላል።</translation>
@@ -1565,6 +1564,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7035825883570480307">ማሳወቂያዎች ይብሩ?</translation>
 <translation id="7039345315346323556">የቅርብ ጊዜ</translation>
+<translation id="704692552158601232">ነባሪ አሳሽ መተግበሪያ</translation>
 <translation id="7055240621761583113">የይለፍ ቃሉን በራስ-ሙላ</translation>
 <translation id="7058455400288852416">ወደ የትር መቀያየሪያ ይሂዱ</translation>
 <translation id="7063811929043357292">የእርስዎ መለያ የሚተዳደረው በወላጅዎ ነው።

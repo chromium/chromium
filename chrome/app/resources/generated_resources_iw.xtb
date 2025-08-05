@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">בדיקת עדכון השם</translation>
 <translation id="1166596238782048887">הכרטיסייה <ph name="TAB_TITLE" /> שייכת לשולחן העבודה הווירטואלי <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">‏אפליקציות אינטרנט מבודדות (IWA) יפעלו לפי ההגדרה הזו באופן אוטומטי</translation>
-<translation id="116712635768212829">‏אם Chrome מוצא אחת מהסיסמאות שלך בפרצה באבטחת המידע, מנהל הסיסמאות של Google יכול להציע לשנות אותה בשבילך אם החשבון מחובר.</translation>
 <translation id="1168020859489941584">הפתיחה תתבצע בעוד <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">‏עיצוב <ph name="INDEX" /> מהזמן האחרון של <ph name="SUBJECT" /> שנוצר על ידי AI, בסגנון <ph name="STYLE" />, באווירה <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">שינוי השפה באופן אוטומטי כך שתתאים לתוכן הנבחר</translation>
@@ -404,6 +403,7 @@
 <translation id="1260810365552581339">‏יכול להיות שאין מספיק מקום אחסון פנוי ב‑Linux. אפשר להגדיל את מקום האחסון הפנוי ב‑Linux ולנסות לשחזר שוב ב<ph name="LINK_START" />הגדרות<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">מתון</translation>
 <translation id="126156426083987769">התרחשה בעיה שקשורה לרישיונות המכשירים של מצב ההדגמה.</translation>
+<translation id="1262395978737369974">‏אין הגבלה על השימוש באופטימיזציה של JavaScript</translation>
 <translation id="1262564987698748643">אתרים יכולים לבקש הרשאה לשנות את ברירת המחדל של קלט המקלדת</translation>
 <translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1263733306853729545">מעבר בין העמודים של רשימת התווים האפשריים באמצעות המקש <ph name="MINUS" /> והמקש <ph name="EQUAL" /></translation>
@@ -1987,6 +1987,7 @@
 <translation id="2343160676229467122">אין הרשאה לתוספים באתר <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">הפארק הלאומי הרי הרוקי</translation>
 <translation id="2343747224442182863">הדגשת הכרטיסייה הזו</translation>
+<translation id="2343971313330854480">הקובץ נמצא בתיקייה <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">‏לא ניתן להתחבר לשרת. צריך לבדוק את החיבור לרשת ולנסות שוב. אם הבעיה נמשכת, כדאי לנסות להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="234559068082989648">‏גרסאות ישנות של אפליקציות Chrome לא ייפתחו אחרי דצמבר 2022. עליך לפנות לאדמין כדי לעדכן לגרסה חדשה או להסיר את האפליקציה הזו.</translation>
 <translation id="2348176352564285430">אפליקציה: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2234,6 +2235,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> מתוך <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">פריסת מסכים</translation>
 <translation id="2507253002925770350">הכרטיס הוסר</translation>
+<translation id="2507339521369019923">שמירה בחשבון שלך</translation>
 <translation id="2507491234071975894">רמקול</translation>
 <translation id="2508747373511408451">‏כדי להשתמש באפליקציה <ph name="APPLICATION_NAME" />, שירות Google Drive צריך להיות זמין.</translation>
 <translation id="2509495747794740764">שיעור קנה המידה חייב להיות מספר בין 10 ל-200.</translation>
@@ -5770,7 +5772,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏לא נמצאו מכונות VM מסוג <ph name="VM_TYPE" />}=1{‏נמצאה מכונת VM אחת מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}one{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}two{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}other{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">אין חיבור לאינטרנט.</translation>
 <translation id="4998430619171209993">מופעל</translation>
-<translation id="4999804342505941663">הפעלת המצב 'נא לא להפריע'</translation>
+<translation id="4999804342505941663">הפעלת המצב "נא לא להפריע"</translation>
 <translation id="5001526427543320409">‏קובצי cookie של צד שלישי</translation>
 <translation id="5003070249435823986">משתמשים בתנועה כדי להיכנס למצב גלילה, ואז מזיזים את הראש לכיוון שאליו רוצים לגלול. כדי לצאת ממצב הגלילה, צריך להשתמש בתנועה שוב.</translation>
 <translation id="5003993274120026347">המשפט הבא</translation>
@@ -8006,6 +8008,7 @@
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6613267708691765962">מתבצעת סריקה לאיתור תוכנה זדונית…</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
+<translation id="6618013221808317456">‏אין הרשאה לאתרים להשתמש באופטימיזציה של JavaScript</translation>
 <translation id="6619058681307408113">‎Line Printer Daemon (LPD)‎</translation>
 <translation id="661907246513853610">האתר רשאי לעקוב אחרי המיקום שלך</translation>
 <translation id="6619243162837544323">מצב רשת</translation>
@@ -9869,6 +9872,7 @@
 <translation id="7920482456679570420">הוספת מילים שיש לדלג עליהן בבדיקות איות</translation>
 <translation id="7920715534283810633">לא ניתן לפתוח את <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">אין לך אפשרות לצפות בהתראות של הטלפון בחשבון המנוהל הזה. כדאי לנסות שוב מחשבון אחר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">‏אתרים יכולים להשתמש באופטימיזציה של JavaScript</translation>
 <translation id="7921901223958867679">לתוסף הזה יש הרשאה לקרוא ולשנות את <ph name="HOST" /></translation>
 <translation id="7922606348470480702">תוסף אחד</translation>
 <translation id="7923564237306226146">‏השדרוג של Linux הושלם</translation>
@@ -10418,6 +10422,7 @@
 <translation id="8276560076771292512">ריקון המטמון וטעינה מחדש קשיחה</translation>
 <translation id="8276850948802942358">‏מידע נוסף על מתן הרשאה זמנית לאתר לצורך שימוש בקובצי Cookie של צדדים שלישיים</translation>
 <translation id="8277907305629781277">יצרת את מפתח הגישה הזה בתאריך <ph name="DATE" /></translation>
+<translation id="8278702675516957539">‏אין הרשאה להשתמש באופטימיזציה של JavaScript</translation>
 <translation id="827966378414194229">‏שימוש בתנועות ראש ובהבעות פנים לשליטה ב-Chromebook. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">אתרים בשפות שלך</translation>
 <translation id="8280848878018088610">גלים מתנפצים בים, על רקע עיר וארמון דימיוניים, באווירה אפלה.</translation>
@@ -10637,6 +10642,7 @@
 <translation id="8431190899827883166">הצגת לחיצות</translation>
 <translation id="843173223122814223">‏יצירת רקעים באמצעות AI</translation>
 <translation id="8431977087510901105">הגדרות הסמן אופסו</translation>
+<translation id="843210078733508372">אחרי הכניסה לחשבון, שינוי הסיסמה יימשך</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="8434109185104929038">פינת קריאה</translation>
 <translation id="8434837876193928924">פרטי קבוצת הכרטיסיות</translation>
@@ -11395,6 +11401,7 @@
 <translation id="895347679606913382">הפעולה מתחילה...</translation>
 <translation id="8954796993367253220">כדי למחוק את ההיסטוריה של 'מצב אורח', צריך לסגור את כל החלונות של האורחים.</translation>
 <translation id="8955174612586215829">חיפוש עיצובים</translation>
+<translation id="8957656266859671822">צריך לבחור חשבון</translation>
 <translation id="8957757410289731985">התאמה אישית של הפרופיל</translation>
 <translation id="8959144235813727886">אתרים ואפליקציות</translation>
 <translation id="895944840846194039">‏זיכרון JavaScript</translation>
@@ -11707,6 +11714,7 @@
 <translation id="9153367754133725216">‏אפשר לראות הצעות לאפליקציות חדשות ולתוכן מהאינטרנט במרכז האפליקציות ובתוצאות החיפוש. המערכת שולחת נתונים סטטיסטיים כדי לשפר את ההצעות רק אם בחרת לשלוח דוחות קריסה ונתוני אבחון ושימוש במכשיר אל ChromeOS.</translation>
 <translation id="9154194610265714752">עודכן</translation>
 <translation id="915485121129452731">לוח גרפי</translation>
+<translation id="9155100833189043833">שימוש מאובטח במזהה מהמכשיר הנייד</translation>
 <translation id="9155344700756733162">ביטול בחירת הצבע</translation>
 <translation id="9157096865782046368">0.8 שניות</translation>
 <translation id="9157697743260533322">הגדרת עדכונים אוטומטיים לכל המשתמשים נכשלה (שגיאת קדם-הפעלה: <ph name="ERROR_NUMBER" />)</translation>

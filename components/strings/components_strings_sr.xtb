@@ -273,6 +273,7 @@
 <translation id="1436185428532214179">Може да тражи да мења фајлове и фолдере на уређају</translation>
 <translation id="1442386063175183758">Пресавијање на десној страни у облику прозора</translation>
 <translation id="1442987760062738829">Бушење</translation>
+<translation id="1445896388055045436">Прикажи доступне предности и награде за картицу при плаћању. Важе услови издавача.</translation>
 <translation id="1446396933673057385">Провера тачности</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Кључеви „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ не могу да се подесе у истом речнику као и кључеви <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
@@ -314,7 +315,6 @@
 <translation id="1521655867290435174">Google табеле</translation>
 <translation id="1524669537550112617">Изнајмљивање опремљених некретнина</translation>
 <translation id="1527263332363067270">Чека се веза…</translation>
-<translation id="1527490370616010873">Google није добављач аутоматског попуњавања. Да бисте омогућили ова подешавања и користили информације о плаћању са Google налога, посетите <ph name="BEGIN_LINK" />подешавања услуга аутоматског попуњавања<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Веза је блокирана зато што ју је покренула јавна страница за повезивање са уређајима или серверима на приватној мрежи. Поново учитајте ову страницу да бисте дозволили повезивање.</translation>
 <translation id="1529789484829130889">8. фиока</translation>
 <translation id="1530707389502320859">Сајт који сте управо пробали да посетите делује лажно. Нападачи понекад имитирају сајтове тако што незнатно и скоро неприметно измене URL.</translation>
@@ -1235,6 +1235,7 @@
 <translation id="3086579638707268289">Ваше активности на вебу се прате</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
+<translation id="3094051226187213523">Отвори AI режим помоћу овог предлога.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3098513225387949945">Занемарује се јер се на листи онемогућених налази образац који је једнак „*“, а што је еквивалентно онемогућавању смерница.</translation>
 <translation id="3098944373717628099">Локални фајлови ће бити избрисани за 1 сат</translation>
@@ -3292,6 +3293,7 @@
 <translation id="6457206614190510200">Спајање по средини</translation>
 <translation id="6457455098507772300">Обавештења о снижењима се приказују као искачућа обавештења на рачунару</translation>
 <translation id="6458606150257356946">Ипак налепи</translation>
+<translation id="6462438303393708881">Откажи отпремање</translation>
 <translation id="6464094930452079790">слике</translation>
 <translation id="6465306955648956876">Управљајте лозинкама...</translation>
 <translation id="646789491285795429">Већ пратите овај производ</translation>
@@ -4796,6 +4798,7 @@
 <translation id="9040341831873780534">Погледајте услове овде</translation>
 <translation id="9042617223719777575">Велики капацитет</translation>
 <translation id="9042827002460091668">Проверите интернет везу и пробајте поново</translation>
+<translation id="9043161870923715789">AI режим</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> жели да тражи уређаје на локалној мрежи и повезује се са њима</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>

@@ -1002,7 +1002,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="496392417432935267">Åpnet et annet sted</translation>
 <translation id="4970724460420203313">Hvis du logger på med den administrerte kontoen din når du bruker Chrome, kan du holde nettlesingen som er knyttet til organisasjonen din (inkludert faner, logg og passord), atskilt fra annen nettlesing</translation>
 <translation id="4971735654804503942">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser. Advarer deg om passordbrudd. Krever at nettlesingsdata sendes til Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} loggelement fra private profiler og jobbprofiler i Safari}other{{count} loggelementer fra private profiler og jobbprofiler i Safari}}</translation>
 <translation id="4979397965658815378">Logg på med Google-kontoen din for å få bokmerkene, passordene, loggoppføringene og de andre innstillingene dine på alle enhetene du bruker</translation>
 <translation id="4985921635659180565">Når en fil er planlagt slettet, kan ikke dette avbrytes.</translation>
 <translation id="498624032394115435">Alle som har linken, kan redigere alle faner.</translation>
@@ -1565,6 +1564,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7035825883570480307">Vil du slå på varsler?</translation>
 <translation id="7039345315346323556">Nylige</translation>
+<translation id="704692552158601232">Standard nettleserapp</translation>
 <translation id="7055240621761583113">Autofyll passordet</translation>
 <translation id="7058455400288852416">Gå til fanevelgeren</translation>
 <translation id="7063811929043357292">Kontoen din administreres av forelderen din.

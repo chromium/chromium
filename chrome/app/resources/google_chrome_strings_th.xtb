@@ -310,6 +310,7 @@
 <translation id="4747730611090640388">Chrome สามารถคาดคะเนความสนใจของคุณได้  ภายหลัง เว็บไซต์ที่คุณเข้าชมอาจขอข้อมูลความสนใจจาก Chrome เพื่อปรับการแสดงโฆษณาให้เหมาะกับคุณ</translation>
 <translation id="475321580758063259">อัปเดต Chrome เพื่อใช้ข้อมูล Chrome ในบัญชี Google (<ph name="ACCOUNT_EMAIL" />) ของคุณต่อไป</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
 <translation id="479167709087336770">การดำเนินการนี้จะใช้โปรแกรมตรวจตัวสะกดแบบเดียวกับใน Google Search ข้อความที่คุณพิมพ์ในเบราว์เซอร์จะส่งไปยัง Google คุณปรับเปลี่ยนลักษณะการทำงานนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="4793679854893018356">ดูวิธีที่ Chrome ช่วยให้คุณปลอดภัย</translation>
 <translation id="4828579605166583682">Google Chrome กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
@@ -592,6 +593,7 @@
 <translation id="8342675569599923794">ไฟล์นี้อันตราย Chrome จึงบล็อกไว้</translation>
 <translation id="8349094670477064572">คุณจะบันทึกและใช้รหัสผ่านรวมถึงข้อมูลอื่นๆ ในบัญชี Google ได้ทุกครั้งที่ลงชื่อเข้าใช้ Chrome <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">แปลเป็นภาษา</translation>
+<translation id="8366770919198174997">ลดประสิทธิภาพแต่ทำให้ Chrome ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="8387459386171870978">ใช้ Chrome ต่อ</translation>
 <translation id="8394720698884623075">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome</translation>

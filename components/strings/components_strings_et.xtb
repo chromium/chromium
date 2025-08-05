@@ -273,6 +273,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1436185428532214179">Saab küsida luba teie seadmes olevate failide ja kaustade muutmiseks</translation>
 <translation id="1442386063175183758">Paremalt väravakujuliselt volditud</translation>
 <translation id="1442987760062738829">Auk</translation>
+<translation id="1445896388055045436">Kuvab kassas saadaolevad kaardi hüved ja preemiad. Kohaldatakse väljaandja tingimusi.</translation>
 <translation id="1446396933673057385">Täpsuse kontroll</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Võtmeid „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ ei saa seada samas kataloogis nagu võtmeid „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />“</translation>
@@ -314,7 +315,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1521655867290435174">Google'i arvutustabelid</translation>
 <translation id="1524669537550112617">Möbleeritud kinnisvara üürimine</translation>
 <translation id="1527263332363067270">Ühenduse ootamine …</translation>
-<translation id="1527490370616010873">Google ei ole teie automaattäite teenusepakkuja. Nende seadete lubamiseks ja oma Google'i kontolt pärineva makseteabe kasutamiseks külastage <ph name="BEGIN_LINK" />automaattäite teenuste seadeid<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Ühendus on blokeeritud, kuna selle algatas avalik leht teie privaatvõrgus olevate seadmete või serveritega ühenduse loomiseks. Ühenduse lubamiseks laadige see leht uuesti.</translation>
 <translation id="1529789484829130889">Salv 8</translation>
 <translation id="1530707389502320859">Sait, mida üritasite külastada, näib olevat võltsitud. Ründajad imiteerivad mõnikord saite, tehes URL-is väikeseid raskestimärgatavaid muudatusi.</translation>
@@ -1232,6 +1232,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3086579638707268289">Teie tegevusi veebis jälgitakse</translation>
 <translation id="3087734570205094154">Alaserv</translation>
 <translation id="3090667236485488075">Klaas</translation>
+<translation id="3094051226187213523">Avage AI-režiim selle soovitusega.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Eiratakse, kuna keelatute loend hõlmab mustrit, mis on võrdne tähemärgiga „*“, mis võrdub reegli keelamisega.</translation>
 <translation id="3098944373717628099">Teie kohalikud failid kustutatakse 1 tunni pärast</translation>
@@ -3282,6 +3283,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6457206614190510200">Sadulõmblus</translation>
 <translation id="6457455098507772300">Hinnaalanduse teavitused kuvatakse teie töölaual hüpikmärguannetena</translation>
 <translation id="6458606150257356946">Kleebi ikkagi</translation>
+<translation id="6462438303393708881">Tühista üleslaadimine</translation>
 <translation id="6464094930452079790">pildid</translation>
 <translation id="6465306955648956876">Halda paroole …</translation>
 <translation id="646789491285795429">Jälgite juba seda toodet</translation>
@@ -4779,6 +4781,7 @@ Lisateave:
 <translation id="9040341831873780534">Vaadake tingimusi siit</translation>
 <translation id="9042617223719777575">Suur mahutavus</translation>
 <translation id="9042827002460091668">Kontrollige internetiühendust ja proovige uuesti</translation>
+<translation id="9043161870923715789">AI-režiim</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> soovib teie kohalikus võrgus otsida mis tahes seadet ja sellega ühendust luua</translation>
 <translation id="9046864189129893978">Mikrofonid (<ph name="MICS_COUNT" />)</translation>

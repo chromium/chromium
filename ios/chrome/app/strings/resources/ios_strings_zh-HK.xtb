@@ -1002,7 +1002,6 @@
 <translation id="496392417432935267">已在其他視窗開啟</translation>
 <translation id="4970724460420203313">以受管帳戶使用 Chrome，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} 個記錄項目來自 Safari 私人和工作設定檔}other{{count} 個記錄項目來自 Safari 私人和工作設定檔}}</translation>
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
 <translation id="4985921635659180565">檔案預定刪除後，便無法取消操作。</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
@@ -1565,6 +1564,7 @@
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7035825883570480307">要開啟通知嗎？</translation>
 <translation id="7039345315346323556">最近</translation>
+<translation id="704692552158601232">預設瀏覽器應用程式</translation>
 <translation id="7055240621761583113">自動填入密碼</translation>
 <translation id="7058455400288852416">前往分頁切換工具</translation>
 <translation id="7063811929043357292">你的帳戶由家長管理。
@@ -1612,6 +1612,7 @@
 <translation id="7266578100016339897">這有助你保持條理。你可隨時在設定中修改。</translation>
 <translation id="7272437679830969316">無法驗證您的身分。未複製密碼。</translation>
 <translation id="728025568708172005">開始導覽</translation>
+<translation id="7280980607183752256">無法匯入此檔案</translation>
 <translation id="7281202269687163394">個人私隱權與 Gemini。</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7300448350764260141">為對抗網上威脅增添多一重安全保障。</translation>

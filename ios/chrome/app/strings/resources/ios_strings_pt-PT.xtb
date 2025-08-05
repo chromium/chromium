@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Propor guardar palavras-passe e chaves de acesso</translation>
 <translation id="1794893174442046596">Grupo de separadores</translation>
 <translation id="1807893857950749072">Permitir notificações de acompanhamento de preço…</translation>
+<translation id="1809929083618343438">Esta ação remove as informações selecionadas do Chrome, mas não as elimina da sua Conta Google.</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1812514023095547458">Selecionar a Cor</translation>
 <translation id="1815941218935345331">Código secreto</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Mudar para a janela aberta</translation>
 <translation id="2164946989711475905">Iniciar sessão…</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2180338296831857171">Eliminar moradas</translation>
 <translation id="218350106843433823">Preencher automaticamente palavras-passe e chaves de acesso</translation>
 <translation id="2184272387334793084">Inicie sessão para ter os seus marcadores, palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Seletor de unidades</translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Eliminar e terminar sessão</translation>
+<translation id="2350463587705616331">Cor de fundo sépia</translation>
 <translation id="2351097562818989364">As definições de tradução foram repostas.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Pode guardar a palavra-passe do domínio {DOMAIN_ONE} na sua Conta Google, {EMAIL}.}=2{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE} e {DOMAIN_TWO} na sua Conta Google, {EMAIL}.}=3{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}other{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Vista do site predefinida</translation>
@@ -543,6 +546,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3081338492074632642">Certifique-se de que a palavra-passe que está a guardar corresponde à sua palavra-passe para <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Tem 1 palavra-passe reutilizada. Corrija-a agora para manter a sua segurança.</translation>
+<translation id="3099402981545350675">Esta ação elimina as moradas guardadas neste dispositivo. Também remove as informações selecionadas do Chrome, mas não as elimina da sua Conta Google.</translation>
 <translation id="3106258548858559536">Desativar Modo de leitura</translation>
 <translation id="3106690631878101882">Ocultar Traduzir</translation>
 <translation id="310900540163454140">Eliminar a palavra-passe de <ph name="WEBSITE" />?</translation>
@@ -741,6 +745,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3962326069546168954">Guardar</translation>
 <translation id="3967327056943561740">Marcadores</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
+<translation id="3973560090698854095">Esta ação elimina as moradas guardadas na sua Conta Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3982893814825393515">Comunicar um problema…</translation>
 <translation id="398604237578616937">Com sessão iniciada como <ph name="USER_EMAIL" />. Abra o menu da conta.</translation>
 <translation id="3986739045730058129">Aceder ao separador</translation>
@@ -1004,7 +1009,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="496392417432935267">Aberta noutro local</translation>
 <translation id="4970724460420203313">Usar o Chrome com a sua conta gerida ajuda a manter a navegação relacionada com a sua organização (incluindo separadores, histórico e palavras-passe) separada da restante navegação</translation>
 <translation id="4971735654804503942">Proteção proativa mais rápida contra transferências, extensões e Webistes perigosos. Envia-lhe avisos sobre violações de palavras-passe. Requer o envio de dados de navegação para a Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} item do histórico dos perfis de trabalho e privado do Safari}other{{count} itens do histórico dos perfis de trabalho e privado do Safari}}</translation>
 <translation id="4979397965658815378">Inicie sessão com a sua Conta Google para aceder aos marcadores, às palavras-passe, ao histórico e a outras definições em todos os dispositivos</translation>
 <translation id="4985921635659180565">Quando é agendada a eliminação de um ficheiro, não é possível cancelá-la.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
@@ -1022,6 +1026,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5050810143224996149">Partilhar palavra-passe</translation>
 <translation id="5055015094595227120">Localização exata</translation>
+<translation id="5055551113846164633">Esta ação elimina as moradas guardadas neste dispositivo. Também elimina as moradas guardadas na sua Conta Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemas encontrados <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
@@ -1233,6 +1238,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">A sincronizar…</translation>
 <translation id="583923961930319521">Use palavras-passe em todos os dispositivos</translation>
+<translation id="5843013299019689749">Cor de fundo preta</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857770089550859117">A frase de acesso é necessária para iniciar a sincronização.</translation>
@@ -1485,6 +1491,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6682680306647339111">Lembrete removido</translation>
 <translation id="6684262542644248484">Inicie sessão num Website</translation>
 <translation id="6685259053455152195">Atalhos para modificar rapidamente as definições e usar funcionalidades a partir da barra de endereço.</translation>
+<translation id="6689342293888598653">Cor de fundo branca</translation>
 <translation id="6689685206615181381">Só está disponível o Modo de navegação anónima</translation>
 <translation id="6708501134077648845">Opções de palavras-passe</translation>
 <translation id="6709964700841491574">Modo de bloqueio</translation>
@@ -1568,6 +1575,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7035825883570480307">Ativar as notificações?</translation>
 <translation id="7039345315346323556">Recentes</translation>
+<translation id="704692552158601232">App de navegador predefinida</translation>
 <translation id="7055240621761583113">Preencher automaticamente a palavra-passe</translation>
 <translation id="7058455400288852416">Aceder ao Switcher de separadores</translation>
 <translation id="7063811929043357292">A conta é gerida pelos teus pais.
@@ -1591,6 +1599,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="714291438898585119">Marcado com estrela</translation>
 <translation id="7146301801400584641">Ficheiro de calendário disponível</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="7154417656353909837">Remover moradas</translation>
 <translation id="7161230316646448869">Sincronize os seus marcadores, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7173721738069475737">{count,plural, =1{Marcador guardado}other{{count} marcadores guardados}}</translation>
@@ -1615,6 +1624,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7266578100016339897">Isto ajuda a manter a organização. Pode alterar esta opção nas definições em qualquer altura.</translation>
 <translation id="7272437679830969316">Não é possível validar a sua identidade. Palavra-passe não copiada.</translation>
 <translation id="728025568708172005">Iniciar visita guiada</translation>
+<translation id="7280980607183752256">Não é possível importar este ficheiro</translation>
 <translation id="7281202269687163394">A sua privacidade e o Gemini.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="7300448350764260141">Adicione uma camada extra de proteção contra ameaças online.</translation>
@@ -1659,6 +1669,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7458706065921255639">Personalização e associação</translation>
 <translation id="745899714366929493">Todo o dia</translation>
 <translation id="7460698861522306757">Pedir site para dispositivos móveis</translation>
+<translation id="7464143666517313304">Esta ação elimina as moradas guardadas neste dispositivo.</translation>
 <translation id="7468373585447318060">Mantenha-se a par das descidas de preços de todos os produtos que acompanha.</translation>
 <translation id="746872191028309255">Compre o que vê com a câmara ou a galeria de fotos.</translation>
 <translation id="7471557245617580330">Criar novo separador</translation>
@@ -1710,6 +1721,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7646772052135772216">A sincronização de palavras-passe não está a funcionar</translation>
 <translation id="764827086632467055">Toque em App de navegador predefinida</translation>
 <translation id="7649070708921625228">Ajuda</translation>
+<translation id="765555660695722850">Esta ação elimina as moradas guardadas neste dispositivo. Também elimina algumas informações da sua Conta Google, mas não informações básicas, como o seu nome ou morada de casa.</translation>
 <translation id="765631330137769217">Toque em "Guardar" para aceder facilmente a esta palavra-passe na próxima vez que iniciar sessão</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662316065255305764">Informações do site</translation>
@@ -2055,6 +2067,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8891031436559779793">Vai receber uma notificação se o preço descer em qualquer site.</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>
+<translation id="8900845556227858314">App do navegador</translation>
 <translation id="890565330728586731">Anterior</translation>
 <translation id="8907722425137681851">Localizar na página…</translation>
 <translation id="8909135823018751308">Partilhar…</translation>

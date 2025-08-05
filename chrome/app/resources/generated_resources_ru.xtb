@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">Проверьте новое название</translation>
 <translation id="1166596238782048887">Вкладка "<ph name="TAB_TITLE" />" находится на рабочем столе "<ph name="DESK_TITLE" />"</translation>
 <translation id="1166644470305877068">Изолированные веб-приложения используют этот параметр автоматически.</translation>
-<translation id="116712635768212829">Если Chrome обнаружит, что один из ваших паролей раскрыт в результате утечки данных, Google Менеджер паролей может предложить изменить его. Для этого нужно войти в аккаунт.</translation>
 <translation id="1168020859489941584">Открытие через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Недавняя тема, созданная искусственным интеллектом: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />. Настроение: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Автоматически устанавливать язык, соответствующий выбранному контенту</translation>
@@ -405,6 +404,7 @@
 <translation id="1260810365552581339">Возможно, на диске с Linux недостаточно места. Увеличьте размер диска и снова попробуйте восстановить резервную копию в <ph name="LINK_START" />настройках<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Иногда</translation>
 <translation id="126156426083987769">Возникла проблема с лицензиями для устройств, работающих в демонстрационном режиме.</translation>
+<translation id="1262395978737369974">Всегда разрешено использовать оптимизацию JavaScript</translation>
 <translation id="1262564987698748643">Разрешить сайтам отправлять запросы на переопределение клавиш</translation>
 <translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1263733306853729545">Пролистывать список вариантов клавишами "<ph name="MINUS" />" и "<ph name="EQUAL" />"</translation>
@@ -1975,6 +1975,7 @@
 <translation id="2343160676229467122">На странице <ph name="SITE_NAME" /> нельзя использовать расширения.</translation>
 <translation id="2343390523044483367">Роки-Маунтин</translation>
 <translation id="2343747224442182863">Переключиться на эту вкладку</translation>
+<translation id="2343971313330854480">Найдите файл в папке "<ph name="FEATURE_NAME" />".</translation>
 <translation id="2344032937402519675">Не удалось установить связь с сервером. Проверьте подключение к сети и повторите попытку. Если решить проблему не удалось, перезапустите Chromebook.</translation>
 <translation id="234559068082989648">Старые версии приложений Chrome перестанут работать с декабря 2022 года. Удалите это приложение или обратитесь к администратору, чтобы обновить его.</translation>
 <translation id="2348176352564285430">Приложение: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2222,6 +2223,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> из <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Расположение дисплеев</translation>
 <translation id="2507253002925770350">Билет удален.</translation>
+<translation id="2507339521369019923">Сохраните файл в аккаунте</translation>
 <translation id="2507491234071975894">Динамик</translation>
 <translation id="2508747373511408451">Для работы приложения "<ph name="APPLICATION_NAME" />" нужен Google Диск.</translation>
 <translation id="2509495747794740764">Укажите значение от 10 до 200.</translation>
@@ -7982,6 +7984,7 @@
 <translation id="661266467055912436">Делает интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6613267708691765962">Поиск вредоносного ПО…</translation>
 <translation id="6615455863669487791">Показать</translation>
+<translation id="6618013221808317456">Запретить сайтам использовать оптимизацию JavaScript</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Сайт может отслеживать ваше местоположение</translation>
 <translation id="6619243162837544323">Статус сети</translation>
@@ -9842,6 +9845,7 @@
 <translation id="7920482456679570420">Добавьте ниже слова, правописание которых не нужно проверять.</translation>
 <translation id="7920715534283810633">Не удается открыть: <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Вы не можете просматривать уведомления с телефона в этом управляемом аккаунте. Повторите попытку, используя другой аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Сайты, которым разрешено использовать оптимизацию JavaScript</translation>
 <translation id="7921901223958867679">Это расширение может читать и изменять данные <ph name="HOST" />.</translation>
 <translation id="7922606348470480702">1 расширение</translation>
 <translation id="7923564237306226146">Обновление Linux завершено</translation>
@@ -10388,6 +10392,7 @@
 <translation id="8276560076771292512">Очистка кеша и жесткая перезагрузка</translation>
 <translation id="8276850948802942358">Узнайте больше о предоставлении сайту временного разрешения использовать сторонние файлы cookie</translation>
 <translation id="8277907305629781277">Вы создали этот ключ доступа <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Запрещено использовать оптимизацию JavaScript</translation>
 <translation id="827966378414194229">Управлять Chromebook с помощью мимики и движений головы. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Сайты на ваших языках</translation>
 <translation id="8280848878018088610">Картина в мрачных тонах, на которой изображены штормовые волны в море и фантастический город с замком на заднем плане.</translation>
@@ -10607,6 +10612,7 @@
 <translation id="8431190899827883166">Визуальный отклик</translation>
 <translation id="843173223122814223">Создавайте фоновые изображения с помощью ИИ</translation>
 <translation id="8431977087510901105">Настройки указателя сброшены</translation>
+<translation id="843210078733508372">Чтобы продолжить смену пароля, выполните вход.</translation>
 <translation id="8433186206711564395">Настройки сети</translation>
 <translation id="8434109185104929038">Уголок для чтения</translation>
 <translation id="8434837876193928924">Сведения о группе вкладок</translation>
@@ -11363,6 +11369,7 @@
 <translation id="895347679606913382">Запуск...</translation>
 <translation id="8954796993367253220">Чтобы очистить историю гостевого режима, закройте все гостевые окна</translation>
 <translation id="8955174612586215829">Обзор тем</translation>
+<translation id="8957656266859671822">Выберите нужный аккаунт</translation>
 <translation id="8957757410289731985">Настроить профиль</translation>
 <translation id="8959144235813727886">Сайты и приложения</translation>
 <translation id="895944840846194039">Память JavaScript</translation>
@@ -11675,6 +11682,7 @@
 <translation id="9153367754133725216">Получать рекомендации новых приложений и веб-контента на панели запуска и в результатах поиска. Статистику для улучшения рекомендаций мы будем собирать, только если вы разрешите отправлять в ChromeOS отчеты о сбоях и данные об использовании и диагностике.</translation>
 <translation id="9154194610265714752">Обновлено</translation>
 <translation id="915485121129452731">Графический планшет</translation>
+<translation id="9155100833189043833">Используйте удостоверение личности на мобильном устройстве Android. Это безопасно.</translation>
 <translation id="9155344700756733162">Отменить выбор цвета</translation>
 <translation id="9157096865782046368">0,8 секунды</translation>
 <translation id="9157697743260533322">Не удалось настроить автоматические обновления для всех пользователей (ошибка <ph name="ERROR_NUMBER" />)</translation>

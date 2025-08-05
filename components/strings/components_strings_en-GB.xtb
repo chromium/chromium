@@ -314,7 +314,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Furnished Rentals</translation>
 <translation id="1527263332363067270">Waiting for connection…</translation>
-<translation id="1527490370616010873">Google isn't your autofill provider. To enable these settings and use payment info from your Google Account, visit <ph name="BEGIN_LINK" />Autofill services settings<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">The connection is blocked because it was initiated by a public page to connect to devices or servers on your private network. Reload this page to allow the connection.</translation>
 <translation id="1529789484829130889">Tray 8</translation>
 <translation id="1530707389502320859">The site that you just tried to visit looks fake. Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.</translation>
@@ -3282,6 +3281,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6457206614190510200">Saddle stitch</translation>
 <translation id="6457455098507772300">Price drop alerts appear as pop-up notifications on your desktop</translation>
 <translation id="6458606150257356946">Paste anyway</translation>
+<translation id="6462438303393708881">Cancel upload</translation>
 <translation id="6464094930452079790">images</translation>
 <translation id="6465306955648956876">Manage passwords...</translation>
 <translation id="646789491285795429">You're already tracking this product</translation>

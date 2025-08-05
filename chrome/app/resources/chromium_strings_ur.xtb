@@ -284,6 +284,7 @@
 <translation id="4598116752460667024">فہرست سے کوئی بھی پروسیس تلاش کریں۔</translation>
 <translation id="4613863813562375431">‏ChromiumOS ورژن</translation>
 <translation id="4621240073146040695">‏تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے Chromium کو دوبارہ شروع کریں۔</translation>
+<translation id="4625064703209785397">‏‫Chromium کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chromium کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے</translation>
 <translation id="4654936675281451226">‏‫Chromium فارمز کو بہتر طور پر سمجھتا ہے اور آپ کے لیے انہیں تیزی سے آٹو فل کر سکتا ہے۔ یہ ترتیب آن ہے۔</translation>
 <translation id="4665829708273112819">‏وارننگ: Chromium ایکسٹینشنز کو آپ کی براؤزنگ سرگزشت ریکارڈ کرنے سے نہیں روک سکتا۔ اس ایکسٹینشن کو پوشیدگی وضع میں غیر فعال کرنے کے لیے اس اختیار کو غیر منتخب کریں۔</translation>
 <translation id="4673151026126227699">‏اگر آپ Chromium کے استعمال کی رپورٹس کا بھی اشتراک کرتے ہیں تو ان رپورٹس میں آپ کے ملاحظہ کردہ URLs شامل ہوں گے</translation>
@@ -329,6 +330,7 @@
 <translation id="5386450000063123300">‏Chromium کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏Chromium میں سائن ان کی اجازت دیں</translation>
 <translation id="5405650547142096840">‏Chromium سے ہٹائیں</translation>
+<translation id="5424544524441439284">‏اس سے کارکردگی کم ہو جاتی ہے لیکن Chromium حملوں کا مزید مزاحم ہو جاتا ہے</translation>
 <translation id="5427571867875391349">‏Chromium کو اپنے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium بی ٹا</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{‏‫Chromium آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو روکنے کی تجویز دیتا ہے}other{‏‫Chromium آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو روکنے کی تجویز دیتا ہے}}</translation>

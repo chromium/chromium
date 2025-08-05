@@ -1002,7 +1002,6 @@
 <translation id="496392417432935267">別の場所で開かれています</translation>
 <translation id="4970724460420203313">管理対象アカウントで Chrome を使用すると、組織に関連するブラウジング（タブ、履歴、パスワードなど）を他のブラウジングと分けて管理できます</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
-<translation id="4975364841282576329">{count,plural, =1{Safari の個人用プロファイルと仕事用プロファイルの履歴アイテム {count} 件}other{Safari の個人用プロファイルと仕事用プロファイルの履歴アイテム {count} 件}}</translation>
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="4985921635659180565">ファイルの削除をスケジュール設定すると、後からキャンセルできません。</translation>
 <translation id="498624032394115435">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。</translation>
@@ -1565,6 +1564,7 @@
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7035825883570480307">通知をオンにしますか？</translation>
 <translation id="7039345315346323556">最近使用したアイテム</translation>
+<translation id="704692552158601232">デフォルトのブラウザ App</translation>
 <translation id="7055240621761583113">パスワードを自動入力</translation>
 <translation id="7058455400288852416">タブ切り替え機能に移動</translation>
 <translation id="7063811929043357292">ご利用のアカウントは保護者によって管理されています。
@@ -1612,6 +1612,7 @@
 <translation id="7266578100016339897">タブの整理に役立つこの機能は、設定でいつでも変更できます。</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
 <translation id="728025568708172005">スタートガイド ツアー</translation>
+<translation id="7280980607183752256">このファイルはインポートできません</translation>
 <translation id="7281202269687163394">お客様のプライバシーと Gemini について。</translation>
 <translation id="7293429513719260019">言語を選択</translation>
 <translation id="7300448350764260141">オンラインの脅威に対する保護を強化しましょう。</translation>

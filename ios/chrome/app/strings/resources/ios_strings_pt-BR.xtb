@@ -1002,7 +1002,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="496392417432935267">Aberto em outro lugar</translation>
 <translation id="4970724460420203313">Usar o Chrome com a conta gerenciada ajuda a separar sua navegação relacionada à organização (incluindo abas, histórico e senhas) da sua outra navegação</translation>
 <translation id="4971735654804503942">Proteção mais rápida e proativa contra sites, downloads e extensões perigosos. Envia um alerta de violação de senha. Requer que dados de navegação sejam enviados ao Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} item do histórico dos perfis de trabalho e privados do Safari}one{{count} item do histórico dos perfis de trabalho e privados do Safari}other{{count} itens do histórico dos perfis de trabalho e privados do Safari}}</translation>
 <translation id="4979397965658815378">Faça login com sua Conta do Google para ter seus favoritos, senhas, histórico e outras configurações em todos os seus dispositivos</translation>
 <translation id="4985921635659180565">Não é possível cancelar a exclusão programada de um arquivo.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todas as guias.</translation>
@@ -1565,6 +1564,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="7035825883570480307">Ativar notificações?</translation>
 <translation id="7039345315346323556">Recentes</translation>
+<translation id="704692552158601232">App de navegação padrão</translation>
 <translation id="7055240621761583113">Preencher a senha automaticamente</translation>
 <translation id="7058455400288852416">Acessar o seletor de guias</translation>
 <translation id="7063811929043357292">Sua conta é gerenciada pelo seu familiar responsável.
@@ -2154,7 +2154,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="954667170699278022">Lista de leitura</translation>
 <translation id="956218893102219091">Use sua localização exata para ter resultados mais precisos no Gemini, em vez de uma localização aproximada com base no seu endereço IP. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Você está seguindo este canal: <ph name="CHANNEL_NAME" /></translation>
-<translation id="961856697154696964">Excluir dados de navegação</translation>
+<translation id="961856697154696964">Excluir histórico</translation>
 <translation id="963102227019621224">Atividade na Web e de apps</translation>
 <translation id="966593914872420832">Pesquisa por voz</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Participe do grupo de guias com <ph name="OWNER_NAME" />}=1{Participe do grupo de guias com <ph name="OWNER_NAME" /> e mais {COUNT} pessoa}one{Participe do grupo de guias com <ph name="OWNER_NAME" /> e mais {COUNT} pessoa}other{Participe do grupo de guias com <ph name="OWNER_NAME" /> e mais {COUNT} pessoas}}</translation>

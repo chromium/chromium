@@ -285,6 +285,7 @@
 <translation id="4598116752460667024">সূচীখনৰ পৰা যিকোনো প্ৰক্ৰিয়া সন্ধান কৰক।</translation>
 <translation id="4613863813562375431">ChromiumOSৰ সংস্কৰণ</translation>
 <translation id="4621240073146040695">প্ৰায় আপ-টু-ডে’ট কৰা হৈছে! আপডে’ট সম্পূৰ্ণ কৰিবলৈ Chromium পুনৰ লঞ্চ কৰক৷</translation>
+<translation id="4625064703209785397">Chromiumৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromiumক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে</translation>
 <translation id="4654936675281451226">Chromiumএ ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে। এই ছেটিংটো অন আছে।</translation>
 <translation id="4665829708273112819">সকীয়নি: Chromeএ কোনো এক্সটেনশ্বনক আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ৰেকৰ্ড কৰাত বাধা দিব নোৱাৰে। এই এক্সটেনশ্বনটো ইনক’গনিট’ ম’ডত অক্ষম কৰিবলৈ এই বিকল্পটো বাছনিৰ পৰা আঁতৰাওক।</translation>
 <translation id="4673151026126227699">যদি আপুনি Chromium ব্যৱহাৰ কৰাৰ ৰিপ’ৰ্টও শ্বেয়াৰ কৰে, সেই ৰিপ’ৰ্টত আপুনি চোৱা URLসমূহ অন্তৰ্ভুক্ত হয়</translation>
@@ -330,6 +331,7 @@
 <translation id="5386450000063123300">Chromium আপডে’ট কৰি থকা হৈছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromiumত ছাইন ইন কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="5405650547142096840">Chromiumৰ পৰা আঁতৰাওক</translation>
+<translation id="5424544524441439284">কাৰ্যদক্ষতা কম কৰে কিন্তু Chromiumক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে</translation>
 <translation id="5427571867875391349">আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ হিচাপে Chromiumক ছেট কৰক</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium বিটা</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromiumএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবটো পজ কৰাটো চুপাৰিছ কৰে}one{Chromiumএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবসমূহ পজ কৰাটো চুপাৰিছ কৰে}other{Chromiumএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবসমূহ পজ কৰাটো চুপাৰিছ কৰে}}</translation>

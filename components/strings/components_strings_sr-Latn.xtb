@@ -273,6 +273,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1436185428532214179">Može da traži da menja fajlove i foldere na uređaju</translation>
 <translation id="1442386063175183758">Presavijanje na desnoj strani u obliku prozora</translation>
 <translation id="1442987760062738829">Bušenje</translation>
+<translation id="1445896388055045436">Prikaži dostupne prednosti i nagrade za karticu pri plaćanju. Važe uslovi izdavača.</translation>
 <translation id="1446396933673057385">Provera tačnosti</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ključevi „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ ne mogu da se podese u istom rečniku kao i ključevi <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
@@ -314,7 +315,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1521655867290435174">Google tabele</translation>
 <translation id="1524669537550112617">Iznajmljivanje opremljenih nekretnina</translation>
 <translation id="1527263332363067270">Čeka se veza…</translation>
-<translation id="1527490370616010873">Google nije dobavljač automatskog popunjavanja. Da biste omogućili ova podešavanja i koristili informacije o plaćanju sa Google naloga, posetite <ph name="BEGIN_LINK" />podešavanja usluga automatskog popunjavanja<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Veza je blokirana zato što ju je pokrenula javna stranica za povezivanje sa uređajima ili serverima na privatnoj mreži. Ponovo učitajte ovu stranicu da biste dozvolili povezivanje.</translation>
 <translation id="1529789484829130889">8. fioka</translation>
 <translation id="1530707389502320859">Sajt koji ste upravo probali da posetite deluje lažno. Napadači ponekad imitiraju sajtove tako što neznatno i skoro neprimetno izmene URL.</translation>
@@ -1235,6 +1235,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3086579638707268289">Vaše aktivnosti na vebu se prate</translation>
 <translation id="3087734570205094154">Dno</translation>
 <translation id="3090667236485488075">Staklo</translation>
+<translation id="3094051226187213523">Otvori AI režim pomoću ovog predloga.</translation>
 <translation id="3095940652251934233">Izjava</translation>
 <translation id="3098513225387949945">Zanemaruje se jer se na listi onemogućenih nalazi obrazac koji je jednak „*“, a što je ekvivalentno onemogućavanju smernica.</translation>
 <translation id="3098944373717628099">Lokalni fajlovi će biti izbrisani za 1 sat</translation>
@@ -3292,6 +3293,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6457206614190510200">Spajanje po sredini</translation>
 <translation id="6457455098507772300">Obaveštenja o sniženjima se prikazuju kao iskačuća obaveštenja na računaru</translation>
 <translation id="6458606150257356946">Ipak nalepi</translation>
+<translation id="6462438303393708881">Otkaži otpremanje</translation>
 <translation id="6464094930452079790">slike</translation>
 <translation id="6465306955648956876">Upravljajte lozinkama...</translation>
 <translation id="646789491285795429">Već pratite ovaj proizvod</translation>
@@ -4796,6 +4798,7 @@ Dodatni detalji:
 <translation id="9040341831873780534">Pogledajte uslove ovde</translation>
 <translation id="9042617223719777575">Veliki kapacitet</translation>
 <translation id="9042827002460091668">Proverite internet vezu i probajte ponovo</translation>
+<translation id="9043161870923715789">AI režim</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> želi da traži uređaje na lokalnoj mreži i povezuje se sa njima</translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>

@@ -1002,7 +1002,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="496392417432935267">Woanders geöffnet</translation>
 <translation id="4970724460420203313">Wenn du Chrome mit deinem verwalteten Konto verwendest, kannst du die mit deiner Organisation verbundenen Browserdaten wie Tabs, Verlauf und Passwörter besser von deinen anderen Browserdaten trennen</translation>
 <translation id="4971735654804503942">Schnellerer und dynamischerer Schutz gegen schädliche Websites, Downloads und Erweiterungen. Warnt dich im Fall von Datenpannen, bei denen Passwörter preisgegeben werden. Hierfür müssen Browserdaten an Google gesendet werden.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} Verlaufseintrag aus dem privaten und dem Arbeitsprofil in Safari}other{{count} Verlaufseinträge aus dem privaten und dem Arbeitsprofil in Safari}}</translation>
 <translation id="4979397965658815378">Melde dich mit deinem Google-Konto an, um deine Lesezeichen, deine Passwörter, den Verlauf und deine anderen Einstellungen auf allen Geräten abrufen zu können</translation>
 <translation id="4985921635659180565">Wenn das Löschen einer Datei geplant wurde, kann es nicht mehr abgebrochen werden.</translation>
 <translation id="498624032394115435">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten.</translation>
@@ -1565,6 +1564,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7035825883570480307">Benachrichtigungen aktivieren?</translation>
 <translation id="7039345315346323556">Zuletzt verwendet</translation>
+<translation id="704692552158601232">Standard-Browser-App</translation>
 <translation id="7055240621761583113">Passwort automatisch ausfüllen</translation>
 <translation id="7058455400288852416">Zum Tab-Wechsler</translation>
 <translation id="7063811929043357292">Dein Konto wird von deinen Eltern verwaltet.

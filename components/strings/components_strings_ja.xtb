@@ -273,6 +273,7 @@
 <translation id="1436185428532214179">デバイスのファイルやフォルダの編集を要求できる</translation>
 <translation id="1442386063175183758">右観音折り</translation>
 <translation id="1442987760062738829">パンチ</translation>
+<translation id="1445896388055045436">購入手続きの際に、ご利用いただけるカードの特典とメリットを表示します。カード発行会社の利用規約が適用されます。</translation>
 <translation id="1446396933673057385">正確性チェック</translation>
 <translation id="1447067628680007684">（x86_64）</translation>
 <translation id="1448166547804028941">キー「<ph name="DATA_CONTROLS_FIRST_KEY_SET" />」は「<ph name="DATA_CONTROLS_SECOND_KEY_SET" />」キーと同じ辞書に設定できません</translation>
@@ -314,7 +315,6 @@
 <translation id="1521655867290435174">Google スプレッドシート</translation>
 <translation id="1524669537550112617">家具付き賃貸物件</translation>
 <translation id="1527263332363067270">接続を待機しています…</translation>
-<translation id="1527490370616010873">Google は自動入力プロバイダとして設定されていません。これらの設定を有効にして Google アカウントのお支払い情報を使用するには、<ph name="BEGIN_LINK" />自動入力サービスの設定<ph name="END_LINK" />にアクセスしてください。</translation>
 <translation id="1528311629279578926">公開ページでプライベート ネットワーク上のデバイスまたはサーバーへの接続が開始されたため、接続がブロックされています。接続を許可するには、このページを再読み込みしてください。</translation>
 <translation id="1529789484829130889">トレイ 8</translation>
 <translation id="1530707389502320859">アクセスしようとしたサイトは偽装サイトのようです。不正なユーザーが URL のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。</translation>
@@ -1232,6 +1232,7 @@
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
 <translation id="3087734570205094154">下部</translation>
 <translation id="3090667236485488075">ガラス</translation>
+<translation id="3094051226187213523">この候補を使用して AI モードを開きます。</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">無効リストにポリシーを無効にするのと同じ「*」と同等のパターンが含まれているため、無視されました。</translation>
 <translation id="3098944373717628099">ローカル ファイルは 1 時間後に削除されます</translation>
@@ -3282,6 +3283,7 @@
 <translation id="6457206614190510200">中綴じ</translation>
 <translation id="6457455098507772300">値下げアラートがデスクトップにポップアップ通知として表示されます</translation>
 <translation id="6458606150257356946">このまま貼り付け</translation>
+<translation id="6462438303393708881">アップロードをキャンセル</translation>
 <translation id="6464094930452079790">画像</translation>
 <translation id="6465306955648956876">パスワードを管理...</translation>
 <translation id="646789491285795429">この商品はすでにトラッキングしています</translation>
@@ -4781,6 +4783,7 @@
 <translation id="9040341831873780534">利用規約を見る</translation>
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
+<translation id="9043161870923715789">AI モード</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> はローカル ネットワーク上のデバイスの検出と接続を要求しています</translation>
 <translation id="9046864189129893978">マイク（<ph name="MICS_COUNT" />）</translation>

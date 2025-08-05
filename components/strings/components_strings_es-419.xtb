@@ -273,6 +273,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
+<translation id="1445896388055045436">Muestra las recompensas y los beneficios de la tarjeta disponibles durante la confirmación de la compra. Se aplican los términos de la entidad emisora.</translation>
 <translation id="1446396933673057385">Verificación de exactitud</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Las claves "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" no se pueden establecer en el mismo diccionario que las claves "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
@@ -314,7 +315,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alquiler de viviendas amobladas</translation>
 <translation id="1527263332363067270">Esperando conexión…</translation>
-<translation id="1527490370616010873">Google no es tu proveedor de autocompletado. Para habilitar estos parámetros de configuración y usar la información de pago de tu Cuenta de Google, visita la <ph name="BEGIN_LINK" />configuración de los servicios de autocompletado<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La conexión se bloqueó porque una página pública la inició para conectarse a los dispositivos o servidores de tu red privada. Vuelve a cargar esta página para permitir la conexión.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">El sitio que intentaste visitar parece falso. A veces, los atacantes hacen cambios sutiles y difíciles de detectar en la URL para imitar sitios.</translation>
@@ -1232,6 +1232,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3086579638707268289">Se supervisa tu actividad en la Web</translation>
 <translation id="3087734570205094154">Inferior</translation>
 <translation id="3090667236485488075">Vidrio</translation>
+<translation id="3094051226187213523">Abrir el Modo IA con esta sugerencia.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Se ignoró porque la lista de inhabilitaciones contenía un patrón igual a "*", lo que es igual a la política de inhabilitación.</translation>
 <translation id="3098944373717628099">Se borrarán tus archivos locales dentro de 1 hora</translation>
@@ -3283,6 +3284,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6457206614190510200">Grapado en el pliegue central</translation>
 <translation id="6457455098507772300">Las alertas de descuentos se muestran como notificaciones emergentes en tu escritorio</translation>
 <translation id="6458606150257356946">Pegar de todos modos</translation>
+<translation id="6462438303393708881">Cancelar la carga</translation>
 <translation id="6464094930452079790">imágenes</translation>
 <translation id="6465306955648956876">Administrar contraseñas…</translation>
 <translation id="646789491285795429">Ya estás realizando un seguimiento de este producto</translation>
@@ -4781,6 +4783,7 @@ Detalles adicionales:
 <translation id="9040341831873780534">Ver las condiciones aquí</translation>
 <translation id="9042617223719777575">Gran capacidad</translation>
 <translation id="9042827002460091668">Revisa la conexión a Internet y vuelve a intentarlo</translation>
+<translation id="9043161870923715789">Modo IA</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> quiere buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>

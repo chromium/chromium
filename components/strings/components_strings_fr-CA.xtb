@@ -314,7 +314,6 @@
 <translation id="1521655867290435174">Google Feuilles de calcul</translation>
 <translation id="1524669537550112617">Locations meublées</translation>
 <translation id="1527263332363067270">En attente de connexion…</translation>
-<translation id="1527490370616010873">Google n'est pas votre fournisseur de remplissage automatique. Pour activer ces paramètres et utiliser les infos de paiement de votre compte Google, accédez aux <ph name="BEGIN_LINK" />paramètres des services de remplissage automatique<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La connexion est bloquée, car elle a été lancée par une page publique pour se connecter à des appareils ou des serveurs de votre réseau privé. Actualisez cette page pour autoriser la connexion.</translation>
 <translation id="1529789484829130889">Bac 8</translation>
 <translation id="1530707389502320859">Le site que vous venez d'essayer de visiter semble être un faux. Les pirates tentent parfois d'imiter des sites Web en modifiant légèrement l'URL utilisée.</translation>
@@ -3282,6 +3281,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6457206614190510200">Agrafage à cheval</translation>
 <translation id="6457455098507772300">Les alertes de réduction s'affichent sous forme de notifications en fenêtre contextuelle sur votre bureau</translation>
 <translation id="6458606150257356946">Coller quand même</translation>
+<translation id="6462438303393708881">Annuler le téléversement</translation>
 <translation id="6464094930452079790">Images</translation>
 <translation id="6465306955648956876">Gérer les mots de passe...</translation>
 <translation id="646789491285795429">Vous suivez déjà ce produit</translation>

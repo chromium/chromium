@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">مرور به‌روزرسانی نام</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> به میز کار <ph name="DESK_TITLE" /> تعلق دارد</translation>
 <translation id="1166644470305877068">«برنامه‌های وب مجزا» به‌طور خودکار از این تنظیم پیروی می‌کنند</translation>
-<translation id="116712635768212829">‏اگر Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه پیدا کند، «مدیر گذرواژه Google» می‌تواند درصورتی‌که به سیستم وارد شده باشید پیشنهاد دهد گذرواژه را برای شما تغییر دهد.</translation>
 <translation id="1168020859489941584">باز کردن با <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">تغییر خودکار زبان برای مطابقت با محتوای انتخاب‌شده</translation>
@@ -403,6 +402,7 @@
 <translation id="1260810365552581339">‏Linux ممکن است فضای دیسک کافی نداشته باشد. می‌توانید در <ph name="LINK_START" />تنظیمات<ph name="LINK_END" /> فضای دیسک Linux را افزایش دهید و بازیابی را دوباره امتحان کنید.</translation>
 <translation id="1261380933454402672">متوسط</translation>
 <translation id="126156426083987769">مشکلی در رابطه با مجوزهای حالت نمایشی دستگاه پیش آمد.</translation>
+<translation id="1262395978737369974">همیشه اجازه استفاده از بهینه‌سازی جاوا اسکریپت داده شود</translation>
 <translation id="1262564987698748643">سایت‌ها می‌توانند برای ملغی کردن ورودی صفحه‌کلید درخواست دهند</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1263733306853729545">استفاده از کلیدهای <ph name="MINUS" /> و <ph name="EQUAL" /> برای پی‌جویی فهرست کاندیداها</translation>
@@ -1983,6 +1983,7 @@
 <translation id="2343160676229467122">افزونه‌ها در <ph name="SITE_NAME" /> مجاز نیستند</translation>
 <translation id="2343390523044483367">پارک ملی کوه راکی</translation>
 <translation id="2343747224442182863">متمرکز کردن این برگه</translation>
+<translation id="2343971313330854480">فایلتان را در پوشه «<ph name="FEATURE_NAME" />» پیدا کنید</translation>
 <translation id="2344032937402519675">‏اتصال با سرور برقرار نشد. اتصال شبکه‌تان را بررسی و دوباره امتحان کنید. اگر همچنان با مشکل روبرو هستید، Chromebook را بازراه‌اندازی کنید.</translation>
 <translation id="234559068082989648">‏نسخه‌های قدیمی «برنامه‌های Chrome» بعداز دسامبر ۲۰۲۲ باز نخواهند شد. برای به‌روزرسانی به نسخه جدید یا برداشتن این برنامه، با سرپرست تماس بگیرید.</translation>
 <translation id="2348176352564285430">برنامه: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2230,6 +2231,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> از <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">تنظیم نمایشگر</translation>
 <translation id="2507253002925770350">بلیت برداشته شد</translation>
+<translation id="2507339521369019923">در حسابتان ذخیره کنید</translation>
 <translation id="2507491234071975894">بلندگو</translation>
 <translation id="2508747373511408451">‏برنامه <ph name="APPLICATION_NAME" /> برای دردسترس بودن به Google Drive نیاز دارد.</translation>
 <translation id="2509495747794740764">مقیاس باید عددی بین ۱۰ تا ۲۰۰ باشد.</translation>
@@ -7987,6 +7989,7 @@
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
 <translation id="6613267708691765962">درحال اسکن کردن برای یافتن بدافزار…</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
+<translation id="6618013221808317456">به سایت‌ها اجازه داده نشود از بهینه‌سازی جاوا اسکریپت استفاده کنند</translation>
 <translation id="6619058681307408113">‏Line Printer Daemon‏ (LPD)</translation>
 <translation id="661907246513853610">سایت می‌تواند مکانتان را ردیابی کند</translation>
 <translation id="6619243162837544323">وضعیت شبکه</translation>
@@ -9847,6 +9850,7 @@
 <translation id="7920482456679570420">واژه‌هایی را که نیازی به غلط‌گیری املا ندارند اضافه کنید</translation>
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> باز نمی‌شود</translation>
 <translation id="7921347341284348270">نمی‌توانید اعلان‌های تلفنتان را در این حساب مدیریت‌شده مشاهده کنید. با حساب دیگری دوباره امتحان کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">سایت‌ها می‌توانند از بهینه‌سازی جاوا اسکریپت استفاده کنند</translation>
 <translation id="7921901223958867679">این افزونه می‌تواند <ph name="HOST" /> را بخواند و تغییر دهد</translation>
 <translation id="7922606348470480702">یک افزونه</translation>
 <translation id="7923564237306226146">‏ارتقای Linux کامل شد</translation>
@@ -10393,6 +10397,7 @@
 <translation id="8276560076771292512">خالی کردن حافظه پنهان و بار کردن مجدد سخت</translation>
 <translation id="8276850948802942358">درباره دادن اجازه موقت به سایت برای استفاده از کوکی شخص ثالث بیشتر بدانید</translation>
 <translation id="8277907305629781277">این گذرکلید را در <ph name="DATE" /> ایجاد کردید</translation>
+<translation id="8278702675516957539">اجازه استفاده از بهینه‌سازی جاوا اسکریپت داده نشود</translation>
 <translation id="827966378414194229">‏از حرکت‌های سر و حالت‌های چهره برای کنترل کردن Chromebook خود استفاده کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">نمایش وب‌سایت‌ها به زبان شما</translation>
 <translation id="8280848878018088610">موج‌های خروشان در دریا و پس‌زمینه‌ای از شهر و قلعه‌ای خارق‌العاده با حال‌وهوای تاریک.</translation>
@@ -10612,6 +10617,7 @@
 <translation id="8431190899827883166">نمایش تک‌ضرب‌ها</translation>
 <translation id="843173223122814223">ایجاد پس‌زمینه با هوش مصنوعی</translation>
 <translation id="8431977087510901105">بازنشانی کردن تنظیمات مکان‌نما</translation>
+<translation id="843210078733508372">به سیستم وارد شوید تا روند تغییر گذرواژه ادامه یابد</translation>
 <translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="8434109185104929038">محل مطالعه</translation>
 <translation id="8434837876193928924">جزئیات گروه برگه</translation>
@@ -10625,7 +10631,7 @@
 <translation id="844059392176531372">هم‌رسانی کردن گروه برگه «<ph name="GROUP_NAME" />»</translation>
 <translation id="8440630305826533614">‏برنامه‌های Linux</translation>
 <translation id="844063558976952706">همیشه در این سایت</translation>
-<translation id="8440730169421032987">بین دستگاه‌ها مرور می‌کنید؟</translation>
+<translation id="8440730169421032987">بین دستگاه‌ها پیمایش می‌کنید؟</translation>
 <translation id="8441313165929432954">فعال/ غیرفعال کردن اشتراک‌گذاری اینترنت</translation>
 <translation id="8443986842926457191">نشانی وب بیش‌از ۲۰۴۸ نویسه دارد</translation>
 <translation id="8445281870900174108">این برگه درحال استفاده از دوربین است</translation>
@@ -10672,7 +10678,7 @@
 <translation id="8472623782143987204">سخت‌افزار پشتیبانی</translation>
 <translation id="8473540203671727883">خواندن نوشتار زیر نشانگر موشواره</translation>
 <translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
-<translation id="847433688444405067">مرور بین دستگاه‌ها</translation>
+<translation id="847433688444405067">پیمایش بین دستگاه‌ها</translation>
 <translation id="8474378002946546633">مجاز بودن اعلان‌ها</translation>
 <translation id="8474561048882755118">به شما کمک می‌کند محصولات مشابه را در کنار هم ببینید و جزئیاتی را که برایتان مهم است به‌راحتی مقایسه کنید</translation>
 <translation id="8475313423285172237">‏برنامه‌ای دیگر بر روی رایانه شما یک برنامه افزودنی را اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.</translation>
@@ -11366,6 +11372,7 @@
 <translation id="895347679606913382">در حال شروع...</translation>
 <translation id="8954796993367253220">برای حذف کردن سابقه «حالت مهمان»، همه پنجره‌های «مهمان» را ببندید.</translation>
 <translation id="8955174612586215829">پیدا کردن زمینه‌ها</translation>
+<translation id="8957656266859671822">حسابتان را انتخاب کنید</translation>
 <translation id="8957757410289731985">سفارشی کردن نمایه</translation>
 <translation id="8959144235813727886">سایت‌ها و برنامه‌ها</translation>
 <translation id="895944840846194039">حافطه جاوا اسکریپت</translation>
@@ -11678,6 +11685,7 @@
 <translation id="9153367754133725216">‏در «راه‌انداز» و نتایج جستجو، برای برنامه‌ها و محتوای وب جدید پیشنهاد می‌بینید. تنها درصورتی‌که ارسال گزارش‌های خرابی و عیب‌یابی و داده‌های استفاده به ChromeOS را انتخاب کرده باشید، آمار را برای بهبود پیشنهادها ارسال می‌کند.</translation>
 <translation id="9154194610265714752">به‌روزرسانی ‌شد</translation>
 <translation id="915485121129452731">رایانه لوحی دارای قلم</translation>
+<translation id="9155100833189043833">با خیال راحت از مدرک شناسایی ذخیره‌شده در دستگاه همراهتان استفاده کنید</translation>
 <translation id="9155344700756733162">لغو انتخاب رنگ</translation>
 <translation id="9157096865782046368">۰٫۸ ثانیه</translation>
 <translation id="9157697743260533322">راه‌اندازی به‌روزرسانی‌های خودکار برای همه کاربران انجام نشد (خطای راه‌اندازی قبل از تولید: <ph name="ERROR_NUMBER" />)</translation>

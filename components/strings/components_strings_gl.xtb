@@ -314,7 +314,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alugueiro de mobiliario</translation>
 <translation id="1527263332363067270">Agardando pola conexión…</translation>
-<translation id="1527490370616010873">Google non é o teu provedor de autocompletado. Para activar estas opcións e usar a información de pago da túa Conta de Google, visita a <ph name="BEGIN_LINK" />configuración dos servizos de autocompletar<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Bloqueouse a conexión porque a iniciou unha páxina pública para conectarse a dispositivos ou servidores da túa rede privada. Volve cargar esta páxina para permitir a conexión.</translation>
 <translation id="1529789484829130889">Bandexa 8</translation>
 <translation id="1530707389502320859">O sitio que acabas de tentar visitar parece falso. Ás veces, os atacantes crean copias de sitios introducindo nos URL cambios pequenos e difíciles de ver.</translation>
@@ -3282,6 +3281,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6457206614190510200">Costura</translation>
 <translation id="6457455098507772300">As alertas de baixada de prezo móstranse como notificacións emerxentes no escritorio</translation>
 <translation id="6458606150257356946">Pegar de todas as formas</translation>
+<translation id="6462438303393708881">Cancelar carga</translation>
 <translation id="6464094930452079790">imaxes</translation>
 <translation id="6465306955648956876">Xestiona os contrasinais…</translation>
 <translation id="646789491285795429">Xa estás facendo un seguimento deste produto</translation>

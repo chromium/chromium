@@ -282,6 +282,7 @@
 <translation id="4598116752460667024">ค้นหากระบวนการใดๆ จากรายการ</translation>
 <translation id="4613863813562375431">เวอร์ชัน Chromium OS</translation>
 <translation id="4621240073146040695">การอัปเดตใกล้จะเสร็จเรียบร้อยแล้ว เปิด Chromium อีกครั้งเพื่อให้การอัปเดตเสร็จสิ้น</translation>
+<translation id="4625064703209785397">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
 <translation id="4654936675281451226">Chromium เข้าใจแบบฟอร์มได้ดีขึ้นและสามารถป้อนข้อมูลอัตโนมัติให้คุณได้เร็วขึ้น การตั้งค่านี้เปิดอยู่</translation>
 <translation id="4665829708273112819">คำเตือน: Chromium ไม่สามารถป้องกันไม่ให้ส่วนขยายบันทึกประวัติการท่องเว็บได้ หากคุณต้องการปิดใช้ส่วนขยายนี้ในโหมดไม่ระบุตัวตน ให้ยกเลิกการเลือกตัวเลือกนี้</translation>
 <translation id="4673151026126227699">หากคุณแชร์รายงานการใช้งาน Chromium ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
@@ -327,6 +328,7 @@
 <translation id="5386450000063123300">กำลังอัปเดต Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="5405650547142096840">ลบจาก Chromium</translation>
+<translation id="5424544524441439284">ลดประสิทธิภาพแต่ทำให้ Chromium ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="5427571867875391349">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium เบต้า</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chromium แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>

@@ -282,6 +282,7 @@
 <translation id="4598116752460667024">فرایندی را ازطریق فهرست جستجو کنید.</translation>
 <translation id="4613863813562375431">‏نسخه ChromiumOS</translation>
 <translation id="4621240073146040695">‏تقریباً به‌روز شده است! برای تمام کردن به‌روزرسانی، Chromium را راه‌اندازی مجدد کنید.</translation>
+<translation id="4625064703209785397">‏سرعت سایت‌ها را با موتورV8 مرورگر Chromium بالاتر می‌برد اما مقاومت Chromium را دربرابر حمله‌ها کمی کمتر می‌کند</translation>
 <translation id="4654936675281451226">‏‫Chromium فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند. این تنظیم روشن است.</translation>
 <translation id="4665829708273112819">‏هشدار: Chromium نمی‌تواند مانع از ثبت سابقه مرورتان توسط افزونه‌ها شود. برای غیرفعال کردن این افزونه در «حالت ناشناس»، این گزینه را لغو انتخاب کنید.</translation>
 <translation id="4673151026126227699">‏اگر گزارش‌های استفاده از Chromium را نیز هم‌رسانی کنید، این گزارش‌ها نشانی‌های وبی را که بازدید می‌کنید دربرمی‌گیرد</translation>
@@ -327,6 +328,7 @@
 <translation id="5386450000063123300">‏درحال به‌روزرسانی Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏مجاز کردن ورود به سیستم Chromium</translation>
 <translation id="5405650547142096840">‏حذف از Chromium</translation>
+<translation id="5424544524441439284">‏عملکرد را کاهش می‌دهد اما Chromium را دربرابر حملات مقاوم‌تر می‌کند</translation>
 <translation id="5427571867875391349">‏تنظیم Chromium به عنوان مرورگر پیش‌فرضتان</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{‏‫Chromium توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{‏‫Chromium توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{‏‫Chromium توصیه می‌کند زبانه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>

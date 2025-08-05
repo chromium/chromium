@@ -253,7 +253,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1166583374608765787">Nom oʻzgarishi tekshiruvi</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> nomli varaq <ph name="DESK_TITLE" /> ish stoliga tegishli</translation>
 <translation id="1166644470305877068">Izolatsiyalangan veb-ilovalarda bu sozlama avtomatik amal qiladi</translation>
-<translation id="116712635768212829">Chrome parollaringizdan biri ommaviy oshkor qilinganini aniqlasa, Google Parollar menejeri hisobga kirganingizda parolni almashtirishni taklif qilishi mumkin</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> dan so‘ng ochiladi...</translation>
 <translation id="1168704243733734901">Oxirgi AI mavzusi: <ph name="INDEX" />/<ph name="SUBJECT" />, uslub: <ph name="STYLE" />, kayfiyat: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Tanlangan kontentga moslash uchun tilni avtomatik almashtirish</translation>
@@ -5910,6 +5909,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Olib tashlash: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Guruhni yangi oynada ochish</translation>
+<translation id="511147239888121455">Maʼlumotlaringiz zaxiralansinmi?</translation>
 <translation id="5111646998522066203">Inkognito rejimidan chiqish</translation>
 <translation id="5111692334209731439">&amp;Xatcho‘plar menejeri</translation>
 <translation id="5111794652433847656">Bu qurilmada <ph name="APP_NAME" /> uchun hech qanday kod mavjud emas</translation>
@@ -8200,6 +8200,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> maʼlumotlarini Googlega ulashish va ulardan qanday maqsadlarda foydalanishi haqida batafsil axborot: g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi</translation>
 <translation id="6771503742377376720">Bu sertifikatlashtirish markazi</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> ishxona manzili uchun boshqa parametrlar</translation>
 <translation id="6772974422346500939">Ochish va tahrirlash</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Bu saytga bir martalik parol kerak</translation>
@@ -10025,6 +10026,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8025151549289123443">Ekranni qulflash va kirish</translation>
 <translation id="8025291188699172126">Yangilanishlar haqida</translation>
 <translation id="8026471514777758216">Barcha qurilmalarda</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> uy manzili uchun boshqa parametrlar</translation>
 <translation id="8026784703228858744">Sinxronizatsiya orqali bukmarklaringizni saqlang</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 kun oldin ochgansiz}=1{1 kun oldin ochgansiz}other{# kun oldin ochgansiz}}</translation>
 <translation id="8028060951694135607">Microsoft kalitlarini tiklash</translation>
@@ -10173,6 +10175,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8121537075864592453">Butun ekran rejimi yoqilmagan</translation>
 <translation id="8121750884985440809">Hozir ekran translatsiya qilinmoqda</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Barcha qurilmalarda oson foydalanish uchun parollar, bukmarklar va bosha maʼlumotlaringizni zaxiralang</translation>
 <translation id="81238879832906896">Moychechak</translation>
 <translation id="8123975449645947908">Orqaga varaqlash</translation>
 <translation id="8124313775439841391">Boshqariladigan ONC</translation>

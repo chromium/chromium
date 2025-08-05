@@ -253,7 +253,6 @@
 <translation id="1166583374608765787">查看名称更新</translation>
 <translation id="1166596238782048887">标签页“<ph name="TAB_TITLE" />”属于桌面“<ph name="DESK_TITLE" />”</translation>
 <translation id="1166644470305877068">独立式 Web 应用 (IWA) 会自动遵循此设置</translation>
-<translation id="116712635768212829">如果 Chrome 发现您的密码在数据泄露事件中外泄，Google 密码管理工具可能会在您登录时建议更改密码。</translation>
 <translation id="1168020859489941584">即将在 <ph name="TIME_REMAINING" />后打开...</translation>
 <translation id="1168704243733734901">近期创建的<ph name="SUBJECT" /> AI 主题 <ph name="INDEX" />，样式是<ph name="STYLE" />，情感基调是<ph name="MOOD" />。</translation>
 <translation id="116896278675803795">自动更改语言以匹配所选内容</translation>
@@ -302,7 +301,7 @@
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>
 <translation id="119330003005586565">您已读过的页面</translation>
 <translation id="1193927020065025187">此网站可能正试图诱骗您允许显示侵扰性通知</translation>
-<translation id="11947597112837849">电子邮件地址</translation>
+<translation id="11947597112837849">邮箱</translation>
 <translation id="1195210374336998651">转到应用设置</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1195558154361252544">除您允许的网站外，已自动阻止所有其他网站显示通知</translation>
@@ -402,6 +401,7 @@
 <translation id="1260810365552581339">Linux 可能没有足够的磁盘可用空间。您可在<ph name="LINK_START" />设置<ph name="LINK_END" />中增加 Linux 磁盘可用空间并再次尝试恢复。</translation>
 <translation id="1261380933454402672">审慎</translation>
 <translation id="126156426083987769">演示模式设备许可出问题了。</translation>
+<translation id="1262395978737369974">始终允许使用 JavaScript 优化功能</translation>
 <translation id="1262564987698748643">网站可以请求替换键盘输入</translation>
 <translation id="1263231323834454256">阅读清单</translation>
 <translation id="1263733306853729545">用 <ph name="MINUS" /> 键和 <ph name="EQUAL" /> 键在候选字词列表中翻页</translation>
@@ -1966,6 +1966,7 @@
 <translation id="2343160676229467122">不允许在 <ph name="SITE_NAME" /> 上使用扩展程序</translation>
 <translation id="2343390523044483367">落基山国家公园</translation>
 <translation id="2343747224442182863">聚焦此标签页</translation>
+<translation id="2343971313330854480">在 <ph name="FEATURE_NAME" /> 文件夹中查找文件</translation>
 <translation id="2344032937402519675">无法连接到服务器。请检查您的网络连接状况，然后重试。如果问题仍然存在，请尝试重启 Chromebook。</translation>
 <translation id="234559068082989648">2022 年 12 月之后，多款旧版 Chrome 应用将无法开启。请联系您的管理员以更新到新版本或移除此应用。</translation>
 <translation id="2348176352564285430">应用：<ph name="ARC_PROCESS_NAME" /></translation>
@@ -2213,6 +2214,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />，共 <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">显示屏排列方式</translation>
 <translation id="2507253002925770350">票据已移除</translation>
+<translation id="2507339521369019923">保存到您的账号</translation>
 <translation id="2507491234071975894">扬声器</translation>
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" />应用要求 Google 云端硬盘必须可用。</translation>
 <translation id="2509495747794740764">缩放值必须是一个介于 10 到 200 之间的数字。</translation>
@@ -3876,7 +3878,7 @@
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{您可以阻止这个网站继续发送通知。}other{您可以阻止这些网站继续发送通知。}}</translation>
 <translation id="3697952514309507634">其他 Chrome 个人资料</translation>
 <translation id="3698471669415859717">检查完毕</translation>
-<translation id="3699624789011381381">电子邮件地址</translation>
+<translation id="3699624789011381381">邮箱</translation>
 <translation id="3699755232086000535">授权 Parallels Desktop 控制 USB 设备。</translation>
 <translation id="3699920817649120894">要关闭同步和个性化功能吗？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
@@ -7959,6 +7961,7 @@
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
 <translation id="6615455863669487791">演示一下</translation>
+<translation id="6618013221808317456">不允许网站使用 JavaScript 优化功能</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">该网站可能会跟踪您的位置</translation>
 <translation id="6619243162837544323">网络状态</translation>
@@ -8805,7 +8808,7 @@
 <translation id="7220019174139618249">无法将密码导出到“<ph name="FOLDER" />”</translation>
 <translation id="722099540765702221">电源</translation>
 <translation id="7221869452894271364">重新加载此页</translation>
-<translation id="7222232353993864120">电子邮件地址</translation>
+<translation id="7222232353993864120">邮箱</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223027547122518521">选择允许此网站读取的文件</translation>
@@ -9820,6 +9823,7 @@
 <translation id="7920482456679570420">添加您想让“拼写检查”功能跳过的字词</translation>
 <translation id="7920715534283810633">无法打开 <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">您无法通过这个受管理的账号查看手机上的通知。请换个账号重试。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">网站可以使用 JavaScript 优化功能</translation>
 <translation id="7921901223958867679">此扩展程序可读取和更改 <ph name="HOST" /> 数据</translation>
 <translation id="7922606348470480702">1 个扩展程序</translation>
 <translation id="7923564237306226146">Linux 升级完毕</translation>
@@ -10366,6 +10370,7 @@
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
 <translation id="8276850948802942358">详细了解如何向网站授予对第三方 Cookie 的临时使用权限</translation>
 <translation id="8277907305629781277">您创建此通行密钥的日期为 <ph name="DATE" /></translation>
+<translation id="8278702675516957539">不允许使用 JavaScript 优化功能</translation>
 <translation id="827966378414194229">使用头部动作和面部表情控制 Chromebook。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">网站使用的语言</translation>
 <translation id="8280848878018088610">图片描绘了一种黑暗氛围，海中巨浪翻滚，背景中有一座奇幻的城市和城堡。</translation>
@@ -10585,6 +10590,7 @@
 <translation id="8431190899827883166">显示点按操作反馈</translation>
 <translation id="843173223122814223">利用 AI 创建背景</translation>
 <translation id="8431977087510901105">光标设置已重置</translation>
+<translation id="843210078733508372">登录后即可继续更改密码</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8434109185104929038">阅读角</translation>
 <translation id="8434837876193928924">标签页分组详情</translation>
@@ -11338,6 +11344,7 @@
 <translation id="895347679606913382">即将开始下载...</translation>
 <translation id="8954796993367253220">若要删除访客模式的历史记录，请关闭所有访客窗口。</translation>
 <translation id="8955174612586215829">查找主题</translation>
+<translation id="8957656266859671822">选择您的账号</translation>
 <translation id="8957757410289731985">自定义个人资料</translation>
 <translation id="8959144235813727886">网站和应用</translation>
 <translation id="895944840846194039">JavaScript 使用的内存</translation>
@@ -11650,6 +11657,7 @@
 <translation id="9153367754133725216">在启动器和搜索结果中查看针对新应用和新 Web 内容的建议。仅当您已选择向 ChromeOS 发送崩溃报告以及诊断信息和使用情况数据时，才会发送统计信息以优化建议。</translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="915485121129452731">手写板</translation>
+<translation id="9155100833189043833">安全地使用移动设备上的 ID</translation>
 <translation id="9155344700756733162">取消选择颜色</translation>
 <translation id="9157096865782046368">0.8 秒</translation>
 <translation id="9157697743260533322">未能按您的要求为所有用户设置自动更新（启动预定流程时出错：<ph name="ERROR_NUMBER" />）</translation>
