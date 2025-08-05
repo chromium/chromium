@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/embedder_support/switches.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/content_browser_client.h"
@@ -179,6 +180,8 @@ class GetAllScreensMediaBrowserTestBase
  public:
   explicit GetAllScreensMediaBrowserTestBase(bool is_permissions_policy_set)
       : is_permissions_policy_set_(is_permissions_policy_set) {
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kMultiCaptureReworkedUsageIndicators);
     allowed_app_1_ =
         CreateIsolatedWebApp(/*html_text=*/"GetAllScreensMedia allowed 1");
     EXPECT_TRUE(allowed_app_1_);
