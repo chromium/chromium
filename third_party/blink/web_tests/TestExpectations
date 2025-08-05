@@ -1167,6 +1167,8 @@ crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failu
 
 crbug.com/430991561 external/wpt/css/css-anchor-position/anchor-scroll-004.html [ Failure Pass ]
 crbug.com/431611648 external/wpt/css/css-anchor-position/position-area-percents-001.html [ Failure ]
+crbug.com/408223892 external/wpt/css/css-anchor-position/position-area-pseudo-element-implicit-anchor.html [ Failure ]
+crbug.com/408223892 external/wpt/css/css-anchor-position/position-area-pseudo-element-implicit-anchor-dynamic.html [ Failure ]
 crbug.com/332933527 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 crbug.com/408223892 external/wpt/css/css-anchor-position/pseudo-element-implicit-anchor.html [ Failure ]
 
