@@ -366,7 +366,7 @@ void VariationsSeedStore::LogSeedDayChange(
 }
 
 const std::string& VariationsSeedStore::GetLatestSerialNumber() {
-  if (latest_serial_number_.empty()) {
+  if (!latest_serial_number_.has_value()) {
     // Efficiency note: This code should rarely be reached; typically, the
     // latest serial number should be cached via the call to LoadSeed(). The
     // call to ParseFromString() can be expensive, so it's best to only perform
@@ -378,10 +378,16 @@ const std::string& VariationsSeedStore::GetLatestSerialNumber() {
     if (ReadSeedData(SeedType::LATEST, &seed_data) ==
             LoadSeedResult::kSuccess &&
         seed.ParseFromString(seed_data)) {
-      latest_serial_number_ = seed.serial_number();
+      latest_serial_number_ = std::optional<std::string>{seed.serial_number()};
+    } else {
+      // If the seed could not be read, the serial number is empty. We set the
+      // value to an empty string so that we don't keep trying to read the
+      // seed. The value will be updated when a new seed is successfully fetched
+      // and stored.
+      latest_serial_number_ = std::optional<std::string>{""};
     }
   }
-  return latest_serial_number_;
+  return latest_serial_number_.value();
 }
 
 std::string VariationsSeedStore::GetLatestCountry() {
