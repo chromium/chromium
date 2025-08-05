@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_DOCUMENT_STYLE_SHEET_COLLECTOR_H_
 
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -35,6 +36,8 @@
 
 namespace blink {
 
+class MediaQueryEvaluator;
+class StyleEngine;
 class StyleSheet;
 class StyleSheetCollection;
 class RuleSetDiff;
@@ -51,9 +54,14 @@ class DocumentStyleSheetCollector {
   DocumentStyleSheetCollector(StyleSheetCollection*,
                               HeapVector<Member<StyleSheet>>*);
 
-  void AppendActiveStyleSheet(const ActiveStyleSheet&);
+  // NOTE: You will need to call FinishCollectingStylesheets()
+  // after this.
+  void AppendActiveStyleSheet(CSSStyleSheet*);
   void AppendSheetForList(StyleSheet*);
   void AppendRuleSetDiff(RuleSetDiff*);
+
+  // Can only be called once.
+  void FinishCollectingStylesheets(StyleEngine& engine);
 
  private:
   StyleSheetCollection* collection_;
@@ -63,7 +71,7 @@ class DocumentStyleSheetCollector {
 class ActiveDocumentStyleSheetCollector final
     : public DocumentStyleSheetCollector {
  public:
-  ActiveDocumentStyleSheetCollector(StyleSheetCollection&);
+  explicit ActiveDocumentStyleSheetCollector(StyleSheetCollection&);
 };
 
 class ImportedDocumentStyleSheetCollector final

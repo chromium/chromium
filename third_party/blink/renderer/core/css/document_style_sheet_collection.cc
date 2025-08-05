@@ -51,8 +51,6 @@ DocumentStyleSheetCollection::DocumentStyleSheetCollection(
 void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     StyleEngine& engine,
     DocumentStyleSheetCollector& collector) {
-  StyleEngine::RuleSetScope rule_set_scope;
-
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
 
@@ -73,13 +71,7 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     }
 
     CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
-    collector.AppendActiveStyleSheet(std::make_pair(
-        css_sheet, rule_set_scope.RuleSetForSheet(engine, css_sheet)));
-
-    if (css_sheet->Contents()->GetRuleSetDiff()) {
-      collector.AppendRuleSetDiff(css_sheet->Contents()->GetRuleSetDiff());
-      css_sheet->Contents()->ClearRuleSetDiff();
-    }
+    collector.AppendActiveStyleSheet(css_sheet);
   }
 
   const TreeScope& tree_scope = GetTreeScope();
@@ -95,8 +87,7 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     }
     DCHECK_EQ(GetDocument(), sheet->ConstructorDocument());
     collector.AppendSheetForList(sheet);
-    collector.AppendActiveStyleSheet(
-        std::make_pair(sheet, engine.RuleSetForSheet(*sheet)));
+    collector.AppendActiveStyleSheet(sheet);
   }
 }
 
@@ -105,17 +96,14 @@ void DocumentStyleSheetCollection::CollectStyleSheets(
     DocumentStyleSheetCollector& collector) {
   for (auto& sheet :
        GetDocument().GetStyleEngine().InjectedAuthorStyleSheets()) {
-    collector.AppendActiveStyleSheet(std::make_pair(
-        sheet.second,
-        GetDocument().GetStyleEngine().RuleSetForSheet(*sheet.second)));
+    collector.AppendActiveStyleSheet(sheet.second);
   }
   CollectStyleSheetsFromCandidates(engine, collector);
   for (CSSStyleSheet* inspector_sheet :
        GetDocument().GetStyleEngine().InspectorStyleSheets()) {
-    collector.AppendActiveStyleSheet(std::make_pair(
-        inspector_sheet,
-        GetDocument().GetStyleEngine().RuleSetForSheet(*inspector_sheet)));
+    collector.AppendActiveStyleSheet(inspector_sheet);
   }
+  collector.FinishCollectingStylesheets(engine);
 }
 
 void DocumentStyleSheetCollection::UpdateActiveStyleSheets(

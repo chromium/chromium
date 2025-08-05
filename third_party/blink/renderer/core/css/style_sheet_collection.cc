@@ -31,6 +31,8 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/rule_set_diff.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 
 namespace blink {
 
@@ -54,9 +56,52 @@ void StyleSheetCollection::SwapSheetsForSheetList(
   sheet_list_dirty_ = false;
 }
 
-void StyleSheetCollection::AppendActiveStyleSheet(
-    const ActiveStyleSheet& active_sheet) {
-  active_style_sheets_.push_back(active_sheet);
+void StyleSheetCollection::AppendActiveStyleSheet(CSSStyleSheet* sheet) {
+  active_style_sheets_.push_back(std::pair(sheet, nullptr));
+}
+
+void StyleSheetCollection::CreateRuleSets(StyleEngine& engine) {
+  // Keep track of ensured RuleSets with @layer rules to detect
+  // StyleSheetContents sharing; RuleSets should not be shared
+  // between two equal sheets with @layer rules, since anonymous
+  // layers need to be unique.
+  HeapHashSet<Member<const RuleSet>> layer_rule_sets_;
+
+  for (auto& [css_sheet, rule_set] : active_style_sheets_) {
+    CHECK_EQ(rule_set, nullptr);
+    rule_set = engine.RuleSetForSheet(*css_sheet);
+
+    // NOTE: If the user has specified the same CSSStyleSheet object multiple
+    // times (which is only possible for constructible stylesheets, in
+    // adoptedStyleSheets), then we will not deduplicate them here
+    // (HasSingleOwnerNode() returns false, because the StyleSheetContents is
+    // indeed owned by only one CSSStyleSheet; we just send in that
+    // CSSStyleSheet twice). This means we could get confusing layer ordering if
+    // there were other stylesheets with anonymous layers between the
+    // duplicates.
+    //
+    // It is possible that we should change this; our current behavior differs
+    // from both Gecko and WebKit. It does not appear to be clear from the
+    // standard, though.
+    if (rule_set && rule_set->HasCascadeLayers() &&
+        !css_sheet->Contents()->HasSingleOwnerNode() &&
+        !layer_rule_sets_.insert(rule_set).is_new_entry) {
+      // The condition above is met for a stylesheet with cascade layers which
+      // shares StyleSheetContents with another stylesheet in this TreeScope.
+      // WillMutateRules() creates a unique StyleSheetContents for this sheet to
+      // avoid incorrectly identifying two separate anonymous layers as the same
+      // layer.
+      //
+      // TODO(sesse): Can we detect this before creating the RuleSet?
+      css_sheet->WillMutateRules();
+      rule_set = engine.RuleSetForSheet(*css_sheet);
+    }
+
+    if (css_sheet->Contents()->GetRuleSetDiff()) {
+      AppendRuleSetDiff(css_sheet->Contents()->GetRuleSetDiff());
+      css_sheet->Contents()->ClearRuleSetDiff();
+    }
+  }
 }
 
 void StyleSheetCollection::AppendSheetForList(StyleSheet* sheet) {

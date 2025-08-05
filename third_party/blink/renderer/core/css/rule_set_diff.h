@@ -73,6 +73,7 @@ class CORE_EXPORT RuleSetDiff : public GarbageCollected<RuleSetDiff> {
   // after reaction).
   void NewRuleSetCreated(RuleSet* new_ruleset) {
     DCHECK(!HasNewRuleSet());
+    DCHECK(new_ruleset);
     new_ruleset_ = new_ruleset;
   }
   void NewRuleSetCleared() { new_ruleset_ = nullptr; }
