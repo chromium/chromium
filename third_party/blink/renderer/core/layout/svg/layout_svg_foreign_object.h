@@ -68,9 +68,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   AffineTransform LocalToSVGParentTransform() const override;
 
   // LayoutBox override:
-  PhysicalOffset PhysicalLocation(
-      const LayoutBox* location_container = nullptr) const override;
-  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
+  PhysicalOffset PhysicalLocation() const override;
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 

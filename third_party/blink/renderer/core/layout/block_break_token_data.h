@@ -30,8 +30,6 @@ struct BlockBreakTokenData : public GarbageCollected<BlockBreakTokenData> {
       : type(type) {
     if (other_data) {
       consumed_block_size = other_data->consumed_block_size;
-      consumed_block_size_legacy_adjustment =
-          other_data->consumed_block_size_legacy_adjustment;
       sequence_number = other_data->sequence_number;
       monolithic_overflow = other_data->monolithic_overflow;
     }
@@ -52,7 +50,6 @@ struct BlockBreakTokenData : public GarbageCollected<BlockBreakTokenData> {
   virtual void Trace(Visitor* visitor) const {}
 
   LayoutUnit consumed_block_size;
-  LayoutUnit consumed_block_size_legacy_adjustment;
   LayoutUnit monolithic_overflow;
 
   unsigned sequence_number = 0;

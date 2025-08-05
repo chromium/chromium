@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 
-#include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -134,18 +133,6 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
   // A flow thread should never be an invalidation container.
   DCHECK_NE(ancestor, this);
 
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
-        ancestor, transform_state, visual_rect_flags);
-  }
-
-  transform_state.Flatten();
-  gfx::RectF bounding_box = transform_state.LastPlanarQuad().BoundingBox();
-  PhysicalRect rect(LayoutUnit(bounding_box.x()), LayoutUnit(bounding_box.y()),
-                    LayoutUnit(bounding_box.width()),
-                    LayoutUnit(bounding_box.height()));
-  rect = FragmentsBoundingBox(rect);
-  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
       ancestor, transform_state, visual_rect_flags);
 }
@@ -153,71 +140,6 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
 PaintLayerType LayoutFlowThread::LayerTypeRequired() const {
   NOT_DESTROYED();
   return kNoPaintLayer;
-}
-
-void LayoutFlowThread::QuadsInAncestorForDescendant(
-    const LayoutBox& descendant,
-    Vector<gfx::QuadF>& quads,
-    const LayoutBoxModelObject* ancestor,
-    MapCoordinatesFlags mode) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  PhysicalOffset offset_from_flow_thread;
-  for (const LayoutObject* object = &descendant; object != this;) {
-    // Based on current intended usage, it should be impossible to end up in a
-    // situation where the ancestor is inside the same fragmentation context as
-    // the descendant. If needed, though, it should be fairly trivial to add
-    // support for it.
-    DCHECK(object != ancestor);
-
-    const LayoutObject* container = object->Container();
-    offset_from_flow_thread += object->OffsetFromContainer(container);
-    object = container;
-  }
-  PhysicalRect bounding_rect_in_flow_thread(offset_from_flow_thread,
-                                            descendant.Size());
-  // Set up a fragments relative to the descendant, in the flow thread
-  // coordinate space, and convert each of them, individually, to absolute
-  // coordinates.
-  for (FragmentainerIterator iterator(*this, bounding_rect_in_flow_thread);
-       !iterator.AtEnd(); iterator.Advance()) {
-    PhysicalRect fragment = bounding_rect_in_flow_thread;
-    // We use InclusiveIntersect() because Intersect() would reset the
-    // coordinates for zero-height objects.
-    PhysicalRect clip_rect = iterator.ClipRectInFlowThread();
-    fragment.InclusiveIntersect(clip_rect);
-    fragment.offset -= offset_from_flow_thread;
-    quads.push_back(
-        descendant.LocalRectToAncestorQuad(fragment, ancestor, mode));
-  }
-}
-
-void LayoutFlowThread::AddOutlineRects(
-    OutlineRectCollector& collector,
-    OutlineInfo* info,
-    const PhysicalOffset& additional_offset,
-    OutlineType include_block_overflows) const {
-  NOT_DESTROYED();
-
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBlockFlow::AddOutlineRects(collector, info, additional_offset,
-                                            include_block_overflows);
-  }
-
-  Vector<PhysicalRect> rects_in_flowthread;
-  UnionOutlineRectCollector flow_collector;
-  LayoutBlockFlow::AddOutlineRects(flow_collector, info, additional_offset,
-                                   include_block_overflows);
-  // Convert the rectangles from the flow thread coordinate space to the visual
-  // space. The approach here is very simplistic; just calculate a bounding box
-  // in flow thread coordinates and convert it to one in visual
-  // coordinates. While the solution can be made more sophisticated by
-  // e.g. using FragmentainerIterator, the usefulness isn't obvious: our
-  // multicol implementation has practically no support for overflow in the
-  // block direction anyway. As far as the inline direction (the column
-  // progression direction) is concerned, we'll just include the full height of
-  // each column involved. Should be good enough.
-  collector.AddRect(FragmentsBoundingBox(flow_collector.Rect()));
 }
 
 void LayoutFlowThread::Paint(const PaintInfo& paint_info) const {
@@ -256,19 +178,6 @@ void LayoutFlowThread::GenerateColumnSetIntervalTree() {
         MultiColumnSetIntervalTree::CreateInterval(
             column_set->LogicalTopInFlowThread(),
             column_set->LogicalBottomInFlowThread(), column_set));
-}
-
-PhysicalRect LayoutFlowThread::FragmentsBoundingBox(
-    const PhysicalRect& layer_bounding_box) const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  DCHECK(!column_sets_invalidated_);
-
-  PhysicalRect result;
-  for (const auto& column_set : multi_column_set_list_)
-    result.Unite(column_set->FragmentsBoundingBox(layer_bounding_box));
-
-  return result;
 }
 
 void LayoutFlowThread::MultiColumnSetSearchAdapter::CollectIfNeeded(

@@ -19,11 +19,9 @@ class BlockBreakToken;
 class ColumnSpannerPath;
 class ConstraintSpace;
 class EarlyBreak;
-class FragmentItems;
 class InlineNode;
 class LayoutBox;
 class LayoutResult;
-class PhysicalBoxFragment;
 class PhysicalFragment;
 enum class BaselineAlgorithmType;
 enum class MathScriptType;
@@ -222,15 +220,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   LayoutUnit EmptyLineBlockSize(
       const BlockBreakToken* incoming_break_token) const;
 
-  // After we run the layout algorithm, this function copies back the fragment
-  // position to the layout box.
-  void CopyChildFragmentPosition(
-      const PhysicalBoxFragment& child_fragment,
-      PhysicalOffset,
-      const PhysicalBoxFragment& container_fragment,
-      const BlockBreakToken* previous_container_break_token = nullptr,
-      bool needs_invalidation_check = false) const;
-
   // If extra columns are added after a multicol has been written back to
   // legacy, for example for an OOF positioned element, we need to update the
   // legacy flow thread to encompass those extra columns.
@@ -274,18 +263,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       const ConstraintSpace&,
       const LayoutResult&,
       const BlockBreakToken* previous_break_token) const;
-  void CopyFragmentItemsToLayoutBox(
-      const PhysicalBoxFragment& container,
-      const FragmentItems& items,
-      const BlockBreakToken* previous_break_token) const;
-  void PlaceChildrenInLayoutBox(const PhysicalBoxFragment&,
-                                const BlockBreakToken* previous_break_token,
-                                bool needs_invalidation_check = false) const;
-  void PlaceChildrenInFlowThread(
-      LayoutMultiColumnFlowThread*,
-      const ConstraintSpace&,
-      const PhysicalBoxFragment&,
-      const BlockBreakToken* previous_container_break_token) const;
 
   void UpdateMarginPaddingInfoIfNeeded(const ConstraintSpace&,
                                        const PhysicalFragment& fragment) const;

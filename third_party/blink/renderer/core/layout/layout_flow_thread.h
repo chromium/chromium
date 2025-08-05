@@ -114,16 +114,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
     NOT_DESTROYED();
   }
 
-  void QuadsInAncestorForDescendant(const LayoutBox& descendant,
-                                    Vector<gfx::QuadF>&,
-                                    const LayoutBoxModelObject* ancestor,
-                                    MapCoordinatesFlags);
-
-  void AddOutlineRects(OutlineRectCollector&,
-                       OutlineInfo*,
-                       const PhysicalOffset& additional_offset,
-                       OutlineType) const override;
-
   void Paint(const PaintInfo& paint_info) const final;
 
   bool NodeAtPoint(HitTestResult&,
@@ -158,17 +148,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
     NOT_DESTROYED();
     return true;
   }
-  // Return the visual bounding box based on the supplied flow-thread bounding
-  // box. Both rectangles are completely physical in terms of writing mode.
-  PhysicalRect FragmentsBoundingBox(
-      const PhysicalRect& layer_bounding_box) const;
-
-  virtual PhysicalOffset VisualPointToFlowThreadPoint(
-      const PhysicalOffset& visual_point) const = 0;
-
-  virtual LayoutMultiColumnSet* ColumnSetAtBlockOffset(
-      LayoutUnit,
-      PageBoundaryRule) const = 0;
 
   const char* GetName() const override = 0;
 

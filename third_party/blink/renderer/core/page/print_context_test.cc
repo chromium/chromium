@@ -673,7 +673,6 @@ TEST_P(PrintContextTest, LinkedTargetSecondPage) {
 }
 
 TEST_P(PrintContextTest, LinkedTargetRootMargin) {
-  ScopedLayoutBoxVisualLocationForTest scoped_feature(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       html { margin-top: 50px; }

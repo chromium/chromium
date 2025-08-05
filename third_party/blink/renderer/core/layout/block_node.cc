@@ -104,13 +104,6 @@ inline bool HasInlineChildren(LayoutBlockFlow* block_flow) {
   return child && AreNGBlockFlowChildrenInline(block_flow);
 }
 
-inline LayoutMultiColumnFlowThread* GetFlowThread(
-    const LayoutBlockFlow* block_flow) {
-  if (!block_flow)
-    return nullptr;
-  return block_flow->MultiColumnFlowThread();
-}
-
 // The entire purpose of this function is to avoid allocating space on the stack
 // for all layout algorithms for each node we lay out. Therefore it must not be
 // inline.
@@ -901,11 +894,7 @@ void BlockNode::FinishLayout(
       box_->SetChildNeedsLayout(kMarkOnlyThis);
     }
 
-    if (has_inline_children) {
-      if (items && !RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-        CopyFragmentItemsToLayoutBox(physical_fragment, *items, break_token);
-      }
-    } else {
+    if (!has_inline_children) {
       // We still need to clear |InlineNodeData| in case it had inline
       // children.
       block_flow->ClearInlineNodeData();
@@ -1234,194 +1223,17 @@ void BlockNode::CopyFragmentDataToLayoutBox(
   // the following line when all layout modes do this properly.
   UpdateMarginPaddingInfoIfNeeded(constraint_space, physical_fragment);
 
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    // If this node doesn't participate in block fragmentation (either because
-    // there's no outer fragmentation context, or because we're in a monolithic
-    // subtree), update the box offset right away. Otherwise, we need to wait
-    // until layout of the outer fragmentation context is finished, in order to
-    // tell where the fragments are placed relatively to each other.
-    if (!InvolvedInBlockFragmentation(constraint_space, previous_break_token)) {
-      UpdateChildLayoutBoxLocations(physical_fragment);
-    }
-    if (is_last_fragment) {
-      box_->UpdateAfterLayout();
-    }
-    return;
+  // If this node doesn't participate in block fragmentation (either because
+  // there's no outer fragmentation context, or because we're in a monolithic
+  // subtree), update the box offset right away. Otherwise, we need to wait
+  // until layout of the outer fragmentation context is finished, in order to
+  // tell where the fragments are placed relatively to each other.
+  if (!InvolvedInBlockFragmentation(constraint_space, previous_break_token)) {
+    UpdateChildLayoutBoxLocations(physical_fragment);
   }
-
-  auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
-  LayoutMultiColumnFlowThread* flow_thread = GetFlowThread(block_flow);
-
-  // Position the children inside the box. We skip this if display-lock prevents
-  // child layout.
-  if (!ChildLayoutBlockedByDisplayLock()) {
-    if (flow_thread) [[unlikely]] {
-      // Hold off writing legacy data for the entire multicol container until
-      // done with the last fragment (we may have multiple if nested within
-      // another fragmentation context). This way we'll get everything in order.
-      // We'd otherwise mess up in complex cases of nested column balancing. The
-      // column layout algorithms may retry layout for a given fragment, which
-      // would confuse the code that writes back to legacy objects, so that we
-      // wouldn't always update column sets or establish fragmentainer groups
-      // correctly.
-      if (is_last_fragment) {
-        const BlockBreakToken* incoming_break_token = nullptr;
-        for (const PhysicalBoxFragment& multicol_fragment :
-             box_->PhysicalFragments()) {
-          PlaceChildrenInFlowThread(flow_thread, constraint_space,
-                                    multicol_fragment, incoming_break_token);
-          incoming_break_token = multicol_fragment.GetBreakToken();
-        }
-      }
-    } else {
-      PlaceChildrenInLayoutBox(physical_fragment, previous_break_token);
-    }
+  if (is_last_fragment) {
+    box_->UpdateAfterLayout();
   }
-
-  if (!is_last_fragment) [[unlikely]] {
-    return;
-  }
-
-  box_->UpdateAfterLayout();
-}
-
-void BlockNode::PlaceChildrenInLayoutBox(
-    const PhysicalBoxFragment& physical_fragment,
-    const BlockBreakToken* previous_break_token,
-    bool needs_invalidation_check) const {
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  for (const auto& child_fragment : physical_fragment.Children()) {
-    // Skip any line-boxes we have as children, this is handled within
-    // InlineNode at the moment.
-    if (!child_fragment->IsBox())
-      continue;
-
-    const auto& box_fragment = *To<PhysicalBoxFragment>(child_fragment.get());
-    if (!box_fragment.IsFirstForNode())
-      continue;
-
-    // The offset for an OOF positioned node that is added as a child of a
-    // fragmentainer box is handled by
-    // OutOfFlowLayoutPart::AddOOFToFragmentainer().
-    if (physical_fragment.IsFragmentainerBox() &&
-        child_fragment->IsOutOfFlowPositioned()) [[unlikely]] {
-      continue;
-    }
-
-    CopyChildFragmentPosition(box_fragment, child_fragment.offset,
-                              physical_fragment, previous_break_token,
-                              needs_invalidation_check);
-  }
-}
-
-void BlockNode::PlaceChildrenInFlowThread(
-    LayoutMultiColumnFlowThread* flow_thread,
-    const ConstraintSpace& space,
-    const PhysicalBoxFragment& physical_fragment,
-    const BlockBreakToken* previous_container_break_token) const {
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  // Stitch the contents of the columns together in the legacy flow thread, and
-  // update the position and size of column sets, spanners and spanner
-  // placeholders. Create fragmentainer groups as needed. When in a nested
-  // fragmentation context, we need one fragmentainer group for each outer
-  // fragmentainer in which the column contents occur. All this ensures that the
-  // legacy layout tree is sufficiently set up, so that DOM position/size
-  // querying APIs (such as offsetTop and offsetLeft) work correctly. We still
-  // rely on the legacy engine for this.
-  //
-  // This rather complex piece of machinery is described to some extent in the
-  // design document for legacy multicol:
-  // https://www.chromium.org/developers/design-documents/multi-column-layout
-
-  WritingModeConverter converter(space.GetWritingDirection(),
-                                 physical_fragment.Size());
-
-  const BlockBreakToken* previous_column_break_token = nullptr;
-  LayoutUnit flow_thread_offset;
-
-  if (IsBreakInside(previous_container_break_token)) {
-    // This multicol container is nested inside another fragmentation context,
-    // and this isn't its first fragment. Locate the break token for the
-    // previous inner column contents, so that we include the correct amount of
-    // consumed block-size in the child offsets. If there's a break token for
-    // column contents, we'll find it at the back.
-    const auto& child_break_tokens =
-        previous_container_break_token->ChildBreakTokens();
-    if (!child_break_tokens.empty()) {
-      const auto* token = To<BlockBreakToken>(child_break_tokens.back().Get());
-      // We also create break tokens for spanners, so we need to check.
-      if (token->InputNode() == *this) {
-        previous_column_break_token = token;
-      }
-    }
-  }
-
-  for (const auto& child : physical_fragment.Children()) {
-    const auto& child_fragment = To<PhysicalBoxFragment>(*child);
-    const auto* child_box = To<LayoutBox>(child_fragment.GetLayoutObject());
-    if (child_box && child_box != box_) {
-      CopyChildFragmentPosition(child_fragment, child.offset,
-                                physical_fragment);
-      continue;
-    }
-
-    DCHECK(!child_box);
-
-    // Each anonymous child of a multicol container constitutes one column.
-    // Position each child fragment in the first column that they occur,
-    // relatively to the block-start of the flow thread.
-    //
-    // We may fail to detect visual movement of flow thread children if the
-    // child re-uses a cached result, since the LayoutBox's frame_rect_ is in
-    // the flow thread coordinate space. If the column block-size or inline-size
-    // has changed, we might miss paint invalidation, unless we request it to be
-    // checked explicitly. We only need to do this for direct flow thread
-    // children, since movement detection works fine for descendants. If it's
-    // not detected during layout (due to cache hits), it will be detected
-    // during pre-paint.
-    //
-    // TODO(mstensho): Get rid of this in the future if we become able to
-    // compare visual offsets rather than flow thread offsets.
-    PlaceChildrenInLayoutBox(child_fragment, previous_column_break_token,
-                             /* needs_invalidation_check */ true);
-
-    previous_column_break_token = child_fragment.GetBreakToken();
-  }
-
-  if (!physical_fragment.GetBreakToken()) {
-    flow_thread->FinishLayoutFromNG(flow_thread_offset);
-  }
-}
-
-// Copies data back to the legacy layout tree for a given child fragment.
-void BlockNode::CopyChildFragmentPosition(
-    const PhysicalBoxFragment& child_fragment,
-    PhysicalOffset offset,
-    const PhysicalBoxFragment& container_fragment,
-    const BlockBreakToken* previous_container_break_token,
-    bool needs_invalidation_check) const {
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  auto* layout_box = To<LayoutBox>(child_fragment.GetMutableLayoutObject());
-  if (!layout_box)
-    return;
-
-  if (child_fragment.GetBoxType() == PhysicalFragment::kPageContainer ||
-      child_fragment.GetBoxType() == PhysicalFragment::kPageBorderBox) {
-    // These fragment types don't need to write anything back to their
-    // LayoutBox. Furthermore, they have no parent, so the check below would
-    // fail.
-    return;
-  }
-
-  DCHECK(layout_box->Parent()) << "Should be called on children only.";
-
-  DeprecatedLayoutPoint point =
-      ComputeBoxLocation(child_fragment, offset, container_fragment,
-                         previous_container_break_token);
-  layout_box->SetLocation(point);
-
-  if (needs_invalidation_check)
-    layout_box->SetShouldCheckForPaintInvalidation();
 }
 
 void BlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
@@ -1446,63 +1258,6 @@ void BlockNode::FinishPageContainerLayout(const LayoutResult* result) const {
   DCHECK(
       To<PhysicalBoxFragment>(result->GetPhysicalFragment()).IsOnlyForNode());
   StoreResultInLayoutBox(result, /*BlockBreakToken=*/nullptr);
-}
-
-void BlockNode::CopyFragmentItemsToLayoutBox(
-    const PhysicalBoxFragment& container,
-    const FragmentItems& items,
-    const BlockBreakToken* previous_break_token) const {
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  LayoutUnit previously_consumed_block_size;
-  if (previous_break_token) {
-    previously_consumed_block_size =
-        previous_break_token->ConsumedBlockSizeForLegacy();
-  }
-  bool initial_container_is_flipped = Style().IsFlippedBlocksWritingMode();
-  for (InlineCursor cursor(container, items); cursor; cursor.MoveToNext()) {
-    if (const PhysicalBoxFragment* child = cursor.Current().BoxFragment()) {
-      // Replaced elements and inline blocks need Location() set relative to
-      // their block container. Similarly for block-in-inline anonymous wrapper
-      // blocks, but those may actually fragment, so we need to make sure that
-      // we only do this when at the first fragment.
-      if (!child->IsFirstForNode())
-        continue;
-
-      LayoutObject* layout_object = child->GetMutableLayoutObject();
-      if (!layout_object)
-        continue;
-      if (auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
-        PhysicalOffset maybe_flipped_offset =
-            cursor.Current().OffsetInContainerFragment();
-        if (initial_container_is_flipped) {
-          maybe_flipped_offset.left = container.Size().width -
-                                      child->Size().width -
-                                      maybe_flipped_offset.left;
-        }
-        if (container.Style().IsHorizontalWritingMode())
-          maybe_flipped_offset.top += previously_consumed_block_size;
-        else
-          maybe_flipped_offset.left += previously_consumed_block_size;
-        layout_box->SetLocation(
-            maybe_flipped_offset.FaultyToDeprecatedLayoutPoint());
-        if (layout_box->HasSelfPaintingLayer()) [[unlikely]] {
-          layout_box->Layer()->SetNeedsVisualOverflowRecalc();
-        }
-#if DCHECK_IS_ON()
-        layout_box->InvalidateVisualOverflowForDCheck();
-#endif
-        continue;
-      }
-
-      // Legacy compatibility. This flag is used in paint layer for
-      // invalidation.
-      if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
-        if (layout_inline->HasSelfPaintingLayer()) [[unlikely]] {
-          layout_inline->Layer()->SetNeedsVisualOverflowRecalc();
-        }
-      }
-    }
-  }
 }
 
 bool BlockNode::UseParentPercentageResolutionBlockSizeForChildren() const {

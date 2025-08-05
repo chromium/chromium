@@ -151,10 +151,7 @@ static constexpr int kAutoscrollBeltSizeBottom = 20;
 static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
-  union {
-    DeprecatedLayoutPoint a;
-    PhysicalOffset b;
-  } frame_location_;
+  PhysicalOffset frame_location_;
   PhysicalSize frame_size_;
   PhysicalSize previous_size;
   MinMaxSizes intrinsic_logical_widths;
@@ -1074,22 +1071,6 @@ LayoutUnit LayoutBox::ClientHeightWithTableSpecialBehavior() const {
   return ClientHeight();
 }
 
-LayoutUnit LayoutBox::OffsetWidth() const {
-  NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBoxModelObject::OffsetWidth();
-  }
-  return Size().width;
-}
-
-LayoutUnit LayoutBox::OffsetHeight() const {
-  NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBoxModelObject::OffsetHeight();
-  }
-  return Size().height;
-}
-
 bool LayoutBox::UsesOverlayScrollbars() const {
   NOT_DESTROYED();
   if (StyleRef().HasCustomScrollbarStyle(DynamicTo<Element>(GetNode()))) {
@@ -1186,30 +1167,20 @@ void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
                                         const LayoutBoxModelObject* ancestor,
                                         MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    const PhysicalBoxFragment* first_fragment = nullptr;
-    for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
-      // Calculate the offset relatively to the first fragment, which in turn
-      // will be mapped correctly to the ancestor.
-      PhysicalOffset offset;
-      if (!first_fragment) {
-        first_fragment = &fragment;
-      } else {
-        offset = fragment.OffsetFromRootFragmentationContext() -
-                 first_fragment->OffsetFromRootFragmentationContext();
-      }
-      PhysicalRect rect(offset, fragment.Size());
-      quads.push_back(LocalRectToAncestorQuad(rect, ancestor, mode));
+  const PhysicalBoxFragment* first_fragment = nullptr;
+  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
+    // Calculate the offset relatively to the first fragment, which in turn
+    // will be mapped correctly to the ancestor.
+    PhysicalOffset offset;
+    if (!first_fragment) {
+      first_fragment = &fragment;
+    } else {
+      offset = fragment.OffsetFromRootFragmentationContext() -
+               first_fragment->OffsetFromRootFragmentationContext();
     }
-    return;
+    PhysicalRect rect(offset, fragment.Size());
+    quads.push_back(LocalRectToAncestorQuad(rect, ancestor, mode));
   }
-
-  if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
-    flow_thread->QuadsInAncestorForDescendant(*this, quads, ancestor, mode);
-    return;
-  }
-  quads.push_back(
-      LocalRectToAncestorQuad(PhysicalBorderBoxRect(), ancestor, mode));
 }
 
 gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
@@ -2133,7 +2104,7 @@ bool LayoutBox::HitTestChildren(HitTestResult& result,
 
     PhysicalOffset child_accumulated_offset = accumulated_offset;
     if (auto* box = DynamicTo<LayoutBox>(child))
-      child_accumulated_offset += box->PhysicalLocation(this);
+      child_accumulated_offset += box->PhysicalLocation();
 
     if (child->NodeAtPoint(result, hit_test_location, child_accumulated_offset,
                            phase))
@@ -3125,12 +3096,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
   if (!container)
     return true;
 
-  PhysicalOffset container_offset;
-  if (auto* box = DynamicTo<LayoutBox>(container)) {
-    container_offset += PhysicalLocation(box);
-  } else {
-    container_offset += PhysicalLocation();
-  }
+  PhysicalOffset container_offset = PhysicalLocation();
 
   if (IsStickyPositioned()) {
     container_offset += StickyPositionOffset();
@@ -4604,14 +4570,9 @@ WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
                               Size());
 }
 
-PhysicalOffset LayoutBox::PhysicalLocation(
-    const LayoutBox* location_container) const {
+PhysicalOffset LayoutBox::PhysicalLocation() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return frame_location_.physical_offset;
-  }
-  return DeprecatedPhysicalLocationInternal(
-      location_container ? location_container : LocationContainer());
+  return frame_location_;
 }
 
 PhysicalRect LayoutBox::BoundingBoxRelativeToFirstFragment() const {

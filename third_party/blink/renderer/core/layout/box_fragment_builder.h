@@ -423,13 +423,6 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     EnsureBreakTokenData()->consumed_block_size = size;
   }
 
-  // Set how much to adjust |consumed_block_size_| for legacy write-back. See
-  // BlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
-  void SetConsumedBlockSizeLegacyAdjustment(LayoutUnit adjustment) {
-    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-    EnsureBreakTokenData()->consumed_block_size_legacy_adjustment = adjustment;
-  }
-
   void ReserveSpaceForMonolithicOverflow(LayoutUnit monolithic_overflow) {
     DCHECK(GetConstraintSpace().IsPaginated());
     auto* data = EnsureBreakTokenData();

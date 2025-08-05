@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -78,23 +77,6 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   LayoutUnit ConsumedBlockSize() const {
     DCHECK(data_);
     return data_->consumed_block_size;
-  }
-
-  // The consumed block size when writing back to legacy layout. The only time
-  // this may be different than ConsumedBlockSize() is in the case of a
-  // fragmentainer. We clamp the fragmentainer block size from 0 to 1 for legacy
-  // write-back only in the case where there is content that overflows the
-  // zero-height fragmentainer. This can result in a different consumed block
-  // size when used for legacy. This difference is represented by
-  // |consumed_block_size_legacy_adjustment_|.
-  LayoutUnit ConsumedBlockSizeForLegacy() const {
-    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-#if DCHECK_IS_ON()
-    DCHECK(!is_repeated_actual_break_);
-#endif
-    DCHECK(data_);
-    return data_->consumed_block_size +
-           data_->consumed_block_size_legacy_adjustment;
   }
 
   // A unique identifier for a fragment that generates a break token. This is

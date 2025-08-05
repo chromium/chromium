@@ -3533,14 +3533,6 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
     return;
 
   PhysicalOffset container_offset = OffsetFromContainer(container, mode);
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled() &&
-      IsLayoutFlowThread()) {
-    // So far the point has been in flow thread coordinates (i.e. as if
-    // everything in the fragmentation context lived in one tall single column).
-    // Convert it to a visual point now, since we're about to escape the flow
-    // thread.
-    container_offset += ColumnOffset(transform_state.MappedPoint());
-  }
 
   // Text objects just copy their parent's computed style, so we need to ignore
   // them.
@@ -3615,16 +3607,6 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
     transform_state.Move(container_offset,
                          preserve3d ? TransformState::kAccumulateTransform
                                     : TransformState::kFlattenTransform);
-  }
-
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled() &&
-      IsLayoutFlowThread()) {
-    // Descending into a flow thread. Convert to the local coordinate space,
-    // i.e. flow thread coordinates.
-    PhysicalOffset visual_point = transform_state.MappedPoint();
-    transform_state.Move(
-        visual_point -
-        To<LayoutFlowThread>(this)->VisualPointToFlowThreadPoint(visual_point));
   }
 
   if (skip_info.AncestorSkipped()) {
@@ -3740,15 +3722,6 @@ gfx::Transform LayoutObject::LocalToAncestorTransform(
   TransformState transform_state(TransformState::kApplyTransformDirection);
   MapLocalToAncestor(ancestor, transform_state, mode);
   return transform_state.AccumulatedTransform();
-}
-
-bool LayoutObject::OffsetForContainerDependsOnPoint(
-    const LayoutObject* container) const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  return IsLayoutFlowThread() ||
-         (container->StyleRef().IsFlippedBlocksWritingMode() &&
-          container->IsBox());
 }
 
 PhysicalOffset LayoutObject::OffsetFromContainerInternal(

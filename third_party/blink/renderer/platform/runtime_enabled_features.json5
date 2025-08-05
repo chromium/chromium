@@ -2380,7 +2380,6 @@
       // Don't create LayoutMultiColumnFlowThread objects, or any of the other
       // legacy multicol objects.
       name: "FlowThreadLess",
-      depends_on: ["LayoutBoxVisualLocation"],
       status: "stable",
     },
     {
@@ -2873,14 +2872,6 @@
     },
     {
       name: "LayoutAddChildBeforeDescendantFix",
-      status: "stable",
-    },
-    {
-      // LayoutBox::PhysicalLocation() to return a truly visual offset - the
-      // offset of its first fragment relatively to the first fragment of its
-      // containing block, also when block-fragmented (used to be in the
-      // "stitched" flow-thread coordinate space).
-      name: "LayoutBoxVisualLocation",
       status: "stable",
     },
     {

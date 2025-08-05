@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -448,29 +447,9 @@ void LayoutInline::CollectLineBoxRects(
   cursor.MoveToIncludingCulledInline(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     if (!IsInChildRubyText(*this, cursor.Current().GetLayoutObject())) {
-      PhysicalRect rect;
-      if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-        rect = cursor.CurrentRectInFirstContainerFragment();
-      } else {
-        rect = cursor.CurrentRectInBlockFlow();
-      }
-      yield(rect);
+      yield(cursor.CurrentRectInFirstContainerFragment());
     }
   }
-}
-
-bool LayoutInline::AbsoluteTransformDependsOnPoint(
-    const LayoutObject& object) const {
-  NOT_DESTROYED();
-  const LayoutObject* current = &object;
-  const LayoutObject* container = object.Container();
-  while (container) {
-    if (current->OffsetForContainerDependsOnPoint(container))
-      return true;
-    current = container;
-    container = container->Container();
-  }
-  return false;
 }
 
 void LayoutInline::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
@@ -486,29 +465,12 @@ void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                                         bool map_to_ancestor) const {
   NOT_DESTROYED();
   std::optional<gfx::Transform> mapping_to_ancestor;
-  // Set to true if the transform to absolute space depends on the point
-  // being mapped (in which case we can't use LocalToAncestorTransform).
-  bool transform_depends_on_point = false;
-  bool transform_depends_on_point_computed = false;
-  auto PushAncestorQuad = [&transform_depends_on_point,
-                           &transform_depends_on_point_computed,
-                           &mapping_to_ancestor, &quads, ancestor, mode,
+  auto PushAncestorQuad = [&mapping_to_ancestor, &quads, ancestor, mode,
                            this](const PhysicalRect& rect) {
-    if (!transform_depends_on_point_computed) {
-      transform_depends_on_point_computed = true;
-      transform_depends_on_point =
-          !RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled() &&
-          AbsoluteTransformDependsOnPoint(*this);
-      if (!transform_depends_on_point)
-        mapping_to_ancestor.emplace(LocalToAncestorTransform(ancestor, mode));
+    if (!mapping_to_ancestor) {
+      mapping_to_ancestor.emplace(LocalToAncestorTransform(ancestor, mode));
     }
-    if (transform_depends_on_point) {
-      quads.push_back(
-          LocalToAncestorQuad(gfx::QuadF(gfx::RectF(rect)), ancestor, mode));
-    } else {
-      quads.push_back(
-          mapping_to_ancestor->MapQuad(gfx::QuadF(gfx::RectF(rect))));
-    }
+    quads.push_back(mapping_to_ancestor->MapQuad(gfx::QuadF(gfx::RectF(rect))));
   };
 
   CollectLineBoxRects(
@@ -536,9 +498,6 @@ std::optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
     cursor.MoveToIncludingCulledInline(*this);
     if (!cursor)
       return std::nullopt;
-    if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-      return cursor.CurrentOffsetInBlockFlow();
-    }
     return cursor.CurrentOffsetInFirstContainerFragment();
   }
   return std::nullopt;
@@ -589,25 +548,8 @@ LayoutUnit LayoutInline::OffsetTop(const Element* parent) const {
   return AdjustedPositionRelativeTo(FirstLineBoxTopLeft(), parent).top;
 }
 
-LayoutUnit LayoutInline::OffsetWidth() const {
-  NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBoxModelObject::OffsetWidth();
-  }
-  return PhysicalLinesBoundingBox().Width();
-}
-
-LayoutUnit LayoutInline::OffsetHeight() const {
-  NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBoxModelObject::OffsetHeight();
-  }
-  return PhysicalLinesBoundingBox().Height();
-}
-
 PhysicalRect LayoutInline::BoundingBoxRelativeToFirstFragment() const {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   DCHECK(IsInLayoutNGInlineFormattingContext());
   InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*this);

@@ -101,9 +101,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
       LayoutUnit,
       LayoutBox::PageBoundaryRule) const;
 
-  LogicalOffset VisualPointToFlowThreadPoint(
-      const LogicalOffset& visual_point) const;
-
   PhysicalRect FragmentsBoundingBox(
       const PhysicalRect& bounding_box_in_flow_thread) const;
 

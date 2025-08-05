@@ -845,8 +845,6 @@ component("platform") {
     "geometry/geometry_as_json.h",
     "geometry/geometry_hash_traits.h",
     "geometry/infinite_int_rect.h",
-    "geometry/layout_point.cc",
-    "geometry/layout_point.h",
     "geometry/layout_unit.cc",
     "geometry/layout_unit.h",
     "geometry/length.cc",

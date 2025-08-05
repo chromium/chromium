@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -146,13 +145,6 @@ String BlockBreakToken::ToString(bool skip_node_info) const {
   string_builder.Append(" consumed:");
   string_builder.Append(ConsumedBlockSize().ToString());
   string_builder.Append("px");
-
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled() &&
-      ConsumedBlockSizeForLegacy() != ConsumedBlockSize()) {
-    string_builder.Append(" legacy consumed:");
-    string_builder.Append(ConsumedBlockSizeForLegacy().ToString());
-    string_builder.Append("px");
-  }
 
   if (MonolithicOverflow()) {
     string_builder.Append(" monolithic overflow:");

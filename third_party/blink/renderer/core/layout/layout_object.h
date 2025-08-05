@@ -330,10 +330,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Returns false iff this object or one of its ancestors has opacity:0.
   bool HasNonZeroEffectiveOpacity() const;
 
-  // Returns true if the offset ot the containing block depends on the point
-  // being mapped.
-  bool OffsetForContainerDependsOnPoint(const LayoutObject* container) const;
-
  protected:
   void EnsureIdForTesting() {
     NOT_DESTROYED();
@@ -2566,15 +2562,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Do a rect-based hit test with this object as the stop node.
   HitTestResult HitTestForOcclusion(const PhysicalRect&) const;
-
-  // Return the offset to the column in which the specified point (in
-  // flow-thread coordinates) lives. This is used to convert a flow-thread point
-  // to a point in the containing coordinate space.
-  virtual PhysicalOffset ColumnOffset(const PhysicalOffset&) const {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-    return PhysicalOffset();
-  }
 
   bool IsFloatingOrOutOfFlowPositioned() const {
     NOT_DESTROYED();

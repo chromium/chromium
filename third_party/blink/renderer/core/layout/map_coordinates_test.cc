@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -787,9 +786,6 @@ TEST_F(MapCoordinatesTest, MulticolWithText) {
   LayoutObject* target = GetLayoutObjectByElementId("sibling")->NextSibling();
   ASSERT_TRUE(target->IsText());
 
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return;
-  }
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, multicol, PhysicalOffset(220, 20));
   EXPECT_EQ(PhysicalOffset(225, 25), mapped_point);
@@ -809,9 +805,6 @@ TEST_F(MapCoordinatesTest, MulticolWithInline) {
       To<LayoutBlockFlow>(GetLayoutBoxByElementId("multicol"));
   LayoutObject* target = GetLayoutObjectByElementId("target");
 
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return;
-  }
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, multicol, PhysicalOffset(220, 20));
   EXPECT_EQ(PhysicalOffset(225, 25), mapped_point);
@@ -883,9 +876,6 @@ TEST_F(MapCoordinatesTest, NestedMulticolWithBlock) {
   EXPECT_EQ(PhysicalOffset(), mapped_point);
 
   // Walk each ancestor in the chain separately, to verify each step on the way.
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return;
-  }
   mapped_point = MapLocalToAncestor(target, inner_multicol, PhysicalOffset());
   EXPECT_EQ(PhysicalOffset(420, 90), mapped_point);
   mapped_point = MapAncestorToLocal(target, inner_multicol, mapped_point);

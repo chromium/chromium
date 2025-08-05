@@ -105,45 +105,6 @@ class ChildFragmentIterator {
   wtf_size_t child_index_ = 0;
 };
 
-DeprecatedLayoutPoint ComputeLocation(
-    const PhysicalBoxFragment& column_box,
-    PhysicalOffset column_offset,
-    LayoutUnit set_inline_size,
-    const LayoutBlockFlow& container,
-    wtf_size_t fragment_index,
-    const PhysicalBoxStrut& border_padding_scrollbar) {
-  const PhysicalBoxFragment* container_fragment =
-      container.GetPhysicalFragment(fragment_index);
-  WritingModeConverter converter(
-      container_fragment->Style().GetWritingDirection(),
-      container_fragment->Size());
-  // The inline-offset will be the content-box edge of the multicol container,
-  // and the block-offset will be the block-offset of the column itself. It
-  // doesn't matter which column from the same row we use, since all columns
-  // have the same block-offset and block-size (so just use the first one).
-  LogicalOffset logical_offset(
-      border_padding_scrollbar.ConvertToLogical(converter.GetWritingDirection())
-          .inline_start,
-      converter.ToLogical(column_offset, column_box.Size()).block_offset);
-  LogicalSize column_set_logical_size(
-      set_inline_size, converter.ToLogical(column_box.Size()).block_size);
-  PhysicalOffset physical_offset = converter.ToPhysical(
-      logical_offset, converter.ToPhysical(column_set_logical_size));
-  const BlockBreakToken* previous_container_break_token = nullptr;
-  if (fragment_index > 0) {
-    previous_container_break_token =
-        container.GetPhysicalFragment(fragment_index - 1)->GetBreakToken();
-  }
-  // We have calculated the physical offset relative to the border edge of
-  // this multicol container fragment. We'll now convert it to a legacy
-  // engine DeprecatedLayoutPoint, which will also take care of converting it
-  // into the flow thread coordinate space, if we happen to be nested inside
-  // another fragmentation context.
-  return ComputeBoxLocation(column_box, physical_offset,
-                            *container.GetPhysicalFragment(fragment_index),
-                            previous_container_break_token);
-}
-
 }  // namespace
 
 LayoutMultiColumnSet::LayoutMultiColumnSet(LayoutFlowThread* flow_thread)
@@ -175,51 +136,6 @@ void LayoutMultiColumnSet::Trace(Visitor* visitor) const {
 bool LayoutMultiColumnSet::IsLayoutNGObject() const {
   NOT_DESTROYED();
   return false;
-}
-
-unsigned LayoutMultiColumnSet::FragmentainerGroupIndexAtFlowThreadOffset(
-    LayoutUnit flow_thread_offset,
-    PageBoundaryRule rule) const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  UpdateGeometryIfNeeded();
-  DCHECK_GT(fragmentainer_groups_.size(), 0u);
-  if (flow_thread_offset <= 0)
-    return 0;
-  for (unsigned index = 0; index < fragmentainer_groups_.size(); index++) {
-    const auto& row = fragmentainer_groups_[index];
-    if (rule == kAssociateWithLatterPage) {
-      if (row.LogicalTopInFlowThread() <= flow_thread_offset &&
-          row.LogicalBottomInFlowThread() > flow_thread_offset)
-        return index;
-    } else if (row.LogicalTopInFlowThread() < flow_thread_offset &&
-               row.LogicalBottomInFlowThread() >= flow_thread_offset) {
-      return index;
-    }
-  }
-  return fragmentainer_groups_.size() - 1;
-}
-
-const MultiColumnFragmentainerGroup&
-LayoutMultiColumnSet::FragmentainerGroupAtVisualPoint(
-    const LogicalOffset& visual_point) const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  UpdateGeometryIfNeeded();
-  DCHECK_GT(fragmentainer_groups_.size(), 0u);
-  LayoutUnit block_offset = visual_point.block_offset;
-  for (unsigned index = 0; index < fragmentainer_groups_.size(); index++) {
-    const auto& row = fragmentainer_groups_[index];
-    if (row.LogicalTop() + row.GroupLogicalHeight() > block_offset)
-      return row;
-  }
-  return fragmentainer_groups_.Last();
-}
-
-bool LayoutMultiColumnSet::IsPageLogicalHeightKnown() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  return FirstFragmentainerGroup().IsLogicalHeightKnown();
 }
 
 LayoutMultiColumnSet* LayoutMultiColumnSet::NextSiblingMultiColumnSet() const {
@@ -277,27 +193,6 @@ LayoutUnit LayoutMultiColumnSet::LogicalBottomInFlowThread() const {
   return LastFragmentainerGroup().LogicalBottomInFlowThread();
 }
 
-PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
-    LayoutUnit block_offset,
-    PageBoundaryRule rule) const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  return FragmentainerGroupAtFlowThreadOffset(block_offset, rule)
-      .FlowThreadTranslationAtOffset(block_offset, rule);
-}
-
-LogicalOffset LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
-    const PhysicalOffset& visual_point) const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  LogicalOffset logical_point =
-      CreateWritingModeConverter().ToLogical(visual_point, {});
-  const MultiColumnFragmentainerGroup& row =
-      FragmentainerGroupAtVisualPoint(logical_point);
-  return row.VisualPointToFlowThreadPoint(logical_point -
-                                          row.OffsetFromColumnSet());
-}
-
 void LayoutMultiColumnSet::ResetColumnHeight() {
   NOT_DESTROYED();
   fragmentainer_groups_.DeleteExtraGroups();
@@ -342,17 +237,6 @@ unsigned LayoutMultiColumnSet::ActualColumnCount() const {
   return FirstFragmentainerGroup().ActualColumnCount();
 }
 
-PhysicalRect LayoutMultiColumnSet::FragmentsBoundingBox(
-    const PhysicalRect& bounding_box_in_flow_thread) const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  UpdateGeometryIfNeeded();
-  PhysicalRect result;
-  for (const auto& group : fragmentainer_groups_)
-    result.Unite(group.FragmentsBoundingBox(bounding_box_in_flow_thread));
-  return result;
-}
-
 void LayoutMultiColumnSet::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBlockFlow::InsertedIntoTree();
@@ -365,157 +249,9 @@ void LayoutMultiColumnSet::WillBeRemovedFromTree() {
   DetachFromFlowThread();
 }
 
-DeprecatedLayoutPoint LayoutMultiColumnSet::DeprecatedLocationInternal() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  UpdateGeometryIfNeeded();
-  return frame_location_.layout_point;
-}
-
 PhysicalSize LayoutMultiColumnSet::Size() const {
   NOT_DESTROYED();
-  UpdateGeometryIfNeeded();
   return frame_size_;
-}
-
-void LayoutMultiColumnSet::UpdateGeometryIfNeeded() const {
-  if (!HasValidCachedGeometry() && EverHadLayout()) {
-    // const_cast in order to update the cached value.
-    const_cast<LayoutMultiColumnSet*>(this)->UpdateGeometry();
-  }
-}
-
-void LayoutMultiColumnSet::UpdateGeometry() {
-  NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    // Nobody cares.
-    return;
-  }
-  DCHECK(!HasValidCachedGeometry());
-  SetHasValidCachedGeometry(true);
-  frame_location_.layout_point = DeprecatedLayoutPoint();
-  ResetColumnHeight();
-  const LayoutBlockFlow* container = MultiColumnBlockFlow();
-  DCHECK_GT(container->PhysicalFragmentCount(), 0u);
-
-  const auto* first_fragment = container->GetPhysicalFragment(0);
-  WritingMode writing_mode = first_fragment->Style().GetWritingMode();
-  PhysicalBoxStrut border_padding_scrollbar = first_fragment->Borders() +
-                                              first_fragment->Padding() +
-                                              container->ComputeScrollbars();
-
-  // Set the inline-size to that of the content-box of the multicol container.
-  PhysicalSize content_size =
-      first_fragment->Size() -
-      PhysicalSize(border_padding_scrollbar.HorizontalSum(),
-                   border_padding_scrollbar.VerticalSum());
-  LogicalSize logical_size;
-  logical_size.inline_size =
-      ToLogicalSize(content_size, writing_mode).inline_size;
-
-  // TODO(layout-dev): Ideally we should not depend on the layout tree structure
-  // because it may be different from the tree for the physical fragments.
-  const auto* previous_placeholder =
-      DynamicTo<LayoutMultiColumnSpannerPlaceholder>(PreviousSibling());
-  bool seen_previous_placeholder = !previous_placeholder;
-  ChildFragmentIterator iter(*container);
-  LayoutUnit flow_thread_offset;
-
-  // Skip until a column box after previous_placeholder.
-  for (; iter.IsValid(); iter.NextChild()) {
-    if (!iter->IsFragmentainerBox()) {
-      if (iter->IsLayoutObjectDestroyedOrMoved()) {
-        continue;
-      }
-      const auto* child_box = To<LayoutBox>(iter->GetLayoutObject());
-      if (child_box->IsColumnSpanAll()) {
-        if (seen_previous_placeholder) {
-          // The legacy tree builder (the flow thread code) sometimes
-          // incorrectly keeps column sets that shouldn't be there anymore. If
-          // we have two column spanners, that are in fact adjacent, even though
-          // there's a spurious column set between them, the column set hasn't
-          // been initialized correctly (since we still have a
-          // pending_column_set at this point). Say hello to the column set that
-          // shouldn't exist, so that it gets some initialization.
-          SetIsIgnoredByNG();
-          frame_size_ = ToPhysicalSize(logical_size, writing_mode);
-          return;
-        }
-        if (previous_placeholder &&
-            child_box == previous_placeholder->LayoutObjectInFlowThread()) {
-          seen_previous_placeholder = true;
-        }
-      }
-      continue;
-    }
-    if (seen_previous_placeholder) {
-      break;
-    }
-    flow_thread_offset += FragmentainerLogicalCapacity(*iter).block_size;
-  }
-  if (!iter.IsValid()) {
-    SetIsIgnoredByNG();
-    frame_size_ = ToPhysicalSize(logical_size, writing_mode);
-    return;
-  }
-  // Found the first column box after previous_placeholder.
-
-  frame_location_.layout_point = ComputeLocation(
-      *iter, iter.Offset(), logical_size.inline_size, *container,
-      iter.FragmentIndex(), border_padding_scrollbar);
-
-  while (true) {
-    LogicalSize fragmentainer_logical_size =
-        FragmentainerLogicalCapacity(*iter);
-    LastFragmentainerGroup().SetLogicalTopInFlowThread(flow_thread_offset);
-    logical_size.block_size += fragmentainer_logical_size.block_size;
-    flow_thread_offset += fragmentainer_logical_size.block_size;
-    LastFragmentainerGroup().SetColumnBlockSizeFromNG(
-        fragmentainer_logical_size.block_size);
-
-    // Handle following fragmentainer boxes in the current container fragment.
-    wtf_size_t fragment_index = iter.FragmentIndex();
-    bool should_expand_last_set = false;
-    while (iter.NextChild() && iter.FragmentIndex() == fragment_index) {
-      if (iter->IsFragmentainerBox()) {
-        LayoutUnit column_size = FragmentainerLogicalCapacity(*iter).block_size;
-        flow_thread_offset += column_size;
-        if (should_expand_last_set) {
-          LastFragmentainerGroup().ExtendColumnBlockSizeFromNG(column_size);
-          should_expand_last_set = false;
-        }
-      } else {
-        if (iter->IsColumnSpanAll()) {
-          const auto* placeholder =
-              iter->GetLayoutObject()->SpannerPlaceholder();
-          // If there is no column set after the spanner, we should expand the
-          // last column set (if any) to encompass any columns that were created
-          // after the spanner. Only do this if we're actually past the last
-          // column set, though. We may have adjacent spanner placeholders,
-          // because the legacy and NG engines disagree on whether there's
-          // column content in-between (NG will create column content if the
-          // parent block of a spanner has trailing margin / border / padding,
-          // while legacy does not).
-          if (placeholder && !placeholder->NextSiblingMultiColumnBox()) {
-            should_expand_last_set = true;
-            continue;
-          }
-        }
-        break;
-      }
-    }
-    LastFragmentainerGroup().SetLogicalBottomInFlowThread(flow_thread_offset);
-
-    if (!iter.IsValid()) {
-      break;
-    }
-    if (iter.FragmentIndex() == fragment_index || !iter->IsFragmentainerBox()) {
-      // Found a physical fragment with !IsFragmentainerBox().
-      break;
-    }
-    AppendNewFragmentainerGroup();
-  }
-  frame_size_ = ToPhysicalSize(logical_size, writing_mode);
 }
 
 void LayoutMultiColumnSet::AttachToFlowThread() {

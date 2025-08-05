@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -388,15 +387,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     const auto writing_direction = line_style.GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
                                          line_box.ContainerFragment().Size());
-    PhysicalRect physical_rect;
-    if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-      physical_rect = line_box.CurrentRectInFirstContainerFragment();
-    } else {
-      physical_rect = line_box.Current().RectInContainerFragment();
-      // The caller expects it to be in the "stitched" coordinate space.
-      physical_rect.offset +=
-          OffsetInStitchedFragments(line_box.ContainerFragment());
-    }
+    PhysicalRect physical_rect = line_box.CurrentRectInFirstContainerFragment();
     const LogicalRect logical_rect = converter.ToLogical(physical_rect);
     return {logical_rect.offset.block_offset, logical_rect.BlockEndOffset()};
   }

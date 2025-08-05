@@ -554,7 +554,7 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
       continue;
 
     PhysicalOffset child_accumulated_offset =
-        scrolled_offset + child->PhysicalLocation(this);
+        scrolled_offset + child->PhysicalLocation();
     bool did_hit;
     if (child->IsFloating()) {
       if (phase != HitTestPhase::kFloat || !IsLayoutNGObject())

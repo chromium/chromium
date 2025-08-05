@@ -190,21 +190,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
     return column_count_;
   }
 
-  PhysicalOffset ColumnOffset(const PhysicalOffset&) const final;
-
-  bool IsPageLogicalHeightKnown() const final;
-
-  PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
-                                               PageBoundaryRule) const;
-  PhysicalOffset FlowThreadTranslationAtPoint(
-      const PhysicalOffset& flow_thread_point) const;
-
-  PhysicalOffset VisualPointToFlowThreadPoint(
-      const PhysicalOffset& visual_point) const final;
-
-  LayoutMultiColumnSet* ColumnSetAtBlockOffset(LayoutUnit,
-                                               PageBoundaryRule) const final;
-
   void ColumnRuleStyleDidChange();
 
   // Remove the spanner placeholder and return true if the specified object is
@@ -227,7 +212,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
   // "public" for |MakeGarbageCollected<T>|.
   explicit LayoutMultiColumnFlowThread();
 
-  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
   PhysicalSize Size() const override;
 
  private:
@@ -252,7 +236,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final : public LayoutFlowThread {
       StyleDifference,
       const ComputedStyle& old_style) override;
   void ToggleSpannersInSubtree(LayoutBoxModelObject*);
-  void UpdateGeometry();
 
   // The last set we worked on. It's not to be used as the "current set". The
   // concept of a "current set" is difficult, since layout may jump back and

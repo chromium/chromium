@@ -320,37 +320,6 @@ LayoutUnit BoxTotalBlockSize(const LayoutBox& box) {
   return total_block_size;
 }
 
-DeprecatedLayoutPoint ComputeBoxLocation(
-    const PhysicalBoxFragment& child_fragment,
-    PhysicalOffset offset,
-    const PhysicalBoxFragment& container_fragment,
-    const BlockBreakToken* previous_container_break_token) {
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  if (container_fragment.Style().IsFlippedBlocksWritingMode()) [[unlikely]] {
-    // Move the physical offset to the right side of the child fragment,
-    // relative to the right edge of the container fragment. This is the
-    // block-start offset in vertical-rl, and the legacy engine expects always
-    // expects the block offset to be relative to block-start.
-    offset.left = container_fragment.Size().width - offset.left -
-                  child_fragment.Size().width;
-  }
-
-  if (previous_container_break_token) [[unlikely]] {
-    // Add the amount of block-size previously (in previous fragmentainers)
-    // consumed by the container fragment. This will map the child's offset
-    // nicely into the flow thread coordinate system used by the legacy engine.
-    LayoutUnit consumed =
-        previous_container_break_token->ConsumedBlockSizeForLegacy();
-    if (container_fragment.Style().IsHorizontalWritingMode()) {
-      offset.top += consumed;
-    } else {
-      offset.left += consumed;
-    }
-  }
-
-  return offset.FaultyToDeprecatedLayoutPoint();
-}
-
 void UpdateChildLayoutBoxLocations(const PhysicalBoxFragment& fragment) {
   if (fragment.GetLayoutObject()->ChildLayoutBlockedByDisplayLock()) {
     return;

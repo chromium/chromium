@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 class HTMLBRElement;
@@ -523,49 +522,7 @@ PhysicalRect InlineCursor::CurrentLocalSelectionRectForReplaced() const {
   return physical_rect;
 }
 
-PhysicalRect InlineCursor::CurrentRectInBlockFlow() const {
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  PhysicalRect rect = Current().RectInContainerFragment();
-  // We'll now convert the offset from being relative to the containing fragment
-  // to being relative to the containing LayoutBlockFlow. For writing modes that
-  // don't flip the block direction, this is easy: just add the block-size
-  // consumed in previous fragments.
-  auto writing_direction = ContainerFragment().Style().GetWritingDirection();
-  switch (writing_direction.GetWritingMode()) {
-    case WritingMode::kHorizontalTb:
-      rect.offset.top += previously_consumed_block_size_;
-      break;
-    case WritingMode::kSidewaysLr:
-    case WritingMode::kVerticalLr:
-      rect.offset.left += previously_consumed_block_size_;
-      break;
-    case WritingMode::kSidewaysRl:
-    case WritingMode::kVerticalRl: {
-      // For vertical-rl writing-mode it's a bit more complicated. We need to
-      // convert to logical coordinates in the containing box fragment, in order
-      // to add the consumed block-size to make it relative to the
-      // LayoutBlockFlow ("flow thread coordinate space"), and then we convert
-      // back to physical coordinates.
-      const LayoutBlock* containing_block =
-          Current().GetLayoutObject()->ContainingBlock();
-      DCHECK_EQ(containing_block->StyleRef().GetWritingDirection(),
-                ContainerFragment().Style().GetWritingDirection());
-      LogicalOffset logical_offset =
-          WritingModeConverter(writing_direction, ContainerFragment().Size())
-              .ToLogical(rect.offset, rect.size);
-      LogicalOffset logical_offset_in_flow_thread(
-          logical_offset.inline_offset,
-          logical_offset.block_offset + previously_consumed_block_size_);
-      rect.offset = logical_offset_in_flow_thread.ConvertToPhysical(
-          writing_direction, PhysicalSize(containing_block->Size()), rect.size);
-      break;
-    }
-  };
-  return rect;
-}
-
 PhysicalRect InlineCursor::CurrentRectInFirstContainerFragment() const {
-  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   PhysicalRect rect = Current().RectInContainerFragment();
   if (ContainerFragment().IsFirstForNode()) {
     return rect;

@@ -86,17 +86,6 @@ PhysicalOffset MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
   return physical_column_rect.offset - portion_rect.offset;
 }
 
-LogicalOffset MultiColumnFragmentainerGroup::VisualPointToFlowThreadPoint(
-    const LogicalOffset& visual_point) const {
-  unsigned column_index = ColumnIndexAtVisualPoint(visual_point);
-  LogicalRect column_rect = ColumnRectAt(column_index);
-  LogicalOffset local_point(visual_point);
-  local_point -= column_rect.offset;
-  return LogicalOffset(
-      local_point.inline_offset,
-      local_point.block_offset + LogicalTopInFlowThreadAt(column_index));
-}
-
 PhysicalRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
     const PhysicalRect& bounding_box_in_flow_thread) const {
   // Find the start and end column intersected by the bounding box.

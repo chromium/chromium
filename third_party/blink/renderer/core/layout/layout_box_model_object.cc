@@ -352,18 +352,6 @@ void LayoutBoxModelObject::DestroyLayer() {
   SetNeedsPaintPropertyUpdate();
 }
 
-LayoutUnit LayoutBoxModelObject::OffsetWidth() const {
-  NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  return BoundingBoxRelativeToFirstFragment().size.width;
-}
-
-LayoutUnit LayoutBoxModelObject::OffsetHeight() const {
-  NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  return BoundingBoxRelativeToFirstFragment().size.height;
-}
-
 bool LayoutBoxModelObject::HasSelfPaintingLayer() const {
   NOT_DESTROYED();
   return Layer() && Layer()->IsSelfPaintingLayer();
@@ -745,9 +733,6 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
            current && current->GetNode() != offset_parent;
            current = current->Container()) {
         // FIXME: What are we supposed to do inside SVG content?
-        if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-          reference_point += current->ColumnOffset(reference_point);
-        }
         if (current->IsBox()) {
           reference_point += To<LayoutBox>(current)->PhysicalLocation();
         }
