@@ -119,7 +119,7 @@ class InstallTest(unittest.TestCase):
                                   self.target_extensions_dir))
 
         install.add_extension('sample_1', self.source_extensions_dir,
-                              self.target_extensions_dir)
+                              self.target_extensions_dir, False)
         mock_get_dir_hash.side_effect = [b'some_hash', b'some_hash']
         self.assertTrue(
             install.is_up_to_date('sample_1', self.source_extensions_dir,
@@ -134,8 +134,15 @@ class InstallTest(unittest.TestCase):
     def test_add_extension(self, mock_input):
         """Tests the add_extension function."""
         install.add_extension('sample_1', self.source_extensions_dir,
-                              self.target_extensions_dir)
+                              self.target_extensions_dir, False)
         self.assertTrue((self.target_extensions_dir / 'sample_1').exists())
+
+    @patch('builtins.input', return_value='y')
+    def test_add_extension_symlink(self, mock_input):
+        """Tests the add_extension function with symlinking."""
+        install.add_extension('sample_1', self.source_extensions_dir,
+                              self.target_extensions_dir, True)
+        self.assertTrue((self.target_extensions_dir / 'sample_1').is_symlink())
 
     @patch('builtins.input', return_value='n')
     @patch('install.is_up_to_date', return_value=False)
@@ -144,10 +151,10 @@ class InstallTest(unittest.TestCase):
         """Tests that adding an existing extension is skipped if the user
         declines."""
         install.add_extension('sample_1', self.source_extensions_dir,
-                              self.target_extensions_dir)
+                              self.target_extensions_dir, False)
         with patch('shutil.copytree') as mock_copy:
             install.add_extension('sample_1', self.source_extensions_dir,
-                                  self.target_extensions_dir)
+                                  self.target_extensions_dir, False)
             mock_copy.assert_not_called()
 
     def test_update_extension(self):
@@ -160,7 +167,7 @@ class InstallTest(unittest.TestCase):
 
         # Test updating an up-to-date extension
         install.add_extension('sample_1', self.source_extensions_dir,
-                              self.target_extensions_dir)
+                              self.target_extensions_dir, False)
         with patch('install.is_up_to_date', return_value=True):
             with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
                 install.update_extension('sample_1',
@@ -188,7 +195,8 @@ class InstallTest(unittest.TestCase):
                 install.main()
         mock_add_extension.assert_called_once_with('sample_1',
                                                    self.source_extensions_dir,
-                                                   self.global_extension_dir)
+                                                   self.global_extension_dir,
+                                                   False)
 
     @patch('install.update_extension')
     @patch('install.get_installed_extensions', return_value=['sample_1'])

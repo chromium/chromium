@@ -196,7 +196,7 @@ def list_extensions(extensions_dirs: list[Path]) -> None:
 
 
 def add_extension(extension_name: str, source_extensions_dir: Path,
-                  target_extensions_dir: Path) -> None:
+                  target_extensions_dir: Path, symlink: bool) -> None:
     """Adds an extension."""
     source_dir = source_extensions_dir / extension_name
     dest_dir = target_extensions_dir / extension_name
@@ -216,7 +216,10 @@ def add_extension(extension_name: str, source_extensions_dir: Path,
 
     if dest_dir.exists():
         shutil.rmtree(dest_dir)
-    shutil.copytree(source_dir, dest_dir)
+    if symlink:
+        os.symlink(source_dir, dest_dir)
+    else:
+        shutil.copytree(source_dir, dest_dir)
     print(f"Added/updated '{extension_name}' to {dest_dir}")
 
 
@@ -276,6 +279,12 @@ def main() -> None:
                             dest='use_global',
                             action='store_true',
                             help='Install to the global extensions directory.')
+    add_parser.add_argument(
+        '-l',
+        '--symlink',
+        action='store_true',
+        help='Use symlinks rather than directory copies so '
+        'that extensions automatically stays up-to-date.')
     add_parser.add_argument('extensions',
                             nargs='+',
                             help='A list of extension directory names to add.')
@@ -333,7 +342,7 @@ def main() -> None:
 
             if args.command == 'add':
                 add_extension(extension, source_extensions_dir,
-                              target_extensions_dir)
+                              target_extensions_dir, args.symlink)
             elif args.command == 'update':
                 update_extension(extension, source_extensions_dir,
                                  target_extensions_dir)
