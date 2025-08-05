@@ -325,13 +325,13 @@ WatermarkBlock DrawWatermarkToPaintRecord(const std::string& watermark_text,
   cc::PaintCanvas* paint_canvas = recorder.beginRecording();
   if (!watermark_text.empty()) {
     gfx::Rect display_rect(0, 0, watermark_block.width, 0);
-    auto text_fill =
-        CreateFillRenderText(display_rect, utf16_text, fill_color, font_size);
     auto text_outline = CreateOutlineRenderText(display_rect, utf16_text,
                                                 outline_color, font_size);
+    auto text_fill =
+        CreateFillRenderText(display_rect, utf16_text, fill_color, font_size);
     gfx::Canvas gfx_canvas(paint_canvas, 1.0f);
-    text_fill->Draw(&gfx_canvas);
     text_outline->Draw(&gfx_canvas);
+    text_fill->Draw(&gfx_canvas);
     watermark_block.height = GetWatermarkBlockHeight(
         utf16_text, text_fill->GetNumLines(), watermark_block.width, font_size);
   } else {
