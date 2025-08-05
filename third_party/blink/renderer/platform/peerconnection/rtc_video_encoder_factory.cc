@@ -36,12 +36,16 @@ namespace blink {
 
 namespace {
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Enables H.264 CBP encode acceleration.
+BASE_FEATURE(kPlatformH264CbpEncoding,
+             "PlatformH264CbpEncoding",
 #if BUILDFLAG(IS_WIN)
-// Enables H.264 CBP encode acceleration for Windows.
-BASE_FEATURE(kMediaFoundationH264CbpEncoding,
-             "MediaFoundationH264CbpEncoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Convert media::SVCScalabilityMode to webrtc::ScalabilityMode and fill
 // format.scalability_modes.
@@ -325,14 +329,10 @@ SupportedFormats GetSupportedFormatsInternal(
       supported_formats.sdp_formats.push_back(std::move(*format));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_WIN)
       const bool kShouldAddH264Cbp =
-          base::FeatureList::IsEnabled(kMediaFoundationH264CbpEncoding) &&
+          base::FeatureList::IsEnabled(kPlatformH264CbpEncoding) &&
           profile.profile == media::VideoCodecProfile::H264PROFILE_BASELINE;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      const bool kShouldAddH264Cbp =
-          profile.profile == media::VideoCodecProfile::H264PROFILE_BASELINE;
-#endif
+
       if (kShouldAddH264Cbp) {
         supported_formats.profiles.push_back(profile.profile);
         webrtc::AddH264ConstrainedBaselineProfileToSupportedFormats(

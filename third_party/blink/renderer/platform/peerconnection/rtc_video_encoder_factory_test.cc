@@ -202,7 +202,7 @@ class RTCVideoEncoderFactoryTest : public ::testing::Test {
 
 TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine("MediaFoundationH264CbpEncoding", "");
+  scoped_feature_list.InitFromCommandLine("PlatformH264CbpEncoding", "");
 
   ClearDisabledProfilesForTesting();
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
