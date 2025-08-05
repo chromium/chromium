@@ -596,8 +596,4 @@ public class SelectableListLayout<E> extends FrameLayout
         mBackPressStateSupplier.set(
                 mToolbar.getSelectionDelegate().isSelectionEnabled() || mToolbar.isSearching());
     }
-
-    public RecyclerView getRecyclerViewForTesting() {
-        return mRecyclerView;
-    }
 }
