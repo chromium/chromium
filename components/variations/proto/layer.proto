@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.variations";
@@ -35,14 +35,14 @@ message Layer {
     message SlotRange {
       // First slot in the range (inclusive). This range has to be
       // in the [0..`num_slots`) range of the layer.
-      optional uint32 start = 1;
+      uint32 start = 1;
       // Last slot in the range (inclusive).
-      optional uint32 end = 2;
+      uint32 end = 2;
     }
 
     // An id (unique within the Layer) that studies will use to refer to this
     // particular member.
-    optional uint32 id = 1;
+    uint32 id = 1;
     // Ranges of slots that belong to this member. These slot ranges must not
     // overlap with the slot ranges of other members within the layer, so
     // that at most one member within the layer will be active. The ranges must
@@ -52,12 +52,12 @@ message Layer {
 
   // ID for the layer, must be unique across all layers. Studies will specify
   // a <layer_id, layer_member_id> pair to become part of a layer.
-  optional uint32 id = 1;
+  uint32 id = 1;
 
   // Total number of slots within the layer. There are constraints on the number
   // of slots when a low entropy source is used (100, initially) to alleviate
   // skew in the bucket populations.
-  optional uint32 num_slots = 2;
+  uint32 num_slots = 2;
 
   // Layer members, which occupy disjoint subsets of the [0, `num_slots`) range.
   // Not all slots have to be used, and normally won't in order to reserve space
@@ -68,9 +68,11 @@ message Layer {
   // A salt which is used as an input to a hash function together with the
   // output of the chosen entropy source, to choose an active slot within the
   // layer. If salt is unset or 0, the layer id will be used instead.
-  optional uint32 salt = 4;
+  uint32 salt = 4;
 
   enum EntropyMode {
+    option features.enum_type = CLOSED;
+
     // Use the default entropy source when selecting slots. This will use the
     // high entropy source for the clients that have it, and falls back to the
     // low entropy source for other clients.
@@ -84,14 +86,14 @@ message Layer {
   }
 
   // Which of the above entropy modes should be used to select a slot.
-  optional EntropyMode entropy_mode = 5;
+  EntropyMode entropy_mode = 5;
 }
 
 // A Study can optionally specify a LayerMemberReference which will constrain it
 // to one or more layer members of the specified layer.
 message LayerMemberReference {
   // Reference to the layer with this specific ID.
-  optional uint32 layer_id = 1;
+  uint32 layer_id = 1;
 
   // References to members within the above layer.
   //
@@ -111,6 +113,6 @@ message LayerMemberReference {
   //   - Removing a `layer_member_id` will take out clients randomized to that
   //     layer member from the study.
   //
-  optional uint32 layer_member_id = 2;
-  repeated uint32 layer_member_ids = 3 [packed = true];
+  uint32 layer_member_id = 2;
+  repeated uint32 layer_member_ids = 3;
 }

@@ -124,6 +124,7 @@ component("variations") {
   public_deps = [
     ":variations_features",
     "proto",
+    "proto:client_variations_proto",
     "//base",
   ]
 
@@ -208,6 +209,7 @@ static_library("test_support") {
   deps = [
     "field_trial_config",
     "proto",
+    "proto:client_variations_proto",
     "//base/test:test_support",
     "//components/metrics",
     "//components/prefs",
