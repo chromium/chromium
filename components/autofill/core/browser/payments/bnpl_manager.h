@@ -78,7 +78,8 @@ class BnplManager {
   // result. This must be called after `NotifyOfSuggestionGeneration()`, so
   // that the manager can update suggestions for buy-now-pay-later.
   virtual void OnAmountExtractionReturned(
-      const std::optional<uint64_t>& extracted_amount);
+      const std::optional<uint64_t>& extracted_amount,
+      bool timeout_reached = false);
 
   // Determines if autofill BNPL is supported.
   // Returns true if:

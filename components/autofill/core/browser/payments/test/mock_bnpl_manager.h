@@ -32,7 +32,7 @@ class MockBnplManager : public payments::BnplManager {
 
   MOCK_METHOD(void,
               OnAmountExtractionReturned,
-              (const std::optional<uint64_t>&),
+              (const std::optional<uint64_t>&, bool),
               (override));
 
   MOCK_METHOD(void,

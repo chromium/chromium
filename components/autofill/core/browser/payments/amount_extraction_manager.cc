@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_deref.h"
@@ -204,7 +205,10 @@ void AmountExtractionManager::OnTimeoutReached() {
         GetMainFrameDriver()->GetPageUkmSourceId());
     has_logged_amount_extraction_result_ = true;
   }
-  // TODO(crbug.com/378517983): Add BNPL flow action logic here.
+  if (BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager()) {
+    bnpl_manager->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
+                                             /*timeout_reached=*/true);
+  }
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)) {
     if (base::FeatureList::IsEnabled(

@@ -107,6 +107,11 @@ class AmountExtractionManagerTest : public Test {
                                                          extracted_amount);
   }
 
+  void FakeAmountExtractionTimeout() {
+    amount_extraction_manager_->SetSearchRequestPendingForTesting(true);
+    amount_extraction_manager_->OnTimeoutReached();
+  }
+
   void SetUpCheckoutAmountExtractionCall(const std::string& extracted_amount,
                                          int latency_ms = 0) {
     auto extract_action =
@@ -688,7 +693,7 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_EmptyResult_BnplManagerNotified) {
   EXPECT_CALL(*autofill_manager_->GetPaymentsBnplManager(),
-              OnAmountExtractionReturned(std::optional<uint64_t>()))
+              OnAmountExtractionReturned(std::optional<uint64_t>(), false))
       .Times(1);
 
   FakeCheckoutAmountReceived("");
@@ -698,12 +703,23 @@ TEST_F(AmountExtractionManagerTest,
 // extraction receives a result with correct format.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountInCorrectFormat_BnplManagerNotified) {
-  EXPECT_CALL(
-      *autofill_manager_->GetPaymentsBnplManager(),
-      OnAmountExtractionReturned(std::optional<uint64_t>(123'450'000ULL)))
+  EXPECT_CALL(*autofill_manager_->GetPaymentsBnplManager(),
+              OnAmountExtractionReturned(
+                  std::optional<uint64_t>(123'450'000ULL), false))
       .Times(1);
 
   FakeCheckoutAmountReceived("$ 123.45");
+}
+
+// This test checks that the BNPL manager will be notified when the amount
+// extraction times out.
+TEST_F(AmountExtractionManagerTest,
+       OnCheckoutAmountReceived_AmountExtractionTimeout_BnplManagerNotified) {
+  EXPECT_CALL(*autofill_manager_->GetPaymentsBnplManager(),
+              OnAmountExtractionReturned(Eq(std::nullopt), true))
+      .Times(1);
+
+  FakeAmountExtractionTimeout();
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

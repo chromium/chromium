@@ -259,7 +259,8 @@ class BnplManagerTest : public Test {
 
   void TriggerBnplUpdateSuggestionsFlow(
       bool expect_suggestions_are_updated,
-      std::optional<uint64_t> extracted_amount) {
+      std::optional<uint64_t> extracted_amount,
+      bool timeout_reached = false) {
     std::vector<Suggestion> suggestions = {
         Suggestion(SuggestionType::kCreditCardEntry),
         Suggestion(SuggestionType::kManageCreditCard)};
@@ -269,7 +270,8 @@ class BnplManagerTest : public Test {
 
     bnpl_manager_->NotifyOfSuggestionGeneration(
         AutofillSuggestionTriggerSource::kUnspecified);
-    bnpl_manager_->OnAmountExtractionReturned(extracted_amount);
+    bnpl_manager_->OnAmountExtractionReturned(extracted_amount,
+                                              timeout_reached);
     bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
   }
 
@@ -1482,6 +1484,38 @@ TEST_F(BnplManagerTest,
       "Autofill.Bnpl.SuggestionNotShownReason",
       autofill_metrics::BnplSuggestionNotShownReason::
           kCheckoutAmountNotSupported,
+      1);
+}
+
+// Tests that BnplSuggestionNotShownReason will be logged once if the amount
+// extraction engine times out.
+TEST_F(
+    BnplManagerTest,
+    AddBnplSuggestion_AmountExtractionTimeout_BnplSuggestionNotShownReasonLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Add one linked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/40,
+      /*price_higher_bound_in_micros=*/1000, IssuerId::kBnplAffirm,
+      /*instrument_id=*/1234);
+
+  TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
+                                   /*extracted_amount=*/std::nullopt,
+                                   /*timeout_reached=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionTimeout,
+      1);
+
+  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
+  // flow is triggered and not shown more than once on the same page.
+  TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
+                                   /*extracted_amount=*/std::nullopt,
+                                   /*timeout_reached=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionTimeout,
       1);
 }
 

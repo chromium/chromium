@@ -28,7 +28,12 @@ enum class BnplSuggestionNotShownReason {
   // available BNPL issuers.
   kCheckoutAmountNotSupported = 1,
 
-  kMaxValue = kCheckoutAmountNotSupported,
+  // Amount extraction timed out while running on the page and the checkout
+  // amount was not retrieved. This value is necessary to determine BNPL
+  // eligibility for the purchase.
+  kAmountExtractionTimeout = 2,
+
+  kMaxValue = kAmountExtractionTimeout,
 };
 
 // Enum to track the result of a corresponding BnplTosDialog that was shown.

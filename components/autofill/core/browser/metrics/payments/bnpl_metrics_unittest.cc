@@ -115,6 +115,18 @@ TEST_F(BnplMetricsTest,
       BnplSuggestionNotShownReason::kCheckoutAmountNotSupported, 1);
 }
 
+TEST_F(BnplMetricsTest,
+       LogBnplSuggestionNotShownReason_AmountExtractionTimeout) {
+  base::HistogramTester histogram_tester;
+
+  LogBnplSuggestionNotShownReason(
+      BnplSuggestionNotShownReason::kAmountExtractionTimeout);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      BnplSuggestionNotShownReason::kAmountExtractionTimeout, 1);
+}
+
 TEST_F(BnplMetricsTest, LogSelectBnplIssuerDialogResult_Cancelled) {
   base::HistogramTester histogram_tester;
   LogSelectBnplIssuerDialogResult(

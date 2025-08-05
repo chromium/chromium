@@ -141,13 +141,22 @@ void BnplManager::OnSuggestionsShown(
 }
 
 void BnplManager::OnAmountExtractionReturned(
-    const std::optional<uint64_t>& extracted_amount) {
+    const std::optional<uint64_t>& extracted_amount,
+    bool timeout_reached) {
   if (!update_suggestions_barrier_callback_.has_value()) {
     return;
   }
 
   if (update_suggestions_barrier_callback_.has_value()) {
     update_suggestions_barrier_callback_->Run(extracted_amount);
+  }
+
+  if (timeout_reached && !has_logged_bnpl_suggestion_not_shown_reason_) {
+    LogBnplSuggestionNotShownReason(
+        autofill_metrics::BnplSuggestionNotShownReason::
+            kAmountExtractionTimeout);
+    has_logged_bnpl_suggestion_not_shown_reason_ = true;
+    return;
   }
 
   if (!extracted_amount && !has_logged_bnpl_suggestion_not_shown_reason_) {
