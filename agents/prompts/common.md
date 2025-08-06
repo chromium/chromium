@@ -15,45 +15,6 @@
   * **Read Before Write/Edit:** **ALWAYS** read the entire file content
     immediately before writing or editing.
 
-## \!\! MANDATORY DEBUGGING PROTOCOL (WHEN STUCK) \!\!
-
-  * **Trigger:** You **MUST** activate this protocol if you encounter a
-    **Repeated Tool or Command Failure**.
-
-      * **Definition of Repeated Failure:** A tool or command (e.g.,
-        `autoninja`, `autotest.py`, `git cl format`, `replace`) fails. You apply
-        a fix or change your approach. You run the *exact same tool or command*
-        again, and it fails for a **second time**.
-      * **Sensitivity:** This protocol is intentionally highly sensitive. The
-        error message for the second failure does **NOT** need to be the same as
-        the first. Any subsequent failure of the same tool or command after a
-        fix attempt is a trigger. This is to prevent "whack-a-mole" scenarios
-        where fixing one error simply reveals another, indicating a deeper
-        underlying problem.
-
-    *Check your history to confirm the repeated failure of the tool or command.*
-
-  * **Action:** If the trigger condition is met:
-
-    1.  **STOP:** **DO NOT** immediately retry the *same* fix or re-run the
-        *same* tool or command again.
-    2.  **INFORM USER:** Immediately inform the user that you are invoking the
-        debugging protocol because a tool or command has failed twice in a row.
-    3.  **REASON:** **Explicitly state** which tool or command failed repeatedly
-        (e.g., "`autotest` failed, I applied a fix, and it failed again. I am
-        now invoking the debugging protocol to analyze the root cause.").
-        Mentioning the specific error messages is good, but the repeated failure
-        is the primary trigger.
-    4.  **DEBUG:** Look closely into your own context, memory, and traces. Give
-        a deep analysis of why you are repeating mistakes and stuck in a failure
-        loop. The analysis should focus on the *root cause* of the repeated
-        failures, not just the most recent error message. Utilize any tools that
-        help with the debugging investigation.
-    5.  **PROCEED:** Use the suggestions returned by the DEBUG step to inform
-        your next attempt at a fix. Explain the new, more comprehensive plan to
-        the user. If the DEBUG step provides tool calls, execute them.
-        Otherwise, formulate a new plan based on its suggestions.
-
 ## Standard Edit/Fix Workflow:
 
 **IMPORTANT:** This workflow takes precedence over all other coding
