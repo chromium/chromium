@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span_reader.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_math.h"
 #include "components/cbor/reader.h"
@@ -175,10 +177,10 @@ AttestedCredentialData::CreateFromU2fRegisterResponse(
   // TODO(crbug.com/41363164): Introduce a CredentialID class to do this
   // extraction. Extract the length of the credential (i.e. of the U2FResponse
   // key handle). Length is big endian.
-  std::vector<uint8_t> extracted_length =
-      fido_parsing_utils::Extract(u2f_data, kU2fKeyHandleLengthOffset, 1);
-
-  if (extracted_length.empty()) {
+  base::SpanReader<const uint8_t> reader(u2f_data);
+  reader.Skip(kU2fKeyHandleLengthOffset);
+  uint8_t extracted_length;
+  if (!reader.ReadU8BigEndian(extracted_length)) {
     return std::nullopt;
   }
 
@@ -187,19 +189,18 @@ AttestedCredentialData::CreateFromU2fRegisterResponse(
 
   // Note that U2F responses only use one byte for length.
   std::array<uint8_t, kCredentialIdLengthLength> credential_id_length = {
-      0, extracted_length[0]};
+      0, extracted_length};
 
   // Extract the credential id (i.e. key handle).
-  std::vector<uint8_t> credential_id = fido_parsing_utils::Extract(
-      u2f_data, kU2fKeyHandleOffset,
-      base::strict_cast<size_t>(credential_id_length[1]));
+  std::optional<base::span<const uint8_t>> credential_id =
+      reader.Read(extracted_length);
 
-  if (credential_id.empty()) {
+  if (!credential_id.has_value()) {
     return std::nullopt;
   }
 
   return AttestedCredentialData(aaguid, credential_id_length,
-                                std::move(credential_id),
+                                base::ToVector(*credential_id),
                                 std::move(public_key));
 }
 
