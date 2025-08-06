@@ -150,7 +150,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   // They guarantee only that the returned type will reflect the same
   // data exposed by the MotionEvent interface; no guarantees are made that the
   // underlying implementation is identical to the source implementation.
-  std::unique_ptr<MotionEvent> Clone() const;
+  std::unique_ptr<MotionEvent> Clone(bool with_history = true) const;
   std::unique_ptr<MotionEvent> Cancel() const;
 };
 

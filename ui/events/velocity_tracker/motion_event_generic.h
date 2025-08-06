@@ -119,7 +119,8 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEventGeneric
   void set_flags(int flags) { flags_ = flags; }
 
   static std::unique_ptr<MotionEventGeneric> CloneEvent(
-      const MotionEvent& event);
+      const MotionEvent& event,
+      bool with_history);
   static std::unique_ptr<MotionEventGeneric> CancelEvent(
       const MotionEvent& event);
 

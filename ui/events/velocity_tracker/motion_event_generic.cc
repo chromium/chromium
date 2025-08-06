@@ -258,8 +258,8 @@ int32_t MotionEventGeneric::GetSourceDeviceId(size_t pointer_index) const {
 
 // static
 std::unique_ptr<MotionEventGeneric> MotionEventGeneric::CloneEvent(
-    const MotionEvent& event) {
-  bool with_history = true;
+    const MotionEvent& event,
+    bool with_history) {
   return base::WrapUnique(new MotionEventGeneric(event, with_history));
 }
 
@@ -269,6 +269,11 @@ std::unique_ptr<MotionEventGeneric> MotionEventGeneric::CancelEvent(
   bool with_history = false;
   std::unique_ptr<MotionEventGeneric> cancel_event(
       new MotionEventGeneric(event, with_history));
+  if (event.GetAction() == MotionEvent::Action::POINTER_UP) {
+    // Remove this pointer since Renderer would already know about up of this
+    // pointer.
+    cancel_event->RemovePointerAt(event.GetActionIndex());
+  }
   cancel_event->set_action(Action::CANCEL);
   cancel_event->set_unique_event_id(ui::GetNextTouchEventId());
   return cancel_event;

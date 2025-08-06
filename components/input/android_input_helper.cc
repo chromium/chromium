@@ -69,7 +69,19 @@ void AndroidInputHelper::ResetGestureDetection() {
     return;
   }
 
-  std::unique_ptr<ui::MotionEvent> cancel_event = current_down_event->Cancel();
+  const ui::MotionEvent* last_event =
+      gesture_provider.GetLastEventWithoutHistory();
+  CHECK(last_event);
+
+  std::unique_ptr<ui::MotionEvent> cancel_event;
+  if (last_event->GetAction() == ui::MotionEvent::Action::POINTER_UP &&
+      last_event->GetPointerCount() == 1) {
+    // Fall back to using down for generating cancel, since we expect pointer
+    // ups to generally have all the pointers in it.
+    cancel_event = current_down_event->Cancel();
+  } else {
+    cancel_event = last_event->Cancel();
+  }
   if (gesture_provider.OnTouchEvent(*cancel_event).succeeded) {
     blink::WebTouchEvent web_event = ui::CreateWebTouchEventFromMotionEvent(
         *cancel_event, false /* may_cause_scrolling */, false /* hovering */);
