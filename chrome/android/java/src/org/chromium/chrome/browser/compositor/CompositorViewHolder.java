@@ -1723,6 +1723,20 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @Override
+    public void requestKeyboardFocus(SceneOverlay sceneOverlay, VirtualView view) {
+        mSceneOverlay = sceneOverlay;
+        mKeyboardFocusIndex = 0; // Focus on the first item by default
+        List<VirtualView> virtualViews = getVirtualViewsForCurrentSceneOverlay();
+        for (int i = 0; i < virtualViews.size(); i++) {
+            if (view.equals(virtualViews.get(i))) {
+                mKeyboardFocusIndex = i;
+                break;
+            }
+        }
+        updateKeyboardFocus(virtualViews);
+    }
+
+    @Override
     public boolean containsKeyboardFocus(SceneOverlay sceneOverlay) {
         return sceneOverlay.equals(mSceneOverlay)
                 && (isA11ySetUp() ? mAccessibilityView.hasFocus() : hasFocus());
@@ -1758,7 +1772,7 @@ public class CompositorViewHolder extends FrameLayout
             return true;
         }
         if (isButtonActivate(event)
-                && 0 < mKeyboardFocusIndex
+                && 0 <= mKeyboardFocusIndex
                 && mKeyboardFocusIndex < keyboardFocusableViews.size()) {
             keyboardFocusableViews
                     .get(mKeyboardFocusIndex)
