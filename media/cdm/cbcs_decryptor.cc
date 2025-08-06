@@ -179,8 +179,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
       auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
       src = src_rem;
       dest = dest_rem;
-      if (!DecryptWithPattern(key,
-                              base::as_bytes(base::span(decrypt_config->iv())),
+      if (!DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
                               pattern, src_cypher, dest_cypher)) {
         return nullptr;
       }
