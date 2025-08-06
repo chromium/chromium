@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -57,6 +58,8 @@ bool CheckAppSizesNotNull(WebAppProvider& provider,
 }  // namespace
 
 class ComputeAppSizeCommandForWebAppBrowserTest : public WebAppBrowserTestBase {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 };
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForWebAppBrowserTest,
@@ -104,7 +107,7 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
 #if !BUILDFLAG(IS_CHROMEOS)
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 

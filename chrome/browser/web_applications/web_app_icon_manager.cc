@@ -1346,6 +1346,7 @@ void WebAppIconManager::GetIconsSizeForApp(
     WebAppIconManager::GetIconsSizeCallback callback) const {
   std::vector<base::FilePath> icon_paths;
 
+  // Populate manifest icon sizes.
   for (IconPurpose purpose : kIconPurposes) {
     for (SquareSizePx size : provider_->registrar_unsafe()
                                  .GetAppById(app_id)
@@ -1353,6 +1354,23 @@ void WebAppIconManager::GetIconsSizeForApp(
       IconId icon_id(app_id, purpose, size);
       base::FilePath icon_path = GetIconFileName(web_apps_directory_, icon_id);
       icon_paths.push_back(icon_path);
+    }
+  }
+
+  // Populate trusted icon sizes too if enabled.
+  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+    for (IconPurpose purpose : kIconPurposes) {
+      if (purpose == IconPurpose::MONOCHROME) {
+        continue;
+      }
+      for (SquareSizePx size : provider_->registrar_unsafe()
+                                   .GetAppById(app_id)
+                                   ->stored_trusted_icon_sizes(purpose)) {
+        IconId icon_id(app_id, purpose, size);
+        base::FilePath icon_path =
+            GetTrustedIconsFileName(web_apps_directory_, icon_id);
+        icon_paths.push_back(icon_path);
+      }
     }
   }
 
