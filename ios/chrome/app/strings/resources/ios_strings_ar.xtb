@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">أوقفت مؤسستك ميزة "التصفُّح بخصوصية تامّة".</translation>
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">‏يُرجى العِلم بأنّنا لن نستخدم محادثات مؤسستك لتحسين نماذجنا، وننصحك بالتحقّق من ردود Gemini لأنّه قد يعرض معلومات غير دقيقة، بما فيها تلك المتعلّقة بالأشخاص. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">‏لم يتم استيراد كلمات المرور التالية إلى "مدير كلمات المرور في Google" لأنّها لا تتطابق مع المتطلبات.</translation>
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="2147127444698817042">‏متوفّرة فقط على iPhone</translation>
 <translation id="2148799636999124959">يمكنك تسجيل الدخول بسرعة إلى المواقع الإلكترونية والتطبيقات باستخدام كلمات المرور المحفوظة.</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">فتح خيارات "وضع القراءة"</translation>
 <translation id="4624080227980645783">نافذة جديدة في وضع التصفّح المتخفي</translation>
 <translation id="4627107755957573804">يمكن السماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لاستخدام مفاتيح المرور</translation>
+<translation id="4629065796475200039">لم يتم استيراد كلمة المرور</translation>
 <translation id="4630212057753624203">فقاعة معلوماتية</translation>
 <translation id="4631335160486397366">هناك <ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
 <translation id="4631890462758052414">علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
@@ -1502,6 +1504,7 @@
 <translation id="6790502149545262384">قريبًا، ستظهر لك قصص من "<ph name="CHANNEL_NAME" />" عند فتح علامة تبويب جديدة.</translation>
 <translation id="6791425686608802741">النقر على "إضافة علامة تبويب إلى المجموعة الجديدة"</translation>
 <translation id="6794476726485507147">يُرجى اختيار تاريخ ووقت لتلقّي إشعار تذكير بالرجوع إلى هذه الصفحة</translation>
+<translation id="6795481620482106033">البيانات غير الصالحة</translation>
 <translation id="6807287147325542056">كلمات المرور في التطبيقات الأخرى</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏تمّ حفظ إشارة مرجعية واحدة في حسابك على Google‏ ({email})}zero{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}two{‏تمّ حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email})}few{‏تمّ حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email})}many{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}other{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}}</translation>
@@ -2008,6 +2011,7 @@
 <translation id="8726523474917941818">تذكير</translation>
 <translation id="8728922029615312208">إغلاق الكل</translation>
 <translation id="8730621377337864115">تم</translation>
+<translation id="8731268612289859741">رمز الأمان</translation>
 <translation id="87371078663613140">اطّلِع على الخيارات في شريط القوائم.</translation>
 <translation id="8741627442233023406">{count,plural, =1{مراجعة علامة التبويب…}zero{مراجعة جميع علامات التبويب…}two{مراجعة علامتَي التبويب…}few{مراجعة جميع علامات التبويب…}many{مراجعة جميع علامات التبويب…}other{مراجعة جميع علامات التبويب…}}</translation>
 <translation id="8741995161408053644">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" /> history.google.com <ph name="END_LINK" />.</translation>

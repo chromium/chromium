@@ -401,6 +401,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1260810365552581339">Linux may not have enough disk space. You can increase your Linux disk space and try to restore again in <ph name="LINK_START" />Settings<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Modest</translation>
 <translation id="126156426083987769">A problem with demo mode device licences occurred.</translation>
+<translation id="1262395978737369974">Always allowed to use JavaScript optimisation</translation>
 <translation id="1262564987698748643">Sites can ask to override your keyboard input</translation>
 <translation id="1263231323834454256">Reading list</translation>
 <translation id="1263733306853729545">Use <ph name="MINUS" /> and <ph name="EQUAL" /> keys to page a candidate list</translation>
@@ -1985,6 +1986,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2343160676229467122">Extensions are not allowed on <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Rocky Mountains National Park</translation>
 <translation id="2343747224442182863">Focus This Tab</translation>
+<translation id="2343971313330854480">Find your file in the <ph name="FEATURE_NAME" /> folder</translation>
 <translation id="2344032937402519675">Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook.</translation>
 <translation id="234559068082989648">Old versions of Chrome Apps won't open after December 2022. Contact your administrator to update to a new version or remove this app.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2232,6 +2234,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> of <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Display arrangement</translation>
 <translation id="2507253002925770350">Ticket removed</translation>
+<translation id="2507339521369019923">Save to your account</translation>
 <translation id="2507491234071975894">Speaker</translation>
 <translation id="2508747373511408451">The application <ph name="APPLICATION_NAME" /> requires Google Drive to be available.</translation>
 <translation id="2509495747794740764">Scale amount must be a number between 10 and 200.</translation>
@@ -7987,6 +7990,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6613267708691765962">Scanning for malware...</translation>
 <translation id="6615455863669487791">Show me</translation>
+<translation id="6618013221808317456">Don't allow sites to use JavaScript optimisation</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site can track your location</translation>
 <translation id="6619243162837544323">Network state</translation>
@@ -9848,6 +9852,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7920482456679570420">Add words that you want spell check to skip</translation>
 <translation id="7920715534283810633">Can't open <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">You can't view your phone's notifications on this managed account. Try again with a different account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Sites can use JavaScript optimisation</translation>
 <translation id="7921901223958867679">This extension can read and change <ph name="HOST" /></translation>
 <translation id="7922606348470480702">One extension</translation>
 <translation id="7923564237306226146">Linux upgrade complete</translation>
@@ -10394,6 +10399,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8276560076771292512">Empty cache and hard reload</translation>
 <translation id="8276850948802942358">Learn more about giving a site temporary permission to use third-party cookies</translation>
 <translation id="8277907305629781277">You created this passkey on <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Not allowed to use JavaScript optimisation</translation>
 <translation id="827966378414194229">Use head movements and facial expressions to control your Chromebook. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Websites in your languages</translation>
 <translation id="8280848878018088610">Crashing waves in the sea, with a fantastical city and castle in the background, in a dark mood.</translation>
@@ -10613,6 +10619,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8431190899827883166">Show taps</translation>
 <translation id="843173223122814223">Create backgrounds with AI</translation>
 <translation id="8431977087510901105">Cursor settings reset</translation>
+<translation id="843210078733508372">Sign in and the password change will continue</translation>
 <translation id="8433186206711564395">Network settings</translation>
 <translation id="8434109185104929038">Reading nook</translation>
 <translation id="8434837876193928924">Tab group details</translation>
@@ -11366,6 +11373,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="895347679606913382">Starting...</translation>
 <translation id="8954796993367253220">To delete guest mode history, close all guest windows.</translation>
 <translation id="8955174612586215829">Find themes</translation>
+<translation id="8957656266859671822">Choose your account</translation>
 <translation id="8957757410289731985">Customise profile</translation>
 <translation id="8959144235813727886">Sites and apps</translation>
 <translation id="895944840846194039">JavaScript Memory</translation>
@@ -11678,6 +11686,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9153367754133725216">See suggestions for new apps and web content in Launcher and search results. Sends statistics to improve suggestions only if you have chosen to send crash reports and diagnostics and usage data to ChromeOS.</translation>
 <translation id="9154194610265714752">Updated</translation>
 <translation id="915485121129452731">Pen tablet</translation>
+<translation id="9155100833189043833">Safely use an ID from your mobile device</translation>
 <translation id="9155344700756733162">Unselect colour</translation>
 <translation id="9157096865782046368">0.8 seconds</translation>
 <translation id="9157697743260533322">Failed to set up automatic updates for all users (preflight launch error: <ph name="ERROR_NUMBER" />)</translation>

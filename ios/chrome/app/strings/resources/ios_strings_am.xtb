@@ -1612,6 +1612,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7266578100016339897">ይህ እንደተደራጁ እንዲቆዩ ያግዝዎታል። ይህን በቅንብሮች ውስጥ በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="728025568708172005">ዞር ዞር አድርገህ አሳየኝ</translation>
+<translation id="7280980607183752256">ይህ ፋይል ሊመጣ አይችልም</translation>
 <translation id="7281202269687163394">የእርስዎ ግላዊነት እና Gemini።</translation>
 <translation id="7293429513719260019">ቋንቋ ይምረጡ</translation>
 <translation id="7300448350764260141">ከመስመር ላይ ዛቻዎች ለመጠበቅ ተጨማሪ የጥበቃ ንብርብር ያክሉ።</translation>
@@ -2008,6 +2009,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8726523474917941818">አስታዋሽ</translation>
 <translation id="8728922029615312208">ሁሉንም ዝጋ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
+<translation id="8731268612289859741">የደህንነት ኮድ</translation>
 <translation id="87371078663613140">በምናሌ አሞሌው ውስጥ ያሉትን አማራጮች ያስሱ</translation>
 <translation id="8741627442233023406">{count,plural, =1{ትሩን ይገምግሙ…}one{ሁሉንም ትር ይገምግሙ…}other{ሁሉንም ትር ይገምግሙ…}}</translation>
 <translation id="8741995161408053644">የእርስዎ Google መለያ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>

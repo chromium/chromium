@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
-<translation id="1045545926731898784">Este site pertence a um grupo de sites, definido por <ph name="SET_OWNER" />, que pode partilhar a sua atividade no grupo para ajudar os sites a funcionarem conforme esperado.</translation>
 <translation id="1055273091707420432">O Chromium elimina automaticamente os tópicos de anúncios com mais de 4 semanas</translation>
 <translation id="1145223915439299117">O Chrome bloqueia cookies de terceiros na Navegação anónima, mas uma extensão permitiu cookies de terceiros para este site.</translation>
 <translation id="1184166532603925201">Quando está no Modo de navegação anónima, o Chrome impede que os sites usem cookies de terceiros</translation>
@@ -19,7 +18,6 @@
 <translation id="172522356264798673">Retomar proteções antirrastreio</translation>
 <translation id="1732764153129912782">Pode fazer alterações nas definições de privacidade dos anúncios</translation>
 <translation id="1780659583673667574">Por exemplo, se visitar um site para encontrar receitas para o jantar, o site pode decidir que tem interesse em culinária. Mais tarde, outro site pode mostrar-lhe um anúncio relacionado com um serviço de entrega de mercearias sugerido pelo primeiro site.</translation>
-<translation id="1818866261309406359">Gerir dados de sites relacionados num novo separador</translation>
 <translation id="1824257235526922152">O Chromium bloqueia cookies de terceiros na Navegação anónima, mas uma extensão permitiu cookies de terceiros para este site. A Navegação anónima também oferece funcionalidades que podem limitar as informações disponíveis para as empresas cujo conteúdo está incorporado num site que visita.</translation>
 <translation id="1887631853265748225">As funcionalidades de privacidade dos anúncios ajudam a limitar o que os Websites e os respetivos parceiros publicitários podem saber sobre si quando lhe mostram anúncios personalizados.</translation>
 <translation id="1953252525523274058">Os sites que visita podem incorporar conteúdo de outros sites (como imagens, anúncios e texto), que pode ser usado para saber mais sobre si. Saiba como gerir as <ph name="START_LINK" />proteções antirrastreio da Navegação anónima<ph name="END_LINK" /></translation>
@@ -101,7 +99,6 @@
 <translation id="5165490319523240316">Os sites e os respetivos parceiros de publicidade podem usar a sua atividade, como o tempo que passa nos sites que visita, para personalizar anúncios noutros sites. Por exemplo, se visitar um site para encontrar receitas para o jantar, o site pode decidir que tem interesse em culinária. Mais tarde, outro site pode mostrar-lhe um anúncio relacionado com um serviço de entrega de mercearias sugerido pelo primeiro site.</translation>
 <translation id="5362892126200493757">Indique-nos o motivo pelo qual pausou as proteções antirrastreio neste site</translation>
 <translation id="544199055391706031">A sua atividade é um dos muitos elementos que um site pode usar para sugerir anúncios. Quando os anúncios sugeridos por sites estão desativados, os sites podem continuar a mostrar-lhe anúncios, mas estes podem ser menos personalizados. Saiba mais acerca dos <ph name="BEGIN_LINK" />anúncios sugeridos por sites<ph name="END_LINK" />.</translation>
-<translation id="5495405805627942351">Gerir dados de sites relacionados</translation>
 <translation id="5535388436012824806">O Chrome bloqueia cookies de terceiros na Navegação anónima, mas fez uma exceção para este site. A Navegação anónima também oferece funcionalidades que podem limitar as informações disponíveis para as empresas cujo conteúdo está incorporado num site que visita.</translation>
 <translation id="5574580428711706114">A Google exige que as empresas declarem publicamente que não vão usar estes dados para monitorizar a sua navegação em sites. As empresas são responsáveis por lhe indicar como usam os seus dados. <ph name="BEGIN_LINK1" />Saiba mais na nossa Política de Privacidade<ph name="LINK_END1" />.</translation>
 <translation id="565589626121534692">Pausar proteções antirrastreio</translation>

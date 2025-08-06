@@ -273,6 +273,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1436185428532214179">Kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="1442386063175183758">Høyre vindusfals</translation>
 <translation id="1442987760062738829">Hull</translation>
+<translation id="1445896388055045436">Vis tilgjengelige kortfordeler og -belønninger i kassen. Utstederens vilkår gjelder.</translation>
 <translation id="1446396933673057385">Nøyaktighetssjekk</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Nøklene «<ph name="DATA_CONTROLS_FIRST_KEY_SET" />» kan ikke være angitt i samme ordliste som nøklene «<ph name="DATA_CONTROLS_SECOND_KEY_SET" />»</translation>
@@ -1193,6 +1194,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3002501248619246229">Sjekk inndataskuffmedier</translation>
 <translation id="3005723025932146533">Vis lagret kopi</translation>
 <translation id="300580149047131921">Nylig brukt</translation>
+<translation id="3006864083554020786">hjemmeadresse</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab for å bla gjennom tilgjengelige handlinger, og trykk deretter på Enter for å utføre den valgte handlingen.</translation>
 <translation id="3010991137650052245">For å bruke <ph name="PERMISSION" /> på dette nettstedet, gi <ph name="SHORT_PRODUCT_NAME" /> tilgang</translation>
 <translation id="3013711734159931232">Husholdningsutstyr</translation>
@@ -1233,6 +1235,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3086579638707268289">Aktiviteten din på nettet overvåkes</translation>
 <translation id="3087734570205094154">Bunn</translation>
 <translation id="3090667236485488075">Glass</translation>
+<translation id="3094051226187213523">Åpne AI-modus med dette forslaget.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorert fordi «disable»-listen (deaktiveringslisten) inneholder mønsteret «*», som tilsvarer at regelen er deaktivert.</translation>
 <translation id="3098944373717628099">De lokale filene dine slettes om 1 time</translation>
@@ -1826,6 +1829,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="404831776305217138">Oppdateringsnettadressen for utvidelsen med ID-en «<ph name="EXTENSION_ID" />» er ugyldig eller bruker en protokoll som ikke støttes. Disse protokollene støttes: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> og <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Du kan bruke den i alle Google-produkter</translation>
 <translation id="4050599136622776556">Chromium prøver å redigere betalingsmåter.</translation>
+<translation id="4052683751389375539">Rediger – åpner et nytt vindu</translation>
 <translation id="405399507749852140">Få varsler hvis prisen settes ned på noe nettsted</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Finn ut mer om beskyttelse av sensitive data</translation>
@@ -3518,6 +3522,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6881240511396774766">Opprett et nytt Google-dokument raskt</translation>
 <translation id="6882210908253838664">Hvis et nettsted ikke fungerer, kan du prøve å gi det midlertidig tillatelse til å bruke informasjonskapsler fra tredjeparter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Ark for sikker autentisering av betalingslegitimasjon er lukket</translation>
+<translation id="6883745783646124431">jobbadresse</translation>
 <translation id="6884662655240309489">Størrelse 1</translation>
 <translation id="6886283082988906333">ZIP-arkiv</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4792,6 +4797,7 @@ Mer informasjon:
 <translation id="9040341831873780534">Se vilkårene her</translation>
 <translation id="9042617223719777575">Stor kapasitet</translation>
 <translation id="9042827002460091668">Sjekk internettilkoblingen, og prøv på nytt</translation>
+<translation id="9043161870923715789">AI-modus</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> vil se etter og koble til enheter på det lokale nettverket ditt</translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>

@@ -1194,6 +1194,7 @@
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="300580149047131921">最近使用過</translation>
+<translation id="3006864083554020786">住宅地址</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒 Tab 掣就可以瀏覽可以用嘅操作，然後㩒 Enter 掣就可以執行揀咗嘅操作。</translation>
 <translation id="3010991137650052245">如要在此網站上使用<ph name="PERMISSION" />，請向 <ph name="SHORT_PRODUCT_NAME" /> 授予存取權</translation>
 <translation id="3013711734159931232">家庭用品</translation>
@@ -1827,6 +1828,7 @@
 <translation id="404831776305217138">ID 為「<ph name="EXTENSION_ID" />」的擴充程式更新網址無效，或已使用不支援的配置。支援的配置如下：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
 <translation id="4050392779074832022">您將可在不同的 Google 產品中使用該地址</translation>
 <translation id="4050599136622776556">Chromium 正嘗試編輯付款方法。</translation>
+<translation id="4052683751389375539">編輯，打開新視窗</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
 <translation id="4059523390906550209">進一步了解敏感資料保護功能</translation>
@@ -3519,6 +3521,7 @@
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">閂咗安全付款憑證驗證工作表</translation>
+<translation id="6883745783646124431">公司地址</translation>
 <translation id="6884662655240309489">粗幼：1</translation>
 <translation id="6886283082988906333">ZIP 封存檔案</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

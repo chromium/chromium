@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">آپ کی تنظیم نے نجی براؤزنگ کو آف کر دیا ہے۔</translation>
 <translation id="2122754583996902531">آپ کا براؤزر نظم کردہ ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">‏آپ کی تنظیم کی چیٹس کا استعمال ہمارے ماڈلز کو بہتر بنانے کے لیے نہیں کیا جاتا ہے۔ ‫Gemini غلط معلومات ظاہر کر سکتا ہے، بشمول لوگوں کے بارے میں، لہذا اسے دوبارہ چیک کریں۔ <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">‏درج ذیل پاس ورڈز کو Google پاس ورڈ مینیجر میں درآمد نہیں کیا گیا تھا، کیونکہ وہ تقاضوں سے مماثل نہیں ہیں۔</translation>
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="2147127444698817042">‏صرف iPhone پر دستیاب ہے</translation>
 <translation id="2148799636999124959">اپنے محفوظ کردہ پاس ورڈز کے ساتھ تیزی سے سائٹس اور ایپس میں سائن ان کریں۔</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">ریڈنگ موڈ کے اختیارات کھولیں</translation>
 <translation id="4624080227980645783">نئی پوشیدگی ونڈو</translation>
 <translation id="4627107755957573804">سائٹس اور ایپس کو پاس کیز استعمال کرنے کے لیے موجودہ اکاؤنٹس کو اپ گریڈ کرنے کی اجازت دیں</translation>
+<translation id="4629065796475200039">آپ کا پاس ورڈ درآمد نہیں کیا گیا تھا</translation>
 <translation id="4630212057753624203">نمونہ ببل</translation>
 <translation id="4631335160486397366">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
 <translation id="4631890462758052414">نیا پوشیدگی ٹیب</translation>
@@ -1504,6 +1506,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6790502149545262384">جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="6791425686608802741">"نئے گروپ میں ٹیب شامل کریں" پر تھپتھپائیں</translation>
 <translation id="6794476726485507147">اس صفحہ کو دوبارہ ملاحظہ کرنے سے متعلق یاد دہانی کی اطلاع موصول کرنے کیلئے تاریخ اور وقت منتخب کریں</translation>
+<translation id="6795481620482106033">غلط ڈیٹا</translation>
 <translation id="6807287147325542056">دیگر ایپس میں پاس ورڈز</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏بُک مارک آپ کے Google اکاؤنٹ، {email} میں محفوظ کیا گیا}other{‏‫{count} بُک مارکس آپ کے Google اکاؤنٹ، {email} میں محفوظ کیے گئے}}</translation>
@@ -2009,6 +2012,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8726523474917941818">یاد دلائیں</translation>
 <translation id="8728922029615312208">تمام بند کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
+<translation id="8731268612289859741">سیکیورٹی کوڈ</translation>
 <translation id="87371078663613140">مینیو بار میں موجود اختیارات کو دریافت کریں</translation>
 <translation id="8741627442233023406">{count,plural, =1{ٹیب کا جائزہ لیں…}other{تمام ٹیبز کا جائزہ لیں…}}</translation>
 <translation id="8741995161408053644">‏ممکن ہے کہ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر فارمز موجود ہوں۔</translation>

@@ -5923,6 +5923,7 @@
 <translation id="5109044022078737958">மியா</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> மொழியை அகற்றும்</translation>
 <translation id="5111326646107464148">புதிய சாளரத்தில் குழுவைத் திற</translation>
+<translation id="511147239888121455">உங்கள் உள்ளடக்கத்தைக் காப்புப் பிரதி எடுக்கவா?</translation>
 <translation id="5111646998522066203">மறைநிலையிலிருந்து வெளியேறு</translation>
 <translation id="5111692334209731439">&amp;புக்மார்க் மேனேஜர்</translation>
 <translation id="5111794652433847656">இந்தச் சாதனத்தில் <ph name="APP_NAME" /> தளத்திற்கான கடவுக்குறியீடுகள் எதுவுமில்லை</translation>
@@ -6058,6 +6059,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> டொமைனுக்கு</translation>
 <translation id="5203035663139409780">உங்கள் சாதனத்தில் மாற்றம் செய்வதற்கு அணுகல் உள்ள ஃபைல்கள் அல்லது ஃபோல்டர்கள்</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பைப் பார்ப்பதற்குக் கிளிக் செய்யவும்}other{இந்த நீட்டிப்புகளைப் பார்ப்பதற்குக் கிளிக் செய்யவும்}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" />க்கான மீட்புக் கடவுச்சொல்</translation>
 <translation id="5204673965307125349">சாதனத்தைப் பவர்வாஷ் செய்து, மீண்டும் முயலவும்.</translation>
 <translation id="5204967432542742771">கடவுச்சொல்</translation>
 <translation id="5205484256512407285">பரிமாற்றத்திற்கு எப்போதும் மொபைல் டேட்டாவைப் பயன்படுத்தாது</translation>
@@ -8214,6 +8216,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Googleளுடன் <ph name="DEVICE_OS" /> பகிரக்கூடிய தரவைப் பற்றியும் அவை எப்படிப் பயன்படுத்தப்படுகின்றன என்பதைப் பற்றியும் கூடுதல் விவரங்களை அறிய g.co/flex/HWDataCollection தளத்தைப் பார்க்கவும்.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">உங்களுக்கும் வலையைப் பயன்படுபடுத்துகின்ற அனைவருக்குமான பாதுகாப்பையும் மேம்படுத்தும்</translation>
 <translation id="6771503742377376720">இது ஒரு சான்றளிக்கும் மையம்</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> பணியிட முகவரிக்கான கூடுதல் விருப்பங்கள்</translation>
 <translation id="6772974422346500939">திறந்து திருத்து</translation>
 <translation id="6773595613448852535">Chrome ரூட் ஸ்டோர்</translation>
 <translation id="677394079035748956">இந்தத் தளத்திற்கு ஒரு முறை பயன்படுத்தப்படும் கடவுச்சொல் தேவை</translation>
@@ -10042,6 +10045,7 @@
 <translation id="8025151549289123443">பூட்டுத் திரை &amp; உள்நுழைவு</translation>
 <translation id="8025291188699172126">புதுப்பிப்புகள் பற்றி</translation>
 <translation id="8026471514777758216">அனைத்துச் சாதனங்களிலும் இணைந்திருத்தல்</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> வீட்டு முகவரிக்கான கூடுதல் விருப்பங்கள்</translation>
 <translation id="8026784703228858744">ஒத்திசைப்பதன் மூலம் புக்மார்க்குகள் மற்றும் பலவற்றைச் சேமிக்கலாம்</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{இதுவரை பார்க்கவில்லை}=1{1 நாளுக்கு முன் பார்த்துள்ளீர்கள்}other{# நாட்களுக்கு முன் பார்த்துள்ளீர்கள்}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10190,6 +10194,7 @@
 <translation id="8121537075864592453">முழுத்திரை முடக்கப்பட்டுள்ளது</translation>
 <translation id="8121750884985440809">தற்போது உங்கள் திரையை அலைபரப்புகிறீர்கள்</translation>
 <translation id="8122898034710982882">ஃபோன் ஹப், <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">கடவுச்சொற்கள், புக்மார்க்குகள் மற்றும் பலவற்றைக் காப்புப் பிரதி எடுப்பதன் மூலம் அவற்றை உங்களின் எல்லாச் சாதனங்களிலும் எளிதாகப் பெறலாம்</translation>
 <translation id="81238879832906896">மஞ்சள் வெள்ளை மலர்</translation>
 <translation id="8123975449645947908">பின்னே செல்</translation>
 <translation id="8124313775439841391">நிர்வகிக்கப்படும் ONC</translation>
@@ -11565,6 +11570,7 @@
 <translation id="9057354806206861646">புதுப்பிப்புக்கான திட்ட அட்டவணை</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ஒரு நாளுக்கு சுமார் 1 அறிவிப்பு}other{ஒரு நாளுக்கு சுமார் {NUM_NOTIFICATION} அறிவிப்புகள்}}</translation>
 <translation id="9058760336383947367">பிரிண்டர் PPDயைக் காட்டு</translation>
+<translation id="9061521313218438086">உங்கள் கடவுச்சொற்களில் ஏதேனும் ஒன்று பொதுவான தரவு மீறலுக்கு உட்பட்டிருப்பதாக Chrome கண்டறிந்தால், உங்கள் கடவுச்சொல்லை மாற்றக்கூடிய வாய்ப்பை நீங்கள் உள்நுழைந்திருக்கும்போது Google Password Manager உங்களுக்கு வழங்கலாம்.</translation>
 <translation id="9061694916020926968">Steam for Chromebook (பீட்டா) ஆப்ஸைப் பயன்படுத்த நீங்கள் Google கணக்கில் உள்நுழைந்திருக்க வேண்டும். உள்நுழைந்து மீண்டும் முயலவும்.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> இலிருந்து <ph name="ERROR_LINE_END" />வது வரி வரை பிழை</translation>

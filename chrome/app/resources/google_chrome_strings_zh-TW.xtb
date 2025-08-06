@@ -310,6 +310,7 @@
 <translation id="4747730611090640388">Chrome 可以推測你的興趣喜好。在此之後，你造訪的網站可以要求 Chrome 查看你的興趣喜好，以便向你放送個人化廣告。</translation>
 <translation id="475321580758063259">請更新 Chrome，以便繼續使用 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的 Chrome 資料</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防範攻擊的能力會稍微降低</translation>
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
 <translation id="4793679854893018356">瞭解 Chrome 如何保護資料安全</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
@@ -594,6 +595,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8342675569599923794">這個檔案並不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="8349094670477064572">只要登入 Chrome，就能將密碼和其他資訊儲存到 Google 帳戶，方便你隨時取用。<ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">譯文語言：</translation>
+<translation id="8366770919198174997">降低效能但提高 Chrome 防範攻擊的能力</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>
 <translation id="8394720698884623075">可使用儲存在 Chrome 中的不安全網站清單檢查網址</translation>

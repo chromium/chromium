@@ -401,6 +401,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1260810365552581339">Előfordulhat, hogy nem áll rendelkezésre elegendő lemezterület a Linux számára. A <ph name="LINK_START" />Beállításokban<ph name="LINK_END" /> növelheti a Linux lemezterületét, majd újra megpróbálhatja a visszaállítást.</translation>
 <translation id="1261380933454402672">Mérsékelt</translation>
 <translation id="126156426083987769">Gond adódott a demó módú eszközengedélyekkel.</translation>
+<translation id="1262395978737369974">Mindig használhatnak JavaScript-optimalizálást</translation>
 <translation id="1262564987698748643">A webhelyek engedélyt kérhetnek a billentyűzetbevitelek felülbírálására</translation>
 <translation id="1263231323834454256">Olvasási lista</translation>
 <translation id="1263733306853729545">Karakterlisták lapozása a <ph name="MINUS" /> és az <ph name="EQUAL" /> billentyűvel</translation>
@@ -1984,6 +1985,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2343160676229467122">A bővítmények nincsenek engedélyezve itt: <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Sziklás-hegység Nemzeti Park</translation>
 <translation id="2343747224442182863">Fókusz erre a lapra</translation>
+<translation id="2343971313330854480">A fájlt a(z) <ph name="FEATURE_NAME" /> mappában találja</translation>
 <translation id="2344032937402519675">Nem sikerült csatlakozni a szerverhez. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Ha továbbra is jelentkeznek a problémák, próbálkozzon a Chromebook újraindításával.</translation>
 <translation id="234559068082989648">A Chrome-alkalmazások régi verziói 2022 decembere után nem nyílnak majd meg. Kérje meg a rendszergazdát, hogy frissítsen az új verzióra, vagy távolítsa el ezt az alkalmazást.</translation>
 <translation id="2348176352564285430">Alkalmazás: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2231,6 +2233,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />, összesen: <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Kijelzőelrendezés</translation>
 <translation id="2507253002925770350">Jegy eltávolítva</translation>
+<translation id="2507339521369019923">Mentse a fiókjába</translation>
 <translation id="2507491234071975894">Hangszóró</translation>
 <translation id="2508747373511408451">A(z) <ph name="APPLICATION_NAME" /> alkalmazás használatához rendelkezésre kell állnia a Google Drive-nak.</translation>
 <translation id="2509495747794740764">Az átméretezési értéknek 10 és 200 közötti számnak kell lennie.</translation>
@@ -7986,6 +7989,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="661266467055912436">Javítja az Ön és mindenki más biztonságát az interneten.</translation>
 <translation id="6613267708691765962">Rosszindulatú programok keresése…</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
+<translation id="6618013221808317456">A webhelyek nem használhatnak JavaScript-optimalizálást</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">A webhely nyomon tudja követni a tartózkodási helyét</translation>
 <translation id="6619243162837544323">Hálózat állapota</translation>
@@ -9846,6 +9850,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7920482456679570420">Vegye fel azokat a szavakat, melyeknél szeretné kihagyni a helyesírás-ellenőrzést</translation>
 <translation id="7920715534283810633">A(z) <ph name="FILE_NAMES" /> nem nyitható meg</translation>
 <translation id="7921347341284348270">Nem tekintheti meg telefonja értesítéseit ebben a felügyelt fiókban. Próbálja újra másik fiókkal. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="7921395044508886182">A webhelyek használhatnak JavaScript-optimalizálást</translation>
 <translation id="7921901223958867679">Ez a bővítmény olvashatja és módosíthatja a következőt: <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 bővítmény</translation>
 <translation id="7923564237306226146">A Linux frissítése befejeződött</translation>
@@ -10392,6 +10397,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8276560076771292512">Gyorsítótár ürítése és teljes újratöltés</translation>
 <translation id="8276850948802942358">További információ arról, hogy miként adhat ideiglenes engedélyt egy webhelynek a harmadik féltől származó cookie-k használatára</translation>
 <translation id="8277907305629781277">Ezt az azonosítókulcsot ekkor hozta létre: <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Nem használhatnak JavaScript-optimalizálást</translation>
 <translation id="827966378414194229">Fejmozgások és arckifejezések használatával is vezérelheti a Chromebookot. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8280267190418431666">Webhelyek az Ön nyelvén</translation>
 <translation id="8280848878018088610">Felkorbácsolt hullámok a tengerben, a háttérben egy fantasztikus várossal és kastéllyal, sötét hangulattal.</translation>
@@ -10611,6 +10617,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8431190899827883166">Koppintások megjelenítése</translation>
 <translation id="843173223122814223">Létrehozhat háttereket AI segítségével</translation>
 <translation id="8431977087510901105">Kurzorbeállítások visszaállítva</translation>
+<translation id="843210078733508372">Jelentkezzen be a jelszómódosítás folytatásához</translation>
 <translation id="8433186206711564395">Hálózati beállítások</translation>
 <translation id="8434109185104929038">Olvasósarok</translation>
 <translation id="8434837876193928924">Lapcsoport részletei</translation>
@@ -11364,6 +11371,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="895347679606913382">Kezdés...</translation>
 <translation id="8954796993367253220">A vendég mód előzményeinek törléséhez zárja be a vendég módban megnyitott összes ablakot.</translation>
 <translation id="8955174612586215829">Témák keresése</translation>
+<translation id="8957656266859671822">Válasszon fiókot</translation>
 <translation id="8957757410289731985">Profil személyre szabása</translation>
 <translation id="8959144235813727886">Webhelyek és alkalmazások</translation>
 <translation id="895944840846194039">JavaScript-memória</translation>
@@ -11676,6 +11684,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9153367754133725216">Új alkalmazásokra és webes tartalmakra vonatkozó javaslatokat tekinthet meg az Indítóban és a keresési találatokban. A rendszer csak akkor küld statisztikákat a javaslatok javítása érdekében, ha Ön úgy döntött, hogy hibajelentéseket, valamint diagnosztikai és használati adatokat küld a ChromeOS részére.</translation>
 <translation id="9154194610265714752">Frissítve</translation>
 <translation id="915485121129452731">Toll táblagéphez</translation>
+<translation id="9155100833189043833">Biztonságosan használhatja a mobileszközén található személyazonosító okmányát</translation>
 <translation id="9155344700756733162">Szín kiválasztásának megszüntetése</translation>
 <translation id="9157096865782046368">0,8 másodperc</translation>
 <translation id="9157697743260533322">Nem sikerült beállítani az automatikus frissítéseket az összes felhasználó számára (előzetes lekérdezés indítási hibája: <ph name="ERROR_NUMBER" />)</translation>

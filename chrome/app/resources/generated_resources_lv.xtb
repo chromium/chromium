@@ -403,6 +403,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1260810365552581339">Iespējams, operētājsistēmai Linux nav pietiekami daudz brīvas vietas diskā. <ph name="LINK_START" />Iestatījumos<ph name="LINK_END" /> varat palielināt operētājsistēmai Linux pieejamo brīvo vietu diskā un vēlreiz mēģināt atjaunot failus.</translation>
 <translation id="1261380933454402672">Mērena</translation>
 <translation id="126156426083987769">Radās problēma ar demonstrācijas režīma ierīces licencēm.</translation>
+<translation id="1262395978737369974">Vienmēr atļauts izmantot JavaScript optimizāciju</translation>
 <translation id="1262564987698748643">Atļaut vietnēm ignorēt ar tastatūru ievadītos datus</translation>
 <translation id="1263231323834454256">Lasīšanas saraksts</translation>
 <translation id="1263733306853729545">Lietot taustiņus “<ph name="MINUS" />” un “<ph name="EQUAL" />”, lai lapotu kandidātu sarakstu</translation>
@@ -1974,6 +1975,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2343160676229467122">Vietnē <ph name="SITE_NAME" /> paplašinājumi nav atļauti</translation>
 <translation id="2343390523044483367">Klinšu kalnu nacionālais parks</translation>
 <translation id="2343747224442182863">Izcelt šo cilni</translation>
+<translation id="2343971313330854480">Atrodiet failu mapē “<ph name="FEATURE_NAME" />”.</translation>
 <translation id="2344032937402519675">Nevarēja izveidot savienojumu ar serveri. Pārbaudiet tīkla savienojumu un mēģiniet vēlreiz. Ja problēma nav novērsta, restartējiet Chromebook datoru.</translation>
 <translation id="234559068082989648">Pēc 2022. gada decembra novecojušas Chrome lietotņu versijas vairs netiks atvērtas. Sazinieties ar administratoru, lai atjauninātu šo lietotni uz jaunu versiju vai noņemtu to.</translation>
 <translation id="2348176352564285430">Lietotne: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2221,6 +2223,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> no <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Displeja izkārtojums</translation>
 <translation id="2507253002925770350">Biļete noņemta</translation>
+<translation id="2507339521369019923">Saglabājiet savā kontā</translation>
 <translation id="2507491234071975894">Skaļrunis</translation>
 <translation id="2508747373511408451">Lietojumprogrammai <ph name="APPLICATION_NAME" /> ir nepieciešama piekļuve Google diskam.</translation>
 <translation id="2509495747794740764">Mērogošanas apjomam ir jābūt skaitlim no 10 līdz 200.</translation>
@@ -7974,6 +7977,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6613267708691765962">Notiek ļaunprātīgas programmatūras meklēšana…</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
+<translation id="6618013221808317456">Neļaut vietnēm izmantot JavaScript optimizāciju</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Vietne var izsekot jūsu atrašanās vietu.</translation>
 <translation id="6619243162837544323">Tīkla statuss</translation>
@@ -9834,6 +9838,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7920482456679570420">Pievienojiet vārdus, kurus pareizrakstības pārbaudē izlaist</translation>
 <translation id="7920715534283810633">Nevar atvērt failu <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Šajā pārvaldītajā kontā nevar skatīt tālruņa paziņojumus. Mēģiniet vēlreiz, izmantojot citu kontu. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
+<translation id="7921395044508886182">Atļaut vietnēm izmantot JavaScript optimizāciju</translation>
 <translation id="7921901223958867679">Šis paplašinājums var lasīt un mainīt vietnes <ph name="HOST" /> datus.</translation>
 <translation id="7922606348470480702">1 paplašinājums</translation>
 <translation id="7923564237306226146">Linux jaunināšana ir pabeigta</translation>
@@ -10380,6 +10385,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8276560076771292512">Iztīrīt kešatmiņu un veikt stingro atkārtoto ielādi</translation>
 <translation id="8276850948802942358">Uzzināt vairāk par to, kā piešķirt vietnei pagaidu atļauju izmantot trešo pušu sīkfailus</translation>
 <translation id="8277907305629781277">Šo piekļuves atslēgu izveidojāt šādā datumā: <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Nav atļauts izmantot JavaScript optimizāciju</translation>
 <translation id="827966378414194229">Izmantojiet galvas kustības un sejas izteiksmes, lai kontrolētu Chromebook datoru. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8280267190418431666">Vietnes jūsu valodās</translation>
 <translation id="8280848878018088610">Mutuļojoši jūras viļņi, brīnumaina pilsēta un pils fonā, tumša noskaņa</translation>
@@ -10599,6 +10605,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8431190899827883166">Pieskārienu rādīšana</translation>
 <translation id="843173223122814223">Fonu izveide, izmantojot MI</translation>
 <translation id="8431977087510901105">Kursora iestatījumi ir atiestatīti</translation>
+<translation id="843210078733508372">Pierakstieties, lai turpinātu paroles nomaiņu.</translation>
 <translation id="8433186206711564395">Tīkla iestatījumi</translation>
 <translation id="8434109185104929038">Lasīšanas stūrītis</translation>
 <translation id="8434837876193928924">Informācija par ciļņu grupu</translation>
@@ -11354,6 +11361,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="895347679606913382">Sākums...</translation>
 <translation id="8954796993367253220">Lai dzēstu viesa režīma vēsturi, aizveriet visus viesa režīmā atvērtos logus.</translation>
 <translation id="8955174612586215829">Meklēt motīvus</translation>
+<translation id="8957656266859671822">Izvēlieties savu kontu</translation>
 <translation id="8957757410289731985">Pielāgot profilu</translation>
 <translation id="8959144235813727886">Vietnes un lietotnes</translation>
 <translation id="895944840846194039">JavaScript atmiņa</translation>
@@ -11666,6 +11674,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9153367754133725216">Skatīt jaunu lietotņu un tīmekļa satura ieteikumus Palaidējā un meklēšanas rezultātos. Statistikas dati tiek sūtīti ieteikumu uzlabošanai tikai tad, ja esat izvēlējies sūtīt avāriju pārskatus, kā arī diagnostikas un lietojuma datus uz ChromeOS.</translation>
 <translation id="9154194610265714752">Atjaunināts</translation>
 <translation id="915485121129452731">Planšetdatora pildspalva</translation>
+<translation id="9155100833189043833">Droši izmantojiet ID no savas mobilās ierīces.</translation>
 <translation id="9155344700756733162">Noņemt krāsas atlasi</translation>
 <translation id="9157096865782046368">0,8 sekundes</translation>
 <translation id="9157697743260533322">Neizdevās iestatīt automātiskos atjauninājumus visiem lietotājiem (pirmslidojuma palaišanas kļūda: <ph name="ERROR_NUMBER" />).</translation>

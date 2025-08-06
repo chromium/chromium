@@ -6047,6 +6047,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5201945335223486172">Para <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Pode editar ficheiros ou pastas no seu dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Clique para ver a extensão.}other{Clique para ver estas extensões.}}</translation>
+<translation id="5204282224596194174">Palavra-passe de recuperação para <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Efetue um Powerwash ao dispositivo e tente novamente.</translation>
 <translation id="5204967432542742771">Introduzir palavra-passe</translation>
 <translation id="5205484256512407285">Nunca utilizar dados móveis para transferir</translation>
@@ -6741,7 +6742,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5705005699929844214">Mostrar sempre opções de acessibilidade</translation>
 <translation id="5705882733397021510">Voltar</translation>
 <translation id="5707185214361380026">Falha ao carregar a extensão de:</translation>
-<translation id="5707674184620508665">A sua organização, <ph name="ACCOUNT_MANAGER" />, não vai poder ver nem gerir os seus dados existentes. Vai permanecer no perfil existente.</translation>
+<translation id="5707674184620508665">A sua organização, <ph name="ACCOUNT_MANAGER" />, não vai poder ver nem gerir os seus dados existentes. Vão permanecer no perfil existente.</translation>
 <translation id="5708171344853220004">Nome principal Microsoft</translation>
 <translation id="5711010025974903573">Registos de serviço</translation>
 <translation id="5711983031544731014">Não foi possível desbloquear. Introduza a sua palavra-passe.</translation>
@@ -10038,7 +10039,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8028060951694135607">Recuperação de chaves da Microsoft</translation>
 <translation id="8028803902702117856">A transferir <ph name="SIZE" />… <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamanho</translation>
-<translation id="8029349782735515147">Apresente legendas ao usar o Gemini Live</translation>
+<translation id="8029349782735515147">Mostrar legendas ao usar o Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lista de leitura}=1{Lista de leitura ({SELECTED_ITEMS})}other{Lista de leitura ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Autorização solicitada, prima ⌘ + Opção + seta para cima para responder.</translation>
 <translation id="8030169304546394654">Desligado</translation>
@@ -11557,6 +11558,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9057354806206861646">Programa de atualizações</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cerca de 1 notificação por dia}other{Cerca de {NUM_NOTIFICATION} notificações por dia}}</translation>
 <translation id="9058760336383947367">Ver PPD da impressora</translation>
+<translation id="9061521313218438086">Se o Chrome encontrar uma das suas palavras-passe numa violação de dados pública, o Gestor de Palavras-passe da Google pode oferecer-se para a alterar por si se tiver sessão iniciada.</translation>
 <translation id="9061694916020926968">Tem de ter sessão iniciada numa Conta Google para usar o Steam para o Chromebook (beta). Inicie sessão e tente novamente.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> até <ph name="ERROR_LINE_END" />.</translation>

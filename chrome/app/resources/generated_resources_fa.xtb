@@ -1002,6 +1002,7 @@
 <translation id="1668804837842452164">ذخیره در <ph name="BRAND" /> برای <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">با پیشنهادها آشنا شوید</translation>
 <translation id="1670399744444387456">پایه</translation>
+<translation id="1671749176392751693">شناسه‌های محتوای محافظت‌شده مجاز هستند</translation>
 <translation id="1673137583248014546"><ph name="URL" /> می‌خواهد به ساخت و مدل «کلید امنیتی» شما دسترسی پیدا کند</translation>
 <translation id="1674073353928166410">باز کردن همه (<ph name="URL_COUNT" /> مورد) در «پنجره ناشناس»</translation>
 <translation id="1674142805528405174">‏«مدیر گذرواژه Google» می‌تواند حسابتان را با گذرواژه‌ای قوی که در حساب <ph name="EMAIL" /> شما ذخیره می‌شود به‌روز کند.</translation>
@@ -1807,6 +1808,7 @@
 <translation id="2234876718134438132">‏همگام‌سازی و سرویس‌های Google</translation>
 <translation id="2235344399760031203">کوکی‌های طرف سوم مسدود شده‌اند</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
+<translation id="2236963250883149540">‏نشانی محل کارتان از تکمیل خودکار Chrome برداشته شود؟</translation>
 <translation id="2238379619048995541">داده‌های حالت فرکانس</translation>
 <translation id="2240582393605484605">داده‌هایی که فقط در این دستگاه ذخیره می‌شود در نمایه فعلی باقی خواهد ماند</translation>
 <translation id="2241053333139545397">خواندن و تغییر داده‌هایتان در تعدادی از وب‌سایت‌ها</translation>
@@ -2396,6 +2398,7 @@
 <translation id="2624142942574147739">این صفحه به دوربین و میکروفون شما دسترسی دارد.</translation>
 <translation id="2626799779920242286">لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="2627424346328942291">هم‌رسانی نشد</translation>
+<translation id="2628258844236035475">‏نشانی خانه‌تان از تکمیل خودکار Chrome برداشته شود؟</translation>
 <translation id="2628770867680720336">‏بازنشانی کارخانه برای این Chromebook لازم است تا اشکال‌زدایی ADB (پل اشکال‌زدایی Android) فعال شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">‏تولید برنامه‌های Android</translation>
 <translation id="2629437048544561682">پاک کردن بوم نقاشی</translation>
@@ -3857,6 +3860,7 @@
 <translation id="3665100783276035932">اکثر سایت‌ها باید عملکرد موردانتظار را داشته باشند</translation>
 <translation id="3665301845536101715">باز کردن در پانل کناری</translation>
 <translation id="3665589677786828986">‏Chrome تشخیص داد که برنامه دیگری برخی از تنظیمات شما را خراب کرده است و این تنظیمات را به پیش‌فرض‌های اولیه آن‌ها بازنشانی کرد.</translation>
+<translation id="3665918214153961651">درحال بارگذاری فایل</translation>
 <translation id="3665919494326051362">نسخه کنونی: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">‏رونوشت اشکال‌زدایی کنترل‌کننده‌های رابط شبکه Intel Wi-Fi</translation>
 <translation id="3666971425390608309">بارگیری <ph name="FILE_NAME" /> موقتاً متوقف شد.</translation>
@@ -4250,6 +4254,7 @@
 <translation id="3913689539406883376">وقتی رایانه به برق وصل نیست روشن شود</translation>
 <translation id="3914173277599553213">ضروری</translation>
 <translation id="3914568430265141791">باز کردن پوشه <ph name="FOLDER_TITLE" /></translation>
+<translation id="3914894336972817683">بارگذاری نشد. به‌نظر می‌رسد فایل خالی است.</translation>
 <translation id="3915280005470252504">جستجو با صدا</translation>
 <translation id="3916445069167113093">این نوع فایل می‌تواند به رایانهٔ شما آسیب برساند. آیا با این وجود می‌خواهید <ph name="FILE_NAME" /> را نگه دارید؟</translation>
 <translation id="3917184139185490151">‏رایانه شما پودمان امنیتی‌ای دارد که از آن برای اجرای بسیاری از ویژگی‌های امنیتی مهم در ChromeOS استفاده می‌شود. برای کسب اطلاعات بیشتر از «مرکز راهنمایی Chromebook» دیدن کنید: https://support.google.com/chromebook/?p=sm</translation>
@@ -4326,6 +4331,7 @@
 <translation id="3959969108528118741">مالک</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">کنش‌های بیشتر برای <ph name="IBAN_DESCRIPTION" /></translation>
+<translation id="3961823084595287812">همیشه به <ph name="HOST" /> اجازه داده شود از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند</translation>
 <translation id="3964480518399667971">خاموش کردن شبکه تلفن همراه</translation>
 <translation id="3965467402665811906">سایت‌ها می‌توانند درخواست کنند از اطلاعاتی که درباره شما ذخیره کرده‌اند استفاده کنند</translation>
 <translation id="3965965397408324205">خارج شدن از <ph name="PROFILE_NAME" /></translation>
@@ -5982,6 +5988,7 @@
 <translation id="5154108062446123722">تنظیمات پیشرفته برای <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">موضوع</translation>
 <translation id="5154917547274118687">حافظه</translation>
+<translation id="5155299520372681119">بارگذاری فایل منقضی و برداشته شده است.</translation>
 <translation id="5155327081870541046">‏در نوار نشانی، میان‌بر سایتی را که می‌خواهید جستجو کنید وارد کنید، مثلاً «‎@bookmarks». سپس، میان‌بر ترجیحی صفحه‌کلید را فشار دهید و عبارت جستجو را وارد کنید.</translation>
 <translation id="5156638757840305347">وقتی مکان‌نما ظاهر می‌شود یا حرکت می‌کند برجسته می‌شود</translation>
 <translation id="5157250307065481244">مشاهده جزئیات سایت</translation>
@@ -6261,6 +6268,7 @@
 <translation id="536278396489099088">‏گزارش‌ها و وضعیت سیستم ChromeOS</translation>
 <translation id="5362916924854054326">‏فایل‌های SharePoint و OneDrive نشان داده نشود</translation>
 <translation id="5363109466694494651">‏Powerwash و برگرداندن</translation>
+<translation id="5365858324977454035">خطای غیرمنتظره، فایل بارگذاری نشد.</translation>
 <translation id="5365881113273618889">پوشه‌ای که انتخاب کرده‌اید حاوی فایل‌های حساسی است. آیا مطمئنید می‌خواهید به «<ph name="APP_NAME" />» دسترسی دائم نوشتن این پوشه را بدهید؟</translation>
 <translation id="536638840841140142">هیچ‌کدام</translation>
 <translation id="5368246151595623328">«<ph name="NETWORK_NAME" />» از <ph name="DEVICE_NAME" /> ذخیره شد</translation>
@@ -6289,6 +6297,7 @@
 <translation id="538822246583124912">خط‌مشی شرکت تغییر کرد. دکمه آزمایش به نوار ابزار اضافه شد. برای فعال کردن آزمایش‌ها، روی دکمه کلیک کنید تا کادر گفتگو را باز کنید.</translation>
 <translation id="5388436023007579456">برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین، و همچنین خدمات سیستم می‌توانند از دوربین استفاده کنند. برای استفاده از دوربین، شاید لازم باشد برنامه را بازراه‌اندازی کنید یا صفحه را بازآوری کنید.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{۱ سایت با اعلان‌های فراوان پیدا شد}one{{NUM_SITES} سایت با اعلان‌های فراوان پیدا شد}other{{NUM_SITES} سایت با اعلان‌های فراوان پیدا شد}}</translation>
+<translation id="5388719243178419614">بارگذاری نشد. فایل تصویری پردازش نشد.</translation>
 <translation id="5388885445722491159">مرتبط شده</translation>
 <translation id="5389224261615877010">رنگین‌کمان</translation>
 <translation id="5389794555912875905">نمایش هشدار قبل‌از رفتن به سایت‌های ناامن (توصیه‌شده)</translation>
@@ -6331,6 +6340,7 @@
 <translation id="5414836363063783498">در حال تأیید کردن…</translation>
 <translation id="5415328625985164836">‏این یک برنامه نسخه بتا است. اکنون می‌توانید از Steam برای اجرای برخی‌از بازی‌ها در Chromebook استفاده کنید.</translation>
 <translation id="5415497281076257439">عبارت</translation>
+<translation id="5417293056300086453">این سایت می‌تواند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند.</translation>
 <translation id="5417312524372586921">طرح‌های زمینه مرورگر</translation>
 <translation id="541737483547792035">درشت‌نمایی صفحه‌نمایش</translation>
 <translation id="541822678830750798">درحال ارسال درخواست برای خواندن و تغییر دادن این سایت</translation>
@@ -6866,6 +6876,7 @@
 <translation id="5804259315582798390">بازیابی داده محلی فعال نشد</translation>
 <translation id="5805268472388605531">برای دیدن نشانه‌های تکیه و نویسه‌های خاص، کلیدهای صفحه‌کلید را فشار دهید و نگه دارید</translation>
 <translation id="5805697420284793859">مدیر پنجره</translation>
+<translation id="5806322307130093061">‏‫<ph name="FILE_NAME" /> برای حذف فایل، کلید Enter را فشار دهید</translation>
 <translation id="5806447147478173900">مجموع فضای ذخیره‌سازی که سایت‌های نشان‌داده‌شده استفاده کرده‌اند: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">۰ درجه (پیش‌فرض)</translation>
 <translation id="5807774529265708172">نمایش دادن یا پنهان کردن صفحه‌کلید مجازی</translation>
@@ -7005,6 +7016,7 @@
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5902892210366342391">نمایش هشدار قبل‌از رفتن به سایت‌های ناامن «درحالت ناشناس»</translation>
 <translation id="5904614460720589786">به‌دلیل مشکل پیکربندی، <ph name="APP_NAME" /> راه‌اندازی نشد. لطفاً با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
+<translation id="5906457147959147328">همچنان به این سایت اجازه داده شود از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند</translation>
 <translation id="5906655207909574370">تقریباً به‌روز شده است! برای تمام کردن به‌روزرسانی، دستگاهتان را دوباره راه‌اندازی کنید.</translation>
 <translation id="5906732635754427568">داده‌های مرتبط با این برنامه از این دستگاه پاک می‌شوند.</translation>
 <translation id="5906974869830879618">لطفاً پین را وارد کنید</translation>
@@ -7851,6 +7863,8 @@
 <translation id="6521214596282732365">سایت‌ها معمولاً از قلم‌هایتان استفاده می‌کنند تا با ابزارهای گرافیکی و طراحی آنلاین بتوانید محتوای با شباهت زیاد به اصل ایجاد کنید</translation>
 <translation id="6523574494641144162">‏«مدیر گذرواژه Google» نتوانست این گذرواژه‌ها را در «حساب Google» شما ذخیره کند. می‌توانید آن‌ها را در این دستگاه ذخیره کنید.</translation>
 <translation id="652492607360843641">به یک شبکه <ph name="NETWORK_TYPE" /> متصل شده‌اید.</translation>
+<translation id="6525594601091660913">&gt;
+        بارگذاری فایل کامل شد</translation>
 <translation id="6525767484449074555">روی «نصب» کلیک کنید</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6527574156657772563">‏دستگاهی دردسترس نیست. برای متصل کردن تلفنتان به این <ph name="DEVICE_TYPE" />، «حساب Google» خود را به تلفن اضافه کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -8985,8 +8999,10 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{‏‫۱ نشانک فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، آن را در «حساب Google» خود ذخیره کنید.}one{‏‫{BOOKMARK_COUNT} نشانک فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید.}other{‏‫{BOOKMARK_COUNT} نشانک فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید.}}</translation>
 <translation id="7328867076235380839">ترکیب نامعتبر</translation>
+<translation id="7329009627557479564">بارگذاری نشد. اندازه فایل از حداکثر اندازه پشتیبانی‌شده بیشتر است.</translation>
 <translation id="7329154610228416156">ورود به سیستم ناموفق بود، زیرا برای استفاده از یک نشانی وب غیرامن (<ph name="BLOCKED_URL" />) پیکربندی شده بود. لطفاً با سرپرستتان تماس بگیرید.</translation>
 <translation id="7330533963640151632">تنظیمات <ph name="FEATURE_NAME" /> برای دستگاه <ph name="USER_NAME" />، که با حساب <ph name="USER_EMAIL" /> هم‌رسانی می‌کند.</translation>
+<translation id="733058866272972585">این سایت اجازه ندارد از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند.</translation>
 <translation id="7331646370422660166">دگرساز + پایین‌بر</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">برگه‌های تکراری</translation>
@@ -9236,6 +9252,7 @@
 <translation id="7490683549040131791">بررسی گذرواژه‌های باقی‌مانده</translation>
 <translation id="7491962110804786152">برگه</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{۱ کوکی}one{{NUM_COOKIES} کوکی}other{{NUM_COOKIES} کوکی}}</translation>
+<translation id="7493355200491857618">شناسه‌های محتوای محافظت‌شده رد شدند</translation>
 <translation id="7493386493263658176">ممکن است افزونه <ph name="EXTENSION_NAME" /> همه نوشتاری را که تایپ می‌کنید (از جمله داده‌های شخصی مانند گذرواژه‌ها و شماره کارت‌های اعتباری) جمع‌آوری کند. می‌خواهید از این افزونه استفاده کنید؟</translation>
 <translation id="7494694779888133066">‏<ph name="WIDTH" /> ‏x‏ <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">‏برنامه Android</translation>
@@ -10229,6 +10246,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
 <translation id="8163152278172770963">سایت‌ها اجازه ندارند به‌طور خودکار به حالت تصویردرتصویر بروند</translation>
 <translation id="8163708146810922598">قدیمی‌ترین</translation>
+<translation id="8164842729077473463">این سایت همچنان اجازه نداشته باشد از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند</translation>
 <translation id="8165997195302308593">‏بازارسال درگاه Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{یک شماره تلفن}one{# شماره تلفن}other{# شماره تلفن}}</translation>
 <translation id="8168435359814927499">محتوا</translation>
@@ -10978,6 +10996,7 @@
 <translation id="8686142379631285985">با <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> به سیستم وارد شده‌اید.</translation>
 <translation id="8687103160920393343">لغو <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">تنظیم پین</translation>
+<translation id="8687774873995698516">‫<ph name="HOST" /> هرگز اجازه نداشته باشد از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند</translation>
 <translation id="8688672835843460752">دردسترس</translation>
 <translation id="8689811383248488428">رد کردن و بستن نمایه</translation>
 <translation id="8689998525144040851">۱۰۰</translation>
@@ -11324,12 +11343,14 @@
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">درحال نصب برنامه…</translation>
 <translation id="891931289445130855">حذف داده‌ها و اجازه‌ها</translation>
+<translation id="8919468987486771003">بارگذاری نشد. بررسی‌های اعتبارسنجی ناموفق بود و فایل بارگذاری نشد.</translation>
 <translation id="8920133120839850939">برگه «اشاره‌های بیشتر» را انتخاب کنید، سپس «تند کشیدن بین صفحه‌ها» را برای پیمایش به‌عقب و جلو روشن کنید</translation>
 <translation id="8921369299636221117">‏سرویس Concierge دردسترس نیست.</translation>
 <translation id="8922348435910470639">دوبار رزرو</translation>
 <translation id="8922624386829239660">حرکت صفحه زمانی که موشواره به لبه‌های صفحه می‌رسد</translation>
 <translation id="8923880975836399332">سبزآبی تیره</translation>
 <translation id="8925124370124776087">اکنون نوار عنوان پنهان است</translation>
+<translation id="8925308599005372373">بارگذاری پی‌دی‌اف</translation>
 <translation id="8925458182817574960">&amp;تنظیمات</translation>
 <translation id="8926389886865778422">دوباره سؤال نشود</translation>
 <translation id="8926555406617248399">برگه‌ها پنهان شد</translation>

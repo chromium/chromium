@@ -1612,6 +1612,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7266578100016339897">Cela vous aide à rester organisé. Vous pouvez modifier cette option dans les paramètres en tout temps.</translation>
 <translation id="7272437679830969316">Impossible de vérifier votre identité. Le mot de passe n'a pas été copié.</translation>
 <translation id="728025568708172005">Commencer la visite guidée</translation>
+<translation id="7280980607183752256">Impossible d'importer ce fichier</translation>
 <translation id="7281202269687163394">Gemini et votre confidentialité</translation>
 <translation id="7293429513719260019">Sélectionner la langue</translation>
 <translation id="7300448350764260141">Ajoutez une couche de protection supplémentaire contre les menaces en ligne.</translation>
@@ -2008,6 +2009,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8726523474917941818">Me le rappeler</translation>
 <translation id="8728922029615312208">Tout fermer</translation>
 <translation id="8730621377337864115">Terminé</translation>
+<translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="87371078663613140">Explorer les options dans la barre de menu</translation>
 <translation id="8741627442233023406">{count,plural, =1{Vérifier l'onglet…}one{Vérifier tous les onglets...}other{Vérifier tous les onglets…}}</translation>
 <translation id="8741995161408053644">D'autres formes d'historique de navigation peuvent exister sur votre compte Google : <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

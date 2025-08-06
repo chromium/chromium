@@ -5926,6 +5926,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5109044022078737958">Austra</translation>
 <translation id="5109816792918100764">Pašalinti <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Atidaryti grupę naujame lange</translation>
+<translation id="511147239888121455">Kurti atsarginę turinio kopiją?</translation>
 <translation id="5111646998522066203">Išjungti inkognito režimą</translation>
 <translation id="5111692334209731439">&amp;Žymių tvarkytuvė</translation>
 <translation id="5111794652433847656">Šiame įrenginyje nėra jokių slaptažodžių, skirtų „<ph name="APP_NAME" />“</translation>
@@ -8223,6 +8224,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
     <ph name="BEGIN_PARAGRAPH3" />Daugiau informacijos apie tai, kokius duomenis „<ph name="DEVICE_OS" />“ gali bendrinti su „Google“ ir kaip jie naudojami, rasite apsilankę adresu g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą</translation>
 <translation id="6771503742377376720">Yra sertifikavimo institucija</translation>
+<translation id="6772103682557559072">Daugiau <ph name="ADDRESS_SUMMARY" /> darbo adreso parinkčių</translation>
 <translation id="6772974422346500939">Atidaryti ir redaguoti</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Svetainėje reikia vienkartinio slaptažodžio</translation>
@@ -10051,6 +10053,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8025151549289123443">Užrakinimo ekranas ir prisijungimas</translation>
 <translation id="8025291188699172126">Apie naujinius</translation>
 <translation id="8026471514777758216">Visi jūsų įrenginiai</translation>
+<translation id="8026700655446696031">Daugiau <ph name="ADDRESS_SUMMARY" /> namų adreso parinkčių</translation>
 <translation id="8026784703228858744">Saugokite žymes ir atlikite daugiau veiksmų naudodami sinchronizavimą</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Lankėtės prieš 0 dienų}=1{Lankėtės prieš 1 dieną}one{Lankėtės prieš # dieną}few{Lankėtės prieš # dienas}many{Lankėtės prieš # dienos}other{Lankėtės prieš # dienų}}</translation>
 <translation id="8028060951694135607">„Microsoft“ rakto atkūrimas</translation>
@@ -10199,6 +10202,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8121537075864592453">Viso ekrano režimas išjungtas</translation>
 <translation id="8121750884985440809">Šiuo metu perduodate savo ekrano vaizdą</translation>
 <translation id="8122898034710982882">„Phone Hub“, „<ph name="FEATURE_NAME" />“</translation>
+<translation id="8123087650856503231">Kurkite slaptažodžių, žymių ir kt. atsargines kopijas, kad galėtumėte lengvai gauti juos visuose įrenginiuose</translation>
 <translation id="81238879832906896">Geltonos ir baltos spalvos gėlė</translation>
 <translation id="8123975449645947908">Slinkti atgal</translation>
 <translation id="8124313775439841391">Tvarkoma ONC</translation>

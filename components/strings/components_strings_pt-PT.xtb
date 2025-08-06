@@ -362,6 +362,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="159274626729231974">Festivais de cinema</translation>
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Escolher</translation>
+<translation id="1595731774593926493">Elimine o número de correção</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Link de dica do Chrome, prima Enter para abrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Tem um cartão novo? <ph name="BEGIN_LINK" />Introduza os detalhes do cartão<ph name="END_LINK" /></translation>
@@ -754,6 +755,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
+<translation id="224130779555573777">Adicione o número de correção</translation>
 <translation id="2241693394036365668">É transferido um ficheiro</translation>
 <translation id="2242389809734574253">"Guardar IBAN" fechado.</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
@@ -2932,6 +2934,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5886961930368713749">Envie feedback sobre a comparação</translation>
 <translation id="5887400589839399685">Cartão guardado</translation>
 <translation id="5887687176710214216">Última visita ontem</translation>
+<translation id="5890248301649767931">Guardar o número de correção?</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido em</translation>
 <translation id="5898767305816764989">Botão Gosto, prima Enter para enviar feedback a indicar que gosta, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3553,6 +3556,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6905163627763043954">Testar</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Transferir vários ficheiros</translation>
+<translation id="691046363691324218">Número de correção</translation>
 <translation id="6915804003454593391">Utilizador:</translation>
 <translation id="6916193791494646625">Indique o motivo da transferência (obrigatório)</translation>
 <translation id="6917795328362592458">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe recomenda que verifique as suas palavras-passe guardadas.</translation>
@@ -4498,6 +4502,7 @@ Detalhes adicionais:
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Ativar</translation>
+<translation id="8461289985785035071">Edite o número de correção</translation>
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
 <translation id="8461973047386722744">Nenhuma palavra-passe encontrada</translation>
 <translation id="8467494337615822642">Aceda à página da verificação de segurança do Chrome nas definições</translation>
@@ -4806,6 +4811,7 @@ Detalhes adicionais:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Experimentar Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Para sair do modo de ecrã inteiro, prima sem soltar |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">Atualizar o número de correção?</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
 <translation id="9035824888276246493">Guardar códigos de segurança</translation>
 <translation id="9036306139374661733">Permitir o acesso ao microfone?</translation>

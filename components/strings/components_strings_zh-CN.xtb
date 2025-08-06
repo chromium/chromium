@@ -1194,6 +1194,7 @@
 <translation id="3002501248619246229">检查进纸匣媒体</translation>
 <translation id="3005723025932146533">显示已保存的版本</translation>
 <translation id="300580149047131921">最近使用过</translation>
+<translation id="3006864083554020786">住址</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键浏览可执行的操作，然后按 Enter 键执行选定的操作。</translation>
 <translation id="3010991137650052245">如要在此网站上使用您的<ph name="PERMISSION" />，请授予 <ph name="SHORT_PRODUCT_NAME" /> 访问权限</translation>
 <translation id="3013711734159931232">家居用品</translation>
@@ -1680,7 +1681,7 @@
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
 <translation id="3795624560191557077">您最近更改了遭遇公开数据泄露的密码。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
-<translation id="3796181268473765083">分 4 期免息付款或按月付款（需满足资格要求）</translation>
+<translation id="3796181268473765083">分 4 期免息付款或按月分期付款（需满足资格要求）</translation>
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3801297763951514916">您经常访问</translation>
 <translation id="380329542618494757">姓名</translation>
@@ -1824,6 +1825,7 @@
 <translation id="404831776305217138">ID 为“<ph name="EXTENSION_ID" />”的扩展程序的更新网址无效或使用的架构不受支持。受支持的架构包括：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
 <translation id="4050392779074832022">您将能在各种 Google 产品中使用它</translation>
 <translation id="4050599136622776556">Chromium 正在尝试修改付款方式。</translation>
+<translation id="4052683751389375539">修改，在新窗口中打开</translation>
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4059523390906550209">详细了解敏感数据保护</translation>
@@ -3081,7 +3083,7 @@
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6150036310511284407">三孔（左侧）</translation>
-<translation id="6150164900447447084">要在此设备上保存卡吗？</translation>
+<translation id="6150164900447447084">要将银行卡保存在此设备上吗？</translation>
 <translation id="6150754742333439143"><ph name="ORG_NAME" />会监控密码重复使用情况</translation>
 <translation id="6151417162996330722">该服务器证书的有效期过长。</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 英寸（<ph name="ORIENTATION" />）</translation>
@@ -3515,6 +3517,7 @@
 <translation id="6881240511396774766">快速创建一个新的 Google 文档</translation>
 <translation id="6882210908253838664">如果某个网站无法正常运行，您可尝试向其授予对第三方 Cookie 的临时使用权限。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">安全付款凭据身份验证表单已关闭</translation>
+<translation id="6883745783646124431">工作地址</translation>
 <translation id="6884662655240309489">大小：1</translation>
 <translation id="6886283082988906333">ZIP 归档文件</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4138,7 +4141,7 @@
 <translation id="7887885240995164102">进入“画中画”模式</translation>
 <translation id="7888575728750733395">打印操作渲染方式</translation>
 <translation id="7890748547282909375">登录 Microsoft OneDrive 即可保存屏幕截图</translation>
-<translation id="7890755620327858054">目前无法使用先买后付功能。请重试，或者选择其他支付方式。</translation>
+<translation id="7890755620327858054">目前无法使用先买后付服务。请重试，或者选择其他支付方式。</translation>
 <translation id="7892431309448524994"><ph name="ORIGIN" /> - 若要显示光标，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">支付设置</translation>
 <translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>

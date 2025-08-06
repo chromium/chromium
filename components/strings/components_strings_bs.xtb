@@ -273,7 +273,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1436185428532214179">Može tražiti da uređuje fajlove i foldere na vašem uređaju</translation>
 <translation id="1442386063175183758">Presavijanje s desne strane</translation>
 <translation id="1442987760062738829">Bušenje</translation>
-<translation id="1445896388055045436">Pri naplati prikažite dostupne pogodnosti i nagrade kartice. Primjenjuju se uvjeti izdavatelja.</translation>
+<translation id="1445896388055045436">Prikaz dostupnih pogodnosti kartice i nagrada prilikom plaćanja. Primjenjuju se uslovi izdavača.</translation>
 <translation id="1446396933673057385">Provjera tačnosti</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ključevi "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" se ne mogu postaviti u isti rječnik kao i ključevi "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
@@ -1235,7 +1235,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3086579638707268289">Neko nadzire vašu aktivnost na webu</translation>
 <translation id="3087734570205094154">Dolje</translation>
 <translation id="3090667236485488075">Staklo</translation>
-<translation id="3094051226187213523">Otvorite AI način s ovim prijedlogom.</translation>
+<translation id="3094051226187213523">Otvaranje AI načina rada s ovim prijedlogom.</translation>
 <translation id="3095940652251934233">Izjava</translation>
 <translation id="3098513225387949945">Zanemareno je jer lista onemogućenih sadrži uzorak koji je jednak "*", a što je ekvivalentno onemogućavanju pravila.</translation>
 <translation id="3098944373717628099">Lokalni fajlovi će se izbrisati za 1 sat</translation>
@@ -1829,7 +1829,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="404831776305217138">URL ažuriranja za ekstenziju s ID-om "<ph name="EXTENSION_ID" />" nije važeći ili koristi nepodržanu šemu. Nepodržane šeme su <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Moći ćete je koristiti na Googleovim proizvodima</translation>
 <translation id="4050599136622776556">Chromium pokušava urediti načine plaćanja.</translation>
-<translation id="4052683751389375539">Uredi, otvara novi prozor</translation>
+<translation id="4052683751389375539">Uređivanje, otvaranje novog prozora</translation>
 <translation id="405399507749852140">Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4059523390906550209">Saznajte više o zaštiti osjetljivih podataka</translation>
@@ -3168,7 +3168,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6284449872909111707">Razmjena tekstualnih i instant poruka</translation>
 <translation id="6284517535531159884">Vrsta početne vrijednosti varijacija</translation>
 <translation id="6287197303017372967">Dobijajte smjernice do odredišta uz postepeni vodič pomoću navigacijske funkcije.</translation>
-<translation id="6288559570252410796">Postavljanje pitanja u Google AI načinu rada</translation>
+<translation id="6288559570252410796">Postavljanje pitanja Google AI načinu rada</translation>
 <translation id="628877850550444614">Pronađen je popust</translation>
 <translation id="6289939620939689042">Boja stranice</translation>
 <translation id="6292819926564202163">Vaš pretraživač u Chromeu</translation>
@@ -4399,7 +4399,7 @@ Dodatni detalji:
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321448084834652864">Možete promijeniti pretraživač bilo kada u postavkama Chromiuma.</translation>
 <translation id="8321476692217554900">obavještenja</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postavljanje pitanja u Google AI načinu rada pritiskom na Enter</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postavljanje pitanja Google AI načinu rada pritiskom na Enter</translation>
 <translation id="8322402665880479974">Kreveti i uzglavlja</translation>
 <translation id="8323505966575306467">Dodajte veću zaštitu za lozinke</translation>
 <translation id="832547548543012337">Izbrišite pasoš</translation>
@@ -4798,7 +4798,7 @@ Dodatni detalji:
 <translation id="9040341831873780534">Pogledajte uslove ovdje</translation>
 <translation id="9042617223719777575">Veliki kapacitet</translation>
 <translation id="9042827002460091668">Provjerite internetsku vezu i pokušajte ponovo</translation>
-<translation id="9043161870923715789">AI način</translation>
+<translation id="9043161870923715789">AI način rada</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> želi potražiti bilo koji uređaj na lokalnoj mreži i povezati se s njim</translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
@@ -4942,7 +4942,7 @@ Dodatni detalji:
 <translation id="950926967802086924">Pristupni ključ • Google upravitelj lozinki</translation>
 <translation id="955429569736351433">VR je dozvoljen</translation>
 <translation id="955627189349169688">Možete isključiti ova pravila u <ph name="BEGIN_LINK" />postavkama Sinhronizacije Chromea<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Dugme za AI način rada, postavljanje pitanja u Google AI načinu rada aktiviranjem</translation>
+<translation id="95676157383774931">Dugme za AI način rada, postavljanje pitanja Google AI načinu rada aktiviranjem</translation>
 <translation id="95721182352849470">2. žuta</translation>
 <translation id="961663415146723894">Povezivanje donje strane</translation>
 <translation id="961856697154696964">Izbriši podatke pregledanja</translation>

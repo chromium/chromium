@@ -998,6 +998,7 @@
 <translation id="1668804837842452164">保存到 <ph name="EMAIL" /> 的 <ph name="BRAND" /></translation>
 <translation id="1668979692599483141">了解建议</translation>
 <translation id="1670399744444387456">基本</translation>
+<translation id="1671749176392751693">允许使用受保护内容的标识符</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 想查看您的安全密钥的品牌和型号</translation>
 <translation id="1674073353928166410">在无痕式窗口中打开全部（<ph name="URL_COUNT" /> 个）网址</translation>
 <translation id="1674142805528405174">Google 密码管理工具可以为账号改用安全系数高的密码，并将其保存在账号 <ph name="EMAIL" /> 中。</translation>
@@ -1793,6 +1794,7 @@
 <translation id="2234876718134438132">同步功能和 Google 服务</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
+<translation id="2236963250883149540">要从 Chrome 自动填充功能中移除工作地址吗？</translation>
 <translation id="2238379619048995541">频率状态数据</translation>
 <translation id="2240582393605484605">仅保存在此设备上的数据将保留在现有资料中</translation>
 <translation id="2241053333139545397">读取和更改您在一些网站上的数据</translation>
@@ -2378,6 +2380,7 @@
 <translation id="2624142942574147739">此网页正在使用您的摄像头和麦克风。</translation>
 <translation id="2626799779920242286">请稍后重试。</translation>
 <translation id="2627424346328942291">无法分享</translation>
+<translation id="2628258844236035475">要从 Chrome 自动填充功能中移除住址吗？</translation>
 <translation id="2628770867680720336">要启用 ADB 调试，您必须将此 Chromebook 恢复出厂设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
 <translation id="2629437048544561682">清除画布</translation>
@@ -3837,6 +3840,7 @@
 <translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
 <translation id="3665301845536101715">在侧边栏中打开</translation>
 <translation id="3665589677786828986">Chrome检测到您的部分设置被其他程序篡改了，因此已将这些设置重置为原始默认设置。</translation>
+<translation id="3665918214153961651">正在上传文件</translation>
 <translation id="3665919494326051362">当前版本为 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 调试转储</translation>
 <translation id="3666971425390608309"><ph name="FILE_NAME" /> 已暂停下载。</translation>
@@ -4230,6 +4234,7 @@
 <translation id="3913689539406883376">在拔下计算机电源线时开启</translation>
 <translation id="3914173277599553213">必需</translation>
 <translation id="3914568430265141791">打开文件夹“<ph name="FOLDER_TITLE" />”</translation>
+<translation id="3914894336972817683">无法上传。文件似乎为空。</translation>
 <translation id="3915280005470252504">语音搜索</translation>
 <translation id="3916445069167113093">此类型的文件可能会损害您的计算机。您仍然要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="3917184139185490151">您的计算机包含一个安全模块，该模块可用于在 Chrome 操作系统中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=sm</translation>
@@ -4305,6 +4310,7 @@
 <translation id="3959969108528118741">所有者</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可对“<ph name="IBAN_DESCRIPTION" />”执行的更多操作</translation>
+<translation id="3961823084595287812">始终允许 <ph name="HOST" /> 使用标识符播放受保护内容</translation>
 <translation id="3964480518399667971">关闭移动网络</translation>
 <translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3965965397408324205">退出<ph name="PROFILE_NAME" /></translation>
@@ -5960,6 +5966,7 @@
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />高级设置</translation>
 <translation id="5154702632169343078">主题</translation>
 <translation id="5154917547274118687">内存</translation>
+<translation id="5155299520372681119">上传的文件已过期并被移除。</translation>
 <translation id="5155327081870541046">在地址栏中，输入与您要用作搜索范围的网站对应的快捷字词，例如“@bookmarks”。然后，按您的首选键盘快捷键，并输入搜索字词。</translation>
 <translation id="5156638757840305347">光标在出现或移动时突出显示</translation>
 <translation id="5157250307065481244">查看网站详细信息</translation>
@@ -6238,6 +6245,7 @@
 <translation id="536278396489099088">ChromeOS 系统状态和报告</translation>
 <translation id="5362916924854054326">不显示 SharePoint 和 OneDrive 文件</translation>
 <translation id="5363109466694494651">执行 Powerwash 操作并还原</translation>
+<translation id="5365858324977454035">出现意外错误，文件上传失败。</translation>
 <translation id="5365881113273618889">您所选的文件夹中包含敏感文件。确定要向“<ph name="APP_NAME" />”授予对此文件夹的永久写入权限吗？</translation>
 <translation id="536638840841140142">无</translation>
 <translation id="5368246151595623328">已保存由“<ph name="DEVICE_NAME" />”分享的“<ph name="NETWORK_NAME" />”</translation>
@@ -6266,6 +6274,7 @@
 <translation id="538822246583124912">企业政策已更改。实验按钮已添加到工具栏。点击此按钮即可打开对话框以启用实验。</translation>
 <translation id="5388436023007579456">系统服务以及具有摄像头使用权限的应用和网站可以使用您的摄像头。如需使用摄像头，您可能需要重启应用或刷新页面。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{发现了 1 个向用户发送大量通知的网站}other{发现了 {NUM_SITES} 个向用户发送大量通知的网站}}</translation>
+<translation id="5388719243178419614">无法上传。未能处理图片文件。</translation>
 <translation id="5388885445722491159">已配对</translation>
 <translation id="5389224261615877010">彩虹</translation>
 <translation id="5389794555912875905">在您访问不安全的网站前发出警告（推荐）</translation>
@@ -6308,6 +6317,7 @@
 <translation id="5414836363063783498">正在验证…</translation>
 <translation id="5415328625985164836">这是一项 Beta 版计划。现在，您可以在 Chromebook 上使用 Steam 玩某些游戏了。</translation>
 <translation id="5415497281076257439">词组</translation>
+<translation id="5417293056300086453">此网站可以使用标识符播放受保护内容。</translation>
 <translation id="5417312524372586921">浏览器主题背景</translation>
 <translation id="541737483547792035">放大屏幕</translation>
 <translation id="541822678830750798">请求读取和更改此网站</translation>
@@ -6841,6 +6851,7 @@
 <translation id="5804259315582798390">未能启用本地数据恢复功能</translation>
 <translation id="5805268472388605531">按住键盘按键即可查看重音符号和特殊字符</translation>
 <translation id="5805697420284793859">窗口管理器</translation>
+<translation id="5806322307130093061"><ph name="FILE_NAME" />，按 Enter 键即可删除文件</translation>
 <translation id="5806447147478173900">显示的网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（默认）</translation>
 <translation id="5807774529265708172">显示或隐藏屏幕键盘</translation>
@@ -6980,6 +6991,7 @@
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5902892210366342391">在您以无痕模式访问不安全的网站前发出警告</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
+<translation id="5906457147959147328">继续允许此网站使用标识符播放受保护内容</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
 <translation id="5906974869830879618">请输入 PIN 码</translation>
@@ -7825,6 +7837,8 @@
 <translation id="6521214596282732365">网站通常会使用您的字体，以便您能够利用在线设计和制图工具创作高保真内容</translation>
 <translation id="6523574494641144162">Google 密码管理工具无法将这些密码保存到您的 Google 账号中。您可以将这些密码保存到此设备上。</translation>
 <translation id="652492607360843641">您已连接到<ph name="NETWORK_TYPE" />网络。</translation>
+<translation id="6525594601091660913">&gt;
+        文件上传完成</translation>
 <translation id="6525767484449074555">点击“安装”</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6527574156657772563">无可用设备。将您的 Google 账号添加到手机，以便将其关联到此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -8957,8 +8971,10 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {BOOKMARK_COUNT} 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="7328867076235380839">无效的组合</translation>
+<translation id="7329009627557479564">无法上传。文件超过了支持的大小上限。</translation>
 <translation id="7329154610228416156">由于已配置为使用不安全的网址 (<ph name="BLOCKED_URL" />)，因此登录失败了。请与管理员联系。</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />的设备的“<ph name="FEATURE_NAME" />”设置，通过账号 <ph name="USER_EMAIL" /> 分享。</translation>
+<translation id="733058866272972585">此网站已被禁止使用标识符播放受保护内容。</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7332053360324989309">Dedicated Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">重复标签页</translation>
@@ -9208,6 +9224,7 @@
 <translation id="7490683549040131791">检查其余的密码</translation>
 <translation id="7491962110804786152">标签</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 个 Cookie}other{{NUM_COOKIES} 个 Cookie}}</translation>
+<translation id="7493355200491857618">禁止使用受保护内容的标识符</translation>
 <translation id="7493386493263658176">扩展程序“<ph name="EXTENSION_NAME" />”可能会收集您输入的所有内容（包括密码和信用卡号等个人数据）。要使用此扩展程序吗？</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android 应用</translation>
@@ -10202,6 +10219,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8163152278172770963">不允许网站自动进入画中画模式</translation>
 <translation id="8163708146810922598">从旧到新</translation>
+<translation id="8164842729077473463">继续禁止此网站使用标识符播放受保护内容</translation>
 <translation id="8165997195302308593">Crostini 端口转发</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
 <translation id="8168435359814927499">内容</translation>
@@ -10951,6 +10969,7 @@
 <translation id="8686142379631285985">目前登录的账号是 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">取消下载 <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">设置 PIN 码</translation>
+<translation id="8687774873995698516">始终禁止 <ph name="HOST" /> 使用标识符播放受保护内容</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="8689811383248488428">拒绝并关闭个人资料</translation>
 <translation id="8689998525144040851">100</translation>
@@ -11296,12 +11315,14 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安装应用…</translation>
 <translation id="891931289445130855">删除数据和权限</translation>
+<translation id="8919468987486771003">无法上传。文件上传失败，未能通过验证检查。</translation>
 <translation id="8920133120839850939">选择“更多手势”标签页，然后开启“滑动浏览各个页面”即可前后浏览页面</translation>
 <translation id="8921369299636221117">Concierge 服务不可用。</translation>
 <translation id="8922348435910470639">重复预约</translation>
 <translation id="8922624386829239660">鼠标指针触及屏幕边缘时移动屏幕</translation>
 <translation id="8923880975836399332">深蓝绿色</translation>
 <translation id="8925124370124776087">标题栏现已隐藏</translation>
+<translation id="8925308599005372373">上传 PDF</translation>
 <translation id="8925458182817574960">设置(&amp;S)</translation>
 <translation id="8926389886865778422">不再询问</translation>
 <translation id="8926555406617248399">标签页已隐藏</translation>

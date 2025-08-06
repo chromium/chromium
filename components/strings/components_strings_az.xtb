@@ -273,6 +273,7 @@
 <translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="1442386063175183758">Sağ küncə qatlayın</translation>
 <translation id="1442987760062738829">Deşik açın</translation>
+<translation id="1445896388055045436">Ödəmə zamanı əlçatan kart üstünlüklərini və mükafatlarını göstərin. Emitent şərtləri tətbiq olunur.</translation>
 <translation id="1446396933673057385">Dəqiqliyin yoxlanması</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" açar sözləri "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" açar sözləri ilə eyni lüğətdə ola bilməz</translation>
@@ -1233,6 +1234,7 @@
 <translation id="3086579638707268289">Vebdəki fəaliyyətinizə nəzarət edilir</translation>
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090667236485488075">Şüşə</translation>
+<translation id="3094051226187213523">Bu təkliflə Sİ rejimini açın.</translation>
 <translation id="3095940652251934233">Bəyanat</translation>
 <translation id="3098513225387949945">Deaktiv siyahısında siyasətin deaktiv edilməsinə bərabər olan '*' işarəsinə bərabər model olduğu üçün nəzərə alınmayıb.</translation>
 <translation id="3098944373717628099">Lokal fayllarınız 1 saat sonra silinəcək</translation>
@@ -4788,6 +4790,7 @@
 <translation id="9040341831873780534">Burada şərtlərə baxın</translation>
 <translation id="9042617223719777575">Geniş Tutum</translation>
 <translation id="9042827002460091668">İnternet bağlantınızı yoxlayın və yenidən sınayın</translation>
+<translation id="9043161870923715789">Sİ rejimi</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> yerli şəbəkənizdə istənilən cihazı axtarmaq və ona qoşulmaq istəyir</translation>
 <translation id="9046864189129893978">Mikrofonlar (<ph name="MICS_COUNT" />)</translation>

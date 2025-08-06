@@ -1612,6 +1612,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7266578100016339897">Astfel, îți vei putea menține organizarea. Poți modifica oricând opțiunea din Setări.</translation>
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
 <translation id="728025568708172005">Arată-mi împrejurimile</translation>
+<translation id="7280980607183752256">Fișierul nu poate fi importat</translation>
 <translation id="7281202269687163394">Confidențialitatea ta și Gemini.</translation>
 <translation id="7293429513719260019">Selectează limba</translation>
 <translation id="7300448350764260141">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online.</translation>
@@ -2008,6 +2009,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8726523474917941818">Amintește-mi</translation>
 <translation id="8728922029615312208">Închide-le pe toate</translation>
 <translation id="8730621377337864115">Terminat</translation>
+<translation id="8731268612289859741">Cod de securitate</translation>
 <translation id="87371078663613140">Explorează opțiunile din bara de meniu</translation>
 <translation id="8741627442233023406">{count,plural, =1{Examinează fila…}few{Examinează toate filele…}other{Examinează toate filele…}}</translation>
 <translation id="8741995161408053644">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

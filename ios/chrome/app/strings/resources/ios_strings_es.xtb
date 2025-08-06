@@ -1612,6 +1612,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7266578100016339897">Esto te ayuda a mantener el orden. Puedes cambiarlo en los ajustes en cualquier momento.</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
 <translation id="728025568708172005">Ver ahora</translation>
+<translation id="7280980607183752256">Este archivo no se puede importar</translation>
 <translation id="7281202269687163394">Tu privacidad y Gemini.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Añade una capa adicional de protección frente a las amenazas online.</translation>
@@ -2008,6 +2009,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8726523474917941818">Recordar</translation>
 <translation id="8728922029615312208">Cerrar todo</translation>
 <translation id="8730621377337864115">Hecho</translation>
+<translation id="8731268612289859741">Código de seguridad</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú</translation>
 <translation id="8741627442233023406">{count,plural, =1{Revisar la pestaña…}other{Revisar todas las pestañas…}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

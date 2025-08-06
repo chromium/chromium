@@ -260,6 +260,7 @@
 <translation id="14222610277930434">ביקרת בתדירות גבוהה</translation>
 <translation id="1422795627423046860">התאריך לא תקף.</translation>
 <translation id="1422930527989633628">‏האתר יכול לבקש הרשאה לחפש מכשירי Bluetooth בקרבת מקום</translation>
+<translation id="142559998533702194">ההעלאה נכשלה</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1427192966110103169">בריכות שחייה, סאונות ומתקני ספא לבית</translation>
 <translation id="1428146450423315676">מערים 7</translation>
@@ -720,6 +721,7 @@
 <translation id="2188375229972301266">ניקובים מרובים בחלק התחתון</translation>
 <translation id="218940509700321686">‏ערכים מופרדים בפסיקים (CSV)</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
+<translation id="2198215508485017216">‏קרה משהו לא צפוי. <ph name="BEGIN_LINK" />מידע נוסף על העלאות ל-Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">‏כפתור 'לא אהבתי', לוחצים על Enter כדי לפתוח טופס לשליחה של משוב מפורט על הסיבה לכך שלא אהבת את ההצעה הזו</translation>
 <translation id="2202627062836089804">גב הכרטיס</translation>
 <translation id="2204482073374652408">העדכון הסתיים.</translation>
@@ -735,6 +737,7 @@
 <translation id="2215539479425228550">קירות טיפוס וטיפוס הרים</translation>
 <translation id="2215727959747642672">עריכת קובץ</translation>
 <translation id="2215963164070968490">כלבים</translation>
+<translation id="2218089682233901164">‏הוספת מספר KTN</translation>
 <translation id="2219376942605837404">הוספת כרטיסייה לטבלת ההשוואה</translation>
 <translation id="2219658597883514593">חזרה על המדריך</translation>
 <translation id="2219735899272417925">יש לאתחל את המכשיר</translation>
@@ -855,6 +858,7 @@
 <translation id="239429038616798445">שיטת המשלוח הזו לא זמינה. עליך לבחור שיטה אחרת.</translation>
 <translation id="2395840535409704129">ספורט מים</translation>
 <translation id="2396249848217231973">&amp;ביטול מחיקה</translation>
+<translation id="239708975263889666">‏עריכת מספר ה-KTN</translation>
 <translation id="2399344929880464793">‏ה-IBAN הזה נשמר בחשבון Google, כך שאפשר להשתמש בו בכל שירותי Google.</translation>
 <translation id="2399868464369312507">‏Google Chrome מנסה לערוך את אמצעי התשלום.</translation>
 <translation id="2400263725572336749">הוספת דרכון</translation>
@@ -883,6 +887,7 @@
 <translation id="2451201933352935301">האתר <ph name="URL" /> מבקש הרשאה לנהל את החלונות בכל המסכים</translation>
 <translation id="2451607499823206582">במעקב</translation>
 <translation id="2452098632681057184">אקולוגיה וסביבה</translation>
+<translation id="2452689005240417488">‏לשמור את מספר ה-KTN?</translation>
 <translation id="2452837234288608067">לא ניתן היה לעזור בבקשה הזו. אפשר לנסות שוב.</translation>
 <translation id="2453045048779611513">הארגון שלך מגביל את מה שאפשר לשמור</translation>
 <translation id="2456755709261364512">רמת הטעינה של הסוללה צריכה להיות גבוהה מ-<ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -992,6 +997,7 @@
 <translation id="2634124572758952069">‏לא ניתן היה למצוא את כתובת ה-IP של השרת של <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">אפשר להזין @ כדי לחפש ב-<ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">סטטוס:</translation>
+<translation id="2644219706149911059">‏מתבצעת העלאה ל-Google Drive…</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Fabric (Semi-Gloss)</translation>
 <translation id="264810637653812429">לא נמצאו מכשירים תואמים.</translation>
@@ -1123,6 +1129,7 @@
 <translation id="2904180982022726666">הארגון שלך מגביל את מה שאפשר לשתף</translation>
 <translation id="2905107382358353958">התראה לגבי הגדרת תשלום חדשה</translation>
 <translation id="2909946352844186028">אותר שינוי ברשת.</translation>
+<translation id="2910062169995917863">תוקף הסשן פג</translation>
 <translation id="2911255567212929079">‏למידת מכונה ובינה מלאכותית (AI)</translation>
 <translation id="2911973620368911614">מזהה משתמש של חשבון עבודה</translation>
 <translation id="2913421697249863476">ברביקיו וגריל</translation>
@@ -1380,6 +1387,7 @@
 <translation id="33073482541490531">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות את הסיסמה הזו עכשיו.</translation>
 <translation id="3307649904964670439">‏הכפתור להתאמה אישית של Chrome, מפעילים אותו כדי להתאים אישית את מראה הדפדפן</translation>
 <translation id="3308006649705061278">‏יחידה ארגונית (OU)</translation>
+<translation id="3312952471765023168">ההעלאה הושלמה בהצלחה</translation>
 <translation id="3318016344440038475">תוכניות קומיות בטלוויזיה</translation>
 <translation id="3324687287337751929">‏4x6 אינץ'</translation>
 <translation id="3324983252691184275">ארגמן</translation>
@@ -2189,6 +2197,7 @@
 <translation id="4652266463001779298">אין הרשאה</translation>
 <translation id="4652440160515225514">האתר הזה נחסם על ידי הארגון שלך עקב הפרת מדיניות.</translation>
 <translation id="4658638640878098064">סיכת הידוק בפינה השמאלית העליונה</translation>
+<translation id="4660592918803576381">‏פתיחה ב-Drive</translation>
 <translation id="4661556981531699496">חיות מחמד ובעלי חיים</translation>
 <translation id="4661868874067696603">חיפוש אפשרויות קנייה נוספות</translation>
 <translation id="4663373278480897665">ניתן להשתמש במצלמה בדף זה</translation>
@@ -3168,6 +3177,7 @@ Del</translation>
 <translation id="6272088941196661550">‏חזרה לתהליך כדי להציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="6272383483618007430">‏עדכוני Google</translation>
 <translation id="6278015583149890680">‏‫Google Drive ו-OneDrive</translation>
+<translation id="6279228081537458128">תשלום אחר כך</translation>
 <translation id="6280223929691119688">לא ניתן לבצע מסירה בכתובת זו. עליך לבחור כתובת אחרת.</translation>
 <translation id="6284292079994426700">‏26x38 אינץ'</translation>
 <translation id="6284449872909111707">העברת הודעות מיידיות והודעות טקסט</translation>
@@ -3201,6 +3211,7 @@ Del</translation>
 <translation id="6327065120806001832">גישה לרשת המקומית</translation>
 <translation id="6328639280570009161">יש לנסות להשבית את חיזוי הרשת</translation>
 <translation id="6329815962353376655">&lt;כאן מקלידים שאלה&gt;</translation>
+<translation id="633348045801643466">הצגת אפשרויות <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />לתשלום אחר כך<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> בשלב התשלום בקופה</translation>
 <translation id="6335029926534404762">נעלי ספורט</translation>
 <translation id="6336948221660696475">‏אין הרשאה לשימוש ב-VR</translation>
 <translation id="6337133576188860026">פינוי של פחות מ-<ph name="SIZE" /> מהנפח. ייתכן שחלק מהאתרים ייטענו לאט יותר בביקור הבא שלך.</translation>
@@ -3526,6 +3537,7 @@ Del</translation>
 <translation id="6880941331070119097">אפשרות במחיר גבוה</translation>
 <translation id="6881240511396774766">‏יצירה מהירה של מסמך Google Docs</translation>
 <translation id="6882210908253838664">‏אם אתר מסוים לא פועל, אפשר לתת לו הרשאה זמנית לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="6883120223439653449">‏לעדכן את מספר ה-KTN?</translation>
 <translation id="6883221904761970440">גיליון האימות של פרטי הכניסה לתשלום המאובטח סגור</translation>
 <translation id="6883745783646124431">כתובת בעבודה</translation>
 <translation id="6884662655240309489">גודל 1</translation>
@@ -3635,6 +3647,7 @@ Del</translation>
 <translation id="7044081119134178347">יש אישור לשימוש חד-פעמי במצלמה</translation>
 <translation id="7048095965575426564">‏8.5x12 אינץ' (Fanfold – אירופה)</translation>
 <translation id="7050187094878475250">ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור שתקופת התוקף שלו ארוכה מדי ולכן אינו מהימן.</translation>
+<translation id="7050877504983265321">Known Traveler Number</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7054717457611655239">מעכשיו אפשר לשמור את הקבצים ב-<ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
@@ -3905,6 +3918,7 @@ Del</translation>
 <translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489255442002627311">‫<ph name="BNPL_ISSUER_NAME" /> תבדוק את הזכאות שלך (זה לא משפיע על דירוג האשראי שלך). אם הבקשה תאושר, <ph name="BNPL_ISSUER_NAME" /> תציע לך תוכניות תשלומים לבחירה כדי להשלים את הרכישה.</translation>
 <translation id="7489392576326061356">שמפו ומרככי שיער</translation>
+<translation id="7489919936111034362">‏האחסון ב-Google Drive מלא</translation>
 <translation id="7495528107193238112">התוכן הזה חסום. יש לפנות אל הבעלים של האתר כדי לפתור את הבעיה.</translation>
 <translation id="749865518782565832">אינסטלציה</translation>
 <translation id="7499188644237027195">‏כשמבצעים רכישות ב-Chrome, הארנק האלקטרוני ו-Pix יופיעו כאפשרויות</translation>
@@ -3963,6 +3977,7 @@ Del</translation>
 <translation id="7569983096843329377">שחור</translation>
 <translation id="7571813784389228510">‏מצב Google AI</translation>
 <translation id="7574998639136359461">ציוד לספורט חורף</translation>
+<translation id="7575130707299232096">‏מחיקת מספר ה-KTN</translation>
 <translation id="7575207903026901870">‏הכפתור 'הסרת ההצעה', יש ללחוץ על Enter כדי להסיר את ההצעה הזו</translation>
 <translation id="7575800019233204241">‏"החיבור שלך אינך פרטי" או "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" או "שגיאת אישור SSL"</translation>
 <translation id="7575887283389198269">טלפונים ניידים</translation>
@@ -4001,6 +4016,7 @@ Del</translation>
 <translation id="7631072086707140121">‏כתובת ה-URL חייבת להיות HTTPS.</translation>
 <translation id="7631527008834753063">שעשועוני טלוויזיה</translation>
 <translation id="7633909222644580952">נתוני ביצועים ודוחות קריסה</translation>
+<translation id="7634963626477752453">הקובץ נשמר בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="7636346903338549690">‏אתרים שמורשים להשתמש בקובצי cookie של צד שלישי</translation>
 <translation id="7637571805876720304">‏האם להסיר מ-Chromium את כרטיס האשראי?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{אין סיסמאות}=1{סיסמה אחת בחשבון (עבור <ph name="DOMAIN_LIST" />)}one{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}two{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}}</translation>

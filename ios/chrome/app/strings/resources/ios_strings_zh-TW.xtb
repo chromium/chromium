@@ -1612,6 +1612,7 @@
 <translation id="7266578100016339897">這麼做可有效整理分頁，保持井然有序。你隨時可以前往「設定」變更這項設定。</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
 <translation id="728025568708172005">開始導覽</translation>
+<translation id="7280980607183752256">無法匯入這個檔案</translation>
 <translation id="7281202269687163394">個人隱私權與 Gemini。</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7300448350764260141">多添一層防護，有效防範線上威脅。</translation>
@@ -2008,6 +2009,7 @@
 <translation id="8726523474917941818">提醒</translation>
 <translation id="8728922029615312208">全部關閉</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8731268612289859741">安全碼</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
 <translation id="8741627442233023406">{count,plural, =1{查看分頁…}other{查看所有分頁…}}</translation>
 <translation id="8741995161408053644">您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的各種瀏覽記錄。</translation>

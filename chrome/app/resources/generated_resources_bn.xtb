@@ -1005,6 +1005,7 @@
 <translation id="1668804837842452164"><ph name="EMAIL" />-এর জন্য <ph name="BRAND" />-এ সেভ করুন</translation>
 <translation id="1668979692599483141">সাজেশনের ব্যাপারে জানুন</translation>
 <translation id="1670399744444387456">প্রাথমিক</translation>
+<translation id="1671749176392751693">সুরক্ষিত কন্টেন্ট সংক্রান্ত শনাক্তকারী ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1673137583248014546"><ph name="URL" /> আপনার নিরাপত্তা কী এবং মডেল দেখতে চায়</translation>
 <translation id="1674073353928166410">সব ইউআরএল (<ph name="URL_COUNT" />টি) ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="1674142805528405174">আপনার অ্যাকাউন্ট <ph name="EMAIL" />-এ আপনার জন্য সেভ করে রাখা শক্তিশালী পাসওয়ার্ডের মাধ্যমে, Google Password Manager, আপনার অ্যাকাউন্ট আপডেট করতে পারবে।</translation>
@@ -1811,6 +1812,7 @@
 <translation id="2234876718134438132">সিঙ্ক এবং Google পরিষেবাগুলি</translation>
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
+<translation id="2236963250883149540">Chrome অটোফিল থেকে আপনার কর্মস্থলের ঠিকানা সরাতে চান?</translation>
 <translation id="2238379619048995541">ফ্রিকোয়েন্সি স্থিতি ডেটা</translation>
 <translation id="2240582393605484605">শুধুমাত্র এই ডিভাইসে সেভ করা ডেটা আগে থাকা প্রোফাইলে রয়ে যাবে</translation>
 <translation id="2241053333139545397">কয়েকটি ওয়েবসাইটে আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
@@ -2400,6 +2402,7 @@
 <translation id="2624142942574147739">এই পৃষ্ঠাটি আপনার ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস করছে৷</translation>
 <translation id="2626799779920242286">দয়া করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="2627424346328942291">শেয়ার করা যাচ্ছে না</translation>
+<translation id="2628258844236035475">Chrome অটোফিল থেকে বাড়ির ঠিকানা সরাতে চান?</translation>
 <translation id="2628770867680720336">ADB ডিবাগিং চালু করতে এই Chromebook ফ্যাক্টরি রিসেট করতে হবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android অ্যাপ তৈরি করুন</translation>
 <translation id="2629437048544561682">ক্যানভাস মুছে দিন</translation>
@@ -3861,6 +3864,7 @@
 <translation id="3665100783276035932">বেশিরভাগ সাইটের প্রত্যাশা অনুযায়ী কাজ করা উচিত</translation>
 <translation id="3665301845536101715">সাইড প্যানেলে খুলুন</translation>
 <translation id="3665589677786828986">Chrome শনাক্ত করেছে যে অন্য কোনো প্রোগ্রাম আপনার কিছু সেটিংয়ের ক্ষতি করেছে এবং সেগুলিকে তাদের মূল ডিফল্টে রিসেট করেছে।</translation>
+<translation id="3665918214153961651">ফাইল আপলোড করা হচ্ছে</translation>
 <translation id="3665919494326051362">বর্তমান ভার্সন হল <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel ওয়াই ফাই NICs-এর জন্য ডিবাগ সংক্রান্ত ডাম্প</translation>
 <translation id="3666971425390608309">ডাউনলোড পজ করা হয়েছে: <ph name="FILE_NAME" />।</translation>
@@ -4254,6 +4258,7 @@
 <translation id="3913689539406883376">আমার কম্পিউটার আনপ্লাগ করা হলে এই মোড চালু করুন</translation>
 <translation id="3914173277599553213">প্রয়োজন</translation>
 <translation id="3914568430265141791">ফোল্ডার <ph name="FOLDER_TITLE" /> খুলুন</translation>
+<translation id="3914894336972817683">আপলোড করা যাবে না। ফাইলে কিছু নেই বলে মনে হচ্ছে।</translation>
 <translation id="3915280005470252504">ভয়েস দ্বারা খুঁজুন</translation>
 <translation id="3916445069167113093"> এই প্রকারের ফাইল আপনার কম্পিউটারের ক্ষতি করতে পারে৷ আপনি কি যেকোনো ভাবে <ph name="FILE_NAME" /> রাখতে চান?</translation>
 <translation id="3917184139185490151">আপনার কম্পিউটারে একটি নিরাপদ মডিউল আছে, যেটির সাহায্যে ChromeOS-এর বিভিন্ন জটিল নিরাপত্তা ফিচার ব্যবহার করা হয়। আরও জানতে Chromebook সহায়তা কেন্দ্রে যান: https://support.google.com/chromebook/?p=sm</translation>
@@ -4329,6 +4334,7 @@
 <translation id="3959969108528118741">মালিক</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-এর জন্য আরও অ্যাকশন</translation>
+<translation id="3961823084595287812">সুরক্ষিত কন্টেন্ট চালানোর জন্য <ph name="HOST" />-কে সবসময় শনাক্তকারী ব্যবহার করার অনুমতি দিন</translation>
 <translation id="3964480518399667971">মোবাইল নেটওয়ার্ক বন্ধ করুন</translation>
 <translation id="3965467402665811906">আপনার সম্পর্কে যে তথ্য সাইটে সেভ হয়েছে, তা ব্যবহারের জন্য সেখান থেকে অনুমতি চাওয়া হতে পারে</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> ছেড়ে যান</translation>
@@ -5986,6 +5992,7 @@
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> এর উন্নত সেটিংস</translation>
 <translation id="5154702632169343078">বিষয়</translation>
 <translation id="5154917547274118687">স্মৃতি</translation>
+<translation id="5155299520372681119">ফাইল আপলোড করার মেয়াদ শেষ হয়ে গেছে এবং সেটি সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="5155327081870541046">আপনি যে সাইট সার্চ করতে চান, অ্যাড্রেস বারে সেটির শর্টকাট লিখুন, যেমন "@bookmarks". এরপর, আপনার পছন্দের কীবোর্ড শর্টকাট প্রেস করে যে শব্দ দিয়ে সার্চ করতে চান সেটি লিখুন।</translation>
 <translation id="5156638757840305347">কার্সর দেখা গেলে বা সরলে তা হাইলাইট করা হয়</translation>
 <translation id="5157250307065481244">সাইটের বিবরণ দেখুন</translation>
@@ -6265,6 +6272,7 @@
 <translation id="536278396489099088">ChromeOS সিস্টেম স্টেট ও রিপোর্ট</translation>
 <translation id="5362916924854054326">SharePoint ও OneDrive ফাইল দেখবেন না</translation>
 <translation id="5363109466694494651">পাওয়ারওয়াশ এবং প্রত্যাবর্তন করুন</translation>
+<translation id="5365858324977454035">অপ্রত্যাশিত সমস্যা হয়েছে, ফাইল আপলোড করা যায়নি।</translation>
 <translation id="5365881113273618889">আপনি যে ফোল্ডার বেছে নিয়েছেন সেটিতে সংবেদনশীল ফাইল আছে। আপনি কি "<ph name="APP_NAME" />"-কে স্থায়ীভাবে লেখার অ্যাক্সেস দেওয়ার ব্যাপারে নিশ্চিত?</translation>
 <translation id="536638840841140142">কোনওটিই নয়</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" />-এ সেভ করা '<ph name="NETWORK_NAME" />'</translation>
@@ -6293,6 +6301,7 @@
 <translation id="538822246583124912">Enterprise সংক্রান্ত নীতি পরিবর্তন করা হয়েছে। টুলবারে "পরীক্ষা" বোতাম যোগ করা হয়েছে। পরীক্ষা চালু করার জন্য একটি ডায়ালগ খুলতে বোতামে ক্লিক করুন।</translation>
 <translation id="5388436023007579456">সিস্টেম পরিষেবার সাথে যেসব অ্যাপ ও ওয়েবসাইটের ক্যামেরা অ্যাক্সেস করার অনুমতি আছে, সেগুলি আপনার ক্যামেরা ব্যবহার করতে পারবে। ক্যামেরা ব্যবহার করতে, আপনাকে অ্যাপ রিস্টার্ট করতে বা পৃষ্ঠা রিফ্রেশ করতে হতে পারে।</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{অনেক বেশি বিজ্ঞপ্তি সহ ১টি সাইট পাওয়া গেছে}one{অনেক বেশি বিজ্ঞপ্তি সহ {NUM_SITES}টি সাইট পাওয়া গেছে}other{অনেক বেশি বিজ্ঞপ্তি সহ {NUM_SITES}টি সাইট পাওয়া গেছে}}</translation>
+<translation id="5388719243178419614">আপলোড করা যাবে না। ছবির ফাইল প্রসেস করা যায়নি।</translation>
 <translation id="5388885445722491159">জোড়া</translation>
 <translation id="5389224261615877010">রামধনু</translation>
 <translation id="5389794555912875905">অসুরক্ষিত সাইটে যাওয়ার আগে সতর্কতা দেখুন (সাজেস্ট করা হয়েছে)</translation>
@@ -6335,6 +6344,7 @@
 <translation id="5414836363063783498">যাচাই করা হচ্ছে...</translation>
 <translation id="5415328625985164836">এটি হল বিটা প্রোগ্রাম। আপনি এখন নিজের Chromebook-এ কিছু গেম খেলার জন্য Steam ব্যবহার করতে পারবেন।</translation>
 <translation id="5415497281076257439">বাক্যাংশ</translation>
+<translation id="5417293056300086453">সুরক্ষিত কন্টেন্ট চালানোর জন্য এই সাইট শনাক্তকারী ব্যবহার করে।</translation>
 <translation id="5417312524372586921">ব্রাউজারের থিম</translation>
 <translation id="541737483547792035">স্ক্রিন বড় করা</translation>
 <translation id="541822678830750798">এই সাইট পড়ার ও পরিবর্তন করার অনুরোধ করা হচ্ছে</translation>
@@ -6871,6 +6881,7 @@
 <translation id="5804259315582798390">স্থানীয় ডেটা রিকভারি চালু করা যায়নি</translation>
 <translation id="5805268472388605531">অ্যাকসেন্ট চিহ্ন এবং বিশেষ অক্ষর দেখতে কীবোর্ড কী প্রেস করে ধরে থাকুন</translation>
 <translation id="5805697420284793859">উইন্ডো ম্যানেজার</translation>
+<translation id="5806322307130093061"><ph name="FILE_NAME" /> ফাইল মুছে ফেলতে Enter প্রেস করুন</translation>
 <translation id="5806447147478173900">দেখানো সাইটগুলি মোট যতটা স্টোরেজ ব্যবহার করেছে: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">০° (ডিফল্ট)</translation>
 <translation id="5807774529265708172">স্ক্রিনের কীবোর্ড দেখা বা লুকিয়ে দেওয়া</translation>
@@ -7010,6 +7021,7 @@
 <translation id="5901630391730855834">হলুদ</translation>
 <translation id="5902892210366342391">ছদ্মবেশী মোডে অসুরক্ষিত সাইটে যাওয়ার আগে সতর্কতা দেখুন</translation>
 <translation id="5904614460720589786">কনফিগার করার সময় সমস্যা হওয়ার জন্য <ph name="APP_NAME" /> সেট-আপ করা যায়নি। আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
+<translation id="5906457147959147328">সুরক্ষিত কন্টেন্ট চালানোর জন্য এই সাইটকে শনাক্তকারী ব্যবহার করার অনুমোদন দেওয়ার প্রসেস চালিয়ে যান</translation>
 <translation id="5906655207909574370">প্রায় আপ-টু-ডেট হয়েছে! আপডেট শেষ করতে আপনার ডিভাইস আবার চালু করুন।</translation>
 <translation id="5906732635754427568">এই অ্যাপ্লিকেশান সংশ্লিষ্ট ডেটা এই ডিভাইস থেকে সরিয়ে ফেলা হবে।</translation>
 <translation id="5906974869830879618">পিন নম্বর লিখুন</translation>
@@ -7856,6 +7868,8 @@
 <translation id="6521214596282732365">সাইট সাধারণত আপনার ফন্ট ব্যবহার করে যাতে আপনি অনলাইন ডিজাইন এবং গ্রাফিক্স টুল দিয়ে হাই-ফিডালিটি কন্টেন্ট তৈরি করতে পারেন</translation>
 <translation id="6523574494641144162">Google Password Manager এইসব পাসওয়ার্ড আপনার Google অ্যাকাউন্টে সেভ করতে পারেনি। আপনি এটি এই ডিভাইসে সেভ করতে পারবেন।</translation>
 <translation id="652492607360843641">আপনি <ph name="NETWORK_TYPE" /> নেটওয়ার্কে কানেক্ট করে রয়েছেন।</translation>
+<translation id="6525594601091660913">&gt;
+        ফাইল আপলোড করা হয়ে গেছে</translation>
 <translation id="6525767484449074555">“ইনস্টল করুন” বিকল্পে ক্লিক করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6527574156657772563">কোনও ডিভাইস উপলভ্য নেই। আপনার ফোন নম্বর <ph name="DEVICE_TYPE" />-এর সাথে কানেক্ট করতে নিজের Google অ্যাকাউন্ট যোগ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -8990,8 +9004,10 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{শুধু ১টি বুকমার্ক এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেটিকে সেভ করুন।}one{শুধু {BOOKMARK_COUNT}টি বুকমার্ক এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}other{শুধু {BOOKMARK_COUNT}টি বুকমার্ক এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}}</translation>
 <translation id="7328867076235380839">এই কম্বিনেশন ব্যবহার করা যাবে না</translation>
+<translation id="7329009627557479564">আপলোড করা যাবে না। ফাইলটি অনুমোদিত সাইজের থেকে অনেক বড়।</translation>
 <translation id="7329154610228416156">এটি নিরাপদ নয় এমন একটি URL (<ph name="BLOCKED_URL" />) ব্যবহারের জন্য কনফিগার করা থাকায় সাইন-ইন করা যায়নি। অনুগ্রহ করে আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />-এর ডিভাইসের জন্য <ph name="FEATURE_NAME" /> সেটিংস, <ph name="USER_EMAIL" /> অ্যাকাউন্টের অধীনে শেয়ার করা হচ্ছে।</translation>
+<translation id="733058866272972585">সুরক্ষিত কন্টেন্ট চালানোর জন্য এই সাইটের কাছে শনাক্তকারী ব্যবহার করার অনুমতি নেই।</translation>
 <translation id="7331646370422660166">alt + নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="7332053360324989309">ডেডিকেটেড ওয়ার্কার: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">ডুপ্লিকেট ট্যাব</translation>
@@ -9241,6 +9257,7 @@
 <translation id="7490683549040131791">বাকি পাসওয়ার্ড চেক করুন</translation>
 <translation id="7491962110804786152">ট্যাব</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{১টি সাইটের কুকি}one{{NUM_COOKIES}টি সাইটের কুকি}other{{NUM_COOKIES}টি সাইটের কুকি}}</translation>
+<translation id="7493355200491857618">সুরক্ষিত কন্টেন্ট সংক্রান্ত শনাক্তকারী ব্যবহারের অনুমতি দেওয়া হয়নি</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> এক্সটেনশন হয়ত ব্যক্তিগত ডেটা যেমন পাসওয়ার্ড ও ক্রেডিট কার্ড নম্বরগুলি সহ আপনি যা টাইপ করেন সেসব পাঠ্য সংগ্রহ করতে পারে। আপনি কি এই এক্সটেনশন ব্যবহার করতে চান?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android অ্যাপ</translation>
@@ -10234,6 +10251,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ট্যাবটি নতুন উইন্ডোতে খুলুন}one{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}other{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}}</translation>
 <translation id="8163152278172770963">'ছবির-মধ্যে-ছবি' মোডে অটোমেটিক প্রবেশ করার জন্য সাইটকে অনুমতি দেবেন না</translation>
 <translation id="8163708146810922598">সবচেয়ে পুরনো</translation>
+<translation id="8164842729077473463">সুরক্ষিত কন্টেন্ট চালানোর জন্য এই সাইটকে শনাক্তকারী ব্যবহার করা থেকে ব্লক করা চালিয়ে যান</translation>
 <translation id="8165997195302308593">Crostini-এর পোর্ট ফরওয়ার্ড করা</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{একটি ফোন নম্বর}one{#টি ফোন নম্বর}other{#টি ফোন নম্বর}}</translation>
 <translation id="8168435359814927499">কন্টেন্ট</translation>
@@ -10983,6 +11001,7 @@
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> বাতিল করুন</translation>
 <translation id="8687527282898211955">আপনার পিন সেট-আপ করুন</translation>
+<translation id="8687774873995698516">সুরক্ষিত কন্টেন্ট চালানোর জন্য <ph name="HOST" />-কে সবসময় শনাক্তকারী ব্যবহার করা থেকে ব্লক করুন</translation>
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="8689811383248488428">প্রত্যাখ্যান করুন এবং প্রোফাইল বন্ধ করুন</translation>
 <translation id="8689998525144040851">১০০</translation>
@@ -11329,12 +11348,14 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-এর <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">অ্যাপ ইনস্টল করা হচ্ছে...</translation>
 <translation id="891931289445130855">ডেটা ও অনুমতি মুছুন</translation>
+<translation id="8919468987486771003">আপলোড করা যাবে না। ফাইল আপলোড সংক্রান্ত ভ্যালিডেশন চেক করা যায়নি।</translation>
 <translation id="8920133120839850939">আরও 'জেসচার' ট্যাব বেছে নিন, তারপর নেভিগেট করে বিভিন্ন পৃষ্ঠার মধ্যে আগে ও পরে যাওয়ার জন্য 'সোয়াইপ' করার সুবিধা চালু করুন</translation>
 <translation id="8921369299636221117">কনসিয়ার্জ পরিষেবা উপলভ্য নেই।</translation>
 <translation id="8922348435910470639">দুবার বুক করা হয়েছে</translation>
 <translation id="8922624386829239660">মাউস স্ক্রিনের ধারে পৌঁছে গেলে স্ক্রিন সরান</translation>
 <translation id="8923880975836399332">গাঢ় নীলাভ সবুজ</translation>
 <translation id="8925124370124776087">টাইটেল বার এখন লুকানো আছে</translation>
+<translation id="8925308599005372373">পিডিএফ আপলোড করুন</translation>
 <translation id="8925458182817574960">&amp;সেটিংস</translation>
 <translation id="8926389886865778422">আর জিজ্ঞাসা করবেন না</translation>
 <translation id="8926555406617248399">ট্যাব লুকানো আছে</translation>

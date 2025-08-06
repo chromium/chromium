@@ -5915,6 +5915,7 @@
 <translation id="5109044022078737958">ಮಿಯಾ</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5111326646107464148">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಗುಂಪನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="511147239888121455">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="5111646998522066203">ಅದೃಶ್ಯ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="5111692334209731439">&amp;ಬುಕ್‌ಮಾರ್ಕ್ ವ್ಯವಸ್ಥಾಪಕ</translation>
 <translation id="5111794652433847656">ಈ ಸಾಧನದಲ್ಲಿ <ph name="APP_NAME" /> ಅವರಿಗಾಗಿ ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳಿಲ್ಲ</translation>
@@ -8207,6 +8208,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Google ಜೊತೆಗೆ <ph name="DEVICE_OS" /> ಹಂಚಿಕೊಳ್ಳಬಹುದಾದ ಡೇಟಾದ ಕುರಿತು ಮತ್ತು ಅದನ್ನು ಹೇಗೆ ಬಳಸಲಾಗುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ಮಾಹಿತಿಗಾಗಿ g.co/flex/HWDataCollection ಗೆ ಭೇಟಿ ನೀಡಿ.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">ನಿಮಗಾಗಿ ಹಾಗೂ ವೆಬ್‌ನಲ್ಲಿರುವ ಎಲ್ಲರಿಗಾಗಿ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ</translation>
 <translation id="6771503742377376720">ಪ್ರಮಾಣಪತ್ರ ಪ್ರಾಧಿಕಾರವಾಗಿದೆ</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> ಕೆಲಸದ ಸ್ಥಳಕ್ಕಾಗಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="6772974422346500939">ತೆರೆಯಿರಿ ಮತ್ತು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">ಸೈಟ್‌ಗೆ ಒನ್‌-ಟೈಮ್‌‌ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
@@ -10031,6 +10033,7 @@
 <translation id="8025151549289123443">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಮಾಡಿ ಹಾಗೂ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8025291188699172126">ಅಪ್‌ಡೇಟ್‌ಗಳ ಕುರಿತು</translation>
 <translation id="8026471514777758216">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳು</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> ಮನೆ ವಿಳಾಸಕ್ಕಾಗಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="8026784703228858744">ಸಿಂಕ್‌ನೊಂದಿಗೆ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 ದಿನಗಳ ಹಿಂದೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ}=1{1 ದಿನದ ಹಿಂದೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ}one{# ದಿನಗಳ ಹಿಂದೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ}other{# ದಿನಗಳ ಹಿಂದೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10179,6 +10182,7 @@
 <translation id="8121537075864592453">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8121750884985440809">ನೀವು ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಬಿತ್ತರಿಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="8122898034710982882">ಫೋನ್ ಹಬ್, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ, ಇದರಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನೀವು ಅವುಗಳನ್ನು ಸುಲಭವಾಗಿ ಪಡೆಯಬಹುದು</translation>
 <translation id="81238879832906896">ಹಳದಿ ಮತ್ತು ಬಿಳಿ ಹೂ</translation>
 <translation id="8123975449645947908">ಹಿಂದಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="8124313775439841391">ನಿರ್ವಹಿಸಲಾದ ONC</translation>

@@ -421,6 +421,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1700542542921501212">Du kan söka på webben med <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
+<translation id="1705645336613358172">Använd Affirm eller Zip för att betala över tid</translation>
 <translation id="1706625117072057435">Zoomnivåer</translation>
 <translation id="1706922226983368260">Nyckel • <ph name="PHONE_NAME" /></translation>
 <translation id="1706954506755087368">{1,plural, =1{Det gick inte att bevisa att serverns identitet är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat uppges börja gälla i morgon. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad.}other{Det gick inte att bevisa att serverns identitet är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat uppges börja gälla om # dagar. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad.}}</translation>
@@ -813,6 +814,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill kopplas</translation>
 <translation id="2344529975040861103">Du kan fylla i det här kortet automatiskt eftersom ditt konto är länkat till Google Pay</translation>
 <translation id="2346319942568447007">Bilden som du kopierade</translation>
+<translation id="2347764072711098973">Använd Affirm, Zip eller Klarna för att betala över tid</translation>
 <translation id="2348509731468399833">Prisbevakning har avslutats.</translation>
 <translation id="2349957959687031096">Knappen Öppna en inkognitoflik: aktivera om du vill öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="2350796302381711542">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" />?</translation>
@@ -1619,6 +1621,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3693327506115126094">Välj hur du vill verifiera din identitet</translation>
 <translation id="3698353241727597930">Administratören har ställt in att <ph name="FILES" /> ska sparas i ditt företagshanterade lagringsutrymme på <ph name="CLOUD_STORAGE" />. Dessa filer kan övervakas, granskas och behållas när du raderar dem.</translation>
 <translation id="3698629142018988477">Knappen Skapa webbplats: aktivera om du snabbt vill skapa en ny webbplats i Google Sites</translation>
+<translation id="3700094625653511150">Gå till <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om du vill dölja alternativen för att betala senare</translation>
 <translation id="3700966190175650601">Du använder ditt fingeravtryck för att fylla i lösenord</translation>
 <translation id="3701325639446035885">Biljettförsäljning</translation>
 <translation id="3701427423622901115">Återställning bekräftad.</translation>
@@ -1682,6 +1685,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3792826587784915501">Kult- och indiefilm</translation>
 <translation id="3793574014653384240">Antal och orsaker till krascher som har skett nyligen</translation>
 <translation id="3795624560191557077">Du har nyligen ändrat ett lösenord som har hittats i ett offentligt dataintrång. Om du har problem kan Google Lösenordshanterare hjälpa dig att logga in.</translation>
+<translation id="3796181268473765083">Betala månadsvis eller dela upp i fyra räntefria avbetalningar (beroende på kvalificering)</translation>
 <translation id="3799805948399000906">Teckensnitt begärt</translation>
 <translation id="3801297763951514916">Du besöker ofta</translation>
 <translation id="380329542618494757">Namn</translation>
@@ -2202,6 +2206,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="468314109939257734">Visa ditt virtuella kortnummer</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
 <translation id="4687718960473379118">Föreslagna annonser på webbplatser</translation>
+<translation id="4690205240253392065">Välj en leverantör för att betala senare</translation>
 <translation id="469028408546145398">Knappen Stäng inkognitofönster: aktivera om du vill stänga alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="4691093235373904540">Takläggning</translation>
 <translation id="4692623383562244444">Sökmotorer</translation>
@@ -2324,6 +2329,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4877422487531841831">Sök på <ph name="TEXT" /></translation>
 <translation id="4877521229462766300">Vill du tillåta inbäddat innehåll?</translation>
 <translation id="4879491255372875719">Automatiskt (standard)</translation>
+<translation id="4880328155169081699">Vill du uppdatera id-kortet?</translation>
 <translation id="4880827082731008257">Sök i historiken</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4881808915112408168">24 x 31,5 tum</translation>
@@ -2472,6 +2478,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5122786942953798871">Kuvert (bomull)</translation>
 <translation id="5123063207673082822">helgen</translation>
 <translation id="5123433949759960244">Basketboll</translation>
+<translation id="5125575917473813637">Redigera id-kort</translation>
 <translation id="5125751979347152379">Ogiltig webbadress.</translation>
 <translation id="512592033764059484">Fotboll</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> kan påverkas om storleken ändras. Använd förinställda fönsterstorlekar för att appen ska fungera som avsett.</translation>
@@ -2992,6 +2999,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6014801569448771146">Kontrollera lösenorden</translation>
 <translation id="6014851866995737824">Ignoreras eftersom antingen aktiverings- eller inaktiveringslistan saknas.</translation>
 <translation id="6015796118275082299">År</translation>
+<translation id="6017028474478839719">Vill du spara id-kortet?</translation>
 <translation id="6017514345406065928">Grön</translation>
 <translation id="6018650639991193045">Radera webbhistorik, cookies, cache med mera i inställningarna för Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
@@ -3080,6 +3088,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
     som används.</translation>
 <translation id="614940544461990577">Testa att</translation>
 <translation id="6150036310511284407">Tre hål till vänster</translation>
+<translation id="6150164900447447084">Vill du spara kortet på den här enheten?</translation>
 <translation id="6150754742333439143">Återanvändning av lösenord övervakas av <ph name="ORG_NAME" /></translation>
 <translation id="6151417162996330722">Servercertifikatet har för lång giltighetstid.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tum (<ph name="ORIENTATION" />)</translation>
@@ -3539,6 +3548,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6921197121276419421">Att installera webbappar tillåts</translation>
 <translation id="69238565902785824">Genom att ha kontot länkat kan du betala snabbare med <ph name="BNPL_ISSUER_NAME" />, men du kan ta bort länken på <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Välj om du vill se dina kortförmåner i kassan (bankvillkor gäller)</translation>
+<translation id="6924933062125062950">Radera id-kort</translation>
 <translation id="6925267999184670015">Nordamerikansk B+</translation>
 <translation id="6926216138694948720">Kroppskonst</translation>
 <translation id="692638818576287323">Yrkesfordon</translation>
@@ -3599,6 +3609,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7006930604109697472">Skicka ändå</translation>
 <translation id="7009364359744329733">Kortet är inte tillgängligt just nu. Försök igen senare.</translation>
 <translation id="7010658264061801199">Mat och dryck</translation>
+<translation id="7011763495818914549">Id-kort</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Kan be om tillåtelse att låsa och använda din mus</translation>
 <translation id="7014042602717177828">Billjudutrustning</translation>
@@ -3873,6 +3884,7 @@ Mer information.
 <translation id="7457071735008326060">Lastbilar och släp</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="746412105358554870">JavaScript-optimering och säkerhet</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> får reda på att du besökte <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 tum</translation>
 <translation id="7469935732330206581">Formuläret är inte säkert</translation>
@@ -3969,6 +3981,7 @@ Mer information.
 <translation id="761261689936461781">Tjock</translation>
 <translation id="7613889955535752492">Upphör: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill visa och hantera lösenord i inställningarna för Chrome</translation>
+<translation id="7615932826417658001">Lägg till id-kort</translation>
 <translation id="7616645509853975347">Administratören har aktiverat Chrome Enterprise Connectors i din webbläsare. Dessa funktioner har åtkomst till en del av din data.</translation>
 <translation id="7617825962482469577">C7/C6-kuvert</translation>
 <translation id="7618270539713451657">Kampsport</translation>
@@ -4133,6 +4146,7 @@ Mer information.
 <translation id="7887885240995164102">Öppna bild-i-bild-läge</translation>
 <translation id="7888575728750733395">Renderingsmetod för utskrifter</translation>
 <translation id="7890748547282909375">Logga in på Microsoft OneDrive för att spara skärmbilden</translation>
+<translation id="7890755620327858054">Det går inte att betala senare just nu. Försök igen eller välj en annan betalningsmetod.</translation>
 <translation id="7892431309448524994"><ph name="ORIGIN" /> – Visa markören genom att trycka på |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">betalningsinställningar</translation>
 <translation id="7894280532028510793">Om stavningen är rätt <ph name="BEGIN_LINK" />testar du att köra nätverksdiagnostik<ph name="END_LINK" />.</translation>

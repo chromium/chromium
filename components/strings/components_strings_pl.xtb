@@ -362,6 +362,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="159274626729231974">Festiwale filmowe</translation>
 <translation id="1593359183944365958">270 stopni</translation>
 <translation id="1594030484168838125">Wybierz</translation>
+<translation id="1595731774593926493">Usuń numer Redress</translation>
 <translation id="1597307423671074806">Film WEBM</translation>
 <translation id="159800670740560023">Link do wskazówki dotyczącej Chrome; naciśnij Enter, aby otworzyć <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Nowa karta? <ph name="BEGIN_LINK" />Podaj dane karty<ph name="END_LINK" /></translation>
@@ -754,6 +755,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2233745931693710080">Dysk kompaktowy</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2239100178324503013">Wyślij teraz</translation>
+<translation id="224130779555573777">Dodaj numer Redress</translation>
 <translation id="2241693394036365668">Pobrano plik</translation>
 <translation id="2242389809734574253">Zapisywanie numeru IBAN zostało zamknięte.</translation>
 <translation id="2246264294482514010">10 x 12 cali</translation>
@@ -2932,6 +2934,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5886961930368713749">Prześlij opinię na temat funkcji Porównaj</translation>
 <translation id="5887400589839399685">Zapisano kartę</translation>
 <translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
+<translation id="5890248301649767931">Zapisać numer Redress?</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5895187275912066135">Wystawiony dnia</translation>
 <translation id="5898767305816764989">Przycisk Lubię. Naciśnij Enter, aby wskazać, że sugestia <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> Ci się podoba</translation>
@@ -3553,6 +3556,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6905163627763043954">Wypróbuj</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Pobranie wielu plików</translation>
+<translation id="691046363691324218">Numer Redress</translation>
 <translation id="6915804003454593391">Użytkownik:</translation>
 <translation id="6916193791494646625">Podaj powód pobrania (wymagane)</translation>
 <translation id="6917795328362592458">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
@@ -4499,6 +4503,7 @@ Dodatkowe informacje:
 <translation id="8457125768502047971">Bez ograniczeń</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Włącz</translation>
+<translation id="8461289985785035071">Edytuj numer Redress</translation>
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem wielowyrazowym do synchronizacji</translation>
 <translation id="8461973047386722744">Nie znaleziono haseł</translation>
 <translation id="8467494337615822642">Otwórz stronę kontroli zabezpieczeń w Chrome w ustawieniach</translation>
@@ -4806,6 +4811,7 @@ Dodatkowe informacje:
 <translation id="9026253329950610248">Witryny Google</translation>
 <translation id="9027020981272345766">Wypróbuj Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Aby zamknąć tryb pełnoekranowy, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">Zaktualizować numer Redress?</translation>
 <translation id="9035022520814077154">Błąd zabezpieczeń</translation>
 <translation id="9035824888276246493">Zapisz kody zabezpieczające</translation>
 <translation id="9036306139374661733">Zezwolić na używanie mikrofonu?</translation>

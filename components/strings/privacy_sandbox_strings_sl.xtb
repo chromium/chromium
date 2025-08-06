@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
-<translation id="1045545926731898784">To spletno mesto pripada skupini spletnih mest, kot jo določa <ph name="SET_OWNER" /> in ki lahko deli vašo dejavnost v skupini, da bi spletna mesta delovala, kot je predvideno.</translation>
 <translation id="1055273091707420432">Chromium samodejno izbriše teme oglasov, starejše od štirih tednov.</translation>
 <translation id="1184166532603925201">V anonimnem načinu Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb</translation>
 <translation id="1205053266843535401">Omejitev dostopa do podatkov o napravi in brskalniku</translation>
@@ -16,7 +15,6 @@
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />Kako spletna mesta uporabljajo te podatke?<ph name="END_BOLD" /> Chrome med brskanjem beleži teme, ki vas zanimajo. Oznake tem so vnaprej določene in vključujejo stvari, kot so umetnost in zabava, nakupovanje in šport. Pozneje lahko spletno mesto, ki ga obiščete, od Chroma zahteva dostop do nekaterih tem zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
 <translation id="1732764153129912782">Spremembe lahko izvedete v nastavitvah zasebnosti pri oglaševanju</translation>
 <translation id="1780659583673667574">Če na primer obiščete spletno mesto, da bi poiskali recept za večerjo, se lahko spletno mesto odloči, da vas zanima kuhanje. Pozneje vam lahko drugo spletno mesto prikaže povezan oglas za storitev dostave živil, ki ga predlaga prvo spletno mesto.</translation>
-<translation id="1818866261309406359">Upravljanje podatkov povezanih spletnih mest na novem zavihku</translation>
 <translation id="1824257235526922152">Chromium blokira piškotke tretjih oseb v anonimnem načinu, vendar je razširitev dovolila piškotke tretjih oseb za to spletno mesto. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete.</translation>
 <translation id="1887631853265748225">Funkcije za zasebnost pri oglaševanju pomagajo omejiti, katere podatke lahko spletna mesta in njihovi oglaševalski partnerji pridobijo o vas, ko prikazujejo osebno prilagojene oglase.</translation>
 <translation id="1953252525523274058">Spletna mesta, ki jih obiščete, morda vdelajo vsebino z drugih spletnih mest (na primer slike, oglase in besedilo), ki se lahko uporabi za pridobivanje podatkov o vas. Preberite več o upravljanju <ph name="START_LINK" />zaščit pred sledenjem v anonimnem načinu<ph name="END_LINK" /></translation>
@@ -93,7 +91,6 @@
 <translation id="5117284457376555514">Spletna mesta ne morejo uporabljati piškotkov tretjih oseb za osebno prilagajanje vsebine in oglasov ter za pridobivanje podatkov o dejanjih, ki jih izvajate na drugih spletnih mestih, razen če sorodnim spletnim mestom omogočite dostop do njih. Nekatere funkcije spletnega mesta morda ne bodo delovale po pričakovanjih.</translation>
 <translation id="5165490319523240316">Spletna mesta in njihovi oglaševalski partnerji lahko za osebno prilagajanje oglasov na drugih spletnih mestih uporabljajo vašo dejavnost, na primer podatke o tem, kako preživljate čas na spletnih mestih, ki jih obiščete. Če na primer obiščete spletno mesto, da bi poiskali recept za večerjo, se lahko spletno mesto odloči, da vas zanima kuhanje. Pozneje vam lahko drugo spletno mesto prikaže povezan oglas za storitev dostave živil, ki ga predlaga prvo spletno mesto.</translation>
 <translation id="544199055391706031">Vaša dejavnost je ena od številnih stvari, ki jih lahko spletno mesto uporablja pri predlaganju oglasov. Ko so oglasi, ki jih predlaga spletno mesto, izklopljeni, vam spletna mesta lahko še vedno prikazujejo oglase, vendar bodo morda manj osebno prilagojeni. Preberite več o <ph name="BEGIN_LINK" />oglasih, ki jih predlaga spletno mesto<ph name="END_LINK" />.</translation>
-<translation id="5495405805627942351">Upravljanje podatkov povezanih spletnih mest</translation>
 <translation id="5535388436012824806">Chrome v anonimnem načinu blokira piškotke tretjih oseb, vendar ste za to spletno mesto ustvarili izjemo. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete.</translation>
 <translation id="5574580428711706114">Google od podjetij zahteva, da javno izjavijo, da teh podatkov ne bodo uporabljala za sledenje vam po spletnih mestih. Podjetja so odgovorna za obveščanje o tem, kako uporabljajo vaše podatke. <ph name="BEGIN_LINK1" />Preberite več o tem v pravilniku o zasebnosti<ph name="LINK_END1" />.</translation>
 <translation id="5677928146339483299">Blokirano</translation>

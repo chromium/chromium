@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
-<translation id="1045545926731898784">Bu sayt <ph name="SET_OWNER" /> egaligidagi saytlar guruhiga qarashli. Kutilganidek ishlashi uchun bu guruhdagi harakatlaringiz axboroti saytlarga uzatilishi mumkin.</translation>
 <translation id="1055273091707420432">Chromium 4 haftadan eski reklamalardagi mavzularni avtomatik oʻchiradi</translation>
 <translation id="1145223915439299117">Inkognito rejimida Chrome tashqi cookie fayllarni bloklaydi, ammo bu sayt uchun tashqi cookie fayllar kengaytma tomonidan ruxsat etilgan.</translation>
 <translation id="1184166532603925201">Inkognito rejimda Chrome saytlarning tashqi cookie fayllaridan foydalanishini bloklaydi</translation>
@@ -19,7 +18,6 @@
 <translation id="172522356264798673">Kuzatuvdan himoyani davom ettirish</translation>
 <translation id="1732764153129912782">Reklamada maxfiylik sozlamalarida oʻzgartirishlar kiritishingiz mumkin.</translation>
 <translation id="1780659583673667574">Masalan, saytlarda kechki ovqat retseptlarini qidirsangiz, sayt oshpazlikka qiziqasiz deb aniqlashi mumkin. Keyinchalik avvalgi sayt tavsiyasi asosida boshqa saytlarda oziq-ovqat yetkazib berish xizmatlari reklamasi chiqishi mumkin.</translation>
-<translation id="1818866261309406359">Aloqador saytlar maʼlumotlarini boshqarish (yangi varaqda ochiladi)</translation>
 <translation id="1824257235526922152">Inkognito rejimida Chromium tashqi cookie fayllarni bloklaydi, ammo bu sayt uchun tashqi cookie fayllar kengaytma tomonidan ruxsat etilgan. Shuningdek, Inkognito rejimida siz tashrif buyurgan saytga kontentni ichki joylagan kompaniyalar uchun mavjud maʼlumotlarga ruxsatni cheklashi mumkin funksiyalar taqdim etiladi.</translation>
 <translation id="1887631853265748225">Reklamalarda maxfiylik funksiyalari saytlar va ularning hamkorlari sizga moslangan reklamalarni chiqarishda siz haqingizda nimalarni bilishini cheklashga yordam beradi.</translation>
 <translation id="1953252525523274058">Siz kiradigan saytlar siz haqingizda axborot olish maqsadida boshqa saytlardagi rasm, reklama va matn kabi kontentni ichki joylashi mumkin. <ph name="START_LINK" />Inkognito rejimida kuzatuvdan himoyalarni<ph name="END_LINK" /> boshqarish haqida batafsil</translation>
@@ -101,7 +99,6 @@
 <translation id="5165490319523240316">Saytlar va ularning reklama hamkorlari bu saytlarda oʻtkazilgan vaqt kabi harakatlaringizdan reklamani moslashtirish maqsadida foydalanishi mumkin. Masalan, saytlarda kechki ovqat retseptlarini qidirsangiz, sayt oshpazlikka qiziqasiz deb aniqlashi mumkin. Keyinchalik avvalgi sayt tavsiyasi asosida boshqa saytlarda oziq-ovqat yetkazib berish xizmatlari reklamasi chiqishi mumkin.</translation>
 <translation id="5362892126200493757">Bu saytda kuzatuvdan himoya nega pauza qilinganini xabar qiling</translation>
 <translation id="544199055391706031">Faollik tarixingiz sayt reklamani moslashtirishda foydalanishi mumkin narsalardan biri hisoblanadi. Sayt taklif qiladigan reklamalar yoqilmasa, saytlar hanuz reklama chiqarishi mumkin, ammo bu reklamalar kamroq moslashtiriladi. <ph name="BEGIN_LINK" />Sayt taklif qiladigan reklamalar<ph name="END_LINK" /> haqida batafsil</translation>
-<translation id="5495405805627942351">Aloqador saytlar maʼlumotlarini boshqarish</translation>
 <translation id="5535388436012824806">Inkognito rejimida Chrome tashqi cookie fayllarni bloklaydi, ammo bu saytni istisno qilgansiz. Shuningdek, Inkognito rejimida siz tashrif buyurgan saytga kontentni ichki joylagan kompaniyalar uchun mavjud maʼlumotlarga ruxsatni cheklashi mumkin funksiyalar taqdim etiladi.</translation>
 <translation id="5574580428711706114">Google kompaniyalardan saytlardagi harakatlaringizni kuzatish uchun bu maʼlumotlardan foydalanmaslik haqida bayonot qilishni talab qiladi. Kompaniyalar maʼlumotlaringizni qanday ishlatishi haqida sizga xabar qilish majburiyatini oladi. <ph name="BEGIN_LINK1" />Maxfiylik siyosati orqali batafsil<ph name="LINK_END1" /> tanishing.</translation>
 <translation id="565589626121534692">Kuzatuvdan himoyani pauza qilish</translation>

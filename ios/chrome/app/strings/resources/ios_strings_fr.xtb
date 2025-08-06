@@ -1612,6 +1612,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7266578100016339897">Cela vous aide à rester organisé. Vous pouvez modifier cette option à tout moment dans les paramètres.</translation>
 <translation id="7272437679830969316">Impossible de confirmer votre identité. Mot de passe non copié.</translation>
 <translation id="728025568708172005">Découvrir</translation>
+<translation id="7280980607183752256">Impossible d'importer ce fichier</translation>
 <translation id="7281202269687163394">Votre confidentialité et Gemini</translation>
 <translation id="7293429513719260019">Sélectionner une langue</translation>
 <translation id="7300448350764260141">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne.</translation>
@@ -2008,6 +2009,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8726523474917941818">Créer un rappel</translation>
 <translation id="8728922029615312208">Tout fermer</translation>
 <translation id="8730621377337864115">OK</translation>
+<translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="87371078663613140">Explorez les options de la barre de menu</translation>
 <translation id="8741627442233023406">{count,plural, =1{Consulter l'onglet…}one{Consulter l'onglet…}other{Consulter tous les onglets…}}</translation>
 <translation id="8741995161408053644">Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -1612,6 +1612,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7266578100016339897">Pomôže vám to udržať si poriadok. V nastaveniach to môžete kedykoľvek zmeniť.</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
 <translation id="728025568708172005">Spustiť prehliadku</translation>
+<translation id="7280980607183752256">Tento súbor sa nedá importovať</translation>
 <translation id="7281202269687163394">Ochrana vášho súkromia a Gemini</translation>
 <translation id="7293429513719260019">Vybrať jazyk</translation>
 <translation id="7300448350764260141">Pridajte ďalšiu úroveň ochrany pred hrozbami na internete.</translation>
@@ -2008,6 +2009,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8726523474917941818">Pripomenúť</translation>
 <translation id="8728922029615312208">Zavrieť všetko</translation>
 <translation id="8730621377337864115">Hotovo</translation>
+<translation id="8731268612289859741">Bezpečnostný kód</translation>
 <translation id="87371078663613140">Preskúmajte možnosti na paneli s ponukami</translation>
 <translation id="8741627442233023406">{count,plural, =1{Skontrolovať kartu…}few{Skontrolovať všetky karty…}many{Review all tabs…}other{Skontrolovať všetky karty…}}</translation>
 <translation id="8741995161408053644">Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

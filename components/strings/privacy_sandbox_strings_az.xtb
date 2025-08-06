@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
-<translation id="1045545926731898784">Bu sayt <ph name="SET_OWNER" /> tərəfindən müəyyən edilmiş saytlar qrupuna aiddir və saytların gözlənildiyi kimi işləməsinə kömək etmək üçün fəaliyyətinizi qrupda paylaşa bilər.</translation>
 <translation id="1055273091707420432">Chromium 4 həftədən əvvələ aid reklam mövzularını avtomatik silir</translation>
 <translation id="1184166532603925201">Anonim rejimdə olduğunuz zaman Chrome saytların üçüncü tərəf kukilərindən istifadəsini bloklayır</translation>
 <translation id="1205053266843535401">Cihaz və brauzer datasına girişi məhdudlaşdırın</translation>
@@ -16,7 +15,6 @@
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />Saytlar bu datadan necə istifadə edir?<ph name="END_BOLD" /> Siz nəzər salarkən Chrome maraqlandığınız mövzuları qeyd edir. Mövzu etiketləri əvvəlcədən müəyyən edilir, İncəsənət və Əyləncə, Alış-veriş və İdman kimi sahələri əhatə edir. Daha sonra daxil olduğunuz sayt gördüyünüz reklamları fərdiləşdirmək üçün Chrome-dan mövzularınızın bir neçəsini istəyə bilər.</translation>
 <translation id="1732764153129912782">Reklam məxfiliyi ayarlarında dəyişiklik edə bilərsiniz</translation>
 <translation id="1780659583673667574">Məsələn, şam yeməyi üçün reseptlər tapmaq məqsədilə sayta daxil olsanız, sayt yemək bişirməklə maraqlandığınıza qərar verə bilər. Daha sonra başqa sayt sizə ilk saytın təklif etdiyi ərzaq çatdırılması xidməti ilə bağlı reklam göstərə bilər.</translation>
-<translation id="1818866261309406359">Əlaqədar saytların datasını yeni tabda idarə edin</translation>
 <translation id="1824257235526922152">Chromium Anonim rejimdə üçüncü tərəf kukilərini bloklayır, lakin artırma bu sayt üçün üçüncü tərəf kukilərinə icazə verib. Anonim rejim daxil olduğunuz sayta kontent yerləşdirmiş şirkətlər üçün əlçatan olan məlumatları məhdudlaşdıra bilən funksiyalar da təqdim edir.</translation>
 <translation id="1887631853265748225">Reklam məxfiliyi funksiyaları sizə fərdiləşdirilmiş reklamlar göstərən veb-saytların və onların reklam partnyorlarının haqqınızda öyrənə biləcəklərini məhdudlaşdırmağa kömək edir.</translation>
 <translation id="1953252525523274058">Daxil olduğunuz saytlar digər saytlardan kontent (məsələn, şəkillər, reklamlar və mətn) yerləşdirə bilər və bu da sizin haqqınızda məlumat toplamaq üçün istifadə oluna bilər. <ph name="START_LINK" />Anonim izləmə qorunmasını<ph name="END_LINK" /> idarə etmək haqqında ətraflı məlumat</translation>
@@ -93,7 +91,6 @@
 <translation id="5117284457376555514">Müvafiq saytlara giriş icazəsi vermədiyiniz halda, həmin saytlar kontent və reklamları fərdiləşdirmək və digər saytlarda etdiyiniz əməliyyatlar haqqında məlumat əldə etmək üçün üçüncü tərəf kukilərindən istifadə edə bilməz. Bəzi sayt funksiyaları gözlənilən kimi işləməyə bilər.</translation>
 <translation id="5165490319523240316">Saytlar və onların reklam partnyorları digər saytlardakı reklamları fərdiləşdirmək üçün daxil olduğunuz saytlardakı fəaliyyətiniz kimi datadan istifadə edə bilər. Məsələn, şam yeməyi üçün reseptlər tapmaq məqsədilə sayta daxil olsanız, sayt yemək bişirməklə maraqlandığınıza qərar verə bilər. Daha sonra başqa sayt sizə ilk saytın təklif etdiyi ərzaq çatdırılması xidməti ilə bağlı reklam göstərə bilər.</translation>
 <translation id="544199055391706031">Sayt reklam təklif etmək üçün fəaliyyətiniz kimi bir çox faktorlardan istifadə edə bilər. Sayt tərəfindən təklif olunan reklamlar söndürüldükdə saytlar sizə reklam göstərməyə davam edə bilər, lakin həmin reklamlar daha az fərdiləşdirilmiş ola bilər. <ph name="BEGIN_LINK" />Sayt tərəfindən təklif olunan reklamlar<ph name="END_LINK" /> haqqında ətraflı məlumat əldə edin.</translation>
-<translation id="5495405805627942351">Əlaqədar saytların datasını idarə edin</translation>
 <translation id="5535388436012824806">Chrome Anonim rejimdə üçüncü tərəf kukilərini bloklayır, lakin siz bu sayt üçün istisna etmisiniz. Anonim rejim daxil olduğunuz sayta kontent yerləşdirmiş şirkətlər üçün əlçatan olan məlumatları məhdudlaşdıra bilən funksiyalar da təqdim edir.</translation>
 <translation id="5574580428711706114">Google şirkətlərdən sizi saytlarda izləmək üçün bu datadan istifadə etməyəcəklərini açıq şəkildə bildirmələrini tələb edir. Şirkətlər datanızdan necə istifadə etdiklərini sizə bildirməyə cavabdehdirlər. <ph name="BEGIN_LINK1" />Məxfilik Siyasətimizdə ətraflı məlumat əldə edin<ph name="LINK_END1" />.</translation>
 <translation id="5677928146339483299">Blok edilib</translation>

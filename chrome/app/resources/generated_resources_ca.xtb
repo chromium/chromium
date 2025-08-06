@@ -401,6 +401,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1260810365552581339">És possible que Linux no tingui prou espai de disc. Pots ampliar-lo i tornar a provar la restauració a <ph name="LINK_START" />Configuració<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">S'ha produït un problema amb les llicències del mode de demostració del dispositiu.</translation>
+<translation id="1262395978737369974">Sempre amb permís per utilitzar l'optimització de JavaScript</translation>
 <translation id="1262564987698748643">Els llocs web poden demanar permís per anul·lar l'entrada del teclat</translation>
 <translation id="1263231323834454256">Llista de lectura</translation>
 <translation id="1263733306853729545">Utilitza les tecles <ph name="MINUS" /> i <ph name="EQUAL" /> per mostrar una llista de candidats</translation>
@@ -1972,6 +1973,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2343160676229467122">Les extensions no es permeten a <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parc nacional de les muntanyes Rocoses</translation>
 <translation id="2343747224442182863">Posa el focus en aquesta pestanya</translation>
+<translation id="2343971313330854480">Troba el fitxer a la carpeta <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">No s'ha pogut connectar amb el servidor. Comprova la connexió de xarxa i torna-ho a provar. Si encara tens problemes, prova de reiniciar el Chromebook.</translation>
 <translation id="234559068082989648">Passat desembre de 2022, les versions anteriors d'Aplicacions de Chrome no s'obriran. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>
 <translation id="2348176352564285430">Aplicació: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2219,6 +2221,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Disposició de les pantalles</translation>
 <translation id="2507253002925770350">S'ha suprimit el tiquet</translation>
+<translation id="2507339521369019923">Desa al teu compte</translation>
 <translation id="2507491234071975894">Altaveu</translation>
 <translation id="2508747373511408451">L'aplicació <ph name="APPLICATION_NAME" /> requereix que Google Drive estigui disponible.</translation>
 <translation id="2509495747794740764">El valor de l'escala ha d'oscil·lar entre 10 i 200.</translation>
@@ -7968,6 +7971,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
 <translation id="6613267708691765962">S'està cercant programari maliciós...</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
+<translation id="6618013221808317456">No permetis que els llocs web utilitzin l'optimització de JavaScript</translation>
 <translation id="6619058681307408113">Protocol Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">El lloc web pot fer un seguiment de la teva ubicació</translation>
 <translation id="6619243162837544323">Estat de la xarxa</translation>
@@ -9829,6 +9833,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7920482456679570420">Afegeix paraules que vulguis que el corrector ortogràfic passi per alt</translation>
 <translation id="7920715534283810633">No es pot obrir <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">No pots veure les notificacions del telèfon en aquest compte gestionat. Torna-ho a provar amb un altre compte. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Els llocs web poden utilitzar l'optimització de JavaScript</translation>
 <translation id="7921901223958867679">Aquesta extensió pot llegir i canviar <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extensió</translation>
 <translation id="7923564237306226146">L'actualització de Linux s'ha completat</translation>
@@ -10375,6 +10380,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8276560076771292512">Buida la memòria cau i torna a carregar de manera forçada</translation>
 <translation id="8276850948802942358">Més informació sobre com es pot concedir permís temporal a un lloc web per utilitzar galetes de tercers</translation>
 <translation id="8277907305629781277">Vas crear aquesta clau d'accés el dia <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Sense permís per utilitzar l'optimització de JavaScript</translation>
 <translation id="827966378414194229">Utilitza moviments de cap i expressions facials per controlar el Chromebook. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Llocs web en els teus idiomes</translation>
 <translation id="8280848878018088610">Onades del mar que xoquen, amb una ciutat fantàstica i un castell al fons, en un ambient fosc.</translation>
@@ -10595,6 +10601,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8431190899827883166">Mostra els tocs</translation>
 <translation id="843173223122814223">Crea fons amb IA</translation>
 <translation id="8431977087510901105">La configuració del cursor s'ha restablert</translation>
+<translation id="843210078733508372">Inicia la sessió i el canvi de contrasenya continuarà</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8434109185104929038">Racó de lectura</translation>
 <translation id="8434837876193928924">Detalls del grup de pestanyes</translation>
@@ -11348,6 +11355,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="895347679606913382">S'està iniciant...</translation>
 <translation id="8954796993367253220">Per suprimir l'historial del mode de convidat, tanca totes les finestres de convidat.</translation>
 <translation id="8955174612586215829">Cerca temes</translation>
+<translation id="8957656266859671822">Tria el teu compte</translation>
 <translation id="8957757410289731985">Personalitza el perfil</translation>
 <translation id="8959144235813727886">Llocs web i aplicacions</translation>
 <translation id="895944840846194039">Memòria de JavaScript</translation>
@@ -11660,6 +11668,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9153367754133725216">Consulta suggeriments d'aplicacions i de contingut web nous al menú d'aplicacions i als resultats de la cerca. Només envia les estadístiques per millorar els suggeriments si has triat enviar informes d'error i dades d'ús i de diagnòstic a ChromeOS.</translation>
 <translation id="9154194610265714752">S'ha actualitzat.</translation>
 <translation id="915485121129452731">Tauleta amb llapis</translation>
+<translation id="9155100833189043833">Utilitza un document d'identitat des del teu dispositiu mòbil de manera segura</translation>
 <translation id="9155344700756733162">Desselecciona el color</translation>
 <translation id="9157096865782046368">0,8 segons</translation>
 <translation id="9157697743260533322">No s'han pogut configurar les actualitzacions automàtiques per a tots els usuaris (error de comprovació preliminar: <ph name="ERROR_NUMBER" />)</translation>

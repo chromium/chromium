@@ -273,6 +273,7 @@
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
 <translation id="1442987760062738829">펀칭</translation>
+<translation id="1445896388055045436">결제 시 사용 가능한 카드 혜택 및 리워드를 표시합니다. 발급기관의 약관이 적용됩니다.</translation>
 <translation id="1446396933673057385">정확성 검사</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" 키는 "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" 키와 같은 사전에서 설정할 수 없습니다.</translation>
@@ -1193,6 +1194,7 @@
 <translation id="3002501248619246229">입력 트레이 미디어 확인</translation>
 <translation id="3005723025932146533">저장된 사본 표시</translation>
 <translation id="300580149047131921">방금 사용</translation>
+<translation id="3006864083554020786">집 주소</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 눌러 사용 가능한 작업을 둘러보고 Enter를 눌러 선택한 작업을 실행합니다.</translation>
 <translation id="3010991137650052245">이 사이트에서 <ph name="PERMISSION" /> 권한을 사용하려면 <ph name="SHORT_PRODUCT_NAME" />에 액세스 권한을 부여하세요.</translation>
 <translation id="3013711734159931232">가정용품</translation>
@@ -1233,6 +1235,7 @@
 <translation id="3086579638707268289">웹상의 활동이 모니터링되고 있음</translation>
 <translation id="3087734570205094154">맨 아래</translation>
 <translation id="3090667236485488075">광택</translation>
+<translation id="3094051226187213523">이 추천을 통해 AI 모드를 엽니다.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">사용 안함 목록에 정책을 사용 중지하는 것과 동일한 '*'와 동등한 패턴이 포함되어 있으므로 무시되었습니다.</translation>
 <translation id="3098944373717628099">로컬 파일이 1시간 후에 삭제됩니다</translation>
@@ -1826,6 +1829,7 @@
 <translation id="404831776305217138">ID가 "<ph name="EXTENSION_ID" />"인 확장 프로그램의 업데이트 URL이 잘못되었거나 지원되지 않는 스키마를 사용합니다. 지원되는 스키마는 <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, <ph name="FILE_SCHEME" />입니다.</translation>
 <translation id="4050392779074832022">Google 제품에서 사용할 수 있습니다.</translation>
 <translation id="4050599136622776556">Chromium에서 결제 수단을 수정하려고 합니다.</translation>
+<translation id="4052683751389375539">수정, 새 창에서 열기</translation>
 <translation id="405399507749852140">사이트에서 가격이 인하되면 알림이 전송됩니다</translation>
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4059523390906550209">Sensitive Data Protection에 관해 자세히 알아보기</translation>
@@ -3518,6 +3522,7 @@
 <translation id="6881240511396774766">빠르게 새 Google 문서 만들기</translation>
 <translation id="6882210908253838664">사이트가 작동하지 않으면 서드 파티 쿠키를 사용하도록 임시 권한을 부여해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">보안 결제 사용자 인증 정보 승인 시트가 닫힘</translation>
+<translation id="6883745783646124431">직장 주소</translation>
 <translation id="6884662655240309489">크기 1</translation>
 <translation id="6886283082988906333">ZIP 파일</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4792,6 +4797,7 @@
 <translation id="9040341831873780534">여기에서 약관 보기</translation>
 <translation id="9042617223719777575">대용량</translation>
 <translation id="9042827002460091668">인터넷 연결 상태를 확인하고 다시 시도해 주세요.</translation>
+<translation id="9043161870923715789">AI 모드</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" />에서 로컬 네트워크의 모든 기기를 찾고 연결하려고 합니다.</translation>
 <translation id="9046864189129893978">마이크(<ph name="MICS_COUNT" />개)</translation>

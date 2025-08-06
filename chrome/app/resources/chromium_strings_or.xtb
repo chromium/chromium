@@ -284,6 +284,7 @@
 <translation id="4598116752460667024">ତାଲିକାରୁ ଯେ କୌଣସି ପ୍ରକ୍ରିୟାକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="4613863813562375431">ChromiumOS ସଂସ୍କରଣ</translation>
 <translation id="4621240073146040695">ପ୍ରାୟତଃ ଅପ୍-ଟୁ-ଡେଟ୍! ଅପ୍‌ଡେଟ୍ ସମାପ୍ତ କରିବାକୁ Chromium ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="4625064703209785397">Chromiumର V8 ଇଞ୍ଜିନ ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକର ସ୍ପିଡ ବଢ଼ାଏ କିନ୍ତୁ Chromiumକୁ ଆକ୍ରମଣ ପ୍ରତି ସାମାନ୍ୟ କମ ପ୍ରତିରୋଧୀ କରିଥାଏ</translation>
 <translation id="4654936675281451226">Chromium ଫର୍ମଗୁଡ଼ିକୁ ଭଲ ଭାବରେ ବୁଝି ଆପଣଙ୍କ ପାଇଁ ସେଗୁଡ଼ିକୁ ଶୀଘ୍ର ଅଟୋଫିଲ କରିପାରେ। ଏହି ସେଟିଂ ଚାଲୁ ଅଛି।</translation>
 <translation id="4665829708273112819">ଚେତାବନୀ: ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସକୁ ରେକର୍ଡ କରିବାରୁ Chromium ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ପ୍ରତିରୋଧ କରିପାରିବ ନାହିଁ। ଇନକଗ୍ନିଟୋ ମୋଡରେ ଏହି ଏକ୍ସଟେନସନକୁ ଅକ୍ଷମ କରିବା ପାଇଁ, ଏହି ବିକଳ୍ପକୁ ଅଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4673151026126227699">ଯଦି ଆପଣ Chromiumର ବ୍ୟବହାର ରିପୋର୍ଟଗୁଡ଼ିକ ମଧ୍ୟ ସେୟାର କରନ୍ତି, ତେବେ ସେହି ରିପୋର୍ଟଗୁଡ଼ିକ ଆପଣ ଭିଜିଟ କରିଥିବା URLଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିଥାଏ</translation>
@@ -329,6 +330,7 @@
 <translation id="5386450000063123300">Chromium ଅପ୍‌ଡେଟ୍ ହେଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromiumରେ ସାଇନ୍-ଇନ୍‌ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5405650547142096840">Chromiumରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="5424544524441439284">ପରଫରମାନ୍ସ କମ କରେ କିନ୍ତୁ Chromiumକୁ ଅଧିକ ଆକ୍ରମଣ ପ୍ରତିରୋଧୀ କରେ</translation>
 <translation id="5427571867875391349">Chromiumକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଭାବରେ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium ବିଟା</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବକୁ ବିରତ କରିବାକୁ ସୁପାରିଶ କରେ}other{Chromium ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବଗୁଡ଼ିକୁ ବିରତ କରିବାକୁ ସୁପାରିଶ କରେ}}</translation>

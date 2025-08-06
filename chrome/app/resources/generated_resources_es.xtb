@@ -6037,6 +6037,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5201945335223486172">De <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Pueden editar archivos o carpetas de tu dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Haz clic para ver la extensión}other{Haz clic para ver las extensiones}}</translation>
+<translation id="5204282224596194174">Contraseña de recuperación de <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Realiza un powerwash e inténtalo de nuevo.</translation>
 <translation id="5204967432542742771">Escribe tu contraseña</translation>
 <translation id="5205484256512407285">No usar nunca datos móviles para hacer transferencias</translation>
@@ -11528,6 +11529,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9057354806206861646">Ciclo de vida de actualizaciones</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Aproximadamente 1 notificación al día}other{Aproximadamente {NUM_NOTIFICATION} notificaciones al día}}</translation>
 <translation id="9058760336383947367">Ver el archivo PPD de la impresora</translation>
+<translation id="9061521313218438086">Si Chrome detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla si has iniciado sesión.</translation>
 <translation id="9061694916020926968">Debes iniciar sesión en una cuenta de Google para usar Steam para Chromebook (beta). Inicia sesión y vuelve a intentarlo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error de la línea <ph name="ERROR_LINE_START" /> a la <ph name="ERROR_LINE_END" /></translation>

@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">మీ సంస్థ, ప్రైవేట్ బ్రౌజింగ్‌ను ఆఫ్ చేసింది.</translation>
 <translation id="2122754583996902531">మీ బ్రౌజర్ మేనేజ్ చేయబడుతుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">మీ సంస్థకు సంబంధించిన చాట్‌లు, మా మోడల్స్‌ను మెరుగుపరచడానికి ఉపయోగించబడవు. Gemini, వ్యక్తుల గురించి సహా, తప్పుడు సమాచారాన్ని డిస్‌ప్లే చేయవచ్చు, కాబట్టి దాన్ని ఒకటికి రెండుసార్లు డబుల్-చెక్ చేయండి. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">కింది పాస్‌వర్డ్‌లు Google Password Managerకు దిగుమతి చేయబడలేదు, ఎందుకంటే అవి ఆవశ్యకతలకు అనుగుణంగా లేవు.</translation>
 <translation id="2139867232736819575">మీరు కాపీ చేసిన వచనం కోసం వెతకండి</translation>
 <translation id="2147127444698817042">iPhoneలో మాత్రమే అందుబాటులో ఉంది</translation>
 <translation id="2148799636999124959">సేవ్ చేసిన మీ పాస్‌వర్డ్‌లతో సైట్‌లు, యాప్‌లకు త్వరగా సైన్ ఇన్ చేయండి.</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">రీడింగ్ మోడ్ ఆప్షన్‌లను తెరవండి</translation>
 <translation id="4624080227980645783">కొత్త అజ్ఞాత విండో</translation>
 <translation id="4627107755957573804">పాస్-కీలను ఉపయోగించడానికి ఇప్పటికే ఉన్న ఖాతాలను అప్‌గ్రేడ్ చేయడానికి సైట్‌లు, యాప్‌లను అనుమతించండి</translation>
+<translation id="4629065796475200039">మీ పాస్‌వర్డ్ దిగుమతి కాలేదు</translation>
 <translation id="4630212057753624203">శాంపిల్ బబుల్</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> వేరే చోట వాడిన పాస్‌వర్డ్‌లు</translation>
 <translation id="4631890462758052414">కొత్త అజ్ఞాత ట్యాబ్</translation>
@@ -1504,6 +1506,7 @@
 <translation id="6790502149545262384">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="CHANNEL_NAME" /> నుండి కథనాలను చూస్తారు.</translation>
 <translation id="6791425686608802741">"కొత్త గ్రూప్‌నకు ట్యాబ్‌ను జోడించు" ట్యాప్ చేయండి</translation>
 <translation id="6794476726485507147">ఈ పేజీని మళ్లీ చూడటానికి రిమైండర్ నోటిఫికేషన్‌ను స్వీకరించడానికి తేదీ, సమయాన్ని ఎంచుకోండి</translation>
+<translation id="6795481620482106033">డేటా చెల్లదు</translation>
 <translation id="6807287147325542056">ఇతర యాప్స్‌లోని పాస్‌వర్డ్‌లు</translation>
 <translation id="681368974849482173">అంశం క్రియేట్ చేయబడింది</translation>
 <translation id="6825078212112407882">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
@@ -2009,6 +2012,7 @@
 <translation id="8726523474917941818">రిమైండ్</translation>
 <translation id="8728922029615312208">అన్నింటినీ మూసివేయండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
+<translation id="8731268612289859741">సెక్యూరిటీ కోడ్</translation>
 <translation id="87371078663613140">మెనూ బార్‌లోని ఆప్షన్‌లను అన్వేషించండి</translation>
 <translation id="8741627442233023406">{count,plural, =1{ట్యాబ్‌ను రివ్యూ చేయండి…}other{ట్యాబ్‌లన్నింటినీ రివ్యూ చేయండి…}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />వద్ద మీ Google ఖాతాలో ఇతర బ్రౌజింగ్ హిస్టరీ రకాలు ఉండవచ్చు.</translation>

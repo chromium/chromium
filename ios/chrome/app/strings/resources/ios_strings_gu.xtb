@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.</translation>
 <translation id="2122754583996902531">તમારું બ્રાઉઝર મેનેજ કરવામાં આવી રહ્યું છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">અમારા મૉડલને બહેતર બનાવવા માટે, તમારી સંસ્થાની ચૅટનો ઉપયોગ કરવામાં આવતો નથી. Gemini અચોક્કસ માહિતી બતાવી શકે છે, જેમાં લોકો વિશેની અચોક્કસ માહિતી શામેલ છે, તેથી તેને બે વાર ચેક કરો. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">નીચેના પાસવર્ડ Google Password Manager પર આયાત કરવામાં આવ્યા ન હતા, કારણ કે તેઓ જરૂરિયાતો સાથે મેળ ખાતા નથી.</translation>
 <translation id="2139867232736819575">તમે કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="2147127444698817042">માત્ર iPhone પર ઉપલબ્ધ છે</translation>
 <translation id="2148799636999124959">તમારા સાચવેલા પાસવર્ડ વડે સાઇટ અને ઍપમાં ઝડપથી સાઇન ઇન કરો.</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">વાંચન મોડના વિકલ્પો ખોલો</translation>
 <translation id="4624080227980645783">નવી છૂપી વિન્ડો</translation>
 <translation id="4627107755957573804">પાસકીનો ઉપયોગ કરવા માટે સાઇટ અને ઍપને ઉપલબ્ધ હોય તેવા એકાઉન્ટને અપગ્રેડ કરવાની મંજૂરી આપો</translation>
+<translation id="4629065796475200039">તમારો પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો</translation>
 <translation id="4630212057753624203">સેમ્પલ બબલ</translation>
 <translation id="4631335160486397366">ફરીથી ઉપયોગમાં લેવાયેલા <ph name="COUNT" /> પાસવર્ડ</translation>
 <translation id="4631890462758052414">નવું છૂપું ટૅબ</translation>
@@ -1504,6 +1506,7 @@
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
 <translation id="6791425686608802741">"નવા ગ્રૂપમાં ટૅબ ઉમેરો" પર ટૅપ કરો</translation>
 <translation id="6794476726485507147">આ પેજની ફરી મુલાકાત લેવા માટે, રિમાઇન્ડર નોટિફિકેશન મેળવવા માટે તારીખ અને સમય પસંદ કરો</translation>
+<translation id="6795481620482106033">અમાન્ય ડેટા</translation>
 <translation id="6807287147325542056">અન્ય ઍપમાંના પાસવર્ડ</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6825078212112407882">{count,plural, =1{તમારા Google એકાઉન્ટ, {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
@@ -1612,6 +1615,7 @@
 <translation id="7266578100016339897">આ તમને વ્યવસ્થિત રહેવામાં સહાય કરે છે. તમે આને સેટિંગમાં જઈને કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="7272437679830969316">તમારી ઓળખની ચકાસણી કરી શકાતી નથી. પાસવર્ડ કૉપિ કરેલો નથી.</translation>
 <translation id="728025568708172005">મને વધુ બતાવો</translation>
+<translation id="7280980607183752256">આ ફાઇલની આયાત કરી શકાતી નથી</translation>
 <translation id="7281202269687163394">તમારી પ્રાઇવસી અને Gemini.</translation>
 <translation id="7293429513719260019">ભાષા પસંદ કરો</translation>
 <translation id="7300448350764260141">ઑનલાઇન જોખમો સામે સુરક્ષાનું વધારાનું લેયર ઉમેરો.</translation>
@@ -2008,6 +2012,7 @@
 <translation id="8726523474917941818">યાદ કરાવો</translation>
 <translation id="8728922029615312208">બધા બંધ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
+<translation id="8731268612289859741">સિક્યુરિટી કોડ</translation>
 <translation id="87371078663613140">મેનૂ બારના વિકલ્પો વિશે શોધખોળ કરો</translation>
 <translation id="8741627442233023406">{count,plural, =1{ટૅબનો રિવ્યૂ કરો…}one{બધા ટૅબનો રિવ્યૂ કરો…}other{બધા ટૅબનો રિવ્યૂ કરો…}}</translation>
 <translation id="8741995161408053644">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>

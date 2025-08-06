@@ -401,6 +401,7 @@
 <translation id="1260810365552581339">Linux 磁碟空間可能不足。你可以增加 Linux 磁碟空間並嘗試在<ph name="LINK_START" />設定<ph name="LINK_END" />中再次還原。</translation>
 <translation id="1261380933454402672">普通模式</translation>
 <translation id="126156426083987769">展示模式的裝置授權發生問題。</translation>
+<translation id="1262395978737369974">一律允許使用 JavaScript 最佳化功能</translation>
 <translation id="1262564987698748643">網站可以要求覆寫鍵盤輸入內容</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1263733306853729545">使用 <ph name="MINUS" /> 鍵與 <ph name="EQUAL" /> 鍵呼叫候選字清單</translation>
@@ -1972,6 +1973,7 @@
 <translation id="2343160676229467122">不允許在 <ph name="SITE_NAME" /> 上使用擴充功能</translation>
 <translation id="2343390523044483367">洛磯山國家公園</translation>
 <translation id="2343747224442182863">將焦點移至這個分頁</translation>
+<translation id="2343971313330854480">檔案會儲存到「<ph name="FEATURE_NAME" />」資料夾</translation>
 <translation id="2344032937402519675">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。</translation>
 <translation id="234559068082989648">2022 年 12 月之後，舊版 Chrome 應用程式將無法開啟。請與系統管理員聯絡以更新至新版本，或移除這個應用程式。</translation>
 <translation id="2348176352564285430">應用程式：<ph name="ARC_PROCESS_NAME" /></translation>
@@ -2219,6 +2221,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />，總共 <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">螢幕排列位置</translation>
 <translation id="2507253002925770350">已移除票證</translation>
+<translation id="2507339521369019923">儲存到帳戶</translation>
 <translation id="2507491234071975894">揚聲器</translation>
 <translation id="2508747373511408451">「<ph name="APPLICATION_NAME" />」應用程式必須搭配 Google 雲端硬碟才能使用。</translation>
 <translation id="2509495747794740764">縮放比例必須為介於 10 和 200 之間的數字。</translation>
@@ -7964,6 +7967,7 @@
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6613267708691765962">正在掃描惡意軟體...</translation>
 <translation id="6615455863669487791">顯示</translation>
+<translation id="6618013221808317456">禁止網站使用 JavaScript 最佳化功能</translation>
 <translation id="6619058681307408113">線上印表機服務精靈 (LPD)</translation>
 <translation id="661907246513853610">網站可以追蹤你的位置</translation>
 <translation id="6619243162837544323">網路狀態</translation>
@@ -9824,6 +9828,7 @@
 <translation id="7920482456679570420">新增要讓拼字檢查功能略過的字詞</translation>
 <translation id="7920715534283810633">無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="7921347341284348270">無法透過這個受管理的帳戶查看手機的通知，請改用其他帳戶重試。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">網站可以使用 JavaScript 最佳化功能</translation>
 <translation id="7921901223958867679">這項擴充功能可讀取及變更 <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 項擴充功能</translation>
 <translation id="7923564237306226146">Linux 升級已完成</translation>
@@ -10370,6 +10375,7 @@
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
 <translation id="8276850948802942358">進一步瞭解如何授予網站使用第三方 Cookie 的臨時權限</translation>
 <translation id="8277907305629781277">你在 <ph name="DATE" /> 建立了這個密碼金鑰</translation>
+<translation id="8278702675516957539">禁止使用 JavaScript 最佳化功能</translation>
 <translation id="827966378414194229">透過頭部動作和臉部表情操控 Chromebook。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">網站語言版本</translation>
 <translation id="8280848878018088610">海浪洶湧，背景呈現奇幻的城市和城堡，色調偏暗。</translation>
@@ -10589,6 +10595,7 @@
 <translation id="8431190899827883166">顯示觸控回應</translation>
 <translation id="843173223122814223">使用 AI 建立背景</translation>
 <translation id="8431977087510901105">游標設定已重設</translation>
+<translation id="843210078733508372">登入後即可繼續變更密碼</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8434109185104929038">閱讀角落</translation>
 <translation id="8434837876193928924">分頁群組詳細資料</translation>
@@ -11342,6 +11349,7 @@
 <translation id="895347679606913382">啟動中...</translation>
 <translation id="8954796993367253220">如要刪除訪客模式的歷史記錄，請關閉所有訪客模式視窗。</translation>
 <translation id="8955174612586215829">尋找主題</translation>
+<translation id="8957656266859671822">請選擇帳戶</translation>
 <translation id="8957757410289731985">自訂檔案</translation>
 <translation id="8959144235813727886">網站和應用程式</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
@@ -11654,6 +11662,7 @@
 <translation id="9153367754133725216">在啟動器和搜尋結果中顯示新應用程式和網路內容的建議。只有在你選擇將當機報告和診斷與使用資料傳送到 ChromeOS 時，系統才會傳送統計資料以改善建議。</translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="915485121129452731">繪圖板</translation>
+<translation id="9155100833189043833">安全使用行動裝置上的身分證件</translation>
 <translation id="9155344700756733162">取消選取顏色</translation>
 <translation id="9157096865782046368">0.8 秒</translation>
 <translation id="9157697743260533322">無法為所有使用者設定自動更新作業 (預先啟動錯誤：<ph name="ERROR_NUMBER" />)</translation>

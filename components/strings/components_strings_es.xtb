@@ -273,6 +273,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
+<translation id="1445896388055045436">Muestra las ventajas y recompensas disponibles de las tarjetas al tramitar la compra. Se aplican los términos de la entidad emisora.</translation>
 <translation id="1446396933673057385">Comprobación de la fiabilidad</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Las claves "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" no se pueden definir en el mismo diccionario que las claves "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
@@ -360,6 +361,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="159274626729231974">Festivales de cine</translation>
 <translation id="1593359183944365958">270 grados</translation>
 <translation id="1594030484168838125">Seleccionar</translation>
+<translation id="1595731774593926493">Eliminar número Redess</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Enlace del consejo de Chrome, pulsa Intro para abrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">¿Tarjeta nueva? <ph name="BEGIN_LINK" />Introducir información de la tarjeta<ph name="END_LINK" /></translation>
@@ -750,6 +752,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2233745931693710080">Disco compacto (CD)</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
+<translation id="224130779555573777">Añadir número Redress</translation>
 <translation id="2241693394036365668">Se ha descargado un archivo</translation>
 <translation id="2242389809734574253">Opción para guardar el IBAN cerrada.</translation>
 <translation id="2246264294482514010">10x12 pulgadas</translation>
@@ -1233,6 +1236,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3086579638707268289">Se está vigilando tu actividad en la Web</translation>
 <translation id="3087734570205094154">Abajo</translation>
 <translation id="3090667236485488075">Cristal</translation>
+<translation id="3094051226187213523">Abrir el modo IA con esta sugerencia.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Se ignora porque la lista inhabilitada contiene un patrón igual a "*", lo que equivale a inhabilitar la política.</translation>
 <translation id="3098944373717628099">Tus archivos locales se eliminarán dentro de 1 hora</translation>
@@ -2919,6 +2923,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5886961930368713749">Enviar comentarios sobre la comparación</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
+<translation id="5890248301649767931">¿Guardar número Redress?</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
 <translation id="5898767305816764989">Botón Me gusta. Pulsa Intro para indicar que te gusta <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
@@ -3536,6 +3541,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6905163627763043954">Probar</translation>
 <translation id="6907458757809079309">Actividad física</translation>
 <translation id="691024665142758461">Descargar varios archivos</translation>
+<translation id="691046363691324218">Número Redress</translation>
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6916193791494646625">Indica el motivo de la descarga (obligatorio)</translation>
 <translation id="6917795328362592458">La contraseña que acabas de usar se ha encontrado en una brecha de seguridad de datos. Para proteger tus cuentas, el gestor de contraseñas te recomienda que compruebes las contraseñas que tengas guardadas.</translation>
@@ -4478,6 +4484,7 @@ Más información:
 <translation id="8457125768502047971">Indefinido</translation>
 <translation id="8458202188076138974">Carta extra</translation>
 <translation id="8460854335417802511">Activar</translation>
+<translation id="8461289985785035071">Editar número Redress</translation>
 <translation id="8461694314515752532">Cifrar datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8461973047386722744">No se ha encontrado ninguna contraseña</translation>
 <translation id="8467494337615822642">Ir a la página de comprobación de seguridad de Chrome en la configuración</translation>
@@ -4785,6 +4792,7 @@ Más información:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Probar Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Para salir de la pantalla completa, mantén pulsado |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">¿Actualizar número Redress?</translation>
 <translation id="9035022520814077154">Error de seguridad</translation>
 <translation id="9035824888276246493">Guardar códigos de seguridad</translation>
 <translation id="9036306139374661733">¿Permitir micrófono?</translation>
@@ -4793,6 +4801,7 @@ Más información:
 <translation id="9040341831873780534">Consulta los términos aquí</translation>
 <translation id="9042617223719777575">Gran capacidad</translation>
 <translation id="9042827002460091668">Comprueba tu conexión a Internet y vuelve a intentarlo</translation>
+<translation id="9043161870923715789">Modo IA</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> quiere buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>

@@ -1612,6 +1612,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7266578100016339897">Энэ нь танд цэгцтэй байхад тусална. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="7272437679830969316">Таныг баталгаажуулж чадсангүй. Нууц үгийг хуулаагүй байна.</translation>
 <translation id="728025568708172005">Надад танилцуулна уу</translation>
+<translation id="7280980607183752256">Энэ файлыг импортлох боломжгүй</translation>
 <translation id="7281202269687163394">Таны нууцлал, Gemini.</translation>
 <translation id="7293429513719260019">Хэл сонгох</translation>
 <translation id="7300448350764260141">Онлайн заналхийллүүдийн эсрэг хамгаалалтын нэмэлт давхаргыг нэмээрэй.</translation>
@@ -2008,6 +2009,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8726523474917941818">Сануулах</translation>
 <translation id="8728922029615312208">Бүгдийг хаах</translation>
 <translation id="8730621377337864115">хийсэн</translation>
+<translation id="8731268612289859741">Аюулгүй байдлын код</translation>
 <translation id="87371078663613140">Цэсийн талбар дахь сонголтыг судална уу</translation>
 <translation id="8741627442233023406">{count,plural, =1{Табыг хянах…}other{Бүх табыг хянах…}}</translation>
 <translation id="8741995161408053644">Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>

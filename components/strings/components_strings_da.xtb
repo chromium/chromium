@@ -273,6 +273,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1436185428532214179">Websitet kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="1442386063175183758">Portfals i højre side</translation>
 <translation id="1442987760062738829">Hul</translation>
+<translation id="1445896388055045436">Vis tilgængelige kortfordele og -bonusser ved betaling. Udstederens vilkår er gældende.</translation>
 <translation id="1446396933673057385">Troværdighedstjek</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Værdierne "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" kan ikke angives i samme ordbog som værdierne "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
@@ -420,6 +421,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1700542542921501212">Du kan bruge <ph name="SEARCH_ENGINE_NAME" /> til at søge på nettet.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
+<translation id="1705645336613358172">Brug Affirm eller Zip til afbetaling</translation>
 <translation id="1706625117072057435">Zoomniveauer</translation>
 <translation id="1706922226983368260">Adgangsnøgle • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra i morgen. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}one{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra om # dag. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}other{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra om # dage. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}}</translation>
@@ -812,6 +814,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vil gerne parre</translation>
 <translation id="2344529975040861103">Du kan udfylde dette kort automatisk, fordi din konto er knyttet til Google Pay</translation>
 <translation id="2346319942568447007">Billede, du har kopieret</translation>
+<translation id="2347764072711098973">Brug Affirm, Zip eller Klarna til afbetaling</translation>
 <translation id="2348509731468399833">Prissporing er stoppet.</translation>
 <translation id="2349957959687031096">Knappen Åbn inkognitofane, aktivér for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="2350796302381711542">Vil du tillade, at <ph name="HANDLER_HOSTNAME" /> åbner alle <ph name="PROTOCOL" />-links i stedet for <ph name="REPLACED_HANDLER_TITLE" />?</translation>
@@ -1231,6 +1234,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3086579638707268289">Din aktivitet på nettet overvåges</translation>
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3090667236485488075">Glas</translation>
+<translation id="3094051226187213523">Åbn AI-tilstand med dette forslag.</translation>
 <translation id="3095940652251934233">Erklæring</translation>
 <translation id="3098513225387949945">Ignoreret, fordi deaktiveringslisten indeholder et mønster, der svarer til "*", hvilket er ækvivalent til deaktivering af politikken.</translation>
 <translation id="3098944373717628099">Dine lokale filer slettes om 1 time</translation>
@@ -1616,6 +1620,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3693327506115126094">Vælg, hvordan du vil verificere din identitet</translation>
 <translation id="3698353241727597930">Din administrator har konfigureret at gemme <ph name="FILES" /> i din virksomhedsadministrerede <ph name="CLOUD_STORAGE" />-lagerplads. Disse filer kan overvåges, kontrolleres og opbevares, når du sletter dem.</translation>
 <translation id="3698629142018988477">Knappen Opret website, aktivér for hurtigt at oprette et nyt website i Google Sites</translation>
+<translation id="3700094625653511150">Gå til <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> for at skjule valgmuligheder for Betal senere</translation>
 <translation id="3700966190175650601">Du bruger dit fingeraftryk til at udfylde adgangskoder</translation>
 <translation id="3701325639446035885">Salg af billetter</translation>
 <translation id="3701427423622901115">Nulstillingen blev anerkendt.</translation>
@@ -1679,6 +1684,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3792826587784915501">Kult- og indiefilm</translation>
 <translation id="3793574014653384240">Antallene af og årsagerne til de nedbrud, der opstod for nylig</translation>
 <translation id="3795624560191557077">Du har for nylig ændret en adgangskode, der blev lækket i forbindelse med et offentligt brud på datasikkerheden. Hvis du har problemer, kan Google Adgangskodeadministrator hjælpe dig med at logge ind.</translation>
+<translation id="3796181268473765083">Betal i 4 rentefri eller månedlige rater (med forbehold for kvalificering)</translation>
 <translation id="3799805948399000906">Der blev anmodet om skrifttype</translation>
 <translation id="3801297763951514916">Du besøger ofte dette indhold</translation>
 <translation id="380329542618494757">Navn</translation>
@@ -2198,6 +2204,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="468314109939257734">Se dit virtuelle kortnummer</translation>
 <translation id="4686942373615810936">Oprettet lige nu</translation>
 <translation id="4687718960473379118">Foreslåede annoncer fra websites</translation>
+<translation id="4690205240253392065">Vælg en udbyder af Betal senere</translation>
 <translation id="469028408546145398">Knappen Luk inkognitovinduer, aktivér for at lukke alle inkognitovinduer, der i øjeblikket er åbne</translation>
 <translation id="4691093235373904540">Tagdækning</translation>
 <translation id="4692623383562244444">Søgemaskiner</translation>
@@ -2320,6 +2327,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4877422487531841831"><ph name="TEXT" />-søgning</translation>
 <translation id="4877521229462766300">Vil du tillade indlejret indhold?</translation>
 <translation id="4879491255372875719">Automatisk (standard)</translation>
+<translation id="4880328155169081699">Vil du opdatere dit identitetskort?</translation>
 <translation id="4880827082731008257">Søg i historikken</translation>
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="4881808915112408168">24 x 31,5 tommer</translation>
@@ -2468,6 +2476,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5122786942953798871">Kuvert (bomuld)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5125575917473813637">Rediger identitetskort</translation>
 <translation id="5125751979347152379">Ugyldig webadresse.</translation>
 <translation id="512592033764059484">Fodbold</translation>
 <translation id="512670116361803001">Størrelsen på <ph name="APP_NAME" /> kan muligvis ikke tilpasses uden problemer. Brug forindstillede vinduestørrelser for at sikre, at appen fungerer korrekt.</translation>
@@ -2988,6 +2997,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6014801569448771146">Tjek dine adgangskoder</translation>
 <translation id="6014851866995737824">Ignoreret, fordi enten listen for aktivering eller deaktivering mangler.</translation>
 <translation id="6015796118275082299">År</translation>
+<translation id="6017028474478839719">Vil du gemme identitetskortet?</translation>
 <translation id="6017514345406065928">Grøn</translation>
 <translation id="6018650639991193045">Slet browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
@@ -3076,6 +3086,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     netværksenheder, du bruger.</translation>
 <translation id="614940544461990577">Prøv at:</translation>
 <translation id="6150036310511284407">Tre huller i venstre side</translation>
+<translation id="6150164900447447084">Vil du gemme kortet på denne enhed?</translation>
 <translation id="6150754742333439143">Genbrug af adgangskoder overvåges af <ph name="ORG_NAME" /></translation>
 <translation id="6151417162996330722">Servercertifikatet har en gyldighedsperiode, der er for lang.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tommer (<ph name="ORIENTATION" />)</translation>
@@ -3534,6 +3545,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6921197121276419421">Installation af webapps er tilladt</translation>
 <translation id="69238565902785824">Hvis du bevarer tilknytningen af din konto, kan du betale hurtigere med <ph name="BNPL_ISSUER_NAME" />. Hvis du vil fjerne tilknytningen, skal du gå til <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Vælg, om du vil se dine kortfordele ved betalingen (bankvilkår er gældende)</translation>
+<translation id="6924933062125062950">Slet identitetskort</translation>
 <translation id="6925267999184670015">Nordamerika B+</translation>
 <translation id="6926216138694948720">Kropskunst</translation>
 <translation id="692638818576287323">Erhvervskøretøjer</translation>
@@ -3594,6 +3606,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7006930604109697472">Send alligevel</translation>
 <translation id="7009364359744329733">Dette kort er ikke tilgængeligt lige nu. Prøv igen senere.</translation>
 <translation id="7010658264061801199">Mad og drikke</translation>
+<translation id="7011763495818914549">Identitetskort</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Kan anmode om at låse og bruge din mus</translation>
 <translation id="7014042602717177828">Lydsystemer til biler</translation>
@@ -3868,6 +3881,7 @@ Yderligere oplysninger:
 <translation id="7457071735008326060">Lastbiler og anhængere</translation>
 <translation id="7461924472993315131">Fastgør</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="746412105358554870">JavaScript-optimering og -sikkerhed</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> vil vide, at du har besøgt <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 tommer</translation>
 <translation id="7469935732330206581">Formularen er ikke sikker</translation>
@@ -3964,6 +3978,7 @@ Yderligere oplysninger:
 <translation id="761261689936461781">Tyk</translation>
 <translation id="7613889955535752492">Udløbsdato: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at se og administrere dine adgangskoder i Chrome-indstillingerne</translation>
+<translation id="7615932826417658001">Tilføj identitetskort</translation>
 <translation id="7616645509853975347">Din administrator har aktiveret Chrome Enterprise Connectors i din browser. Disse connectorer har adgang til nogle af dine data.</translation>
 <translation id="7617825962482469577">Konvolut C7/C6</translation>
 <translation id="7618270539713451657">Kampsport</translation>
@@ -4128,6 +4143,7 @@ Yderligere oplysninger:
 <translation id="7887885240995164102">Åbn integreret billede</translation>
 <translation id="7888575728750733395">Formål for udskriftsgengivelse</translation>
 <translation id="7890748547282909375">Log ind på Microsoft OneDrive for at gemme screenshottet</translation>
+<translation id="7890755620327858054">Betal senere er ikke tilgængelig i øjeblikket. Prøv igen, eller vælg en anden betalingsmetode.</translation>
 <translation id="7892431309448524994"><ph name="ORIGIN" /> – Tryk på |<ph name="ACCELERATOR" />| for at få vist din markør</translation>
 <translation id="7892865709991296481">betalingsindstillinger</translation>
 <translation id="7894280532028510793">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Netværksdiagnosticering<ph name="END_LINK" />.</translation>
@@ -4780,6 +4796,7 @@ Yderligere oplysninger:
 <translation id="9040341831873780534">Se vilkårene her</translation>
 <translation id="9042617223719777575">Stor kapacitet</translation>
 <translation id="9042827002460091668">Tjek din internetforbindelse, og prøv igen</translation>
+<translation id="9043161870923715789">AI-tilstand</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> vil gerne søge efter og oprette tilknytning til enheder på dit lokale netværk</translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>

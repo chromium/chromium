@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">В вашей организации режим инкогнито отключен.</translation>
 <translation id="2122754583996902531">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Чаты вашей организации не используются для улучшения наших моделей. Gemini может показывать неточную информацию, в том числе о людях. Рекомендуем проверять ее. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">Пароли не соответствуют требованиям, поэтому их не удалось импортировать в Google Менеджер паролей.</translation>
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="2147127444698817042">Доступно только на iPhone</translation>
 <translation id="2148799636999124959">Легко входите в аккаунты на сайтах и в приложениях.</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">Открыть настройки Режима чтения</translation>
 <translation id="4624080227980645783">Новое окно в режиме инкогнито</translation>
 <translation id="4627107755957573804">Разрешить сайтам и приложениям переходить на ключи доступа в существующих аккаунтах</translation>
+<translation id="4629065796475200039">Не удалось импортировать пароль</translation>
 <translation id="4630212057753624203">Пример всплывающей подсказки</translation>
 <translation id="4631335160486397366">Повторяющихся паролей: <ph name="COUNT" /></translation>
 <translation id="4631890462758052414">Новая вкладка инкогнито</translation>
@@ -1504,6 +1506,7 @@
 <translation id="6790502149545262384">Скоро, открывая новую вкладку, вы будете видеть статьи с сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6791425686608802741">Выберите "Добавить вкладку в новую группу".</translation>
 <translation id="6794476726485507147">Выберите дату и время, когда хотите получить напоминание о необходимости вернуться на эту страницу.</translation>
+<translation id="6795481620482106033">Недопустимые данные</translation>
 <translation id="6807287147325542056">Пароли в других приложениях</translation>
 <translation id="681368974849482173">Сохранено</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{{count} закладка сохранена в аккаунте Google ({email}).}few{{count} закладки сохранено в аккаунте Google ({email}).}many{{count} закладок сохранено в аккаунте Google ({email}).}other{{count} закладки сохранено в аккаунте Google ({email}).}}</translation>
@@ -1612,6 +1615,7 @@
 <translation id="7266578100016339897">Так вам будет проще поддерживать порядок в браузере. Период, после которого вкладки становятся неактивными, можно изменить в любое время в настройках.</translation>
 <translation id="7272437679830969316">Не удалось пройти проверку. Пароль не скопирован.</translation>
 <translation id="728025568708172005">Смотреть всё</translation>
+<translation id="7280980607183752256">Невозможно импортировать файл.</translation>
 <translation id="7281202269687163394">Ваша конфиденциальность в Gemini</translation>
 <translation id="7293429513719260019">Выбрать язык</translation>
 <translation id="7300448350764260141">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
@@ -2008,6 +2012,7 @@
 <translation id="8726523474917941818">Напомнить</translation>
 <translation id="8728922029615312208">Закрыть все</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731268612289859741">CVC-код</translation>
 <translation id="87371078663613140">Изучите параметры в строке меню.</translation>
 <translation id="8741627442233023406">{count,plural, =1{Посмотреть вкладку}one{Посмотреть все вкладки}few{Посмотреть все вкладки}many{Посмотреть все вкладки}other{Посмотреть все вкладки}}</translation>
 <translation id="8741995161408053644">История просмотра также может храниться в вашем аккаунте Google: <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -403,7 +403,7 @@
 <translation id="1260810365552581339">‏יכול להיות שאין מספיק מקום אחסון פנוי ב‑Linux. אפשר להגדיל את מקום האחסון הפנוי ב‑Linux ולנסות לשחזר שוב ב<ph name="LINK_START" />הגדרות<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">מתון</translation>
 <translation id="126156426083987769">התרחשה בעיה שקשורה לרישיונות המכשירים של מצב ההדגמה.</translation>
-<translation id="1262395978737369974">‏אין הגבלה על השימוש באופטימיזציה של JavaScript</translation>
+<translation id="1262395978737369974">‏תמיד יש הרשאה להשתמש באופטימיזציה של JavaScript</translation>
 <translation id="1262564987698748643">אתרים יכולים לבקש הרשאה לשנות את ברירת המחדל של קלט המקלדת</translation>
 <translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1263733306853729545">מעבר בין העמודים של רשימת התווים האפשריים באמצעות המקש <ph name="MINUS" /> והמקש <ph name="EQUAL" /></translation>
@@ -5923,6 +5923,7 @@
 <translation id="5109044022078737958">מיה</translation>
 <translation id="5109816792918100764">הסרת <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">פתיחת הקבוצה בחלון חדש</translation>
+<translation id="511147239888121455">לגבות את הפריטים שלך?</translation>
 <translation id="5111646998522066203">יציאה ממצב אנונימי</translation>
 <translation id="5111692334209731439">&amp;מנהל הסימניות</translation>
 <translation id="5111794652433847656">אין מפתחות גישה עבור <ph name="APP_NAME" /> במכשיר הזה</translation>
@@ -8217,6 +8218,7 @@
     <ph name="BEGIN_PARAGRAPH3" />בכתובת g.co/flex/HWDataCollection מפורט מידע נוסף על נתונים שמערכת <ph name="DEVICE_OS" /> יכולה לשתף עם Google ועל האופן שבו נעשה בהם שימוש.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט</translation>
 <translation id="6771503742377376720">הוא רשות אישורים</translation>
+<translation id="6772103682557559072">אפשרויות נוספות לכתובת העבודה של <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">פתיחה ועריכה</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">האתר דורש שימוש בסיסמה חד-פעמית</translation>
@@ -10044,6 +10046,7 @@
 <translation id="8025151549289123443">מסך הנעילה וכניסה לחשבון</translation>
 <translation id="8025291188699172126">מידע על העדכונים</translation>
 <translation id="8026471514777758216">כל המכשירים שלך</translation>
+<translation id="8026700655446696031">אפשרויות נוספות לכתובת המגורים של <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">אפשר לשמור את הסימניות ופריטים נוספים בעזרת הסנכרון</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{לא ביקרת כאן מעולם}=1{ביקור אחרון: לפני יום אחד}one{ביקור אחרון: לפני # ימים}two{ביקור אחרון: לפני יומיים (#)}other{ביקור אחרון: לפני # ימים}}</translation>
 <translation id="8028060951694135607">‏שחזור מפתח של Microsoft</translation>
@@ -10194,6 +10197,7 @@
 <translation id="8121537075864592453">המסך המלא מושבת</translation>
 <translation id="8121750884985440809">‏Cast של המסך מופעל</translation>
 <translation id="8122898034710982882">‏Phone Hub,‏ <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">גיבוי של הסיסמאות, הסימניות ועוד, כך שאפשר לגשת אליהם בקלות בכל המכשירים</translation>
 <translation id="81238879832906896">פרח צהוב ולבן</translation>
 <translation id="8123975449645947908">גלילה אחורה</translation>
 <translation id="8124313775439841391">‏ONC מנוהל</translation>
@@ -10642,7 +10646,7 @@
 <translation id="8431190899827883166">הצגת לחיצות</translation>
 <translation id="843173223122814223">‏יצירת רקעים באמצעות AI</translation>
 <translation id="8431977087510901105">הגדרות הסמן אופסו</translation>
-<translation id="843210078733508372">אחרי הכניסה לחשבון, שינוי הסיסמה יימשך</translation>
+<translation id="843210078733508372">אחרי הכניסה לחשבון, אפשר להמשיך בשינוי הסיסמה</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="8434109185104929038">פינת קריאה</translation>
 <translation id="8434837876193928924">פרטי קבוצת הכרטיסיות</translation>

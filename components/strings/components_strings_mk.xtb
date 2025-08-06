@@ -273,6 +273,7 @@
 <translation id="1436185428532214179">Може да прашува за да изменува датотеки и папки на уредот</translation>
 <translation id="1442386063175183758">Десно превиткување како брошура</translation>
 <translation id="1442987760062738829">Дупки</translation>
+<translation id="1445896388055045436">Прикажувај ги достапните придобивки и награди за картичката при плаќање. Важат условите на издавачот.</translation>
 <translation id="1446396933673057385">Проверка на точноста</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Копчињата „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ не може да се постават во истиот речник како копчињата „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />“</translation>
@@ -1233,6 +1234,7 @@
 <translation id="3086579638707268289">Вашата активност на интернет е под надзор</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
+<translation id="3094051226187213523">Отворете го „AI-режимот“ со предлогов.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3098513225387949945">Игнорирано бидејќи списокот на оневозможени содржи шема еднаква на „*“, што пак е еднакво на оневозможување на правилото.</translation>
 <translation id="3098944373717628099">Вашите локални датотеки ќе се избришат по 1 час</translation>
@@ -1682,7 +1684,7 @@
 <translation id="3792826587784915501">Култни и независни филмови</translation>
 <translation id="3793574014653384240">Број на падови и причини за падовите што се случиле неодамна</translation>
 <translation id="3795624560191557077">Неодамна променивте лозинка најдена при јавен упад во податоци. Ако се соочите со проблем, Google Password Manager може да ви помогне да се најавите.</translation>
-<translation id="3796181268473765083">Плаќајте на 4 рати без камата или на месечни рати (зависи од подобност)</translation>
+<translation id="3796181268473765083">Плаќајте на 4 бескаматни или месечни рати (зависно од подобноста)</translation>
 <translation id="3799805948399000906">Побаран е фонт</translation>
 <translation id="3801297763951514916">Го отворате ова често</translation>
 <translation id="380329542618494757">Име</translation>
@@ -4792,6 +4794,7 @@
 <translation id="9040341831873780534">Погледнете ги условите тука</translation>
 <translation id="9042617223719777575">Голем капацитет</translation>
 <translation id="9042827002460091668">Проверете ја интернет-врската и обидете се повторно</translation>
+<translation id="9043161870923715789">AI-режим</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> сака да бара и да се поврзува со кој било уред во вашата локална мрежа</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>

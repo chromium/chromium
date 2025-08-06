@@ -1612,6 +1612,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7266578100016339897">Þetta hjálpar þér að halda skipulagi. Þú getur breytt þessu í stillingum hvenær sem er.</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="728025568708172005">Sýndu mér leiðina</translation>
+<translation id="7280980607183752256">Ekki er hægt að flytja þessa skrá inn</translation>
 <translation id="7281202269687163394">Friðhelgi þín og Gemini</translation>
 <translation id="7293429513719260019">Velja tungumál</translation>
 <translation id="7300448350764260141">Auktu vörn gegn netógnum.</translation>
@@ -2008,6 +2009,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8726523474917941818">Áminna</translation>
 <translation id="8728922029615312208">Loka öllu</translation>
 <translation id="8730621377337864115">Lokið</translation>
+<translation id="8731268612289859741">Öryggiskóði</translation>
 <translation id="87371078663613140">Skoðaðu valkosti á valmyndarstikunni</translation>
 <translation id="8741627442233023406">{count,plural, =1{Fara yfir flipann…}one{Fara yfir alla flipa…}other{Fara yfir alla flipa…}}</translation>
 <translation id="8741995161408053644">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

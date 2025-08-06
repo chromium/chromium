@@ -1612,6 +1612,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="728025568708172005">Show me around</translation>
+<translation id="7280980607183752256">This file can't be imported</translation>
 <translation id="7281202269687163394">Your privacy and Gemini.</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>
@@ -2008,6 +2009,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8726523474917941818">Remind</translation>
 <translation id="8728922029615312208">Close all</translation>
 <translation id="8730621377337864115">Done</translation>
+<translation id="8731268612289859741">Security code</translation>
 <translation id="87371078663613140">Explore the options in the menu bar</translation>
 <translation id="8741627442233023406">{count,plural, =1{Review the tab…}other{Review all tabs…}}</translation>
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

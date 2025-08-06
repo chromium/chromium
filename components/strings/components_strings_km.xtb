@@ -261,6 +261,7 @@
 <translation id="14222610277930434">អ្នក​ចូលមើល​ញឹកញាប់</translation>
 <translation id="1422795627423046860">កាលបរិច្ឆេទ​មិនត្រឹមត្រូវទេ</translation>
 <translation id="1422930527989633628">អាចស្នើសុំ​ស្វែងរក​ឧបករណ៍​ប៊្លូធូស​ដែលនៅជិត</translation>
+<translation id="142559998533702194">ការបង្ហោះ​មិនបាន​សម្រេចទេ</translation>
 <translation id="1426410128494586442">បាទ/ចាស</translation>
 <translation id="1427192966110103169">ស្ប៉ា សូណា និង​អាងហែលទឹក​តាមផ្ទះ</translation>
 <translation id="1428146450423315676">ទម្រគំនរទី 7</translation>
@@ -362,6 +363,7 @@
 <translation id="159274626729231974">មហោស្រព​ភាពយន្ត</translation>
 <translation id="1593359183944365958">270 ដឺក្រេ</translation>
 <translation id="1594030484168838125">ជ្រើសរើស</translation>
+<translation id="1595731774593926493">លុប​លេខកែតម្រូវ</translation>
 <translation id="1597307423671074806">វីដេអូ WebM</translation>
 <translation id="159800670740560023">តំណ​គន្លឹះ Chrome, ចុច Enter ដើម្បីបើក <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">កាតថ្មីឬ? <ph name="BEGIN_LINK" />បញ្ចូល​ព័ត៌មាន​លម្អិត​អំពី​កាត<ph name="END_LINK" /></translation>
@@ -722,6 +724,7 @@
 <translation id="2188375229972301266">ចោះ​ច្រើនរន្ធ​ខាងក្រោម</translation>
 <translation id="218940509700321686">តម្លៃបំបែកដោយសញ្ញាក្បៀស</translation>
 <translation id="2194856509914051091">ចំណុច​ដែលត្រូវ​ពិចារណា</translation>
+<translation id="2198215508485017216">អ្វី​មួយ​ដែល​មិន​បាន​រំពឹង​ទុក​បាន​កើត​ឡើង។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម​អំពី​ការបង្ហោះ​ទៅថាស<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">ប៊ូតុង​ឱ្យមេដៃ​ចុះ, ចុច Enter ដើម្បីបើក​ទម្រង់​បែបបទ​សម្រាប់​ដាក់បញ្ជូន​មតិកែលម្អ​លម្អិត​អំពី​មូលហេតុ​ដែលអ្នក​មិនចូលចិត្ត​ការណែនាំ​នេះ</translation>
 <translation id="2202627062836089804">ផ្នែកខាងក្រោយ​កាតរបស់អ្នក</translation>
 <translation id="2204482073374652408">បានបញ្ចប់​ការធ្វើបច្ចុប្បន្នភាព!</translation>
@@ -737,6 +740,7 @@
 <translation id="2215539479425228550">ការឡើងភ្នំ និង​ការតោង​ឡើងផ្ទាំងថ្ម</translation>
 <translation id="2215727959747642672">ការកែឯកសារ</translation>
 <translation id="2215963164070968490">ឆ្កែ</translation>
+<translation id="2218089682233901164">បញ្ចូល​លេខ​អ្នកដំណើរ​ដែលស្គាល់</translation>
 <translation id="2219376942605837404">បញ្ចូលផ្ទាំងទៅតារាងប្រៀបធៀប</translation>
 <translation id="2219658597883514593">ចាប់ផ្ដើម​មេរៀន​ឡើងវិញ</translation>
 <translation id="2219735899272417925">តម្រូវ​ឱ្យ​កំណត់​ឧបករណ៍​ឡើងវិញ</translation>
@@ -753,6 +757,7 @@
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">បាន​ទប់ស្កាត់ខូគី​ភាគី​ទីបី</translation>
 <translation id="2239100178324503013">ផ្ញើឥឡូវនេះ</translation>
+<translation id="224130779555573777">បញ្ចូល​លេខកែតម្រូវ</translation>
 <translation id="2241693394036365668">ឯកសារ​ត្រូវបាន​ទាញយក</translation>
 <translation id="2242389809734574253">"រក្សាទុក IBAN" ត្រូវ​បានបិទ។</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
@@ -857,6 +862,7 @@
 <translation id="239429038616798445">មិនមានមធ្យោបាយដឹកជញ្ជូនតាមប្រៃសណីយ៍នេះទេ។ សូមសាកល្បងមធ្យោបាយផ្សេង។</translation>
 <translation id="2395840535409704129">កីឡា​លើ​ទឹក</translation>
 <translation id="2396249848217231973">បកក្រោយការលុប</translation>
+<translation id="239708975263889666">កែ​លេខ​អ្នកដំណើរ​ដែលស្គាល់</translation>
 <translation id="2399344929880464793">IBAN នេះត្រូវបានរក្សាទុកនៅក្នុងគណនី Google របស់អ្នក ដើម្បីឱ្យអ្នកអាចប្រើវានៅលើសេវាកម្ម Google។</translation>
 <translation id="2399868464369312507">Google Chrome កំពុង​ព្យាយាម​កែ​វិធីបង់ប្រាក់។</translation>
 <translation id="2400263725572336749">បញ្ចូល​លិខិត​ឆ្លងដែន</translation>
@@ -886,6 +892,7 @@
 <translation id="2451201933352935301"><ph name="URL" /> ចង់​គ្រប់គ្រង​វិនដូ​នៅលើ​ផ្ទាំងអេក្រង់​ទាំងអស់​របស់អ្នក</translation>
 <translation id="2451607499823206582">ការតាមដាន</translation>
 <translation id="2452098632681057184">អេកូឡូស៊ី និងបរិស្ថាន</translation>
+<translation id="2452689005240417488">រក្សាទុក​លេខ​អ្នកដំណើរ​ដែលស្គាល់​ឬ?</translation>
 <translation id="2452837234288608067">មិនអាចជួយ​ពាក់ព័ន្ធនឹង​សំណើនោះ​បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="2453045048779611513">ស្ថាប័ន​របស់អ្នក​ដាក់កំហិត​លើអ្វីដែល​អ្នកអាច​រក្សាទុកបាន</translation>
 <translation id="2456755709261364512">ត្រូវ​តែ​សាកថ្ម​របស់​អ្នក​ឱ្យ​លើស​ពី <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -995,6 +1002,7 @@
 <translation id="2634124572758952069">រកមិន​ឃើញអាសយដ្ឋាន IP ម៉ាស៊ីនមេរបស់ <ph name="HOST_NAME" /> ទេ។</translation>
 <translation id="2638567100095052009">វាយបញ្ចូល @ ដើម្បី​ស្វែងរក​នៅលើ <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">ស្ថានភាព៖</translation>
+<translation id="2644219706149911059">កំពុង​បង្ហោះទៅ Google ថាស...</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ក្រណាត់ (រលោងមធ្យម)</translation>
 <translation id="264810637653812429">រកមិន​ឃើញ​ឧបករណ៍​ដែល​ត្រូវគ្នាទេ។</translation>
@@ -1126,6 +1134,7 @@
 <translation id="2904180982022726666">ស្ថាប័ន​របស់អ្នក​ដាក់កំហិត​លើអ្វីដែល​អ្នកអាច​ចែករំលែក​បាន</translation>
 <translation id="2905107382358353958">ការជូនដំណឹង​អំពី​ការកំណត់​ការបង់ប្រាក់​ថ្មី</translation>
 <translation id="2909946352844186028">ការប្តូរបណ្តាញត្រូវបានរកឃើញ។</translation>
+<translation id="2910062169995917863">វគ្គបាន​អស់ម៉ោង</translation>
 <translation id="2911255567212929079">ការរៀន​របស់​ម៉ាស៊ីន និង​បញ្ញា​សិប្បនិម្មិត</translation>
 <translation id="2911973620368911614">លេខសម្គាល់​អ្នកប្រើប្រាស់​គណនីការងារ</translation>
 <translation id="2913421697249863476">បាប៊ីឃ្យូ និងការអាំងសាច់</translation>
@@ -1383,6 +1392,7 @@
 <translation id="33073482541490531">ពាក្យសម្ងាត់ដែលអ្នកទើបតែប្រើត្រូវបានរកឃើញនៅក្នុងការបែកធ្លាយទិន្នន័យ។ កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ណែនាំឱ្យផ្លាស់ប្ដូរពាក្យសម្ងាត់នេះឥឡូវនេះ។</translation>
 <translation id="3307649904964670439">ប៊ូតុង "ប្ដូរ Chrome តាមបំណង", បើកដំណើរការ ដើម្បីប្ដូររូបរាងកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នកតាមបំណង</translation>
 <translation id="3308006649705061278">ក្រុមអង្គភាព (OU)</translation>
+<translation id="3312952471765023168">ការបង្ហោះ​បានជោគជ័យ​ហើយ</translation>
 <translation id="3318016344440038475">កម្មវិធី​កំប្លែង​តាម​ទូរទស្សន៍</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">ឈាមជ្រូក</translation>
@@ -2193,6 +2203,7 @@
 <translation id="4652266463001779298">មិន​អនុញ្ញាត</translation>
 <translation id="4652440160515225514">ស្ថាប័ន​របស់អ្នក​បានទប់ស្កាត់​គេហទំព័រ​នេះ ដោយសារ​វា​បំពាន​គោលការណ៍។</translation>
 <translation id="4658638640878098064">កិប​ខាងលើ​ផ្នែកខាងឆ្វេង</translation>
+<translation id="4660592918803576381">បើក​នៅក្នុង​ថាស</translation>
 <translation id="4661556981531699496">សត្វ​ចិញ្ចឹម និងសត្វពាហនៈ</translation>
 <translation id="4661868874067696603">ស្វែងរក​ជម្រើសទិញ​ច្រើនទៀត</translation>
 <translation id="4663373278480897665">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា</translation>
@@ -2927,6 +2938,7 @@
 <translation id="5886961930368713749">ផ្ញើមតិកែលម្អសម្រាប់ "ប្រៀបធៀប"</translation>
 <translation id="5887400589839399685">បានរក្សាទុក​កាត</translation>
 <translation id="5887687176710214216">បានចូលមើល​លើកចុងក្រោយ​កាលពីម្សិលមិញ</translation>
+<translation id="5890248301649767931">រក្សាទុក​លេខកែតម្រូវ​ឬ?</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
 <translation id="5895187275912066135">ចេញនៅថ្ងៃទី</translation>
 <translation id="5898767305816764989">ប៊ូតុង​លើកមេដៃ, ចុច Enter ដើម្បី​ដាក់បញ្ជូន​មតិកែលម្អ​ដែលប្រាប់ថា អ្នក​ចូលចិត្ត, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3167,6 +3179,7 @@
 <translation id="6272088941196661550">បន្ត​ការស្វែងរករបស់អ្នក ដើម្បីមើល​សកម្មភាព​ដែលពាក់ព័ន្ធ​នៅក្នុង​ប្រវត្តិ Chrome របស់អ្នក</translation>
 <translation id="6272383483618007430">Google បច្ចុប្បន្នភាព</translation>
 <translation id="6278015583149890680">Google ថាស និង OneDrive</translation>
+<translation id="6279228081537458128">ទូទាត់​ពេលក្រោយ</translation>
 <translation id="6280223929691119688">មិនអាចដឹកជញ្ជូនផ្ទាល់ទៅអាសយដ្ឋាននេះបានទេ។ សូមជ្រើសរើសអាសយដ្ឋានផ្សេង។</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284449872909111707">ការផ្ញើសារជាអក្សរ និងការផ្ញើ​សារ​ភ្លាមៗ</translation>
@@ -3200,6 +3213,7 @@
 <translation id="6327065120806001832">សិទ្ធិចូលប្រើ​បណ្ដាញ​មូលដ្ឋាន</translation>
 <translation id="6328639280570009161">សាកល្បងការបិទដំណើរការការព្យាករណ៍បណ្តាញ</translation>
 <translation id="6329815962353376655">&lt;វាយបញ្ចូល​សំណួរ&gt;</translation>
+<translation id="633348045801643466">បង្ហាញ​ជម្រើស<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />ទូទាត់​ពេលក្រោយ<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> នៅពេល​បង់ប្រាក់​ចេញ</translation>
 <translation id="6335029926534404762">ស្បែកជើង​កីឡា</translation>
 <translation id="6336948221660696475">មិនបានអនុញ្ញាត​ឱ្យប្រើ VR ទេ</translation>
 <translation id="6337133576188860026">បង្កើន​ទំហំផ្ទុក​តិចជាង <ph name="SIZE" /> ។ ទំព័រ​មួយចំនួន​អាចផ្ទុក​យឺតជាងមុន នៅពេលដែលអ្នក​ចូល​លើកក្រោយ។</translation>
@@ -3525,6 +3539,7 @@
 <translation id="6880941331070119097">ជម្រើស​តម្លៃខ្ពស់</translation>
 <translation id="6881240511396774766">បង្កើតឯកសារ Google ថ្មីបានរហ័ស</translation>
 <translation id="6882210908253838664">ប្រសិនបើ​គេហទំព័រ​មិន​ដំណើរការ អ្នកអាច​សាកល្បង​ផ្ដល់​ការអនុញ្ញាត​ឱ្យ​វា​ប្រើ​ខូគី​ភាគីទីបី​ជា​បណ្ដោះអាសន្ន។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
+<translation id="6883120223439653449">ធ្វើបច្ចុប្បន្នភាព​លេខ​អ្នកដំណើរ​ដែលស្គាល់​ឬ?</translation>
 <translation id="6883221904761970440">បញ្ជី​ផ្ទៀងផ្ទាត់ព័ត៌មានបង់ប្រាក់ដែលមានសុវត្ថិភាពត្រូវបានបិទ</translation>
 <translation id="6883745783646124431">អាសយដ្ឋានកន្លែងធ្វើការ</translation>
 <translation id="6884662655240309489">ទំហំ 1</translation>
@@ -3545,6 +3560,7 @@
 <translation id="6905163627763043954">សាកល្បងវា</translation>
 <translation id="6907458757809079309">សម្បទា</translation>
 <translation id="691024665142758461">ទាញយកឯកសារច្រើន</translation>
+<translation id="691046363691324218">លេខកែតម្រូវ</translation>
 <translation id="6915804003454593391">អ្នកប្រើ៖</translation>
 <translation id="6916193791494646625">ផ្ដល់​មូលហេតុ​នៃការទាញយក (តម្រូវ)</translation>
 <translation id="6917795328362592458">ពាក្យសម្ងាត់ដែលអ្នកទើបតែប្រើត្រូវបានរកឃើញនៅក្នុងការបែកធ្លាយទិន្នន័យ។ ដើម្បីការពារសុវត្ថិភាពគណនីរបស់អ្នក កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ណែនាំឱ្យពិនិត្យមើលពាក្យសម្ងាត់ដែលអ្នកបានរក្សាទុក។</translation>
@@ -3634,6 +3650,7 @@
 <translation id="7044081119134178347">បានអនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា​នៅពេលនេះ</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">អ្នកបានព្យាយាមចូលទៅ <ph name="DOMAIN" />, ប៉ុន្តែវិញ្ញាបនបត្រនៃម៉ាស៊ីនមេនេះមានសុពលភាពយូរពេកដែលមិនគួរឲ្យទុកចិត្ត។</translation>
+<translation id="7050877504983265321">លេខ​អ្នកដំណើរ​ដែលស្គាល់</translation>
 <translation id="7053983685419859001">ទប់ស្កាត់</translation>
 <translation id="7054717457611655239">ចាប់ពីពេលនេះ សូមរក្សាទុកឯកសាររបស់អ្នកទៅ <ph name="CLOUD_PROVIDER" />។</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> បានបញ្ជាក់ថា <ph name="ISSUER" /> បានចេញវិញ្ញាបនបត្ររបស់គេហទំព័រនេះ។</translation>
@@ -3903,6 +3920,7 @@
 <translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> នឹង​ត្រួតពិនិត្យ​សិទ្ធិទទួលបាន​របស់អ្នក (ការធ្វើបែបនេះ​នឹងមិន​ប៉ះពាល់​ដល់ពិន្ទុ​ឥណទាន​របស់អ្នក​ទេ)។ ប្រសិនបើទទួលបានការយល់ព្រម <ph name="BNPL_ISSUER_NAME" /> នឹងផ្ដល់គម្រោងបង់ប្រាក់សម្រាប់ឱ្យអ្នកជ្រើសរើស និងបញ្ចប់ការទិញរបស់អ្នក។</translation>
 <translation id="7489392576326061356">សាប៊ូ​កក់សក់ និងសាប៊ូកក់​បន្ទន់សក់</translation>
+<translation id="7489919936111034362">ទំហំ​ផ្ទុក Google ថាស​របស់អ្នក​ពេញហើយ</translation>
 <translation id="7495528107193238112">ខ្លឹមសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​។ សូមទាក់ទង​ម្ចាស់​គេហទំព័រ ដើម្បី​ដោះស្រាយ​បញ្ហានេះ​។</translation>
 <translation id="749865518782565832">ប្រព័ន្ធទឹក</translation>
 <translation id="7499188644237027195">នៅពេល​អ្នកទិញ​នៅក្នុង Chrome សូមមើល​កាបូប​អេឡិចត្រូនិក និង Pix ជាជម្រើស</translation>
@@ -3962,6 +3980,7 @@
 <translation id="7569983096843329377">ខ្មៅ</translation>
 <translation id="7571813784389228510">មុខងារ Google AI</translation>
 <translation id="7574998639136359461">បរិក្ខារ​កីឡា​រដូវ​រងា</translation>
+<translation id="7575130707299232096">លុប​លេខ​អ្នកដំណើរ​ដែលស្គាល់</translation>
 <translation id="7575207903026901870">ប៊ូតុង​លុប​ការណែនាំ ចុច Enter ដើម្បី​លុប​ការណែនាំ​នេះ</translation>
 <translation id="7575800019233204241">"ការតភ្ជាប់​របស់អ្នក​មិន​មានលក្ខណៈ​ឯកជន" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ឬ "មានបញ្ហាផ្នែក​វិញ្ញាបនបត្រ SSL"</translation>
 <translation id="7575887283389198269">ទូរសព្ទ​ចល័ត</translation>
@@ -4000,6 +4019,7 @@
 <translation id="7631072086707140121">URL ត្រូវតែមាន https។</translation>
 <translation id="7631527008834753063">កម្មវិធី​ហ្គេម​ក្នុងទូរទស្សន៍</translation>
 <translation id="7633909222644580952">ទិន្នន័យ​ប្រតិបត្តិការ និងរបាយការណ៍​អំពីការគាំង</translation>
+<translation id="7634963626477752453">បាន​រក្សាទុក​ទៅថត <ph name="FOLDER_NAME" /> របស់អ្នក</translation>
 <translation id="7636346903338549690">គេហទំព័រ​បាន​អនុញ្ញាត​ឱ្យ​ប្រើ​ខូគី​ភាគីទីបី</translation>
 <translation id="7637571805876720304">យកកាតឥណទានចេញពី Chromium ឬ?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{គ្មាន}=1{ពាក្យសម្ងាត់ 1 នៅក្នុងគណនីរបស់អ្នក (សម្រាប់ <ph name="DOMAIN_LIST" />)}other{ពាក្យសម្ងាត់ # នៅក្នុងគណនីរបស់អ្នក (សម្រាប់ <ph name="DOMAIN_LIST" />)}}</translation>
@@ -4488,6 +4508,7 @@
 <translation id="8457125768502047971">មិនច្បាស់</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">បើក</translation>
+<translation id="8461289985785035071">កែ​លេខកែតម្រូវ</translation>
 <translation id="8461694314515752532">អ៊ីនគ្រីប​ទិន្នន័យ​ដែលបាន​ធ្វើ​សមកាលកម្ម​ ដោយប្រើឃ្លា​សម្ងាត់​សមកាលកម្មផ្ទាល់​ខ្លួន​របស់​អ្នក</translation>
 <translation id="8461973047386722744">រកមិនឃើញពាក្យសម្ងាត់ទេ</translation>
 <translation id="8467494337615822642">ចូលទៅកាន់ទំព័រនៃការពិនិត្យសុវត្ថិភាព Chrome នៅក្នុងការកំណត់</translation>
@@ -4795,6 +4816,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">សាកល្បងប្រើ Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូម​ចុច |<ph name="ACCELERATOR" />| ឱ្យជាប់</translation>
+<translation id="9031426777610376427">ធ្វើ​បច្ចុប្បន្នភាព​លេខកែតម្រូវ​ឬ?</translation>
 <translation id="9035022520814077154">កំហុសឆ្គងសុវត្ថិភាព</translation>
 <translation id="9035824888276246493">រក្សាទុក​លេខកូដ​សុវត្ថិភាព</translation>
 <translation id="9036306139374661733">អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន​ដែរទេ?</translation>

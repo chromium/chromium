@@ -1612,6 +1612,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7266578100016339897">Tindakan ini membantu Anda tetap teratur. Anda dapat mengubahnya di setelan kapan saja.</translation>
 <translation id="7272437679830969316">Tidak dapat memverifikasi identitas. Sandi tidak disalin.</translation>
 <translation id="728025568708172005">Mulai Tur Terpandu</translation>
+<translation id="7280980607183752256">File ini tidak dapat diimpor</translation>
 <translation id="7281202269687163394">Privasi Anda &amp; Gemini.</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="7300448350764260141">Berikan lapisan perlindungan tambahan terhadap ancaman online.</translation>
@@ -2008,6 +2009,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8726523474917941818">Ingatkan</translation>
 <translation id="8728922029615312208">Tutup semua</translation>
 <translation id="8730621377337864115">Selesai</translation>
+<translation id="8731268612289859741">Kode keamanan</translation>
 <translation id="87371078663613140">Jelajahi opsi di panel menu</translation>
 <translation id="8741627442233023406">{count,plural, =1{Tinjau tab…}other{Tinjau semua tab…}}</translation>
 <translation id="8741995161408053644">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

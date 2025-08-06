@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="1045545926731898784">This site belongs to a group of sites, defined by <ph name="SET_OWNER" />, that can share your activity across the group to help sites work as expected.</translation>
 <translation id="1055273091707420432">Chromium auto-deletes ad topics that are older than four weeks</translation>
 <translation id="1145223915439299117">Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.</translation>
 <translation id="1184166532603925201">When you're in Incognito mode, Chrome blocks sites from using third-party cookies</translation>
@@ -19,7 +18,6 @@
 <translation id="172522356264798673">Resume tracking protections</translation>
 <translation id="1732764153129912782">You can make changes in ads privacy settings</translation>
 <translation id="1780659583673667574">For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.</translation>
-<translation id="1818866261309406359">Manage related sites data in a new tab</translation>
 <translation id="1824257235526922152">Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.</translation>
 <translation id="1887631853265748225">Ads privacy features help limit what websites and their advertising partners can learn about you when they show you personalised ads.</translation>
 <translation id="1953252525523274058">Sites that you visit may embed content from other sites (like images, ads and text), which can be used to learn about you. Learn more about managing <ph name="START_LINK" />Incognito tracking protections<ph name="END_LINK" /></translation>
@@ -101,7 +99,6 @@
 <translation id="5165490319523240316">Sites and their advertising partners can use your activity, such as how you spend your time on sites that you visit, to personalise ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.</translation>
 <translation id="5362892126200493757">Tell us why you paused tracking protections on this site</translation>
 <translation id="544199055391706031">Your activity is one of the many things that a site can use to suggest ads. When site-suggested ads are turned off, sites can still show you ads but they may be less personalised. Learn more about <ph name="BEGIN_LINK" />site-suggested ads<ph name="END_LINK" />.</translation>
-<translation id="5495405805627942351">Manage related sites data</translation>
 <translation id="5535388436012824806">Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.</translation>
 <translation id="5574580428711706114">Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1" />Learn more in our privacy policy<ph name="LINK_END1" />.</translation>
 <translation id="565589626121534692">Pause tracking protections</translation>

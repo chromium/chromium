@@ -421,6 +421,7 @@
 <translation id="1700542542921501212">ୱେବରେ ସର୍ଚ୍ଚ କରିବାକୁ ଆପଣ <ph name="SEARCH_ENGINE_NAME" />କୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">ଲେଟର୍</translation>
+<translation id="1705645336613358172">ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ କରିବାକୁ Affirm କିମ୍ବା Zipକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1706625117072057435">ଜୁମ୍-ସ୍ତର</translation>
 <translation id="1706922226983368260">ପାସକୀ • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{ଏହି ସର୍ଭର୍‌ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ ଏହା <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସର୍ଟିଫିକେଟ୍‍ ଆସନ୍ତାକାଲିଠାରୁ ସ୍ୱୀକାର କରାଯିବ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।}other{ଏହି ସର୍ଭର୍‌ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ ଏହା <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସର୍ଟିଫିକେଟ୍‍ ଭବିଷ୍ୟତରେ # ଦିନଠାରୁ ସ୍ୱୀକାର କରାଯିବ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।}}</translation>
@@ -813,6 +814,7 @@
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ପେୟାର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="2344529975040861103">ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏହି କାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ</translation>
 <translation id="2346319942568447007">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
+<translation id="2347764072711098973">ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ କରିବାକୁ Affirm, Zip କିମ୍ବା Klarnaକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2348509731468399833">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
 <translation id="2349957959687031096">'ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ' ବଟନ, ପ୍ରାଇଭେଟ ଭାବେ ବ୍ରାଉଜ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> ପରିବର୍ତ୍ତେ ସମସ୍ତ <ph name="PROTOCOL" /> ଲିଙ୍କ୍‍ଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ <ph name="HANDLER_HOSTNAME" />କୁ ଅନୁମତି ଦେବେ କି?</translation>
@@ -1615,6 +1617,7 @@
 <translation id="3693327506115126094">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣ କିପରି ଯାଞ୍ଚ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="3698353241727597930">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="FILES" /> ଆପଣଙ୍କର ଏଣ୍ଟରପ୍ରାଇଜ-ଦ୍ୱାରା ପରିଚାଳିତ <ph name="CLOUD_STORAGE" /> ଷ୍ଟୋରେଜରେ ସେଭ କରିବା ପାଇଁ କନଫିଗର କରିଛି। ଆପଣ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଡିଲିଟ କଲେ, ସେଗୁଡ଼ିକୁ ମନିଟର, ଅଡିଟ କରାଯାଇପାରେ କିମ୍ବା ରଖାଯାଇପାରେ।</translation>
 <translation id="3698629142018988477">'ସାଇଟ ତିଆରି କରନ୍ତୁ' ବଟନ, Google Sitesରେ ଶୀଘ୍ର ଏକ ନୂଆ ସାଇଟ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
+<translation id="3700094625653511150">'ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ବିକଳ୍ପଗୁଡ଼ିକୁ ଲୁଚାଇବା ପାଇଁ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3700966190175650601">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ ଆପଣ ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="3701325639446035885">ଇଭେଣ୍ଟ ଟିକେଟ ସେଲ</translation>
 <translation id="3701427423622901115">ରିସେଟ୍ ସ୍ୱୀକାର କରାଯାଇଛି।</translation>
@@ -1678,6 +1681,7 @@
 <translation id="3792826587784915501">କଲ୍ଟ ଏବଂ ଇଣ୍ଡି ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="3793574014653384240">ବର୍ତ୍ତମାନ ଘଟିଥିବା କ୍ରାସଗୁଡ଼ିକର ସଂଖ୍ୟା ଏବଂ କାରଣଗୁଡ଼ିକ</translation>
 <translation id="3795624560191557077">ଆପଣ ବର୍ତ୍ତମାନ ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଥିବା ଏକ ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି। ସମସ୍ୟା ହେଲେ, Google Password Manager ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
+<translation id="3796181268473765083">4ଟି ସୁଧମୁକ୍ତ କିମ୍ବା ମାସିକ କିସ୍ତିରେ ପେମେଣ୍ଟ କରନ୍ତୁ (ଯୋଗ୍ୟତା ଉପରେ ନିର୍ଭର କରେ)</translation>
 <translation id="3799805948399000906">ଅନୁରୋଧ କରାଯାଇଥିବା ଫଣ୍ଟ</translation>
 <translation id="3801297763951514916">ଆପଣ ପ୍ରାୟ ଭିଜିଟ କରନ୍ତି</translation>
 <translation id="380329542618494757">ନାମ</translation>
@@ -2197,6 +2201,7 @@
 <translation id="468314109939257734">ଆପଣଙ୍କ ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ଦେଖନ୍ତୁ</translation>
 <translation id="4686942373615810936">ଏବେ ତିଆରି ହୋଇଛି</translation>
 <translation id="4687718960473379118">ସାଇଟ ଦ୍ୱାରା-ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକ</translation>
+<translation id="4690205240253392065">ଏକ 'ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ପ୍ରଦାନକାରୀ ବାଛନ୍ତୁ</translation>
 <translation id="469028408546145398">'ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରନ୍ତୁ' ବଟନ, ବର୍ତ୍ତମାନ ଖୋଲା ଥିବା ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4691093235373904540">ରୁଫିଂ</translation>
 <translation id="4692623383562244444">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
@@ -2319,6 +2324,7 @@
 <translation id="4877422487531841831"><ph name="TEXT" /> ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4877521229462766300">ଏମ୍ବେଡ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="4879491255372875719">ସ୍ୱଚାଳିତ (ଡିଫଲ୍ଟ)</translation>
+<translation id="4880328155169081699">ପରିଚୟ କାର୍ଡ ଅପଡେଟ କରିବେ?</translation>
 <translation id="4880827082731008257">ସର୍ଚ୍ଚ ଇତିହାସ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4881808915112408168">24 x 31.5 ଇଞ୍ଚ</translation>
@@ -2467,6 +2473,7 @@
 <translation id="5122786942953798871">ଏନଭେଲପ (କଟନ)</translation>
 <translation id="5123063207673082822">ସପ୍ତାହର ଶେଷ ଦିନ</translation>
 <translation id="5123433949759960244">ବାସ୍କେଟବଲ୍</translation>
+<translation id="5125575917473813637">ପରିଚୟ କାର୍ଡକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="5125751979347152379">ଅବୈଧ URL।</translation>
 <translation id="512592033764059484">ସକର</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ଭଲ ଭାବରେ ରିସାଇଜ୍ ହୋଇନପାରେ। ଆପରେ ହୋଇଥିବା ସମସ୍ୟାକୁ ପ୍ରତିରୋଧ କରିବା ପାଇଁ ୱିଣ୍ଡୋର ପ୍ରିସେଟ୍ ଆକାରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -2987,6 +2994,7 @@
 <translation id="6014801569448771146">ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡ୍ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6014851866995737824">"ସକ୍ଷମ" କିମ୍ବା "ଅକ୍ଷମ" ତାଲିକା ଉପଲବ୍ଧ ନଥିବା ଯୋଗୁଁ ଏହାକୁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
+<translation id="6017028474478839719">ପରିଚୟ କାର୍ଡ ସେଭ କରିବେ?</translation>
 <translation id="6017514345406065928">ସବୁଜ</translation>
 <translation id="6018650639991193045">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, କୁକୀ, କେଶେ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
@@ -3074,6 +3082,7 @@
 <translation id="6146055958333702838">ଯେକୌଣସି କେବଲ୍‌ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଉଥିବା ଯେକୌଣସି ରାଉଟର୍‌, ମୋଡେମ୍‍ କିମ୍ବା ଅନ୍ୟ ରାଉଟର୍‌ ରିବୁଟ୍‌ କରନ୍ତୁ।</translation>
 <translation id="614940544461990577">ଏହାକୁ ପରଖନ୍ତୁ:</translation>
 <translation id="6150036310511284407">ବାମ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
+<translation id="6150164900447447084">ଏହି ଡିଭାଇସରେ କାର୍ଡ ସେଭ କରିବେ?</translation>
 <translation id="6150754742333439143">ପାସୱାର୍ଡକୁ ପୁଣି ବ୍ୟବହାର କରିବା <ph name="ORG_NAME" /> ଦ୍ଵାରା ମନିଟର କରାଯାଉଛି</translation>
 <translation id="6151417162996330722">ସର୍ଭର ସାର୍ଟିଫିକେଟ୍‌ର ବୈଧତା ଅବଧି ବହୁତ ଲମ୍ବା ଅଟେ।</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ଇଞ୍ଚ (<ph name="ORIENTATION" />)</translation>
@@ -3532,6 +3541,7 @@
 <translation id="6921197121276419421">ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="69238565902785824"><ph name="BNPL_ISSUER_NAME" /> ବ୍ୟବହାର କରି ଆପଣଙ୍କର ଆକାଉଣ୍ଟକୁ ଲିଙ୍କ ରଖି ଆପଣଙ୍କୁ ଶୀଘ୍ର ପେମେଣ୍ଟ ଦେବାରେ ସାହାଯ୍ୟ ମିଳିଥାଏ, କିନ୍ତୁ ଆପଣ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />କୁ ଯାଇ ଏହାକୁ ଅନଲିଙ୍କ କରିପାରିବେ।</translation>
 <translation id="6924013822850225188">ଚେକଆଉଟ ବେଳେ ଆପଣଙ୍କ କାର୍ଡର ଲାଭଗୁଡ଼ିକୁ ଆପଣ ଦେଖିବେ ନା ନାହିଁ ତାହା ବାଛନ୍ତୁ (ବେଙ୍କର ସର୍ତ୍ତାବଳୀ ପ୍ରଯୁଜ୍ୟ)</translation>
+<translation id="6924933062125062950">ପରିଚୟ କାର୍ଡକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="6925267999184670015">ନର୍ଥ ଆମେରିକାନ B+</translation>
 <translation id="6926216138694948720">ବଡି ଆର୍ଟ</translation>
 <translation id="692638818576287323">କମର୍ସିଆଲ ଗାଡ଼ି</translation>
@@ -3592,6 +3602,7 @@
 <translation id="7006930604109697472">ଯେ କୌଣସି ଭାବେ ପଠାନ୍ତୁ</translation>
 <translation id="7009364359744329733">ଏହି କାର୍ଡ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ, ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7010658264061801199">ଖାଦ୍ୟ ଓ ପାନୀୟ</translation>
+<translation id="7011763495818914549">ପରିଚୟ କାର୍ଡ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">ଆପଣଙ୍କ ମାଉସକୁ ଲକ କରି ବ୍ୟବହାର କରିବା ପାଇଁ କହିପାରିବ</translation>
 <translation id="7014042602717177828">କାର ଅଡିଓ</translation>
@@ -3865,6 +3876,7 @@
 <translation id="7457071735008326060">ମାଲବାହୀ ଟ୍ରକ ଏବଂ ଟ୍ରେଲରଗୁଡ଼ିକ</translation>
 <translation id="7461924472993315131">ପିନ୍‍</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="746412105358554870">JavaScript ଅପ୍ଟିମାଇଜେସନ ଏବଂ ସୁରକ୍ଷା</translation>
 <translation id="7465036432780054056">ଆପଣ <ph name="TOP_LEVEL_URL" />କୁ ଭିଜିଟ କରିଥିବା <ph name="EMBEDDED_URL" /> ଜାଣିବ</translation>
 <translation id="7465963048299965912">10 x 13 ଇଞ୍ଚ</translation>
 <translation id="7469935732330206581">ଫର୍ମ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -3961,6 +3973,7 @@
 <translation id="761261689936461781">ମୋଟା</translation>
 <translation id="7613889955535752492">ସମୟ ଅବଧିର ସମାପ୍ତି: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ ଆପଣଙ୍କ ପାସାୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିବା ଏବଂ ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="7615932826417658001">ପରିଚୟ କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7616645509853975347">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରରେ Chrome Enterprise Connectors ଚାଲୁ କରିଛନ୍ତି। ଏହି କନେକ୍ଟରଗୁଡ଼ିକ ପାଖରେ ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ୍ ଅଛି।</translation>
 <translation id="7617825962482469577">ଏନଭେଲପ C7/C6</translation>
 <translation id="7618270539713451657">ମାର୍ସାଲ ଆର୍ଟ୍ସ</translation>
@@ -4125,6 +4138,7 @@
 <translation id="7887885240995164102">ପିକଚର୍-ଇନ୍-ପିକଚର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="7888575728750733395">ପ୍ରିଣ୍ଟ ରେଣ୍ଡରିଂ ଇଣ୍ଟେଣ୍ଟ</translation>
 <translation id="7890748547282909375">ସ୍କ୍ରିନସଟ ସେଭ କରିବା ପାଇଁ Microsoft OneDriveରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="7890755620327858054">ଏହି ସମୟରେ 'ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ଉପଲବ୍ଧ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଅନ୍ୟ ଏକ ପେମେଣ୍ଟ ପଦ୍ଧତି ବାଛନ୍ତୁ।</translation>
 <translation id="7892431309448524994"><ph name="ORIGIN" /> – ଆପଣଙ୍କ କର୍ସର ଦେଖାଇବା ପାଇଁ, |<ph name="ACCELERATOR" />|କୁ ଦବାନ୍ତୁ</translation>
 <translation id="7892865709991296481">ପେମେଣ୍ଟ ସେଟିଂସ</translation>
 <translation id="7894280532028510793">ଯଦି ବନାନ ସଠିକ୍ ଅଛି, ତେବେ <ph name="BEGIN_LINK" />ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>

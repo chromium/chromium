@@ -1612,6 +1612,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7266578100016339897">Horrela, antolatuta edukiko duzu guztia. Ezarpenetan alda dezakezu hori.</translation>
 <translation id="7272437679830969316">Ezin da egiaztatu identitatea. Ez da kopiatu pasahitza.</translation>
 <translation id="728025568708172005">Eraman nazazue txangoan</translation>
+<translation id="7280980607183752256">Ezin da inportatu fitxategia</translation>
 <translation id="7281202269687163394">Zure pribatutasuna eta Gemini.</translation>
 <translation id="7293429513719260019">Hautatu hizkuntza</translation>
 <translation id="7300448350764260141">Gehitu beste babes-geruza bat sareko mehatxuen aurka.</translation>
@@ -2008,6 +2009,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8726523474917941818">Gogorarazi</translation>
 <translation id="8728922029615312208">Itxi guztiak</translation>
 <translation id="8730621377337864115">Eginda</translation>
+<translation id="8731268612289859741">Segurtasun-kodea</translation>
 <translation id="87371078663613140">Arakatu menu-barrako aukerak</translation>
 <translation id="8741627442233023406">{count,plural, =1{Berrikusi fitxa…}other{Berrikusi fitxa guztiak…}}</translation>
 <translation id="8741995161408053644">Google-ko kontuko arakatze-historiaren bestelako datu batzuk gera litezke <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> webgunean.</translation>

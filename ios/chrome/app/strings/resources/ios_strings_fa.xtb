@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">سازمانتان مرور خصوصی را خاموش کرده است.</translation>
 <translation id="2122754583996902531">مرورگرتان تحت‌مدیریت است. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">‏از گپ‌های سازمان شما برای بهبود دادن مدل‌های ما استفاده نمی‌شود. ممکن است Gemini اطلاعات نادرست، ازجمله درباره افراد، نمایش دهد، بنابراین پاسخ‌هایش را دوباره‌سنجی کنید. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">‏گذرواژه‌های زیر در «مدیر گذرواژه Google» وارد نشدند زیرا با الزامات مطابقت ندارند.</translation>
 <translation id="2139867232736819575">جستجوی نوشتاری که کپی کرده‌اید</translation>
 <translation id="2147127444698817042">‏فقط در iPhone دردسترس است</translation>
 <translation id="2148799636999124959">با گذرواژه‌های ذخیره‌شده‌تان، سریعاً به سیستم سایت‌ها و برنامه‌ها وارد شوید.</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">باز کردن گزینه‌های «حالت خواندن»</translation>
 <translation id="4624080227980645783">پنجره «ناشناس» جدید</translation>
 <translation id="4627107755957573804">به سایت‌ها و برنامه‌ها اجازه می‌دهد تا حساب‌های موجود را برای استفاده از گذرکلید ارتقا دهند</translation>
+<translation id="4629065796475200039">گذرواژه‌تان وارد نشد</translation>
 <translation id="4630212057753624203">حبابک نمونه</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> گذرواژه دوباره‌استفاده‌شده</translation>
 <translation id="4631890462758052414">برگه «ناشناس» جدید</translation>
@@ -1504,6 +1506,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="6791425686608802741">روی «افزودن زبانه به گروه جدید» تک‌ضرب بزنید</translation>
 <translation id="6794476726485507147">تاریخ و ساعتی برای دریافت اعلان یادآور جهت بازدید مجدد از این صفحه انتخاب کنید.</translation>
+<translation id="6795481620482106033">داده‌های نامعتبر</translation>
 <translation id="6807287147325542056">گذرواژه‌ها در برنامه‌های دیگر</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}}</translation>
@@ -1612,6 +1615,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7266578100016339897">این کار به سازمان‌دهی آن‌ها کمک می‌کند. هروقت خواستید می‌توانید این را در تنظیمات تغییر دهید.</translation>
 <translation id="7272437679830969316">نمی‌توانیم هویتتان را به تأیید برسانیم. گذرواژه کپی نشد.</translation>
 <translation id="728025568708172005">اطراف را نشانم بده</translation>
+<translation id="7280980607183752256">امکان وارد کردن این فایل وجود ندارد</translation>
 <translation id="7281202269687163394">‏حریم خصوصی شما و Gemini.</translation>
 <translation id="7293429513719260019">انتخاب زبان</translation>
 <translation id="7300448350764260141">لایه محافظتی بیشتری دربرابر تهدیدهای آنلاین اضافه کنید.</translation>
@@ -2008,6 +2012,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8726523474917941818">یادآور شدن</translation>
 <translation id="8728922029615312208">بستن همه</translation>
 <translation id="8730621377337864115">تمام</translation>
+<translation id="8731268612289859741">کد امنیتی</translation>
 <translation id="87371078663613140">گزینه‌ها را در نوار منو کاوش کنید</translation>
 <translation id="8741627442233023406">{count,plural, =1{مرور کردن برگه…}one{مرور کردن برگه…}other{مرور کردن همه برگه‌ها…}}</translation>
 <translation id="8741995161408053644">‏ممکن است حساب Google شما اشکال سابقه مرور دیگری در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> داشته باشد.</translation>

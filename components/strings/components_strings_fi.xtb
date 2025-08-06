@@ -1194,6 +1194,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3002501248619246229">Tarkista syöttölokeron media</translation>
 <translation id="3005723025932146533">Näytä tallennettu kopio</translation>
 <translation id="300580149047131921">Äskettäin käytetyt</translation>
+<translation id="3006864083554020786">kotiosoite</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, selaa käytettävissä olevia toimintoja painamalla sarkainta ja suorita valittu toiminto painamalla Enter.</translation>
 <translation id="3010991137650052245"><ph name="SHORT_PRODUCT_NAME" /> tarvitsee pääsyoikeuden, jotta <ph name="PERMISSION" /> on käytettävissä tällä sivustolla</translation>
 <translation id="3013711734159931232">Kodinhoitotarvikkeet</translation>
@@ -1829,6 +1830,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="404831776305217138">Päivitysosoite laajennukselle (tunnus "<ph name="EXTENSION_ID" />") on virheellinen tai sen mallia ei tueta. Tuetut mallit ovat <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ja <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Voit käyttää sitä Googlen tuotteissa</translation>
 <translation id="4050599136622776556">Chromium yrittää muokata maksutapoja.</translation>
+<translation id="4052683751389375539">Muokkaa, avaa uuden ikkunan</translation>
 <translation id="405399507749852140">Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4059523390906550209">Lue lisää arkaluontoisten tietojen suojauksesta</translation>
@@ -3521,6 +3523,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6881240511396774766">Luo uusi Google-dokumentti nopeasti</translation>
 <translation id="6882210908253838664">Jos sivusto ei toimi, voit antaa sille väliaikaisen luvan käyttää kolmannen osapuolen evästeitä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Suojatun maksun kirjautumistietojen todennuspaneeli on suljettu</translation>
+<translation id="6883745783646124431">työosoite</translation>
 <translation id="6884662655240309489">Koko 1</translation>
 <translation id="6886283082988906333">ZIP-arkisto</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

@@ -1612,6 +1612,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7266578100016339897">Isso ajuda você a se organizar. É possível mudar essa definição a qualquer momento nas configurações.</translation>
 <translation id="7272437679830969316">Não é possível confirmar sua identidade. Senha não copiada.</translation>
 <translation id="728025568708172005">Mostrar a região</translation>
+<translation id="7280980607183752256">Não é possível importar este arquivo</translation>
 <translation id="7281202269687163394">Sua privacidade e o Gemini.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="7300448350764260141">Adicione mais uma camada de proteção contra ameaças on-line.</translation>
@@ -2008,6 +2009,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8726523474917941818">Lembrar</translation>
 <translation id="8728922029615312208">Fechar todas</translation>
 <translation id="8730621377337864115">Concluir</translation>
+<translation id="8731268612289859741">Código de segurança</translation>
 <translation id="87371078663613140">Explore as opções na barra de menus</translation>
 <translation id="8741627442233023406">{count,plural, =1{Conferir a guia…}one{Conferir a guia…}other{Conferir todas as guias…}}</translation>
 <translation id="8741995161408053644">Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

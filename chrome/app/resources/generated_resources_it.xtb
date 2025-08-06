@@ -401,6 +401,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1260810365552581339">Linux potrebbe non avere sufficiente spazio su disco a disposizione. Puoi aumentare lo spazio su disco di Linux e riprovare il ripristino nelle <ph name="LINK_START" />Impostazioni<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Media</translation>
 <translation id="126156426083987769">Si è verificato un problema con le licenze del dispositivo per la modalità demo.</translation>
+<translation id="1262395978737369974">Sempre autorizzati a utilizzare l'ottimizzazione di JavaScript</translation>
 <translation id="1262564987698748643">I siti possono chiedere di eseguire l'override dell'input della tastiera</translation>
 <translation id="1263231323834454256">Elenco di lettura</translation>
 <translation id="1263733306853729545">Utilizza i tasti <ph name="MINUS" /> e <ph name="EQUAL" /> per il paging di un elenco di candidati</translation>
@@ -1972,6 +1973,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2343160676229467122">Le estensioni non sono consentite su <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parco nazionale delle Montagne Rocciose</translation>
 <translation id="2343747224442182863">Imposta stato attivo su questa scheda</translation>
+<translation id="2343971313330854480">Trova il file nella cartella <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">Impossibile connettersi al server. Controlla la connessione di rete e riprova. Se continui ad avere problemi, prova a riavviare Chromebook.</translation>
 <translation id="234559068082989648">Le versioni precedenti delle app di Chrome non si apriranno più dopo dicembre 2022. Contatta l'amministratore per eseguire l'aggiornamento a una nuova versione o per rimuovere questa app.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2219,6 +2221,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> di <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Disposizione del display</translation>
 <translation id="2507253002925770350">Richiesta rimossa</translation>
+<translation id="2507339521369019923">Salva nel tuo account</translation>
 <translation id="2507491234071975894">Altoparlante</translation>
 <translation id="2508747373511408451">L'applicazione <ph name="APPLICATION_NAME" /> richiede che Google Drive sia disponibile.</translation>
 <translation id="2509495747794740764">Il valore Scala deve essere un numero compreso tra 10 e 200.</translation>
@@ -6034,6 +6037,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5201945335223486172">Per <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Può modificare file o cartelle sul dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Fai clic per visualizzare l'estensione}other{Fai clic per visualizzare queste estensioni}}</translation>
+<translation id="5204282224596194174">Password di recupero per <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Esegui il powerwash del dispositivo e riprova.</translation>
 <translation id="5204967432542742771">Inserisci la password</translation>
 <translation id="5205484256512407285">Non utilizzare mai i dati mobili per il trasferimento</translation>
@@ -7970,6 +7974,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul web.</translation>
 <translation id="6613267708691765962">Ricerca di malware in corso…</translation>
 <translation id="6615455863669487791">Mostrami</translation>
+<translation id="6618013221808317456">Non consentire ai siti di usare l'ottimizzazione di JavaScript</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Il sito può monitorare la tua posizione</translation>
 <translation id="6619243162837544323">Stato rete</translation>
@@ -9831,6 +9836,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7920482456679570420">Aggiungi le parole che vuoi non vengano segnalate dal controllo ortografico</translation>
 <translation id="7920715534283810633">Impossibile aprire <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Non è possibile visualizzare le notifiche del tuo telefono su questo account gestito. Riprova con un altro account. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">I siti possono utilizzare l'ottimizzazione di JavaScript</translation>
 <translation id="7921901223958867679">Questa estensione può leggere e modificare <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 estensione</translation>
 <translation id="7923564237306226146">Upgrade di Linux completato</translation>
@@ -10377,6 +10383,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8276560076771292512">Svuota la cache e ricarica manualmente</translation>
 <translation id="8276850948802942358">Scopri di più su come concedere a un sito l'autorizzazione temporanea a utilizzare i cookie di terze parti</translation>
 <translation id="8277907305629781277">Hai creato questa passkey il giorno <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Non autorizzati a utilizzare l'ottimizzazione di JavaScript</translation>
 <translation id="827966378414194229">Usa i movimenti della testa e le espressioni facciali per controllare Chromebook. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Siti web nelle tue lingue</translation>
 <translation id="8280848878018088610">Onde che si infrangono in mare, con una città fantastica e un castello sullo sfondo, in un'atmosfera cupa.</translation>
@@ -10596,6 +10603,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8431190899827883166">Mostra tocchi</translation>
 <translation id="843173223122814223">Crea sfondi con l'IA</translation>
 <translation id="8431977087510901105">Impostazioni del cursore reimpostate</translation>
+<translation id="843210078733508372">Accedi per continuare la modifica della password</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8434109185104929038">Angolo lettura</translation>
 <translation id="8434837876193928924">Dettagli gruppo di schede</translation>
@@ -11349,6 +11357,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="895347679606913382">Avvio download in corso...</translation>
 <translation id="8954796993367253220">Per eliminare la cronologia della modalità ospite, chiudi tutte le finestre Ospite.</translation>
 <translation id="8955174612586215829">Trova temi</translation>
+<translation id="8957656266859671822">Scegli il tuo account</translation>
 <translation id="8957757410289731985">Personalizza il profilo</translation>
 <translation id="8959144235813727886">Siti e app</translation>
 <translation id="895944840846194039">Memoria JavaScript</translation>
@@ -11518,6 +11527,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9057354806206861646">Aggiornamenti programmati</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Circa 1 notifica al giorno}other{Circa {NUM_NOTIFICATION} notifiche al giorno}}</translation>
 <translation id="9058760336383947367">Visualizza PPD stampante</translation>
+<translation id="9061521313218438086">Se Chrome rileva che una delle tue password è stata compromessa nell'ambito di una violazione dei dati pubblici, Gestore delle password di Google può offrirti di cambiarla automaticamente se hai eseguito l'accesso.</translation>
 <translation id="9061694916020926968">Per utilizzare Steam per Chromebook (beta), devi accedere a un Account Google. Accedi e riprova.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Errore dalla riga <ph name="ERROR_LINE_START" /> alla riga <ph name="ERROR_LINE_END" /></translation>
@@ -11661,6 +11671,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9153367754133725216">Ricevi suggerimenti relativi a nuove app e contenuti web in Avvio app e nei risultati di ricerca. Invia statistiche per migliorare i suggerimenti solo se hai scelto di inviare a ChromeOS report sugli arresti anomali e dati diagnostici e sull'utilizzo.</translation>
 <translation id="9154194610265714752">Aggiornato</translation>
 <translation id="915485121129452731">Tablet con penna</translation>
+<translation id="9155100833189043833">Utilizza in sicurezza un ID dal tuo dispositivo mobile</translation>
 <translation id="9155344700756733162">Deseleziona colore</translation>
 <translation id="9157096865782046368">0,8 secondi</translation>
 <translation id="9157697743260533322">Impostazione degli aggiornamenti automatici per tutti gli utenti non riuscita (errore di avvio preliminare: <ph name="ERROR_NUMBER" />)</translation>

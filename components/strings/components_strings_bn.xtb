@@ -273,6 +273,7 @@
 <translation id="1436185428532214179">আপনার ডিভাইসের ফাইল ও ফোল্ডার এডিট করার অনুমতি চাইতে পারে</translation>
 <translation id="1442386063175183758">ডানদিকে গেট ফোল্ড</translation>
 <translation id="1442987760062738829">পাঞ্চ করুন</translation>
+<translation id="1445896388055045436">চেক-আউটের সময় উপলভ্য থাকা কার্ডের সুবিধা ও পুরস্কার দেখুন। ইস্যুকারীর শর্তাবলী প্রযোজ্য।</translation>
 <translation id="1446396933673057385">আরও উন্নত করার জন্য দেওয়া পরামর্শ যাচাই করা</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" কী একই অভিধানে <ph name="DATA_CONTROLS_SECOND_KEY_SET" /> হিসেবে সেট করা যাচ্ছে না</translation>
@@ -1194,6 +1195,7 @@
 <translation id="3002501248619246229">ইনপুট ট্রে মিডিয়া চেক করুন</translation>
 <translation id="3005723025932146533">সেভ করা কপি দেখুন</translation>
 <translation id="300580149047131921">সম্প্রতি ব্যবহার করা হয়েছে</translation>
+<translation id="3006864083554020786">বাড়ির ঠিকানা</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, উপলভ্য অ্যাকশন ব্রাউজ করতে ট্যাব প্রেস করুন, তারপরে বেছে নেওয়া অ্যাকশন এডিট করতে এন্টার প্রেস করুন।</translation>
 <translation id="3010991137650052245">এই সাইটে আপনার <ph name="PERMISSION" /> ব্যবহার করতে, <ph name="SHORT_PRODUCT_NAME" />-কে অ্যাক্সেস দিন</translation>
 <translation id="3013711734159931232">বাড়ির সামগ্রী</translation>
@@ -1234,6 +1236,7 @@
 <translation id="3086579638707268289">ওয়েবে আপনার অ্যাক্টিভিটি নজরে রাখা হচ্ছে</translation>
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090667236485488075">গ্লাস</translation>
+<translation id="3094051226187213523">এই সাজেশন ব্যবহার করে AI মোড খুলুন।</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">বাদ দেওয়া হয়েছে কারণ, 'বন্ধ আছে' তালিকাতে '*'-এর মতো প্যাটার্ন আছে। এর মানে নীতি বন্ধ করার সমান।</translation>
 <translation id="3098944373717628099">আপনার স্থানীয় ফাইল ১ ঘণ্টার মধ্যে মুছে যাবে</translation>
@@ -1827,6 +1830,7 @@
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" আইডি যুক্ত এক্সটেনশনের আপডেট URL ভুল বা এতে ব্যবহারযোগ্য নয় এমন স্কিম ব্যবহার করা হচ্ছে। ব্যবহারযোগ্য স্কিমগুলি হল: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> এবং <ph name="FILE_SCHEME" />।</translation>
 <translation id="4050392779074832022">আপনি এটি সমস্ত Google প্রোডাক্ট জুড়ে ব্যবহার করতে পারবেন</translation>
 <translation id="4050599136622776556">Chromium পেমেন্ট পদ্ধতি এডিট করার চেষ্টা করছে।</translation>
+<translation id="4052683751389375539">এডিট করুন, নতুন উইন্ডোতে খুলবে</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4059523390906550209">সংবেদনশীল ডেটা সুরক্ষা সম্পর্কে আরও জানুন</translation>
@@ -3518,6 +3522,7 @@
 <translation id="6881240511396774766">চটজলদি নতুন Google Doc তৈরি করুন</translation>
 <translation id="6882210908253838664">কোনও সাইট কাজ না করলে আপনি সেটিকে থার্ড-পার্টি কুকি ব্যবহারের সাময়িক অনুমতি দিয়ে দেখতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">নিরাপদে পেমেন্ট ক্রেডেনশিয়াল যাচাই করার শিট বন্ধ করা হয়েছে</translation>
+<translation id="6883745783646124431">কর্মস্থলের ঠিকানা</translation>
 <translation id="6884662655240309489">সাইজ ১</translation>
 <translation id="6886283082988906333">ZIP ফাইল</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4793,6 +4798,7 @@
 <translation id="9040341831873780534">এখানে শর্তাবলী দেখুন</translation>
 <translation id="9042617223719777575">অধিক ক্ষমতা সম্পন্ন</translation>
 <translation id="9042827002460091668">ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন</translation>
+<translation id="9043161870923715789">AI মোড</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> আপনার স্থানীয় নেটওয়ার্কে, যেকোনও ডিভাইস খুঁজতে ও কানেক্ট করতে চায়</translation>
 <translation id="9046864189129893978">মাইক্রোফোন (<ph name="MICS_COUNT" />)</translation>

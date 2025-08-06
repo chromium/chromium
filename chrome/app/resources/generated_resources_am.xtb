@@ -402,6 +402,7 @@
 <translation id="1260810365552581339">Linux በቂ የዲስክ ቦታ ላይኖረው ይችላል። የLinux ዲስክ ቦታን መጨመር እና በ<ph name="LINK_START" />ቅንብሮች<ph name="LINK_END" /> ውስጥ እንደገና ወደነበረበት ለመመለስ መሞከር ይችላሉ።</translation>
 <translation id="1261380933454402672">መለስተኛ</translation>
 <translation id="126156426083987769">በቅንጭብ ማሳያ ሁነታ ፈቃዶች ችግር አጋጥሟል።</translation>
+<translation id="1262395978737369974">ሁልጊዜ ጃቫስክሪፕት ማመቻቸትን እንዲጠቀም ተፈቅዶለታል</translation>
 <translation id="1262564987698748643">ጣቢያዎች የእርስዎን ቁልፍ ሰሌዳ ግብዓት ለመሻር ሊጠይቁ ይችላሉ</translation>
 <translation id="1263231323834454256">የንባብ ዝርዝር</translation>
 <translation id="1263733306853729545">የዕጩ ዝርዝር ላይ ገፅ ለመፍጠር የ<ph name="MINUS" /> እና <ph name="EQUAL" /> ቁልፎችን ይጠቀሙ</translation>
@@ -1981,6 +1982,7 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> ላይ ቅጥያዎች አይፈቀዱም</translation>
 <translation id="2343390523044483367">ሮኪ ተራሮች ብሔራዊ ፓርክ</translation>
 <translation id="2343747224442182863">በዚህ ትር ላይ አተኩር</translation>
+<translation id="2343971313330854480">ፋይልዎን በ<ph name="FEATURE_NAME" /> አቃፊ ውስጥ ያግኙ</translation>
 <translation id="2344032937402519675">ከአገልጋዩ ጋር መገናኘት አልተቻለም። የአውታረ መረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ። አሁንም ችግር እያጋጠምዎት ከሆነ የእርስዎን Chromebook እንደገና ለመጀመር ይሞክሩ።</translation>
 <translation id="234559068082989648">የድሮ የChrome መተግበሪያዎች ስሪቶች ከዲሴምበር 2022 በኋላ አይከፍቱም። ወደ አዲስ ስሪት ለማዘመን ወይም ይህን መተግበሪያ ለማስወገድ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="2348176352564285430">መተግበሪያ፦ <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2228,6 +2230,7 @@
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> ከ <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">የማሳያ አደራደር</translation>
 <translation id="2507253002925770350">ቲኬት ተወግዷል</translation>
+<translation id="2507339521369019923">ወደ መለያዎ ያስቀምጡ</translation>
 <translation id="2507491234071975894">ድምፅ ማውጫ</translation>
 <translation id="2508747373511408451">የ<ph name="APPLICATION_NAME" /> መተግበሪያው ለመገኘት Google Drive ያስፈልገዋል።</translation>
 <translation id="2509495747794740764">የልኬት መጠኑ በ10 እና 200 መካከል የሆነ ቁጥር መሆን አለበት።</translation>
@@ -7983,6 +7986,7 @@
 <translation id="661266467055912436">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል።</translation>
 <translation id="6613267708691765962">የተንኮል አዘል ዌርን በመቃኘት ላይ...</translation>
 <translation id="6615455863669487791">አሳየኝ</translation>
+<translation id="6618013221808317456">ጣቢያዎች ጃቫስክሪፕት ማመቻቸትን እንዲጠቀሙ አትፍቀድ</translation>
 <translation id="6619058681307408113">የመስመር ህትመት ዴሞን (LPD)</translation>
 <translation id="661907246513853610">ጣቢያ የእርስዎን አካባቢ መከታተል ይችላል</translation>
 <translation id="6619243162837544323">የአውታረ መረብ ሁኔታ</translation>
@@ -9844,6 +9848,7 @@
 <translation id="7920482456679570420">ፊደል ማረም እንዲዘልላቸው የሚፈልጉትን ቃላት ያክሉ</translation>
 <translation id="7920715534283810633"><ph name="FILE_NAMES" />ን መክፈት አልተቻለም</translation>
 <translation id="7921347341284348270">በዚህ የሚተዳደር መለያ ላይ የስልክዎን ማሳወቂያዎች ማየት አይችሉም። በተለየ መለያ እንደገና ይሞክሩ። <ph name="LINK_BEGIN" />የበለጠ ይወቁ<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">ጣቢያዎች ጃቫስክሪፕት ማመቻቸት መጠቀም ይችላሉ</translation>
 <translation id="7921901223958867679">ይህ ቅጥያ <ph name="HOST" />ን ማንበብ እና መለወጥ ይችላል</translation>
 <translation id="7922606348470480702">1 ቅጥያ</translation>
 <translation id="7923564237306226146">Linuxን ማሻሻል ተጠናቅቋል</translation>
@@ -10395,6 +10400,7 @@ nil</translation>
 <translation id="8276560076771292512">ባዶ መሸጎጫ እና ደረቅ ዳግም መጫን</translation>
 <translation id="8276850948802942358">አንድ ጣቢያ የሦስተኛ ወገን ኩኪዎችን እንዲጠቀም ጊዜያዊ ፈቃድ ስለመስጠት የበለጠ ይወቁ</translation>
 <translation id="8277907305629781277">ይህን የይለፍ ቁልፍ የፈጠሩት በ<ph name="DATE" /> ነው</translation>
+<translation id="8278702675516957539">ጃቫስክሪፕት ማመቻቸት እንዲጠቀም አልተፈቀደለትም</translation>
 <translation id="827966378414194229">የእርስዎን Chromebook ለመቆጣጠር የጭንቅላት እንቅስቃሴዎች እና የፊት አገላለጾችን ይጠቀሙ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">በእርስዎ ቋንቋዎች የሚገኙ ድር ጣቢያዎች</translation>
 <translation id="8280848878018088610">በጨለማ ስሜት ውስጥ የተዋጠ አስደናቂ ከተማ እና ቤተመንግስት ከበስተጀርባ ያለው የባሕር ወጀብ።</translation>
@@ -10614,6 +10620,7 @@ nil</translation>
 <translation id="8431190899827883166">መታ ማድረጎችን አሳይ</translation>
 <translation id="843173223122814223">ዳራዎችን በAI ይፍጠሩ</translation>
 <translation id="8431977087510901105">የጠቋሚ ቅንብሮች ዳግም ማስጀመር</translation>
+<translation id="843210078733508372">በመለያ ይግቡ እና የይለፍ ቃል ለውጡ ይቀጥላል</translation>
 <translation id="8433186206711564395">የአውታረ መረብ ቅንብሮች</translation>
 <translation id="8434109185104929038">የንባብ ክፍል</translation>
 <translation id="8434837876193928924">የትር ቡድን ዝርዝሮች</translation>
@@ -11368,6 +11375,7 @@ nil</translation>
 <translation id="895347679606913382">በመጀመር ላይ…</translation>
 <translation id="8954796993367253220">የእንግዳ ሁነታን ታሪክ ለመሰረዝ፣ ሁሉንም የእንግዳ መስኮቶች ይዝጉ።</translation>
 <translation id="8955174612586215829">ገፅታዎችን ያግኙ</translation>
+<translation id="8957656266859671822">መለያዎን ይምረጡ</translation>
 <translation id="8957757410289731985">መገለጫን አብጅ</translation>
 <translation id="8959144235813727886">ጣቢያዎች እና መተግበሪያዎች</translation>
 <translation id="895944840846194039">የJavaScript ማህደረ ትውስታ</translation>
@@ -11680,6 +11688,7 @@ nil</translation>
 <translation id="9153367754133725216">ለአዳዲስ መተግበሪያዎች እና የድር ይዘት በአስጀማሪ እና በፍለጋ ውጤቶች ውስጥ ጥቆማዎችን ይመልከቱ። የብልሽት ሪፖርቶችን እና ምርመራ እና የአጠቃቀም ውሂብን ወደ ChromeOS ለመላክ ከመረጡ ብቻ ጥቆማዎችን ለማሻሻል ስታትስቲክስን ይልካል።</translation>
 <translation id="9154194610265714752">የተዘመነ</translation>
 <translation id="915485121129452731">የብዕር ጡባዊ</translation>
+<translation id="9155100833189043833">ደህንነቱ በተጠበቀ ሁኔታ ከተንቀሳቃሽ መሣሪያዎ ላይ መታወቂያ ይጠቀሙ</translation>
 <translation id="9155344700756733162">ቀለም አይምረጡ</translation>
 <translation id="9157096865782046368">0.8 ሰከንዶች</translation>
 <translation id="9157697743260533322">ለሁሉም ተጠቃሚዎች ራስ-ሰር ዝማኔዎችን ማዋቀር አልተሳካም (የቅድመ በረራ ማስጀመሪያ ስህተት፦ <ph name="ERROR_NUMBER" />)</translation>

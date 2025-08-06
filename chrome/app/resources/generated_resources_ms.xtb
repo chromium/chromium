@@ -5923,6 +5923,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Alih keluar <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Buka kumpulan dalam tetingkap baharu</translation>
+<translation id="511147239888121455">Sandarkan bahan anda?</translation>
 <translation id="5111646998522066203">Keluar daripada tetingkap Inkognito</translation>
 <translation id="5111692334209731439">&amp;Pengurus Penanda Halaman</translation>
 <translation id="5111794652433847656">Tiada apa-apa kunci laluan untuk <ph name="APP_NAME" /> pada peranti ini</translation>
@@ -6058,6 +6059,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5201945335223486172">Untuk <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Boleh mengedit fail atau folder pada peranti anda</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klik untuk melihat sambungan}other{Klik untuk melihat sambungan ini}}</translation>
+<translation id="5204282224596194174">Kata laluan pemulihan untuk <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Sila lakukan powerwash pada peranti dan cuba lagi.</translation>
 <translation id="5204967432542742771">Masukkan kata laluan</translation>
 <translation id="5205484256512407285">Jangan sekali-kali menggunakan data mudah alih untuk memindahkan fail</translation>
@@ -8213,6 +8215,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
     <ph name="BEGIN_PARAGRAPH3" />Untuk mendapatkan butiran lanjut tentang data yang boleh dikongsi oleh <ph name="DEVICE_OS" /> dengan Google dan cara data itu digunakan, lawati g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web</translation>
 <translation id="6771503742377376720">Adalah Pihak Berkuasa Pensijilan</translation>
+<translation id="6772103682557559072">Lagi pilihan untuk <ph name="ADDRESS_SUMMARY" /> alamat tempat kerja</translation>
 <translation id="6772974422346500939">Buka dan edit</translation>
 <translation id="6773595613448852535">Gedung Akar Chrome</translation>
 <translation id="677394079035748956">Laman ini memerlukan kata laluan sekali guna</translation>
@@ -10041,6 +10044,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8025151549289123443">Skrin kunci dan log masuk</translation>
 <translation id="8025291188699172126">Tentang Kemaskinian</translation>
 <translation id="8026471514777758216">Semua peranti anda</translation>
+<translation id="8026700655446696031">Lagi pilihan untuk <ph name="ADDRESS_SUMMARY" /> alamat rumah</translation>
 <translation id="8026784703228858744">Simpan penanda halaman anda dan pelbagai lagi dengan penyegerakan</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Dilawati 0 hari yang lalu}=1{Dilawati 1 hari yang lalu}other{Dilawati # hari yang lalu}}</translation>
 <translation id="8028060951694135607">Pemulihan Kekunci Microsoft</translation>
@@ -10189,6 +10193,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8121537075864592453">Skrin penuh dilumpuhkan</translation>
 <translation id="8121750884985440809">Anda sedang menghantar skrin anda</translation>
 <translation id="8122898034710982882">Hab Telefon, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Sandarkan kata laluan dan penanda halaman anda serta pelbagai lagi supaya anda boleh mendapatkan item tersebut dengan mudah pada semua peranti anda</translation>
 <translation id="81238879832906896">Bunga kuning dan putih</translation>
 <translation id="8123975449645947908">Tatal ke belakang</translation>
 <translation id="8124313775439841391">ONC Terurus</translation>
@@ -11565,6 +11570,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9057354806206861646">Kemas kini jadual</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Kira-kira 1 pemberitahuan sehari}other{Kira-kira {NUM_NOTIFICATION} pemberitahuan sehari}}</translation>
 <translation id="9058760336383947367">Lihat PPD pencetak</translation>
+<translation id="9061521313218438086">Jika Chrome mendapati salah satu kata laluan anda dalam pelanggaran data umum, Google Password Manager boleh mencadangkan untuk menukar kata laluan sekiranya anda telah log masuk.</translation>
 <translation id="9061694916020926968">Anda perlu log masuk ke Google Account untuk menggunakan Steam untuk Chromebook (Beta). Log masuk dan cuba lagi.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Ralat daripada baris <ph name="ERROR_LINE_START" /> hingga <ph name="ERROR_LINE_END" /></translation>

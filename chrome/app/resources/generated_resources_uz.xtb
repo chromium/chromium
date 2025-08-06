@@ -642,6 +642,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> amali oʻchirildi</translation>
 <translation id="1439671507542716852">uzoq muddatli dastak</translation>
 <translation id="1440090277117135316">Maktabni uchun yozilish bajarildi</translation>
+<translation id="1441971243157709645">Boshqaruvdagi printer</translation>
 <translation id="1442054921249164535">Boshqa axborotlar</translation>
 <translation id="144283815522798837">Tanlandi: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Faol Kerberos chiptasini belgilash</translation>
@@ -5057,6 +5058,10 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4501530680793980440">O‘chirishni tasdiqlash</translation>
 <translation id="4502423230170890588">Shu qurilmadan olib tashlash</translation>
 <translation id="4502477450742595012">Varaq ustida oʻng klikni bosib, “Varaqni yangi guruhga kiritish” bandini tanlang</translation>
+<translation id="4503362512377701151">Ishni kelgan joyidan qulay davom ettirishingiz uchun oxirgi ishlatilgan varaqlar guruhi chiqarildi.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Sozlamalarni karta menyusi yoki Chromeni moslash sahifasidagi boshqa parametrlar orqali boshqarish mumkin.</translation>
 <translation id="4503748371388753124">Kompyuter ishonch platformasi modulining (TPM) xavfsizlik qurilmasi bilan jihozlangan. Undan ChromeOS Flex platformasida ko‘plab jiddiy xavfsizlik funksiyalarini amalga oshirishda foydalanialdi. Batafsil ma’lumotni Chromebook yordam markazidan olishingiz mumkin: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookie fayllariga ruxsat berildi}=1{Cookie fayllariga ruxsat berildi, 1 ta istisno}other{Cookie fayllariga ruxsat berildi, {COUNT} ta istisno}}</translation>
 <translation id="4504940961672722399">Bu kengaytmani ikonkasi ustiga bosib yoki <ph name="EXTENSION_SHORTCUT" /> tugmalar birikmasini bosib faollashtiring.</translation>
@@ -6045,6 +6050,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> uchun</translation>
 <translation id="5203035663139409780">Qurilmadagi fayl yoki jildlarni tahrirlash mumkin</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kengaytmani ochish uchun bosing}other{Bu kengaytmalarni ochish uchun bosing}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> zaxiraviy paroli</translation>
 <translation id="5204673965307125349">Qurilmani zavod sozlamalariga qaytaring va qaytadan urining.</translation>
 <translation id="5204967432542742771">Parolni kiriting</translation>
 <translation id="5205484256512407285">Hech qachon mobil internetdan yuborilmasin</translation>
@@ -11551,6 +11557,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9057354806206861646">Jadvalni yangilash</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Kuniga taxminan 1 ta bildirishnoma}other{Kuniga taxminan {NUM_NOTIFICATION} ta bildirishnoma}}</translation>
 <translation id="9058760336383947367">Printer PPD faylini ochish</translation>
+<translation id="9061521313218438086">Chrome parollaringizdan biri ommaviy oshkor qilinganini aniqlasa, Google Parollar menejeri hisobga kirganingizda parolni almashtirishni taklif qilishi mumkin.</translation>
 <translation id="9061694916020926968">Chromebook uchun Steam (Beta) xizmatidan foydalanish uchun Google hisobingizga kirishingiz kerak. Kiring va qaytadan urining.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> – <ph name="ERROR_LINE_END" /> qatorlar oralig‘ida xato bor</translation>

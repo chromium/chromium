@@ -311,6 +311,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4747730611090640388">Chrome оцінює ваші інтереси.  Коли ви пізніше відвідаєте якийсь сайт, він може запитати в Chrome про ваші інтереси, щоб персоналізувати для вас оголошення.</translation>
 <translation id="475321580758063259">Щоб і надалі використовувати дані Chrome в обліковому записі Google <ph name="ACCOUNT_EMAIL" />, оновіть вебпереглядач</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Прискорює роботу сайтів за допомогою системи V8 для Chrome, проте робить вебпереглядач трохи менш стійким до атак</translation>
 <translation id="479167709087336770">Використовується та сама технологія перевірки правопису, що й у Пошуку Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google. Це завжди можна змінити в налаштуваннях.</translation>
 <translation id="4793679854893018356">Дізнайтесь, як Chrome дбає про вашу безпеку</translation>
 <translation id="4828579605166583682">Google Chrome намагається замінити наявні паролі. Щоб дозволити це, введіть пароль Windows.</translation>
@@ -593,6 +594,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8342675569599923794">Цей файл небезпечний, тому Chrome заблокував його.</translation>
 <translation id="8349094670477064572">Увійшовши в Chrome, ви зможете зберігати й використовувати паролі та інші дані у своєму обліковому записі Google. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Перекласти такою мовою:</translation>
+<translation id="8366770919198174997">Знижує продуктивність, але робить вебпереглядач Chrome стійкішим до атак</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="8387459386171870978">Продовжити використовувати Chrome</translation>
 <translation id="8394720698884623075">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chrome</translation>

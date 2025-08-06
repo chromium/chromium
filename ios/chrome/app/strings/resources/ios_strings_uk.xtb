@@ -1612,6 +1612,7 @@
 <translation id="7266578100016339897">Так ви зможете краще впорядкувати роботу. Це можна будь-коли змінити в налаштуваннях.</translation>
 <translation id="7272437679830969316">Не вдалося підтвердити особу. Пароль не скопійовано.</translation>
 <translation id="728025568708172005">Почати ознайомлення</translation>
+<translation id="7280980607183752256">Не вдалось імпортувати цей файл</translation>
 <translation id="7281202269687163394">Ваша конфіденційність і Gemini.</translation>
 <translation id="7293429513719260019">Вибрати мову</translation>
 <translation id="7300448350764260141">Додайте ще один рівень захисту від загроз в Інтернеті.</translation>
@@ -2008,6 +2009,7 @@
 <translation id="8726523474917941818">Нагадати</translation>
 <translation id="8728922029615312208">Закрити всі</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731268612289859741">Код безпеки</translation>
 <translation id="87371078663613140">Перегляньте варіанти на панелі меню</translation>
 <translation id="8741627442233023406">{count,plural, =1{Переглянути вкладку…}one{Переглянути всі вкладки…}few{Переглянути всі вкладки…}many{Переглянути всі вкладки…}other{Переглянути всі вкладки…}}</translation>
 <translation id="8741995161408053644">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

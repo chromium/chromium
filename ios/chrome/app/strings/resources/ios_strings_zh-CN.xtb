@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">您的组织关闭了无痕浏览。</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">我们不会使用贵组织的对话内容来改进模型。Gemini 显示的信息（包括与人相关的信息）不一定准确，请注意核查。<ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">以下密码不符合要求，因此未导入 Google 密码管理工具。</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="2147127444698817042">仅适用于 iPhone</translation>
 <translation id="2148799636999124959">使用您已保存的密码快速登录网站和应用。</translation>
@@ -812,7 +813,7 @@
 <translation id="4250432749243022864">{count,plural, =0{打开 {count} 个标签页}=1{打开 {count} 个标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4253168017788158739">备注</translation>
-<translation id="4256782883801055595">开放源代码许可</translation>
+<translation id="4256782883801055595">开源许可</translation>
 <translation id="4263576668337963058">显示可用的网页操作</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{您忽略了 {COUNT} 条警告}other{您忽略了 {COUNT} 条警告}}</translation>
 <translation id="4268574628540273656">网址：</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">打开阅读模式选项</translation>
 <translation id="4624080227980645783">打开新的无痕式窗口</translation>
 <translation id="4627107755957573804">允许网站和应用将现有账号升级为使用通行密钥</translation>
+<translation id="4629065796475200039">未导入您的密码</translation>
 <translation id="4630212057753624203">示例气泡</translation>
 <translation id="4631335160486397366">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="4631890462758052414">打开新的无痕式标签页</translation>
@@ -1504,6 +1506,7 @@
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6791425686608802741">点按“向新分组添加标签页”</translation>
 <translation id="6794476726485507147">选择日期和时间即可接收通知，提醒您再次访问此页面</translation>
+<translation id="6795481620482106033">数据无效</translation>
 <translation id="6807287147325542056">其他应用中的密码</translation>
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6825078212112407882">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
@@ -2009,6 +2012,7 @@
 <translation id="8726523474917941818">提醒</translation>
 <translation id="8728922029615312208">全部关闭</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8731268612289859741">安全码</translation>
 <translation id="87371078663613140">浏览菜单栏中的选项</translation>
 <translation id="8741627442233023406">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
 <translation id="8741995161408053644">您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>

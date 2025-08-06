@@ -141,7 +141,7 @@
 <translation id="1520027731907768768">Recibe alertas se os produtos que segues baixan de prezo.</translation>
 <translation id="1521366073263497277">Vai á túa grade de pestanas</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
-<translation id="1523567067736644845">Desbloquea para mostrar o contrasinal</translation>
+<translation id="1523567067736644845">Desbloquea o dispositivo para mostrar o contrasinal</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1528290585275339320">Activa o uso compartido de contido da páxina</translation>
 <translation id="1531038290222364269">Mostrar as pestanas</translation>
@@ -1612,6 +1612,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7266578100016339897">Axudarache a ter todo organizado. Podes cambialo cando queiras en Configuración.</translation>
 <translation id="7272437679830969316">Non se pode verificar a túa identidade, polo que non se copiou o contrasinal.</translation>
 <translation id="728025568708172005">Iniciar introdución</translation>
+<translation id="7280980607183752256">Este ficheiro non se pode importar</translation>
 <translation id="7281202269687163394">A túa privacidade e Gemini.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>
@@ -2008,6 +2009,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8726523474917941818">Lembrar</translation>
 <translation id="8728922029615312208">Pechar todo</translation>
 <translation id="8730621377337864115">Feito</translation>
+<translation id="8731268612289859741">Código de seguranza</translation>
 <translation id="87371078663613140">Explora as opcións da barra de menú</translation>
 <translation id="8741627442233023406">{count,plural, =1{Revisar a pestana…}other{Revisar todas as pestanas…}}</translation>
 <translation id="8741995161408053644">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

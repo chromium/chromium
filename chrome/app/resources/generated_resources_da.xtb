@@ -402,6 +402,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1260810365552581339">Linux har muligvis ikke nok diskplads. Du kan øge din Linux-diskplads og prøve at gendanne igen under <ph name="LINK_START" />Indstillinger<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderat</translation>
 <translation id="126156426083987769">Der opstod et problem med enhedslicenser i demotilstand.</translation>
+<translation id="1262395978737369974">Har altid tilladelse til at anvende JavaScript-optimering</translation>
 <translation id="1262564987698748643">Websites kan anmode om at tilsidesætte dit tastaturinput</translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1263733306853729545">Brug tasterne <ph name="MINUS" /> og <ph name="EQUAL" /> til at bladre igennem en kandidatliste</translation>
@@ -1987,6 +1988,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2343160676229467122">Udvidelser er ikke tilladt på <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Rocky Mountains National Park</translation>
 <translation id="2343747224442182863">Sæt denne fane i fokus</translation>
+<translation id="2343971313330854480">Find din fil i mappen <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">Der kunne ikke oprettes forbindelse til serveren. Tjek din netværksforbindelse, og prøv igen. Hvis du stadig har problemer, kan du prøve at genstarte din Chromebook.</translation>
 <translation id="234559068082989648">Gamle versioner af Chrome-apps kan ikke åbnes efter december 2022. Kontakt din administrator, hvis du vil opdatere til en ny version af denne app eller fjerne den.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2234,6 +2236,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> af <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Visningsopstilling</translation>
 <translation id="2507253002925770350">Billetten blev fjernet</translation>
+<translation id="2507339521369019923">Gem på din konto</translation>
 <translation id="2507491234071975894">Højttaler</translation>
 <translation id="2508747373511408451">Appen <ph name="APPLICATION_NAME" /> kræver, at Google Drev er tilgængeligt.</translation>
 <translation id="2509495747794740764">Skaleringsværdien skal være et tal mellem 10 og 200.</translation>
@@ -7991,6 +7994,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6613267708691765962">Søger efter malware…</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
+<translation id="6618013221808317456">Tillad ikke, at websites anvender JavaScript-optimering</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Websitet kan spore din lokation</translation>
 <translation id="6619243162837544323">Netværkstilstand</translation>
@@ -9851,6 +9855,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7920482456679570420">Tilføj ord, som stavekontrollen skal springe over</translation>
 <translation id="7920715534283810633"><ph name="FILE_NAMES" /> kan ikke åbnes</translation>
 <translation id="7921347341284348270">Du kan ikke se din telefons notifikationer på denne administrerede konto. Prøv igen med en anden konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Websites kan anvende JavaScript-optimering</translation>
 <translation id="7921901223958867679">Denne udvidelse kan læse og ændre <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 udvidelse</translation>
 <translation id="7923564237306226146">Linux-opgraderingen er gennemført</translation>
@@ -10397,6 +10402,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8276560076771292512">Tøm cache og genindlæs fuldstændig</translation>
 <translation id="8276850948802942358">Få flere oplysninger om, hvordan du giver et website midlertidig tilladelse til at bruge tredjepartscookies</translation>
 <translation id="8277907305629781277">Du oprettede denne adgangsnøgle den <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Har ikke tilladelse til at anvende JavaScript-optimering</translation>
 <translation id="827966378414194229">Brug hovedbevægelser og ansigtsudtryk til at styre din Chromebook. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Websites på dine sprog</translation>
 <translation id="8280848878018088610">Maleri i dunkel stemning af havets brusende bølger med en forunderlig by og et slot i baggrunden.</translation>
@@ -10616,6 +10622,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8431190899827883166">Vis tryk</translation>
 <translation id="843173223122814223">Opret baggrunde med AI</translation>
 <translation id="8431977087510901105">Indstillingerne for markøren er nulstillet</translation>
+<translation id="843210078733508372">Log ind, så fortsætter ændringen af adgangskoden</translation>
 <translation id="8433186206711564395">Netværksindstillinger</translation>
 <translation id="8434109185104929038">Læsekrog</translation>
 <translation id="8434837876193928924">Oplysninger om fanegruppen</translation>
@@ -11371,6 +11378,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="895347679606913382">Begynder...</translation>
 <translation id="8954796993367253220">Du kan slette historikken for Gæstetilstand ved at lukke alle gæstevinduer.</translation>
 <translation id="8955174612586215829">Find temaer</translation>
+<translation id="8957656266859671822">Vælg din konto</translation>
 <translation id="8957757410289731985">Tilpas profil</translation>
 <translation id="8959144235813727886">Websites og apps</translation>
 <translation id="895944840846194039">JavaScript-hukommelse</translation>
@@ -11683,6 +11691,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9153367754133725216">Se forslag til nye apps og nyt webindhold på applisten og i søgeresultaterne. Der sendes kun statistik til forbedring af forslag, hvis du har valgt at sende nedbrudsrapporter samt diagnostik- og brugsdata til ChromeOS.</translation>
 <translation id="9154194610265714752">Opdateret</translation>
 <translation id="915485121129452731">Tablet med styluspen</translation>
+<translation id="9155100833189043833">Brug et id fra din mobilenhed på en sikker måde</translation>
 <translation id="9155344700756733162">Fjern markeringen ved farven</translation>
 <translation id="9157096865782046368">0,8 sekunder</translation>
 <translation id="9157697743260533322">Automatiske opdateringer kunne ikke konfigureres for alle brugere (fejl ved forhåndsopstart: <ph name="ERROR_NUMBER" />)</translation>

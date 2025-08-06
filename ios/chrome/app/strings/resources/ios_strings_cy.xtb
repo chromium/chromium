@@ -1612,6 +1612,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7266578100016339897">Mae hyn yn eich helpu i aros yn drefnus. Gallwch chi newid hyn yn y gosodiadau unrhyw bryd.</translation>
 <translation id="7272437679830969316">Methu â chadarnhau'ch hunaniaeth. Ni chopïwyd y cyfrinair.</translation>
 <translation id="728025568708172005">Dangoswch fi o gwmpas</translation>
+<translation id="7280980607183752256">Ni ellir mewnforio'r ffeil hon</translation>
 <translation id="7281202269687163394">Eich preifatrwydd a Gemini.</translation>
 <translation id="7293429513719260019">Dewis iaith</translation>
 <translation id="7300448350764260141">Ychwanegu haen ychwanegol o amddiffyniad rhag bygythiadau ar-lein.</translation>
@@ -2008,6 +2009,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8726523474917941818">Atgoffa</translation>
 <translation id="8728922029615312208">Cau'r cyfan</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
+<translation id="8731268612289859741">Cod diogelwch</translation>
 <translation id="87371078663613140">Archwiliwch yr opsiynau yn y bar dewislen</translation>
 <translation id="8741627442233023406">{count,plural, =1{Adolygu'r tab…}zero{Adolygu'r holl dabiau…}two{Adolygu'r holl dabiau…}few{Adolygu'r holl dabiau…}many{Adolygu'r holl dabiau…}other{Adolygu'r holl dabiau…}}</translation>
 <translation id="8741995161408053644">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
-<translation id="1045545926731898784">Ovaj sajt pripada grupi sajtova koju je definisao <ph name="SET_OWNER" /> i koja može da deli vaše aktivnosti u grupi da bi sajtovi radili kao što se očekuje.</translation>
 <translation id="1055273091707420432">Chromium automatski briše teme oglasa starije od 4 nedelje</translation>
 <translation id="1145223915439299117">Chrome blokira kolačiće trećih strana u režimu bez arhiviranja, ali je dodatak dozvolio kolačiće treće strane za ovaj sajt.</translation>
 <translation id="1184166532603925201">Kada ste u režimu bez arhiviranja, Chrome sprečava sajtove da koriste kolačiće trećih strana</translation>
@@ -19,7 +18,6 @@
 <translation id="172522356264798673">Nastavi zaštitu od praćenja</translation>
 <translation id="1732764153129912782">Možete da promenite podešavanja privatnosti sa oglasima</translation>
 <translation id="1780659583673667574">Na primer, ako posetite sajt da biste pronašli recepte za večeru, taj sajt može da odluči da vas zanima kuvanje. Kasnije drugi sajt može da vam prikaže povezan oglas za uslugu dostave namirnica koju je predložio prvi sajt.</translation>
-<translation id="1818866261309406359">Upravljajte podacima o srodnim sajtovima na novoj kartici</translation>
 <translation id="1824257235526922152">Chromium blokira kolačiće trećih strana u režimu bez arhiviranja, ali je dodatak dozvolio kolačiće treće strane za ovaj sajt. Režim bez arhiviranja pruža i funkcije koje mogu da ograniče informacije dostupne preduzećima čiji je sadržaj ugrađen na sajt koji posećujete.</translation>
 <translation id="1887631853265748225">Funkcije za privatnost sa oglasima pomažu u ograničavanju informacija koje veb-sajtovi i njihovi partneri za oglašavanje mogu da saznaju o vama kada vam prikazuju personalizovane oglase.</translation>
 <translation id="1953252525523274058">Sajtovi koje posećujete mogu da ugrade sadržaj sa drugih sajtova (poput slika, oglasa i teksta) koji može da se koristi da bi se saznalo više o vama. Saznajte više o upravljanju <ph name="START_LINK" />zaštitama od praćenja u režimu bez arhiviranja<ph name="END_LINK" /></translation>
@@ -101,7 +99,6 @@
 <translation id="5165490319523240316">Sajtovi i njihovi partneri za oglašavanje mogu da koriste aktivnosti, na primer, kako provodite vreme na sajtovima koje posećujete, da bi personalizovali oglase na drugim sajtovima. Na primer, ako posetite sajt da biste pronašli recepte za večeru, taj sajt može da odluči da vas zanima kuvanje. Kasnije drugi sajt može da vam prikaže povezan oglas za uslugu dostave namirnica koju je predložio prvi sajt.</translation>
 <translation id="5362892126200493757">Recite nam zašto ste pauzirali zaštitu od praćenja na ovom sajtu</translation>
 <translation id="544199055391706031">Aktivnosti su samo jedna od mnogih stvari koje sajt može da koristi za predlaganje oglasa. Kada su oglasi koje predlažu sajtovi isključeni, sajtovi i dalje mogu da vam prikazuju oglase, ali oni mogu da budu manje personalizovani. Saznajte više o <ph name="BEGIN_LINK" />oglasima koje predlaže sajt<ph name="END_LINK" />.</translation>
-<translation id="5495405805627942351">Upravljajte podacima o srodnim sajtovima</translation>
 <translation id="5535388436012824806">Chrome blokira kolačiće trećih strana u režimu bez arhiviranja, ali ste napravili izuzetak za ovaj sajt. Režim bez arhiviranja pruža i funkcije koje mogu da ograniče informacije dostupne preduzećima čiji je sadržaj ugrađen na sajt koji posećujete.</translation>
 <translation id="5574580428711706114">Google zahteva od preduzeća da javno navedu da neće koristiti ove podatke za praćenje na sajtovima. Preduzeća su odgovorna za to da vas obaveste kako koriste vaše podatke. <ph name="BEGIN_LINK1" />Saznajte više u politici privatnosti<ph name="LINK_END1" />.</translation>
 <translation id="565589626121534692">Pauziraj zaštitu od praćenja</translation>

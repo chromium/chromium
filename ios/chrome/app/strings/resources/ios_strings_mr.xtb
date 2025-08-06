@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केले आहे.</translation>
 <translation id="2122754583996902531">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">तुमच्या संस्थेची चॅट आमच्या मॉडेलमध्ये सुधारणा करण्यासाठी वापरली जात नाहीत. Gemini लोकांच्या बाबतीतदेखील चुकीची माहिती दाखवू शकते, त्यामुळे ती दोनदा तपासा. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">पुढील पासवर्ड Google Password Manager मध्ये इंपोर्ट केले नव्हते, कारण ते आवश्यकतांशी जुळत नाहीत.</translation>
 <translation id="2139867232736819575">तुम्ही कॉपी केलेला मजकूर शोधा</translation>
 <translation id="2147127444698817042">फक्त iPhone वर उपलब्ध</translation>
 <translation id="2148799636999124959">तुमच्या सेव्ह केलेल्या पासवर्डच्या मदतीने साइट आणि अ‍ॅप्सवर झटपट साइन इन करा.</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">वाचन मोड पर्याय उघडा</translation>
 <translation id="4624080227980645783">नवीन गुप्त विंडो</translation>
 <translation id="4627107755957573804">पासकी वापरण्यासाठी सद्य खाती अपग्रेड करण्याची साइट आणि अ‍ॅप्सना अनुमती द्या</translation>
+<translation id="4629065796475200039">तुमचा पासवर्ड इंपोर्ट केला नाही</translation>
 <translation id="4630212057753624203">नमुना बबल</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> पुन्हा वापरलेले पासवर्ड</translation>
 <translation id="4631890462758052414">नवीन गुप्त टॅब</translation>
@@ -1505,6 +1507,7 @@
 <translation id="6790502149545262384">लवकरच, तुम्ही नवीन टॅब उघडल्यानंतर तुम्हाला <ph name="CHANNEL_NAME" /> वरील स्टोरी दिसतील.</translation>
 <translation id="6791425686608802741">"नवीन टॅब गटामध्ये जोडा" वर टॅप करा</translation>
 <translation id="6794476726485507147">या पेजला पुन्हा भेट देण्यासाठी रिमाइंडर नोटिफिकेशन मिळविण्याकरिता तारीख आणि वेळ निवडा.</translation>
+<translation id="6795481620482106033">अवैध डेटा</translation>
 <translation id="6807287147325542056">इतर अ‍ॅप्समधील पासवर्ड</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
 <translation id="6825078212112407882">{count,plural, =1{बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केले आहेत}}</translation>
@@ -1613,6 +1616,7 @@
 <translation id="7266578100016339897">यामुळे तुम्हाला टापटीप राहण्यात मदत होते. तुम्ही हे सेटिंग्जमध्ये कधीही बदलू शकता.</translation>
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
 <translation id="728025568708172005">आसपास फेरफटका मारा</translation>
+<translation id="7280980607183752256">ही फाइल इंपोर्ट करता आली नाही</translation>
 <translation id="7281202269687163394">तुमची गोपनीयता आणि Gemini.</translation>
 <translation id="7293429513719260019">भाषा निवडा</translation>
 <translation id="7300448350764260141">ऑनलाइन धोक्यांपासून बचाव करण्यासाठी संरक्षणाचा अतिरिक्त स्तर जोडा.</translation>
@@ -2009,6 +2013,7 @@
 <translation id="8726523474917941818">आठवण करून द्या</translation>
 <translation id="8728922029615312208">सर्व बंद करा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
+<translation id="8731268612289859741">सुरक्षितता कोड</translation>
 <translation id="87371078663613140">मेनू बारमधील पर्याय एक्सप्लोर करा</translation>
 <translation id="8741627442233023406">{count,plural, =1{टॅबचे पुनरावलोकन करा…}other{टॅबचे पुनरावलोकन करा…}}</translation>
 <translation id="8741995161408053644">आपल्या Google खात्यात ब्राउझिंग इतिहासाची इतर स्वरूपे  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> वर असू शकतात.</translation>

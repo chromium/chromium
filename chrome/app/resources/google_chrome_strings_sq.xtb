@@ -314,6 +314,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4747730611090640388">Chrome mund të përllogarisë interesat e tua.  Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome të shikojë interesat e tua në mënyrë që të personalizojë reklamat që shikon.</translation>
 <translation id="475321580758063259">Përditëso Chrome për të vazhduar të përdorësh të dhënat e Chrome në "Llogarinë tënde të Google" <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Shpejton sajtet me motorin V8 të Chrome, por e bën Chrome disi më pak rezistent ndaj sulmeve</translation>
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
 <translation id="4793679854893018356">Mëso se si të mban të sigurt Chrome</translation>
 <translation id="4828579605166583682">Google Chrome po përpiqet të zëvendësojë fjalëkalimet ekzistuese. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
@@ -600,6 +601,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8342675569599923794">Ky skedar është i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="8349094670477064572">Do të ruash dhe përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google" në çdo kohë që je i identifikuar në Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Përkthe në</translation>
+<translation id="8366770919198174997">Zvogëlon performancën, por e bën Chrome më rezistent ndaj sulmeve</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8387459386171870978">Vazhdo të përdorësh Chrome</translation>
 <translation id="8394720698884623075">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome</translation>

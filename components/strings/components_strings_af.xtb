@@ -273,6 +273,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1436185428532214179">Kan vra om lêers of vouers op jou toestel te wysig</translation>
 <translation id="1442386063175183758">Uitvoublad regs</translation>
 <translation id="1442987760062738829">Pons</translation>
+<translation id="1445896388055045436">Wys beskikbare kaartvoordele en belonings by die betaalpunt. Uitreikerbepalings geld.</translation>
 <translation id="1446396933673057385">Akkuraatheidkontrole</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Sleutels “<ph name="DATA_CONTROLS_FIRST_KEY_SET" />” kan nie in dieselfde woordeboek as die “<ph name="DATA_CONTROLS_SECOND_KEY_SET" />”-sleutels gestel word nie</translation>
@@ -1233,6 +1234,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3086579638707268289">Jou aktiwiteit op die web word gemonitor</translation>
 <translation id="3087734570205094154">Onderkant</translation>
 <translation id="3090667236485488075">Glas</translation>
+<translation id="3094051226187213523">Maak KI-modus oop met hierdie voorstel.</translation>
 <translation id="3095940652251934233">Verklaring</translation>
 <translation id="3098513225387949945">Geïgnoreer omdat die deaktiveerlys 'n patroon gelyk aan "*" bevat wat gelykstaande daaraan is om die beleid te deaktiveer.</translation>
 <translation id="3098944373717628099">Jou plaaslike lêers sal oor 1 uur uitgevee word</translation>
@@ -4792,6 +4794,7 @@ Bykomende besonderhede:
 <translation id="9040341831873780534">Sien bepalings hier</translation>
 <translation id="9042617223719777575">Groot kapasiteit</translation>
 <translation id="9042827002460091668">Gaan jou internetverbinding na en probeer weer</translation>
+<translation id="9043161870923715789">KI-modus</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> wil enige toestel op jou plaaslike netwerk soek en daaraan koppel</translation>
 <translation id="9046864189129893978">Mikrofone (<ph name="MICS_COUNT" />)</translation>

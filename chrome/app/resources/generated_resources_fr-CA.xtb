@@ -402,6 +402,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1260810365552581339">L'espace disque du système Linux est peut-être insuffisant. Vous pouvez augmenter l'espace disque de votre système Linux et réessayer la restauration dans <ph name="LINK_START" />Paramètres<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Modérée</translation>
 <translation id="126156426083987769">Un problème avec les licences d'appareils en mode Démo est survenu.</translation>
+<translation id="1262395978737369974">Toujours autorisé à utiliser l'optimisation JavaScript</translation>
 <translation id="1262564987698748643">Les sites peuvent demander à remplacer les entrées de votre clavier</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1263733306853729545">Utiliser les touches <ph name="MINUS" /> et <ph name="EQUAL" /> pour paginer une liste de choix</translation>
@@ -1973,6 +1974,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2343160676229467122">Les extensions ne sont pas autorisées sur <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parc national des montagnes Rocheuses</translation>
 <translation id="2343747224442182863">Mettre cet onglet en évidence</translation>
+<translation id="2343971313330854480">Trouvez votre fichier dans le dossier <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez. Si vous rencontrez toujours des problèmes, essayez de redémarrer votre Chromebook.</translation>
 <translation id="234559068082989648">Les anciennes versions des applications Chrome ne s'ouvriront plus après décembre 2022. Communiquez avec votre administrateur pour passer à une nouvelle version ou retirer cette application.</translation>
 <translation id="2348176352564285430">Application : <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2220,6 +2222,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Position des écrans</translation>
 <translation id="2507253002925770350">Ticket supprimé</translation>
+<translation id="2507339521369019923">Enregistrez un fichier dans votre compte</translation>
 <translation id="2507491234071975894">Haut-parleur</translation>
 <translation id="2508747373511408451">L'application <ph name="APPLICATION_NAME" /> nécessite que Google Disque soit accessible.</translation>
 <translation id="2509495747794740764">La valeur de l'échelle doit être comprise entre 10 et 200.</translation>
@@ -7977,6 +7980,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6613267708691765962">Analyse de logiciels malveillants…</translation>
 <translation id="6615455863669487791">Démonstration</translation>
+<translation id="6618013221808317456">Ne pas autoriser les sites à utiliser l'optimisation JavaScript</translation>
 <translation id="6619058681307408113">Protocole LPD (Line Printer Daemon)</translation>
 <translation id="661907246513853610">Le site peut effectuer le suivi de votre position</translation>
 <translation id="6619243162837544323">État du réseau</translation>
@@ -9837,6 +9841,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7920482456679570420">Ajoutez les termes que le correcteur orthographique doit ignorer</translation>
 <translation id="7920715534283810633">Impossible d'ouvrir <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Vous ne pouvez pas afficher les notifications de votre téléphone sur ce compte géré. Réessayez avec un autre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Les sites peuvent utiliser l'optimisation JavaScript</translation>
 <translation id="7921901223958867679">Cette extension peut lire et modifier <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extension</translation>
 <translation id="7923564237306226146">Mise à niveau Linux terminée</translation>
@@ -10382,6 +10387,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8276560076771292512">Vider le cache et effectuer une actualisation forcée</translation>
 <translation id="8276850948802942358">En savoir plus sur l'octroi à un site d'une autorisation temporaire d'utiliser des témoins tiers</translation>
 <translation id="8277907305629781277">Vous avez créé cette clé d'accès le <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Non autorisé à utiliser l'optimisation JavaScript</translation>
 <translation id="827966378414194229">Utilisez des mouvements de la tête et des expressions faciales pour contrôler votre Chromebook. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Sites Web dans vos langues</translation>
 <translation id="8280848878018088610">Vagues déferlantes dans la mer, avec une ville et un château fantastiques en arrière-plan, dans une ambiance sombre.</translation>
@@ -10601,6 +10607,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8431190899827883166">Afficher les éléments sélectionnés</translation>
 <translation id="843173223122814223">Créer des arrière-plans avec l'IA</translation>
 <translation id="8431977087510901105">Paramètres du curseur réinitialisés</translation>
+<translation id="843210078733508372">Connectez-vous, et la modification du mot de passe se poursuivra</translation>
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8434109185104929038">Coin lecture</translation>
 <translation id="8434837876193928924">Détails du groupe d'onglets</translation>
@@ -11354,6 +11361,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="895347679606913382">Début du téléchargement...</translation>
 <translation id="8954796993367253220">Pour supprimer l'historique du mode Invité, fermez toutes les fenêtres de ce mode.</translation>
 <translation id="8955174612586215829">Rechercher des thèmes</translation>
+<translation id="8957656266859671822">Choisissez votre compte</translation>
 <translation id="8957757410289731985">Personnaliser le profil</translation>
 <translation id="8959144235813727886">Sites et applications</translation>
 <translation id="895944840846194039">Mémoire pour JavaScript</translation>
@@ -11666,6 +11674,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9153367754133725216">Consultez les suggestions de nouvelles applications et de contenu Web dans le lanceur et dans les résultats de recherche. Envoie des statistiques pour améliorer les suggestions uniquement si vous avez choisi d'envoyer des rapports de plantages et des données de diagnostics et d'utilisation à ChromeOS.</translation>
 <translation id="9154194610265714752">Mis à jour</translation>
 <translation id="915485121129452731">Tablette à stylet</translation>
+<translation id="9155100833189043833">Utilisez un identifiant en toute sécurité à partir de votre appareil mobile</translation>
 <translation id="9155344700756733162">Désélectionner la couleur</translation>
 <translation id="9157096865782046368">0,8 seconde</translation>
 <translation id="9157697743260533322">Impossible de configurer les mises à jour automatiques pour tous les utilisateurs (erreur de lancement des vérifications : <ph name="ERROR_NUMBER" />)</translation>

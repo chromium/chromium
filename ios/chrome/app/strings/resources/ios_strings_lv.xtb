@@ -1612,6 +1612,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7266578100016339897">Tas palīdz jums saglabāt kārtību. Varat to jebkurā brīdī mainīt sadaļā Iestatījumi.</translation>
 <translation id="7272437679830969316">Nevar apstiprināt jūsu identitāti. Parole nav nokopēta.</translation>
 <translation id="728025568708172005">Sākt apskati</translation>
+<translation id="7280980607183752256">Šo failu nevar importēt.</translation>
 <translation id="7281202269687163394">Jūsu konfidencialitāte un Gemini</translation>
 <translation id="7293429513719260019">Atlasīt valodu</translation>
 <translation id="7300448350764260141">Pievienojiet papildu aizsardzības līmeni pret draudiem tiešsaistē.</translation>
@@ -2008,6 +2009,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8726523474917941818">Atgādināt</translation>
 <translation id="8728922029615312208">Aizvērt visu</translation>
 <translation id="8730621377337864115">Gatavs</translation>
+<translation id="8731268612289859741">Drošības kods</translation>
 <translation id="87371078663613140">Izpētiet izvēļņu joslā pieejamās opcijas.</translation>
 <translation id="8741627442233023406">{count,plural, =1{Pārskatīt cilni…}zero{Pārskatīt visas cilnes…}one{Pārskatīt visas cilnes…}other{Pārskatīt visas cilnes…}}</translation>
 <translation id="8741995161408053644">Jūsu Google kontam var būt cita veida pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

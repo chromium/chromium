@@ -3294,6 +3294,11 @@ Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook 
           Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="3273221114520206906">Impostazione JavaScript predefinita</translation>
 <translation id="3278042410658310805">Disattiva la funzione di lettura vocale nella schermata di accesso e consenti all'utente di attivarla temporaneamente</translation>
+<translation id="3279532732818711062">La configurazione della policy consente alle origini elencate di ottenere gli attributi dei dispositivi (ad es. numero di serie, nome host) utilizzando l'API Device Attributes.
+
+Le origini devono corrispondere ad applicazioni web che sono app web isolate con installazione forzata (tramite la policy <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (dalla versione 125), configurate come app kiosk o applicazioni web con installazione forzata (tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (prima della versione 140). Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla versione 127), visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questa policy viene impostata su Disattivata, questi consigli vengono nascosti all'utente. Se la policy viene impostata su Attivata o se non viene configurata, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3285231260918855067">Opacità contorno del testo della filigrana, da 0 (trasparente) a 100 (opaco).</translation>
@@ -4348,6 +4353,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
+<translation id="4053168888967633418">Impostazioni di Device Attributes</translation>
 <translation id="4056842786707010434">Scegli se consentire la cancellazione di window.name per le navigazioni cross-site di primo livello che generano un nuovo gruppo di contesti di navigazione.</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4057442294431066708">Questa policy consente di stabilire l'opzione della scorciatoia selezionata per la rimappatura degli eventi a

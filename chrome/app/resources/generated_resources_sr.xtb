@@ -5908,6 +5908,7 @@
 <translation id="5109044022078737958">Мија</translation>
 <translation id="5109816792918100764">Уклоните језик <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Отвори групу у новом прозору</translation>
+<translation id="511147239888121455">Желите да направите резервну копију садржаја?</translation>
 <translation id="5111646998522066203">Затвори режим без архивирања</translation>
 <translation id="5111692334209731439">&amp;Менаџер обележивача</translation>
 <translation id="5111794652433847656">Не постоји ниједан приступни кôд за <ph name="APP_NAME" /> на овом уређају</translation>
@@ -6043,6 +6044,7 @@
 <translation id="5201945335223486172">За <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Фајлови који могу да мењају фајлове или фолдере на уређају</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Кликните да бисте прегледали додатак}one{Кликните да бисте прегледали ове додатке}few{Кликните да бисте прегледали ове додатке}other{Кликните да бисте прегледали ове додатке}}</translation>
+<translation id="5204282224596194174">Лозинка за опоравак за <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Обавите Powerwash на уређају и пробајте поново.</translation>
 <translation id="5204967432542742771">Унесите лозинку</translation>
 <translation id="5205484256512407285">Никада не користите мобилне податке за пренос</translation>
@@ -8201,6 +8203,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Више детаља о подацима које <ph name="DEVICE_OS" /> може да дели са Google-ом, као и о томе како се они користе, потражите на g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Побољшава безбедност за вас и друге на вебу</translation>
 <translation id="6771503742377376720">Јесте ауторитет за издавање сертификата</translation>
+<translation id="6772103682557559072">Још опција за адресу на послу <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Отвори и измени</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Сајт захтева једнократну лозинку</translation>
@@ -10029,6 +10032,7 @@
 <translation id="8025151549289123443">Закључани екран и пријављивање</translation>
 <translation id="8025291188699172126">О ажурирањима</translation>
 <translation id="8026471514777758216">Сви ваши уређаји</translation>
+<translation id="8026700655446696031">Још опција за кућну адресу <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Сачувајте обележиваче, лозинке и друго уз синхронизацију</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Посетили сте пре 0 дана}=1{Посетили сте пре 1 дан}one{Посетили сте пре # дан}few{Посетили сте пре # дана}other{Посетили сте пре # дана}}</translation>
 <translation id="8028060951694135607">Microsoft опоравак кључа</translation>
@@ -10177,6 +10181,7 @@
 <translation id="8121537075864592453">Режим преко целог екрана је онемогућен</translation>
 <translation id="8121750884985440809">Тренутно пребацујете екран</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Направите резервну копију лозинки, обележивача и другог садржаја да бисте лако могли да им приступате на свим уређајима</translation>
 <translation id="81238879832906896">Жути и бели цвет</translation>
 <translation id="8123975449645947908">Скролуј уназад</translation>
 <translation id="8124313775439841391">Управљани ONC</translation>
@@ -11554,6 +11559,7 @@
 <translation id="9057354806206861646">Ажурирајте распоред</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Око 1 обавештење дневно}one{Око {NUM_NOTIFICATION} обавештење дневно}few{Око {NUM_NOTIFICATION} обавештења дневно}other{Око {NUM_NOTIFICATION} обавештења дневно}}</translation>
 <translation id="9058760336383947367">Прикажи PPD штампача</translation>
+<translation id="9061521313218438086">Ако Chrome пронађе неку од лозинки у јавној повреди података, Google менаџер лозинки може да вам понуди да промени лозинку када се пријавите.</translation>
 <translation id="9061694916020926968">Морате да будете пријављени на Google налог да бисте користили Steam за Chromebook (бета). Пријавите се и пробајте поново.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка од <ph name="ERROR_LINE_START" />. до <ph name="ERROR_LINE_END" />. реда</translation>

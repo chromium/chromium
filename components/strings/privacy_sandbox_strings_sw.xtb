@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
-<translation id="1045545926731898784">Tovuti hii inamilikiwa na kikundi cha tovuti, kinachobainishwa na <ph name="SET_OWNER" />, ambacho kinaweza kutuma data ya shughuli zako kwenye kikundi ili kuzisaidia tovuti zifanye kazi ipasavyo.</translation>
 <translation id="1055273091707420432">Chromium hufuta kiotomatiki mada za matangazo zilizohifadhiwa zaidi ya wiki 4</translation>
 <translation id="1145223915439299117">Chrome huzuia vidakuzi vya washirika wengine katika hali ya kutumia faraghani lakini kuna kiendelezi kilichoruhusu vidakuzi vya washirika wengine kwenye tovuti hii.</translation>
 <translation id="1184166532603925201">Ukiwa katika Hali ya kutumia faraghani, Chrome huzuia tovuti zisitumie vidakuzi vya washirika wengine</translation>
@@ -19,7 +18,6 @@
 <translation id="172522356264798673">Endelea kutumia mipangilio ya ulinzi dhidi ya tovuti zinazokufuatilia</translation>
 <translation id="1732764153129912782">Unaweza kufanya mabadiliko kwenye mipangilio ya faragha ya matangazo</translation>
 <translation id="1780659583673667574">Kwa mfano, ikiwa utatembelea tovuti ili upate mapishi ya chakula cha jioni, huenda tovuti ikaamua kwamba unavutiwa na mapishi. Baadaye, tovuti nyingine inaweza kukuonyesha tangazo linalohusiana la huduma ya kukuletea bidhaa za vyakula, iliyopendekezwa na tovuti ya kwanza.</translation>
-<translation id="1818866261309406359">Dhibiti data ya tovuti zinazohusiana katika kichupo kipya</translation>
 <translation id="1824257235526922152">Chromium huzuia vidakuzi vya washirika wengine katika hali ya kutumia faraghani lakini kuna kiendelezi kilichoruhusu vidakuzi vya washirika wengine kwenye tovuti hii. Hali ya kutumia faraghani pia ina vipengele vinavyoweza kudhibiti maelezo yanayopatikana kwa makampuni ambayo maudhui yake yamepachikwa katika tovuti unayotembelea.</translation>
 <translation id="1887631853265748225">Vipengele vya faragha ya matangazo husaidia kudhibiti kile ambacho tovuti na washirika wake wa utangazaji wanaweza kufahamu kukuhusu wanapokuonyesha matangazo yaliyowekewa mapendeleo.</translation>
 <translation id="1953252525523274058">Tovuti ulizotembelea zinaweza kupachika maudhui kutoka kwenye tovuti nyingine (kama vile picha, matangazo na maandishi) yanayoweza kutumika kupata maelezo kukuhusu. Pata maelezo zaidi kuhusu kudhibiti <ph name="START_LINK" />vipengele vya ulinzi dhidi ya tovuti zinazokufuatilia unapotumia hali ya faraghani<ph name="END_LINK" /></translation>
@@ -101,7 +99,6 @@
 <translation id="5165490319523240316">Tovuti na washirika wake wa utangazaji wanaweza kutumia shughuli zako, kama vile jinsi unavyotumia muda wako kwenye tovuti unazotembelea, ili kuweka mapendeleo kwenye matangazo katika tovuti zingine. Kwa mfano, ikiwa utatembelea tovuti ili upate mapishi ya chakula cha jioni, huenda tovuti ikaamua kwamba unavutiwa na mapishi. Baadaye, tovuti nyingine inaweza kukuonyesha tangazo linalohusiana la huduma ya kukuletea bidhaa za vyakula, iliyopendekezwa na tovuti ya kwanza.</translation>
 <translation id="5362892126200493757">Tueleze kilichokufanya usitishe mipangilio ya ulinzi dhidi ya tovuti zinazokufuatilia kwenye tovuti hii</translation>
 <translation id="544199055391706031">Shughuli zako ni mojawapo ya mambo mengi ambayo tovuti inaweza kutumia kupendekeza matangazo. Ukizima kipengele cha matangazo yanayopendekezwa na tovuti, tovuti bado zinaweza kukuonyesha matangazo lakini huenda yasikufae zaidi. Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK" />matangazo yanayopendekezwa na tovuti<ph name="END_LINK" />.</translation>
-<translation id="5495405805627942351">Dhibiti data ya tovuti zinazohusiana</translation>
 <translation id="5535388436012824806">Chrome huzuia vidakuzi vya washirika wengine katika hali ya kutumia faraghani lakini umeweka hali ya kutofuata kanuni kwenye tovuti hii. Hali ya kutumia faraghani pia ina vipengele vinavyoweza kudhibiti maelezo yanayopatikana kwa makampuni ambayo maudhui yake yamepachikwa katika tovuti unayotembelea.</translation>
 <translation id="5574580428711706114">Google inahitaji kampuni zibainishe kwa umma kuwa hazitatumia data hii kukufuatilia kwenye tovuti mbalimbali. Kampuni zina wajibu wa kukufahamisha jinsi zinatumia data yako. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kwenye Sera yetu ya Faragha<ph name="LINK_END1" />.</translation>
 <translation id="565589626121534692">Sitisha mipangilio ya ulinzi dhidi ya tovuti zinazokufuatilia</translation>

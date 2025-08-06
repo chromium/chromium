@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">Je organisatie heeft privé browsen uitgezet.</translation>
 <translation id="2122754583996902531">Je browser wordt beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">De chats van je organisatie worden niet gebruikt om onze modellen te verbeteren. Gemini kan onjuiste informatie tonen, ook over mensen. Dubbelcheck daarom de reacties. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">De volgende wachtwoorden zijn niet geïmporteerd in Google Wachtwoordmanager omdat ze niet voldoen aan de vereisten.</translation>
 <translation id="2139867232736819575">Zoeken naar gekopieerde tekst</translation>
 <translation id="2147127444698817042">Alleen beschikbaar op iPhone</translation>
 <translation id="2148799636999124959">Log snel in bij sites en apps met je opgeslagen wachtwoorden.</translation>
@@ -899,6 +900,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4621768135601674446">Opties voor de leesmodus openen</translation>
 <translation id="4624080227980645783">Nieuw incognitovenster</translation>
 <translation id="4627107755957573804">Sta toe dat sites en apps bestaande accounts upgraden om toegangssleutels te gebruiken</translation>
+<translation id="4629065796475200039">Je wachtwoord is niet geïmporteerd</translation>
 <translation id="4630212057753624203">Voorbeeld van ballon</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> hergebruikte wachtwoorden</translation>
 <translation id="4631890462758052414">Nieuw incognitotabblad</translation>
@@ -1504,6 +1506,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6790502149545262384">Binnenkort zie je artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="6791425686608802741">Tik op Tabblad toevoegen aan nieuwe groep</translation>
 <translation id="6794476726485507147">Kies een datum en tijd waarop je een herinneringsmelding wilt krijgen om deze pagina opnieuw te bezoeken</translation>
+<translation id="6795481620482106033">Ongeldige gegevens</translation>
 <translation id="6807287147325542056">Wachtwoorden in andere apps</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{{count} bookmarks opgeslagen in je Google-account {email}}}</translation>
@@ -1612,6 +1615,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7266578100016339897">Zo blijft alles overzichtelijk. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
 <translation id="728025568708172005">Rondleiding</translation>
+<translation id="7280980607183752256">Dit bestand kan niet worden geïmporteerd</translation>
 <translation id="7281202269687163394">Je privacy en Gemini.</translation>
 <translation id="7293429513719260019">Taal selecteren</translation>
 <translation id="7300448350764260141">Voeg een extra beveiligingslaag toe tegen online dreigingen.</translation>
@@ -2008,6 +2012,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8726523474917941818">Herinneren</translation>
 <translation id="8728922029615312208">Alles sluiten</translation>
 <translation id="8730621377337864115">Klaar</translation>
+<translation id="8731268612289859741">Beveiligingscode</translation>
 <translation id="87371078663613140">Bekijk de opties in de menubalk</translation>
 <translation id="8741627442233023406">{count,plural, =1{Het tabblad checken…}other{Alle tabbladen checken…}}</translation>
 <translation id="8741995161408053644">Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

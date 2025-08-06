@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
-<translation id="1045545926731898784">Ova web-lokacija pripada grupi web-lokacija koju definira <ph name="SET_OWNER" /> i koja može dijeliti vaše aktivnosti u grupi kako bi web-lokacije funkcionirale prema očekivanjima.</translation>
 <translation id="1055273091707420432">Chromium automatski briše teme oglasa starije od četiri tjedna</translation>
 <translation id="1145223915439299117">Chrome blokira kolačiće trećih strana u anonimnom načinu, no proširenje je dopustilo kolačiće trećih strana za ovu web-lokaciju.</translation>
 <translation id="1184166532603925201">Kad ste u anonimnom načinu, Chrome web-lokacijama blokira upotrebu kolačića trećih strana</translation>
@@ -19,7 +18,6 @@
 <translation id="172522356264798673">Nastavi sa zaštitom od praćenja</translation>
 <translation id="1732764153129912782">Promjene možete unijeti u postavkama zaštite privatnosti u online oglašavanju</translation>
 <translation id="1780659583673667574">Na primjer, ako posjetite web-lokaciju da biste pronašli recepte za večeru, ta web-lokacija može odlučiti da vas zanima kuhanje. Poslije vam druga web-lokacija može prikazati povezani oglas za uslugu dostave namirnica koju je predložila prva web-lokacija.</translation>
-<translation id="1818866261309406359">Upravljajte podacima povezanih web-lokacija na novoj kartici</translation>
 <translation id="1824257235526922152">Chromium blokira kolačiće trećih strana u anonimnom načinu, no proširenje je dopustilo kolačiće trećih strana za ovu web-lokaciju. Anonimni način pruža i značajke koje mogu ograničiti informacije dostupne tvrtkama čiji je sadržaj ugrađen na web-lokaciji koju posjećujete.</translation>
 <translation id="1887631853265748225">Značajke zaštite privatnosti u online oglašavanju pomažu ograničiti što web-lokacije i njihovi partneri za oglašavanje mogu saznati o vama kad vam prikazuju personalizirane oglase.</translation>
 <translation id="1953252525523274058">Web-lokacije koje posjećujete mogu ugraditi sadržaj s drugih web-lokacija (kao što su slike, oglasi i tekst) koji se može upotrijebiti za prikupljanje informacija o vama. Saznajte više o upravljanju <ph name="START_LINK" />zaštitama od praćenja u anonimnom načinu<ph name="END_LINK" /></translation>
@@ -101,7 +99,6 @@
 <translation id="5165490319523240316">Web-lokacije i njihovi partneri za oglašavanje mogu upotrebljavati vašu aktivnost, na primjer način na koji provodite vrijeme na web-lokacijama koje posjećujete, za personaliziranje oglasa na drugim web-lokacijama. Na primjer, ako posjetite web-lokaciju da biste pronašli recepte za večeru, ta web-lokacija može odlučiti da vas zanima kuhanje. Poslije vam druga web-lokacija može prikazati povezani oglas za uslugu dostave namirnica koju je predložila prva web-lokacija.</translation>
 <translation id="5362892126200493757">Recite nam zašto ste pauzirali zaštite od praćenja na ovoj web-lokaciji</translation>
 <translation id="544199055391706031">Vaša aktivnost jedna je od mnogih stvari koje web-lokacija može upotrijebiti za predlaganje oglasa. Kad su oglasi koje predlažu web-lokacije isključeni, web-lokacije vam i dalje mogu prikazivati oglase, no oni bi mogli biti manje personalizirani. Saznajte više o <ph name="BEGIN_LINK" />oglasima koje predlažu web-lokacije<ph name="END_LINK" />.</translation>
-<translation id="5495405805627942351">Upravljajte podacima povezanih web-lokacija</translation>
 <translation id="5535388436012824806">Chrome blokira kolačiće trećih strana u anonimnom načinu, no napravili ste iznimku za ovu web-lokaciju. Anonimni način pruža i značajke koje mogu ograničiti informacije dostupne tvrtkama čiji je sadržaj ugrađen na web-lokaciji koju posjećujete.</translation>
 <translation id="5574580428711706114">Google od tvrtki zahtijeva da javno navedu da te podatke neće upotrebljavati da bi vas pratile na web-lokacijama. Tvrtke su odgovorne za to da vas obavijeste o tome kako upotrebljavaju vaše podatke. <ph name="BEGIN_LINK1" />Saznajte više u našim pravilima o privatnosti<ph name="LINK_END1" />.</translation>
 <translation id="565589626121534692">Pauzirajte zaštite od praćenja</translation>

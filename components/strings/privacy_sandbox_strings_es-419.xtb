@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
-<translation id="1045545926731898784">Este sitio pertenece a un grupo de sitios, definido por <ph name="SET_OWNER" />, que puede compartir tu actividad en todo el grupo para ayudar a que los sitios funcionen como se espera.</translation>
 <translation id="1055273091707420432">Chromium borra de forma automática los temas de anuncios luego de 4 semanas</translation>
 <translation id="1145223915439299117">Chrome bloquea las cookies de terceros en el modo Incógnito, pero una extensión permitió esas cookies para este sitio.</translation>
 <translation id="1184166532603925201">Cuando usas el modo Incógnito, Chrome impide que los sitios usen cookies de terceros.</translation>
@@ -19,7 +18,6 @@
 <translation id="172522356264798673">Reanudar las protecciones contra seguimiento</translation>
 <translation id="1732764153129912782">Puedes realizar cambios en la configuración de privacidad en los anuncios.</translation>
 <translation id="1780659583673667574">Por ejemplo, si visitas un sitio para encontrar recetas para la cena, el sitio puede decidir que te interesa la cocina. Luego, otro sitio podría mostrarte un anuncio relacionado con un servicio de entrega de alimentos sugerido por el primer sitio.</translation>
-<translation id="1818866261309406359">Administrar los datos de sitios relacionados en una pestaña nueva</translation>
 <translation id="1824257235526922152">Chromium bloquea las cookies de terceros en el modo Incógnito, pero una extensión permitió esas cookies para este sitio. El modo Incógnito también proporciona funciones que pueden limitar la información disponible para las empresas cuyo contenido está incorporado en un sitio que visitas.</translation>
 <translation id="1887631853265748225">Las funciones de privacidad en los anuncios permiten limitar la información que los sitios web y sus socios publicitarios pueden obtener cuando te muestran anuncios personalizados.</translation>
 <translation id="1953252525523274058">Los sitios que visitas pueden incorporar contenido de otros sitios (como imágenes, anuncios y texto) que se puede usar para obtener información sobre ti. Más información para administrar las <ph name="START_LINK" />protecciones contra seguimiento en modo Incógnito<ph name="END_LINK" /></translation>
@@ -101,7 +99,6 @@
 <translation id="5165490319523240316">Los sitios y sus socios publicitarios pueden usar tu actividad, como el tiempo que pasas en los sitios que visitas, para personalizar anuncios en otros sitios. Por ejemplo, si visitas un sitio para encontrar recetas para la cena, el sitio puede decidir que te interesa la cocina. Luego, otro sitio podría mostrarte un anuncio relacionado con un servicio de entrega de alimentos sugerido por el primer sitio.</translation>
 <translation id="5362892126200493757">Cuéntanos por qué detuviste las protecciones contra seguimiento en este sitio</translation>
 <translation id="544199055391706031">Tu actividad es uno de los muchos datos que un sitio puede usar para sugerir anuncios. Cuando se desactivan los anuncios sugeridos por sitios, los sitios pueden seguir mostrándote anuncios, pero es posible que estén menos personalizados. Obtén más información sobre los <ph name="BEGIN_LINK" />anuncios sugeridos por sitios<ph name="END_LINK" />.</translation>
-<translation id="5495405805627942351">Administrar datos de sitios relacionados</translation>
 <translation id="5535388436012824806">Chrome bloquea las cookies de terceros en el modo Incógnito, pero hiciste una excepción para este sitio. El modo Incógnito también proporciona funciones que pueden limitar la información disponible para las empresas cuyo contenido está incorporado en un sitio que visitas.</translation>
 <translation id="5574580428711706114">Google requiere que las empresas declaren públicamente que no usarán estos datos para realizar un seguimiento de los sitios que visitas. Dichas empresas son responsables de informarte sobre el modo en que se usan tus datos. <ph name="BEGIN_LINK1" />Obtén más información en nuestra Política de Privacidad<ph name="LINK_END1" />.</translation>
 <translation id="565589626121534692">Pausar las protecciones contra seguimiento</translation>
