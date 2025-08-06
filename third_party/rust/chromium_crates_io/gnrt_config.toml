@@ -362,11 +362,6 @@ extra_kv = { allow_unsafe = false }
 allow_unsafe = true
 
 [crate.libc]
-ban_features = [
-    # `extra_traits` feature is banned because of
-    # https://github.com/rust-lang/libc/issues/3560
-    'extra_traits',
-]
 # `libc` crate is implicitly trusted because it comes from
 # https://github.com/rust-lang/ (and we already implicitly trust maintainers of
 # `rustc`).
