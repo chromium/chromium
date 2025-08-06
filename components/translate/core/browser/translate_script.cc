@@ -157,7 +157,9 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     // Append snippet to install callbacks on translate.js if available.
     const char* install_callbacks =
         "try {"
-        "  __gCrWeb.translate.installCallbacks();"
+        "  "
+        "__gCrWeb.getRegisteredApi('translate').getFunction('installCallbacks')"
+        "();"
         "} catch (error) {};";
     data_.append(install_callbacks);
 #endif  // BUILDFLAG(IS_IOS)
