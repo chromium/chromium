@@ -86,6 +86,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
       layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     }
 
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kDialogRoundedCornerRadius));
 

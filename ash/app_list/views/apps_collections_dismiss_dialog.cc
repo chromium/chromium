@@ -58,6 +58,7 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
   SetPaintToLayer();
 
   if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }

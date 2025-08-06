@@ -80,7 +80,6 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
                                    bool tablet_mode)
     : view_delegate_(view_delegate) {
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
@@ -111,6 +110,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
 
   if (tablet_mode) {
     if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetFillsBoundsOpaquely(false);
       layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
       layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     }
@@ -126,6 +126,8 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
     SetBorder(std::make_unique<views::HighlightBorder>(
         GetCornerRadius(/*tablet_mode=*/true),
         views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  } else {
+    layer()->SetFillsBoundsOpaquely(false);
   }
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(

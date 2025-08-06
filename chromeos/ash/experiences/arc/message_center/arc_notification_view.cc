@@ -114,6 +114,7 @@ ArcNotificationView::ArcNotificationView(
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{kMessagePopupCornerRadius});
     if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetFillsBoundsOpaquely(false);
       layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
       layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     }
