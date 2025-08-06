@@ -18,6 +18,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
@@ -61,6 +62,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -68,6 +70,8 @@ import org.chromium.components.payments.AndroidPaymentAppFactory;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 /**
  * Autofill credit cards fragment, which allows the user to edit credit cards and control payment
@@ -169,24 +173,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
         if (disabledSettings) {
             // Add the information string at the top.
-            CardWithButtonPreference disabled_settings_info_pref =
-                    new CardWithButtonPreference(getStyledContext(), null);
+            ClickableSpansTextMessagePreference disabled_settings_info_pref =
+                    new ClickableSpansTextMessagePreference(getStyledContext(), null);
             disabled_settings_info_pref.setKey(DISABLED_SETTINGS_INFO);
-            disabled_settings_info_pref.setTitle(
-                    R.string.autofill_disable_settings_explanation_title);
-            disabled_settings_info_pref.setSummary(R.string.autofill_disable_settings_explanation);
-            disabled_settings_info_pref.setButtonText(
-                    getResources().getString(R.string.autofill_disable_settings_button_label));
-            disabled_settings_info_pref.setOnButtonClick(
-                    () -> {
-                        SettingsNavigation settingsNavigation =
-                                SettingsNavigationFactory.createSettingsNavigation();
-                        settingsNavigation.startSettings(
-                                getPreferenceManager().getContext(),
-                                AutofillOptionsFragment.class,
-                                AutofillOptionsFragment.createRequiredArgs(
-                                        AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT));
-                    });
+            disabled_settings_info_pref.setSummary(getDisableSettingsExplanation());
+            disabled_settings_info_pref.setOnPreferenceClickListener(null);
             getPreferenceScreen().addPreference(disabled_settings_info_pref);
         }
 
@@ -833,5 +824,26 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         == AndroidAutofillAvailabilityStatus.AVAILABLE)
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN);
+    }
+
+    private SpannableString getDisableSettingsExplanation() {
+        return SpanApplier.applySpans(
+                getString(R.string.autofill_disable_settings_explanation),
+                new SpanApplier.SpanInfo(
+                        "<link>",
+                        "</link>",
+                        new ChromeClickableSpan(
+                                getPreferenceManager().getContext(),
+                                this::onLinkToAutofillOptionsClicked)));
+    }
+
+    private void onLinkToAutofillOptionsClicked(View unusedView) {
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
+                getPreferenceManager().getContext(),
+                AutofillOptionsFragment.class,
+                AutofillOptionsFragment.createRequiredArgs(
+                        AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT));
     }
 }

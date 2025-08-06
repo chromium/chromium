@@ -10,10 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.IntDef;
-import androidx.fragment.app.Fragment;
 
-import org.chromium.base.Callback;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -30,8 +27,6 @@ import java.lang.annotation.RetentionPolicy;
 /** Autofill options fragment, which allows the user to configure autofill. */
 @NullMarked
 public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
-    private static @Nullable Callback<Fragment> sObserverForTest;
-
     // Key for the argument with which the AutofillOptions fragment will be launched. The value for
     // this argument is part of the AutofillOptionsReferrer enum containing all entry points.
     public static final String AUTOFILL_OPTIONS_REFERRER = "autofill-options-referrer";
@@ -50,7 +45,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         AutofillOptionsReferrer.SETTINGS,
         AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS,
         AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT,
-        AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT,
         AutofillOptionsReferrer.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -64,10 +58,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         /** Payment methods fragment in Chrome settings. */
         int PAYMENT_METHODS_FRAGMENT = 2;
 
-        /** Profiles fragment in Chrome settings. */
-        int AUTOFILL_PROFILES_FRAGMENT = 3;
-
-        int COUNT = 4;
+        int COUNT = 3;
     }
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
@@ -104,15 +95,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mReferrer = getReferrerFromInstanceStateOrLaunchBundle(savedInstanceState);
-
-        if (sObserverForTest != null) {
-            sObserverForTest.onResult(this);
-        }
-    }
-
-    public static void setObserverForTest(Callback<Fragment> observerForTest) {
-        sObserverForTest = observerForTest;
-        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     @Override
