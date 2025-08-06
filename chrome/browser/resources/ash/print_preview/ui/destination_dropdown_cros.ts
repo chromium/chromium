@@ -236,6 +236,8 @@ export class PrintPreviewDestinationDropdownCrosElement extends
         }
         break;
       }
+      default:
+        break;
     }
   }
 

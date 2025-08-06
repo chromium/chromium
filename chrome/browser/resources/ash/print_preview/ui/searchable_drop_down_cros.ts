@@ -349,6 +349,8 @@ export class SearchableDropDownCrosElement extends PolymerElement {
         event.preventDefault();
         break;
       }
+      default:
+        break;
     }
   }
 
