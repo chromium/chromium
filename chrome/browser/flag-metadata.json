@@ -2915,7 +2915,7 @@
   {
     "name": "enable-bookmarks-selected-type-on-signin-for-testing",
     "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 143
   },
   {
     "name": "enable-bound-session-credentials",
@@ -8167,7 +8167,7 @@
   {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 146
   },
   {
     "name": "promise-icons",
@@ -8493,7 +8493,7 @@
   {
     "name": "reading-list-enable-sync-transport-mode-upon-sign-in",
     "owners": [ "mmrashad@google.com", "rsult@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 141
+    "expiry_milestone": 143
   },
   {
     "name": "realbox-secondary-zero-suggest",
@@ -9388,7 +9388,7 @@
   {
     "name": "sync-enable-bookmarks-in-transport-mode",
     "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
-    "expiry_milestone": 141
+    "expiry_milestone": 143
   },
   {
     "name": "sync-point-graph-validation",
