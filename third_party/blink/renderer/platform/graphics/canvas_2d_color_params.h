@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_2D_COLOR_PARAMS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_2D_COLOR_PARAMS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_COLOR_PARAMS_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_COLOR_PARAMS_H_
 
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -21,7 +21,7 @@ enum class CanvasPixelFormat {
 
 // Parameters used by CanvasRenderingContext2D and
 // OffscreenCanvasRenderingContext2D.
-class CORE_EXPORT Canvas2DColorParams {
+class PLATFORM_EXPORT Canvas2DColorParams {
   DISALLOW_NEW();
 
  public:
@@ -46,4 +46,4 @@ class CORE_EXPORT Canvas2DColorParams {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_2D_COLOR_PARAMS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_COLOR_PARAMS_H_

@@ -16,6 +16,7 @@
 #include "cc/raster/playback_image_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -170,6 +171,42 @@ class PLATFORM_EXPORT CanvasResourceProvider
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      Delegate* delegate = nullptr);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
+      gfx::Size size,
+      const Canvas2DColorParams& color_params,
+      ShouldInitialize initialize_provider,
+      Delegate* delegate = nullptr);
+
+  static std::unique_ptr<CanvasResourceProvider>
+  CreateSharedImageProviderForSoftwareCompositor(
+      gfx::Size size,
+      const Canvas2DColorParams& color_params,
+      ShouldInitialize initialize_provider,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      Delegate* delegate = nullptr);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
+      gfx::Size size,
+      const Canvas2DColorParams& color_params,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      RasterMode raster_mode,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      Delegate* delegate = nullptr);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
+      gfx::Size size,
+      const Canvas2DColorParams& color_params,
+      gpu::SharedImageUsageSet shared_image_usage_flags = {},
+      Delegate* delegate = nullptr);
+
+  static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
+      gfx::Size size,
+      const Canvas2DColorParams& color_params,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       Delegate* delegate = nullptr);

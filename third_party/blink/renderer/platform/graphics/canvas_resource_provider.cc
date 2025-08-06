@@ -2082,4 +2082,68 @@ CanvasResourceProvider::GetRecorderHighEntropyCanvasOpTypes() const {
   return recorder_->getRecordingCanvas().HighEntropyCanvasOpTypes();
 }
 
+std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateBitmapProvider(
+    gfx::Size size,
+    const Canvas2DColorParams& color_params,
+    ShouldInitialize initialize_provider,
+    Delegate* delegate) {
+  return CreateBitmapProvider(
+      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
+      color_params.GetGfxColorSpace(), initialize_provider, delegate);
+}
+
+std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+    gfx::Size size,
+    const Canvas2DColorParams& color_params,
+    ShouldInitialize initialize_provider,
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+    Delegate* delegate) {
+  return CreateSharedImageProviderForSoftwareCompositor(
+      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
+      color_params.GetGfxColorSpace(), initialize_provider,
+      shared_image_interface_provider, delegate);
+}
+
+std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateSharedImageProvider(
+    gfx::Size size,
+    const Canvas2DColorParams& color_params,
+    ShouldInitialize initialize_provider,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    RasterMode raster_mode,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    Delegate* delegate) {
+  return CreateSharedImageProvider(
+      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
+      color_params.GetGfxColorSpace(), initialize_provider,
+      std::move(context_provider_wrapper), raster_mode,
+      shared_image_usage_flags, delegate);
+}
+
+std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateWebGPUImageProvider(
+    gfx::Size size,
+    const Canvas2DColorParams& color_params,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    Delegate* delegate) {
+  return CreateWebGPUImageProvider(
+      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
+      color_params.GetGfxColorSpace(), shared_image_usage_flags, delegate);
+}
+
+std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateSwapChainProvider(
+    gfx::Size size,
+    const Canvas2DColorParams& color_params,
+    ShouldInitialize initialize_provider,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    Delegate* delegate) {
+  return CreateSwapChainProvider(
+      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
+      color_params.GetGfxColorSpace(), initialize_provider,
+      std::move(context_provider_wrapper), delegate);
+}
+
 }  // namespace blink
