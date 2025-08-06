@@ -4,6 +4,7 @@
 
 #include "chrome/updater/installer.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>
@@ -92,7 +93,8 @@ Installer::Installer(
     bool update_disabled,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     scoped_refptr<PersistedData> persisted_data,
-    crx_file::VerifierFormat crx_verifier_format)
+    crx_file::VerifierFormat crx_verifier_format,
+    std::optional<std::vector<uint8_t>> crx_public_key_hash)
     : updater_scope_(GetUpdaterScope()),
       app_id_(app_id),
       client_install_data_(client_install_data),
@@ -107,6 +109,7 @@ Installer::Installer(
       policy_same_version_update_(policy_same_version_update),
       persisted_data_(persisted_data),
       crx_verifier_format_(crx_verifier_format),
+      crx_public_key_hash_(crx_public_key_hash),
       app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {}, {})) {}
 
 Installer::~Installer() = default;
@@ -143,6 +146,9 @@ void Installer::MakeCrxComponentFromAppInfo(
   component.action_handler = MakeActionHandler();
   component.requires_network_encryption = false;
   component.crx_format_requirement = crx_verifier_format_;
+  if (crx_public_key_hash_) {
+    component.pk_hash = *crx_public_key_hash_;
+  }
   component.app_id = app_id_;
 
   // Query server for install data only when the client does not specify one.

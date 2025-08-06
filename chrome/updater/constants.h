@@ -260,6 +260,7 @@ inline constexpr char kDevOverrideKeyServerKeepAliveSeconds[] =
     "server_keep_alive";
 inline constexpr char kDevOverrideKeyCrxVerifierFormat[] =
     "crx_verifier_format";
+inline constexpr char kDevOverrideKeyCrxPublicKeyHash[] = "crx_public_key_hash";
 inline constexpr char kDevOverrideKeyMinumumEventLoggingCooldownSeconds[] =
     "minimum_event_logging_cooldown_seconds";
 inline constexpr char kDevOverrideKeyEventLoggingPermissionProviderAppId[] =

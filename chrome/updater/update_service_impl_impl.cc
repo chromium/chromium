@@ -5,6 +5,7 @@
 #include "chrome/updater/update_service_impl_impl.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -114,6 +115,7 @@ UpdateService::Result ToResult(update_client::Error error) {
 void GetComponents(
     scoped_refptr<PolicyService> policy_service,
     crx_file::VerifierFormat verifier_format,
+    std::optional<std::vector<uint8_t>> crx_public_key_hash,
     scoped_refptr<PersistedData> persisted_data,
     const base::flat_map<std::string, std::string>& app_client_install_data,
     const base::flat_map<std::string, std::string>& app_install_data_index,
@@ -181,7 +183,8 @@ void GetComponents(
                   (is_foreground &&
                    app_updates.policy() == kPolicyAutomaticUpdatesOnly));
         }(),
-        policy_same_version_update, persisted_data, verifier_format)
+        policy_same_version_update, persisted_data, verifier_format,
+        crx_public_key_hash)
         ->MakeCrxComponent(
             base::BindOnce([](update_client::CrxComponent component) {
               return component;
@@ -692,6 +695,7 @@ void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
                   base::BindOnce(&internal::GetComponents,
                                  config_->GetPolicyService(),
                                  config_->GetCrxVerifierFormat(),
+                                 config_->GetCrxPublicKeyHash(),
                                  config_->GetUpdaterPersistedData(),
                                  kEmptyFlatMap, kEmptyFlatMap,
                                  kInstallSourcePolicy, Priority::kForeground,
@@ -1184,7 +1188,8 @@ void UpdateServiceImplImpl::InstallImpl(
       registration.app_id,
       base::BindOnce(
           &internal::GetComponents, config_->GetPolicyService(),
-          config_->GetCrxVerifierFormat(), config_->GetUpdaterPersistedData(),
+          config_->GetCrxVerifierFormat(), config_->GetCrxPublicKeyHash(),
+          config_->GetUpdaterPersistedData(),
           base::flat_map<std::string, std::string>(
               {std::make_pair(registration.app_id, client_install_data)}),
           base::flat_map<std::string, std::string>(
@@ -1502,14 +1507,14 @@ void UpdateServiceImplImpl::OnShouldBlockCheckForUpdateForMeteredNetwork(
       FROM_HERE,
       base::BindOnce(
           &update_client::UpdateClient::CheckForUpdate, update_client_, app_id,
-          base::BindOnce(&internal::GetComponents, config_->GetPolicyService(),
-                         config_->GetCrxVerifierFormat(),
-                         config_->GetUpdaterPersistedData(), kEmptyFlatMap,
-                         kEmptyFlatMap,
-                         priority == UpdateService::Priority::kForeground
-                             ? kInstallSourceOnDemand
-                             : "",
-                         priority, update_blocked, policy_same_version_update),
+          base::BindOnce(
+              &internal::GetComponents, config_->GetPolicyService(),
+              config_->GetCrxVerifierFormat(), config_->GetCrxPublicKeyHash(),
+              config_->GetUpdaterPersistedData(), kEmptyFlatMap, kEmptyFlatMap,
+              priority == UpdateService::Priority::kForeground
+                  ? kInstallSourceOnDemand
+                  : "",
+              priority, update_blocked, policy_same_version_update),
           MakeUpdateClientCrxStateChangeCallback(
               config_, config_->GetUpdaterPersistedData(),
               /*new_install=*/false, language, state_update),
@@ -1534,6 +1539,7 @@ void UpdateServiceImplImpl::OnShouldBlockUpdateForMeteredNetwork(
           &update_client::UpdateClient::Update, update_client_, app_ids,
           base::BindOnce(&internal::GetComponents, config_->GetPolicyService(),
                          config_->GetCrxVerifierFormat(),
+                         config_->GetCrxPublicKeyHash(),
                          config_->GetUpdaterPersistedData(),
                          app_client_install_data, app_install_data_index,
                          priority == UpdateService::Priority::kForeground
@@ -1573,13 +1579,13 @@ void UpdateServiceImplImpl::OnShouldBlockForceInstallForMeteredNetwork(
         base::BindOnce(
             base::IgnoreResult(&update_client::UpdateClient::Install),
             update_client_, id,
-            base::BindOnce(&internal::GetComponents,
-                           config_->GetPolicyService(),
-                           config_->GetCrxVerifierFormat(),
-                           config_->GetUpdaterPersistedData(),
-                           app_client_install_data, app_install_data_index,
-                           kInstallSourcePolicy, Priority::kBackground,
-                           update_blocked, policy_same_version_update),
+            base::BindOnce(
+                &internal::GetComponents, config_->GetPolicyService(),
+                config_->GetCrxVerifierFormat(), config_->GetCrxPublicKeyHash(),
+                config_->GetUpdaterPersistedData(), app_client_install_data,
+                app_install_data_index, kInstallSourcePolicy,
+                Priority::kBackground, update_blocked,
+                policy_same_version_update),
             MakeUpdateClientCrxStateChangeCallback(
                 config_, config_->GetUpdaterPersistedData(),
                 /*new_install=*/false,

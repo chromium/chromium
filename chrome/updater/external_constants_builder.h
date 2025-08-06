@@ -76,6 +76,10 @@ class ExternalConstantsBuilder {
       crx_file::VerifierFormat crx_verifier_format);
   ExternalConstantsBuilder& ClearCrxVerifierFormat();
 
+  ExternalConstantsBuilder& SetCrxPublicKeyHash(
+      std::optional<std::vector<uint8_t>> crx_public_key_hash);
+  ExternalConstantsBuilder& ClearCrxPublicKeyHash();
+
   ExternalConstantsBuilder& SetDictPolicies(
       const base::Value::Dict& dict_policies);
   ExternalConstantsBuilder& ClearDictPolicies();

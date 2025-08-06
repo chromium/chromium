@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_UPDATE_SERVICE_IMPL_IMPL_H_
 #define CHROME_UPDATER_UPDATE_SERVICE_IMPL_IMPL_H_
 
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -203,6 +204,7 @@ UpdateService::Result ToResult(update_client::Error error);
 void GetComponents(
     scoped_refptr<PolicyService> policy_service,
     crx_file::VerifierFormat verifier_format,
+    std::optional<std::vector<uint8_t>> crx_public_key_hash,
     scoped_refptr<PersistedData> persisted_data,
     const base::flat_map<std::string, std::string>& app_client_install_data,
     const base::flat_map<std::string, std::string>& app_install_data_index,

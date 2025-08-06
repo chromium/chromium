@@ -5,6 +5,7 @@
 #include "chrome/updater/installer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -48,7 +49,7 @@ TEST(InstallerTest, Simple) {
       /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, std::nullopt)
       ->MakeCrxComponent(
           base::BindLambdaForTesting([&](update_client::CrxComponent out) {
             crx = out;
@@ -118,7 +119,7 @@ TEST(InstallerTest, LoadFromPath) {
       /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, std::nullopt)
       ->MakeCrxComponent(
           base::BindLambdaForTesting([&](update_client::CrxComponent out) {
             crx = out;
@@ -163,7 +164,7 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
       /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, std::nullopt)
       ->MakeCrxComponent(
           base::BindLambdaForTesting([&](update_client::CrxComponent out) {
             crx = out;
@@ -210,7 +211,7 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
       /*minor_version_rollout_policy=*/2,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, std::nullopt)
       ->MakeCrxComponent(
           base::BindLambdaForTesting([&](update_client::CrxComponent out) {
             crx = out;
@@ -242,7 +243,8 @@ TEST(InstallerTest, GetInstalledFileReturnsNothing) {
               /*minor_version_rollout_policy=*/2,
               /*update_disabled=*/false,
               UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
-              crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF))
+              crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
+              std::nullopt))
           ->GetInstalledFile("f"),
       std::nullopt);
 }

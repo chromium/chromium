@@ -3664,7 +3664,7 @@ deps = {
 
   'src/chrome/updater/internal': {
     'url': Var('chrome_git') + '/chrome/updater/internal.git' + '@' +
-        '9ae52b67200db02d7d35d2712602c820cee7dea6',
+        'db5d0ba0230a45fd9b60e140b553aebb121ee31b',
     'condition': 'checkout_src_internal',
   },
 

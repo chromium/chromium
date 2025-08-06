@@ -4,12 +4,14 @@
 
 #include "chrome/updater/external_constants_override.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -195,6 +197,21 @@ crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
       << "]: " << base::Value::GetTypeName(crx_format_verifier_value->type());
   return static_cast<crx_file::VerifierFormat>(
       crx_format_verifier_value->GetInt());
+}
+
+std::optional<std::vector<uint8_t>>
+ExternalConstantsOverrider::CrxPublicKeyHash() const {
+  if (!override_values_.contains(kDevOverrideKeyCrxPublicKeyHash)) {
+    return next_provider_->CrxPublicKeyHash();
+  }
+
+  const base::Value* value =
+      override_values_.Find(kDevOverrideKeyCrxPublicKeyHash);
+  CHECK(value->is_string())
+      << "Unexpected type of override[" << kDevOverrideKeyCrxPublicKeyHash
+      << "]: " << base::Value::GetTypeName(value->type());
+  return value->GetString().empty() ? std::nullopt
+                                    : base::Base64Decode(value->GetString());
 }
 
 base::TimeDelta ExternalConstantsOverrider::MinimumEventLoggingCooldown()

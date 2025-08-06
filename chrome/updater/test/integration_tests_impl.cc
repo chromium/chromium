@@ -514,6 +514,7 @@ void EnterTestMode(const GURL& update_url,
           .SetInitialDelay(base::Milliseconds(100))
           .SetServerKeepAliveTime(server_keep_alive_time)
           .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
+          .SetCrxPublicKeyHash(std::nullopt)
           .SetOverinstallTimeout(GetOverinstallTimeoutForEnterTestMode())
           .SetIdleCheckPeriod(idle_timeout)
           .SetCecaConnectionTimeout(ceca_connection_timeout)

@@ -5,6 +5,7 @@
 #include "chrome/updater/configurator.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -288,6 +289,11 @@ scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
 crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return external_constants_->CrxVerifierFormat();
+}
+
+std::optional<std::vector<uint8_t>> Configurator::GetCrxPublicKeyHash() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return external_constants_->CrxPublicKeyHash();
 }
 
 base::TimeDelta Configurator::MinimumEventLoggingCooldown() const {
