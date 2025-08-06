@@ -12446,4 +12446,33 @@ void Element::setHTML(const String& html,
   SanitizerAPI::SanitizeSafeInternal(this, options, exception_state);
 }
 
+void Element::SetNamedTriggers(NamedAnimationTriggerMap&& named_triggers) {
+  EnsureElementRareData().EnsureAnimationTriggerData().SetNamedTriggers(
+      named_triggers);
+}
+
+NamedAnimationTriggerMap* Element::NamedTriggers() const {
+  ElementRareDataVector* data = GetElementRareData();
+  if (!data) {
+    return nullptr;
+  }
+
+  ElementAnimationTriggerData* trigger_data = data->AnimationTriggerData();
+  if (!trigger_data) {
+    return nullptr;
+  }
+
+  return &trigger_data->NamedTriggers();
+}
+
+AnimationTrigger* Element::NamedTrigger(const ScopedCSSName* name) const {
+  NamedAnimationTriggerMap* trigger_map = NamedTriggers();
+  if (!trigger_map) {
+    return nullptr;
+  }
+
+  auto it = trigger_map->find(name);
+  return it == trigger_map->end() ? nullptr : it->value.Get();
+}
+
 }  // namespace blink

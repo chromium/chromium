@@ -1400,6 +1400,7 @@ const ComputedStyle* StyleResolver::ResolveStyle(
 
   ApplyAnchorData(state);
   ApplyInertness(state);
+  ApplyTriggerData(state);
 
   IncrementResolvedStyleCounters(style_request, GetDocument());
   if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
@@ -3653,6 +3654,11 @@ StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(
   }
 
   return position_try_rule;
+}
+
+void StyleResolver::ApplyTriggerData(StyleResolverState& state) {
+  CSSAnimations::UpdateNamedTriggers(
+      state.StyleBuilder(), state.AnimationUpdate(), state.GetElement());
 }
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/element_animation_trigger_data.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
@@ -94,8 +95,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kExplicitlySetElementsForAttr = 35,
     kCSSPseudoElementData = 36,
     kCustomElementRegistry = 37,
+    kAnimationTriggerData = 38,
 
-    kNumFields = 38,
+    kNumFields = 39,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -325,6 +327,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
   CustomElementRegistry* GetCustomElementRegistry() const;
   void SetCustomElementRegistry(CustomElementRegistry* registry);
+
+  ElementAnimationTriggerData* AnimationTriggerData();
+  ElementAnimationTriggerData& EnsureAnimationTriggerData();
 
   void IncrementImplicitlyAnchoredElementCount();
   void DecrementImplicitlyAnchoredElementCount();
