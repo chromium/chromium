@@ -7,6 +7,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBaseWindow_jni.h"
@@ -15,6 +16,7 @@
 namespace {
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
+using base::android::ScopedJavaLocalRef;
 }  // namespace
 
 // Implements Java |AndroidBaseWindow.Natives#create|.
@@ -39,7 +41,8 @@ void AndroidBaseWindow::Destroy(JNIEnv* env) {
 }
 
 bool AndroidBaseWindow::IsActive() const {
-  NOTREACHED();
+  return Java_AndroidBaseWindow_isActive(AttachCurrentThread(),
+                                         java_android_base_window_);
 }
 
 bool AndroidBaseWindow::IsMaximized() const {
@@ -67,7 +70,11 @@ ui::mojom::WindowShowState AndroidBaseWindow::GetRestoredState() const {
 }
 
 gfx::Rect AndroidBaseWindow::GetBounds() const {
-  NOTREACHED();
+  std::vector<int> sizes = Java_AndroidBaseWindow_getBounds(
+      AttachCurrentThread(), java_android_base_window_);
+  gfx::Rect bounds = gfx::Rect(
+      /*x=*/sizes[0], /*y=*/sizes[1], /*width=*/sizes[2], /*height=*/sizes[3]);
+  return bounds;
 }
 
 void AndroidBaseWindow::Show() {

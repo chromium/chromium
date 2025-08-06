@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import android.app.Activity;
+import android.graphics.Rect;
+import android.os.Build;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -89,7 +92,9 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
 
     @Override
     public @Nullable ActivityWindowAndroid getActivityWindowAndroid() {
-        return getActivityWindowAndroidInternal(/* assertAlive= */ true);
+        synchronized (mActivityWindowAndroidLock) {
+            return getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+        }
     }
 
     @Override
@@ -140,6 +145,29 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
         return mState.get() == State.DESTROYED;
     }
 
+    @Override
+    public boolean isActive() {
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return false;
+            return activityWindowAndroid.isTopResumedActivity();
+        }
+    }
+
+    @Override
+    @RequiresApi(Build.VERSION_CODES.R)
+    public Rect getBounds() {
+        synchronized (mActivityWindowAndroidLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return new Rect();
+            Activity activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return new Rect();
+            return activity.getWindowManager().getCurrentWindowMetrics().getBounds();
+        }
+    }
+
     /**
      * Same as {@link #getActivityWindowAndroid()}, but skips asserting that the {@link
      * ChromeAndroidTask} is alive.
@@ -147,7 +175,9 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
      * <p>This method should only be used in tests.
      */
     @Nullable ActivityWindowAndroid getActivityWindowAndroidForTesting() {
-        return getActivityWindowAndroidInternal(/* assertAlive= */ false);
+        synchronized (mActivityWindowAndroidLock) {
+            return getActivityWindowAndroidInternalLocked(/* assertAlive= */ false);
+        }
     }
 
     @Override
@@ -169,14 +199,14 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
         }
     }
 
-    private @Nullable ActivityWindowAndroid getActivityWindowAndroidInternal(boolean assertAlive) {
-        synchronized (mActivityWindowAndroidLock) {
-            if (assertAlive) {
-                assertAlive();
-            }
-
-            return mActivityWindowAndroid.get();
+    @GuardedBy("mActivityWindowAndroidLock")
+    private @Nullable ActivityWindowAndroid getActivityWindowAndroidInternalLocked(
+            boolean assertAlive) {
+        if (assertAlive) {
+            assertAlive();
         }
+
+        return mActivityWindowAndroid.get();
     }
 
     private void clearActivityWindowAndroidInternal() {

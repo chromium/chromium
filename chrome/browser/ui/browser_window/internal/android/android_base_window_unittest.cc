@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/AndroidBaseWindowNativeUnitTestSupport_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 using base::android::AttachCurrentThread;
@@ -47,6 +48,11 @@ class AndroidBaseWindowUnitTest : public testing::Test {
         AttachCurrentThread(), java_test_support_);
   }
 
+  void InvokeJavaSetFakeBounds(int left, int top, int right, int bottom) const {
+    Java_AndroidBaseWindowNativeUnitTestSupport_setFakeBounds(
+        AttachCurrentThread(), java_test_support_, left, top, right, bottom);
+  }
+
  private:
   ScopedJavaGlobalRef<jobject> java_test_support_;
 };
@@ -73,4 +79,18 @@ TEST_F(AndroidBaseWindowUnitTest, JavaDestroyMethodClearsPtrValueInJava) {
   // Assert: the native pointer on the Java side should be set to null.
   AndroidBaseWindow* android_base_window = InvokeJavaGetNativePtrForTesting();
   EXPECT_EQ(nullptr, android_base_window);
+}
+
+TEST_F(AndroidBaseWindowUnitTest, GetBoundsMethodReturnsCorrectBounds) {
+  // Arrange.
+  AndroidBaseWindow* android_base_window = InvokeJavaGetOrCreateNativePtr();
+  gfx::Rect expected_bounds(/*x=*/2, /*y=*/3, /*width=*/4, /*height=*/5);
+  InvokeJavaSetFakeBounds(expected_bounds.x(), expected_bounds.y(),
+                          expected_bounds.right(), expected_bounds.bottom());
+
+  // Act.
+  gfx::Rect actual_bounds = android_base_window->GetBounds();
+
+  // Assert.
+  EXPECT_EQ(expected_bounds, actual_bounds);
 }

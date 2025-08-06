@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import android.graphics.Rect;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -42,6 +45,18 @@ final class AndroidBaseWindow {
         if (mNativeAndroidBaseWindow != 0) {
             AndroidBaseWindowJni.get().destroy(mNativeAndroidBaseWindow);
         }
+    }
+
+    @CalledByNative
+    private boolean isActive() {
+        return mChromeAndroidTask.isActive();
+    }
+
+    @CalledByNative
+    @JniType("std::vector<int>")
+    private int[] getBounds() {
+        Rect bounds = mChromeAndroidTask.getBounds();
+        return new int[] {bounds.left, bounds.top, bounds.width(), bounds.height()};
     }
 
     @CalledByNative

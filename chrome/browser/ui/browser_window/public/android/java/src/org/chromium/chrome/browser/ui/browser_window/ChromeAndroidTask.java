@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import android.graphics.Rect;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -107,6 +109,14 @@ public interface ChromeAndroidTask {
 
     /** Returns whether this {@link ChromeAndroidTask} has been destroyed. */
     boolean isDestroyed();
+
+    /**
+     * Returns whether this {@link ChromeAndroidTask} is currently in the foreground and focused.
+     */
+    boolean isActive();
+
+    /** Returns current bounds of the window. */
+    Rect getBounds();
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();

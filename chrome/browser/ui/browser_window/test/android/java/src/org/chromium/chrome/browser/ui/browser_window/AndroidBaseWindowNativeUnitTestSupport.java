@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import android.graphics.Rect;
 
 import org.jni_zero.CalledByNative;
 
@@ -44,5 +47,10 @@ final class AndroidBaseWindowNativeUnitTestSupport {
     @CalledByNative
     private void invokeDestroy() {
         mAndroidBaseWindow.destroy();
+    }
+
+    @CalledByNative
+    private void setFakeBounds(int left, int top, int right, int bottom) {
+        when(mMockChromeAndroidTask.getBounds()).thenReturn(new Rect(left, top, right, bottom));
     }
 }
