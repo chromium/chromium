@@ -151,6 +151,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
+    @DisabledTest(message = "https://crbug.com/436904664")
     public void testReaderModeInRegularTab() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
 
