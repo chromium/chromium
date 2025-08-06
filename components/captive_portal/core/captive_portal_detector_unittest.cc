@@ -6,12 +6,15 @@
 
 #include <memory>
 
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
+#include "components/captive_portal/core/features.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,12 +52,12 @@ class CaptivePortalClient {
 }  // namespace
 
 class CaptivePortalDetectorTest : public testing::Test,
+                                  public ::testing::WithParamInterface<bool>,
                                   public CaptivePortalDetectorTestBase {
  public:
-  CaptivePortalDetectorTest() = default;
-  ~CaptivePortalDetectorTest() override = default;
-
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        captive_portal::features::kCaptivePortalUpdatedOrigin, GetParam());
     detector_ = std::make_unique<CaptivePortalDetector>(test_loader_factory());
     set_detector(detector_.get());
   }
@@ -68,7 +71,7 @@ class CaptivePortalDetectorTest : public testing::Test,
                const char* response_headers) {
     ASSERT_FALSE(FetchingURL());
 
-    GURL url(CaptivePortalDetector::kDefaultURL);
+    GURL url(CaptivePortalDetector::GetDefaultUrl());
     CaptivePortalClient client(detector());
 
     detector()->DetectCaptivePortal(
@@ -96,7 +99,7 @@ class CaptivePortalDetectorTest : public testing::Test,
   void RunCancelTest() {
     ASSERT_FALSE(FetchingURL());
 
-    GURL url(CaptivePortalDetector::kDefaultURL);
+    GURL url(CaptivePortalDetector::GetDefaultUrl());
     CaptivePortalClient client(detector());
 
     detector()->DetectCaptivePortal(
@@ -116,12 +119,17 @@ class CaptivePortalDetectorTest : public testing::Test,
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<CaptivePortalDetector> detector_;
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         CaptivePortalDetectorTest,
+                         testing::Values(true, false));
+
 // Test that the CaptivePortalDetector returns the expected result
 // codes in response to a variety of probe results.
-TEST_F(CaptivePortalDetectorTest, CaptivePortalResultCodes) {
+TEST_P(CaptivePortalDetectorTest, CaptivePortalResultCodes) {
   CaptivePortalDetector::Results results;
   results.result = captive_portal::RESULT_INTERNET_CONNECTED;
   results.response_code = 204;
@@ -161,7 +169,7 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalResultCodes) {
 }
 
 // Check a Retry-After header that contains a delay in seconds.
-TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterSeconds) {
+TEST_P(CaptivePortalDetectorTest, CaptivePortalRetryAfterSeconds) {
   const char* retry_after = "HTTP/1.1 503 OK\nRetry-After: 101\n\n";
   CaptivePortalDetector::Results results;
 
@@ -182,7 +190,7 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterSeconds) {
 }
 
 // Check a Retry-After header that contains a date.
-TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterDate) {
+TEST_P(CaptivePortalDetectorTest, CaptivePortalRetryAfterDate) {
   const char* retry_after =
       "HTTP/1.1 503 OK\nRetry-After: Tue, 17 Apr 2012 18:02:51 GMT\n\n";
   CaptivePortalDetector::Results results;
@@ -207,7 +215,7 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterDate) {
 }
 
 // Check invalid Retry-After headers are ignored.
-TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterInvalid) {
+TEST_P(CaptivePortalDetectorTest, CaptivePortalRetryAfterInvalid) {
   const char* retry_after = "HTTP/1.1 503 OK\nRetry-After: Christmas\n\n";
   CaptivePortalDetector::Results results;
 
@@ -218,7 +226,7 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterInvalid) {
           retry_after);
 }
 
-TEST_F(CaptivePortalDetectorTest, Cancel) {
+TEST_P(CaptivePortalDetectorTest, Cancel) {
   RunCancelTest();
   CaptivePortalDetector::Results results;
   results.result = captive_portal::RESULT_INTERNET_CONNECTED;

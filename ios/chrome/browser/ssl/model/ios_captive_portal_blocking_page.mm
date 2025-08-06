@@ -53,7 +53,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
 
   std::u16string paragraph;
   if (landing_url_.spec() ==
-      captive_portal::CaptivePortalDetector::kDefaultURL) {
+      captive_portal::CaptivePortalDetector::GetDefaultUrl()) {
     // Captive portal may intercept requests without HTTP redirects, in which
     // case the login url would be the same as the captive portal detection url.
     // Don't show the login url in that case.

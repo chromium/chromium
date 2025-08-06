@@ -110,7 +110,7 @@ void IOSSSLErrorHandler::StartHandlingError() {
   base::WeakPtr<IOSSSLErrorHandler> weak_error_handler =
       weak_factory_.GetWeakPtr();
   captive_portal_detector_->DetectCaptivePortal(
-      GURL(CaptivePortalDetector::kDefaultURL),
+      GURL(CaptivePortalDetector::GetDefaultUrl()),
       base::BindRepeating(
           &IOSSSLErrorHandler::HandleCaptivePortalDetectionResult,
           weak_error_handler),

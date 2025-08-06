@@ -359,7 +359,7 @@ std::optional<GURL> GetPortalProbeUrl(const NetworkState* network) {
       if (probe_url.is_valid())
         return probe_url;
       else
-        return GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+        return GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl());
     }
     case NetworkState::PortalState::kNoInternet:
       return std::nullopt;

@@ -131,7 +131,7 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
 
   url = default_network->probe_url();
   if (url.is_empty()) {
-    url = GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+    url = GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl());
   }
 
   SigninMode mode = GetSigninMode(portal_state);

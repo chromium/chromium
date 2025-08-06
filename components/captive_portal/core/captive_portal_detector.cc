@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/captive_portal/core/features.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -16,10 +18,13 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-namespace captive_portal {
+namespace {
+constexpr char kLegacyURL[] = "http://www.gstatic.com/generate_204";
+constexpr char kDefaultURL[] =
+    "http://connectivitycheck.gstatic.com/generate_204";
+}  // namespace
 
-const char CaptivePortalDetector::kDefaultURL[] =
-    "http://www.gstatic.com/generate_204";
+namespace captive_portal {
 
 CaptivePortalDetector::CaptivePortalDetector(
     network::mojom::URLLoaderFactory* loader_factory)
@@ -27,6 +32,12 @@ CaptivePortalDetector::CaptivePortalDetector(
 
 CaptivePortalDetector::~CaptivePortalDetector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+const std::string_view CaptivePortalDetector::GetDefaultUrl() {
+  return base::FeatureList::IsEnabled(features::kCaptivePortalUpdatedOrigin)
+             ? kDefaultURL
+             : kLegacyURL;
 }
 
 void CaptivePortalDetector::DetectCaptivePortal(

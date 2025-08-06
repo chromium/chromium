@@ -45,7 +45,7 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
   // requests for this URL should get an HTTP redirect or a login
   // page.  When neither is true, no server should respond to requests
   // for this URL.
-  static const char kDefaultURL[];
+  static const std::string_view GetDefaultUrl();
 
   explicit CaptivePortalDetector(
       network::mojom::URLLoaderFactory* loader_factory);

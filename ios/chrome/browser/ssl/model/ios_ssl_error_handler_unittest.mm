@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
+#import "components/captive_portal/core/captive_portal_detector.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -54,8 +55,9 @@ class IOSSSLErrorHandlerWithoutTabHelpersTest : public PlatformTest {
     profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
-    test_loader_factory_.AddResponse("http://www.gstatic.com/generate_204", "",
-                                     net::HTTP_NO_CONTENT);
+    test_loader_factory_.AddResponse(
+        captive_portal::CaptivePortalDetector::GetDefaultUrl(), "",
+        net::HTTP_NO_CONTENT);
   }
 
   web::WebState* web_state() const { return web_state_.get(); }

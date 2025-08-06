@@ -1409,7 +1409,7 @@ TEST_F(CrosNetworkConfigTest, PortalState) {
   EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
   EXPECT_EQ(mojom::PortalState::kPortalSuspected, network->portal_state);
   ASSERT_TRUE(network->portal_probe_url);
-  EXPECT_EQ(captive_portal::CaptivePortalDetector::kDefaultURL,
+  EXPECT_EQ(captive_portal::CaptivePortalDetector::GetDefaultUrl(),
             *network->portal_probe_url);
 
   helper()->ConfigureService(

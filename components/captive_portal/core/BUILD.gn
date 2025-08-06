@@ -22,6 +22,7 @@ component("core") {
   defines = [ "CAPTIVE_PORTAL_IMPLEMENTATION" ]
 
   deps = [
+    ":features",
     "//base",
     "//net",
     "//services/network/public/cpp",
@@ -31,6 +32,17 @@ component("core") {
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/network" ]
   }
+}
+
+component("features") {
+  output_name = "captive_portal_features"
+  defines = [ "IS_CAPTIVE_PORTAL_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 buildflag_header("buildflags") {
@@ -60,6 +72,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":features",
     ":test_support",
     "//base",
     "//net:test_support",

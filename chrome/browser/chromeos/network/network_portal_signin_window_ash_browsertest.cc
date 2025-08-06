@@ -11,6 +11,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
+#include "components/captive_portal/core/captive_portal_detector.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -43,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   content::CreateAndLoadWebContentsObserver web_contents_observer;
 
   NetworkPortalSigninWindow::Get()->Show(
-      GURL("http://www.gstatic.com/generate_204"));
+      GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl()));
   ASSERT_TRUE(NetworkPortalSigninWindow::Get()->GetBrowserForTesting());
 
   web_contents_observer.Wait();
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   content::CreateAndLoadWebContentsObserver web_contents_observer;
 
   NetworkPortalSigninWindow::Get()->Show(
-      GURL("http://www.gstatic.com/generate_204"));
+      GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl()));
   ASSERT_TRUE(NetworkPortalSigninWindow::Get()->GetBrowserForTesting());
 
   web_contents_observer.Wait();

@@ -138,7 +138,8 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
 
   std::u16string paragraph;
   if (login_url_.is_empty() ||
-      login_url_.spec() == captive_portal::CaptivePortalDetector::kDefaultURL) {
+      login_url_.spec() ==
+          captive_portal::CaptivePortalDetector::GetDefaultUrl()) {
     // Don't show the login url when it's empty or is the portal detection URL.
     // login_url_ can be empty when:
     // - The captive portal intercepted requests without HTTP redirects, in
