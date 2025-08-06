@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "components/page_load_metrics/common/page_load_metrics_debug_string.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,8 +88,12 @@ void FakePageTimingSender::PageTimingValidator::
             *expected_soft_navigation_metrics_.at(i))) {
       continue;
     }
-    ADD_FAILURE() << "Observed soft navigation metric != expected one at index "
-                  << i;
+    ADD_FAILURE() << "Actual soft navigation metric != expected at index "
+                  << i << "\n"
+                  << "Actual: "
+                  << DebugString(*actual_soft_navigation_metrics_.at(i))
+                  << "\nExpected: "
+                  << DebugString(*expected_soft_navigation_metrics_.at(i));
   }
 }
 

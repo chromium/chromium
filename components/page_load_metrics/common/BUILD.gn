@@ -10,6 +10,8 @@ source_set("common") {
     "page_end_reason.h",
     "page_load_metrics_util.cc",
     "page_load_metrics_util.h",
+    "page_load_metrics_debug_string.cc",
+    "page_load_metrics_debug_string.h",
     "page_load_timing.cc",
     "page_load_timing.h",
     "page_visit_final_status.h",
