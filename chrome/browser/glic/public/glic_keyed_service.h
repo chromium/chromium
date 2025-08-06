@@ -173,7 +173,8 @@ class GlicKeyedService : public KeyedService {
                       mojom::WebClientHandler::PerformActionsCallback callback);
 
   void StopActorTask(actor::TaskId task_id);
-  void PauseActorTask(actor::TaskId task_id);
+  void PauseActorTask(actor::TaskId task_id,
+                      mojom::ActorTaskPauseReason pause_reason);
   void ResumeActorTask(
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& context_options,

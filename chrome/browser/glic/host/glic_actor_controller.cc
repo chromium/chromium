@@ -52,12 +52,20 @@ void GlicActorController::StopTask(actor::TaskId task_id) {
   actor::ActorKeyedService::Get(profile_.get())->StopTask(task->id());
 }
 
-void GlicActorController::PauseTask(actor::TaskId task_id) {
+void GlicActorController::PauseTask(actor::TaskId task_id,
+                                    mojom::ActorTaskPauseReason pause_reason) {
   actor::ActorTask* task = GetCurrentTask();
   if (!task) {
     return;
   }
-  task->Pause(/*from_actor=*/true);
+  switch (pause_reason) {
+    case mojom::ActorTaskPauseReason::kPausedByModel:
+      task->Pause(/*from_actor=*/true);
+      break;
+    case mojom::ActorTaskPauseReason::kPausedByUser:
+      task->Pause(/*from_actor=*/false);
+      break;
+  }
 }
 
 void GlicActorController::ResumeTask(

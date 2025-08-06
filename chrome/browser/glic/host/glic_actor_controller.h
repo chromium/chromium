@@ -32,7 +32,8 @@ class GlicActorController {
   ~GlicActorController();
 
   void StopTask(actor::TaskId task_id);
-  void PauseTask(actor::TaskId task_id);
+  void PauseTask(actor::TaskId task_id,
+                 mojom::ActorTaskPauseReason pause_reason);
   void ResumeTask(
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& context_options,

@@ -255,10 +255,12 @@ export declare interface GlicBrowserHost {
    * canceled and the associated Promises are rejected.
    *
    * If the task ID is 0, the most recent task is paused.
+   * If the pauseReason is not provided, it uses the default value
+   * ActorTaskPauseReason.PAUSED_BY_MODEL.
    *
    * @todo Require callers to provide a valid ID.
    */
-  pauseActorTask?(taskId: number): void;
+  pauseActorTask?(taskId: number, pauseReason?: ActorTaskPauseReason): void;
 
   /**
    * Resumes a previously paused actor task with the given ID.
@@ -1274,6 +1276,14 @@ export enum ActorTaskState {
   STOPPED = 4,
 }
 
+/* The reason/source of why a actor task was paused. */
+export enum ActorTaskPauseReason {
+  /* Actor task was paused by the model. */
+  PAUSED_BY_MODEL = 0,
+  /* Actor task was puased by the user. */
+  PAUSED_BY_USER = 1,
+}
+
 export enum PerformActionsErrorReason {
   UNKNOWN = 0,
 
@@ -1716,4 +1726,5 @@ export interface ExtensibleEnums {
   settingsPageField: typeof SettingsPageField;
   hostCapability: typeof HostCapability;
   actorTaskState: typeof ActorTaskState;
+  actorTaskPauseReason: typeof ActorTaskPauseReason;
 }

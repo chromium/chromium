@@ -169,6 +169,14 @@ enum ActorTaskState {
   kStopped = 4,
 };
 
+// The reason/source of why an actor task was paused.
+// This MUST be kept in sync with the glic_api.ts enum.
+[Stable, Extensible]
+enum ActorTaskPauseReason {
+  [Default] kPausedByModel = 0,
+  kPausedByUser = 1,
+};
+
 // Reason why capturing desktop screenshot failed. This MUST be kept in sync
 // with the glic_api.ts enum.
 [Stable, Extensible]
@@ -545,12 +553,13 @@ interface WebClientHandler {
   StopActorTask(int32 task_id);
 
   // Pauses the task associated with the given id. Any restrictions on the tab
-  // which would prevent user interaction with it are lifted. ResumeActorTask
+  // which would prevent user interaction with it are lifted. The pause_reason
+  // indicates the reason for why the pause was initiated. ResumeActorTask
   // restores these restrictions, and allows for further actions. Any in flight
   // actions are canceled and their callbacks will be (asynchronously) invoked.
   // No-op if a task with the given id does not exist. An id of 0 refers to the
   // most recent task.
-  PauseActorTask(int32 task_id);
+  PauseActorTask(int32 task_id, ActorTaskPauseReason pause_reason);
 
   // Resumes a paused task associated with the given id, allowing for further
   // actions. Any restrictions on the tab lifted by PauseActorTask are

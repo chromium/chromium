@@ -462,10 +462,12 @@ void GlicKeyedService::StopActorTask(actor::TaskId task_id) {
   actor_controller_->StopTask(task_id);
 }
 
-void GlicKeyedService::PauseActorTask(actor::TaskId task_id) {
+void GlicKeyedService::PauseActorTask(
+    actor::TaskId task_id,
+    mojom::ActorTaskPauseReason pause_reason) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(actor_controller_);
-  actor_controller_->PauseTask(task_id);
+  actor_controller_->PauseTask(task_id, pause_reason);
 }
 
 void GlicKeyedService::ResumeActorTask(

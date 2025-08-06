@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
-import {ActorTaskState} from '../glic_api/glic_api.js';
+import {ActorTaskPauseReason, ActorTaskState} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -467,8 +467,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserStopActorTask', {taskId: taskId ?? 0});
   }
 
-  pauseActorTask?(taskId: number): void {
-    this.sender.requestNoResponse('glicBrowserPauseActorTask', {taskId});
+  pauseActorTask?(taskId: number, pauseReason?: ActorTaskPauseReason): void {
+    this.sender.requestNoResponse('glicBrowserPauseActorTask', {
+      taskId,
+      pauseReason: pauseReason ?? ActorTaskPauseReason.PAUSED_BY_MODEL,
+    });
   }
 
   async resumeActorTask?(taskId: number, tabContextOptions: TabContextOptions):
