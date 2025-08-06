@@ -59,4 +59,6 @@ public interface ProfileBoundaryInterface {
     void clearOriginMatchedHeader(String headerName);
 
     void clearAllOriginMatchedHeaders();
+
+    void preconnect(String url);
 }
