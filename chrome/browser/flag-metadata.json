@@ -3537,11 +3537,6 @@
     "expiry_milestone": 145
   },
   {
-      "name": "enable-fontations-backend",
-      "owners": [ "drott@chromium.org", "layout-dev@chromium.org" ],
-      "expiry_milestone": 136
-  },
-  {
     "name": "enable-force-dark",
     "owners": [ "beverloo@chromium.org", "pdr@chromium.org" ],
     // This flag enables an automatic dark mode for sites that do not support
