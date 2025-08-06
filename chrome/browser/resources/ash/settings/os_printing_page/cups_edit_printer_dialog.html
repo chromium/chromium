@@ -150,7 +150,7 @@
         <cr-input class="browse-file-input" readonly input-tabindex="-1"
             value="[[userPPD_]]" aria-labelledby="ppdLabel"
             error-message="$i18n{selectDriverErrorMessage}"
-            invalid="[[invalidPPD_]]">
+            invalid="[[invalidPPD_]]" id="printerPPD">
         </cr-input>
         <cr-button class="browse-button" on-click="onBrowseFile_"
             disabled="[[!isOnline_]]"

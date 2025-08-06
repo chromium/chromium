@@ -366,9 +366,11 @@ suite('CupsSavedPrintersTests', () => {
   test('ReconfigureSavedPrinter', async () => {
     const expectedName = 'edited name';
     const expectedAddress = '1.1.1.1';
+    const ppdUrl = 'file:///foo/bar/bazppd';
+    const ppdFileName = 'bazppd';
 
     createCupsPrinterPage([
-      createCupsPrinterInfo('google', '4', 'id4'),
+      createCupsPrinterInfo('google', '4', 'id4', false, ppdUrl),
       createCupsPrinterInfo('test1', '1', 'id1'),
       createCupsPrinterInfo('test2', '2', 'id2'),
     ]);
@@ -413,6 +415,14 @@ suite('CupsSavedPrintersTests', () => {
     const parentElement = managedPrinterPPD.parentElement;
     assertTrue(!!parentElement);
     assertTrue(parentElement.hidden);
+
+    // Regular printer PPD textbox should be visible.
+    const printerPPD =
+        editDialog.shadowRoot!.querySelector<CrInputElement>('#printerPPD');
+    assertTrue(!!printerPPD);
+    assertFalse(printerPPD.hidden);
+    // Local PPD file should display only the file name.
+    assertEquals(ppdFileName, printerPPD.value);
 
     const cancelButton =
         editDialog.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -1632,8 +1642,9 @@ suite('CupsEnterprisePrintersTests', () => {
 
   // Verifies that enterprise printers are not editable.
   test('EnterprisePrinterDialog', async () => {
+    const ppdUrl = 'https://foo.bar.baz/ppd';
     createCupsPrinterPage([
-      createCupsPrinterInfo('test1', '1', 'id1', true, '/foo/bar/bazppd'),
+      createCupsPrinterInfo('test1', '1', 'id1', true, ppdUrl),
     ]);
     await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
     // Wait for enterprise printers to populate.
@@ -1703,7 +1714,8 @@ suite('CupsEnterprisePrintersTests', () => {
             '#managedPrinterPPD');
     assertTrue(!!managedPrinterPPD);
     assertFalse(managedPrinterPPD.hidden);
-    assertEquals('bazppd', managedPrinterPPD.value);
+    // Remote PPD file should display the full URL.
+    assertEquals(ppdUrl, managedPrinterPPD.value);
 
     // View printer PPD button should be visible. Help text should be hidden.
     const ppdLabel =
