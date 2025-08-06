@@ -1137,22 +1137,27 @@
     {
         "name": "arcore",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "runtime",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
+    },
+    {
+        "name": "runtime-manifest",
+        "group": "androidx.xr.runtime",
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "runtime-openxr",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "scenecore",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha04"
+        "version": "1.0.0-alpha05"
     },
     {
         "name": "lottie",
@@ -1342,7 +1347,7 @@
     {
         "name": "impress",
         "group": "com.google.ar",
-        "version": "0.0.3"
+        "version": "0.0.4"
     },
     {
         "name": "auto-service-annotations",
@@ -1565,11 +1570,6 @@
         "version": "2.2.6"
     },
     {
-        "name": "rxjava",
-        "group": "io.reactivex.rxjava3",
-        "version": "3.0.2"
-    },
-    {
         "name": "javax.annotation-api",
         "group": "javax.annotation",
         "version": "1.3.2"
@@ -1723,16 +1723,6 @@
         "name": "kotlinx-coroutines-play-services",
         "group": "org.jetbrains.kotlinx",
         "version": "1.9.0"
-    },
-    {
-        "name": "kotlinx-coroutines-reactive",
-        "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
-    },
-    {
-        "name": "kotlinx-coroutines-rx3",
-        "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
     },
     {
         "name": "kotlinx-coroutines-test",
