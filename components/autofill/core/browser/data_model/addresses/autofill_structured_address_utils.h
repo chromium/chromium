@@ -275,7 +275,7 @@ bool AreStringTokenCompatible(const std::u16string& first,
 // Returns a sorted vector containing the tokens of |value| after |value| was
 // canonicalized. |value| is tokenized by splitting it by white spaces and
 // commas.
-std::vector<AddressToken> TokenizeValue(const std::u16string value);
+std::vector<AddressToken> TokenizeValue(std::u16string_view value);
 
 // Compares two vectors of sorted AddressTokens and returns the
 // SortedTokenComparisonResult;

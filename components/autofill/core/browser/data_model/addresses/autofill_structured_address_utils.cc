@@ -408,7 +408,7 @@ bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
          SortedTokenComparisonStatus::kMatch;
 }
 
-std::vector<AddressToken> TokenizeValue(const std::u16string value) {
+std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
   std::vector<AddressToken> tokens;
   int index = 0;
 
@@ -422,7 +422,7 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
         SplitByRegex(value, **regex, value.size());
     if (!parts.has_value()) {
       return {AddressToken{
-          .value = value,
+          .value = std::u16string(value),
           .normalized_value =
               AutofillProfileComparator::NormalizeForComparison(value),
           .position = 0}};
