@@ -647,6 +647,18 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return data_[plane];
   }
 
+  std::optional<base::span<uint8_t>> writable_span(size_t plane) {
+    if (storage_type_ == STORAGE_SHMEM ||
+        storage_type_ == STORAGE_UNOWNED_MEMORY) {
+      return std::nullopt;
+    }
+    auto const_span = data_span(plane);
+    // SAFETY: We take data() and size() from another span, which supposedly
+    // refers to a valid range in memory.
+    return UNSAFE_BUFFERS(
+        base::span(const_cast<uint8_t*>(const_span.data()), const_span.size()));
+  }
+
   uint8_t* writable_data(size_t plane) {
     // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
     // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.

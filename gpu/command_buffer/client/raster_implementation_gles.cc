@@ -284,7 +284,7 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
     const gfx::Point& source_starting_point,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
-    unsigned char* out,
+    base::span<uint8_t> out,
     base::OnceCallback<void(bool)> readback_done) {
   DCHECK(!readback_done.is_null());
   DCHECK(dst_info.colorType() == kRGBA_8888_SkColorType ||
@@ -346,11 +346,11 @@ void RasterImplementationGLES::ReadbackYUVPixelsAsync(
     const gfx::Rect& output_rect,
     bool vertically_flip_texture,
     int y_plane_row_stride_bytes,
-    unsigned char* y_plane_data,
+    base::span<uint8_t> y_plane_data,
     int u_plane_row_stride_bytes,
-    unsigned char* u_plane_data,
+    base::span<uint8_t> u_plane_data,
     int v_plane_row_stride_bytes,
-    unsigned char* v_plane_data,
+    base::span<uint8_t> v_plane_data,
     const gfx::Point& paste_location,
     base::OnceCallback<void()> release_mailbox,
     base::OnceCallback<void(bool)> readback_done) {

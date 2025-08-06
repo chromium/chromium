@@ -1657,7 +1657,7 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
     const gfx::Point& source_starting_point,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
-    unsigned char* out,
+    base::span<uint8_t> out,
     base::OnceCallback<void(bool)> readback_done) {
   TRACE_EVENT0("gpu", "RasterImplementation::ReadbackARGBPixelsAsync");
   DCHECK(!!readback_done);
@@ -1674,7 +1674,7 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
   ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes,
                               source_starting_point.x(),
                               source_starting_point.y(), /*plane_index=*/0,
-                              std::move(readback_done), out);
+                              std::move(readback_done), out.data());
 }
 
 bool RasterImplementation::ReadbackImagePixels(
@@ -1699,11 +1699,11 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
     const gfx::Rect& output_rect,
     bool vertically_flip_texture,
     int y_plane_row_stride_bytes,
-    unsigned char* y_plane_data,
+    base::span<uint8_t> y_plane_data,
     int u_plane_row_stride_bytes,
-    unsigned char* u_plane_data,
+    base::span<uint8_t> u_plane_data,
     int v_plane_row_stride_bytes,
-    unsigned char* v_plane_data,
+    base::span<uint8_t> v_plane_data,
     const gfx::Point& paste_location,
     base::OnceCallback<void()> release_mailbox,
     base::OnceCallback<void(bool)> readback_done) {
@@ -1783,11 +1783,11 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
   EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
 
   auto request = std::make_unique<AsyncYUVReadbackRequest>(
-      output_rect, query, y_plane_row_stride_bytes, y_offset, y_plane_data,
-      u_plane_row_stride_bytes, u_offset, u_plane_data,
-      v_plane_row_stride_bytes, v_offset, v_plane_data,
-      std::move(scoped_shared_memory), std::move(release_mailbox),
-      std::move(readback_done));
+      output_rect, query, y_plane_row_stride_bytes, y_offset,
+      y_plane_data.data(), u_plane_row_stride_bytes, u_offset,
+      u_plane_data.data(), v_plane_row_stride_bytes, v_offset,
+      v_plane_data.data(), std::move(scoped_shared_memory),
+      std::move(release_mailbox), std::move(readback_done));
   auto* request_ptr = request.get();
   yuv_request_queue_.push(std::move(request));
   SignalQuery(query,

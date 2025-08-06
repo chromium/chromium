@@ -122,18 +122,19 @@ class RasterInterface : public InterfaceBase {
       const gfx::ColorSpace& target_color_space,
       bool needs_mips) = 0;
 
-  // Starts an asynchronous readback of |source_mailbox| into caller-owned
-  // memory |out|.
-  // |dst_row_bytes| is a per row stride expected in the |out| buffer.
+  // Starts an asynchronous readback of `source_mailbox` into caller-owned
+  // memory represented by `out`.
+  // `dst_row_bytes` is a per row stride expected in the `out` buffer.
   // |source_origin| specifies texture coordinate directions, but
-  // pixels in |out| laid out with top-left origin.
+  // pixels in `out` are laid out with top-left origin.
   // Currently supports the kRGBA_8888_SkColorType and
   // kBGRA_8888_SkColorType color types.
-  // |out| must remain valid  until |readback_done| is called with
-  // a bool indicating if the readback was successful.
-  // |source_size| describes dimensions of the |source_mailbox| texture.
-  // |dst_info| |source_starting_point| describe subregion that needs to be read
-  // On success |out| will contain the pixel data copied back from the GPU
+  // The memory backing `out` must remain valid until `readback_done` is called
+  // with a bool indicating if the readback was successful.
+  // `source_size` describes dimensions of the `source_mailbox` texture.
+  // `dst_info` and `source_starting_point` describe the subregion that needs
+  // to be read.
+  // On success, `out` will contain the pixel data copied back from the GPU
   // process.
   virtual void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
@@ -143,17 +144,17 @@ class RasterInterface : public InterfaceBase {
       const gfx::Point& source_starting_point,
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,
-      unsigned char* out,
+      base::span<uint8_t> out,
       base::OnceCallback<void(bool)> readback_done) = 0;
 
-  // Starts an asynchronus readback and translation of RGBA |source_mailbox|
-  // into caller-owned |[yuv]_plane_data|. All provided pointers must remain
-  // valid until |readback_done| is called with a bool indicating if readback
-  // was successful. On success the provided memory will contain pixel data in
-  // I420 format copied from |source_mailbox| in the GPU process.
-  // |release_mailbox| is called when all operations requiring a valid mailbox
-  // have completed, indicating that the caller can perform any necessary
-  // cleanup.
+  // Starts an asynchronous readback and translation of RGBA `source_mailbox`
+  // into caller-owned memory represented by `[yuv]_plane_data`. The memory
+  // backing these spans must remain valid until `readback_done` is called with
+  // a bool indicating if readback was successful. On success, the provided
+  // spans will contain pixel data in I420 format copied from `source_mailbox`
+  // in the GPU process. `release_mailbox` is called when all operations
+  // requiring a valid mailbox have completed, indicating that the caller can
+  // perform any necessary cleanup.
   virtual void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
@@ -161,11 +162,11 @@ class RasterInterface : public InterfaceBase {
       const gfx::Rect& output_rect,
       bool vertically_flip_texture,
       int y_plane_row_stride_bytes,
-      unsigned char* y_plane_data,
+      base::span<uint8_t> y_plane_data,
       int u_plane_row_stride_bytes,
-      unsigned char* u_plane_data,
+      base::span<uint8_t> u_plane_data,
       int v_plane_row_stride_bytes,
-      unsigned char* v_plane_data,
+      base::span<uint8_t> v_plane_data,
       const gfx::Point& paste_location,
       base::OnceCallback<void()> release_mailbox,
       base::OnceCallback<void(bool)> readback_done) = 0;

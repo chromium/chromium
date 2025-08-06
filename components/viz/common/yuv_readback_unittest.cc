@@ -365,15 +365,24 @@ class YUVReadbackTest : public testing::Test {
     auto run_quit_closure = [](base::OnceClosure quit_closure, bool result) {
       std::move(quit_closure).Run();
     };
+    std::optional<base::span<uint8_t>> maybe_span_y =
+        output_frame->writable_span(media::VideoFrame::Plane::kY);
+    ASSERT_TRUE(maybe_span_y);
+    std::optional<base::span<uint8_t>> maybe_span_u =
+        output_frame->writable_span(media::VideoFrame::Plane::kU);
+    ASSERT_TRUE(maybe_span_u);
+    std::optional<base::span<uint8_t>> maybe_span_v =
+        output_frame->writable_span(media::VideoFrame::Plane::kV);
+    ASSERT_TRUE(maybe_span_v);
+
     yuv_reader->ReadbackYUV(
         src_texture, gfx::Size(xsize, ysize), gfx::Rect(0, 0, xsize, ysize),
         output_frame->stride(media::VideoFrame::Plane::kY),
-        output_frame->writable_data(media::VideoFrame::Plane::kY),
+        maybe_span_y.value(),
         output_frame->stride(media::VideoFrame::Plane::kU),
-        output_frame->writable_data(media::VideoFrame::Plane::kU),
+        maybe_span_u.value(),
         output_frame->stride(media::VideoFrame::Plane::kV),
-        output_frame->writable_data(media::VideoFrame::Plane::kV),
-        gfx::Point(xmargin, ymargin),
+        maybe_span_v.value(), gfx::Point(xmargin, ymargin),
         base::BindOnce(run_quit_closure, run_loop.QuitClosure()));
 
     const gfx::Rect paste_rect(gfx::Point(xmargin, ymargin),

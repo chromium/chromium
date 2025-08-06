@@ -195,8 +195,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       "media", "ReadbackRGBTextureBackedFrameToMemory", txt_frame.get(),
       "timestamp", txt_frame->timestamp());
 
-  uint8_t* dst_pixels =
-      result->GetWritableVisibleData(media::VideoFrame::Plane::kARGB);
+  base::span<uint8_t> dst_pixels =
+      result->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kARGB);
   int rgba_stide = result->stride(media::VideoFrame::Plane::kARGB);
   DCHECK_GT(rgba_stide, 0);
 
@@ -261,7 +261,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
   uint32_t offset = dest_layout.Offset(0);
   uint32_t stride = dest_layout.Stride(0);
 
-  uint8_t* dst_pixels = dest_buffer.subspan(offset).data();
+  base::span<uint8_t> dst_pixels = dest_buffer.subspan(offset);
   size_t max_bytes_written = stride * src_rect.height();
   if (stride <= 0 || max_bytes_written > dest_buffer.size()) {
     DLOG(ERROR) << "Buffer is not sufficiently large for readback";

@@ -153,9 +153,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT GLHelper {
     SCALER_QUALITY_BEST = 3,
   };
 
-  // Copies the texture data out of |texture| into |out|.
-  // |src_starting_point| an origin point of the rectangle fragment of the
-  // texture to copy, |dst_size| - size of the rectangle to copy.
+  // Copies the texture data out of `texture` into the caller-owned memory
+  // represented by `out`.
+  // `src_starting_point` an origin point of the rectangle fragment of the
+  // texture to copy, `dst_size` - size of the rectangle to copy.
   // No post processing is applied to the pixels.  The
   // texture is assumed to have a format of GL_RGBA or GL_BGRA_EXT with a pixel
   // type of GL_UNSIGNED_BYTE.
@@ -166,7 +167,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT GLHelper {
                             GLenum texture_target,
                             const gfx::Point& src_starting_point,
                             const gfx::Size& dst_size,
-                            unsigned char* out,
+                            base::span<uint8_t> out,
                             size_t row_stride_bytes,
                             bool flip_y,
                             GLenum format,
@@ -444,25 +445,25 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ReadbackYUVInterface {
 
   // Transforms a RGBA texture into I420 planar form, and then reads it back
   // from the GPU into system memory. See the GLHelper::ScalerInterface::Scale()
-  // method comments for the meaning/semantics of |src_texture_size| and
-  // |output_rect|. The process is:
+  // method comments for the meaning/semantics of `src_texture_size` and
+  // `output_rect`. The process is:
   //
   //   1. Scale the source texture to an intermediate texture.
   //   2. Planarize, producing textures containing the Y, U, and V planes.
   //   3. Read-back the planar data, copying it into the given output
-  //      destination. |paste_location| specifies the where to place the output
+  //      destination. `paste_location` specifies the where to place the output
   //      pixels: Rect(paste_location.origin(), output_rect.size()).
-  //   4. Run |callback| with true on success, false on failure (with no output
+  //   4. Run `callback` with true on success, false on failure (with no output
   //      modified).
   virtual void ReadbackYUV(GLuint texture,
                            const gfx::Size& src_texture_size,
                            const gfx::Rect& output_rect,
                            int y_plane_row_stride_bytes,
-                           unsigned char* y_plane_data,
+                           base::span<uint8_t> y_plane_data,
                            int u_plane_row_stride_bytes,
-                           unsigned char* u_plane_data,
+                           base::span<uint8_t> u_plane_data,
                            int v_plane_row_stride_bytes,
-                           unsigned char* v_plane_data,
+                           base::span<uint8_t> v_plane_data,
                            const gfx::Point& paste_location,
                            base::OnceCallback<void(bool)> callback) = 0;
 };
