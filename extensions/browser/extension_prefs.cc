@@ -103,9 +103,7 @@ constexpr const char kPrefExternalAcknowledged[] = "ack_external";
 // run of this profile.
 constexpr const char kPrefExternalInstallFirstRun[] = "external_first_run";
 
-// A list of all the reasons an extension is disabled. This used to be a
-// bitflag, but `MaybeMigrateDisableReasonsBitflagToList()` will convert it to a
-// list if it's still a bitflag.
+// A list of all the reasons an extension is disabled.
 constexpr const char kPrefDisableReasons[] = "disable_reasons";
 
 // The key for a serialized Time value indicating the start of the day (from the
@@ -246,17 +244,6 @@ bool CheckPrefType(PrefType pref_type, const base::Value* value) {
     case kList:
       return value->is_list();
   }
-}
-
-base::Value::List BitflagToList(int bit_flag) {
-  base::Value::List list;
-  for (int i = 0; i < 32; ++i) {
-    int val = (1 << i);
-    if (bit_flag & val) {
-      list.Append(val);
-    }
-  }
-  return list;
 }
 
 // Converts a set of integers to a set of disable reasons. Unknown reasons are
@@ -2218,10 +2205,6 @@ ExtensionPrefs::ExtensionPrefs(
 
   MigrateDeprecatedDisableReasons();
 
-  MaybeMigrateDisableReasonsBitflagToList();
-
-  MaybeClearExtensionStatePref();
-
 #if BUILDFLAG(IS_CHROMEOS)
   ApplyPendingUpdates();
 #endif
@@ -2624,70 +2607,6 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
   }
 }
 
-void ExtensionPrefs::MaybeMigrateDisableReasonsBitflagToList() {
-  const ExtensionsInfo extensions_info = GetInstalledExtensionsInfo();
-
-  for (const ExtensionInfo& info : extensions_info) {
-    const ExtensionId& extension_id = info.extension_id;
-
-    // We try to get the disable reasons as an integer. If it succeeds, it means
-    // that the bitflag to list migration has not been done yet.
-    int disable_reasons = -1;
-    if (!ReadPrefAsInteger(extension_id, kPrefDisableReasons,
-                           &disable_reasons)) {
-      // Either the migration is complete, or there are no disable reasons.
-      // Nothing to migrate in both the cases.
-      continue;
-    }
-
-    ScopedExtensionPrefUpdate update(prefs_, extension_id);
-
-    if (disable_reasons == disable_reason::DISABLE_NONE) {
-      // Ideally, this shouldn't happen as we always clear the preference when
-      // all disable reasons are removed. If we still reach here, we should
-      // clear the preference.
-      update->Remove(kPrefDisableReasons);
-      continue;
-    }
-
-    base::Value::List disable_reasons_list = BitflagToList(disable_reasons);
-    update->Set(kPrefDisableReasons,
-                base::Value(std::move(disable_reasons_list)));
-  }
-}
-
-void ExtensionPrefs::MaybeClearExtensionStatePref() {
-  constexpr const char kDeprecatedPrefState[] = "state";
-  const ExtensionsInfo extensions_info = GetInstalledExtensionsInfo();
-
-  for (const ExtensionInfo& info : extensions_info) {
-    const ExtensionId& extension_id = info.extension_id;
-    ScopedExtensionPrefUpdate update(prefs_, extension_id);
-    int state = -1;
-
-    if (!ReadPrefAsInteger(extension_id, kDeprecatedPrefState, &state)) {
-      // We have already cleaned up. Nothing to do.
-      continue;
-    }
-
-    update->Remove(kDeprecatedPrefState);
-
-    // If the state said that the extension was disabled but the disable reasons
-    // are empty, add DISABLE_USER_ACTION to the disable reasons. This will
-    // prevent any surprise re-enabling of the extension.
-    base::flat_set<int> disable_reasons =
-        ReadDisableReasonsFromPrefs(extension_id);
-
-    // state = 0 corresponded to State::DISABLED.
-    if (disable_reasons.empty() && state == 0) {
-      base::Value::List disable_reasons_list;
-      disable_reasons_list.Append(disable_reason::DISABLE_USER_ACTION);
-      update->Set(kPrefDisableReasons,
-                  base::Value(std::move(disable_reasons_list)));
-    }
-  }
-}
-
 void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
   const base::Value::Dict& extensions_dictionary =
       prefs_->GetDict(pref_names::kExtensions);
@@ -2698,9 +2617,8 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       // Permanent testing-only key.
       kFakeObsoletePrefForTesting,
 
-      // Added 2023-11.
-      "ack_proxy_bubble",
-      "ack_wiped",
+      // Added 2025-08.
+      "state",
   };
 
   for (auto key_value : extensions_dictionary) {

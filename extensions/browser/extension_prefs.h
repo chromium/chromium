@@ -738,16 +738,6 @@ class ExtensionPrefs : public KeyedService {
   // TODO(archanasimha): Remove this around M89.
   void MigrateDeprecatedDisableReasons();
 
-  // Performs a one-time migration of the legacy disable reasons bitflag to a
-  // list of disable reasons.
-  // TODO(crbug.com/372186532): Remove this around M140.
-  void MaybeMigrateDisableReasonsBitflagToList();
-
-  // Performs a one-time cleanup of the extension's "state" pref. Also adds a
-  // disable reason if the pref disagrees with the list of disable reasons.
-  // TODO(crbug.com/40554334): Remove this around M140.
-  void MaybeClearExtensionStatePref();
-
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the
