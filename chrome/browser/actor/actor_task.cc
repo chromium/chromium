@@ -54,10 +54,12 @@ void ActorTask::SetState(State state) {
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>>
       allowed_transitions(base::StateTransitions<State>({
-          {kCreated, {kActing, kReflecting, kPausedByClient, kFinished}},
-          {kActing, {kReflecting, kPausedByClient, kFinished}},
-          {kReflecting, {kActing, kPausedByClient, kFinished}},
-          {kPausedByClient, {kActing, kReflecting, kFinished}},
+          {kCreated,
+           {kActing, kReflecting, kPausedByActor, kPausedByUser, kFinished}},
+          {kActing, {kReflecting, kPausedByActor, kPausedByUser, kFinished}},
+          {kReflecting, {kActing, kPausedByActor, kPausedByUser, kFinished}},
+          {kPausedByActor, {kActing, kReflecting, kFinished}},
+          {kPausedByUser, {kActing, kReflecting, kFinished}},
           {kFinished, {}},
       }));
   if (state != state_) {
@@ -76,7 +78,7 @@ void ActorTask::SetState(State state) {
 
 void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                     ActCallback callback) {
-  if (state_ == State::kPausedByClient) {
+  if (state_ == State::kPausedByActor) {
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
                             std::nullopt);
     return;
@@ -118,7 +120,7 @@ void ActorTask::Stop() {
   SetState(State::kFinished);
 }
 
-void ActorTask::Pause() {
+void ActorTask::Pause(bool from_actor) {
   if (GetState() == State::kFinished) {
     return;
   }
@@ -126,7 +128,11 @@ void ActorTask::Pause() {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskPaused);
   }
-  SetState(State::kPausedByClient);
+  if (from_actor) {
+    SetState(State::kPausedByActor);
+  } else {
+    SetState(State::kPausedByUser);
+  }
 }
 
 void ActorTask::Resume() {
@@ -136,7 +142,8 @@ void ActorTask::Resume() {
 }
 
 bool ActorTask::IsPaused() const {
-  return GetState() == State::kPausedByClient;
+  return (GetState() == State::kPausedByActor) ||
+         (GetState() == State::kPausedByUser);
 }
 
 base::Time ActorTask::GetEndTime() const {
@@ -211,8 +218,10 @@ std::string ToString(const ActorTask::State& state) {
       return "Acting";
     case kReflecting:
       return "Reflecting";
-    case kPausedByClient:
-      return "PausedByClient";
+    case kPausedByActor:
+      return "PausedByActor";
+    case kPausedByUser:
+      return "PausedByUser";
     case kFinished:
       return "Finished";
   }

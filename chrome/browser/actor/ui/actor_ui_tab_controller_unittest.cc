@@ -153,7 +153,7 @@ class ActorUiTabControllerTest : public testing::Test {
 TEST_F(ActorUiTabControllerTest, SetActorTaskStatePaused_SetsStateCorrectly) {
   tab_controller()->SetActorTaskPaused();
   EXPECT_EQ(actor_keyed_service()->GetTask(task_id())->GetState(),
-            ActorTask::State::kPausedByClient);
+            ActorTask::State::kPausedByUser);
 }
 
 TEST_F(ActorUiTabControllerTest, SetActorTaskStateResume_SetsStateCorrectly) {

@@ -56,7 +56,8 @@ class ActorTask {
     kCreated,
     kActing,
     kReflecting,
-    kPausedByClient,
+    kPausedByActor,
+    kPausedByUser,
     kFinished
   };
 
@@ -71,9 +72,10 @@ class ActorTask {
   // Sets State to kFinished and cancels any pending actions.
   void Stop();
 
-  // Pause() is called to indicate that the user is pausing server-driven
-  // actuation. This will cancel any ongoing actuation.
-  void Pause();
+  // Pause() is called to indicate that either the actor or user is pausing
+  // server-driven actuation determined by the `from_actor` flag. This will
+  // cancel any ongoing actuation.
+  void Pause(bool from_actor);
 
   // Resume() indicates the user wants server-driven actuation to resume. The
   // caller is responsible for sending new state to the server (e.g. APC).

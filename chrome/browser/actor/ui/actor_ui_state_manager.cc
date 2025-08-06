@@ -134,7 +134,8 @@ void ActorUiStateManager::OnActorTaskStateChange(
     case ActorTask::State::kReflecting:
       ui_tab_state = GetActorControlledUiTabState();
       break;
-    case ActorTask::State::kPausedByClient:
+    case ActorTask::State::kPausedByUser:
+    case ActorTask::State::kPausedByActor:
       ui_tab_state = GetPausedUiTabState();
       break;
     case ActorTask::State::kFinished:
@@ -298,14 +299,13 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
 
 void ActorUiStateManager::MaybeUpdateProfileScopedUiState() {
   const auto& active_tasks = actor_service_->GetActiveTasks();
-  const bool has_paused_task = std::any_of(
+  const bool has_actor_paused_task = std::any_of(
       active_tasks.begin(), active_tasks.end(), [](const auto& task_pair) {
-        return task_pair.second->GetState() ==
-               ActorTask::State::kPausedByClient;
+        return task_pair.second->GetState() == ActorTask::State::kPausedByActor;
       });
 
   UiState new_state;
-  if (has_paused_task) {
+  if (has_actor_paused_task) {
     new_state = ActorUiStateManager::UiState::kCheckTasks;
   } else if (!GetCompletedTasks(base::Time::Now()).empty()) {
     new_state = ActorUiStateManager::UiState::kCompleteTasks;

@@ -57,7 +57,7 @@ void GlicActorController::PauseTask(actor::TaskId task_id) {
   if (!task) {
     return;
   }
-  task->Pause();
+  task->Pause(/*from_actor=*/true);
 }
 
 void GlicActorController::ResumeTask(
@@ -65,7 +65,7 @@ void GlicActorController::ResumeTask(
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
   actor::ActorTask* task = GetCurrentTask();
-  if (!task || task->GetState() != actor::ActorTask::State::kPausedByClient) {
+  if (!task || !task->IsPaused()) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
         std::string("task does not exist or was not paused")));
     return;

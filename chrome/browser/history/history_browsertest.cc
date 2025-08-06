@@ -1108,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, PauseTask) {
   TestNavigationUIDataObserver observer(web_contents);
 
   actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
-  actor_service->GetTask(test_actor_task_id)->Pause();
+  actor_service->GetTask(test_actor_task_id)->Pause(/*from_actor=*/true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
@@ -1140,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, PauseThenResumeTask) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
   EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer));
 
-  actor_service->GetTask(test_actor_task_id)->Pause();
+  actor_service->GetTask(test_actor_task_id)->Pause(/*from_actor=*/true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
   EXPECT_FALSE(LatestTaskIdFromNavigationData(observer));
 

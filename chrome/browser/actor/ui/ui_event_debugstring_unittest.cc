@@ -44,8 +44,8 @@ TEST_F(UiEventDebugStringTest, TaskStateChanged) {
                 TaskStateChanged(TaskId(123), ActorTask::State::kActing))),
             "TaskStateChanged[task_id=123, state=Acting]");
   EXPECT_EQ(DebugString(UiEvent(TaskStateChanged(
-                TaskId(8675), ActorTask::State::kPausedByClient))),
-            "TaskStateChanged[task_id=8675, state=PausedByClient]");
+                TaskId(8675), ActorTask::State::kPausedByActor))),
+            "TaskStateChanged[task_id=8675, state=PausedByActor]");
 }
 
 TEST_F(UiEventDebugStringTest, StartingToActOnTab) {

@@ -134,11 +134,15 @@ class ActorUiStateManagerTest : public testing::Test {
   // TODO(crbug.com/424495020): Refactor the actor_keyed_service_fake to set
   // Active/Inactive tasks correct from ActorTask states and then remove manual
   // setting of task states in the below tests.
-  void PauseActorTask(TaskId task_id) {
-    actor_keyed_service()->GetTask(task_id)->Pause();
-    TaskStateChanged pause_task_event(task_id,
-                                      ActorTask::State::kPausedByClient);
-    actor_ui_state_manager()->OnUiEvent(pause_task_event);
+  void PauseActorTask(TaskId task_id, bool from_actor) {
+    actor_keyed_service()->GetTask(task_id)->Pause(/*from_actor=*/from_actor);
+    if (from_actor) {
+      actor_ui_state_manager()->OnUiEvent(
+          TaskStateChanged(task_id, ActorTask::State::kPausedByActor));
+    } else {
+      actor_ui_state_manager()->OnUiEvent(
+          TaskStateChanged(task_id, ActorTask::State::kPausedByUser));
+    }
   }
 
   void ResumeActorTask(TaskId task_id) {
@@ -226,13 +230,25 @@ TEST_F(ActorUiStateManagerTest, SingleTask_ReturnsCorrectUiState) {
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
-  // Pause the task.
-  PauseActorTask(task_id);
+  // Pause the task, since it's paused from the actor we want to notify the
+  // user.
+  PauseActorTask(task_id, /*from_actor*/ true);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
 
   // Resume the task.
+  ResumeActorTask(task_id);
+  task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
+  EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
+            ActorUiStateManager::UiState::kActive);
+
+  // Pause the task, since it's paused from the user, we shouldn't notify.
+  PauseActorTask(task_id, /*from_actor*/ false);
+  task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
+  EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
+            ActorUiStateManager::UiState::kActive);
+
   ResumeActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
@@ -255,7 +271,7 @@ TEST_F(ActorUiStateManagerTest, SingleTask_RapidStateChanges_Debounced) {
   actor_ui_state_manager()->OnUiEvent(start_task_event);
 
   // Immediately pause and resume without waiting for the debounce delay.
-  PauseActorTask(task_id);
+  PauseActorTask(task_id, /*from_actor=*/true);
   ResumeActorTask(task_id);
 
   // The debounce delay timer has not yet fired so we should still be in the
@@ -278,7 +294,7 @@ TEST_F(ActorUiStateManagerTest, MultiTask_OneTaskPaused_ReturnsCorrectUiState) {
             ActorUiStateManager::UiState::kActive);
 
   // Pause the first task, the state should now be in kCheckTasks.
-  PauseActorTask(task_id);
+  PauseActorTask(task_id, /*from_actor=*/true);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
@@ -424,7 +440,13 @@ const auto kActorTaskTestValues =
              .handoff_button = {.is_active = true, .controller = kActor},
              .tab_indicator_visible = true,
          }},
-        {ActorTask::State::kPausedByClient,
+        {ActorTask::State::kPausedByActor,
+         UiTabState{
+             .actor_overlay = ActorOverlayState(/*is_active=*/false),
+             .handoff_button = {.is_active = true, .controller = kClient},
+             .tab_indicator_visible = false,
+         }},
+        {ActorTask::State::kPausedByUser,
          UiTabState{
              .actor_overlay = ActorOverlayState(/*is_active=*/false),
              .handoff_button = {.is_active = true, .controller = kClient},

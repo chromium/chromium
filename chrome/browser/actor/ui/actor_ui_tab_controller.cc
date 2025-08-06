@@ -210,7 +210,7 @@ void ActorUiTabController::ClearActiveTaskId() {
 
 void ActorUiTabController::SetActorTaskPaused() {
   if (auto* task = actor_keyed_service_->GetTask(active_task_id_)) {
-    task->Pause();
+    task->Pause(/*from_actor=*/false);
   }
 }
 
