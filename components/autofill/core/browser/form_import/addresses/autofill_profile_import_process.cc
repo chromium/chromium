@@ -214,8 +214,6 @@ void ProfileImportProcess::DetermineProfileImportType() {
     bool silent_updates_present = !silently_updated_profiles_.empty();
 
     if (merge_candidate_.has_value()) {
-      // TODO(crbug.com/429508491): Ensure that importing a superset of an
-      // existing Home & Work superset does not create a new profile.
       if (import_candidate_->IsHomeAndWorkProfile()) {
         import_type_ = AutofillProfileImportType::kHomeAndWorkSuperset;
       } else {
@@ -260,10 +258,12 @@ void ProfileImportProcess::DetermineProfileImportType() {
 }
 
 void ProfileImportProcess::DetermineSourceOfImportCandidate() {
-  // Even though kHomeAndWorkSuperset is a kind of new profile, it doesn't need
-  // to be handled here, since H/W is only available for users eligible to
-  // account address storage.
-  if (import_type_ != AutofillProfileImportType::kNewProfile) {
+  // kHomeAndWorkSuperset prompts use the "Update profile" UI, but store a new
+  // profile under the hood, since Home & Work is read-only. This makes sure
+  // that the profile created is an account profile, since Home & Work is only
+  // available for users eligible to account address storage.
+  if (import_type_ != AutofillProfileImportType::kNewProfile &&
+      import_type_ != AutofillProfileImportType::kHomeAndWorkSuperset) {
     return;
   }
   CHECK(import_candidate_);
@@ -302,20 +302,16 @@ void ProfileImportProcess::ApplyImport() {
   if (!confirmed_import_candidate_.has_value()) {
     return;
   }
-  const AutofillProfile& confirmed_profile = *confirmed_import_candidate_;
   // Confirming an import candidate corresponds to either a new/update profile
   // or a migration prompt.
   if (is_migration()) {
-    address_data_manager_->MigrateProfileToAccount(confirmed_profile);
+    address_data_manager_->MigrateProfileToAccount(
+        *confirmed_import_candidate_);
   } else if (is_confirmable_update()) {
-    address_data_manager_->UpdateProfile(confirmed_profile);
-  } else if (import_type() == AutofillProfileImportType::kHomeAndWorkSuperset) {
-    // Home & Work profiles can't be added, so superset profiles need to have
-    // `kAccount` record type.
-    address_data_manager_->AddProfile(
-        confirmed_import_candidate_->ConvertToAccountProfile());
+    address_data_manager_->UpdateProfile(*confirmed_import_candidate_);
   } else {
-    address_data_manager_->AddProfile(confirmed_profile);
+    // New update or Home & Work superset prompt.
+    address_data_manager_->AddProfile(*confirmed_import_candidate_);
   }
 }
 

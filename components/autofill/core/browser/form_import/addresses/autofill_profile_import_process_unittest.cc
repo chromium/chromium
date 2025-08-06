@@ -1022,15 +1022,16 @@ TEST_F(AutofillProfileImportProcessTest,
 // Tests that importing a superset of Home & Work profile results in an update
 // prompt which in fact adds a new profile with `kAccount` type.
 TEST_F(AutofillProfileImportProcessTest, ImportingHomeAndWorkProfileSuperset) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+
   AutofillProfile observed_profile = test::StandardProfile();
-  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
-  test_api(mergeable_profile)
+  AutofillProfile home_profile = test::SubsetOfStandardProfile();
+  test_api(home_profile)
       .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  address_data_manager().AddProfile(home_profile);
 
-  address_data_manager().AddProfile(mergeable_profile);
-
-  // Create the import process for the scenario that a profile that is mergeable
-  // with the observed profile already exists.
+  // Create the import process for the scenario the `observed_profile` is a
+  // superset of the existing `home_profile`.
   auto import_data = CreateProfileImportProcess(
       observed_profile, /*allow_only_silent_updates=*/false);
 
@@ -1038,21 +1039,20 @@ TEST_F(AutofillProfileImportProcessTest, ImportingHomeAndWorkProfileSuperset) {
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kHomeAndWorkSuperset);
 
-  // There should be a merge candidate that is the existing profile.
+  // There should be a merge candidate that is the `home_profile`.
   ASSERT_TRUE(import_data.merge_candidate().has_value());
-  EXPECT_EQ(import_data.merge_candidate(), mergeable_profile);
+  EXPECT_EQ(import_data.merge_candidate(), home_profile);
 
   // Simulate that the user accepts this import without edits.
   import_data.AcceptWithoutEdits();
   EXPECT_TRUE(import_data.ProfilesChanged());
 
-  // Confirm two profiles exist post-import: the original home profile and a
+  // Confirm two profiles exist post-import: the original `home_profile` and a
   // merged superset profile of type `kAccount`.
-  EXPECT_THAT(
-      ApplyImportAndGetProfiles(import_data),
-      testing::UnorderedPointwise(
-          CompareWithRecordType(),
-          {observed_profile.ConvertToAccountProfile(), mergeable_profile}));
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedPointwise(
+                  CompareWithRecordType(),
+                  {observed_profile.ConvertToAccountProfile(), home_profile}));
 }
 
 }  // namespace
