@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -80,29 +80,25 @@ class MultilingualSpellCheckTest : public testing::Test {
   TestingSpellCheckProvider* provider() { return provider_.get(); }
 
  protected:
-  void ExpectSpellCheckWordResults(const std::string& languages,
-                                   const SpellcheckTestCase* test_cases,
-                                   size_t num_test_cases) {
+  void ExpectSpellCheckWordResults(
+      const std::string& languages,
+      base::span<const SpellcheckTestCase> test_cases) {
     ReinitializeSpellCheck(languages);
 
-    for (size_t i = 0; i < num_test_cases; ++i) {
+    for (size_t i = 0; i < test_cases.size(); ++i) {
       size_t misspelling_start = 0;
       size_t misspelling_length = 0;
       static_cast<blink::WebTextCheckClient*>(provider())
-          ->CheckSpelling(blink::WebString::FromUTF16(base::WideToUTF16(
-                              UNSAFE_TODO(test_cases[i]).input)),
+          ->CheckSpelling(blink::WebString::FromUTF16(
+                              base::WideToUTF16(test_cases[i].input)),
                           misspelling_start, misspelling_length, nullptr);
 
-      UNSAFE_TODO(EXPECT_EQ(test_cases[i].expected_misspelling_start,
-                            misspelling_start))
+      EXPECT_EQ(test_cases[i].expected_misspelling_start, misspelling_start)
           << "Improper misspelling location found with the languages "
-          << languages << " when checking \""
-          << UNSAFE_TODO(test_cases[i]).input << "\".";
-      UNSAFE_TODO(EXPECT_EQ(test_cases[i].expected_misspelling_length,
-                            misspelling_length))
+          << languages << " when checking \"" << test_cases[i].input << "\".";
+      EXPECT_EQ(test_cases[i].expected_misspelling_length, misspelling_length)
           << "Improper misspelling length found with the languages "
-          << languages << " when checking \""
-          << UNSAFE_TODO(test_cases[i]).input << "\".";
+          << languages << " when checking \"" << test_cases[i].input << "\".";
     }
   }
 
@@ -158,8 +154,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
 
   do {
     std::string reordered_languages = base::JoinString(permuted_languages, ",");
-    ExpectSpellCheckWordResults(reordered_languages, kTestCases,
-                                std::size(kTestCases));
+    ExpectSpellCheckWordResults(reordered_languages, kTestCases);
   } while (std::next_permutation(permuted_languages.begin(),
                                  permuted_languages.end()));
 }
@@ -189,8 +184,9 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWordEnglishSpanish) {
       {L"sand hola sand hola sand hola", 0, 0},
       {L"hola sand hola sand hola sand", 0, 0},
       {L"hola:legs", 0, 9},
-      {L"legs:hola", 0, 9}};
-  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases, std::size(kTestCases));
+      {L"legs:hola", 0, 9},
+  };
+  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases);
 }
 
 // If there are no spellcheck languages, no text should be marked as misspelled.

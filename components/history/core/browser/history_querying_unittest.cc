@@ -7,7 +7,7 @@
 #include <array>
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -117,19 +117,18 @@ class HistoryQueryTest : public testing::Test {
   // Defined here so code can be shared for the text search and the non-text
   // seach versions.
   void TestPaging(const std::string& query_text,
-                  const int* expected_results,
-                  int results_length) {
+                  base::span<const int> expected_results) {
     ASSERT_TRUE(history_.get());
 
     QueryOptions options;
     QueryResults results;
 
     options.max_count = 1;
-    for (int i = 0; i < results_length; i++) {
+    for (size_t i = 0; i < expected_results.size(); i++) {
       SCOPED_TRACE(testing::Message() << "i = " << i);
       QueryHistory(query_text, options, &results);
       ASSERT_EQ(1U, results.size());
-      UNSAFE_TODO(EXPECT_TRUE(NthResultIs(results, 0, expected_results[i])));
+      EXPECT_TRUE(NthResultIs(results, 0, expected_results[i]));
       options.end_time = results.back().visit_time();
     }
     QueryHistory(query_text, options, &results);
@@ -138,14 +137,12 @@ class HistoryQueryTest : public testing::Test {
     // Try with a max_count > 1.
     options.max_count = 2;
     options.end_time = base::Time();
-    for (int i = 0; i < results_length / 2; i++) {
+    for (size_t i = 0; i < expected_results.size() / 2; i++) {
       SCOPED_TRACE(testing::Message() << "i = " << i);
       QueryHistory(query_text, options, &results);
       ASSERT_EQ(2U, results.size());
-      UNSAFE_TODO(
-          EXPECT_TRUE(NthResultIs(results, 0, expected_results[i * 2])));
-      UNSAFE_TODO(
-          EXPECT_TRUE(NthResultIs(results, 1, expected_results[i * 2 + 1])));
+      EXPECT_TRUE(NthResultIs(results, 0, expected_results[i * 2]));
+      EXPECT_TRUE(NthResultIs(results, 1, expected_results[i * 2 + 1]));
       options.end_time = results.back().visit_time();
     }
 
@@ -478,15 +475,15 @@ TEST_F(HistoryQueryTest, Paging) {
   // Since results are fetched 1 and 2 at a time, entry #0 and #6 will not
   // be de-duplicated.
   int expected_results[] = {4, 2, 3, 1, 7, 6, 5, 8, 9, 10, 11, 12, 13, 14, 0};
-  TestPaging(std::string(), expected_results, std::size(expected_results));
+  TestPaging(std::string(), expected_results);
 }
 
 TEST_F(HistoryQueryTest, TextSearchPaging) {
   // Since results are fetched 1 and 2 at a time, entry #0 and #6 will not
   // be de-duplicated. Entry #4 does not contain the text "title", so it
   // shouldn't appear.
-  int expected_results[] = { 2, 3, 1, 7, 6, 5 };
-  TestPaging("title", expected_results, std::size(expected_results));
+  int expected_results[] = {2, 3, 1, 7, 6, 5};
+  TestPaging("title", expected_results);
 }
 
 }  // namespace history

@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -493,12 +494,12 @@ class HistoryBackendTest : public HistoryBackendTestBase {
                                       : nullptr;
   }
 
-  void AddRedirectChain(const char* sequence[], int nav_entry_id) {
+  void AddRedirectChain(base::span<const char*> sequence, int nav_entry_id) {
     AddRedirectChainWithTransitionAndTime(
         sequence, nav_entry_id, ui::PAGE_TRANSITION_LINK, base::Time::Now());
   }
 
-  void AddRedirectChainWithTransitionAndTime(const char* sequence[],
+  void AddRedirectChainWithTransitionAndTime(base::span<const char*> sequence,
                                              int nav_entry_id,
                                              ui::PageTransition transition,
                                              base::Time time) {

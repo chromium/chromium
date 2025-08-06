@@ -9,7 +9,9 @@
 
 #include "components/qr_code_generator/bitmap_generator.h"
 
-#include "base/notreached.h"
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/qr_code_generator/dino_image.h"
@@ -54,13 +56,13 @@ SkBitmap CreateDinoBitmap() {
 
   // Helper: Copies |src_num_rows| of dino data from |src_array| to
   // canvas (obtained via closure), starting at |dest_row|.
-  auto copyPixelBitData = [&](const unsigned char* src_array, int src_num_rows,
-                              int dest_row) {
+  auto copyPixelBitData = [&](base::span<const unsigned char> src_array,
+                              int src_num_rows, int dest_row) {
     for (int row = 0; row < src_num_rows; row++) {
       int which_byte = (row * bytes_per_row);
       unsigned char mask = 0b10000000;
       for (int col = 0; col < dino_image::kDinoWidth; col++) {
-        if (*(src_array + which_byte) & mask) {
+        if (src_array[which_byte] & mask) {
           canvas.drawIRect({col, dest_row + row, col + 1, dest_row + row + 1},
                            paint);
         }

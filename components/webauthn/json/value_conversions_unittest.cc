@@ -15,6 +15,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -74,8 +76,7 @@ void PrintJava(const char* name, base::span<const uint8_t> data) {
 }
 
 std::vector<uint8_t> ToByteVector(std::string_view in) {
-  const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
-  return std::vector<uint8_t>(in_ptr, in_ptr + in.size());
+  return base::ToVector(base::as_byte_span(in));
 }
 
 constexpr char kAppId[] = "https://example.test/appid.json";

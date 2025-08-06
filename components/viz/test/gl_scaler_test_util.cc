@@ -11,6 +11,8 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -151,29 +153,31 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
   switch (pattern) {
     case HORIZONTAL_STRIPES:
       for (int y = 0; y < size.height(); ++y) {
-        uint32_t* const pixels = result.getAddr32(0, y);
+        const base::span<uint32_t> pixels =
+            UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
         const uint32_t stripe_rgba = cycle_as_rgba[y % cycle_as_rgba.size()];
         for (int x = 0; x < size.width(); ++x) {
-          UNSAFE_TODO(pixels[x]) = stripe_rgba;
+          pixels[x] = stripe_rgba;
         }
       }
       break;
 
     case VERTICAL_STRIPES:
       for (int y = 0; y < size.height(); ++y) {
-        uint32_t* const pixels = result.getAddr32(0, y);
+        const base::span<uint32_t> pixels =
+            UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
         for (int x = 0; x < size.width(); ++x) {
-          UNSAFE_TODO(pixels[x]) = cycle_as_rgba[x % cycle_as_rgba.size()];
+          pixels[x] = cycle_as_rgba[x % cycle_as_rgba.size()];
         }
       }
       break;
 
     case STAGGERED:
       for (int y = 0; y < size.height(); ++y) {
-        uint32_t* const pixels = result.getAddr32(0, y);
+        const base::span<uint32_t> pixels =
+            UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
         for (int x = 0; x < size.width(); ++x) {
-          UNSAFE_TODO(pixels[x]) =
-              cycle_as_rgba[(x + y) % cycle_as_rgba.size()];
+          pixels[x] = cycle_as_rgba[(x + y) % cycle_as_rgba.size()];
         }
       }
       break;
@@ -202,19 +206,18 @@ void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
   // Loop, transforming one row of pixels at a time.
   std::vector<gfx::ColorTransform::TriStim> stims(image->width());
   for (int y = 0; y < image->height(); ++y) {
-    uint32_t* const pixels = image->getAddr32(0, y);
+    const base::span<uint32_t> pixels = UNSAFE_SKBITMAP_GETADDR32(image, 0, y);
     for (int x = 0; x < image->width(); ++x) {
-      stims[x].set_x(((UNSAFE_TODO(pixels[x]) >> kRedShift) & 0xff) / 255.0f);
-      stims[x].set_y(((UNSAFE_TODO(pixels[x]) >> kGreenShift) & 0xff) / 255.0f);
-      stims[x].set_z(((UNSAFE_TODO(pixels[x]) >> kBlueShift) & 0xff) / 255.0f);
+      stims[x].set_x(((pixels[x] >> kRedShift) & 0xff) / 255.0f);
+      stims[x].set_y(((pixels[x] >> kGreenShift) & 0xff) / 255.0f);
+      stims[x].set_z(((pixels[x] >> kBlueShift) & 0xff) / 255.0f);
     }
     transform->Transform(stims.data(), stims.size());
     for (int x = 0; x < image->width(); ++x) {
-      UNSAFE_TODO(pixels[x]) =
-          ((ToClamped255(stims[x].x()) << kRedShift) |
-           (ToClamped255(stims[x].y()) << kGreenShift) |
-           (ToClamped255(stims[x].z()) << kBlueShift) |
-           (((UNSAFE_TODO(pixels[x]) >> kAlphaShift) & 0xff) << kAlphaShift));
+      pixels[x] = ((ToClamped255(stims[x].x()) << kRedShift) |
+                   (ToClamped255(stims[x].y()) << kGreenShift) |
+                   (ToClamped255(stims[x].z()) << kBlueShift) |
+                   (((pixels[x] >> kAlphaShift) & 0xff) << kAlphaShift));
     }
   }
 }
@@ -235,13 +238,12 @@ SkBitmap GLScalerTestUtil::CopyAndConvertToRGBA(const SkBitmap& bitmap) {
 // static
 void GLScalerTestUtil::SwizzleBitmap(SkBitmap* image) {
   for (int y = 0; y < image->height(); ++y) {
-    uint32_t* const pixels = image->getAddr32(0, y);
+    const base::span<uint32_t> pixels = UNSAFE_SKBITMAP_GETADDR32(image, 0, y);
     for (int x = 0; x < image->width(); ++x) {
-      UNSAFE_TODO(pixels[x]) =
-          ((((UNSAFE_TODO(pixels[x]) >> kBlueShift) & 0xff) << kRedShift) |
-           (((UNSAFE_TODO(pixels[x]) >> kGreenShift) & 0xff) << kGreenShift) |
-           (((UNSAFE_TODO(pixels[x]) >> kRedShift) & 0xff) << kBlueShift) |
-           (((UNSAFE_TODO(pixels[x]) >> kAlphaShift) & 0xff) << kAlphaShift));
+      pixels[x] = ((((pixels[x] >> kBlueShift) & 0xff) << kRedShift) |
+                   (((pixels[x] >> kGreenShift) & 0xff) << kGreenShift) |
+                   (((pixels[x] >> kRedShift) & 0xff) << kBlueShift) |
+                   (((pixels[x] >> kAlphaShift) & 0xff) << kAlphaShift));
     }
   }
 }
@@ -261,16 +263,16 @@ SkBitmap GLScalerTestUtil::CreatePackedPlanarBitmap(const SkBitmap& source,
   };
   const int shift = kShiftForChannel[channel];
   for (int y = 0; y < result.height(); ++y) {
-    const uint32_t* const src = source.getAddr32(0, y);
-    uint32_t* const dst = result.getAddr32(0, y);
+    const base::span<const uint32_t> src =
+        UNSAFE_SKBITMAP_GETADDR32(source, 0, y);
+    const base::span<uint32_t> dst = UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
     for (int x = 0; x < result.width(); ++x) {
       //     (src[0..3])         (dst)
       // RGBA RGBA RGBA RGBA --> RRRR   (if channel is 0)
-      UNSAFE_TODO(dst[x]) =
-          ((((UNSAFE_TODO(src[x * 4 + 0]) >> shift) & 0xff) << kRedShift) |
-           (((UNSAFE_TODO(src[x * 4 + 1]) >> shift) & 0xff) << kGreenShift) |
-           (((UNSAFE_TODO(src[x * 4 + 2]) >> shift) & 0xff) << kBlueShift) |
-           (((UNSAFE_TODO(src[x * 4 + 3]) >> shift) & 0xff) << kAlphaShift));
+      dst[x] = ((((src[x * 4 + 0] >> shift) & 0xff) << kRedShift) |
+                (((src[x * 4 + 1] >> shift) & 0xff) << kGreenShift) |
+                (((src[x * 4 + 2] >> shift) & 0xff) << kBlueShift) |
+                (((src[x * 4 + 3] >> shift) & 0xff) << kAlphaShift));
     }
   }
   return result;
@@ -310,20 +312,20 @@ void GLScalerTestUtil::UnpackPlanarBitmap(const SkBitmap& plane,
   // Iterate over the pixels of |out|, sampling each of the 4 components of each
   // of |plane|'s pixels.
   for (int y = 0; y < out->height(); ++y) {
-    const uint32_t* const src = plane.getAddr32(0, y / row_sampling_ratio);
-    uint32_t* const dst = out->getAddr32(0, y);
+    const base::span<const uint32_t> src =
+        UNSAFE_SKBITMAP_GETADDR32(plane, 0, y / row_sampling_ratio);
+    const base::span<uint32_t> dst = UNSAFE_SKBITMAP_GETADDR32(out, 0, y);
     for (int x = 0; x < out->width(); ++x) {
       // Zero-out the existing byte (e.g., if channel==1, then "RGBA" → "R0BA").
-      UNSAFE_TODO(dst[x]) &= output_retain_mask;
+      dst[x] &= output_retain_mask;
 
       // From |src|, grab one of "XYZW". Then, copy it to the target byte in
       // |dst| (e.g., if x_src_ch=3, then grab "W" from |src|, and |dst| changes
       // from "R0BA" to "RWBA").
       const int x_src = x / col_sampling_ratio;
       const int x_src_ch = (x / ch_sampling_ratio) % 4;
-      UNSAFE_TODO(dst[x]) |=
-          ((UNSAFE_TODO(src[x_src]) >> kShiftForChannel[x_src_ch]) & 0xff)
-          << output_shift;
+      dst[x] |= ((src[x_src] >> kShiftForChannel[x_src_ch]) & 0xff)
+                << output_shift;
     }
   }
 }
@@ -371,11 +373,12 @@ void GLScalerTestUtil::UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out) {
   // Iterate over all the pixels of |out|, calculate where the data for that
   // said pixel is.
   for (int y = 0; y < out->height(); ++y) {
-    const uint32_t* const src = plane.getAddr32(0, y / row_sampling_ratio);
-    uint32_t* const dst = out->getAddr32(0, y);
+    const base::span<const uint32_t> src =
+        UNSAFE_SKBITMAP_GETADDR32(plane, 0, y / row_sampling_ratio);
+    const base::span<uint32_t> dst = UNSAFE_SKBITMAP_GETADDR32(out, 0, y);
     for (int x = 0; x < out->width(); ++x) {
       // Zero-out the existing byte (e.g., "RGBA" → "R00A").
-      UNSAFE_TODO(dst[x]) &= zero_green_blue_mask;
+      dst[x] &= zero_green_blue_mask;
 
       // Find which half-texel to look at:
       const int src_half_texel = x / col_sampling_ratio;
@@ -385,14 +388,10 @@ void GLScalerTestUtil::UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out) {
       const int src_channel = 2 * (src_half_texel % 2);
 
       // Grab the 2 consecutive channels, starting at |src_channel|:
-      UNSAFE_TODO(dst[x]) |=
-          ((UNSAFE_TODO(src[src_texel]) >> kShiftForChannel[src_channel]) &
-           0xff)
-          << kGreenShift;
-      UNSAFE_TODO(dst[x]) |=
-          ((UNSAFE_TODO(src[src_texel]) >> kShiftForChannel[src_channel + 1]) &
-           0xff)
-          << kBlueShift;
+      dst[x] |= ((src[src_texel] >> kShiftForChannel[src_channel]) & 0xff)
+                << kGreenShift;
+      dst[x] |= ((src[src_texel] >> kShiftForChannel[src_channel + 1]) & 0xff)
+                << kBlueShift;
     }
   }
 }

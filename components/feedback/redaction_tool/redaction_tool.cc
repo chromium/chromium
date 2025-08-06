@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -521,19 +522,28 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
 bool FindAndConsumeAndGetSkippedN(std::string_view* input,
                                   const re2::RE2& pattern,
                                   std::string_view* skipped_input,
-                                  std::string_view* args[],
-                                  int argc) {
+                                  base::span<std::string_view*> args,
+                                  int spanification_suspected_redundant_argc) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_argc == static_cast<int>(args.size()),
+        base::NotFatalUntil::M143);
   std::string_view old_input = *input;
 
-  CHECK_GE(argc, 1);
-  re2::RE2::Arg a0(argc > 0 ? args[0] : nullptr);
-  re2::RE2::Arg a1(argc > 1 ? args[1] : nullptr);
-  re2::RE2::Arg a2(argc > 2 ? args[2] : nullptr);
-  re2::RE2::Arg a3(argc > 3 ? args[3] : nullptr);
+  CHECK_GE(spanification_suspected_redundant_argc, 1);
+  re2::RE2::Arg a0(spanification_suspected_redundant_argc > 0 ? args[0]
+                                                              : nullptr);
+  re2::RE2::Arg a1(spanification_suspected_redundant_argc > 1 ? args[1]
+                                                              : nullptr);
+  re2::RE2::Arg a2(spanification_suspected_redundant_argc > 2 ? args[2]
+                                                              : nullptr);
+  re2::RE2::Arg a3(spanification_suspected_redundant_argc > 3 ? args[3]
+                                                              : nullptr);
   const re2::RE2::Arg* const wrapped_args[] = {&a0, &a1, &a2, &a3};
-  CHECK_LE(argc, 4);
+  CHECK_LE(spanification_suspected_redundant_argc, 4);
 
-  bool result = re2::RE2::FindAndConsumeN(input, pattern, wrapped_args, argc);
+  bool result = re2::RE2::FindAndConsumeN(
+      input, pattern, wrapped_args, spanification_suspected_redundant_argc);
 
   if (skipped_input && result) {
     size_t bytes_skipped = args[0]->data() - old_input.data();

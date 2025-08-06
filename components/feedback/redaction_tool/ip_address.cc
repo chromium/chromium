@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -37,12 +38,12 @@ constexpr uint8_t kIPv4MappedPrefix[] = {0, 0, 0, 0, 0,    0,
 // * |ip_address| is at least |prefix_length_in_bits| (bits) long;
 // * |ip_prefix| is at least |prefix_length_in_bits| (bits) long.
 bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
-                          const uint8_t* ip_prefix,
+                          base::span<const uint8_t> ip_prefix,
                           size_t prefix_length_in_bits) {
   // Compare all the bytes that fall entirely within the prefix.
   size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
   for (size_t i = 0; i < num_entire_bytes_in_prefix; ++i) {
-    if (ip_address[i] != UNSAFE_TODO(ip_prefix[i])) {
+    if (ip_address[i] != ip_prefix[i]) {
       return false;
     }
   }
@@ -53,7 +54,7 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   if (remaining_bits != 0) {
     uint8_t mask = 0xFF << (8 - remaining_bits);
     size_t i = num_entire_bytes_in_prefix;
-    if ((ip_address[i] & mask) != (UNSAFE_TODO(ip_prefix[i]) & mask)) {
+    if ((ip_address[i] & mask) != (ip_prefix[i] & mask)) {
       return false;
     }
   }
@@ -276,7 +277,7 @@ bool IPAddressMatchesPrefix(const IPAddress& ip_address,
                                   96 + prefix_length_in_bits);
   }
 
-  return IPAddressPrefixCheck(ip_address.bytes(), ip_prefix.bytes().data(),
+  return IPAddressPrefixCheck(ip_address.bytes(), ip_prefix.bytes(),
                               prefix_length_in_bits);
 }
 

@@ -675,7 +675,7 @@ std::u16string PageInfoUI::PermissionActionToUIString(
     bool is_one_time) {
   ContentSetting effective_setting =
       GetEffectiveSetting(type, setting, default_setting);
-  const int* button_text_ids = nullptr;
+  base::span<const int> button_text_ids;
   switch (source) {
     case SettingSource::kUser:
       if (setting == CONTENT_SETTING_DEFAULT) {

@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -61,8 +61,7 @@ std::unique_ptr<openscreen::cast::TrustStore> TrustStore::CreateInstanceForTest(
   // TODO(issuetracker.google.com/222145200): We need to allow linking this
   // implementation into `openscreen_unittests` when in the chromium waterfall.
   auto result = std::make_unique<cast_certificate::NetTrustStore>();
-  result->AddAnchor(UNSAFE_TODO(
-      base::span(trust_anchor_der.cbegin(), trust_anchor_der.cend())));
+  result->AddAnchor(trust_anchor_der);
   return result;
 }
 
@@ -77,9 +76,7 @@ TrustStore::CreateInstanceFromPemFile(std::string_view file_path) {
   auto result = std::make_unique<cast_certificate::NetTrustStore>();
   while (tokenizer.GetNext()) {
     const std::string& data = tokenizer.data();
-    auto* data_ptr = reinterpret_cast<const uint8_t*>(data.data());
-    result->AddAnchor(UNSAFE_TODO(
-        base::span<const uint8_t>(data_ptr, data_ptr + data.size())));
+    result->AddAnchor(base::as_byte_span(data));
   }
   return result;
 }

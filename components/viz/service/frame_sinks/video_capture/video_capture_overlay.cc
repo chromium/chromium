@@ -10,8 +10,9 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -561,9 +562,10 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
   } else {
     int pos = 0;
     for (int y = 0; y < size_.height(); ++y) {
-      const uint32_t* src = scaled_image.getAddr32(0, y);
+      base::span<const uint32_t> src =
+          UNSAFE_SKBITMAP_GETADDR32(scaled_image, 0, y);
       for (int x = 0; x < size_.width(); ++x) {
-        const uint32_t pixel = UNSAFE_TODO(src[x]);
+        const uint32_t pixel = src[x];
         alphas[pos] = ((pixel >> SK_A32_SHIFT) & 0xff) / 255.0f;
         colors[pos].SetPoint(((pixel >> SK_R32_SHIFT) & 0xff) / 255.0f,
                              ((pixel >> SK_G32_SHIFT) & 0xff) / 255.0f,

@@ -13,6 +13,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -165,21 +166,19 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
   }
 
   void AddResourcesToFrame(CompositorFrame* frame,
-                           ResourceId* resource_ids,
-                           size_t num_resource_ids) {
-    for (size_t i = 0u; i < num_resource_ids; ++i) {
+                           base::span<ResourceId> resource_ids) {
+    for (ResourceId resource_id : resource_ids) {
       TransferableResource resource;
-      resource.id = resource_ids[i];
+      resource.id = resource_id;
       resource.set_texture_target(GL_TEXTURE_2D);
       resource.set_sync_token(frame_sync_token_);
       frame->resource_list.push_back(resource);
     }
   }
 
-  void SubmitCompositorFrameWithResources(ResourceId* resource_ids,
-                                          size_t num_resource_ids) {
+  void SubmitCompositorFrameWithResources(base::span<ResourceId> resource_ids) {
     auto frame = MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId);
-    AddResourcesToFrame(&frame, resource_ids, num_resource_ids);
+    AddResourcesToFrame(&frame, resource_ids);
     support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
     EXPECT_EQ(surface_observer_->last_created_surface_id().local_surface_id(),
               local_surface_id_);
@@ -205,11 +204,11 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
     return false;
   }
 
-  void UnrefResources(ResourceId* ids_to_unref,
-                      int* counts_to_unref,
-                      size_t num_ids_to_unref) {
+  void UnrefResources(base::span<ResourceId> ids_to_unref,
+                      base::span<int> counts_to_unref) {
+    CHECK_EQ(ids_to_unref.size(), counts_to_unref.size());
     std::vector<ReturnedResource> unref_array;
-    for (size_t i = 0; i < num_ids_to_unref; ++i) {
+    for (size_t i = 0; i < ids_to_unref.size(); ++i) {
       ReturnedResource resource;
       resource.sync_token = consumer_sync_token_;
       resource.id = ids_to_unref[i];
@@ -219,25 +218,26 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
     support_->UnrefResources(std::move(unref_array));
   }
 
-  void CheckReturnedResourcesMatchExpected(ResourceId* expected_returned_ids,
-                                           size_t expected_resources) {
+  void CheckReturnedResourcesMatchExpected(
+      base::span<ResourceId> expected_returned_ids) {
     const std::vector<ReturnedResource>& actual_resources =
         fake_support_client_.returned_resources();
-    ASSERT_EQ(expected_resources, actual_resources.size());
-    for (size_t i = 0; i < expected_resources; ++i) {
+    ASSERT_EQ(expected_returned_ids.size(), actual_resources.size());
+    for (size_t i = 0; i < expected_returned_ids.size(); ++i) {
       EXPECT_EQ(expected_returned_ids[i], actual_resources[i].id);
     }
     fake_support_client_.clear_returned_resources();
   }
 
-  void CheckReturnedResourcesMatchExpected(ResourceId* expected_returned_ids,
-                                           int* expected_returned_counts,
-                                           size_t expected_resources,
-                                           gpu::SyncToken expected_sync_token) {
+  void CheckReturnedResourcesMatchExpected(
+      base::span<ResourceId> expected_returned_ids,
+      base::span<int> expected_returned_counts,
+      gpu::SyncToken expected_sync_token) {
+    CHECK_EQ(expected_returned_ids.size(), expected_returned_counts.size());
     const std::vector<ReturnedResource>& actual_resources =
         fake_support_client_.returned_resources();
-    ASSERT_EQ(expected_resources, actual_resources.size());
-    for (size_t i = 0; i < expected_resources; ++i) {
+    ASSERT_EQ(expected_returned_ids.size(), actual_resources.size());
+    for (size_t i = 0; i < expected_returned_ids.size(); ++i) {
       const auto& resource = actual_resources[i];
       EXPECT_EQ(expected_sync_token, resource.sync_token);
       EXPECT_EQ(expected_returned_ids[i], resource.id);
@@ -397,8 +397,7 @@ AckOnSurfaceActivationWhenInteractiveTest::
 // with no resource provider action in between.
 TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetimeSimple) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3)};
-  SubmitCompositorFrameWithResources(first_frame_ids,
-                                     std::size(first_frame_ids));
+  SubmitCompositorFrameWithResources(first_frame_ids);
 
   // All of the resources submitted in the first frame are still in use at this
   // time by virtue of being in the pending frame, so none can be returned to
@@ -408,19 +407,17 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetimeSimple) {
 
   // The second frame references no resources of first frame and thus should
   // make all resources of first frame available to be returned.
-  SubmitCompositorFrameWithResources(nullptr, 0);
+  SubmitCompositorFrameWithResources({});
 
   ResourceId expected_returned_ids[] = {ResourceId(1), ResourceId(2),
                                         ResourceId(3)};
   int expected_returned_counts[] = {1, 1, 1};
   // Resources were never consumed so no sync token should be set.
   CheckReturnedResourcesMatchExpected(
-      expected_returned_ids, expected_returned_counts,
-      std::size(expected_returned_counts), gpu::SyncToken());
+      expected_returned_ids, expected_returned_counts, gpu::SyncToken());
 
   ResourceId third_frame_ids[] = {ResourceId(4), ResourceId(5), ResourceId(6)};
-  SubmitCompositorFrameWithResources(third_frame_ids,
-                                     std::size(third_frame_ids));
+  SubmitCompositorFrameWithResources(third_frame_ids);
 
   // All of the resources submitted in the third frame are still in use at this
   // time by virtue of being in the pending frame, so none can be returned to
@@ -431,16 +428,15 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetimeSimple) {
   // The forth frame references no resources of third frame and thus should
   // make all resources of third frame available to be returned.
   ResourceId forth_frame_ids[] = {ResourceId(7), ResourceId(8), ResourceId(9)};
-  SubmitCompositorFrameWithResources(forth_frame_ids,
-                                     std::size(forth_frame_ids));
+  SubmitCompositorFrameWithResources(forth_frame_ids);
 
   ResourceId forth_expected_returned_ids[] = {ResourceId(4), ResourceId(5),
                                               ResourceId(6)};
   int forth_expected_returned_counts[] = {1, 1, 1};
   // Resources were never consumed so no sync token should be set.
-  CheckReturnedResourcesMatchExpected(
-      forth_expected_returned_ids, forth_expected_returned_counts,
-      std::size(forth_expected_returned_counts), gpu::SyncToken());
+  CheckReturnedResourcesMatchExpected(forth_expected_returned_ids,
+                                      forth_expected_returned_counts,
+                                      gpu::SyncToken());
 }
 
 // Tests submitting a frame with resources followed by one with no resources
@@ -448,8 +444,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetimeSimple) {
 TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
        ResourceLifetimeSimpleWithProviderHoldingAlive) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3)};
-  SubmitCompositorFrameWithResources(first_frame_ids,
-                                     std::size(first_frame_ids));
+  SubmitCompositorFrameWithResources(first_frame_ids);
 
   // All of the resources submitted in the first frame are still in use at this
   // time by virtue of being in the pending frame, so none can be returned to
@@ -462,13 +457,13 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
 
   // The second frame references no resources and thus should make all resources
   // available to be returned as soon as the resource provider releases them.
-  SubmitCompositorFrameWithResources(nullptr, 0);
+  SubmitCompositorFrameWithResources({});
 
   EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
   fake_support_client_.clear_returned_resources();
 
   int release_counts[] = {1, 1, 1};
-  UnrefResources(first_frame_ids, release_counts, std::size(first_frame_ids));
+  UnrefResources(first_frame_ids, release_counts);
 
   // None are returned to the client since DidReceiveCompositorAck is not
   // invoked.
@@ -480,31 +475,28 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
 
   // Submitting an empty frame causes previous resources referenced by the
   // previous frame to be returned to client.
-  SubmitCompositorFrameWithResources(nullptr, 0);
+  SubmitCompositorFrameWithResources({});
   ResourceId expected_returned_ids[] = {ResourceId(1), ResourceId(2),
                                         ResourceId(3)};
   int expected_returned_counts[] = {1, 1, 1};
   CheckReturnedResourcesMatchExpected(
-      expected_returned_ids, expected_returned_counts,
-      std::size(expected_returned_counts), consumer_sync_token_);
+      expected_returned_ids, expected_returned_counts, consumer_sync_token_);
 }
 
 // Tests referencing a resource, unref'ing it to zero, then using it again
 // before returning it to the client.
 TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceReusedBeforeReturn) {
   ResourceId first_frame_ids[] = {ResourceId(7)};
-  SubmitCompositorFrameWithResources(first_frame_ids,
-                                     std::size(first_frame_ids));
+  SubmitCompositorFrameWithResources(first_frame_ids);
 
   // This removes all references to resource id 7.
-  SubmitCompositorFrameWithResources(nullptr, 0);
+  SubmitCompositorFrameWithResources({});
 
   // This references id 7 again.
-  SubmitCompositorFrameWithResources(first_frame_ids,
-                                     std::size(first_frame_ids));
+  SubmitCompositorFrameWithResources(first_frame_ids);
 
   // This removes it again.
-  SubmitCompositorFrameWithResources(nullptr, 0);
+  SubmitCompositorFrameWithResources({});
 
   // Now it should be returned.
   // We don't care how many entries are in the returned array for 7, so long as
@@ -523,16 +515,14 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceReusedBeforeReturn) {
 // multiple providers.
 TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceRefMultipleTimes) {
   ResourceId first_frame_ids[] = {ResourceId(3), ResourceId(4)};
-  SubmitCompositorFrameWithResources(first_frame_ids,
-                                     std::size(first_frame_ids));
+  SubmitCompositorFrameWithResources(first_frame_ids);
 
   // Ref resources from the first frame twice.
   RefCurrentFrameResources();
   RefCurrentFrameResources();
 
   ResourceId second_frame_ids[] = {ResourceId(4), ResourceId(5)};
-  SubmitCompositorFrameWithResources(second_frame_ids,
-                                     std::size(second_frame_ids));
+  SubmitCompositorFrameWithResources(second_frame_ids);
 
   // Ref resources from the second frame 3 times.
   RefCurrentFrameResources();
@@ -541,7 +531,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceRefMultipleTimes) {
 
   // Submit a frame with no resources to remove all current frame refs from
   // submitted resources.
-  SubmitCompositorFrameWithResources(nullptr, 0);
+  SubmitCompositorFrameWithResources({});
 
   EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
   fake_support_client_.clear_returned_resources();
@@ -554,19 +544,18 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceRefMultipleTimes) {
     SCOPED_TRACE("unref all 3");
     ResourceId ids_to_unref[] = {ResourceId(3), ResourceId(4), ResourceId(5)};
     int counts[] = {1, 1, 1};
-    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts);
 
     EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
     fake_support_client_.clear_returned_resources();
 
-    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
-    SubmitCompositorFrameWithResources(nullptr, 0);
+    UnrefResources(ids_to_unref, counts);
+    SubmitCompositorFrameWithResources({});
 
     ResourceId expected_returned_ids[] = {ResourceId(3)};
     int expected_returned_counts[] = {1};
     CheckReturnedResourcesMatchExpected(
-        expected_returned_ids, expected_returned_counts,
-        std::size(expected_returned_counts), consumer_sync_token_);
+        expected_returned_ids, expected_returned_counts, consumer_sync_token_);
   }
 
   // Expected refs remaining:
@@ -576,14 +565,13 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceRefMultipleTimes) {
     SCOPED_TRACE("unref 4 and 5");
     ResourceId ids_to_unref[] = {ResourceId(4), ResourceId(5)};
     int counts[] = {1, 1};
-    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
-    SubmitCompositorFrameWithResources(nullptr, 0);
+    UnrefResources(ids_to_unref, counts);
+    SubmitCompositorFrameWithResources({});
 
     ResourceId expected_returned_ids[] = {ResourceId(5)};
     int expected_returned_counts[] = {1};
     CheckReturnedResourcesMatchExpected(
-        expected_returned_ids, expected_returned_counts,
-        std::size(expected_returned_counts), consumer_sync_token_);
+        expected_returned_ids, expected_returned_counts, consumer_sync_token_);
   }
 
   // Now, just 2 refs remaining on resource 4. Unref both at once and make sure
@@ -592,21 +580,19 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceRefMultipleTimes) {
     SCOPED_TRACE("unref only 4");
     ResourceId ids_to_unref[] = {ResourceId(4)};
     int counts[] = {2};
-    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
-    SubmitCompositorFrameWithResources(nullptr, 0);
+    UnrefResources(ids_to_unref, counts);
+    SubmitCompositorFrameWithResources({});
 
     ResourceId expected_returned_ids[] = {ResourceId(4)};
     int expected_returned_counts[] = {2};
     CheckReturnedResourcesMatchExpected(
-        expected_returned_ids, expected_returned_counts,
-        std::size(expected_returned_counts), consumer_sync_token_);
+        expected_returned_ids, expected_returned_counts, consumer_sync_token_);
   }
 }
 
 TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3)};
-  SubmitCompositorFrameWithResources(first_frame_ids,
-                                     std::size(first_frame_ids));
+  SubmitCompositorFrameWithResources(first_frame_ids);
 
   // This test relied on CompositorFrameSinkSupport::ReturnResources to not send
   // as long as there has been no DidReceiveCompositorFrameAck. Such that
@@ -626,15 +612,13 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
   // ones. We expect to receive back resource 1 with a count of 1 since it was
   // only referenced by the first frame.
   ResourceId second_frame_ids[] = {ResourceId(2), ResourceId(3), ResourceId(4)};
-  SubmitCompositorFrameWithResources(second_frame_ids,
-                                     std::size(second_frame_ids));
+  SubmitCompositorFrameWithResources(second_frame_ids);
   {
     SCOPED_TRACE("second frame");
     ResourceId expected_returned_ids[] = {ResourceId(1)};
     int expected_returned_counts[] = {1};
     CheckReturnedResourcesMatchExpected(
-        expected_returned_ids, expected_returned_counts,
-        std::size(expected_returned_counts), gpu::SyncToken());
+        expected_returned_ids, expected_returned_counts, gpu::SyncToken());
   }
 
   // The third frame references a disjoint set of resources, so we expect to
@@ -643,8 +627,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
   // resource ID 4 will have a count of 1.
   ResourceId third_frame_ids[] = {ResourceId(10), ResourceId(11),
                                   ResourceId(12), ResourceId(13)};
-  SubmitCompositorFrameWithResources(third_frame_ids,
-                                     std::size(third_frame_ids));
+  SubmitCompositorFrameWithResources(third_frame_ids);
 
   {
     SCOPED_TRACE("third frame");
@@ -652,8 +635,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
                                           ResourceId(4)};
     int expected_returned_counts[] = {2, 2, 1};
     CheckReturnedResourcesMatchExpected(
-        expected_returned_ids, expected_returned_counts,
-        std::size(expected_returned_counts), gpu::SyncToken());
+        expected_returned_ids, expected_returned_counts, gpu::SyncToken());
   }
 
   // Simulate a ResourceProvider taking a ref on all of the resources.
@@ -661,8 +643,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
 
   ResourceId fourth_frame_ids[] = {ResourceId(12), ResourceId(13)};
 
-  SubmitCompositorFrameWithResources(fourth_frame_ids,
-                                     std::size(fourth_frame_ids));
+  SubmitCompositorFrameWithResources(fourth_frame_ids);
 
   EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
 
@@ -680,21 +661,20 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
     int counts[] = {1, 1, 1, 1};
     // If we are always acking upon surface activation, we will not have any
     // pending surfaces and we will unref here.
-    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts);
   }
 
   // Nothing is returned to the client yet since DidReceiveCompositorFrameAck
   // is not invoked.
   {
     SCOPED_TRACE("fourth frame, first unref");
-    CheckReturnedResourcesMatchExpected(nullptr, nullptr, 0,
-                                        consumer_sync_token_);
+    CheckReturnedResourcesMatchExpected({}, {}, consumer_sync_token_);
   }
 
   {
     ResourceId ids_to_unref[] = {ResourceId(12), ResourceId(13)};
     int counts[] = {1, 1};
-    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts);
   }
 
   // Resources 12 and 13 are still in use by the current frame, so they
@@ -703,7 +683,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
 
   // If we submit an empty frame, however, they should become available.
   // Resources that were previously unref'd also return at this point.
-  SubmitCompositorFrameWithResources(nullptr, 0u);
+  SubmitCompositorFrameWithResources({});
 
   {
     SCOPED_TRACE("fourth frame, second unref");
@@ -711,8 +691,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, ResourceLifetime) {
                                           ResourceId(12), ResourceId(13)};
     int expected_returned_counts[] = {1, 1, 2, 2};
     CheckReturnedResourcesMatchExpected(
-        expected_returned_ids, expected_returned_counts,
-        std::size(expected_returned_counts), consumer_sync_token_);
+        expected_returned_ids, expected_returned_counts, consumer_sync_token_);
   }
 }
 
@@ -827,8 +806,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
   auto frame = MakeDefaultInteractiveCompositorFrame();
   ResourceId frame_resource_ids[] = {ResourceId(1), ResourceId(2),
                                      ResourceId(3)};
-  AddResourcesToFrame(&frame, frame_resource_ids,
-                      std::size(frame_resource_ids));
+  AddResourcesToFrame(&frame, frame_resource_ids);
 
   EXPECT_FALSE(SubmitCompositorFrameWithCopyRequest(std::move(frame),
                                                     std::move(request)));
@@ -836,8 +814,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
   EXPECT_TRUE(did_receive_aborted_copy_result);
 
   // All the resources in the rejected frame should have been returned.
-  CheckReturnedResourcesMatchExpected(frame_resource_ids,
-                                      std::size(frame_resource_ids));
+  CheckReturnedResourcesMatchExpected(frame_resource_ids);
 
   manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId);
 }
@@ -1143,8 +1120,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, FrameSizeMismatch) {
               .Build();
   ResourceId frame_resource_ids[] = {ResourceId(1), ResourceId(2),
                                      ResourceId(3)};
-  AddResourcesToFrame(&frame, frame_resource_ids,
-                      std::size(frame_resource_ids));
+  AddResourcesToFrame(&frame, frame_resource_ids);
 
   result = support_->MaybeSubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::nullopt, 0);
@@ -1152,8 +1128,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, FrameSizeMismatch) {
   EXPECT_EQ(SubmitResult::SIZE_MISMATCH, result);
 
   // All the resources in the rejected frame should have been returned.
-  CheckReturnedResourcesMatchExpected(frame_resource_ids,
-                                      std::size(frame_resource_ids));
+  CheckReturnedResourcesMatchExpected(frame_resource_ids);
 }
 
 // Check that if the device scale factor of a CompositorFrame doesn't match the
@@ -2158,8 +2133,7 @@ TEST_P(CompositorFrameSinkSupportTest,
        GetRequestRegionProperties_SurfaceWithNoCaptureIdentifier) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3),
                                   ResourceId(4), ResourceId(5)};
-  SubmitCompositorFrameWithResources(first_frame_ids,
-                                     std::size(first_frame_ids));
+  SubmitCompositorFrameWithResources(first_frame_ids);
   const auto props_with_frame =
       support_->GetRequestRegionProperties(VideoCaptureSubTarget());
   EXPECT_EQ((kDefaultOutputRect), props_with_frame->render_pass_subrect);

@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -536,13 +537,13 @@ class VideoCaptureOverlayRenderTest
         };
         pos = 0;
         for (int row = 0; row < size.height(); ++row) {
-          uint32_t* out = canonical_bitmap.getAddr32(0, row);
+          base::span<uint32_t> out =
+              UNSAFE_SKBITMAP_GETADDR32(canonical_bitmap, 0, row);
           for (int col = 0; col < size.width(); ++col) {
-            UNSAFE_TODO(out[col]) =
-                ((UINT32_C(255) << SK_A32_SHIFT) |
-                 (ToClamped255(colors[pos].x()) << SK_R32_SHIFT) |
-                 (ToClamped255(colors[pos].y()) << SK_G32_SHIFT) |
-                 (ToClamped255(colors[pos].z()) << SK_B32_SHIFT));
+            out[col] = ((UINT32_C(255) << SK_A32_SHIFT) |
+                        (ToClamped255(colors[pos].x()) << SK_R32_SHIFT) |
+                        (ToClamped255(colors[pos].y()) << SK_G32_SHIFT) |
+                        (ToClamped255(colors[pos].z()) << SK_B32_SHIFT));
             ++pos;
           }
         }
@@ -598,14 +599,14 @@ class VideoCaptureOverlayRenderTest
   }
 
   void ExpectRendersAs(base::span<VideoCaptureOverlay::OnceRenderer> renderers,
-                       const char* const* expected_files,
-                       const std::size_t count,
+                       base::span<const char* const> expected_files,
                        const gfx::Size& video_frame_size) {
-    for (std::size_t i = 0; i < count; ++i) {
+    ASSERT_EQ(renderers.size(), expected_files.size());
+    for (std::size_t i = 0; i < renderers.size(); ++i) {
       auto frame = CreateVideoFrame(video_frame_size);
       CHECK(renderers[i]);
       std::move(renderers[i]).Run(frame.get());
-      UNSAFE_TODO(EXPECT_TRUE(FrameMatchesPNG(*frame, expected_files[i])));
+      EXPECT_TRUE(FrameMatchesPNG(*frame, expected_files[i]));
     }
   }
 
@@ -734,8 +735,7 @@ TEST_P(VideoCaptureOverlayRenderTest, MovesAround) {
       "overlay_moves_2_1.png", "overlay_moves_2_2.png", "overlay_moves_lr.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
-                  video_frame_size);
+  ExpectRendersAs(renderers, kGoldenFiles, video_frame_size);
 }
 
 // Tests that the overlay will be partially rendered (clipped) when any part of
@@ -803,8 +803,7 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToContentBounds) {
       "overlay_clips_ll.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
-                  video_frame_size);
+  ExpectRendersAs(renderers, kGoldenFiles, video_frame_size);
 }
 
 TEST_P(VideoCaptureOverlayRenderTest, HandlesEmptySubRegion) {
@@ -880,8 +879,7 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToSubregionBounds) {
       "overlay_clips_ll_subregion.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
-                  compositor_frame_subrect.size());
+  ExpectRendersAs(renderers, kGoldenFiles, compositor_frame_subrect.size());
 }
 
 TEST_P(VideoCaptureOverlayRenderTest, ScalesToContentRegion) {
@@ -934,7 +932,7 @@ TEST_P(VideoCaptureOverlayRenderTest, ScalesToContentRegion) {
       "overlay_clips_ll_contentscaled.png",
   };
 
-  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
+  ExpectRendersAs(renderers, kGoldenFiles,
                   gfx::Size(content_rect.right(), content_rect.bottom()));
 }
 

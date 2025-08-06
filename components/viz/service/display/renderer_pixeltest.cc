@@ -583,11 +583,22 @@ class TestVideoFrameBuilder {
       uint8_t y_foreground,
       uint8_t u_foreground,
       uint8_t v_foreground) {
-    int planes[] = {media::VideoFrame::Plane::kY, media::VideoFrame::Plane::kU,
-                    media::VideoFrame::Plane::kV};
-    uint8_t yuv_background[] = {y_background, u_background, v_background};
-    uint8_t yuv_foreground[] = {y_foreground, u_foreground, v_foreground};
-    int sample_size[] = {1, 2, 2};
+    auto planes = std::to_array<int>({
+        media::VideoFrame::Plane::kY,
+        media::VideoFrame::Plane::kU,
+        media::VideoFrame::Plane::kV,
+    });
+    auto yuv_background = std::to_array<uint8_t>({
+        y_background,
+        u_background,
+        v_background,
+    });
+    auto yuv_foreground = std::to_array<uint8_t>({
+        y_foreground,
+        u_foreground,
+        v_foreground,
+    });
+    auto sample_size = std::to_array<int>({1, 2, 2});
 
     for (int i = 0; i < 3; ++i) {
       memset(video_frame_->writable_data(planes[i]), yuv_background[i],
