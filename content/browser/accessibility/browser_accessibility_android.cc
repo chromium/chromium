@@ -933,7 +933,8 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     return;
   }
 
-  if (AccessibleNameMapsToTextProperty() && !is_non_atomic_text_field) {
+  if (ComputeAndroidNameTo() == AndroidNameTo::kText &&
+      !is_non_atomic_text_field) {
     text = GetNameAsString16();
   }
   if (ui::IsRangeValueSupported(GetRole())) {
@@ -1069,8 +1070,9 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
   // If we're returning the value as the main text, the name needs to be
   // part of the hint.
   if (ShouldExposeValueAsName(GetValueForControl())) {
-    std::u16string name =
-        AccessibleNameMapsToTextProperty() ? GetNameAsString16() : u"";
+    std::u16string name = (ComputeAndroidNameTo() == AndroidNameTo::kText)
+                              ? GetNameAsString16()
+                              : u"";
     if (!name.empty()) {
       strings.push_back(name);
     }
@@ -1158,71 +1160,24 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetContainerTitle() const {
-  // Accessible name from kAttribute, is Android container role.
-  if (HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
-      GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
-      ui::IsContainerOnAndroid(GetRole())) {
+  if (ComputeAndroidNameTo() == AndroidNameTo::kContainerTitle) {
     return GetNameAsString16();
   }
   return u"";
 }
 
 std::u16string BrowserAccessibilityAndroid::GetContentDescription() const {
-  // Accessible name from kAttribute, is not Android container role, supports
-  // naming from child content.
-  if (base::FeatureList::IsEnabled(
-          features::kAccessibilityPopulateSupplementalDescriptionApi) &&
-      HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
-      GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
-      !ui::IsContainerOnAndroid(GetRole()) &&
-      ui::SupportsNamingWithChildContent(GetRole())) {
+  if (ComputeAndroidNameTo() == AndroidNameTo::kContentDescription) {
     return GetNameAsString16();
   }
   return u"";
 }
 
 std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
-  // Accessible name from kAttribute, is not Android container role, does not
-  // support naming from child content.
-  if (base::FeatureList::IsEnabled(
-          features::kAccessibilityPopulateSupplementalDescriptionApi) &&
-      HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
-      GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
-      !ui::IsContainerOnAndroid(GetRole()) &&
-      !ui::SupportsNamingWithChildContent(GetRole())) {
+  if (ComputeAndroidNameTo() == AndroidNameTo::kSupplementalDescription) {
     return GetNameAsString16();
   }
   return u"";
-}
-
-bool BrowserAccessibilityAndroid::AccessibleNameMapsToTextProperty() const {
-  // 1. If the accessible name comes from the node's content (e.g., inner text)
-  //    and not a specific attribute (like aria-label), it's considered part of
-  //    the main text.
-  if (!HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) ||
-      GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
-    return true;
-  }
-
-  // 2. If the node gets its name from a container's title (e.g., a <figure>
-  //    with a <figcaption>), the name is considered a title, not regular text.
-  if (!GetContainerTitle().empty()) {
-    return false;
-  }
-
-  // 3. The following checks depend on a feature flag. If it's disabled, we
-  //    revert to the default behavior of mapping to the text property.
-  if (!base::FeatureList::IsEnabled(
-          features::kAccessibilityPopulateSupplementalDescriptionApi)) {
-    return true;
-  }
-
-  // 4. At this point, the name is from an attribute (like aria-label), but it
-  //    should only be mapped to the text property if there is no other
-  //    descriptive content (like a content description or supplemental
-  //    description) available to use instead.
-  return GetContentDescription().empty() &&
-         GetSupplementalDescription().empty();
 }
 
 std::u16string BrowserAccessibilityAndroid::GetAccessibleNameUTF16() const {
@@ -1236,7 +1191,7 @@ std::u16string BrowserAccessibilityAndroid::GetAccessibleNameUTF16() const {
   // 2. If text content is empty, check if the name is *supposed* to map to the
   // text property anyway. If so, it means the accessible name is intentionally
   // empty, and we should not check any fallback sources.
-  if (AccessibleNameMapsToTextProperty()) {
+  if (ComputeAndroidNameTo() == AndroidNameTo::kText) {
     return {};  // Return an empty string.
   }
 
@@ -2474,6 +2429,7 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
   manager->ClearNodeInfoCacheForGivenId(GetUniqueId());
+  name_to_cache_.reset();
 
   if (BrowserAccessibilityAndroid* parent =
           static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent())) {
@@ -2559,6 +2515,50 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
   }
 
   return base::JoinString(error_messages, u" ");
+}
+
+BrowserAccessibilityAndroid::AndroidNameTo
+BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
+  if (name_to_cache_.has_value()) {
+    return name_to_cache_.value();
+  }
+
+  // 1. If the accessible name comes from the node's content (e.g., inner text)
+  //    and not a specific attribute (like aria-label), it's considered part of
+  //    the main text.
+  // TODO(accessibility): Revisit the logic of mapping attributes to text. For
+  // example, relatedElement's name may not be appropriate for the text property
+  // and needs to be fixed.
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) ||
+      GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
+    name_to_cache_ = AndroidNameTo::kText;
+    return name_to_cache_.value();
+  }
+
+  // 2. If the node gets its name from a container's title (e.g., a <figure>
+  //    with a <figcaption>), the name is considered a title, not regular text.
+  if (ui::IsContainerOnAndroid(GetRole())) {
+    name_to_cache_ = AndroidNameTo::kContainerTitle;
+    return name_to_cache_.value();
+  }
+
+  // 3. The following checks depend on a feature flag. If it's disabled, we
+  //    revert to the default behavior of mapping to the text property.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityPopulateSupplementalDescriptionApi)) {
+    name_to_cache_ = AndroidNameTo::kText;
+    return name_to_cache_.value();
+  }
+
+  // 4. At this point, the name is from an attribute (like aria-label), so we
+  //    need to decide whether it should be a content description or a
+  //    supplemental one.
+  if (ui::SupportsNamingWithChildContent(GetRole())) {
+    name_to_cache_ = AndroidNameTo::kContentDescription;
+  } else {
+    name_to_cache_ = AndroidNameTo::kSupplementalDescription;
+  }
+  return name_to_cache_.value();
 }
 
 std::u16string

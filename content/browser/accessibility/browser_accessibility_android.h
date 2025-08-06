@@ -244,6 +244,16 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
                                 std::vector<int32_t>* ends,
                                 int offset);
 
+  // Enumerates all possible mappings of ax::mojom::StringAttribute::kName to
+  // Android accessibility properties.
+  enum class AndroidNameTo {
+    kUnset = 0,
+    kText,
+    kContentDescription,
+    kSupplementalDescription,
+    kContainerTitle,
+  };
+
   // Append line start and end indices for the text of this node
   // (as returned by GetTextContentUTF16()), adding |offset| to each one.
   void GetLineBoundaries(std::vector<int32_t>* line_starts,
@@ -298,10 +308,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool HasOnlyTextAndImageChildren() const;
   bool HasListMarkerChild() const;
 
-  // Returns true if the accessible name should be mapped to android's text
-  // property.
-  bool AccessibleNameMapsToTextProperty() const;
-
   // This method determines if a node should expose its value as a name, which
   // is placed in the Android API's "text" attribute. For controls that can take
   // on a value (e.g. a date time, or combobox), we wish to expose the value
@@ -329,8 +335,14 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // This method determines if a node should expose its editable value.
   bool ShouldExposeEditableValue() const;
 
+  // Computes the name-to-property mapping on Android.
+  AndroidNameTo ComputeAndroidNameTo() const;
+
   std::u16string old_value_;
   std::u16string new_value_;
+
+  // A cached value for the result of `ComputeAndroidNameTo`.
+  mutable std::optional<AndroidNameTo> name_to_cache_;
 };
 
 }  // namespace content
