@@ -176,7 +176,7 @@ TEST_P(CookieControlsIconViewUnitTest,
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(), BlockedLabel());
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
-// TODO(crbug.com/40064612): Fix screenreader tests on ChromeOS and Mac.
+// TODO(b/436858103): Fix screenreader tests on ChromeOS and Mac.
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
@@ -322,7 +322,7 @@ TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(), BlockedLabel());
   EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
-// TODO(crbug.com/40064612): Fix screenreader tests on ChromeOS and Mac.
+// TODO(b/436858103): Fix screenreader tests on ChromeOS and Mac.
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
