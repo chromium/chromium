@@ -515,8 +515,7 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
       autofill_metrics::LogNewProfileEditedType(difference.type);
     } else if (is_confirmable_update()) {
       autofill_metrics::LogProfileUpdateEditedType(difference.type);
-    } else {
-      CHECK(is_migration());
+    } else if (is_migration()) {
       autofill_metrics::LogProfileMigrationEditedType(difference.type);
     }
   }
