@@ -71,6 +71,10 @@ url::Origin ContentWebFrame::GetSecurityOrigin() const {
   return render_frame_host_->GetLastCommittedOrigin();
 }
 
+GURL ContentWebFrame::GetUrl() const {
+  return render_frame_host_->GetLastCommittedURL();
+}
+
 BrowserState* ContentWebFrame::GetBrowserState() {
   return content_web_state_->GetBrowserState();
   ;
