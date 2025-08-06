@@ -15,7 +15,8 @@
 namespace on_device_model {
 
 // Android implementation of BackendSession. A Java counterpart with the same
-// lifetime will be created when this object is created.
+// lifetime will be created when this object is created. The model may be loaded
+// in memory as soon as this object is created.
 class BackendSessionImplAndroid : public BackendSession {
  public:
   // The result of a generate call.

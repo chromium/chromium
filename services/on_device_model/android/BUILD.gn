@@ -11,6 +11,8 @@ source_set("android") {
     "backend_model_impl_android.h",
     "backend_session_impl_android.cc",
     "backend_session_impl_android.h",
+    "model_downloader_android.cc",
+    "model_downloader_android.h",
     "on_device_model_bridge.cc",
     "on_device_model_bridge.h",
   ]
@@ -28,7 +30,12 @@ source_set("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "backend_model_impl_android_unittest.cc" ]
+  sources = [
+    "backend_model_impl_android_unittest.cc",
+    "model_downloader_android_unittest.cc",
+    "on_device_model_bridge_native_unittest_helper.cc",
+    "on_device_model_bridge_native_unittest_helper.h",
+  ]
   deps = [
     ":android",
     ":native_j_unittests_jni_headers",
@@ -43,8 +50,10 @@ source_set("unit_tests") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/on_device_model/AiCoreFactory.java",
+    "java/src/org/chromium/on_device_model/AiCoreModelDownloader.java",
+    "java/src/org/chromium/on_device_model/AiCoreModelDownloaderUpstreamImpl.java",
     "java/src/org/chromium/on_device_model/AiCoreSession.java",
-    "java/src/org/chromium/on_device_model/AiCoreSessionFactory.java",
     "java/src/org/chromium/on_device_model/AiCoreSessionUpstreamImpl.java",
     "java/src/org/chromium/on_device_model/GenerateOptionsHelper.java",
     "java/src/org/chromium/on_device_model/InputPieceHelper.java",
@@ -82,6 +91,7 @@ android_library("native_java_unittests_java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/on_device_model/AiCoreModelDownloader.java",
     "java/src/org/chromium/on_device_model/AiCoreSession.java",
     "java/src/org/chromium/on_device_model/GenerateOptionsHelper.java",
     "java/src/org/chromium/on_device_model/InputPieceHelper.java",

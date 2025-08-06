@@ -20,6 +20,11 @@ class OnDeviceModelBridge {
   static base::android::ScopedJavaLocalRef<jobject> CreateSession(
       optimization_guide::proto::ModelExecutionFeature feature,
       on_device_model::mojom::SessionParamsPtr params);
+
+  // Creates a new AiCoreModelDownloader instance. Caller is responsible for
+  // creating a global ref if it needs to be stored.
+  static base::android::ScopedJavaLocalRef<jobject> CreateModelDownloader(
+      optimization_guide::proto::ModelExecutionFeature feature);
 };
 
 }  // namespace on_device_model

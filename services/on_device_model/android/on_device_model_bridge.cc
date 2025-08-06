@@ -16,8 +16,8 @@ namespace on_device_model {
 base::android::ScopedJavaLocalRef<jobject> OnDeviceModelBridge::CreateSession(
     optimization_guide::proto::ModelExecutionFeature feature,
     on_device_model::mojom::SessionParamsPtr params) {
-  CHECK(feature != optimization_guide::proto::ModelExecutionFeature::
-                       MODEL_EXECUTION_FEATURE_UNSPECIFIED)
+  CHECK_NE(feature, optimization_guide::proto::ModelExecutionFeature::
+                        MODEL_EXECUTION_FEATURE_UNSPECIFIED)
       << "Feature is required to create a session.";
   CHECK(params) << "SessionParams is required to create a session.";
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -26,6 +26,17 @@ base::android::ScopedJavaLocalRef<jobject> OnDeviceModelBridge::CreateSession(
   // Only passing the parameters that are supported on Android.
   return Java_OnDeviceModelBridge_createSession(env, feature, params->top_k,
                                                 params->temperature);
+}
+
+// static
+base::android::ScopedJavaLocalRef<jobject>
+OnDeviceModelBridge::CreateModelDownloader(
+    optimization_guide::proto::ModelExecutionFeature feature) {
+  CHECK_NE(feature, optimization_guide::proto::ModelExecutionFeature::
+                        MODEL_EXECUTION_FEATURE_UNSPECIFIED)
+      << "Feature is required to create a downloader.";
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_OnDeviceModelBridge_createModelDownloader(env, feature);
 }
 
 }  // namespace on_device_model
