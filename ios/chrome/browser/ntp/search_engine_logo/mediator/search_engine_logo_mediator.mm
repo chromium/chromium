@@ -304,7 +304,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       logo->metadata.fingerprint != "") {
     // The -updateLogo call can be noisy. Don't reload the image if the
     // fingerprint hasn't changed.
-    // TODO(crbug.com/423883582): finger print is empty for 3rd party search
+    // TODO(crbug.com/436747442): fingerprint is empty for 3rd party search
     // engine logo.
     if (_fingerprint == logo->metadata.fingerprint) {
       return;
