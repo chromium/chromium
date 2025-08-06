@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -17,6 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -30,8 +31,9 @@ import java.util.List;
  * Class for launching the DownloadActivity and monitoring its status so dialogs could be shown on
  * top of it.
  */
+@NullMarked
 public class DownloadActivityLauncher implements ApplicationStatus.ActivityStateListener {
-    private static DownloadActivityLauncher sInstance;
+    private static @Nullable DownloadActivityLauncher sInstance;
     private static final String EXTRA_SHOW_PREFETCHED_CONTENT =
             "org.chromium.chrome.browser.download.SHOW_PREFETCHED_CONTENT";
     private @DownloadActivityStatus int mActivityStatus = DownloadActivityStatus.NOT_CREATED;

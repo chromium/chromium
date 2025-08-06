@@ -47,7 +47,7 @@ public interface AppMenuPropertiesDelegate {
      * @param itemId The id of the menu item for which to return the Bundle.
      * @return A {@link Bundle} for the provided MenuItem containing extra data, if any.
      */
-    Bundle getBundleForMenuItem(int itemId);
+    @Nullable Bundle getBundleForMenuItem(int itemId);
 
     /**
      * Notify the delegate that the load state changed.

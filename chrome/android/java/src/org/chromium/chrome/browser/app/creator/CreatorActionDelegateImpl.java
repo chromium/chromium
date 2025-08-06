@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.app.creator;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -37,6 +37,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 /** Implements some actions for the Feed */
+@NullMarked
 public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private static final String TAG = "Cormorant";
 
@@ -128,7 +129,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                 HistorySyncConfig.OptInMode.NONE)
                         .build();
-        @Nullable
+
         Intent intent =
                 SigninAndHistorySyncActivityLauncherImpl.get()
                         .createBottomSheetSigninIntentOrShowError(
@@ -141,7 +142,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     @Override
     public void showSignInInterstitial(
             @SigninAccessPoint int signinAccessPoint,
-            BottomSheetController mBottomSheetController) {
+            @Nullable BottomSheetController mBottomSheetController) {
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string
@@ -158,7 +159,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                 HistorySyncConfig.OptInMode.NONE)
                         .build();
-        @Nullable
+
         Intent intent =
                 SigninAndHistorySyncActivityLauncherImpl.get()
                         .createBottomSheetSigninIntentOrShowError(

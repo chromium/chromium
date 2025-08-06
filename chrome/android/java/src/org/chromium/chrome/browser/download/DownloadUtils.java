@@ -310,7 +310,7 @@ public class DownloadUtils {
      * @param tab Tab displaying the page that will be downloaded.
      * @return Whether the "Download Page" button should be enabled.
      */
-    public static boolean isAllowedToDownloadPage(Tab tab) {
+    public static boolean isAllowedToDownloadPage(@Nullable Tab tab) {
         if (tab == null) return false;
 
         if (tab.isIncognito()
@@ -386,8 +386,8 @@ public class DownloadUtils {
      * @param source The location from which the download was opened.
      */
     public static void openItem(
-            OfflineItem offlineItem,
-            OtrProfileId otrProfileId,
+            @Nullable OfflineItem offlineItem,
+            @Nullable OtrProfileId otrProfileId,
             @DownloadOpenSource int source,
             Context context) {
         if (offlineItem == null) {

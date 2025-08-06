@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.app.download;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ApplicationStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -25,6 +25,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.lang.ref.WeakReference;
 
 /** Delegate for {@link DownloadMessageUiController} to provide chrome layer dependencies. */
+@NullMarked
 public class DownloadMessageUiDelegate implements DownloadMessageUiController.Delegate {
     private WeakReference<ChromeActivity> mActivity = new WeakReference<>(null);
 
@@ -66,13 +67,16 @@ public class DownloadMessageUiDelegate implements DownloadMessageUiController.De
     }
 
     @Override
-    public void openDownloadsPage(OtrProfileId otrProfileId, int source) {
+    public void openDownloadsPage(@Nullable OtrProfileId otrProfileId, int source) {
         DownloadManagerService.openDownloadsPage(otrProfileId, source);
     }
 
     @Override
     public void openDownload(
-            OfflineItem offlineItem, OtrProfileId otrProfileId, int source, Context context) {
+            @Nullable OfflineItem offlineItem,
+            @Nullable OtrProfileId otrProfileId,
+            int source,
+            Context context) {
         DownloadUtils.openItem(offlineItem, otrProfileId, source, context);
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
@@ -18,8 +20,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -36,6 +36,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -92,8 +94,9 @@ import java.util.List;
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
  * items based on activity state.
  */
+@NullMarked
 public abstract class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
-    private static Boolean sItemBookmarkedForTesting;
+    private static @Nullable Boolean sItemBookmarkedForTesting;
 
     protected final Context mContext;
     protected final boolean mIsTablet;
@@ -108,7 +111,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private @Nullable ModelList mModelList;
     private int mReadAloudPos;
-    @Nullable protected Runnable mReadAloudAppMenuResetter;
+    protected @Nullable Runnable mReadAloudAppMenuResetter;
     private boolean mHasReadAloudInserted;
 
     @VisibleForTesting
@@ -176,7 +179,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             View decorView,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            @Nullable Supplier<ReadAloudController> readAloudControllerSupplier) {
+            Supplier<ReadAloudController> readAloudControllerSupplier) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mActivityTabProvider = activityTabProvider;
@@ -197,6 +200,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         mBookmarkModelSupplier = bookmarkModelSupplier;
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         if (mCallbackController != null) {
@@ -211,13 +215,12 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public Runnable getReadAloudmenuResetter() {
+    public @Nullable Runnable getReadAloudmenuResetter() {
         return mReadAloudAppMenuResetter;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @Nullable
-    public ModelList getModelList() {
+    public @Nullable ModelList getModelList() {
         return mModelList;
     }
 
@@ -511,7 +514,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      *         is bookmarked.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public boolean shouldCheckBookmarkStar(@NonNull Tab currentTab) {
+    public boolean shouldCheckBookmarkStar(Tab currentTab) {
         if (sItemBookmarkedForTesting != null) return sItemBookmarkedForTesting;
 
         if (!mBookmarkModelSupplier.hasValue()) return false;
@@ -534,7 +537,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return Whether the currentTab should show an app menu item that requires a webContents. This
      *     will return false for native NTP, and true otherwise.
      */
-    protected boolean shouldShowWebContentsDependentMenuItem(@NonNull Tab currentTab) {
+    protected boolean shouldShowWebContentsDependentMenuItem(Tab currentTab) {
         return !currentTab.isNativePage() && currentTab.getWebContents() != null;
     }
 
@@ -564,7 +567,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected boolean shouldShowOpenWithItem(@Nullable Tab currentTab) {
         return currentTab != null
                 && currentTab.isNativePage()
-                && currentTab.getNativePage().isPdf();
+                && assumeNonNull(currentTab.getNativePage()).isPdf();
     }
 
     /** Construct the "Open with..." item for the given tab. */
@@ -591,7 +594,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             boolean isFileScheme,
             boolean isContentScheme,
             boolean isIncognito,
-            @NonNull GURL url) {
+            GURL url) {
         // Hide 'Add to homescreen' for the following:
         // * native pages - Android doesn't know how to direct those URLs.
         // * incognito pages - To avoid problems where users create shortcuts in incognito
@@ -709,6 +712,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         && "/".equals(currentTab.getUrl().getPath());
 
         if (openWebApkItemVisible) {
+            assumeNonNull(resolveInfo);
             // This is the 'webapp is already installed' case, so we offer to open the webapp.
             String appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
             return new ListItem(
@@ -734,8 +738,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         }
     }
 
-    public static ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
-        String manifestId = AppBannerManager.maybeGetManifestId(currentTab.getWebContents());
+    public static @Nullable ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
+        String manifestId =
+                AppBannerManager.maybeGetManifestId(assumeNonNull(currentTab.getWebContents()));
         ResolveInfo resolveInfo =
                 WebApkValidator.queryFirstWebApkResolveInfo(
                         context,
@@ -753,7 +758,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     @Override
-    public Bundle getBundleForMenuItem(int itemId) {
+    public @Nullable Bundle getBundleForMenuItem(int itemId) {
         return null;
     }
 
@@ -766,6 +771,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     () -> {
                         boolean isReadable = isTabReadable(currentTab);
                         if (isReadable) {
+                            assumeNonNull(mModelList);
                             maybeInsertReadAloudItem(mModelList);
                         } else {
                             maybeFindAndRemoveReadAloudItem();
@@ -845,7 +851,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected boolean isMenuItemManaged(@IdRes int itemId) {
         if (itemId == R.id.new_incognito_tab_menu_id) {
             return IncognitoUtils.isIncognitoModeManaged(
-                    mTabModelSelector.getCurrentModel().getProfile());
+                    assumeNonNull(mTabModelSelector.getCurrentModel().getProfile()));
         }
         return false;
     }
@@ -868,7 +874,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * Returns content description for the menu item, if different from the titleCondensed xml
      * attribute.
      */
-    protected String getContentDescription(@IdRes int itemId) {
+    protected @Nullable String getContentDescription(@IdRes int itemId) {
         if (itemId == R.id.preferences_id) {
             // Theoretically mTabModelSelector could return a stub model.
             Profile profile = mTabModelSelector.getCurrentModel().getProfile();
@@ -999,8 +1005,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @param showIcon Whether icons should be shown for this menu item.
      * @return The price tracking item appropriate for the current conditions (if any).
      */
-    @Nullable
-    protected ListItem maybeBuildPriceTrackingListItem(@Nullable Tab currentTab, boolean showIcon) {
+    protected @Nullable ListItem maybeBuildPriceTrackingListItem(
+            @Nullable Tab currentTab, boolean showIcon) {
         Boolean show = getPriceTrackingMenuItemInfo(currentTab);
         if (show == null) return null;
 
@@ -1027,8 +1033,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @param currentTab The currently selected tab.
      * @return {@code true} to show 'enable'. Shows no option if {@code null}.
      */
-    @Nullable
-    public Boolean getPriceTrackingMenuItemInfo(@Nullable Tab currentTab) {
+    public @Nullable Boolean getPriceTrackingMenuItemInfo(@Nullable Tab currentTab) {
         if (currentTab == null || currentTab.getWebContents() == null) {
             return null;
         }
@@ -1071,8 +1076,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @param showIcon Whether icons should be shown for this menu item.
      * @return The RDS item appropriate for the current conditions (if any).
      */
-    @Nullable
-    protected ListItem maybeBuildRequestDesktopSiteListItem(
+    protected @Nullable ListItem maybeBuildRequestDesktopSiteListItem(
             @Nullable Tab currentTab, boolean isNativePage, boolean showIcon) {
         // Hide request desktop site on all native pages. Also hide it for desktop Android, which
         // always requests desktop sites.
@@ -1085,6 +1089,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
         if (!itemVisible) return null;
 
+        assumeNonNull(currentTab);
+        assumeNonNull(currentTab.getWebContents());
         boolean isRequestDesktopSite =
                 currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
 
@@ -1126,7 +1132,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         assert shouldShowAutoDarkItem(currentTab, isNativePage);
         boolean isEnabled =
                 WebContentsDarkModeController.isEnabledForUrl(
-                        mTabModelSelector.getCurrentModel().getProfile(), currentTab.getUrl());
+                        assumeNonNull(mTabModelSelector.getCurrentModel().getProfile()),
+                        currentTab.getUrl());
         return new ListItem(
                 AppMenuItemType.TITLE_BUTTON,
                 buildModelForMenuItemWithCheckbox(
@@ -1140,7 +1147,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public boolean isIncognitoEnabled() {
         return IncognitoUtils.isIncognitoModeEnabled(
-                mTabModelSelector.getCurrentModel().getProfile());
+                assumeNonNull(mTabModelSelector.getCurrentModel().getProfile()));
     }
 
     static void setPageBookmarkedForTesting(Boolean bookmarked) {

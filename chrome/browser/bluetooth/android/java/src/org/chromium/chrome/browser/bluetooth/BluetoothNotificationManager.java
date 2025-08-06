@@ -90,7 +90,7 @@ public class BluetoothNotificationManager {
         return mNotifications.indexOfKey(notificationId) >= 0;
     }
 
-    public void onStartCommand(Intent intent, int flags, int startId) {
+    public void onStartCommand(@Nullable Intent intent, int flags, int startId) {
         if (intent == null || intent.getExtras() == null) {
             cancelPreviousBluetoothNotifications();
             mDelegate.stopSelf();

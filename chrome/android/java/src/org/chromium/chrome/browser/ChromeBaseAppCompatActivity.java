@@ -383,7 +383,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     // the warning should be acceptable.
     @SuppressWarnings("NullAway")
     @Override
-    public ModalDialogManager getModalDialogManager() {
+    public @Nullable ModalDialogManager getModalDialogManager() {
         // TODO(jinsukkim): Remove this method in favor of getModalDialogManagerSupplier().
         return getModalDialogManagerSupplier().get();
     }
