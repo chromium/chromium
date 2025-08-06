@@ -213,6 +213,56 @@ const LayoutResult* LayoutMasonryItemForMeasure(
   return node.Layout(constraint_space);
 }
 
+LayoutUnit AlignContentOffset(
+    LayoutUnit intrinsic_size,
+    LayoutUnit container_size,
+    LayoutUnit baseline_offset,
+    const StyleContentAlignmentData& content_alignment) {
+  // Note: There is only ever one alignment subject for these properties in the
+  // stacking axis, so the unique align-content / justify-content values boil
+  // down to start, center, end, and baseline alignment. (The behavior of normal
+  // and stretch is identical to start, and the distributed alignment values
+  // behave as their fallback alignments.) [1].
+  //
+  // [1]: https://www.w3.org/TR/css-grid-3/#alignment
+  LayoutUnit free_space = container_size - intrinsic_size;
+
+  // If overflow is 'safe', we have to make sure we don't overflow the
+  // 'start' edge (potentially cause some data loss as the overflow is
+  // unreachable).
+  if (content_alignment.Overflow() == OverflowAlignment::kSafe) {
+    free_space = free_space.ClampNegativeToZero();
+  }
+
+  switch (content_alignment.Distribution()) {
+    case ContentDistributionType::kSpaceAround:
+    case ContentDistributionType::kSpaceEvenly:
+      return (free_space / 2);
+    case ContentDistributionType::kSpaceBetween:
+    case ContentDistributionType::kStretch:
+    case ContentDistributionType::kDefault:
+      break;
+  }
+
+  switch (content_alignment.GetPosition()) {
+    case ContentPosition::kLeft:
+    case ContentPosition::kStart:
+    case ContentPosition::kFlexStart:
+    case ContentPosition::kNormal:
+      return LayoutUnit();
+    case ContentPosition::kCenter:
+      return (free_space / 2);
+    case ContentPosition::kRight:
+    case ContentPosition::kEnd:
+    case ContentPosition::kFlexEnd:
+      return free_space;
+    case ContentPosition::kBaseline:
+    case ContentPosition::kLastBaseline:
+      return baseline_offset;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // TODO(almaher): Item margins aren't being taken into account for placement.
@@ -340,19 +390,6 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     baseline_accumulator.Accumulate(masonry_item, fragment,
                                     containing_rect.offset.block_offset);
   }
-  if (is_for_columns) {
-    // Remove last gap that was added, since there is no item after it.
-    intrinsic_block_size_ =
-        running_positions.GetMaxPositionForSpan(
-            GridSpan::TranslatedDefiniteGridSpan(
-                /*start_line=*/0,
-                /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
-        stacking_axis_gap;
-  } else {
-    // If the stacking axis is the inline axis, add the size of the tracks to
-    // `intrinsic_block_size_`.
-    intrinsic_block_size_ = track_collection.CalculateSetSpanSize();
-  }
 
   // Propagate the baselines to the container.
   if (auto first_baseline = baseline_accumulator.FirstBaseline()) {
@@ -360,6 +397,49 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
   }
   if (auto last_baseline = baseline_accumulator.LastBaseline()) {
     container_builder_.SetLastBaseline(*last_baseline);
+  }
+
+  // Determine intrinsic size of the masonry container. For the stacking axis,
+  // remove the last gap that was added, since there is no item after it.
+  const LayoutUnit stacking_axis_size =
+      running_positions.GetMaxPositionForSpan(
+          GridSpan::TranslatedDefiniteGridSpan(
+              /*start_line=*/0,
+              /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
+      stacking_axis_gap;
+
+  // To determine the size of the grid axis, add the size of the tracks.
+  const LayoutUnit grid_axis_size = track_collection.CalculateSetSpanSize();
+  intrinsic_block_size_ = is_for_columns ? stacking_axis_size : grid_axis_size;
+
+  // Apply content alignment/justification. This is an additional offset
+  // determined by the intrisic inline or block size of the masonry container,
+  // so it must occur after that has been determined. This must also occur after
+  // the container baselines have been set.
+  const auto& content_alignment =
+      is_for_columns ? style.AlignContent() : style.JustifyContent();
+  if (content_alignment != ComputedStyleInitialValues::InitialAlignContent()) {
+    const LayoutUnit intrinsic_inline_size =
+        is_for_columns ? grid_axis_size : stacking_axis_size;
+
+    const LayoutUnit align_content_offset = AlignContentOffset(
+        is_for_columns ? intrinsic_block_size_ : intrinsic_inline_size,
+        is_for_columns ? ChildAvailableSize().block_size
+                       : ChildAvailableSize().inline_size,
+        baseline_accumulator.FirstBaseline().value_or(LayoutUnit()),
+        content_alignment);
+
+    if (is_for_columns) {
+      if (ChildAvailableSize().block_size != kIndefiniteSize) {
+        container_builder_.MoveChildrenInDirection(align_content_offset,
+                                                   /*is_block_direction=*/true);
+      }
+    } else {
+      if (ChildAvailableSize().inline_size != kIndefiniteSize) {
+        container_builder_.MoveChildrenInDirection(
+            align_content_offset, /*is_block_direction=*/false);
+      }
+    }
   }
 }
 
