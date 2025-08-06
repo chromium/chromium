@@ -32,6 +32,8 @@ android_resources("java_resources") {
     "res/drawable-mdpi/infobar_protected_media_identifier.png",
     "res/drawable-mdpi/infobar_warning.png",
     "res/drawable-mdpi/permission_cookie.png",
+    "res/drawable-night/location_approximate.xml",
+    "res/drawable-night/location_precise.xml",
     "res/drawable-xhdpi/exclamation_triangle.png",
     "res/drawable-xhdpi/infobar_downloading.png",
     "res/drawable-xhdpi/infobar_protected_media_identifier.png",
