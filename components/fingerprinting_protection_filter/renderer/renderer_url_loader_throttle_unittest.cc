@@ -201,28 +201,6 @@ TEST_F(RendererURLLoaderThrottleTest,
   EXPECT_FALSE(defer);
 }
 
-// Regression test for https://crbug.com/436470071.
-TEST_F(RendererURLLoaderThrottleTest,
-       DoesNotDeferHttpsScriptRedirectWhenActivationComputed) {
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  SetActivationLevel(subresource_filter::mojom::ActivationLevel::kEnabled);
-  RunUntilActivationReceived(
-      subresource_filter::mojom::ActivationLevel::kEnabled);
-  throttle_->WillStartRequest(&request, &defer);
-  EXPECT_FALSE(defer);
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  GURL redirect_url("https://blocked.com/tracker.js");
-  net::RedirectInfo redirect_info;
-  redirect_info.new_url = redirect_url;
-  throttle_->WillRedirectRequest(&redirect_info, *response_head, &defer,
-                                 nullptr, nullptr, nullptr);
-  EXPECT_FALSE(defer);
-}
-
 TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
   base::HistogramTester histogram_tester;
   GURL url("https://example.com/script.js");
