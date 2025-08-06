@@ -51,6 +51,8 @@ struct SourceProfile {
 
 // Contains information needed for importing search engine urls.
 struct SearchEngineInfo {
+  friend bool operator==(const SearchEngineInfo& a,
+                         const SearchEngineInfo& b) = default;
   // |url| is a string instead of a GURL since it may not actually be a valid
   // GURL directly (e.g. for "http://%s.com").
   std::u16string url;
