@@ -100,9 +100,21 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   // Section -> EntityType -> AttributeType -> AttributeInstance.
   for (const auto& [section, entities_with_fields_and_types] :
        RationalizeAndDetermineAttributeTypes(fields)) {
+    std::map<FieldGlobalId, size_t> num_occurrences;
     for (const auto& [entity, fields_with_types] :
          entities_with_fields_and_types) {
       for (const auto& [field, attribute_type] : fields_with_types) {
+        num_occurrences[field->global_id()] +=
+            attribute_type.data_type() != AttributeType::DataType::kName;
+      }
+    }
+
+    for (const auto& [entity, fields_with_types] :
+         entities_with_fields_and_types) {
+      for (const auto& [field, attribute_type] : fields_with_types) {
+        if (num_occurrences[field->global_id()] >= 2) {
+          continue;
+        }
         DCHECK_EQ(entity, attribute_type.entity_type());
         const FieldType field_type =
             field->Type().GetAutofillAiTypeAndResolveTagTypes(entity);

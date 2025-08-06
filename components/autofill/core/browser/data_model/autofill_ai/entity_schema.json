@@ -4,9 +4,9 @@
     "attributes": [ "Name", "Country", "Number", "Issue date", "Expiration date" ],
     "obfuscated attributes": [ "Number" ],
     "required fields": [
-      ["Number"],
-      ["Issue date"],
-      ["Expiration date"]
+      [ "Number" ],
+      [ "Issue date" ],
+      [ "Expiration date" ]
     ],
     "import constraints": [
       [ "Number" ]
