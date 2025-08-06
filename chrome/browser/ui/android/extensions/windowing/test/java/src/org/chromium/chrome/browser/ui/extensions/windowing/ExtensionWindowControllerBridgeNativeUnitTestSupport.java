@@ -30,12 +30,13 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
 
     @CalledByNative
     private ExtensionWindowControllerBridgeNativeUnitTestSupport() {
-        // Create a real ChromeAndroidTask with mock dependencies so that we can have real
-        // ChromeAndroidTask internals, such as the native BrowserWindowInterface pointer that
-        // ExtensionWindowControllerBridge depends on.
+        // Create a real ChromeAndroidTask with mock dependencies, but don't mock @NativeMethods.
+        // This way we can have real ChromeAndroidTask internals, such as the native
+        // BrowserWindowInterface pointer that ExtensionWindowControllerBridge depends on.
         mChromeAndroidTask =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                        FAKE_CHROME_ANDROID_TASK_ID);
+                                FAKE_CHROME_ANDROID_TASK_ID, /* mockNatives= */ false)
+                        .mChromeAndroidTask;
 
         mExtensionWindowControllerBridge =
                 new ExtensionWindowControllerBridgeImpl(mChromeAndroidTask);

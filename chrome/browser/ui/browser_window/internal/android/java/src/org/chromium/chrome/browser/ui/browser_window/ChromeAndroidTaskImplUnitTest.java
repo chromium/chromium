@@ -14,7 +14,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Before;
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,25 +31,17 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private static final long FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR = 42;
-
-    private final AndroidBrowserWindow.Natives mMockAndroidBrowserWindowNatives =
-            ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives(
-                    FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
-
     private static ChromeAndroidTaskImpl createChromeAndroidTask() {
         return createChromeAndroidTask(/* taskId= */ 1);
     }
 
     private static ChromeAndroidTaskImpl createChromeAndroidTask(int taskId) {
-        var activityWindowAndroid =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
-        return new ChromeAndroidTaskImpl(activityWindowAndroid);
-    }
-
-    @Before
-    public void setUp() {
-        AndroidBrowserWindowJni.setInstanceForTesting(mMockAndroidBrowserWindowNatives);
+        var chromeAndroidTask =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                                /* taskId= */ 1)
+                        .mChromeAndroidTask;
+        assert chromeAndroidTask instanceof ChromeAndroidTaskImpl;
+        return (ChromeAndroidTaskImpl) chromeAndroidTask;
     }
 
     @Test
@@ -77,50 +70,44 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setActivityWindowAndroid_refAlreadyExists_throwsException() {
         // Arrange.
-        var activityWindowAndroid1 =
+        var chromeAndroidTask = createChromeAndroidTask();
+        var newActivityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var activityWindowAndroid2 =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var chromeAndroidTask = new ChromeAndroidTaskImpl(activityWindowAndroid1);
 
         // Act & Assert.
         assertThrows(
                 AssertionError.class,
-                () -> chromeAndroidTask.setActivityWindowAndroid(activityWindowAndroid2));
+                () -> chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid));
     }
 
     @Test
     public void setActivityWindowAndroid_previousRefCleared_setsNewRef() {
         // Arrange.
-        var activityWindowAndroid1 =
+        var chromeAndroidTask = createChromeAndroidTask();
+        var newActivityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var activityWindowAndroid2 =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var chromeAndroidTask = new ChromeAndroidTaskImpl(activityWindowAndroid1);
         chromeAndroidTask.clearActivityWindowAndroid();
 
         // Act.
-        chromeAndroidTask.setActivityWindowAndroid(activityWindowAndroid2);
+        chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid);
 
         // Assert.
-        assertEquals(activityWindowAndroid2, chromeAndroidTask.getActivityWindowAndroid());
+        assertEquals(newActivityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
     }
 
     @Test
     public void
             setActivityWindowAndroid_previousRefCleared_newRefHasDifferentTaskId_throwsException() {
         // Arrange.
-        var activityWindowAndroid1 =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
-        var activityWindowAndroid2 =
+        var chromeAndroidTask = createChromeAndroidTask();
+        var newActivityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 2);
-        var chromeAndroidTask = new ChromeAndroidTaskImpl(activityWindowAndroid1);
         chromeAndroidTask.clearActivityWindowAndroid();
 
         // Act & Assert.
         assertThrows(
                 AssertionError.class,
-                () -> chromeAndroidTask.setActivityWindowAndroid(activityWindowAndroid2));
+                () -> chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid));
     }
 
     @Test
@@ -198,7 +185,9 @@ public class ChromeAndroidTaskImplUnitTest {
         long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
 
         // Assert.
-        assertEquals(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, nativeBrowserWindowPtr);
+        assertEquals(
+                ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                nativeBrowserWindowPtr);
     }
 
     @Test
@@ -244,15 +233,20 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void destroy_destroysAndroidBrowserWindow() {
-        // Arrange: create a ChromeAndroidTask and a fake native AndroidBrowserWindow pointer value.
-        var chromeAndroidTask = createChromeAndroidTask();
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockAndroidBrowserWindowNatives =
+                assertNonNull(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives);
         long nativeAndroidBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
 
         // Act.
         chromeAndroidTask.destroy();
 
         // Assert.
-        verify(mMockAndroidBrowserWindowNatives, times(1)).destroy(nativeAndroidBrowserWindowPtr);
+        verify(mockAndroidBrowserWindowNatives, times(1)).destroy(nativeAndroidBrowserWindowPtr);
     }
 
     @Test
