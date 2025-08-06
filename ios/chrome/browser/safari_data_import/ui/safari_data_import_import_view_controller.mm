@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
+#import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
@@ -42,6 +43,10 @@
   [super viewDidLoad];
   [self makeBannerImageVisibilityAdaptive];
   [self showInstructionView];
+}
+
+- (UIFontTextStyle)titleLabelFontTextStyle {
+  return GetSafariDataImportTitleLabelFontTextStyle(self.traitCollection);
 }
 
 #pragma mark - Accessor

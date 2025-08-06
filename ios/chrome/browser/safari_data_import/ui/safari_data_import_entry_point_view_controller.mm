@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_entry_point_view_controller.h"
 
+#import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
+#import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -28,6 +30,26 @@
   [super viewDidLoad];
   /// Hide the image on compact height.
   self.alwaysShowImage = NO;
+  [self updateUIOnTraitChange];
+  NSArray<UITrait>* traits = @[
+    UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+    UITraitPreferredContentSizeCategory.class
+  ];
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
+}
+
+#pragma mark - Accessor
+
+- (UIFontTextStyle)titleTextStyle {
+  return GetSafariDataImportTitleLabelFontTextStyle(self.traitCollection);
+}
+
+#pragma mark - Private
+
+/// Method that updates the title font on trait collection change.
+- (void)updateUIOnTraitChange {
+  self.titleLabel.font = GetFRETitleFont(self.titleTextStyle);
 }
 
 @end
