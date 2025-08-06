@@ -141,17 +141,13 @@ void SessionServiceImpl::RegisterBoundSession(
       net::NetLogEventType::DBSC_REGISTRATION_REQUEST,
       net_log_source_for_registration);
 
-  std::unique_ptr<RegistrationFetcher> fetcher =
-      RegistrationFetcher::StartCreateTokenAndFetch(
-          std::move(registration_params), key_service_.get(), context_.get(),
-          isolation_info, net_log_source_for_registration,
-          original_request_initiator,
-          base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
-                         weak_factory_.GetWeakPtr(),
-                         std::move(on_access_callback)));
-  if (fetcher) {
-    registration_fetchers_.insert(std::move(fetcher));
-  }
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(registration_params), key_service_.get(), context_.get(),
+      isolation_info, net_log_source_for_registration,
+      original_request_initiator,
+      base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(on_access_callback)));
 }
 
 SessionServiceImpl::Observer::Observer(
@@ -178,10 +174,9 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 
 void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
-    RegistrationFetcher* fetcher,
     base::expected<SessionParams, SessionError> params_or_error) {
   SessionError::ErrorType result = OnRegistrationCompleteInternal(
-      std::move(on_access_callback), fetcher, std::move(params_or_error));
+      std::move(on_access_callback), std::move(params_or_error));
   base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RegistrationResult",
                                 result);
 }
@@ -324,11 +319,9 @@ void SessionServiceImpl::DeferRequestForRefresh(
 void SessionServiceImpl::OnRefreshRequestCompletion(
     OnAccessCallback on_access_callback,
     SessionKey session_key,
-    RegistrationFetcher* fetcher,
     base::expected<SessionParams, SessionError> params_or_error) {
   SessionError::ErrorType result = OnRefreshRequestCompletionInternal(
-      std::move(on_access_callback), session_key, fetcher,
-      std::move(params_or_error));
+      std::move(on_access_callback), session_key, std::move(params_or_error));
 
   Session* session = GetSession(session_key);
   if (session) {
@@ -528,10 +521,7 @@ void SessionServiceImpl::RemoveObserver(net::SchemefulSite site,
 
 SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     OnAccessCallback on_access_callback,
-    RegistrationFetcher* fetcher,
     base::expected<SessionParams, SessionError> params_or_error) {
-  RemoveFetcher(fetcher);
-
   if (!params_or_error.has_value()) {
     // We failed to create a new session, so there's nothing to clean
     // up.
@@ -558,10 +548,7 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
 SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     OnAccessCallback on_access_callback,
     const SessionKey& session_key,
-    RegistrationFetcher* fetcher,
     base::expected<SessionParams, SessionError> params_or_error) {
-  RemoveFetcher(fetcher);
-
   // If refresh succeeded:
   // 1. update the session by adding a new session, replacing the old one
   // 2. restart the deferred requests.
@@ -647,15 +634,10 @@ void SessionServiceImpl::RefreshSessionInternal(
       &SessionServiceImpl::OnRefreshRequestCompletion,
       weak_factory_.GetWeakPtr(),
       request->device_bound_session_access_callback(), session_key);
-  std::unique_ptr<RegistrationFetcher> fetcher =
-      RegistrationFetcher::StartFetchWithExistingKey(
-          RegistrationRequestParam::CreateForRefresh(*session),
-          key_service_.get(), context_.get(), request->isolation_info(),
-          net_log_source_for_refresh, request->initiator(), std::move(callback),
-          key_id);
-  if (fetcher) {
-    registration_fetchers_.insert(std::move(fetcher));
-  }
+  RegistrationFetcher::StartFetchWithExistingKey(
+      RegistrationRequestParam::CreateForRefresh(*session), key_service_.get(),
+      context_.get(), request->isolation_info(), net_log_source_for_refresh,
+      request->initiator(), std::move(callback), key_id);
 }
 
 bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
@@ -681,17 +663,6 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
   }
 
   return refresh_count >= kRefreshQuota;
-}
-
-void SessionServiceImpl::RemoveFetcher(RegistrationFetcher* fetcher) {
-  if (!fetcher) {
-    return;
-  }
-  auto it = registration_fetchers_.find(fetcher);
-  if (it == registration_fetchers_.end()) {
-    return;
-  }
-  registration_fetchers_.erase(it);
 }
 
 }  // namespace net::device_bound_sessions
