@@ -18535,29 +18535,6 @@
             ]
         }
     ],
-    "Prerender2NewTabPageTriggerV2": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "BothMouseDownAndMouseHover_20241010",
-                    "params": {
-                        "prerender_new_tab_page_on_mouse_hover_trigger": "true",
-                        "prerender_new_tab_page_on_mouse_pressed_trigger": "true",
-                        "prerender_start_delay_on_mouse_hover_ms": "300"
-                    },
-                    "enable_features": [
-                        "NewTabPageTriggerForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2ReuseSearchResultHostAndroid": [
         {
             "platforms": [
