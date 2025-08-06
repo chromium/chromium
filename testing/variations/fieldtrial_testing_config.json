@@ -5504,6 +5504,27 @@
             ]
         }
     ],
+    "ChromnientEntrypointLabelAlt": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "id": "1"
+                    },
+                    "enable_features": [
+                        "LensOverlayEntrypointLabelAlt"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientFetchSrp": [
         {
             "platforms": [
