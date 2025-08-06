@@ -382,6 +382,8 @@ export const LayoutMixin = dedupingMixin(
                 left -= width;
                 top += layout.offset;
                 break;
+              default:
+                break;
             }
           }
           const result = {

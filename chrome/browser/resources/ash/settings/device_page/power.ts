@@ -524,6 +524,8 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
       case LidClosedBehavior.SHUT_DOWN:
         this.lidClosedLabel_ = loadTimeData.getString('powerLidShutDownLabel');
         break;
+      default:
+        break;
     }
 
     if (isControlled) {
@@ -700,6 +702,8 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
         break;
       case 'lidClosed':
         classes.push('dropdown-row');
+        break;
+      default:
         break;
     }
 

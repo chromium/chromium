@@ -16,6 +16,7 @@ import '../../settings_shared.css.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {AppParentalControlsHandlerInterface} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
@@ -171,6 +172,8 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
       case (PinValidationResult.kPinNumericError):
         this.problemMessage_ = this.i18n(MessageType.NUMBERS_ONLY);
         return false;
+      default:
+        assertNotReached();
     }
   }
 

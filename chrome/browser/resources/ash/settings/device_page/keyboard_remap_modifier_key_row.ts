@@ -151,6 +151,8 @@ export class KeyboardRemapModifierKeyRowElement extends
       case MetaKey.kSearch:
       case MetaKey.kLauncherRefresh:
         return this.i18n('perDeviceKeyboardKeySearch');
+      default:
+        assertNotReached();
     }
   }
 
