@@ -578,7 +578,6 @@ void CookieControlsController::RecordActivationMetrics() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
 
   // Metrics, related to confidence signals:
-  // TODO(crbug.com/40064612): Add CookieControlsActivated.FedCmInitiated
   base::UmaHistogramBoolean(
       "Privacy.CookieControlsActivated.SaaRequested",
       cookie_settings_->HasAnyFrameRequestedStorageAccess(url));
@@ -597,7 +596,6 @@ void CookieControlsController::RecordActivationMetrics() {
       site_data_access_type);
 
   // Record activation UKM.
-  // TODO(crbug.com/40064612): Include FedCM information.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto ukm_source_id =
       GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -614,8 +612,6 @@ void CookieControlsController::RecordActivationMetrics() {
       .SetThirdPartySiteDataAccessType(
           static_cast<uint64_t>(site_data_access_type))
       .Record(ukm::UkmRecorder::Get());
-
-  // TODO(crbug.com/40064612): Add metrics, related to repeated activations.
 }
 
 bool CookieControlsController::ShouldHighlightUserBypass(
@@ -635,7 +631,6 @@ bool CookieControlsController::ShouldHighlightUserBypass(
     return false;
   }
 
-  // TODO(crbug.com/40064612): Check if FedCM was requested.
   const GURL& url = web_contents->GetLastCommittedURL();
   if (cookie_settings_->HasAnyFrameRequestedStorageAccess(url)) {
     return false;

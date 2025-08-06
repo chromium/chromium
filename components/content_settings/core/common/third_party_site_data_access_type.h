@@ -9,8 +9,6 @@
 // Keep in sync with CookieControlsSiteDataAccessType in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/40064612): Extend this to capture sites which only accessed
-// partitioned cookies and storage.
 enum class ThirdPartySiteDataAccessType {
   kAnyBlockedThirdPartySiteAccesses = 0,
   kAnyAllowedThirdPartySiteAccesses = 1,
