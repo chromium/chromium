@@ -538,6 +538,13 @@ void BackgroundTabLoadingPolicy::NotifyAllTabsScored() {
 
 void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
   TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::InitiateLoad");
+  for (const PageNode* to_load : page_loader_->GetPageNodesToLoad(page_node)) {
+    InitiateSinglePageLoad(to_load);
+  }
+}
+
+void BackgroundTabLoadingPolicy::InitiateSinglePageLoad(
+    const PageNode* page_node) {
   // The page shouldn't already be loading.
   DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
   DCHECK(!base::Contains(page_nodes_loading_, page_node));
@@ -567,8 +574,9 @@ void BackgroundTabLoadingPolicy::MaybeLoadSomeTabs() {
   // Continue to load tabs while possible. This is in a loop with a
   // recalculation of GetMaxNewTabLoads() as reentrancy can cause conditions
   // to change as each tab load is initiated.
-  while (GetMaxNewTabLoads() > 0)
+  while (GetMaxNewTabLoads() > 0) {
     LoadNextTab();
+  }
 
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();

@@ -45,7 +45,25 @@ class LenientMockPageLoader
   LenientMockPageLoader(const LenientMockPageLoader& other) = delete;
   LenientMockPageLoader& operator=(const LenientMockPageLoader&) = delete;
 
-  MOCK_METHOD1(LoadPageNode, void(const PageNode* page_node));
+  MOCK_METHOD(void, LoadPageNode, (const PageNode* page_node));
+
+  std::vector<const PageNode*> GetPageNodesToLoad(
+      const PageNode* page_node) override {
+    std::vector<const PageNode*> to_load = split_nodes_map_[page_node];
+    if (to_load.empty()) {
+      return {page_node};
+    } else {
+      return to_load;
+    }
+  }
+
+  void SetPageNodesToLoad(PageNode* page_node,
+                          std::vector<const PageNode*> split_nodes) {
+    split_nodes_map_[page_node] = split_nodes;
+  }
+
+ private:
+  std::map<const PageNode*, std::vector<const PageNode*>> split_nodes_map_;
 };
 using MockPageLoader = ::testing::StrictMock<LenientMockPageLoader>;
 
@@ -253,6 +271,61 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
   page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoading);
   page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsLoadedTogether) {
+  // Create 4 PageNode to restore.
+  std::vector<
+      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
+      page_nodes;
+  std::vector<PageNodeData> to_load;
+
+  // Create vector of PageNode to restore.
+  for (int i = 0; i < 4; i++) {
+    page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
+
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // Mark tabs 1 and 2 as split and 2 as the having granted permission status so
+  // it loads first.
+  loader()->SetPageNodesToLoad(page_nodes[2].get(),
+                               {page_nodes[1].get(), page_nodes[2].get()});
+  to_load[2].notification_permission_status =
+      blink::mojom::PermissionStatus::GRANTED;
+
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[1].get()));
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[2].get()));
+
+  // Use 2 loading slots, which means only 2 of the PageNodes should immediately
+  // be scheduled to load.
+  policy()->SetMaxSimultaneousLoadsForTesting(2);
+
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // After the first 2 pages are loaded, the next two will be loaded.
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[0].get()));
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[3].get()));
+
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  ::testing::Mock::VerifyAndClear(loader());
+
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
   EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 

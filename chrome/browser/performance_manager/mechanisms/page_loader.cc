@@ -8,7 +8,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -29,6 +35,28 @@ void PageLoader::LoadPageNode(const PageNode* page_node) {
                        }
                      },
                      page_node->GetWebContents()));
+}
+
+std::vector<const PageNode*> PageLoader::GetPageNodesToLoad(
+    const PageNode* page_node) {
+  std::vector<const PageNode*> split_nodes;
+  tabs::TabInterface* const source_tab =
+      tabs::TabInterface::GetFromContents(page_node->GetWebContents().get());
+  std::optional<split_tabs::SplitTabId> split_id = source_tab->GetSplit();
+  if (split_id.has_value()) {
+    TabStripModel* tab_strip_model =
+        source_tab->GetBrowserWindowInterface()->GetTabStripModel();
+    for (tabs::TabInterface* tab :
+         tab_strip_model->GetSplitData(split_id.value())->ListTabs()) {
+      split_nodes.push_back(
+          PerformanceManager::GetPrimaryPageNodeForWebContents(
+              tab->GetContents())
+              .get());
+    }
+  } else {
+    split_nodes.push_back(page_node);
+  }
+  return split_nodes;
 }
 
 }  // namespace mechanism

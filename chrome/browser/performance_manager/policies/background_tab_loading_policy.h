@@ -164,8 +164,12 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   void NotifyAllTabsScored();
 
   // Move the PageNode from |page_nodes_to_load_| to
-  // |page_nodes_load_initiated_| and make the call to load the PageNode.
+  // |page_nodes_load_initiated_| and make the call to load the PageNode. If the
+  // PageNode is a split view, all tabs in the split will be loaded.
   void InitiateLoad(const PageNode* page_node);
+
+  // Helper to load a single PageNode.
+  void InitiateSinglePageLoad(const PageNode* page_node);
 
   // Removes the PageNode from all the sets of PageNodes that the policy is
   // tracking.
