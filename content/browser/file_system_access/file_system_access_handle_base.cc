@@ -116,6 +116,12 @@ FileSystemAccessHandleBase::GetReadWritePermissionStatus() {
   return handle_state_.write_grant->GetStatus();
 }
 
+FileSystemAccessHandleBase::PermissionStatus
+FileSystemAccessHandleBase::GetEffectiveWritePermissionStatus() {
+  return GetPermissionStatusForMode(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode());
+}
+
 // TODO(crbug.com/40276567): Update callers if they only need write permission.
 void FileSystemAccessHandleBase::DoGetPermissionStatus(
     blink::mojom::FileSystemAccessPermissionMode mode,

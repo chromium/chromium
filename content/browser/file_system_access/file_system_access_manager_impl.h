@@ -46,6 +46,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace blink {
@@ -388,6 +389,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // correspond to a "real" file path and not a virtual path in a sandboxed file
   // system.
   storage::FileSystemURL CreateFileSystemURLFromPath(const PathInfo& path_info);
+
+  // Returns the effective permission mode for operations that require write
+  // access. This currently returns kReadWrite, but will switch to kWrite only
+  // when the FileSystemAccessWriteMode feature is fully rolled out.
+  // See https://crbug.com/40276567.
+  static blink::mojom::FileSystemAccessPermissionMode
+  GetEffectiveWritePermissionMode();
 
   void Shutdown();
 

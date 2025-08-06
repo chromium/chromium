@@ -28,7 +28,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
-#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -63,6 +62,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
@@ -2068,6 +2068,15 @@ base::WeakPtr<FileSystemAccessManagerImpl>
 FileSystemAccessManagerImpl::AsWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
+}
+
+// static
+blink::mojom::FileSystemAccessPermissionMode
+FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode() {
+  return base::FeatureList::IsEnabled(
+             blink::features::kFileSystemAccessWriteMode)
+             ? blink::mojom::FileSystemAccessPermissionMode::kWrite
+             : blink::mojom::FileSystemAccessPermissionMode::kReadWrite;
 }
 
 bool FileSystemAccessManagerImpl::IsSafePathComponent(

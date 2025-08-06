@@ -650,6 +650,25 @@
     "expires": "never"
   },
   {
+    "prefix": "file-system-access-write-mode",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/file-system-access",
+      "external/wpt/fs"
+    ],
+    "args": [
+      "--enable-features=FileSystemAccessWriteMode"
+    ],
+    "expires": "Sep 10, 2026",
+    "owners": [
+      "mych@chromium.org"
+    ]
+  },
+  {
     "prefix": "delay-async-when-lcp-in-html",
     "platforms": [
       "Linux",

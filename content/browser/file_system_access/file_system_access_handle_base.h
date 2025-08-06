@@ -140,6 +140,12 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
  protected:
   virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
 
+  // Returns the effective write permission status.
+  // This currently returns permission status for kReadWrite, but will switch to
+  // the one for kWrite only when the FileSystemAccessWriteMode feature is fully
+  // rolled out.
+  PermissionStatus GetEffectiveWritePermissionStatus();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
