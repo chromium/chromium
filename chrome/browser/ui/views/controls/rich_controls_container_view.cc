@@ -25,7 +25,7 @@ namespace {
 
 using Util = ::content_settings::CookieControlsUtil;
 
-// TODO(crbug.com/40064612): Consider moving this method to a Factory class
+// TODO(crbug.com/436861952): Consider moving this method to a Factory class
 // and refactor PageInfoViewFactory::CreateLabelWrapper.
 std::unique_ptr<views::View> CreateLabelWrapper() {
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -66,7 +66,7 @@ RichControlsContainerView::RichControlsContainerView() {
 
   // Calculate difference between label height and icon size to align icons
   // and label in the first row.
-  // TODO(crbug.com/40064612): Refactor the view and use a TableLayout instead.
+  // TODO(crbug.com/436861952): Refactor the view and use a TableLayout instead.
   const int label_height =
       title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
   const int margin = (label_height - icon_size) / 2;
