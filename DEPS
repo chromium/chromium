@@ -3727,6 +3727,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/safe_browsing/internal': {
+      'url': Var('chrome_git') + '/chrome/components/safe_browsing/internal.git' + '@' +
+        'af846eec122d8ca3714a9dcbf368a56999ea2756',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/components/site_isolation/internal': {
       'url': Var('chrome_git') + '/chrome/components/site_isolation.git' + '@' +
         'c0820b79078dbee4b737614f83f5942ea4c0b916',
