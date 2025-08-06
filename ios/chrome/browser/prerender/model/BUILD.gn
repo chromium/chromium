@@ -11,6 +11,8 @@ source_set("model") {
     "preload_controller_delegate.h",
     "prerender_service.h",
     "prerender_service_factory.h",
+    "prerender_tab_helper.h",
+    "prerender_tab_helper_delegate.h",
   ]
   sources = [
     "preload_controller.h",
@@ -18,6 +20,7 @@ source_set("model") {
     "prerender_service_factory.mm",
     "prerender_service_impl.h",
     "prerender_service_impl.mm",
+    "prerender_tab_helper.mm",
   ]
 
   friend = [ ":unit_tests" ]
