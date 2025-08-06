@@ -10,7 +10,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps/apps/calculator_app",
   "+chrome/browser/ash/system_web_apps/apps/camera_app",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/arc",
   "+chrome/browser/chromeos/network",
   "+chrome/browser/extensions/extension_util.h",
@@ -40,6 +39,7 @@ include_rules = [
 
 specific_include_rules = {
   "chrome_new_window_client_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser_list.h",
     "+chrome/test",
   ],
