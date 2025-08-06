@@ -230,4 +230,48 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
   EXPECT_EQ((*final_timestamps)[0].end, base::Seconds(25));
 }
 
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       HandlesResultsWithInvalidAudioEndTime) {
+  CreateRecognizer(CreateOptions());
+
+  // 1. Populate the timestamp estimator.
+  // Audio from media time [10s, 12s) corresponds to speech time [0s, 2s).
+  SendAudio(recognizer_.get(), base::Seconds(2), base::Seconds(10));
+
+  // 2. Create a non-final recognition result for speech time [1s, 1s).
+  media::SpeechRecognitionResult result;
+  result.transcription = "hello world";
+  result.is_final = false;
+  result.timing_information = media::TimingInformation();
+  result.timing_information->audio_start_time = base::Seconds(1);
+  result.timing_information->audio_end_time = base::Seconds(1);
+
+  // 3. Trigger the event handler to receive the result.
+  recognizer_->recognition_event_callback().Run(std::move(result));
+  WaitForRecognitionEvent();
+
+  // 4. Verify the timestamps on the received result.
+  ASSERT_TRUE(last_received_result_.timing_information.has_value());
+  auto& timestamps =
+      last_received_result_.timing_information->originating_media_timestamps;
+  ASSERT_FALSE(timestamps.has_value());
+
+  // 5. Create a final recognition result.
+  media::SpeechRecognitionResult final_result;
+  final_result.is_final = true;
+  final_result.timing_information = media::TimingInformation();
+  final_result.timing_information->audio_start_time = base::Seconds(2);
+  final_result.timing_information->audio_end_time = base::Seconds(2);
+
+  // 6. Trigger the event handler to receive the result.
+  recognizer_->recognition_event_callback().Run(std::move(final_result));
+  WaitForRecognitionEvent();
+
+  // 7. Verify the timestamps on the received result.
+  ASSERT_TRUE(last_received_result_.timing_information.has_value());
+  timestamps =
+      last_received_result_.timing_information->originating_media_timestamps;
+  ASSERT_FALSE(timestamps.has_value());
+}
+
 }  // namespace speech

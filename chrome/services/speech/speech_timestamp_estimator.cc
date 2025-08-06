@@ -199,9 +199,8 @@ SpeechTimestampEstimator::TakeFrontUntil(
 MediaRanges SpeechTimestampEstimator::TakeTimestampsInRange(
     SpeechTimestamp start,
     SpeechTimestamp end) {
-  CHECK_LT(start, end);
-
-  if (playback_chunks_.empty()) {
+  // Verify the timestamps and chunks.
+  if (start >= end || playback_chunks_.empty()) {
     return MediaRanges();
   }
 
@@ -232,9 +231,8 @@ MediaRanges SpeechTimestampEstimator::TakeTimestampsInRange(
 MediaRanges SpeechTimestampEstimator::PeekTimestampsInRange(
     SpeechTimestamp start,
     SpeechTimestamp end) {
-  CHECK_LT(start, end);
-
-  if (playback_chunks_.empty()) {
+  // Verify the timestamps and chunks.
+  if (start >= end || playback_chunks_.empty()) {
     return MediaRanges();
   }
 

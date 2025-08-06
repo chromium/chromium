@@ -204,8 +204,9 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
     session_contains_speech_ = true;
   }
 
-  if (!client_remote_.is_bound())
+  if (!client_remote_.is_bound()) {
     return;
+  }
 
   if (event.timing_information.has_value()) {
     using SpeechTimestamp = SpeechTimestampEstimator::SpeechTimestamp;
@@ -235,8 +236,9 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
           SpeechTimestamp(timing_info.audio_start_time),
           SpeechTimestamp(timing_info.audio_end_time));
     }
-
-    timing_info.originating_media_timestamps = std::move(media_timestamps);
+    if (!media_timestamps.empty()) {
+      timing_info.originating_media_timestamps = std::move(media_timestamps);
+    }
   }
 
   client_remote_->OnSpeechRecognitionRecognitionEvent(
