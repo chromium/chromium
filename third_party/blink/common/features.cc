@@ -429,7 +429,7 @@ BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
 // of the renderer eviction reasons for Back/Forward Cache.
 BASE_FEATURE(kCaptureJSExecutionLocation,
              "CaptureJSExecutionLocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCheckHTMLParserBudgetLessOften,
              "CheckHTMLParserBudgetLessOften",
