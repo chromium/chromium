@@ -84,8 +84,7 @@ TEST_F(BlobBytesProviderTest, Consolidation) {
   data->AppendData(base::span_from_cstring("ps2"));
 
   EXPECT_EQ(1u, data->data_.size());
-  EXPECT_EQ(12u, data->data_[0]->size());
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(data->data_[0]->data(), "abcdefps1ps2", 12)));
+  EXPECT_EQ(data->data_[0]->span(), base::span_from_cstring("abcdefps1ps2"));
 
   auto large_data = base::HeapArray<char>::WithSize(
       BlobBytesProvider::kMaxConsolidatedItemSizeInBytes);

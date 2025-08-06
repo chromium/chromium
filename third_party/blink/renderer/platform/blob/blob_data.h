@@ -78,6 +78,7 @@ class PLATFORM_EXPORT RawData : public ThreadSafeRefCounted<RawData> {
     return base::AdoptRef(new RawData());
   }
 
+  base::span<const char> span() const { return data_; }
   const char* data() const { return data_.data(); }
   size_t size() const { return data_.size(); }
 
