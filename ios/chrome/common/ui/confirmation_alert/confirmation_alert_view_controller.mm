@@ -115,8 +115,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 @property(nonatomic, strong) UIView* imageContainerView;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @property(nonatomic, strong) UIScrollView* scrollView;
-@property(nonatomic, strong) GradientView* gradientView;
-@property(nonatomic, strong) NSLayoutConstraint* gradientViewHeightConstraint;
+@property(nonatomic, strong) CAGradientLayer* gradientMask;
 @property(nonatomic, strong)
     NSLayoutConstraint* scrollViewBottomAnchorConstraint;
 @end
@@ -272,20 +271,14 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     self.actionStackView = actionStackView;
 
     if (self.customGradientViewHeight > 0) {
-      self.gradientView = [self createGradientView];
-      [self.view addSubview:self.gradientView];
-
-      [NSLayoutConstraint activateConstraints:@[
-        [self.gradientView.bottomAnchor
-            constraintEqualToAnchor:actionStackView.topAnchor],
-        [self.gradientView.leadingAnchor
-            constraintEqualToAnchor:self.scrollView.leadingAnchor],
-        [self.gradientView.trailingAnchor
-            constraintEqualToAnchor:self.scrollView.trailingAnchor],
-      ]];
-      self.gradientViewHeightConstraint = [self.gradientView.heightAnchor
-          constraintEqualToConstant:self.customGradientViewHeight];
-      self.gradientViewHeightConstraint.active = YES;
+      self.gradientMask = [CAGradientLayer layer];
+      self.gradientMask.endPoint = CGPointMake(0.0, 1.0);
+      UIColor* bottomColor =
+          BlendColors([UIColor clearColor], [UIColor whiteColor],
+                      kScrollViewBottomInsets / self.customGradientViewHeight);
+      self.gradientMask.colors =
+          @[ (id)[UIColor whiteColor].CGColor, (id)bottomColor.CGColor ];
+      self.scrollView.layer.mask = self.gradientMask;
     }
   }
 
@@ -384,6 +377,29 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   [self.scrollView flashScrollIndicators];
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  // The portion of the gradient view actually covering the scroll view.
+  CGFloat effectiveGradientHeight =
+      self.customGradientViewHeight - kScrollViewBottomInsets;
+  if (effectiveGradientHeight <= 0) {
+    return;
+  }
+
+  // Match the mask's size to the scroll view's size.
+  self.gradientMask.frame = self.scrollView.bounds;
+
+  // Determine the starting point of the gradient so that it has the desired
+  // number of pixels of height at the bottom of the scroll view.
+  CGFloat startY =
+      (effectiveGradientHeight >= self.gradientMask.frame.size.height)
+          ? 0.0
+          : 1.0 -
+                (effectiveGradientHeight / self.gradientMask.frame.size.height);
+  self.gradientMask.startPoint = CGPointMake(0.0, startY);
+}
+
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   [self.view setNeedsUpdateConstraints];
@@ -422,7 +438,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 }
 
 - (void)displayGradientView:(BOOL)shouldShow {
-  self.gradientView.hidden = !shouldShow;
+  self.scrollView.layer.mask = shouldShow ? self.gradientMask : nil;
 }
 
 - (UIButton*)primaryActionButton {
@@ -784,15 +800,6 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
       setShowsVerticalScrollIndicator:self.showsVerticalScrollIndicator];
   scrollView.delegate = self;
   return scrollView;
-}
-
-// Helper to create the gradient view.
-- (GradientView*)createGradientView {
-  GradientView* gradientView = [[GradientView alloc]
-      initWithTopColor:[self.mainBackgroundColor colorWithAlphaComponent:0]
-           bottomColor:self.mainBackgroundColor];
-  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-  return gradientView;
 }
 
 // Helper to create the stack view.

@@ -164,35 +164,6 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   }
 }
 
-// Returns a color which is a blend of `color_1` and `color_2`, depending on
-// the value of `fraction`. `fraction` is a value between 0 and 1. If it is
-// closer to 0, the output will be closer to `color_1`, and if it is closer to
-// 1 the output will be closer to `color_2`.
-UIColor* BlendColors(UIColor* color_1, UIColor* color_2, CGFloat fraction) {
-  if (fraction <= 0.0) {
-    return color_1;
-  } else if (fraction >= 1.0) {
-    return color_2;
-  } else if ([color_1 isEqual:color_2]) {
-    return color_1;
-  }
-
-  // Get RGBA components for the two colors, as inputs to the blend.
-  CGFloat in_1[4];
-  CGFloat in_2[4];
-  [color_1 getRed:&in_1[0] green:&in_1[1] blue:&in_1[2] alpha:&in_1[3]];
-  [color_2 getRed:&in_2[0] green:&in_2[1] blue:&in_2[2] alpha:&in_2[3]];
-
-  // Blend each RGBA color component, based on the given fraction.
-  CGFloat out[4];
-  CGFloat inverse = 1.0 - fraction;
-  for (int i = 0; i < 4; i++) {
-    out[i] = inverse * in_1[i] + fraction * in_2[i];
-  }
-
-  return [UIColor colorWithRed:out[0] green:out[1] blue:out[2] alpha:out[3]];
-}
-
 // Returns a value in the range of `from` up to `to`, depending on the given
 // `percent`.
 CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
