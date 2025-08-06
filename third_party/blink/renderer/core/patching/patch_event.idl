@@ -7,5 +7,5 @@
   RuntimeEnabled=DocumentPatching
 ] interface PatchEvent : Event {
   constructor(DOMString type, PatchEventInit init);
-  [SameObject] readonly attribute PatchStatus patch;
+  [SameObject] readonly attribute Patch patch;
 };

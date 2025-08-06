@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/patching/dom_patch_status.h"
+#include "third_party/blink/renderer/core/patching/patch.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -52,7 +52,7 @@
 namespace blink {
 
 using SlotChangeList = HeapVector<Member<HTMLSlotElement>>;
-using PatchList = HeapVector<Member<DOMPatchStatus>>;
+using PatchList = HeapVector<Member<Patch>>;
 
 static unsigned g_observer_priority = 0;
 struct MutationObserver::ObserverLessThan {
@@ -92,7 +92,7 @@ class MutationObserverAgentData
     active_slot_change_list_.push_back(&slot);
   }
 
-  void EnqueuePatch(DOMPatchStatus& patch) {
+  void EnqueuePatch(Patch& patch) {
     EnsureEnqueueMicrotask();
     pending_patches_.push_back(&patch);
   }
@@ -345,7 +345,7 @@ void MutationObserver::CleanSlotChangeList(Document& document) {
 }
 
 // static
-void MutationObserver::EnqueuePatch(DOMPatchStatus& patch) {
+void MutationObserver::EnqueuePatch(Patch& patch) {
   DCHECK(IsMainThread());
   MutationObserverAgentData::From(patch.GetDocument().GetAgent())
       .EnqueuePatch(patch);

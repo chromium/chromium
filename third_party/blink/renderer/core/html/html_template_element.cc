@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/patching/dom_patch_status.h"
+#include "third_party/blink/renderer/core/patching/patch.h"
 #include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -110,8 +110,7 @@ bool HTMLTemplateElement::ProcessPatch(ContainerNode& target) {
                              FastGetAttribute(html_names::kPatchsrcAttr))
                        : KURL();
   SetOverrideInsertionTarget(target);
-  patch_status_ =
-      DOMPatchStatus::Create(target, this, src, start_after, end_before);
+  patch_status_ = Patch::Create(target, this, src, start_after, end_before);
   patch_status_->Start();
   return true;
 }

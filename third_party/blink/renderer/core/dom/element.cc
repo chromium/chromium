@@ -3836,7 +3836,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
 }
 
 // https://github.com/WICG/declarative-partial-updates
-DOMPatchStatus* Element::currentPatch() {
+Patch* Element::currentPatch() {
   PatchSupplement* supplement = PatchSupplement::FromIfExists(GetDocument());
   if (!supplement) {
     return nullptr;

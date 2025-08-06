@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 dictionary PatchEventInit : EventInit {
-  PatchStatus patch;
+  Patch patch;
 };
 

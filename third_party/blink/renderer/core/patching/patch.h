@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PATCHING_DOM_PATCH_STATUS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_PATCHING_DOM_PATCH_STATUS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PATCHING_PATCH_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_PATCHING_PATCH_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
+#include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -28,20 +29,20 @@ namespace blink {
 class HTMLTemplateElement;
 class ScriptState;
 
-class DOMPatchStatus : public ScriptWrappable {
+class Patch : public ScriptWrappable, public ThreadableLoaderClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMPatchStatus* Create(ContainerNode& target,
-                                HTMLTemplateElement* source = nullptr,
-                                const KURL& source_url = KURL(),
-                                Node* previous_child = nullptr,
-                                Node* next_child = nullptr);
-  DOMPatchStatus(HTMLTemplateElement* source,
-                 ContainerNode& target,
-                 const KURL& source_url,
-                 Node* previous_child,
-                 Node* next_child);
+  static Patch* Create(ContainerNode& target,
+                       HTMLTemplateElement* source = nullptr,
+                       const KURL& source_url = KURL(),
+                       Node* previous_child = nullptr,
+                       Node* next_child = nullptr);
+  Patch(HTMLTemplateElement* source,
+        ContainerNode& target,
+        const KURL& source_url,
+        Node* previous_child,
+        Node* next_child);
   ScriptPromise<IDLUndefined> finished(ScriptState*);
   HTMLTemplateElement* source() { return source_; }
   void Trace(Visitor*) const override;
@@ -58,6 +59,14 @@ class DOMPatchStatus : public ScriptWrappable {
 
  private:
   void Fetch();
+
+  // ThreadableLoaderClient implementation
+  void DidReceiveResponse(uint64_t, const ResourceResponse& response) override;
+  void DidReceiveData(base::span<const char> bytes) override;
+  void DidFinishLoading(uint64_t /*identifier*/) override;
+  void DidFail(uint64_t /*identifier*/, const ResourceError& error) override;
+  void OnFetchError(DOMExceptionCode code, const AtomicString& message);
+
   enum class State { kPending, kActive, kTerminated, kFinished };
   State state_ = State::kPending;
   Member<HTMLTemplateElement> source_;
@@ -74,4 +83,4 @@ class DOMPatchStatus : public ScriptWrappable {
 };
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PATCHING_DOM_PATCH_STATUS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PATCHING_PATCH_H_

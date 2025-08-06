@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/core/patching/dom_patch_status.h"
+#include "third_party/blink/renderer/core/patching/patch.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -26,7 +26,7 @@ class PatchEvent final : public Event {
     return MakeGarbageCollected<PatchEvent>(type, init->patch());
   }
 
-  PatchEvent(const AtomicString& type, DOMPatchStatus* patch)
+  PatchEvent(const AtomicString& type, Patch* patch)
       : Event(type, Bubbles::kNo, Cancelable::kNo), patch_(patch) {}
 
   ~PatchEvent() override = default;
@@ -40,12 +40,12 @@ class PatchEvent final : public Event {
     Event::Trace(visitor);
   }
 
-  DOMPatchStatus* patch() const { return patch_; }
+  Patch* patch() const { return patch_; }
 
   bool IsPatchEvent() const override { return true; }
 
  private:
-  Member<DOMPatchStatus> patch_;
+  Member<Patch> patch_;
 };
 
 template <>

@@ -86,7 +86,6 @@ class CSSPseudoElement;
 class CSSStyleDeclaration;
 class CustomElementDefinition;
 class CustomElementRegistry;
-class DOMPatchStatus;
 class DOMRect;
 class DOMRectList;
 class DOMStringMap;
@@ -112,6 +111,7 @@ class Locale;
 class MutableCSSPropertyValueSet;
 class NamedNodeMap;
 class OutOfFlowData;
+class Patch;
 class PointerLockOptions;
 class PopoverData;
 class PseudoElement;
@@ -1515,7 +1515,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   EditContext* editContext() const;
 
   // https://github.com/WICG/declarative-partial-updates
-  DOMPatchStatus* currentPatch();
+  Patch* currentPatch();
 
   // Helpers for V8DOMActivityLogger::logEvent.  They call logEvent only if
   // the element is isConnected() and the context is an isolated world.

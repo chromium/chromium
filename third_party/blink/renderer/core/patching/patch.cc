@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/patching/dom_patch_status.h"
+#include "third_party/blink/renderer/core/patching/patch.h"
 
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/header_util.h"
@@ -41,20 +41,20 @@
 
 namespace blink {
 // static
-DOMPatchStatus* DOMPatchStatus::Create(ContainerNode& target,
-                                       HTMLTemplateElement* source,
-                                       const KURL& source_url,
-                                       Node* previous_child,
-                                       Node* next_child) {
-  return MakeGarbageCollected<DOMPatchStatus>(source, target, source_url,
-                                              previous_child, next_child);
+Patch* Patch::Create(ContainerNode& target,
+                     HTMLTemplateElement* source,
+                     const KURL& source_url,
+                     Node* previous_child,
+                     Node* next_child) {
+  return MakeGarbageCollected<Patch>(source, target, source_url, previous_child,
+                                     next_child);
 }
 
-DOMPatchStatus::DOMPatchStatus(HTMLTemplateElement* source,
-                               ContainerNode& target,
-                               const KURL& source_url,
-                               Node* previous_child,
-                               Node* next_child)
+Patch::Patch(HTMLTemplateElement* source,
+             ContainerNode& target,
+             const KURL& source_url,
+             Node* previous_child,
+             Node* next_child)
     : source_(source),
       target_(target),
       previous_child_(previous_child),
@@ -64,12 +64,11 @@ DOMPatchStatus::DOMPatchStatus(HTMLTemplateElement* source,
               target.GetDocument().GetExecutionContext())),
       source_url_(source_url) {}
 
-ScriptPromise<IDLUndefined> DOMPatchStatus::finished(
-    ScriptState* script_state) {
+ScriptPromise<IDLUndefined> Patch::finished(ScriptState* script_state) {
   return finished_->Promise(script_state->World());
 }
 
-void DOMPatchStatus::Start() {
+void Patch::Start() {
   if (state_ != State::kPending) {
     return;
   }
@@ -79,7 +78,7 @@ void DOMPatchStatus::Start() {
   Commit();
 }
 
-void DOMPatchStatus::Commit() {
+void Patch::Commit() {
   state_ = State::kActive;
   loader_.Clear();
   if (!next_child_ && !previous_child_) {
@@ -106,81 +105,14 @@ void DOMPatchStatus::Commit() {
       ParserPrefetchPolicy::kDisallowPrefetching);
 }
 
-void DOMPatchStatus::DispatchPatchEvent() {
+void Patch::DispatchPatchEvent() {
   Event* event =
       MakeGarbageCollected<PatchEvent>(event_type_names::kPatch, this);
   event->SetTarget(target_);
   target_->DispatchEvent(*event);
 }
 
-class PatchLoaderClient : public GarbageCollected<PatchLoaderClient>,
-                          public ThreadableLoaderClient {
- public:
-  explicit PatchLoaderClient(DOMPatchStatus* patch) : patch_(patch) {}
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(patch_);
-    ThreadableLoaderClient::Trace(visitor);
-  }
-
- private:
-  void DidReceiveResponse(uint64_t, const ResourceResponse& response) override {
-    if (!network::IsSuccessfulStatus(response.HttpStatusCode())) {
-      // TODO(nrosenthal): use different DOMExceptions for different statuses?
-      // Or maybe using "network error" for all of them?
-      if (response.HttpStatusCode() == net::HTTP_NOT_FOUND) {
-        OnError(DOMExceptionCode::kNotFoundError, response.HttpStatusText());
-      } else {
-        OnError(DOMExceptionCode::kNetworkError, response.HttpStatusText());
-      }
-    } else {
-      patch_->Commit();
-    }
-  }
-  void DidReceiveData(base::span<const char> bytes) override {
-    patch_->AppendBytes(reinterpret_cast<const base::span<uint8_t>&>(bytes));
-  }
-  void DidFinishLoading(uint64_t /*identifier*/) override { patch_->Finish(); }
-  void DidFail(uint64_t /*identifier*/, const ResourceError& error) override {
-    OnError(DOMExceptionCode::kNetworkError,
-            AtomicString("Failed to fetch resource"));
-  }
-
-  void OnError(DOMExceptionCode code, const AtomicString& message) {
-    ScriptState* script_state =
-        ToScriptStateForMainWorld(patch_->GetDocument().GetExecutionContext());
-    ScriptState::Scope scope(script_state);
-    v8::Local<v8::Value> exception = V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), code, message);
-    patch_->Terminate(ScriptValue(script_state->GetIsolate(), exception));
-  }
-
-  Member<DOMPatchStatus> patch_;
-};
-
-void DOMPatchStatus::Fetch() {
-  ResourceRequest request(source_url_);
-  source_url_ = KURL();
-  // TODO(nrosenthal): add actual patch request destination & context
-  request.SetRequestDestination(network::mojom::RequestDestination::kScript);
-  request.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
-
-  // TODO(nrosenthal): add a crossorigin property
-  request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);
-  request.SetMode(network::mojom::RequestMode::kCors);
-  // TODO(nrosenthal): change accept header based on target element
-  request.SetHttpHeaderField(http_names::kAccept, AtomicString("text/html"));
-  ResourceLoaderOptions resource_loader_options(
-      GetDocument().GetExecutionContext()->GetCurrentWorld());
-  resource_loader_options.data_buffering_policy = kDoNotBufferData;
-
-  loader_ = MakeGarbageCollected<ThreadableLoader>(
-      *GetDocument().GetExecutionContext(),
-      MakeGarbageCollected<PatchLoaderClient>(this), resource_loader_options);
-  loader_->Start(std::move(request));
-}
-
-void DOMPatchStatus::Finish() {
+void Patch::Finish() {
   if (state_ == State::kTerminated) {
     return;
   }
@@ -220,13 +152,7 @@ void DOMPatchStatus::Finish() {
   PatchSupplement::From(GetDocument())->DidComplete(*target_);
 }
 
-void DOMPatchStatus::Append(const String& text) {
-  if (state_ != State::kTerminated) {
-    parser_->Append(text);
-  }
-}
-
-void DOMPatchStatus::Terminate(ScriptValue reason) {
+void Patch::Terminate(ScriptValue reason) {
   if (state_ == State::kFinished || state_ == State::kTerminated) {
     return;
   }
@@ -242,7 +168,13 @@ void DOMPatchStatus::Terminate(ScriptValue reason) {
   finished_->Reject(reason);
 }
 
-void DOMPatchStatus::AppendBytes(base::span<uint8_t> bytes) {
+void Patch::Append(const String& text) {
+  if (state_ != State::kTerminated) {
+    parser_->Append(text);
+  }
+}
+
+void Patch::AppendBytes(base::span<uint8_t> bytes) {
   if (state_ == State::kTerminated) {
     return;
   }
@@ -255,11 +187,68 @@ void DOMPatchStatus::AppendBytes(base::span<uint8_t> bytes) {
   parser_->AppendBytes(bytes);
 }
 
-Document& DOMPatchStatus::GetDocument() {
+Document& Patch::GetDocument() {
   return target_->GetDocument();
 }
 
-void DOMPatchStatus::Trace(Visitor* visitor) const {
+void Patch::Fetch() {
+  ResourceRequest request(source_url_);
+  source_url_ = KURL();
+  // TODO(nrosenthal): add actual patch request destination & context
+  request.SetRequestDestination(network::mojom::RequestDestination::kScript);
+  request.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
+
+  // TODO(nrosenthal): add a crossorigin property
+  request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);
+  request.SetMode(network::mojom::RequestMode::kCors);
+  // TODO(nrosenthal): change accept header based on target element
+  request.SetHttpHeaderField(http_names::kAccept, AtomicString("text/html"));
+  ResourceLoaderOptions resource_loader_options(
+      GetDocument().GetExecutionContext()->GetCurrentWorld());
+  resource_loader_options.data_buffering_policy = kDoNotBufferData;
+
+  loader_ = MakeGarbageCollected<ThreadableLoader>(
+      *GetDocument().GetExecutionContext(), this, resource_loader_options);
+  loader_->Start(std::move(request));
+}
+
+void Patch::DidReceiveResponse(uint64_t, const ResourceResponse& response) {
+  if (!network::IsSuccessfulStatus(response.HttpStatusCode())) {
+    // TODO(nrosenthal): use different DOMExceptions for different statuses?
+    // Or maybe using "network error" for all of them?
+    if (response.HttpStatusCode() == net::HTTP_NOT_FOUND) {
+      OnFetchError(DOMExceptionCode::kNotFoundError, response.HttpStatusText());
+    } else {
+      OnFetchError(DOMExceptionCode::kNetworkError, response.HttpStatusText());
+    }
+  } else {
+    Commit();
+  }
+}
+
+void Patch::DidReceiveData(base::span<const char> bytes) {
+  AppendBytes(reinterpret_cast<const base::span<uint8_t>&>(bytes));
+}
+
+void Patch::DidFinishLoading(uint64_t /*identifier*/) {
+  Finish();
+}
+
+void Patch::DidFail(uint64_t /*identifier*/, const ResourceError& error) {
+  OnFetchError(DOMExceptionCode::kNetworkError,
+               AtomicString("Failed to fetch resource"));
+}
+
+void Patch::OnFetchError(DOMExceptionCode code, const AtomicString& message) {
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetExecutionContext());
+  ScriptState::Scope scope(script_state);
+  v8::Local<v8::Value> exception = V8ThrowDOMException::CreateOrEmpty(
+      script_state->GetIsolate(), code, message);
+  Terminate(ScriptValue(script_state->GetIsolate(), exception));
+}
+
+void Patch::Trace(Visitor* visitor) const {
   visitor->Trace(source_);
   visitor->Trace(target_);
   visitor->Trace(previous_child_);

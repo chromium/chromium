@@ -7239,14 +7239,14 @@ interface PasswordCredential : Credential
     getter name
     getter password
     method constructor
-interface PatchEvent : Event
-    attribute @@toStringTag
-    getter patch
-    method constructor
-interface PatchStatus
+interface Patch
     attribute @@toStringTag
     getter finished
     getter source
+    method constructor
+interface PatchEvent : Event
+    attribute @@toStringTag
+    getter patch
     method constructor
 interface Path2D
     attribute @@toStringTag
