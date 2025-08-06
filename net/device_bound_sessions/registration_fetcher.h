@@ -40,7 +40,8 @@ class RegistrationRequestParam;
 class NET_EXPORT RegistrationFetcher {
  public:
   using RegistrationCompleteCallback =
-      base::OnceCallback<void(base::expected<SessionParams, SessionError>)>;
+      base::OnceCallback<void(RegistrationFetcher*,
+                              base::expected<SessionParams, SessionError>)>;
 
   using FetcherType =
       base::RepeatingCallback<base::expected<SessionParams, SessionError>()>;
@@ -57,7 +58,7 @@ class NET_EXPORT RegistrationFetcher {
   // is called with the fetch results upon completion.
   // This can fail during key creation, signing and during the network request,
   // and if so it the callback with be called with a std::nullopt.
-  static void StartCreateTokenAndFetch(
+  static std::unique_ptr<RegistrationFetcher> StartCreateTokenAndFetch(
       RegistrationFetcherParam registration_params,
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
@@ -70,7 +71,7 @@ class NET_EXPORT RegistrationFetcher {
   // id. `callback` is called with the fetch results upon completion. This can
   // fail during signing and during the network request, and if so the callback
   // will be called with a std::nullopt.
-  static void StartFetchWithExistingKey(
+  static std::unique_ptr<RegistrationFetcher> StartFetchWithExistingKey(
       RegistrationRequestParam request_params,
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
@@ -95,6 +96,8 @@ class NET_EXPORT RegistrationFetcher {
           callback);
 
   static void SetFetcherForTesting(FetcherType* fetcher);
+
+  virtual ~RegistrationFetcher() = default;
 };
 
 }  // namespace net::device_bound_sessions
