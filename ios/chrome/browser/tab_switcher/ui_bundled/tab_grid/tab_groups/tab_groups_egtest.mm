@@ -867,12 +867,6 @@ void TapTabGridEditButton() {
 // Tests cancelling of the deletion of a group from the overflow menu in the
 // group view.
 - (void)testCancellingActionToGroupFromGroupView {
-// TODO(crbug.com/429592748): Re-enable the test on iOS26.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -898,19 +892,21 @@ void TapTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
       performAction:grey_tap()];
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (iOS26_OR_ABOVE()) {
+    [[EarlGrey
+        selectElementWithMatcher:GREYAccessibilityID(@"PopoverDismissRegion")]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
+        performAction:grey_tap()];
+  }
+#else
   // Cancel the action by tapping the close button (= outside the delete
   // button). We have a cancel button only on iPhones with iOS versions smaller
   // than iOS26.
   [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
-
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  if (iOS26_OR_ABOVE()) {
-    // On iOS26 cancelling the action by tapping outside the popover is also
-    // clicking the button, for this reason, it is necessary to open again the
-    // tab group.
-    OpenTabGroupAtIndex(0);
-  }
 #endif
 
   // Check that `Tab 1` tab cell still exists in the group.
