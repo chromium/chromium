@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -32,9 +33,11 @@
 
 namespace {
 
-const CGFloat kOmniboxContainerHorizontalMargin = 32;
+const CGFloat kOmniboxContainerHorizontalMargin = 16;
+const CGFloat kOmniboxInnerMargin = 12;
+const CGFloat kButtonSize = 44;
 const CGFloat kOmniboxContainerVerticalMargin = 24;
-const CGFloat kOmniboxContainerHeight = 54;
+const CGFloat kOmniboxContainerHeight = 60;
 const CGFloat kOmniboxPopupTopMargin = 8;
 
 const size_t kMaxURLDisplayChars = 32 * 1024;
@@ -152,16 +155,44 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _omniboxContainer.layer.cornerRadius = kOmniboxContainerHeight / 2.0;
   [self.view addSubview:_omniboxContainer];
 
+  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [closeButton addTarget:self
+                  action:@selector(closeView)
+        forControlEvents:UIControlEventTouchUpInside];
+  closeButton.tintColor = [UIColor colorNamed:kSolidBlackColor];
+  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  closeButton.layer.shadowColor = [UIColor colorNamed:kSolidBlackColor].CGColor;
+  closeButton.layer.shadowOffset = CGSizeMake(0, 5);
+  closeButton.layer.shadowOpacity = 0.2;
+  closeButton.layer.shadowRadius = 5;
+
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.image = DefaultCloseButtonForToolbar();
+  configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  configuration.background.backgroundColor =
+      [UIColor colorNamed:kSolidWhiteColor];
+  closeButton.configuration = configuration;
+
+  [self.view addSubview:closeButton];
+
   _omniboxPopupContainer = [[UIView alloc] init];
   _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_omniboxPopupContainer];
 
   [NSLayoutConstraint activateConstraints:@[
+    [closeButton.heightAnchor constraintEqualToConstant:kButtonSize],
+    [closeButton.widthAnchor constraintEqualToAnchor:closeButton.heightAnchor],
+    [closeButton.centerYAnchor
+        constraintEqualToAnchor:_omniboxContainer.centerYAnchor],
     [_omniboxContainer.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor
                        constant:kOmniboxContainerHorizontalMargin],
-    [self.view.trailingAnchor
+    [closeButton.leadingAnchor
         constraintEqualToAnchor:_omniboxContainer.trailingAnchor
+                       constant:kOmniboxInnerMargin],
+    [self.view.trailingAnchor
+        constraintEqualToAnchor:closeButton.trailingAnchor
                        constant:kOmniboxContainerHorizontalMargin],
     [_omniboxContainer.topAnchor
         constraintEqualToAnchor:self.view.topAnchor
@@ -282,6 +313,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
+}
+
+#pragma mark - Private
+
+// Closes the view.
+- (void)closeView {
+  [self.presentingViewController dismissViewControllerAnimated:YES
+                                                    completion:nil];
 }
 
 @end

@@ -52,14 +52,15 @@ UIButtonConfiguration* ButtonConfiguration() {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.imagePlacement = NSDirectionalRectEdgeTop;
-  configuration.imagePadding = 5;
+  configuration.imagePadding = 3;
   configuration.baseForegroundColor = UIColor.whiteColor;
   configuration.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
           NSDictionary<NSAttributedStringKey, id>* incoming) {
     NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
         [incoming mutableCopy];
-    outgoing[NSFontAttributeName] = [UIFont systemFontOfSize:11];
+    outgoing[NSFontAttributeName] =
+        [UIFont systemFontOfSize:11 weight:UIFontWeightMedium];
     return outgoing;
   };
 
@@ -83,7 +84,9 @@ void ConfigureButtonShadow(UIButton* button) {
   // Background when the tab grid is visible.
   UIVisualEffectView* _tabGridBackground;
   // Background when the browser is visible.
-  UIVisualEffectView* _browserBackground;
+  UIView* _browserBackground;
+  // The view used for the shadow of the browser.
+  UIView* _browserShadowOutline;
   // The blur effect for the backgrounds.
   UIBlurEffect* _blurEffect;
 }
@@ -92,6 +95,8 @@ void ConfigureButtonShadow(UIButton* button) {
   self = [super init];
   if (self) {
     CHECK(IsDiamondPrototypeEnabled());
+
+    self.backgroundColor = UIColor.whiteColor;
 
     _blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterialDark];
@@ -102,7 +107,8 @@ void ConfigureButtonShadow(UIButton* button) {
     [self addSubview:_tabGridBackground];
     AddSameConstraints(self, _tabGridBackground);
 
-    _browserBackground = [[UIVisualEffectView alloc] initWithEffect:nil];
+    _browserBackground = [[UIView alloc] init];
+    _browserBackground.backgroundColor = [UIColor colorWithWhite:0.49 alpha:1];
     _browserBackground.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_browserBackground];
     [NSLayoutConstraint activateConstraints:@[
@@ -115,6 +121,23 @@ void ConfigureButtonShadow(UIButton* button) {
       [_browserBackground.topAnchor
           constraintEqualToAnchor:self.topAnchor
                          constant:-BrowserBackgroundGapHeight()],
+    ]];
+
+    _browserShadowOutline = [[UIView alloc] init];
+    _browserShadowOutline.translatesAutoresizingMaskIntoConstraints = NO;
+    _browserShadowOutline.layer.shadowColor = [UIColor blackColor].CGColor;
+    _browserShadowOutline.layer.shadowOpacity = 0.9;
+    _browserShadowOutline.layer.shadowRadius = 24.0;
+    _browserShadowOutline.layer.shadowOffset = CGSizeMake(0, 5);
+    _browserShadowOutline.layer.masksToBounds = NO;
+    [self addSubview:_browserShadowOutline];
+    [NSLayoutConstraint activateConstraints:@[
+      [self.leadingAnchor
+          constraintEqualToAnchor:_browserShadowOutline.leadingAnchor],
+      [self.trailingAnchor
+          constraintEqualToAnchor:_browserShadowOutline.trailingAnchor],
+      [self.topAnchor constraintEqualToAnchor:_browserShadowOutline.topAnchor
+                                     constant:kDiamondBrowserCornerRadius],
     ]];
 
     _maskLayer = [CAShapeLayer layer];
@@ -165,15 +188,24 @@ void ConfigureButtonShadow(UIButton* button) {
     _tabGridButton.translatesAutoresizingMaskIntoConstraints = NO;
     ConfigureButtonShadow(_tabGridButton);
 
+    UILayoutGuide* heightGuide = [[UILayoutGuide alloc] init];
+    [self addLayoutGuide:heightGuide];
+    [heightGuide.heightAnchor
+        constraintEqualToConstant:kChromeAppBarPrototypeHeight]
+        .active = YES;
+    AddSameConstraints(self.safeAreaLayoutGuide, heightGuide);
+
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       _askGeminiButton, _openNewTabButton, _tabGridButton
     ]];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:stackView];
-    [stackView.heightAnchor
-        constraintEqualToConstant:kChromeAppBarPrototypeHeight]
-        .active = YES;
-    AddSameConstraints(self.safeAreaLayoutGuide, stackView);
+    [NSLayoutConstraint activateConstraints:@[
+      [self.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor],
+      [self.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor],
+      [self.centerYAnchor constraintEqualToAnchor:heightGuide.centerYAnchor
+                                         constant:-4],
+    ]];
 
     NSNotificationCenter* notificationCenter =
         [NSNotificationCenter defaultCenter];
@@ -201,6 +233,7 @@ void ConfigureButtonShadow(UIButton* button) {
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self updateMask];
+  _browserShadowOutline.layer.shadowPath = [self browserShadowPath].CGPath;
 }
 
 - (void)setCurrentPage:(TabGridPage)currentPage {
@@ -218,25 +251,24 @@ void ConfigureButtonShadow(UIButton* button) {
 
 // Callback when exiting the grid.
 - (void)didLeaveTabGrid {
-  __weak UIVisualEffectView* browserBackground = _browserBackground;
+  __weak UIView* browserBackground = _browserBackground;
   __weak UIVisualEffectView* tabGridBackground = _tabGridBackground;
-  UIBlurEffect* blur = _blurEffect;
   [UIView animateWithDuration:kBackgroundTransitionTime
                    animations:^{
-                     browserBackground.effect = blur;
                      tabGridBackground.effect = nil;
+                     browserBackground.alpha = 1;
                    }];
 }
 
 // Callback when entering the grid.
 - (void)didEnterTabGrid {
-  __weak UIVisualEffectView* browserBackground = _browserBackground;
+  __weak UIView* browserBackground = _browserBackground;
   __weak UIVisualEffectView* tabGridBackground = _tabGridBackground;
   UIBlurEffect* blur = _blurEffect;
   [UIView animateWithDuration:kBackgroundTransitionTime
                    animations:^{
-                     browserBackground.effect = nil;
                      tabGridBackground.effect = blur;
+                     browserBackground.alpha = 0;
                    }];
 }
 
@@ -384,6 +416,36 @@ void ConfigureButtonShadow(UIButton* button) {
 
   _maskLayer.frame = maskFrame;
   _maskLayer.path = path.CGPath;
+}
+
+// Returns the path for the shadow of the browser.
+- (UIBezierPath*)browserShadowPath {
+  CGFloat cornerRadius = kDiamondBrowserCornerRadius;
+  CGFloat width = _browserShadowOutline.bounds.size.width;
+
+  UIBezierPath* path = [UIBezierPath bezierPath];
+
+  // Start at the bottom-left corner (just before the curve)
+  [path moveToPoint:CGPointMake(0, 0)];
+
+  // Add the bottom-left rounded corner
+  [path addArcWithCenter:CGPointMake(cornerRadius, 0)
+                  radius:cornerRadius
+              startAngle:M_PI
+                endAngle:M_PI_2
+               clockwise:NO];
+
+  // Add a line to the bottom-right corner
+  [path addLineToPoint:CGPointMake(width - cornerRadius, cornerRadius)];
+
+  // Add the bottom-right rounded corner
+  [path addArcWithCenter:CGPointMake(width - cornerRadius, 0)
+                  radius:cornerRadius
+              startAngle:M_PI_2
+                endAngle:0
+               clockwise:NO];
+
+  return path;
 }
 
 @end
