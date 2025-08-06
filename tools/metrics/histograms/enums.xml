@@ -15492,7 +15492,6 @@ from previous Chrome versions.
   <int value="501477022" label="DrawOcclusion:enabled"/>
   <int value="501899677" label="SystemEmojiPicker:enabled"/>
   <int value="502551931" label="IncognitoStrings:enabled"/>
-  <int value="502769956" label="ozone-platform-hint"/>
   <int value="503189154" label="ViewsBrowserWindows:disabled"/>
   <int value="503245473" label="disable-translate-new-ux"/>
   <int value="503573295" label="SingleCaCertVerificationPhase0:disabled"/>

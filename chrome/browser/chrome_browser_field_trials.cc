@@ -108,8 +108,7 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // processing, namely 'ozone-platform-hint', so do it here.
   //
   // TODO(nickdiego): Move it back to
-  // ChromeMainDelegate::PostEarlyInitialization once ozone-platform-hint flag
-  // is dropped.
+  // ChromeMainDelegate::PostEarlyInitialization.
 
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   std::string xdg_session_type =

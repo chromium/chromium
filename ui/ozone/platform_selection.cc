@@ -43,10 +43,7 @@ int GetOzonePlatformId() {
     }
   }
 
-  LOG(FATAL) << "Invalid ozone platform: " << platform_name
-             << (platform_name == "auto"
-                     ? ", use --ozone-platform-hint=auto instead?"
-                     : ".");
+  LOG(FATAL) << "Invalid ozone platform: " << platform_name;
 }
 
 const char* GetOzonePlatformName() {
