@@ -7,6 +7,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
@@ -301,7 +302,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
           {GURL("https://domain1.example")}));
   valuables_data_manager().CacheImage(program_logo, fake_image);
   test_api(valuables_data_manager()).NotifyObservers();
-
   test_autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://common-domain.example/test"));
   field().set_is_autofilled(false);
@@ -545,5 +545,52 @@ TEST_F(ValuableSuggestionGeneratorTest,
               testing::ElementsAre(HasIphFeature(kIphFeature),
                                    HasNoIphFeature(), HasNoIphFeature()));
 }
+
+// Checks that all loyalty cards are returned as suggestion data, and
+// used for generating suggestions.
+TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
+  test_autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://common-domain.example/test"));
+  field().set_is_autofilled(false);
+
+  base::MockCallback<base::OnceCallback<void(
+      std::pair<FillingProduct,
+                std::vector<SuggestionGenerator::SuggestionData>>)>>
+      suggestion_data_callback;
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  LoyaltyCardSuggestionGenerator generator(
+      client().GetValuablesDataManager()->GetWeakPtr(),
+      client().GetLastCommittedPrimaryMainFrameURL());
+  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+      savedCallbackArgument;
+
+  EXPECT_CALL(
+      suggestion_data_callback,
+      Run(testing::Pair(FillingProduct::kLoyaltyCard, testing::SizeIs(3))))
+      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
+                                client(), suggestion_data_callback.Get());
+
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(testing::Pair(
+          FillingProduct::kLoyaltyCard,
+          UnorderedElementsAre(
+              EqualsLoyaltyCardSuggestion(u"987654321987654321",
+                                          u"CVS Pharmacy", "loyalty_card_id_1"),
+              EqualsLoyaltyCardSuggestion(u"37262999281", u"Ticket Maester",
+                                          "loyalty_card_id_2"),
+              EqualsLoyaltyCardSuggestion(u"998766823", u"Walgreens",
+                                          "loyalty_card_id_3"),
+              EqualsSuggestion(SuggestionType::kSeparator),
+              EqualsManageLoyaltyCardsSuggestion()))));
+  generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
+                                {savedCallbackArgument},
+                                suggestions_generated_callback.Get());
+}
+
 }  // namespace
 }  // namespace autofill

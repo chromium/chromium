@@ -7,6 +7,7 @@
 #include <iterator>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
@@ -140,63 +141,36 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
     const FormFieldData& field,
     const AutofillField* autofill_field,
     const AutofillClient& client) {
-  const ValuablesDataManager* valuables_manager =
-      client.GetValuablesDataManager();
-  if (!valuables_manager) {
+  if (!client.GetValuablesDataManager()) {
     return {};
   }
-  std::vector<LoyaltyCard> all_loyalty_cards =
-      valuables_manager->GetLoyaltyCardsToSuggest();
-  if (all_loyalty_cards.empty()) {
-    return {};
-  }
+  std::vector<Suggestion> suggestions;
+  LoyaltyCardSuggestionGenerator loyalty_card_suggestion_generator(
+      client.GetValuablesDataManager()->GetWeakPtr(),
+      client.GetLastCommittedPrimaryMainFrameURL());
 
-  auto non_affiliated_cards = std::ranges::stable_partition(
-      all_loyalty_cards, [&](const LoyaltyCard& card) {
-        return card.GetAffiliationCategory(
-                   client.GetLastCommittedPrimaryMainFrameURL()) ==
-               LoyaltyCard::AffiliationCategory::kAffiliated;
-      });
-  // SAFETY: Bounds information contained in vector iterators.
-  UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
-      all_loyalty_cards.begin(), non_affiliated_cards.begin()));
-  // If no submenu is needed.
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
+      };
 
-#if BUILDFLAG(IS_ANDROID)
-  const bool generate_flat_suggestions = true;
-#else
-  const bool generate_flat_suggestions =
-      affiliated_cards.empty() || non_affiliated_cards.empty();
-#endif
+  auto on_suggestion_data_returned =
+      [&on_suggestions_generated, &form, &field, &form_structure,
+       &autofill_field, &loyalty_card_suggestion_generator](
+          std::pair<FillingProduct,
+                    std::vector<SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        loyalty_card_suggestion_generator.GenerateSuggestions(
+            form, field, form_structure, autofill_field,
+            {std::move(suggestion_data)}, on_suggestions_generated);
+      };
 
-  if (generate_flat_suggestions) {
-    std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
-        all_loyalty_cards, *valuables_manager);
-    std::ranges::move(
-        GetLoyaltyCardsFooterSuggestions(field.is_autofilled()),
-        std::back_inserter(suggestions));
-    return suggestions;
-  }
-
-  // Build suggestions with 'all loyalty cards' submenu.
-  std::vector<Suggestion> suggestions =
-      CreateSuggestionsFromLoyaltyCards(affiliated_cards, *valuables_manager);
-  suggestions.emplace_back(SuggestionType::kSeparator);
-
-  // Build 'all loyalty cards' submenu.
-  Suggestion& submenu_suggestion = suggestions.emplace_back(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE),
-      SuggestionType::kAllLoyaltyCardsEntry);
-  submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
-#endif
-  submenu_suggestion.children = CreateSuggestionsFromLoyaltyCards(
-      valuables_manager->GetLoyaltyCardsToSuggest(), *valuables_manager);
-  std::ranges::move(
-      GetLoyaltyCardsFooterSuggestions(field.is_autofilled()),
-      std::back_inserter(suggestions));
+  // Since the `on_suggestions_generated` callback is called synchronously,
+  // we can assume that `suggestions` will hold correct value.
+  loyalty_card_suggestion_generator.FetchSuggestionData(
+      form, field, form_structure, autofill_field, client,
+      on_suggestion_data_returned);
   return suggestions;
 }
 
@@ -257,6 +231,142 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                              Suggestion(SuggestionType::kSeparator));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+LoyaltyCardSuggestionGenerator::LoyaltyCardSuggestionGenerator(
+    base::WeakPtr<const ValuablesDataManager> valuables_manager,
+    GURL main_frame_url)
+    : valuables_manager_(valuables_manager), main_frame_url_(main_frame_url) {}
+
+LoyaltyCardSuggestionGenerator::~LoyaltyCardSuggestionGenerator() = default;
+
+void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
+    const FormData& form_data,
+    const FormFieldData& field_data,
+    const FormStructure* form,
+    const AutofillField* field,
+    const AutofillClient& client,
+    base::OnceCallback<
+        void(std::pair<FillingProduct,
+                       std::vector<SuggestionGenerator::SuggestionData>>)>
+        callback) {
+  FetchSuggestionData(
+      form_data, field_data, form, field, client,
+      [&callback](std::pair<FillingProduct,
+                            std::vector<SuggestionGenerator::SuggestionData>>
+                      suggestion_data) {
+        std::move(callback).Run(std::move(suggestion_data));
+      });
+}
+
+void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
+    const FormData& form_data,
+    const FormFieldData& field_data,
+    const FormStructure* form,
+    const AutofillField* field,
+    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+        all_suggestion_data,
+    base::OnceCallback<void(ReturnedSuggestions)> callback) {
+  GenerateSuggestions(
+      form_data, field_data, form, field, all_suggestion_data,
+      [&callback](ReturnedSuggestions returned_suggestions) {
+        std::move(callback).Run(std::move(returned_suggestions));
+      });
+}
+
+void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
+    const FormData& form_data,
+    const FormFieldData& field_data,
+    const FormStructure* form,
+    const AutofillField* field,
+    const AutofillClient& client,
+    base::FunctionRef<
+        void(std::pair<FillingProduct,
+                       std::vector<SuggestionGenerator::SuggestionData>>)>
+        callback) {
+  if (!field || !valuables_manager_ ||
+      field->Type().GetTypes().contains_none(
+          {LOYALTY_MEMBERSHIP_ID, EMAIL_OR_LOYALTY_MEMBERSHIP_ID})) {
+    callback({FillingProduct::kLoyaltyCard, {}});
+    return;
+  }
+
+  std::vector<LoyaltyCard> loyalty_cards =
+      valuables_manager_->GetLoyaltyCardsToSuggest();
+  std::vector<SuggestionData> suggestion_data = base::ToVector(
+      std::move(loyalty_cards),
+      [](LoyaltyCard& card) { return SuggestionData(std::move(card)); });
+  callback({FillingProduct::kLoyaltyCard, std::move(suggestion_data)});
+}
+
+void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
+    const FormData& form_data,
+    const FormFieldData& field_data,
+    const FormStructure* form,
+    const AutofillField* field,
+    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+        all_suggestion_data,
+    base::FunctionRef<void(ReturnedSuggestions)> callback) {
+  std::vector<SuggestionData> loyalty_card_suggestion_data =
+      ExtractSuggestionDataForFillingProduct(all_suggestion_data,
+                                             FillingProduct::kLoyaltyCard);
+  if (!valuables_manager_ || loyalty_card_suggestion_data.empty()) {
+    callback({FillingProduct::kLoyaltyCard, {}});
+    return;
+  }
+  std::vector<LoyaltyCard> all_loyalty_cards =
+      base::ToVector(std::move(loyalty_card_suggestion_data),
+                     [](SuggestionData& suggestion_data) {
+                       return std::get<LoyaltyCard>(std::move(suggestion_data));
+                     });
+
+  auto non_affiliated_cards = std::ranges::stable_partition(
+      all_loyalty_cards, [&](const LoyaltyCard& card) {
+        return card.GetAffiliationCategory(main_frame_url_) ==
+               LoyaltyCard::AffiliationCategory::kAffiliated;
+      });
+  // SAFETY: Bounds information contained in vector iterators.
+  UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
+      all_loyalty_cards.begin(), non_affiliated_cards.begin()));
+  // If no submenu is needed.
+
+#if BUILDFLAG(IS_ANDROID)
+  const bool generate_flat_suggestions = true;
+#else
+  const bool generate_flat_suggestions =
+      affiliated_cards.empty() || non_affiliated_cards.empty();
+#endif
+
+  if (generate_flat_suggestions) {
+    std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
+        all_loyalty_cards, *valuables_manager_);
+    std::ranges::move(
+        GetLoyaltyCardsFooterSuggestions(field_data.is_autofilled()),
+        std::back_inserter(suggestions));
+    callback({FillingProduct::kLoyaltyCard, std::move(suggestions)});
+    return;
+  }
+
+  // Build suggestions with 'all loyalty cards' submenu.
+  std::vector<Suggestion> suggestions =
+      CreateSuggestionsFromLoyaltyCards(affiliated_cards, *valuables_manager_);
+  suggestions.emplace_back(SuggestionType::kSeparator);
+
+  // Build 'all loyalty cards' submenu.
+  Suggestion& submenu_suggestion = suggestions.emplace_back(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE),
+      SuggestionType::kAllLoyaltyCardsEntry);
+  submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
+#endif
+  submenu_suggestion.children = CreateSuggestionsFromLoyaltyCards(
+      valuables_manager_->GetLoyaltyCardsToSuggest(), *valuables_manager_);
+  std::ranges::move(
+      GetLoyaltyCardsFooterSuggestions(field_data.is_autofilled()),
+      std::back_inserter(suggestions));
+  callback({FillingProduct::kLoyaltyCard, std::move(suggestions)});
 }
 
 }  // namespace autofill

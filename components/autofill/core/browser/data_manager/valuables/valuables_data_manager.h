@@ -76,6 +76,10 @@ class ValuablesDataManager : public KeyedService,
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
+  base::WeakPtr<const ValuablesDataManager> GetWeakPtr() const {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
