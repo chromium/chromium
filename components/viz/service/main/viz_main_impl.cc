@@ -247,9 +247,7 @@ void VizMainImpl::CreateGpuService(
     CompositorGpuThread* compositor_gpu_thread =
         gpu_service_->compositor_gpu_thread();
 
-    if (compositor_gpu_thread &&
-        base::FeatureList::IsEnabled(
-            ::features::kEnableADPFGpuCompositorThread)) {
+    if (compositor_gpu_thread) {
       gpu_process_thread_ids.insert(compositor_gpu_thread->GetThreadId());
     }
 
