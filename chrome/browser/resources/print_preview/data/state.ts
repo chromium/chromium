@@ -96,6 +96,8 @@ export class PrintPreviewStateElement extends CrLitElement {
       case (State.CLOSING):
         assert(this.state_ !== State.HIDDEN);
         break;
+      default:
+        break;
     }
 
     const oldState = this.state_;
