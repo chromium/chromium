@@ -247,7 +247,6 @@ const CGFloat kBaselineAdjustment = 10.0;
   gradientLayer.startPoint = CGPointMake(0.0, 0.5);
   gradientLayer.endPoint = CGPointMake(1.0, 0.5);
   gradientLayer.frame = CGRectMake(0, 0, iconSize.width, iconSize.height);
-  gradientLayer.locations = @[ @0.40, @1.0 ];
 
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:iconSize];
@@ -301,6 +300,8 @@ const CGFloat kBaselineAdjustment = 10.0;
   UITraitCollection* lightTraitCollection = [UITraitCollection
       traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight];
   NSArray<UIColor*>* colors = @[
+    [[UIColor colorNamed:kBlue500Color]
+        resolvedColorWithTraitCollection:lightTraitCollection],
     [[UIColor colorNamed:kBlue700Color]
         resolvedColorWithTraitCollection:lightTraitCollection],
     [[UIColor colorNamed:kBlue300Color]
