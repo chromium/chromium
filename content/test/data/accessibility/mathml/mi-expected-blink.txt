@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++mathMLMath
+++++++++mathMLIdentifier
+++++++++++staticText name='sin'
+++++++++++++inlineTextBox name='sin'

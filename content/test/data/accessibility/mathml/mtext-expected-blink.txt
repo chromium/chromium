@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++mathMLMath
+++++++++mathMLText
+++++++++++staticText name='otherwise'
+++++++++++++inlineTextBox name='otherwise'

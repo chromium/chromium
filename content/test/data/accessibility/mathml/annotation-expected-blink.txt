@@ -1,0 +1,13 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++mathMLMath
+++++++++mathMLRow
+++++++++++mathMLFraction
+++++++++++++mathMLNumber
+++++++++++++++staticText name='1'
+++++++++++++++++inlineTextBox name='1'
+++++++++++++mathMLNumber
+++++++++++++++staticText name='2'
+++++++++++++++++inlineTextBox name='2'
+++++++++++mathMLText
