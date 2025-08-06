@@ -227,6 +227,65 @@ TEST(MasterPrefsExtension, ValidateExtensionJSON) {
       "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.version"));
 }
 
+// Test the parsing of bookmarks block from initial preferences.
+TEST_F(InitialPreferencesTest, ValidateBookmarksJSON) {
+  constexpr char bookmarks_json_string[] =
+      "{ \n"
+      "  \"bookmarks\": { \n"
+      "    \"first_run_bookmarks\": { \n"
+      "      \"children\": [ \n"
+      "        { \n"
+      "          \"name\": \"ABC\", \n"
+      "          \"type\": \"url\", \n"
+      "          \"url\": \"https://google.com\" \n"
+      "        }, \n"
+      "        { \n"
+      "          \"name\": \"Folder1\", \n"
+      "          \"type\": \"folder\", \n"
+      "          \"children\": [ \n"
+      "            { \n"
+      "              \"name\": \"ABC\", \n"
+      "              \"type\": \"url\", \n"
+      "              \"url\": \"https://google.com\" \n"
+      "            }, \n"
+      "            { \n"
+      "              \"name\": \"XYZ\", \n"
+      "              \"type\": \"url\", \n"
+      "              \"url\": \"https://facebook.com\" \n"
+      "            } \n"
+      "          ] \n"
+      "        } \n"
+      "      ] \n"
+      "    } \n"
+      "  } \n"
+      "} \n";
+  ASSERT_TRUE(base::WriteFile(prefs_file(), bookmarks_json_string));
+
+  installer::InitialPreferences prefs(prefs_file());
+
+  const base::Value::Dict* bookmarks = prefs.GetBookmarksBlock();
+  ASSERT_TRUE(bookmarks);
+
+  ASSERT_TRUE(bookmarks->FindDict("first_run_bookmarks"));
+
+  const base::Value::List* children =
+      bookmarks->FindListByDottedPath("first_run_bookmarks.children");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 2u);
+
+  const base::Value::Dict* first_child = (*children)[0].GetIfDict();
+  ASSERT_TRUE(first_child);
+  EXPECT_EQ(*first_child->FindString("name"), "ABC");
+  EXPECT_EQ(*first_child->FindString("type"), "url");
+  EXPECT_EQ(*first_child->FindString("url"), "https://google.com");
+
+  const base::Value::Dict* second_child = (*children)[1].GetIfDict();
+  ASSERT_TRUE(second_child);
+  EXPECT_EQ(*second_child->FindString("name"), "Folder1");
+  EXPECT_EQ(*second_child->FindString("type"), "folder");
+  EXPECT_EQ(second_child->FindList("children")->size(), 2u);
+}
+
 // Test that we are parsing initial preferences correctly.
 TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
   // Create a temporary prefs file.

@@ -325,6 +325,10 @@ bool InitialPreferences::GetExtensionsBlock(
   return true;
 }
 
+const base::Value::Dict* InitialPreferences::GetBookmarksBlock() const {
+  return initial_dictionary_->FindDict(initial_preferences::kBookmarksBlock);
+}
+
 std::string InitialPreferences::GetCompressedVariationsSeed() {
   return ExtractPrefString(variations::prefs::kVariationsCompressedSeed);
 }

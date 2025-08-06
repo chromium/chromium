@@ -74,6 +74,8 @@ inline constexpr char kSystemLevel[] = "system_level";
 inline constexpr char kVerboseLogging[] = "verbose_logging";
 // Name of the block that contains the extensions on the initial preferences.
 inline constexpr char kExtensionsBlock[] = "extensions.settings";
+// Name of the block that contains the bookmarks on the initial preferences.
+inline constexpr char kBookmarksBlock[] = "bookmarks";
 // Boolean. Allow Chrome to be downgraded to a previous version if true.
 inline constexpr char kAllowDowngrade[] = "allow_downgrade";
 

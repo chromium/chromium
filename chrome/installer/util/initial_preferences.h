@@ -165,6 +165,60 @@ class InitialPreferences {
   //  }
   bool GetExtensionsBlock(const base::Value::Dict*& extensions) const;
 
+  // The initial preferences file can include a bookmarks block that gets
+  // imported on the first run. This block contains bookmark and folder nodes
+  // that get recursively visited and imported.
+  //
+  // Bookmark nodes must have 'name', 'type' (set to 'url') and 'url' fields.
+  // Folder nodes must have 'name', 'type' (set to 'folder') and 'children'
+  // fields.
+  //
+  // Example block:
+  // {
+  //   "bookmarks": {
+  //     "first_run_bookmarks": {
+  //       "children": [
+  //         {
+  //           "name": "ABC",
+  //           "type": "url",
+  //           "url": "https://google.com"
+  //         },
+  //         {
+  //           "name": "XYZ",
+  //           "type": "url",
+  //           "url": "https://facebook.com"
+  //         },
+  //         {
+  //           "name": "Folder 1",
+  //           "type": "folder",
+  //           "children": [
+  //             {
+  //               "name": "ABC",
+  //               "type": "url",
+  //               "url": "https://google.com"
+  //             },
+  //             {
+  //               "name": "Folder 2",
+  //               "type": "folder",
+  //               "children": [
+  //                 {
+  //                   "name": "ABC",
+  //                   "type": "url",
+  //                   "url": "https://google.com"
+  //                 }
+  //               ]
+  //             }
+  //           ]
+  //         }
+  //       ]
+  //     }
+  //   }
+  // }
+  //
+  // The return value can be a nullptr if this dict is not specified in the
+  // initial preferences file.
+  const base::Value::Dict* GetBookmarksBlock() const;
+
   // Returns the compressed variations seed entry from the initial prefs.
   std::string GetCompressedVariationsSeed();
 
