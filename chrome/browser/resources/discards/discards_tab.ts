@@ -219,6 +219,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return 'occluded';
       case LifecycleUnitVisibility.VISIBLE:
         return 'visible';
+      default:
+        assertNotReached();
     }
   }
 
@@ -237,6 +239,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return 'loading';
       case LifecycleUnitLoadingState.LOADED:
         return 'loaded';
+      default:
+        assertNotReached();
     }
   }
 
@@ -257,6 +261,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return 'suggested';
       case LifecycleUnitDiscardReason.FROZEN_WITH_GROWING_MEMORY:
         return 'frozen with growing memory';
+      default:
+        assertNotReached();
     }
   }
 
@@ -284,6 +290,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
           return 'hidden';
         case LifecycleUnitVisibility.VISIBLE:
           return hasFocus ? 'active' : 'passive';
+        default:
+          assertNotReached();
       }
     }
 
@@ -300,6 +308,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
                      (new Date(Number(stateChangeTime.microseconds) / 1000)
                           .toLocaleString()) :
                                                               '');
+      default:
+        assertNotReached();
     }
   }
 
@@ -381,6 +391,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return '✘️';
       case CanFreeze.VARIES:
         return '~';
+      default:
+        assertNotReached();
     }
   }
 
