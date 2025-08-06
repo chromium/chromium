@@ -245,6 +245,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   std::optional<PlusAddressServiceImpl> service_;
 };
 
+// Tests the PlusAddressService ability to save new plus profiles.
 TEST_F(PlusAddressServiceTest, BasicTest) {
   const PlusProfile profile = test::CreatePlusProfile();
   EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));
@@ -256,12 +257,14 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
             profile.plus_address);
 }
 
+// Verifies that the service correctly identifies plus address formats.
 TEST_F(PlusAddressServiceTest, MatchesPlusAddressFormat) {
   EXPECT_FALSE(service().MatchesPlusAddressFormat(u"invalid_email"));
   EXPECT_FALSE(service().MatchesPlusAddressFormat(u"asd@foo.com"));
   EXPECT_TRUE(service().MatchesPlusAddressFormat(u"asd@grelay.com"));
 }
 
+// Verifies that GetPlusProfileByFacet returns the correct plus profile.
 TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
   const PlusProfile profile = test::CreatePlusProfile();
   EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));
@@ -274,6 +277,7 @@ TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
   EXPECT_EQ(service().GetPlusProfile(profile.facet), profile);
 }
 
+// Verifies the default state of ShouldShowManualFallback.
 TEST_F(PlusAddressServiceTest, DefaultShouldShowManualFallbackState) {
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
   EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
@@ -297,6 +301,8 @@ TEST_F(PlusAddressServiceTest, ShouldShowManualFallbackNoServer) {
                                                   /*is_off_the_record=*/false));
 }
 
+// Tests that `IsFieldEligibleForPlusAddress` returns true for eligible
+// fields.
 TEST_F(PlusAddressServiceTest, IsEligibleForPlusAddress) {
   autofill::AutofillField field;
   InitService();
@@ -340,6 +346,8 @@ TEST_F(PlusAddressServiceTest, IsEligibleForPlusAddress) {
   EXPECT_FALSE(service().IsFieldEligibleForPlusAddress(field));
 }
 
+// Verifies that plus address creation is not available for users without an
+// account.
 TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
   base::test::TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
@@ -353,6 +361,7 @@ TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
                                 PlusAddressRequestErrorType::kUserSignedOut)));
 }
 
+// Verifies that plus address creation is aborted if the user signs out.
 TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
   const std::string invalid_email = "plus";
   identity_env().MakeAccountAvailable(invalid_email,
@@ -418,6 +427,8 @@ class PlusAddressServiceRequestsTest : public PlusAddressServiceTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests that `ReservePlusAddress` does not save a new plus address if it is not
+// yet confirmed.
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
   PlusProfile profile = test::CreatePlusProfile();
   base::test::TestFuture<const PlusProfileOrError&> future;
@@ -436,6 +447,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
   EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));
 }
 
+// Tests that `ReservePlusAddress` saves a new plus address if it is confirmed.
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
   PlusProfile profile = test::CreatePlusProfile();
   base::test::TestFuture<const PlusProfileOrError&> future;
@@ -453,6 +465,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
   EXPECT_TRUE(service().IsPlusAddress(*profile.plus_address));
 }
 
+// Tests that `ReservePlusAddress` handles network errors.
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
   base::test::TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
@@ -465,6 +478,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
   EXPECT_FALSE(future.Get().has_value());
 }
 
+// Tests that `ConfirmPlusAddress` succeeds and stores the plus address.
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   const PlusProfile& profile = test::CreatePlusProfile();
   MockPlusAddressServiceObserver observer;
@@ -495,6 +509,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   service().RemoveObserver(&observer);
 }
 
+// Tests that `ConfirmPlusAddress` handles network errors.
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
   ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
 
@@ -513,6 +528,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
   EXPECT_FALSE(service().IsPlusAddress(kPlusAddress));
 }
 
+// Tests that plus address creation is toggled off when the primary account is
+// cleared.
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceRequestsTest,
@@ -588,6 +605,8 @@ TEST_F(PlusAddressServiceRequestsTest,
   EXPECT_THAT(service().GetPlusProfiles(), IsEmpty());
 }
 
+// Tests that plus address creation is toggled off when the primary refresh
+// token is in an error state.
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryRefreshTokenError_TogglesPlusAddressCreationOff) {
   CoreAccountInfo primary_account =
@@ -913,6 +932,8 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionTimeoutError) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// Tests that `GetPlusAddressHatsData` returns default values when the
+// relevant prefs are not set.
 TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsNotSet) {
   std::map<std::string, std::string> hats_data =
       service().GetPlusAddressHatsData();
@@ -923,6 +944,8 @@ TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsNotSet) {
                   Pair(hats::kLastPlusAddressFillingTime, std::string("-1"))));
 }
 
+// Tests that `GetPlusAddressHatsData` returns the correct data when the
+// relevant prefs are set.
 TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsSet) {
   const PlusProfile profile1 = test::CreatePlusProfile();
   const PlusProfile profile2 = test::CreatePlusProfile2();
@@ -1052,6 +1075,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
   std::optional<PlusAddressServiceImpl> service_;
 };
 
+// Tests that the service correctly handles plus address changes from sync.
 TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   const PlusProfile profile1 = test::CreatePlusProfile();
   const PlusProfile profile2 = test::CreatePlusProfile2();
@@ -1098,6 +1122,7 @@ class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests that the service is disabled when the feature is explicitly disabled.
 TEST_F(PlusAddressServiceDisabledTest, FeatureExplicitlyDisabled) {
   // `ShouldShowManualFallback` should return `false`, even if there's a
   // signed-in user.
@@ -1125,6 +1150,8 @@ class PlusAddressServiceEnabledTest : public PlusAddressServiceTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests that the service is enabled but not offering suggestions when there is
+// no signed-in user.
 TEST_F(PlusAddressServiceEnabledTest, NoSignedInUser) {
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
   EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
@@ -1135,6 +1162,8 @@ TEST_F(PlusAddressServiceEnabledTest, NoSignedInUser) {
                                                   /*is_off_the_record=*/false));
 }
 
+// Tests that the service is fully supported when the feature is enabled and a
+// user is signed in.
 TEST_F(PlusAddressServiceEnabledTest, FullySupported) {
   // With a signed in user, the `ShouldShowManualFallback` function should
   // return `true`.
@@ -1233,6 +1262,8 @@ TEST_F(PlusAddressServiceEnabledTest, OpaqueOriginIsNotSupported) {
   EXPECT_FALSE(service().ShouldShowManualFallback(url::Origin(), false));
 }
 
+// Tests that in an off-the-record session with no existing plus address for a
+// given facet, creation is disabled.
 TEST_F(PlusAddressServiceEnabledTest, OTRWithNoExistingAddress) {
   // With a signed in user, an off-the-record session, and no existing address,
   // the `ShouldShowManualFallback` function should return `false`.
@@ -1246,6 +1277,8 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithNoExistingAddress) {
                                                   /*is_off_the_record=*/true));
 }
 
+// Tests that in an off-the-record session with an existing plus address for a
+// given facet, filling is enabled but creation is not.
 TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
   // With a signed in user, an off-the-record session, and an existing address,
   // the `ShouldShowManualFallback` function should return `true`.
@@ -1263,6 +1296,8 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
                                                  /*is_off_the_record=*/true));
 }
 
+// Tests that creation is disabled when the global plus address setting is
+// turned off.
 TEST_F(PlusAddressServiceEnabledTest, GlobalSettingsToggleOff) {
   identity_env().MakeAccountAvailable("plus@plus.plus",
                                       {signin::ConsentLevel::kSignin});
@@ -1275,6 +1310,8 @@ TEST_F(PlusAddressServiceEnabledTest, GlobalSettingsToggleOff) {
                                                   /*is_off_the_record=*/false));
 }
 
+// Tests that filling is enabled when the global setting is off for a user who
+// already has a plus address for the given facet.
 TEST_F(PlusAddressServiceEnabledTest,
        GlobalSettingsToggleOffButTheUserHasPlusAddress) {
   identity_env().MakeAccountAvailable("plus@plus.plus",
@@ -1295,10 +1332,12 @@ TEST_F(PlusAddressServiceEnabledTest,
                                                  /*is_off_the_record=*/false));
 }
 
+// Tests that `GetPrimaryEmail` returns nullopt when the user is signed out.
 TEST_F(PlusAddressServiceEnabledTest, SignedOutGetEmail) {
   EXPECT_EQ(service().GetPrimaryEmail(), std::nullopt);
 }
 
+// Tests that `GetPrimaryEmail` returns the email of the signed-in user.
 TEST_F(PlusAddressServiceEnabledTest, SignedInGetEmail) {
   constexpr std::string_view expected_email = "plus@plus.plus";
   identity_env().MakeAccountAvailable(expected_email,
@@ -1337,6 +1376,8 @@ class PlusAddressServiceSignoutTest : public PlusAddressServiceTest {
   AccountInfo secondary_account_;
 };
 
+// Tests that `IsEnabled` is toggled to false when the primary account is
+// cleared.
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
@@ -1362,6 +1403,8 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Tests that `IsEnabled` is toggled to false when the primary refresh token
+// is in an error state.
 TEST_F(PlusAddressServiceSignoutTest,
        PrimaryRefreshTokenError_TogglesIsEnabled) {
   ASSERT_TRUE(service().IsEnabled());
@@ -1851,6 +1894,8 @@ TEST_F(PlusAddressSuggestionsTest, DidFillPlusAddress) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests that clicking the refresh button on an inline suggestion triggers an
+// update of the suggestions.
 TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
