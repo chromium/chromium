@@ -560,7 +560,7 @@ const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
 // *  `clang::CallExpr`
 //
 // and defaults to returning the range of token `expr`.
-clang::SourceRange getExprRange(const clang::Expr* expr,
+clang::SourceRange GetExprRange(const clang::Expr& expr,
                                 const clang::SourceManager& source_manager,
                                 const clang::LangOptions& lang_opts) {
   // When the given `loc` is inside a macro expansion, tries to get the spelling
@@ -577,14 +577,14 @@ clang::SourceRange getExprRange(const clang::Expr* expr,
     return loc.isValid() && loc.isFileID() ? loc : original_loc;
   };
 
-  if (const auto* member_expr = clang::dyn_cast<clang::MemberExpr>(expr)) {
+  if (const auto* member_expr = clang::dyn_cast<clang::MemberExpr>(&expr)) {
     clang::SourceLocation member_loc =
         ToSpellingLoc(member_expr->getMemberLoc());
     size_t member_name_length = member_expr->getMemberDecl()->getName().size();
     return {member_loc, member_loc.getLocWithOffset(member_name_length)};
   }
 
-  if (const auto* decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+  if (const auto* decl_ref = clang::dyn_cast<clang::DeclRefExpr>(&expr)) {
     assert(decl_ref->getBeginLoc() == decl_ref->getEndLoc() &&
            "DeclRefExpr doesn't have the expected end loc.");
     clang::SourceLocation begin_loc = ToSpellingLoc(decl_ref->getBeginLoc());
@@ -592,7 +592,7 @@ clang::SourceRange getExprRange(const clang::Expr* expr,
     return {begin_loc, begin_loc.getLocWithOffset(name.size())};
   }
 
-  if (const auto* call_expr = clang::dyn_cast<clang::CallExpr>(expr)) {
+  if (const auto* call_expr = clang::dyn_cast<clang::CallExpr>(&expr)) {
     // Disclaimer: This doesn't support edge cases like following.
     //     #define MY_MACRO(func) func
     //     MY_MACRO(func)(arg1, arg2);
@@ -601,24 +601,24 @@ clang::SourceRange getExprRange(const clang::Expr* expr,
             ToSpellingLoc(call_expr->getRParenLoc()).getLocWithOffset(1)};
   }
 
-  if (auto* binary_op = clang::dyn_cast<clang::BinaryOperator>(expr)) {
+  if (auto* binary_op = clang::dyn_cast<clang::BinaryOperator>(&expr)) {
     // Disclaimer: This doesn't support edge cases like following.
     //     #define MY_MACRO(arg) arg
     //     MY_MACRO(1) + 2;  // The returned range will be `1) + 2`.
     //     MY_MACRO(1 +) 2;  // The returned range will be `1 +) 2`.
     return {
-        ToSpellingLoc(expr->getBeginLoc()),
-        getExprRange(binary_op->getRHS(), source_manager, lang_opts).getEnd()};
+        ToSpellingLoc(expr.getBeginLoc()),
+        GetExprRange(*binary_op->getRHS(), source_manager, lang_opts).getEnd()};
   }
 
   if (auto* uett_expr =
-          clang::dyn_cast<clang::UnaryExprOrTypeTraitExpr>(expr)) {
+          clang::dyn_cast<clang::UnaryExprOrTypeTraitExpr>(&expr)) {
     if (uett_expr->getKind() == clang::UETT_SizeOf) {
       // Somehow in case of sizeof expr, the last token is not included in the
       // source range. So skip the next token after the end loc.
-      assert(expr->getBeginLoc() != expr->getEndLoc());
-      clang::SourceLocation begin_loc = ToSpellingLoc(expr->getBeginLoc());
-      clang::SourceLocation end_loc = ToSpellingLoc(expr->getEndLoc());
+      assert(expr.getBeginLoc() != expr.getEndLoc());
+      clang::SourceLocation begin_loc = ToSpellingLoc(expr.getBeginLoc());
+      clang::SourceLocation end_loc = ToSpellingLoc(expr.getEndLoc());
       size_t token_length =
           clang::Lexer::MeasureTokenLength(end_loc, source_manager, lang_opts);
       return {begin_loc, end_loc.getLocWithOffset(token_length)};
@@ -626,9 +626,9 @@ clang::SourceRange getExprRange(const clang::Expr* expr,
   }
 
   // Somehow single token expressions do not have the expected end location.
-  assert(expr->getBeginLoc() == expr->getEndLoc() &&
+  assert(expr.getBeginLoc() == expr.getEndLoc() &&
          "Defaults to a single token expr.");
-  clang::SourceLocation begin_loc = ToSpellingLoc(expr->getBeginLoc());
+  clang::SourceLocation begin_loc = ToSpellingLoc(expr.getBeginLoc());
   size_t token_length =
       clang::Lexer::MeasureTokenLength(begin_loc, source_manager, lang_opts);
   return {begin_loc, begin_loc.getLocWithOffset(token_length)};
@@ -662,11 +662,11 @@ static clang::SourceRange getSourceRange(
     }
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
     return {op->getBeginLoc(),
-            getExprRange(expr, source_manager, lang_opts).getEnd()};
+            GetExprRange(*expr, source_manager, lang_opts).getEnd()};
   }
   if (auto* op = result.Nodes.getNodeAs<clang::Expr>("binaryOperator")) {
     auto* sub_expr = result.Nodes.getNodeAs<clang::Expr>("binary_op_rhs");
-    auto end_loc = getExprRange(sub_expr, source_manager, lang_opts).getEnd();
+    auto end_loc = GetExprRange(*sub_expr, source_manager, lang_opts).getEnd();
     return {op->getBeginLoc(), end_loc};
   }
   if (auto* op = result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
@@ -675,19 +675,19 @@ static clang::SourceRange getSourceRange(
     if (callee->getNumParams() == 0) {  // postfix op++ on raw_ptr;
       auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
       return clang::SourceRange(
-          getExprRange(expr, source_manager, lang_opts).getEnd());
+          GetExprRange(*expr, source_manager, lang_opts).getEnd());
     }
     return clang::SourceRange(op->getEndLoc().getLocWithOffset(2));
   }
 
   if (auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr")) {
     return clang::SourceRange(
-        getExprRange(expr, source_manager, lang_opts).getEnd());
+        GetExprRange(*expr, source_manager, lang_opts).getEnd());
   }
 
   if (auto* size_expr = result.Nodes.getNodeAs<clang::Expr>("size_node")) {
     return clang::SourceRange(
-        getExprRange(size_expr, source_manager, lang_opts).getEnd());
+        GetExprRange(*size_expr, source_manager, lang_opts).getEnd());
   }
 
   // Not supposed to get here.
@@ -1027,7 +1027,7 @@ static SubspanExprReplacement GetSubspanExprReplacement(
 
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::SourceRange range =
-      getExprRange(expr, source_manager, result.Context->getLangOpts());
+      GetExprRange(*expr, source_manager, result.Context->getLangOpts());
 
   if (const auto* integer_literal =
           clang::dyn_cast<clang::IntegerLiteral>(expr)) {
@@ -1076,7 +1076,7 @@ static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 
   EmitReplacement(
       key, GetReplacementDirective(
-               getExprRange(decl_ref, source_manager, lang_opts).getEnd(),
+               GetExprRange(*decl_ref, source_manager, lang_opts).getEnd(),
                ".data()", source_manager));
 
   clang::CharSourceRange macro_range =
@@ -1193,8 +1193,8 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
           {binary_operator_begin, binary_operator_begin.getLocWithOffset(1)},
           subspan_opener, source_manager, -kAdaptBinaryOperationPrecedence));
 
-  const clang::SourceRange operator_rhs_range = getExprRange(
-      binary_op_RHS, source_manager, result.Context->getLangOpts());
+  const clang::SourceRange operator_rhs_range = GetExprRange(
+      *binary_op_RHS, source_manager, result.Context->getLangOpts());
 
   std::string subspan_closer = CreateSubspanCloser(&subspan_expr_replacement);
   EmitReplacement(key, GetReplacementDirective(
@@ -1224,9 +1224,9 @@ static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
   // respectively.
   auto* lhs_expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
   auto* binary_op_RHS = result.Nodes.getNodeAs<clang::Expr>("binary_op_RHS");
-  auto lhs_expr_range = getExprRange(lhs_expr, source_manager, lang_opts);
+  auto lhs_expr_range = GetExprRange(*lhs_expr, source_manager, lang_opts);
   auto binary_op_rhs_range =
-      getExprRange(binary_op_RHS, source_manager, lang_opts);
+      GetExprRange(*binary_op_RHS, source_manager, lang_opts);
   auto source_range = clang::SourceRange(lhs_expr_range.getEnd(),
                                          binary_op_rhs_range.getBegin());
 
@@ -1487,7 +1487,7 @@ static void EmitSingleVariableSpan(const std::string& key,
                            source_manager, kEmitSingleVariableSpanPrecedence));
   EmitReplacement(
       key, GetReplacementDirective(
-               getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
+               GetExprRange(*operand_expr, source_manager, lang_opts).getEnd(),
                ")", source_manager, -kEmitSingleVariableSpanPrecedence));
 }
 
@@ -1770,7 +1770,7 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
 
   // Get the source range of the operand (the 'ptr' part).
   clang::SourceRange operand_range =
-      getExprRange(operand->IgnoreParenImpCasts(), source_manager, lang_opts);
+      GetExprRange(*operand->IgnoreParenImpCasts(), source_manager, lang_opts);
   assert(operand_range.isValid());
 
   clang::SourceLocation operator_end_loc = clang::Lexer::getLocForEndOfToken(
