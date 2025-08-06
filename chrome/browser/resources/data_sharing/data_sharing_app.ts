@@ -422,6 +422,8 @@ export class DataSharingApp extends CustomElement implements Logger {
         return ProgressType.FAILED;
       case (Progress.SUCCEEDED):
         return ProgressType.SUCCEEDED;
+      default:
+        break;
     }
 
     return ProgressType.UNKNOWN;
@@ -458,6 +460,8 @@ export class DataSharingApp extends CustomElement implements Logger {
         return DataSharingIntentType.ACCEPT_JOIN_AND_OPEN;
       case (LoggingIntent.ABANDON_JOIN):
         return DataSharingIntentType.ABANDON_JOIN;
+      default:
+        break;
     }
 
     return DataSharingIntentType.UNKNOWN;
@@ -493,6 +497,8 @@ export class DataSharingApp extends CustomElement implements Logger {
         break;
       case FlowValues.JOIN:
         document.title = loadTimeData.getStringF('previewA11yName');
+        break;
+      default:
         break;
     }
 
