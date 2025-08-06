@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.content.Context;
@@ -24,7 +25,6 @@ import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
@@ -146,7 +146,7 @@ public class NewTabGroupDialogFacility<
                 delayedElements -> {
                     TabGroupModelFilter filter = mHostStation.tabGroupModelFilterElement.get();
                     List<Tab> tabsInGroup =
-                            ThreadUtils.runOnUiThreadBlocking(
+                            runOnUiThreadBlocking(
                                     () -> filter.getTabsInGroup(tabGroupIdElement.get()));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
@@ -204,7 +204,9 @@ public class NewTabGroupDialogFacility<
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
         TabModel currentModel = mHostStation.getTabModel();
-        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
+        int expectedCardIndex =
+                runOnUiThreadBlocking(
+                        () -> TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup));
         return doneButtonElement
                 .clickTo()
                 .exitFacilityAnd()
@@ -257,7 +259,9 @@ public class NewTabGroupDialogFacility<
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
         TabModel currentModel = mHostStation.getTabModel();
-        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
+        int expectedCardIndex =
+                runOnUiThreadBlocking(
+                        () -> TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup));
         return pressBackTo()
                 .exitFacilityAnd()
                 .enterFacility(

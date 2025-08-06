@@ -12,6 +12,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.test.filters.MediumTest;
 
@@ -58,7 +60,9 @@ public class TabSwitcherPanePublicTransitTest {
         for (int i = 1; i < 10; i++) {
             page = page.openNewTabFast();
         }
-        assertEquals(9, cta.getCurrentTabModel().index());
+
+        int index = runOnUiThreadBlocking(() -> cta.getCurrentTabModel().index());
+        assertEquals(9, index);
         IncognitoNewTabPageStation incognitoNtp = page.openNewIncognitoTabFast();
         assertTrue(cta.getCurrentTabModel().isIncognito());
 

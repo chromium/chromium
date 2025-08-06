@@ -206,7 +206,7 @@ public class AddToHomescreenAddShortcutTest {
         mShortcutHelperDelegate = new TestShortcutHelperDelegate();
         ShortcutHelper.setDelegateForTests(mShortcutHelperDelegate);
         mActivity = mActivityTestRule.getActivity();
-        mTab = mActivity.getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
     }
 
     @Test

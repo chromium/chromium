@@ -125,8 +125,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     public void testContextualSearchNotDismissedOnBackgroundTabCrash() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        final Tab tab2 =
-                TabModelUtils.getCurrentTab(mActivityTestRule.getActivity().getCurrentTabModel());
+        final Tab tab2 = mActivityTestRule.getActivityTab();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

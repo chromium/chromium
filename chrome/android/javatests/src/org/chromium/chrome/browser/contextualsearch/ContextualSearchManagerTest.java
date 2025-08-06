@@ -489,9 +489,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void testTapContentAndExpandPanelInFullscreen() throws Exception {
         // Toggle tab to fulllscreen.
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                mActivityTestRule.getActivity().getActivityTab(),
-                true,
-                mActivityTestRule.getActivity());
+                mActivityTestRule.getActivityTab(), true, mActivityTestRule.getActivity());
 
         // Simulate a resolving search and assert that the panel peeks.
         simulateResolveSearch("search");
@@ -517,7 +515,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolveSearch("search");
 
         // Toggle tab to fullscreen.
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
                 tab, true, mActivityTestRule.getActivity());
 

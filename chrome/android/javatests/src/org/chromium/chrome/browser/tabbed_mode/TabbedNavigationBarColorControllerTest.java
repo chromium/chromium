@@ -127,7 +127,7 @@ public class TabbedNavigationBarColorControllerTest {
     public void testToggleOverview() {
         assertEquals(
                 "Navigation bar should match the tab background before entering overview mode.",
-                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mActivityTestRule.getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
@@ -143,7 +143,7 @@ public class TabbedNavigationBarColorControllerTest {
 
         assertEquals(
                 "Navigation bar should match the tab background after exiting overview mode.",
-                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mActivityTestRule.getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
     }
 
@@ -157,7 +157,7 @@ public class TabbedNavigationBarColorControllerTest {
     public void testToggleIncognito() {
         assertEquals(
                 "Navigation bar should match the tab background on normal tabs.",
-                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mActivityTestRule.getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
 
         ChromeTabUtils.newTabFromMenu(
@@ -180,7 +180,7 @@ public class TabbedNavigationBarColorControllerTest {
         assertEquals(
                 "Navigation bar should match the tab background after switching back to normal"
                         + " tab.",
-                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mActivityTestRule.getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
     }
 
@@ -229,7 +229,7 @@ public class TabbedNavigationBarColorControllerTest {
     public void testSetNavigationBarScrimFraction() {
         assertEquals(
                 "Navigation bar should match the tab background on normal tabs.",
-                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mActivityTestRule.getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
 
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -252,7 +252,7 @@ public class TabbedNavigationBarColorControllerTest {
         double regularBrightness = ColorUtils.calculateLuminance(mRegularNavigationColor);
         @ColorInt int withScrim = mWindow.getNavigationBarColor();
         assertNotEquals(
-                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(), withScrim);
+                mActivityTestRule.getActivityTab().getBackgroundColor(), withScrim);
         assertTrue(regularBrightness > ColorUtils.calculateLuminance(withScrim));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -260,7 +260,7 @@ public class TabbedNavigationBarColorControllerTest {
                         scrimManager.hideScrim(
                                 outerPropertyModel, /* animate= */ false, /* duration= */ 0));
         assertEquals(
-                mActivityTestRule.getActivity().getActivityTab().getBackgroundColor(),
+                mActivityTestRule.getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
     }
 

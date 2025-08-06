@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import android.os.Looper;
 
@@ -200,8 +201,8 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () -> {
@@ -217,7 +218,7 @@ public class ArchivedTabModelOrchestratorTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
         verify(mArchivedTabPersistentStore).pauseSaveTabList();
         verify(mArchivedTabPersistentStore).resumeSaveTabList();
@@ -232,8 +233,8 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
 
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
@@ -253,7 +254,7 @@ public class ArchivedTabModelOrchestratorTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
         runOnUiThreadBlocking(
                 () ->
                         mOrchestrator
@@ -286,8 +287,8 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () ->
@@ -298,7 +299,7 @@ public class ArchivedTabModelOrchestratorTest {
                                                 .getTabModelOrchestratorSupplier()
                                                 .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
     }
 
     @Test
@@ -309,8 +310,8 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
 
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
@@ -322,7 +323,7 @@ public class ArchivedTabModelOrchestratorTest {
                                                 .getTabModelOrchestratorSupplier()
                                                 .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
         runOnUiThreadBlocking(
                 () -> {
@@ -346,7 +347,7 @@ public class ArchivedTabModelOrchestratorTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
         verify(mTabGroupSyncService, times(2)).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
         verify(mArchivedTabPersistentStore).pauseSaveTabList();
         verify(mArchivedTabPersistentStore).resumeSaveTabList();
@@ -362,8 +363,8 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
 
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
@@ -375,7 +376,7 @@ public class ArchivedTabModelOrchestratorTest {
                                                 .getTabModelOrchestratorSupplier()
                                                 .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
         runOnUiThreadBlocking(
                 () -> {
@@ -385,7 +386,7 @@ public class ArchivedTabModelOrchestratorTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 2);
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
         verify(mTabGroupSyncService, times(2)).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
     }
 
@@ -397,8 +398,8 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
 
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
@@ -410,7 +411,7 @@ public class ArchivedTabModelOrchestratorTest {
                                                 .getTabModelOrchestratorSupplier()
                                                 .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
         // Unregistering the tab model orchestrator should skip rescue (there's nothing to rescue
         // to).
@@ -429,7 +430,7 @@ public class ArchivedTabModelOrchestratorTest {
                     mOrchestrator.registerTabModelOrchestrator(mTabbedModeOrchestrator);
                 });
         CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 2);
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
         verify(mTabGroupSyncService, times(2)).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
     }
 
@@ -457,7 +458,7 @@ public class ArchivedTabModelOrchestratorTest {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
 
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
@@ -479,8 +480,8 @@ public class ArchivedTabModelOrchestratorTest {
                     observerCaptor.getValue().onTabStateInitialized();
                 });
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
     }
 
     @Test
@@ -494,8 +495,8 @@ public class ArchivedTabModelOrchestratorTest {
                                 mActivityTestRule.getTestServer().getURL(TEST_PATH_2),
                                 WebPageStation.newBuilder());
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () -> {
@@ -513,7 +514,7 @@ public class ArchivedTabModelOrchestratorTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mPage.openRegularTabSwitcher().openTabSwitcherSearch();
@@ -537,8 +538,8 @@ public class ArchivedTabModelOrchestratorTest {
                                 mActivityTestRule.getTestServer().getURL(TEST_PATH_2),
                                 WebPageStation.newBuilder());
 
-        assertEquals(2, mRegularTabModel.getCount());
-        assertEquals(0, mArchivedTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(
                 () -> {
@@ -556,7 +557,7 @@ public class ArchivedTabModelOrchestratorTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mPage.openNewIncognitoTabFast().openIncognitoTabSwitcher().openTabSwitcherSearch();

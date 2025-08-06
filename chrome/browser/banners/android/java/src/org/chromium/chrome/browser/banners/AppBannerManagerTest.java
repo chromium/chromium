@@ -290,7 +290,7 @@ public class AppBannerManagerTest {
         Assert.assertEquals(expectedReferrer, mDetailsDelegate.mReferrer);
 
         final ChromeActivity activity = rule.getActivity();
-        tapAndWaitForModalBanner(activity.getActivityTab());
+        tapAndWaitForModalBanner(rule.getActivityTab());
         if (!installApp) return;
 
         // Click the button to trigger the installation.
@@ -349,8 +349,7 @@ public class AppBannerManagerTest {
         navigateToUrlAndWaitForBannerManager(rule, url);
 
         if (click) {
-            final ChromeActivity activity = rule.getActivity();
-            TouchCommon.singleClickView(activity.getActivityTab().getView());
+            TouchCommon.singleClickView(rule.getActivityTab().getView());
             waitUntilBottomSheetStatus(BottomSheetController.SheetState.FULL);
             return;
         }
@@ -516,7 +515,7 @@ public class AppBannerManagerTest {
         clickButton(activity, ButtonType.NEGATIVE);
 
         // Ensure userChoice is resolved.
-        new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
         Assert.assertEquals(
@@ -539,7 +538,7 @@ public class AppBannerManagerTest {
         clickButton(activity, ButtonType.NEGATIVE);
 
         // Ensure userChoice is resolved.
-        new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
         Assert.assertEquals(

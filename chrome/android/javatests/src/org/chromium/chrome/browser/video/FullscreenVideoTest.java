@@ -89,7 +89,7 @@ public class FullscreenVideoTest {
                     Assert.assertEquals(
                             "URL mismatch after exiting fullscreen video",
                             url,
-                            mActivity.getActivityTab().getUrl().getSpec());
+                            mActivityTestRule.getActivityTab().getUrl().getSpec());
                 });
     }
 
@@ -124,10 +124,10 @@ public class FullscreenVideoTest {
 
         mActivityTestRule.loadUrl(url);
 
-        final Tab tab = mActivity.getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         // Start playback to guarantee it's properly loaded.
-        WebContents webContents = mActivity.getCurrentWebContents();
+        WebContents webContents = mActivityTestRule.getWebContents();
         Assert.assertTrue(DOMUtils.isMediaPaused(webContents, video));
         DOMUtils.playMedia(webContents, video);
         DOMUtils.waitForMediaPlay(webContents, video);
@@ -153,7 +153,7 @@ public class FullscreenVideoTest {
                         .getTestServer()
                         .getURL("/chrome/test/data/android/media/video-fullscreen.html");
         mActivityTestRule.loadUrl(url);
-        final Tab tab = mActivity.getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         TestTouchUtils.singleClickView(
                 InstrumentationRegistry.getInstrumentation(), tab.getView(), 500, 500);
@@ -162,11 +162,13 @@ public class FullscreenVideoTest {
     }
 
     void waitForVideoToEnterFullscreen() {
-        FullscreenTestUtils.waitForFullscreenFlag(mActivity.getActivityTab(), true, mActivity);
+        FullscreenTestUtils.waitForFullscreenFlag(
+                mActivityTestRule.getActivityTab(), true, mActivity);
     }
 
     void waitForTabToExitFullscreen() {
-        FullscreenTestUtils.waitForFullscreenFlag(mActivity.getActivityTab(), false, mActivity);
+        FullscreenTestUtils.waitForFullscreenFlag(
+                mActivityTestRule.getActivityTab(), false, mActivity);
     }
 
     public void pressHomeButton() {

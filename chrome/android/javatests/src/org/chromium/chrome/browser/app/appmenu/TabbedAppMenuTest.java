@@ -246,7 +246,7 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
     public void testRequestDesktopSiteMenuItem_checkbox() throws IOException {
-        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         boolean isRequestDesktopSite =
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
         Assert.assertFalse("Default to request mobile site.", isRequestDesktopSite);

@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
@@ -567,7 +568,7 @@ public class TabsTest {
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
         final Tab tab = TabModelUtils.getCurrentTab(model);
 
-        assertEquals("Too many tabs at startup", 1, model.getCount());
+        assertEquals("Too many tabs at startup", 1, getTabCountOnUiThread(model));
 
         runOnUiThreadBlocking(
                 (Runnable)
@@ -737,7 +738,7 @@ public class TabsTest {
     public void testRequestFocusOnSwitchTab() {
         final TabModel model =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        final Tab oldTab = TabModelUtils.getCurrentTab(model);
+        final Tab oldTab = mActivityTestRule.getActivityTab();
 
         assertNotNull("Tab should have a view", oldTab.getView());
 
@@ -817,7 +818,7 @@ public class TabsTest {
                             });
                 });
 
-        assertEquals("Too many tabs at startup", 1, model.getCount());
+        assertEquals("Too many tabs at startup", 1, getTabCountOnUiThread(model));
 
         runOnUiThreadBlocking(
                 (Runnable)
@@ -886,14 +887,18 @@ public class TabsTest {
                 new File(
                         tabStateDir,
                         TabStateFileManager.getTabStateFilename(
-                                normalModel.getTabAt(normalModel.getCount() - 1).getId(),
+                                runOnUiThreadBlocking(
+                                                () ->
+                                                        normalModel.getTabAt(
+                                                                normalModel.getCount() - 1))
+                                        .getId(),
                                 false,
                                 /* isFlatBuffer= */ true));
         File incognitoTabFile =
                 new File(
                         tabStateDir,
                         TabStateFileManager.getTabStateFilename(
-                                incognitoModel.getTabAt(0).getId(),
+                                runOnUiThreadBlocking(() -> incognitoModel.getTabAt(0)).getId(),
                                 true,
                                 /* isFlatBuffer= */ true));
 
