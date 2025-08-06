@@ -8280,6 +8280,12 @@ const char kEnableHistorySyncOptinExpansionPillName[] =
     "History Sync Opt-in Expansion Pill";
 const char kEnableHistorySyncOptinExpansionPillDescription[] =
     "Enables the History Sync Opt-in expansion pill on Desktop platforms.";
+
+const char kEnableOAuthMultiloginCookiesBindingName[] =
+    "Enable OAuthMultilogin Cookies Binding";
+const char kEnableOAuthMultiloginCookiesBindingDescription[] =
+    "Enables binding of cookies returned from OAuthMultilogin to cryptographic "
+    "keys.";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)

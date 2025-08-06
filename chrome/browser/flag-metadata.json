@@ -4015,6 +4015,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-oauth-multilogin-cookies-binding",
+    "owners": [ "ernn@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-ongoing-processes",
     "owners": ["kradtke@chromium.org"],
     "expiry_milestone": 131

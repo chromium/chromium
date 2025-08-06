@@ -115,6 +115,9 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableOAuthMultiloginCookiesBinding);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Enables a separate account-scoped storage for preferences.

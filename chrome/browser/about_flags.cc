@@ -12063,6 +12063,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    {"enable-oauth-multilogin-cookies-binding",
+     flag_descriptions::kEnableOAuthMultiloginCookiesBindingName,
+     flag_descriptions::kEnableOAuthMultiloginCookiesBindingDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnableOAuthMultiloginCookiesBinding)},
+
     {"enable-chrome-refresh-token-binding",
      flag_descriptions::kEnableChromeRefreshTokenBindingName,
      flag_descriptions::kEnableChromeRefreshTokenBindingDescription,

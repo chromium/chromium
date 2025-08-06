@@ -204,6 +204,11 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 BASE_FEATURE(kUseIssueTokenToFetchAccessTokens,
              "UseIssueTokenToFetchAccessTokens",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables binding the OAuthMultilogin cookies to a device.
+BASE_FEATURE(kEnableOAuthMultiloginCookiesBinding,
+             "EnableOAuthMultiloginCookiesBinding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,

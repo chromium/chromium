@@ -4794,6 +4794,9 @@ extern const char kEnableChromeRefreshTokenBindingDescription[];
 
 extern const char kEnableHistorySyncOptinExpansionPillName[];
 extern const char kEnableHistorySyncOptinExpansionPillDescription[];
+
+extern const char kEnableOAuthMultiloginCookiesBindingName[];
+extern const char kEnableOAuthMultiloginCookiesBindingDescription[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
