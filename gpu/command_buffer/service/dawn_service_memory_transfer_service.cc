@@ -15,6 +15,42 @@ namespace webgpu {
 
 namespace {
 
+std::pair<scoped_refptr<gpu::Buffer>, base::raw_span<uint8_t>> GetHandleInfo(
+    CommonDecoder* decoder,
+    const void* deserialize_pointer,
+    size_t deserialize_size) {
+  DCHECK(deserialize_pointer);
+  // Use CHECK instead of DCHECK because the cast of the memory to
+  // MemoryTransferHandle and subsequent reads won't be safe if deserialize_size
+  // is too small.
+  CHECK_EQ(deserialize_size, sizeof(MemoryTransferHandle));
+  const volatile MemoryTransferHandle* handle =
+      reinterpret_cast<const volatile MemoryTransferHandle*>(
+          deserialize_pointer);
+
+  uint32_t size = handle->size;
+  int32_t shm_id = handle->shm_id;
+  uint32_t shm_offset = handle->shm_offset;
+
+  scoped_refptr<gpu::Buffer> buffer =
+      decoder->command_buffer_service()->GetTransferBuffer(shm_id);
+  if (buffer == nullptr) {
+    return std::make_pair(std::move(buffer), base::raw_span<uint8_t>());
+  }
+
+  void* ptr = buffer->GetDataAddress(shm_offset, size);
+  if (ptr == nullptr) {
+    return std::make_pair(std::move(buffer), base::raw_span<uint8_t>());
+  }
+
+  // SAFETY: gpu::Buffer::GetDataAddress() will return a valid pointer only when
+  // `shm_offset + size` is neither overflow nor greater than the total size of
+  // the whole transfer buffer.
+  auto buffer_data_view =
+      UNSAFE_BUFFERS(base::raw_span<uint8_t>(static_cast<uint8_t*>(ptr), size));
+  return std::make_pair(std::move(buffer), buffer_data_view);
+}
+
 class ReadHandleImpl
     : public dawn::wire::server::MemoryTransferService::ReadHandle {
  public:
@@ -56,7 +92,7 @@ class WriteHandleImpl
     : public dawn::wire::server::MemoryTransferService::WriteHandle {
  public:
   WriteHandleImpl(scoped_refptr<Buffer> buffer,
-                  base::raw_span<const uint8_t> buffer_data_view)
+                  base::raw_span<uint8_t> buffer_data_view)
       : buffer_(std::move(buffer)), buffer_data_view_(buffer_data_view) {}
 
   ~WriteHandleImpl() override = default;
@@ -90,7 +126,7 @@ class WriteHandleImpl
  private:
   scoped_refptr<gpu::Buffer> buffer_;
   // Data view to client-visible shared memory owned by buffer_.
-  base::raw_span<const uint8_t> buffer_data_view_;
+  base::raw_span<uint8_t> buffer_data_view_;
 };
 
 }  // namespace
@@ -105,36 +141,14 @@ bool DawnServiceMemoryTransferService::DeserializeReadHandle(
     const void* deserialize_pointer,
     size_t deserialize_size,
     ReadHandle** read_handle) {
-  DCHECK(deserialize_pointer);
-  // Use CHECK instead of DCHECK because the cast of the memory to
-  // MemoryTransferHandle and subsequent reads won't be safe if deserialize_size
-  // is too small.
-  CHECK_EQ(deserialize_size, sizeof(MemoryTransferHandle));
-  const volatile MemoryTransferHandle* handle =
-      reinterpret_cast<const volatile MemoryTransferHandle*>(
-          deserialize_pointer);
-
-  uint32_t size = handle->size;
-  int32_t shm_id = handle->shm_id;
-  uint32_t shm_offset = handle->shm_offset;
-
-  scoped_refptr<gpu::Buffer> buffer =
-      decoder_->command_buffer_service()->GetTransferBuffer(shm_id);
-  if (buffer == nullptr) {
+  auto [buffer, buffer_data_view] =
+      GetHandleInfo(decoder_, deserialize_pointer, deserialize_size);
+  if (buffer_data_view.data() == nullptr) {
     return false;
   }
 
-  void* ptr = buffer->GetDataAddress(shm_offset, size);
-  if (ptr == nullptr) {
-    return false;
-  }
-
+  DCHECK(buffer);
   DCHECK(read_handle);
-  // SAFETY: gpu::Buffer::GetDataAddress() will return a valid pointer only when
-  // `shm_offset + size` is neither overflow nor greater than the total size of
-  // the whole transfer buffer.
-  auto buffer_data_view =
-      UNSAFE_BUFFERS(base::raw_span<uint8_t>(static_cast<uint8_t*>(ptr), size));
   *read_handle = new ReadHandleImpl(std::move(buffer), buffer_data_view);
 
   return true;
@@ -144,36 +158,14 @@ bool DawnServiceMemoryTransferService::DeserializeWriteHandle(
     const void* deserialize_pointer,
     size_t deserialize_size,
     WriteHandle** write_handle) {
-  DCHECK(deserialize_pointer);
-  // Use CHECK instead of DCHECK because the cast of the memory to
-  // MemoryTransferHandle and subsequent reads won't be safe if deserialize_size
-  // is too small.
-  CHECK_EQ(deserialize_size, sizeof(MemoryTransferHandle));
-  const volatile MemoryTransferHandle* handle =
-      reinterpret_cast<const volatile MemoryTransferHandle*>(
-          deserialize_pointer);
-
-  uint32_t size = handle->size;
-  int32_t shm_id = handle->shm_id;
-  uint32_t shm_offset = handle->shm_offset;
-
-  scoped_refptr<gpu::Buffer> buffer =
-      decoder_->command_buffer_service()->GetTransferBuffer(shm_id);
-  if (buffer == nullptr) {
+  auto [buffer, buffer_data_view] =
+      GetHandleInfo(decoder_, deserialize_pointer, deserialize_size);
+  if (buffer_data_view.data() == nullptr) {
     return false;
   }
 
-  const void* ptr = buffer->GetDataAddress(shm_offset, size);
-  if (ptr == nullptr) {
-    return false;
-  }
-
+  DCHECK(buffer);
   DCHECK(write_handle);
-  // SAFETY: gpu::Buffer::GetDataAddress() will return a valid pointer only when
-  // `shm_offset + size` is neither overflow nor greater than the total size of
-  // the whole transfer buffer.
-  auto buffer_data_view = UNSAFE_BUFFERS(
-      base::raw_span<const uint8_t>(static_cast<const uint8_t*>(ptr), size));
   *write_handle = new WriteHandleImpl(std::move(buffer), buffer_data_view);
 
   return true;
