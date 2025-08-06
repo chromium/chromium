@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -57,6 +58,9 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -80,6 +84,7 @@ import java.util.List;
 /** Instrumentation tests for {@link FacilitatedPaymentsPaymentMethodsView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
 public final class FacilitatedPaymentsPaymentMethodsViewTest {
     private static final BankAccount BANK_ACCOUNT_1 =
             new BankAccount.Builder()
@@ -344,6 +349,69 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(getSheetItems().getChildCount(), is(2));
         assertThat(getPaymentAppNameAt(0).getText(), is(PAYMENT_APP_1_NAME));
         assertThat(getPaymentAppNameAt(1).getText(), is(PAYMENT_APP_2_NAME));
+    }
+
+    // This test checks that the header security image and header description are not shown and
+    // header product icon is present to user when eWallet and payment app both are available.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testPaymentAppHeaderWhenBothEwalletAndPaymentAppAvailable() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildPaymentLinkHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(EWALLET_3),
+                                            List.of(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerSecurityCheckImage = getHeaderSecurityCheckImageAt(0);
+        TextView headerDescription = getHeaderDescriptionAt(0);
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+
+        assertThat(headerProductIcon.getContentDescription(), is("Google Pay"));
+        assertThat(headerSecurityCheckImage.getVisibility(), is(View.GONE));
+        assertThat(headerDescription.getVisibility(), is(View.GONE));
+    }
+
+    // This test checks that the header product icon, header security image and header description
+    // are not shown to user when only payment app is available.
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void
+            testPaymentAppProductionIconSecurtityCheckAndDescriptionNotVisibleWhenOnlyPaymentAppAvailable() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildPaymentLinkHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(),
+                                            List.of(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerSecurityCheckImage = getHeaderSecurityCheckImageAt(0);
+        TextView headerDescription = getHeaderDescriptionAt(0);
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+
+        assertThat(headerProductIcon.getContentDescription(), nullValue());
+        assertThat(headerSecurityCheckImage.getVisibility(), is(View.GONE));
+        assertThat(headerDescription.getVisibility(), is(View.GONE));
     }
 
     @Test

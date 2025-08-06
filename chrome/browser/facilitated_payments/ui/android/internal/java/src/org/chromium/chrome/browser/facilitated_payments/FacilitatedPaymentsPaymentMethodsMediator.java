@@ -276,6 +276,48 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     @VisibleForTesting
     ListItem buildPaymentLinkHeader(
             Context context, List<Ewallet> ewallets, List<ResolveInfo> apps) {
+        PropertyModel.Builder headerBuilder = new PropertyModel.Builder(HeaderProperties.ALL_KEYS);
+        if (!ewallets.isEmpty()) {
+            int productIconHeight =
+                    (int)
+                            context.getResources()
+                                    .getDimension(
+                                            R.dimen.facilitated_payments_gpay_icon_header_height);
+            headerBuilder
+                    .with(PRODUCT_ICON_DRAWABLE_ID, R.drawable.google_pay)
+                    .with(PRODUCT_ICON_HEIGHT, productIconHeight)
+                    .with(
+                            PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
+                            R.string.facilitated_payments_google_pay);
+        }
+        headerBuilder.with(TITLE, getPaymentLinkHeaderTitle(context, ewallets, apps));
+
+        if (ewallets.size() == 1 && !ewallets.get(0).getIsFidoEnrolled() && apps.isEmpty()) {
+            headerBuilder.with(SECURITY_CHECK_DRAWABLE_ID, R.drawable.security_check_illustration);
+            headerBuilder.with(
+                    DESCRIPTION_ID,
+                    R.string.ewallet_first_time_check_payment_methods_bottom_sheet_description);
+        }
+
+        return new ListItem(
+                FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER, headerBuilder.build());
+    }
+
+    // This method will always return a valid title, there should not be any case where eWallet and
+    // payment app both are not present.
+    private String getPaymentLinkHeaderTitle(
+            Context context, List<Ewallet> ewallets, List<ResolveInfo> apps) {
+        if (apps != null
+                && !apps.isEmpty()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT)) {
+            return context.getString(
+                    R.string.facilitated_payments_non_card_payment_methods_bottom_sheet_title);
+        }
+
+        assert ewallets != null && !ewallets.isEmpty()
+                : "At least a single eWallet must be present.";
+
         // This will contain the shared ewallet name if all eWallets have the same name;
         // otherwise, it will contain `null`.
         Optional<String> sharedEwalletName = Optional.of(ewallets.get(0).getEwalletName());
@@ -285,44 +327,15 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 break;
             }
         }
-
-        String title;
         if (sharedEwalletName.isPresent()) {
-            title =
-                    context.getString(
-                            R.string
-                                    .facilitated_payments_payment_methods_bottom_sheet_detailed_title,
-                            sharedEwalletName.get());
-        } else {
-            title =
-                    context.getString(
-                            R.string
-                                    .facilitated_payments_payment_methods_bottom_sheet_generic_title);
+            // If all ewallets have same name, return a specific title containing that eWallet name.
+            return context.getString(
+                    R.string.facilitated_payments_payment_methods_bottom_sheet_detailed_title,
+                    sharedEwalletName.get());
         }
-
-        int productIconHeight =
-                (int)
-                        context.getResources()
-                                .getDimension(R.dimen.facilitated_payments_gpay_icon_header_height);
-
-        PropertyModel.Builder headerBuilder =
-                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(PRODUCT_ICON_DRAWABLE_ID, R.drawable.google_pay)
-                        .with(PRODUCT_ICON_HEIGHT, productIconHeight)
-                        .with(
-                                PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
-                                R.string.facilitated_payments_google_pay)
-                        .with(TITLE, title);
-
-        if (ewallets.size() == 1 && !ewallets.get(0).getIsFidoEnrolled()) {
-            headerBuilder.with(SECURITY_CHECK_DRAWABLE_ID, R.drawable.security_check_illustration);
-            headerBuilder.with(
-                    DESCRIPTION_ID,
-                    R.string.ewallet_first_time_check_payment_methods_bottom_sheet_description);
-        }
-
-        return new ListItem(
-                FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER, headerBuilder.build());
+        // If ewallets have different names, return a generic title.
+        return context.getString(
+                R.string.facilitated_payments_payment_methods_bottom_sheet_generic_title);
     }
 
     private ListItem buildPixFooter() {

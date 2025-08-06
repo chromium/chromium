@@ -78,6 +78,9 @@
   <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_GENERIC_TITLE" desc="Title for the bottom sheet displaying user's accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when it receives signal of intention to pay, and the user has eligible payment accounts." formatter_data="android_java">
     Pay without switching apps
   </message>
+  <message name="IDS_FACILITATED_PAYMENTS_NON_CARD_PAYMENT_METHODS_BOTTOM_SHEET_TITLE" desc="Title for the bottom sheet displaying user's available non-card payment methods. It is displayed when user has at least 1 supported payment app installed." formatter_data="android_java">
+    Pay instantly without QR upload
+  </message>
   <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_DESCRIPTION" desc="Explanation text for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected." formatter_data="android_java">
     Account info is encrypted and kept private
   </message>

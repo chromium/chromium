@@ -320,14 +320,13 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertEquals(FOOTER, itemList.get(4).type);
     }
 
+    // TODO(crbug.com/433880876): Remove assertions for continue button with maybeShowContinueButton
+    // changes.
     @Test
     @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
-    public void testPaymentAppsShown() {
-        // TODO REMOVE DIS?
-        // TODO(crbug.com/433169258): Remove dependence on Ewallets once the FOP selector header,
-        // footer, and additional info implementations have been updated.
+    public void testEwalletAndPaymentAppsShown() {
         mCoordinator.showSheetForPaymentLink(
-                List.of(EWALLET_1, EWALLET_2), List.of(PAYMENT_APP_1, PAYMENT_APP_2));
+                List.of(EWALLET_1), List.of(PAYMENT_APP_1, PAYMENT_APP_2));
 
         // Verify the screen contents set in the model when 2 payment apps exist.
         ModelList itemList =
@@ -335,10 +334,10 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertThat(itemList.size(), is(7));
         assertEquals(HEADER, itemList.get(0).type);
         assertEquals(EWALLET, itemList.get(1).type);
-        assertEquals(EWALLET, itemList.get(2).type);
+        assertEquals(PAYMENT_APP, itemList.get(2).type);
         assertEquals(PAYMENT_APP, itemList.get(3).type);
-        assertEquals(PAYMENT_APP, itemList.get(4).type);
-        assertEquals(ADDITIONAL_INFO, itemList.get(5).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(4).type);
+        assertEquals(CONTINUE_BUTTON, itemList.get(5).type);
         assertEquals(FOOTER, itemList.get(6).type);
     }
 
@@ -372,21 +371,37 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertEquals(FOOTER, itemList.get(4).type);
     }
 
+    // TODO(crbug.com/433880876): Add assertions for continue button with maybeShowContinueButton
+    // changes.
     @Test
     @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testSinglePaymentAppShown() {
-        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
+        mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
 
         // Verify the screen contents set in the model when only 1 payment app exists.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(6));
+        assertThat(itemList.size(), is(4));
         assertEquals(HEADER, itemList.get(0).type);
-        assertEquals(EWALLET, itemList.get(1).type);
+        assertEquals(PAYMENT_APP, itemList.get(1).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(2).type);
+        assertEquals(FOOTER, itemList.get(3).type);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testMultiplePaymentAppsShown() {
+        mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1, PAYMENT_APP_2));
+        // Verify the screen contents set in the model when only 1 payment app account exists.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+
+        assertThat(itemList.size(), is(5));
+        assertEquals(HEADER, itemList.get(0).type);
+        assertEquals(PAYMENT_APP, itemList.get(1).type);
         assertEquals(PAYMENT_APP, itemList.get(2).type);
         assertEquals(ADDITIONAL_INFO, itemList.get(3).type);
-        assertEquals(CONTINUE_BUTTON, itemList.get(4).type);
-        assertEquals(FOOTER, itemList.get(5).type);
+        assertEquals(FOOTER, itemList.get(4).type);
     }
 
     @Test
@@ -455,6 +470,61 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         PropertyModel header = itemList.get(0).model;
 
         assertThat(header.get(TITLE), is("Pay with eWalletName2 without switching apps"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testEwalletPaymentLinkGenericHeaderTitleUsed() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1, EWALLET_3), List.of());
+
+        // Verify the header model uses the generic title when multiple providers are displayed.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        PropertyModel header = itemList.get(0).model;
+
+        assertThat(header.get(TITLE), is("Pay without switching apps"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testEwalletPaymentLinkSpecificHeaderTitleUsed() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2, EWALLET_3), List.of());
+
+        // Verify the header model uses the provider specific title when all eWallets use the same
+        // provider.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        PropertyModel header = itemList.get(0).model;
+
+        assertThat(header.get(TITLE), is("Pay with eWalletName2 without switching apps"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testEwalletAndPaymentAppSpecificHeaderTitleUsed() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2), List.of(PAYMENT_APP_1));
+
+        // Verify the header model uses the provider specific title when all eWallets use the same
+        // provider.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        PropertyModel header = itemList.get(0).model;
+
+        assertThat(header.get(TITLE), is("Pay instantly without QR upload"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testPaymentAppSpecificHeaderTitleUsed() {
+        mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
+
+        // Verify the header model uses the provider specific title when all eWallets use the same
+        // provider.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        PropertyModel header = itemList.get(0).model;
+
+        assertThat(header.get(TITLE), is("Pay instantly without QR upload"));
     }
 
     @Test
