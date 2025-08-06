@@ -237,6 +237,8 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult,
           weak_ptr_factory_.GetWeakPtr(), driver));
+  submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
+      web_contents_, logs_uploader_);
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
@@ -249,7 +251,6 @@ void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
 
   if (success) {
     logs_uploader_->MarkStepSkipped(kSubmitFormFlowStep);
-    OnFormSubmitted();
     return;
   }
 
@@ -325,11 +326,6 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ChangePasswordFormFillingSubmissionHelper::OnFormSubmitted() {
-  submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents_, logs_uploader_);
-}
-
 void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
   CHECK(web_contents_);
   click_helper_.reset();
@@ -339,14 +335,12 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
                        result);
   }
 
-  if (!result) {
-    // Fail immediately as click failed.
+  if (!result && !submission_detected_) {
+    // Fail immediately as click failed and no form submission was detected.
     logs_uploader_->SubmitFormTargetElementNotFound();
     std::move(callback_).Run(false);
     return;
   }
-
-  OnFormSubmitted();
 }
 
 void ChangePasswordFormFillingSubmissionHelper::
@@ -361,7 +355,15 @@ void ChangePasswordFormFillingSubmissionHelper::
       "PasswordManager.PasswordChangeVerificationTriggeredAutomatically",
       submission_detected_);
 
-  submission_verifier_->CheckSubmissionOutcome(std::move(callback_));
+  submission_verifier_->CheckSubmissionOutcome(base::BindOnce(
+      &ChangePasswordFormFillingSubmissionHelper::OnSubmissionOutcomeChecked,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChangePasswordFormFillingSubmissionHelper::OnSubmissionOutcomeChecked(
+    bool success) {
+  CHECK(callback_);
+  std::move(callback_).Run(success);
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnChangePasswordFormFound(

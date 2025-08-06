@@ -115,11 +115,11 @@ class ChangePasswordFormFillingSubmissionHelper {
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
 
-  void OnFormSubmitted();
-
   void OnButtonClicked(bool result);
 
   void OnSubmissionDetectedOrTimeout();
+
+  void OnSubmissionOutcomeChecked(bool success);
 
   void OnChangePasswordFormFound(
       password_manager::PasswordFormManager* form_manager);
