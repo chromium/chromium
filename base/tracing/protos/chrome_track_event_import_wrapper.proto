@@ -5,4 +5,5 @@
 syntax = "proto2";
 
 // Import all .proto files that should be included in the proto descriptor.
+import public "base/tracing/protos/chrome_enums.proto";
 import public "base/tracing/protos/chrome_track_event.proto";

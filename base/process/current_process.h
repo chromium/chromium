@@ -13,8 +13,8 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "base/tracing/protos/chrome_enums.pbzero.h"
 #include "build/buildflag.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h"
 
 namespace tracing {
 class TraceEventDataSource;
@@ -35,8 +35,7 @@ namespace test {
 class CurrentProcessForTest;
 }  // namespace test
 
-using CurrentProcessType =
-    perfetto::protos::pbzero::ChromeProcessDescriptor::ProcessType;
+using CurrentProcessType = perfetto::protos::chrome_enums::pbzero::ProcessType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

@@ -106,6 +106,7 @@ source_set("tests") {
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:proto_test_support",
     "//base/test:test_support",
+    "//base/tracing/protos:chrome_track_event_zero",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp:buildflags",
     "//services/tracing/public/cpp/background_tracing:unit_tests",
