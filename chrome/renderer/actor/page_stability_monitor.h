@@ -8,6 +8,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/delayed_task_handle.h"
 #include "base/time/time.h"
 #include "chrome/renderer/actor/journal.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -77,6 +78,11 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
     // Invoke the callback passed to WaitForStable and cleanup.
     kInvokeCallback,
 
+    // Navigation states - these just move to MaybeDelayCallback or
+    // InvokeCallback state.
+    kNavigationCommitted,
+    kNavigationFailed,
+
     kDone
   } state_ = State::kInitial;
   friend std::ostream& operator<<(std::ostream& o,
@@ -90,6 +96,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   base::OnceClosure PostMoveToStateClosure(
       State new_state,
       base::TimeDelta delay = base::TimeDelta());
+
+  base::OnceCallback<base::DelayedTaskHandle()>
+  PostCancelableMoveToStateClosure(State new_state,
+                                   base::TimeDelta delay = base::TimeDelta());
 
   void SetTimeout(State timeout_type, base::TimeDelta delay);
 
@@ -110,6 +120,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
 
   // Amount of time to delay before monitoring begins.
   base::TimeDelta monitoring_start_delay_;
+
+  // A navigation may commit while waiting to start monitoring. Cancel the task
+  // and don't move to `kStartMonitoring` when the delay expires in this case.
+  base::DelayedTaskHandle start_monitoring_delayed_handle_;
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

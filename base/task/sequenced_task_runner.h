@@ -17,6 +17,9 @@
 #include "base/task/task_runner.h"
 #include "base/types/pass_key.h"
 
+namespace actor {
+class PageStabilityMonitor;
+}  // namespace actor
 namespace blink {
 class LowPrecisionTimer;
 class ScriptedIdleTaskController;
@@ -62,6 +65,7 @@ class PostDelayedTaskPassKey {
   // Avoid =default to disallow creation by uniform initialization.
   PostDelayedTaskPassKey() = default;
 
+  friend class actor::PageStabilityMonitor;
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
