@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -13,12 +13,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.HashSet;
 import java.util.List;
@@ -161,7 +155,7 @@ public class TabGroupVisualDataManager {
     }
 
     /** Overwrites the tab group metadata at the new id with the data from the old id. */
-    public static void moveTabGroupMetadata(
+    private static void moveTabGroupMetadata(
             TabGroupModelFilter filter, int oldRootId, int newRootId) {
         String title = filter.getTabGroupTitle(oldRootId);
         if (title != null) {
