@@ -353,10 +353,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           ~content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS &
           ~constants::FILTERABLE_DATA_TYPES) == 0) ||
         filter_builder->MatchesAllOriginsAndDomains());
-#if !BUILDFLAG(IS_ANDROID)
-  DCHECK(!should_clear_sync_account_settings_);
-#endif
-
   TRACE_EVENT0("browsing_data",
                "ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData");
 
@@ -695,16 +691,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                         profile_->GetJavaObject());
 #endif
     }
-
-#if !BUILDFLAG(IS_ANDROID)
-    if (nullable_filter.is_null() ||
-        (!filter_builder->PartitionedCookiesOnly() &&
-         nullable_filter.Run(GaiaUrls::GetInstance()->google_url()))) {
-      // Set a flag to clear account storage settings later instead of clearing
-      // it now as we can not reset this setting before passwords are deleted.
-      should_clear_sync_account_settings_ = true;
-    }
-#endif
 
     // Persistent Origin Trial tokens are only saved until the next page
     // load from the same origin. For that reason, they are not saved with
@@ -1590,32 +1576,6 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
       return;
     }
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Explicitly clear any per account sync settings when cookies are being
-  // cleared. This needs to happen after the corresponding data has been
-  // deleted, so it is performed when all other tasks are completed.
-  // Note: These usually get cleared automatically when the Google cookies are
-  // deleted, but there is one edge case where that doesn't work: If the user
-  // clears cookies via CBD while they are already signed out (but their
-  // account is still present in the account chooser). In that case, without the
-  // code below, the settings-clearing would only happen when the Google cookies
-  // are refreshed the next time, typically on the next browser restart.
-  if (should_clear_sync_account_settings_) {
-    should_clear_sync_account_settings_ = false;
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_);
-    base::flat_set<GaiaId> gaia_ids = signin::GetAllGaiaIdsForKeyedPreferences(
-        identity_manager,
-        signin::AccountsInCookieJarInfo() /* empty_cookies */);
-    if (syncer::SyncService* sync_service =
-            SyncServiceFactory::GetForProfile(profile_);
-        sync_service) {
-      sync_service->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
-          base::ToVector(gaia_ids));
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   slow_pending_tasks_closure_.Cancel();
 
