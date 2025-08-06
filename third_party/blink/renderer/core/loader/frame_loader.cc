@@ -549,6 +549,12 @@ bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
             .empty()) {
       return false;
     }
+    // `CheckAndGetJavascriptUrl` function above contains Trusted Types check,
+    // which might trigger JS callback that can remove the frame altogether.
+    // Therefore, check if the frame is still attached here.
+    if (!frame_->IsAttached()) {
+      return false;
+    }
 
     if (frame_->Owner() && ((frame_->Owner()->GetFramePolicy().sandbox_flags &
                              network::mojom::blink::WebSandboxFlags::kOrigin) !=
