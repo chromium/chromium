@@ -404,6 +404,8 @@ export class Runner {
       case 'speed':
         this.setSpeed(value);
         break;
+      default:
+        break;
     }
   }
 
@@ -967,6 +969,7 @@ export class Runner {
       case RunnerEvents.GAMEPADCONNECTED:
         this.onGamepadConnected();
         break;
+      default:
     }
   }
 
