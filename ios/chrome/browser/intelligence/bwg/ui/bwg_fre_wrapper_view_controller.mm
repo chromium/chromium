@@ -89,6 +89,8 @@ const CGFloat kDamping = 0.85;
   } else {
     _currentChildViewController = _consentViewController;
   }
+
+  [self updateAccessibilityVisibility];
   _contentHeightConstraint = [self.contentScrollView.heightAnchor
       constraintEqualToConstant:[_currentChildViewController contentHeight]];
   _contentHeightConstraint.active = YES;
@@ -312,12 +314,24 @@ const CGFloat kDamping = 0.85;
                                   _consentViewController.view);
 }
 
+// Manages which view is visible to VoiceOver.
+- (void)updateAccessibilityVisibility {
+  if (_promoViewController) {
+    _promoViewController.view.accessibilityElementsHidden =
+        (_currentChildViewController != _promoViewController);
+  }
+
+  _consentViewController.view.accessibilityElementsHidden =
+      (_currentChildViewController != _consentViewController);
+}
+
 #pragma mark - BWGPromoViewControllerDelegate
 
 // Handles the primary action from the promo screen. It transitions the view
 // to the consent screen and animates the content scroll view horizontally.
 - (void)didAcceptPromo {
   _currentChildViewController = _consentViewController;
+  [self updateAccessibilityVisibility];
   [self updateContentHeightConstraint];
 
   __weak __typeof(self) weakSelf = self;
