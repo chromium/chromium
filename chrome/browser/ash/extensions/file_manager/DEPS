@@ -6,7 +6,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/app/vector_icons",
   "+chrome/browser/app_mode",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/platform_apps/api/media_galleries",
@@ -39,7 +38,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/lifetime",
-  "+chrome/browser/metrics",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/pdf",
@@ -52,7 +50,6 @@ include_rules = [
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",

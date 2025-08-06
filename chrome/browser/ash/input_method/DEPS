@@ -14,8 +14,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/crosapi",
-  "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/lobster/lobster_event_sink.h",
   "+chrome/browser/ash/lobster/lobster_service_provider.h",
   "+chrome/browser/ash/magic_boost/magic_boost_controller_ash.h",
@@ -23,7 +21,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/extensions/component_loader.h",
-  "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/feedback",
   "+chrome/browser/lifetime",
   "+chrome/browser/manta",

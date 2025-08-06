@@ -33,13 +33,11 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash/login",
-  "+chrome/browser/ui/ash/network",
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/login",
   "+chrome/common/pref_names.h",
-  "+chrome/grit",
   "+chrome/test/base",
 ]
 

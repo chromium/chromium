@@ -20,6 +20,5 @@ include_rules = [
   "+chrome/browser/ash/policy/server_backed_state",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/test/base",
 ]

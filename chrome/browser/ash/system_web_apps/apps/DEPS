@@ -85,7 +85,6 @@ include_rules = [
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash",
-  "+chrome/browser/ui/webui/chrome_web_ui_controller_factory.h",
   "+chrome/browser/ui/webui/plural_string_handler.h",
   "+chrome/browser/ui/webui/sanitized_image_source.h",
   "+chrome/browser/web_applications/extension_status_utils.h",

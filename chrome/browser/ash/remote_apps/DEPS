@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/extensions/chrome_test_extension_loader.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/app_list",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/common/apps/platform_apps/api",
   "+chrome/common/chrome_paths.h",

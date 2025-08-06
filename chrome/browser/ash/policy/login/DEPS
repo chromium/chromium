@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/crx_installer.h",
-  "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/install_observer.h",
   "+chrome/browser/extensions/install_tracker.h",
   "+chrome/browser/extensions/policy_test_utils.h",

@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_install_finalizer.h",
   "+chrome/browser/web_applications/web_app_provider.h",
-  "+chrome/browser/web_applications/web_app_sync_bridge.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",

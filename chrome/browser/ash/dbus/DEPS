@@ -44,7 +44,6 @@ include_rules = [
   "+chrome/browser/enterprise/browser_management",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/resource_coordinator",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/chrome_select_file_policy.h",

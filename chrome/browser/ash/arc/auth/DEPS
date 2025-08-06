@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/login/demo_mode",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
