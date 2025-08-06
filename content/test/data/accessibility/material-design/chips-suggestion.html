@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:clickChip()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -24,12 +25,15 @@
             const statusDiv = document.getElementById("status");
             const chipSet = document.createElement("md-chip-set");
             const chips = [
-                { label: "Suggestion chip" },
+                { label: "Suggestion chip", id: "test-chip-1" },
                 { label: "With icon", icon: "lightbulb" }
             ];
             chips.forEach(chipInfo => {
                 const chip = document.createElement("md-suggestion-chip");
                 chip.label = chipInfo.label;
+                if (chipInfo.id) {
+                    chip.id = chipInfo.id;
+                }
                 if (chipInfo.icon) {
                     const icon = document.createElement("md-icon");
                     icon.slot = "icon";
@@ -47,4 +51,18 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
+<script>
+    async function clickChip() {
+        const chip = document.getElementById("test-chip-1");
+        if (chip) {
+            chip.click();
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Suggestion Chip Clicked";
+            statusDiv.appendChild(statusText);
+            return "Suggestion Chip Clicked";
+        }
+        return "Failed to click Suggestion Chip";
+    }
+</script>
 </html>
