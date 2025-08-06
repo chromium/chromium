@@ -10596,6 +10596,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "xslt",
+    "owners": [ "masonf@chromium.org" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "xsurface-metrics-reporting",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 120

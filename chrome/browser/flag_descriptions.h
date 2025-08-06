@@ -1147,6 +1147,9 @@ extern const char kExperimentalWebPlatformFeaturesDescription[];
 extern const char kSafeBrowsingLocalListsUseSBv5Name[];
 extern const char kSafeBrowsingLocalListsUseSBv5Description[];
 
+extern const char kXSLTName[];
+extern const char kXSLTDescription[];
+
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 extern const char kSymphoniaAudioDecodingName[];
 extern const char kSymphoniaAudioDecodingDescription[];

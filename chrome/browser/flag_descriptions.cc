@@ -1983,6 +1983,10 @@ const char kSafeBrowsingLocalListsUseSBv5Description[] =
     "Fetch and check local lists using the Safe Browsing v5 API instead of the "
     "v4 Update API.";
 
+const char kXSLTName[] = "XSLT";
+const char kXSLTDescription[] =
+    "Toggles whether or not XSLT is supported by the browser.";
+
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 const char kSymphoniaAudioDecodingName[] = "Symphonia Audio Decoding";
 const char kSymphoniaAudioDecodingDescription[] =

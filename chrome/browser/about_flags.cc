@@ -10085,6 +10085,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description, kOsAll,
      FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
 
+    {"xslt", flag_descriptions::kXSLTName, flag_descriptions::kXSLTDescription,
+     kOsAll, FEATURE_VALUE_TYPE(blink::features::kXSLT)},
+
 #if BUILDFLAG(ENABLE_SYMPHONIA)
     {"symphonia-audio-decoding", flag_descriptions::kSymphoniaAudioDecodingName,
      flag_descriptions::kSymphoniaAudioDecodingDescription, kOsAll,
