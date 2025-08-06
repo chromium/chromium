@@ -179,14 +179,14 @@ void SecurePaymentConfirmationController::
   // accepted/rejected without user interaction. We deliberately wait until
   // after the dialog is created and shown to handle this, in order to keep the
   // automation codepath as close to the 'real' one as possible.
-  if (request_->spc_transaction_mode() != SPCTransactionMode::NONE) {
+  if (request_->spc_transaction_mode() != SPCTransactionMode::kNone) {
     // TODO(crbug.com/417426346): Once the desktop SPC controller supports the
     // new fallback flow, it should handle SPCTransactionMode::
-    // AUTOAUTHANOTHERWAY here.
-    if (request_->spc_transaction_mode() == SPCTransactionMode::AUTOACCEPT) {
+    // kAutoAuthAnotherWay here.
+    if (request_->spc_transaction_mode() == SPCTransactionMode::kAutoAccept) {
       OnConfirm();
     } else if (request_->spc_transaction_mode() ==
-               SPCTransactionMode::AUTOOPTOUT) {
+               SPCTransactionMode::kAutoOptOut) {
       OnOptOut();
     } else {
       OnCancel();
