@@ -222,13 +222,13 @@ where
 
     /// Produce an ordered iterator over keys
     pub fn iter_keys(self) -> impl Iterator<Item = &'a <K as ZeroMapKV<'a>>::GetType> {
-        #[allow(clippy::unwrap_used)] // idx in 0..keys.zvl_len()
+        #[expect(clippy::unwrap_used)] // idx in 0..keys.zvl_len()
         (0..self.keys.zvl_len()).map(move |idx| self.keys.zvl_get(idx).unwrap())
     }
 
     /// Produce an iterator over values, ordered by keys
     pub fn iter_values(self) -> impl Iterator<Item = &'a <V as ZeroMapKV<'a>>::GetType> {
-        #[allow(clippy::unwrap_used)] // idx in 0..keys.zvl_len() == values.zvl_len()
+        #[expect(clippy::unwrap_used)] // idx in 0..keys.zvl_len() == values.zvl_len()
         (0..self.values.zvl_len()).map(move |idx| self.values.zvl_get(idx).unwrap())
     }
 }
@@ -257,9 +257,9 @@ where
     ) -> impl Iterator<Item = (&'a <K as ZeroMapKV<'a>>::GetType, V)> {
         (0..self.keys.zvl_len()).map(move |idx| {
             (
-                #[allow(clippy::unwrap_used)] // idx in 0..keys.zvl_len()
+                #[expect(clippy::unwrap_used)] // idx in 0..keys.zvl_len()
                 self.keys.zvl_get(idx).unwrap(),
-                #[allow(clippy::unwrap_used)] // idx in 0..keys.zvl_len() = values.zvl_len()
+                #[expect(clippy::unwrap_used)] // idx in 0..keys.zvl_len() = values.zvl_len()
                 self.values.get(idx).unwrap(),
             )
         })
@@ -273,14 +273,13 @@ where
 {
     /// Similar to [`Self::iter()`] except it returns a direct copy of the keys values instead of references
     /// to `K::ULE` and `V::ULE`, in cases when `K` and `V` are fixed-size
-    #[allow(clippy::needless_lifetimes)] // Lifetime is necessary in impl Trait
     pub fn iter_copied(self) -> impl Iterator<Item = (K, V)> + 'a {
         let len = self.keys.zvl_len();
         (0..len).map(move |idx| {
             (
-                #[allow(clippy::unwrap_used)] // idx in 0..keys.zvl_len()
+                #[expect(clippy::unwrap_used)] // idx in 0..keys.zvl_len()
                 ZeroSlice::get(self.keys, idx).unwrap(),
-                #[allow(clippy::unwrap_used)] // idx in 0..keys.zvl_len() = values.zvl_len()
+                #[expect(clippy::unwrap_used)] // idx in 0..keys.zvl_len() = values.zvl_len()
                 ZeroSlice::get(self.values, idx).unwrap(),
             )
         })

@@ -101,7 +101,7 @@ where
     K1: ZeroMapKV<'a> + ?Sized + Ord,
     V: ZeroMapKV<'a> + ?Sized,
 {
-    #[allow(clippy::type_complexity)] // it's a marker type, complexity doesn't matter
+    #[expect(clippy::type_complexity)] // it's a marker type, complexity doesn't matter
     marker: PhantomData<fn() -> (&'a K0::OwnedType, &'a K1::OwnedType, &'a V::OwnedType)>,
 }
 
@@ -172,7 +172,6 @@ struct TupleVecMap<K1, V> {
 }
 
 struct TupleVecMapVisitor<K1, V> {
-    #[allow(clippy::type_complexity)] // it's a marker type, complexity doesn't matter
     marker: PhantomData<fn() -> (K1, V)>,
 }
 

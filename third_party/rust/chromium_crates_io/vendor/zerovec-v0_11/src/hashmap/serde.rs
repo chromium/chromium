@@ -119,6 +119,8 @@ mod test {
         );
     }
 
+    // TODO(#6588): Fix sensitivity to host endianness.
+    #[cfg(target_endian = "little")]
     #[test]
     fn test_serde_valid_deser_zhm() {
         let hm = make_zerohashmap();
@@ -132,6 +134,8 @@ mod test {
         );
     }
 
+    // TODO(#6588): Fix sensitivity to host endianness.
+    #[cfg(target_endian = "little")]
     #[test]
     fn test_bincode_zhm() {
         let hm = make_zerohashmap();

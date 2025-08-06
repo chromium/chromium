@@ -71,11 +71,11 @@ where
         let hash = compute_hash(key.borrow());
         let (g, f0, f1) = split_hash64(hash, self.len());
 
-        #[allow(clippy::unwrap_used)] // g is in-range
+        #[expect(clippy::unwrap_used)] // g is in-range
         let (d0, d1) = self.displacements.get(g).unwrap();
         let index = compute_index((f0, f1), (d0, d1), self.displacements.len() as u32)?;
 
-        #[allow(clippy::unwrap_used)] // index is in 0..self.keys.len()
+        #[expect(clippy::unwrap_used)] // index is in 0..self.keys.len()
         let found = self.keys.zvl_get(index).unwrap();
         if K::Container::zvl_get_as_t(found, |found| found == key.borrow()) {
             Some(index)
@@ -136,9 +136,9 @@ where
     > {
         (0..self.len()).map(|index| {
             (
-                #[allow(clippy::unwrap_used)] // index is in range
+                #[expect(clippy::unwrap_used)] // index is in range
                 self.keys.zvl_get(index).unwrap(),
-                #[allow(clippy::unwrap_used)] // index is in range
+                #[expect(clippy::unwrap_used)] // index is in range
                 self.values.zvl_get(index).unwrap(),
             )
         })
@@ -148,7 +148,7 @@ where
     pub fn iter_keys<'b>(
         &'b self,
     ) -> impl ExactSizeIterator<Item = &'b <K as ZeroMapKV<'a>>::GetType> {
-        #[allow(clippy::unwrap_used)] // index is in range
+        #[expect(clippy::unwrap_used)] // index is in range
         (0..self.len()).map(|index| self.keys.zvl_get(index).unwrap())
     }
 
@@ -156,7 +156,7 @@ where
     pub fn iter_values<'b>(
         &'b self,
     ) -> impl ExactSizeIterator<Item = &'b <V as ZeroMapKV<'a>>::GetType> {
-        #[allow(clippy::unwrap_used)] // index is in range
+        #[expect(clippy::unwrap_used)] // index is in range
         (0..self.len()).map(|index| self.values.zvl_get(index).unwrap())
     }
 }

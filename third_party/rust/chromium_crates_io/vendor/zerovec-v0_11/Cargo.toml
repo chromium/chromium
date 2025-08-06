@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "zerovec"
-version = "0.11.2"
+version = "0.11.4"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [

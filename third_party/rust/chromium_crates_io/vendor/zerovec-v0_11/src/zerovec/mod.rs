@@ -165,6 +165,17 @@ impl<U> EyepatchHackVector<U> {
         // this always represents a valid vector
         Vec::from_raw_parts(self.buf.as_ptr() as *mut U, len, self.capacity)
     }
+
+    fn truncate(&mut self, max: usize) {
+        // SAFETY: The elements in buf are `ULE`, so they don't need to be dropped
+        // even if we own them.
+        self.buf = unsafe {
+            NonNull::new_unchecked(core::ptr::slice_from_raw_parts_mut(
+                self.buf.as_mut().as_mut_ptr(),
+                core::cmp::min(max, self.buf.as_ref().len()),
+            ))
+        };
+    }
 }
 
 #[cfg(feature = "alloc")]
@@ -1067,6 +1078,13 @@ where
             let slice = unsafe { { this }.vector.as_arbitrary_slice() };
             Cow::Borrowed(slice)
         }
+    }
+
+    /// Truncates this vector to `min(self.len(), max)`.
+    #[inline]
+    pub fn truncated(mut self, max: usize) -> Self {
+        self.vector.truncate(max);
+        self
     }
 }
 

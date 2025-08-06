@@ -242,7 +242,7 @@ where
 
     /// Shifts all joiner ranges from key0_index onward one index up
     fn joiner_expand(&mut self, key0_index: usize) {
-        #[allow(clippy::expect_used)] // slice overflow
+        #[expect(clippy::expect_used)] // slice overflow
         self.joiner
             .to_mut_slice()
             .iter_mut()
@@ -314,7 +314,7 @@ where
         debug_assert!(range.start <= range.end); // '<=' because we may have inserted a new key0
         debug_assert!(range.end <= self.keys1.zvl_len());
         let range_start = range.start;
-        #[allow(clippy::unwrap_used)] // by debug_assert! invariants
+        #[expect(clippy::unwrap_used)] // by debug_assert! invariants
         let index = range_start
             + match self.keys1.zvl_binary_search_in_range(key1, range).unwrap() {
                 Ok(index) => return Some(self.values.zvl_replace(range_start + index, value)),
@@ -349,7 +349,7 @@ where
         debug_assert!(range.start < range.end); // '<' because every key0 should have a key1
         debug_assert!(range.end <= self.keys1.zvl_len());
         let is_singleton_range = range.start + 1 == range.end;
-        #[allow(clippy::unwrap_used)] // by debug_assert invariants
+        #[expect(clippy::unwrap_used)] // by debug_assert invariants
         let index = range.start
             + self
                 .keys1
@@ -408,10 +408,10 @@ where
         }
 
         // The unwraps are protected by the fact that we are not empty
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         let last_key0 = self.keys0.zvl_get(self.keys0.zvl_len() - 1).unwrap();
         let key0_cmp = K0::Container::t_cmp_get(key0, last_key0);
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         let last_key1 = self.keys1.zvl_get(self.keys1.zvl_len() - 1).unwrap();
         let key1_cmp = K1::Container::t_cmp_get(key1, last_key1);
 
@@ -433,12 +433,12 @@ where
             _ => {}
         }
 
-        #[allow(clippy::expect_used)] // slice overflow
+        #[expect(clippy::expect_used)] // slice overflow
         let joiner_value = u32::try_from(self.keys1.zvl_len() + 1)
             .expect("Attempted to add more than 2^32 elements to a ZeroMap2d");
 
         // All OK to append
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         if key0_cmp == Ordering::Greater {
             self.keys0.zvl_push(key0);
             self.joiner
@@ -459,7 +459,7 @@ where
     // INTERNAL ROUTINES FOLLOW //
 
     #[cfg(debug_assertions)]
-    #[allow(clippy::unwrap_used)] // this is an assertion function
+    #[expect(clippy::unwrap_used)] // this is an assertion function
     pub(crate) fn check_invariants(&self) {
         debug_assert_eq!(self.keys0.zvl_len(), self.joiner.len());
         debug_assert_eq!(self.keys1.zvl_len(), self.values.zvl_len());
@@ -563,7 +563,7 @@ where
                 } else {
                     debug_assert!(key0_index <= self.joiner.len());
                     // The unwrap is protected by the debug_assert above and key0_index != 0
-                    #[allow(clippy::unwrap_used)]
+                    #[expect(clippy::unwrap_used)]
                     self.joiner.get(key0_index - 1).unwrap()
                 };
                 self.keys0.zvl_insert(key0_index, key0);

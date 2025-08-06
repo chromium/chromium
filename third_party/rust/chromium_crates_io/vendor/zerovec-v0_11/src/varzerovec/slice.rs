@@ -459,7 +459,7 @@ unsafe impl<T: VarULE + ?Sized + 'static, F: VarZeroVecFormat> VarULE for VarZer
 impl<T: VarULE + ?Sized, F: VarZeroVecFormat> Index<usize> for VarZeroSlice<T, F> {
     type Output = T;
     fn index(&self, index: usize) -> &Self::Output {
-        #[allow(clippy::panic)] // documented
+        #[expect(clippy::panic)] // documented
         match self.get(index) {
             Some(x) => x,
             None => panic!(

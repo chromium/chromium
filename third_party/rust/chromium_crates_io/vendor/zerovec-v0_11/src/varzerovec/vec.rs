@@ -395,7 +395,7 @@ where
         if elements.is_empty() {
             VarZeroSlice::new_empty().into()
         } else {
-            #[allow(clippy::unwrap_used)] // TODO(#1410) Better story for fallibility
+            #[expect(clippy::unwrap_used)] // TODO(#1410) Better story for fallibility
             VarZeroVecOwned::try_from_elements(elements).unwrap().into()
         }
     }

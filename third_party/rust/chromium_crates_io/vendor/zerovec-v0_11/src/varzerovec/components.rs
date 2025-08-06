@@ -36,7 +36,6 @@ pub trait VarZeroVecFormat: 'static + Sized {
 ///
 /// Do not implement this trait, its internals may be changed in the future,
 /// and all of its associated items are hidden from the docs.
-#[allow(clippy::missing_safety_doc)] // no safety section for you, don't implement this trait period
 #[doc(hidden)]
 pub unsafe trait IntegerULE: ULE {
     /// The error to show when unable to construct a vec
@@ -432,7 +431,7 @@ impl<'a, T: VarULE + ?Sized, F: VarZeroVecFormat> VarZeroVecComponents<'a, T, F>
     /// This method is NOT allowed to call any other methods on VarZeroVecComponents since all other methods
     /// assume that the slice has been passed through check_indices_and_things
     #[inline]
-    #[allow(clippy::len_zero)] // more explicit to enforce safety invariants
+    #[expect(clippy::len_zero)] // more explicit to enforce safety invariants
     fn check_indices_and_things(self) -> Result<(), VarZeroVecFormatError> {
         if self.len() == 0 {
             if self.things.len() > 0 {
@@ -729,12 +728,12 @@ where
         // The first index is always 0. We don't write it, or update the idx offset.
         if i != 0 {
             let idx_limit = idx_offset + F::Index::SIZE;
-            #[allow(clippy::indexing_slicing)] // Function contract allows panicky behavior
+            #[expect(clippy::indexing_slicing)] // Function contract allows panicky behavior
             let idx_slice = &mut output[idx_offset..idx_limit];
             // VZV expects data offsets to be stored relative to the first data block
             let idx = dat_offset - first_dat_offset;
             assert!(idx <= F::Index::MAX_VALUE as usize);
-            #[allow(clippy::expect_used)] // this function is explicitly panicky
+            #[expect(clippy::expect_used)] // this function is explicitly panicky
             let bytes_to_write = F::Index::iule_from_usize(idx).expect(F::Index::TOO_LARGE_ERROR);
             idx_slice.copy_from_slice(ULE::slice_as_bytes(&[bytes_to_write]));
 
@@ -742,7 +741,7 @@ where
         }
 
         let dat_limit = dat_offset + element_len;
-        #[allow(clippy::indexing_slicing)] // Function contract allows panicky behavior
+        #[expect(clippy::indexing_slicing)] // Function contract allows panicky behavior
         let dat_slice = &mut output[dat_offset..dat_limit];
         element.encode_var_ule_write(dat_slice);
         debug_assert_eq!(T::validate_bytes(dat_slice), Ok(()));
@@ -770,12 +769,12 @@ where
         return;
     }
     assert!(elements.len() <= F::Len::MAX_VALUE as usize);
-    #[allow(clippy::expect_used)] // This function is explicitly panicky
+    #[expect(clippy::expect_used)] // This function is explicitly panicky
     let num_elements_ule = F::Len::iule_from_usize(elements.len()).expect(F::Len::TOO_LARGE_ERROR);
-    #[allow(clippy::indexing_slicing)] // Function contract allows panicky behavior
+    #[expect(clippy::indexing_slicing)] // Function contract allows panicky behavior
     output[0..F::Len::SIZE].copy_from_slice(ULE::slice_as_bytes(&[num_elements_ule]));
 
-    #[allow(clippy::indexing_slicing)] // Function contract allows panicky behavior
+    #[expect(clippy::indexing_slicing)] // Function contract allows panicky behavior
     write_serializable_bytes_without_length::<T, A, F>(elements, &mut output[F::Len::SIZE..]);
 }
 

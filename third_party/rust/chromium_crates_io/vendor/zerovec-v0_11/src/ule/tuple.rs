@@ -56,7 +56,7 @@ macro_rules! tuple_ule {
                     $(
                         let j = i;
                         i += mem::size_of::<$t>();
-                        #[allow(clippy::indexing_slicing)] // length checked
+                        #[expect(clippy::indexing_slicing)] // length checked
                         <$t>::validate_bytes(&chunk[j..i])?;
                     )+
                 }
