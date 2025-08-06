@@ -179,6 +179,8 @@ export class ComposeboxElement extends I18nMixinLit
                     this.errorMessage_ =
                         this.i18n('composeboxFileUploadExpired');
                     break;
+                  default:
+                    break;
                 }
                 this.showErrorScrim_ = true;
               } else {
