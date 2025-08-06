@@ -38,29 +38,16 @@ public class HistoryPaneStation extends HubBaseStation {
     }
 
     /** Expect history entries to be displayed in the history pane. */
-    public HistoryWithEntriesFacility expectEntries(boolean isLLFDevice) {
-        return noopTo().enterFacility(new HistoryWithEntriesFacility(isLLFDevice));
+    public HistoryWithEntriesFacility expectEntries() {
+        return noopTo().enterFacility(new HistoryWithEntriesFacility());
     }
 
     /** Expect no history to be displayed in the history pane. */
-    public void expectEmptyState(boolean isLLFDevice) {
+    public void expectEmptyState() {
         var emptyHistory = new Facility<>("EmptyState");
-        if (isLLFDevice) {
-            emptyHistory.declareView(
-                    withText(
-                            "Can’t find that page. Check your spelling or try a search on"
-                                    + " Google."));
-            emptyHistory.declareView(
-                    withText(
-                            "Try searching for something else or open full Chrome history to see"
-                                    + " more results."));
-        } else {
-            emptyHistory.declareView(withText("You’ll find your history here"));
-            emptyHistory.declareView(
-                    withText(
-                            "You can see the pages you’ve visited or delete them from your"
-                                    + " history"));
-        }
+        emptyHistory.declareView(withText("You’ll find your history here"));
+        emptyHistory.declareView(
+                withText("You can see the pages you’ve visited or delete them from your history"));
         emptyHistory.declareNoView(withId(R.id.history_page_recycler_view));
         noopTo().enterFacility(emptyHistory);
     }
@@ -70,13 +57,8 @@ public class HistoryPaneStation extends HubBaseStation {
         public final ViewElement<View> recyclerViewElement;
         public final ViewElement<View> searchButtonElement;
 
-        public HistoryWithEntriesFacility(boolean mIsLLFDevice) {
+        public HistoryWithEntriesFacility() {
             recyclerViewElement = declareView(withId(R.id.history_page_recycler_view));
-            if (mIsLLFDevice) {
-                searchButtonElement = null;
-                declareNoView(withId(R.id.search_menu_id));
-                return;
-            }
             searchButtonElement = declareView(withId(R.id.search_menu_id));
         }
 
@@ -91,8 +73,7 @@ public class HistoryPaneStation extends HubBaseStation {
         }
 
         /** Open the history search. */
-        public HistorySearchFacility openSearch(boolean isLLFDevice) {
-            if (isLLFDevice) return noopTo().enterFacility(new HistorySearchFacility());
+        public HistorySearchFacility openSearch() {
             return searchButtonElement.clickTo().enterFacility(new HistorySearchFacility());
         }
     }

@@ -172,7 +172,6 @@ public class SelectableListToolbar<E> extends Toolbar
 
     // current view type that SelectableListToolbar is showing
     private int mViewType;
-    private boolean mIsLargeScreenWithKeyboard;
 
     /** Constructor for inflating from XML. */
     public SelectableListToolbar(Context context, AttributeSet attrs) {
@@ -288,7 +287,6 @@ public class SelectableListToolbar<E> extends Toolbar
         mShowInfoIcon = true;
         mShowInfoStringId = R.string.show_info;
         mHideInfoStringId = R.string.hide_info;
-        mIsLargeScreenWithKeyboard = false;
 
         if (showBackInNormalView) {
             mShowBackInNormalView = true;
@@ -448,7 +446,7 @@ public class SelectableListToolbar<E> extends Toolbar
      * search view will be hidden.
      */
     public void onSearchNavigationBack() {
-        if (!mHasSearchView || !isSearching() || mIsLargeScreenWithKeyboard) return;
+        if (!mHasSearchView || !isSearching()) return;
 
         hideSearchView();
     }
@@ -475,7 +473,6 @@ public class SelectableListToolbar<E> extends Toolbar
             case NavigationButton.NONE:
                 break;
             case NavigationButton.SEARCH_BACK:
-                if (mIsLargeScreenWithKeyboard) break;
                 // Create a LayerDrawable to hold the search box icon highlight background as well
                 // as the navigation icon drawable.
                 var navigationBackgroundDrawable =
@@ -585,7 +582,7 @@ public class SelectableListToolbar<E> extends Toolbar
         if (mIsDestroyed) return;
 
         if (mSelectionDelegate != null) mSelectionDelegate.clearSelection();
-        if (isSearching() && !mIsLargeScreenWithKeyboard) hideSearchView();
+        if (isSearching()) hideSearchView();
     }
 
     /**
@@ -841,13 +838,5 @@ public class SelectableListToolbar<E> extends Toolbar
     @VisibleForTesting
     public @ViewType int getCurrentViewType() {
         return mViewType;
-    }
-
-    public void setIsLargeScreenWithKeyboard(boolean isLargeScreenWithKeyboard) {
-        mIsLargeScreenWithKeyboard = isLargeScreenWithKeyboard;
-    }
-
-    public boolean isLargeScreenWithKeyboard() {
-        return mIsLargeScreenWithKeyboard;
     }
 }
