@@ -1975,6 +1975,7 @@ TEST_F(DisplayManagerTest, TestNativeDisplaysChanged) {
   display_info_list.push_back(internal_display_info);
   display_info_list.push_back(mirroring_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
+  SetSoftwareMirrorMode(true);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
   EXPECT_EQ(gfx::Rect(0, 0, 500, 400),
             GetDisplayForId(internal_display_id).bounds());
@@ -1992,6 +1993,7 @@ TEST_F(DisplayManagerTest, TestNativeDisplaysChanged) {
   EXPECT_EQ("Display 100", display_manager()->GetDisplayNameForId(100));
 
   // and exit mirroring.
+  SetSoftwareMirrorMode(false);
   display_info_list.clear();
   display_info_list.push_back(internal_display_info);
   display_info_list.push_back(external_display_info);
@@ -2945,46 +2947,6 @@ TEST_F(DisplayManagerTest, UnifiedDesktopBasic) {
                 ->GetDisplayForId(display::SynthesizeDisplayIdFromSeed(
                     display_manager_test.GetSecondaryDisplay().id()))
                 .size());
-}
-
-TEST_F(DisplayManagerTest, UnifiedDesktopWithHardwareMirroring) {
-  // Don't check root window destruction in unified mode.
-  Shell::GetPrimaryRootWindow()->RemoveObserver(this);
-
-  // Enter to hardware mirroring.
-  display::ManagedDisplayInfo d1 =
-      CreateDisplayInfo(1, gfx::Rect(0, 0, 500, 400));
-  display::ManagedDisplayInfo d2 =
-      CreateDisplayInfo(2, gfx::Rect(0, 0, 500, 400));
-  std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(d1);
-  display_info_list.push_back(d2);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-  ASSERT_TRUE(display_manager()->IsInHardwareMirrorMode());
-  display_manager()->SetUnifiedDesktopEnabled(true);
-  EXPECT_TRUE(display_manager()->IsInHardwareMirrorMode());
-
-  // The display manager automatically switches to software mirroring if
-  // hardware mirroring is no longer available, because previous mirror mode
-  // enforces current display mode to be mirror mode.
-  display::DisplayIdList list = display::test::CreateDisplayIdList2(1, 2);
-  display::DisplayLayoutBuilder builder(
-      display_manager()->layout_store()->GetRegisteredDisplayLayout(list));
-  display_manager()->layout_store()->RegisterLayoutForDisplayIdList(
-      list, builder.Build());
-  d2.SetBounds(gfx::Rect(0, 500, 500, 400));
-  display_info_list.clear();
-  display_info_list.push_back(d1);
-  display_info_list.push_back(d2);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
-  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
-
-  // Exit software mirroring and enter unified desktop mode after mirror mode is
-  // turned off.
-  SetSoftwareMirrorMode(false);
-  EXPECT_FALSE(display_manager()->IsInMirrorMode());
-  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 }
 
 TEST_F(DisplayManagerTest, UnifiedDesktopEnabledWithExtended) {
@@ -4554,42 +4516,6 @@ TEST_F(DisplayManagerOrientationTest, DisplayChangeShouldNotSaveUserRotation) {
   EXPECT_EQ(display::Display::ROTATE_0, screen->GetPrimaryDisplay().rotation());
 }
 
-TEST_F(DisplayManagerTest, HardwareMirrorMode) {
-  // Create three displays with the same origin in frame buffer.
-  const int64_t internal_display_id =
-      display::test::DisplayManagerTestApi(display_manager())
-          .SetFirstDisplayAsInternalDisplay();
-  constexpr int64_t first_mirror_id = 11;
-  constexpr int64_t second_mirror_id = 12;
-  std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(
-      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 500, 400)));
-  display_info_list.push_back(
-      CreateDisplayInfo(first_mirror_id, gfx::Rect(0, 0, 500, 400)));
-  display_info_list.push_back(
-      CreateDisplayInfo(second_mirror_id, gfx::Rect(0, 0, 500, 400)));
-
-  // mirrored across 3 displays...
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  EXPECT_EQ(3U, display_manager()->num_connected_displays());
-
-  EXPECT_EQ(internal_display_id, display_manager()->mirroring_source_id());
-  EXPECT_EQ(gfx::Rect(0, 0, 500, 400),
-            GetDisplayForId(internal_display_id).bounds());
-
-  const display::DisplayIdList id_list =
-      display_manager()->GetMirroringDestinationDisplayIdList();
-  ASSERT_EQ(2U, id_list.size());
-  EXPECT_EQ(11U, id_list[0]);
-  EXPECT_EQ(12U, id_list[1]);
-
-  EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
-  EXPECT_TRUE(display_manager()->IsInHardwareMirrorMode());
-}
-
 TEST_F(DisplayManagerTest, SoftwareMirrorModeBasics) {
   UpdateDisplay("300x400,400x500,500x600");
 
@@ -4615,7 +4541,6 @@ TEST_F(DisplayManagerTest, SoftwareMirrorModeBasics) {
   EXPECT_EQ(gfx::Size(300, 400), host_list[1]->window()->bounds().size());
 
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
-  EXPECT_FALSE(display_manager()->IsInHardwareMirrorMode());
 
   // Turn off mirror mode.
   SetSoftwareMirrorMode(false);

@@ -45,6 +45,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_handler.h"
@@ -730,6 +731,7 @@ TEST_F(WindowTreeHostManagerTest, MirrorToDockedWithFullscreen) {
   display_info_list.push_back(internal_display_info);
   display_info_list.push_back(external_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();

@@ -118,12 +118,6 @@ void RefreshRateController::StopObservingPowerStatusForTest() {
 }
 
 void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
-  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
-  // enabled.
-  if (display::features::IsHardwareMirrorModeEnabled()) {
-    return;
-  }
-
   auto callback =
       base::BindOnce(&RefreshRateController::OnSeamlessRefreshRatesReceived,
                      weak_ptr_factory_.GetWeakPtr(), display_id);
@@ -197,12 +191,6 @@ void RefreshRateController::UpdateStates() {
 void RefreshRateController::RefreshOverrideState() {
   if (!base::FeatureList::IsEnabled(
           ash::features::kSeamlessRefreshRateSwitching)) {
-    return;
-  }
-
-  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
-  // enabled.
-  if (display::features::IsHardwareMirrorModeEnabled()) {
     return;
   }
 

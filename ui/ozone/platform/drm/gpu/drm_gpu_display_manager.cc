@@ -589,12 +589,7 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
   bool config_success = screen_manager_->ConfigureDisplayControllers(
       controllers_to_configure, modeset_flags);
 
-  // Only attempt to fallback on using different CRTC-connector pairings if
-  // hardware mirroring is disabled as hardware mirroring has multiple
-  // connectors assigned to one CRTC, and the fallback assumes 1:1 pairing.
-  const bool should_try_test_fallback =
-      !is_commit && !config_success &&
-      !display::features::IsHardwareMirrorModeEnabled();
+  const bool should_try_test_fallback = !is_commit && !config_success;
   bool did_test_modeset_with_fallback = false;
   if (should_try_test_fallback) {
     did_test_modeset_with_fallback = true;

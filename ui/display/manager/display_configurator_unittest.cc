@@ -244,12 +244,6 @@ class DisplayConfiguratorTest : public testing::Test {
   void SetUp() override {
     log_ = std::make_unique<ActionLogger>();
 
-    // TODO(crbug.com/1161556): |kEnableHardwareMirrorMode| is disabled by
-    // default. We enable it here to maintain test coverage for hardware mirror
-    // mode until it is permanently removed.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableHardwareMirrorMode);
-
     native_display_delegate_ = new TestNativeDisplayDelegate(log_.get());
     // Force configuring displays to simulate on-device configurator behavior.
     configurator_.SetConfigureDisplays(true);
@@ -511,17 +505,8 @@ TEST_F(DisplayConfiguratorTest, ConnectSecondOutput) {
 
   observer_.Reset();
   configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  EXPECT_EQ(
-      JoinActions(
-          kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
-  EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
+  EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
+  EXPECT_TRUE(mirroring_controller_.SoftwareMirroringEnabled());
   EXPECT_EQ(1, observer_.num_changes());
 
   // Disconnect the second output.
@@ -597,17 +582,13 @@ TEST_F(DisplayConfiguratorTest, SetDisplayPower) {
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   observer_.Reset();
   UpdateOutputs(2, true);
-  EXPECT_EQ(
-      JoinActions(
-          kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
-  EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+  EXPECT_TRUE(mirroring_controller_.SoftwareMirroringEnabled());
   EXPECT_EQ(1, observer_.num_changes());
 
   // Turning off the internal display should switch the external display to
@@ -639,14 +620,16 @@ TEST_F(DisplayConfiguratorTest, SetDisplayPower) {
   EXPECT_EQ(kNoDelay, config_waiter_.Wait());
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
   EXPECT_EQ(
-      JoinActions(kTestModesetStr,
-                  GetCrtcActions(DisplayConfig::kOff, nullptr, nullptr).c_str(),
-                  kModesetOutcomeSuccess, kCommitModesetStr,
-                  GetCrtcActions(DisplayConfig::kOff, nullptr, nullptr).c_str(),
-                  kModesetOutcomeSuccess, nullptr),
+      JoinActions(
+          kTestModesetStr,
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, nullptr).c_str(),
+          kModesetOutcomeSuccess, kCommitModesetStr,
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, nullptr).c_str(),
+          kModesetOutcomeSuccess, nullptr),
       log_->GetActionsAndClear());
-  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR, configurator_.display_state());
-  EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
+  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
+            configurator_.display_state());
+  EXPECT_TRUE(mirroring_controller_.SoftwareMirroringEnabled());
   EXPECT_EQ(1, observer_.num_changes());
 
   // Turn all displays on and check that mirroring is still used.
@@ -657,18 +640,15 @@ TEST_F(DisplayConfiguratorTest, SetDisplayPower) {
                                 config_waiter_.on_configuration_callback());
   EXPECT_EQ(kNoDelay, config_waiter_.Wait());
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
-  EXPECT_EQ(
-      JoinActions(
-          kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
-  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR, configurator_.display_state());
-  EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
+  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
+            configurator_.display_state());
+  EXPECT_TRUE(mirroring_controller_.SoftwareMirroringEnabled());
   EXPECT_EQ(1, observer_.num_changes());
 
   // Get rid of shared modes to force software mirroring.
@@ -830,16 +810,12 @@ TEST_F(DisplayConfiguratorTest, SuspendAndResume) {
 
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   UpdateOutputs(2, true);
-  EXPECT_EQ(
-      JoinActions(
-          kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
 
   config_waiter_.Reset();
   configurator_.SetDisplayPower(chromeos::DISPLAY_POWER_ALL_OFF,
@@ -847,13 +823,15 @@ TEST_F(DisplayConfiguratorTest, SuspendAndResume) {
                                 config_waiter_.on_configuration_callback());
   EXPECT_EQ(kNoDelay, config_waiter_.Wait());
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
-  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR, configurator_.display_state());
+  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
+            configurator_.display_state());
   EXPECT_EQ(
-      JoinActions(kTestModesetStr,
-                  GetCrtcActions(DisplayConfig::kOff, nullptr, nullptr).c_str(),
-                  kModesetOutcomeSuccess, kCommitModesetStr,
-                  GetCrtcActions(DisplayConfig::kOff, nullptr, nullptr).c_str(),
-                  kModesetOutcomeSuccess, nullptr),
+      JoinActions(
+          kTestModesetStr,
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, nullptr).c_str(),
+          kModesetOutcomeSuccess, kCommitModesetStr,
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, nullptr).c_str(),
+          kModesetOutcomeSuccess, nullptr),
       log_->GetActionsAndClear());
 
   // No delay in suspend.
@@ -863,7 +841,8 @@ TEST_F(DisplayConfiguratorTest, SuspendAndResume) {
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_OFF,
             configurator_.current_power_state());
-  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR, configurator_.display_state());
+  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
+            configurator_.display_state());
   EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
 
   // If a display is disconnected while suspended, the configurator should
@@ -939,16 +918,12 @@ TEST_F(DisplayConfiguratorTest, StartWithTwoOutputs) {
 
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   configurator_.ForceInitialConfigure();
-  EXPECT_EQ(
-      JoinActions(
-          kInit, kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
+  EXPECT_EQ(JoinActions(kInit, kTestModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
 }
 
 TEST_F(DisplayConfiguratorTest, InvalidMultipleDisplayStates) {
@@ -990,15 +965,6 @@ TEST_F(DisplayConfiguratorTest, InvalidMultipleDisplayStates) {
   configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_EQ(2, observer_.num_changes());
   EXPECT_EQ(2, observer_.num_failures());
-}
-
-TEST_F(DisplayConfiguratorTest, GetMultipleDisplayStateForHWMirroredDisplays) {
-  UpdateOutputs(2, false);
-  Init(false);
-  state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  configurator_.ForceInitialConfigure();
-  EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR, configurator_.display_state());
-  EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
 }
 
 TEST_F(DisplayConfiguratorTest, GetMultipleDisplayStateForSWMirroredDisplays) {
@@ -1120,16 +1086,12 @@ TEST_F(DisplayConfiguratorTest, DoNotConfigureWithSuspendedDisplays) {
 
   UpdateOutputs(2, false);
   configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  EXPECT_EQ(
-      JoinActions(
-          kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
 
   // The DisplayConfigurator should do nothing at resume time if there is no
   // state change.
@@ -1309,7 +1271,7 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                          GetOutput(0)->native_mode()})
               .c_str(),
           GetCrtcAction(
-              {GetOutput(1)->display_id(), gfx::Point(0, 0), modes[0].get()})
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), modes[0].get()})
               .c_str(),
           kModesetOutcomeFailure,
           // We first test-modeset the internal display with all other displays
@@ -1318,7 +1280,8 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
           GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0),
                          GetOutput(0)->native_mode()})
               .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(), gfx::Point(0, 0), nullptr})
+          GetCrtcAction(
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), nullptr})
               .c_str(),
           kModesetOutcomeFailure,
           // Since internal displays are restricted to their preferred mode,
@@ -1330,25 +1293,25 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
           GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
               .c_str(),
           GetCrtcAction(
-              {GetOutput(1)->display_id(), gfx::Point(0, 0), modes[0].get()})
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), modes[0].get()})
               .c_str(),
           kModesetOutcomeFailure, kTestModesetStr,
           GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
               .c_str(),
           GetCrtcAction(
-              {GetOutput(1)->display_id(), gfx::Point(0, 0), modes[3].get()})
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), modes[3].get()})
               .c_str(),
           kModesetOutcomeFailure, kTestModesetStr,
           GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
               .c_str(),
           GetCrtcAction(
-              {GetOutput(1)->display_id(), gfx::Point(0, 0), modes[4].get()})
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), modes[4].get()})
               .c_str(),
           kModesetOutcomeFailure, kTestModesetStr,
           GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
               .c_str(),
           GetCrtcAction(
-              {GetOutput(1)->display_id(), gfx::Point(0, 0), modes[2].get()})
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), modes[2].get()})
               .c_str(),
           kModesetOutcomeFailure,
           // This configuration still passes intermediate test-modeset.
@@ -1356,91 +1319,13 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
           GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
               .c_str(),
           GetCrtcAction(
-              {GetOutput(1)->display_id(), gfx::Point(0, 0), modes[1].get()})
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), modes[1].get()})
               .c_str(),
           kModesetOutcomeSuccess, kCommitModesetStr,
           GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
               .c_str(),
           GetCrtcAction(
-              {GetOutput(1)->display_id(), gfx::Point(0, 0), modes[1].get()})
-              .c_str(),
-          kModesetOutcomeSuccess,
-          // Since mirror mode configuration failed it should now attempt to
-          // configure in extended mode. However, initial attempt fails.
-          // Initiate retry logic.
-          kTestModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0),
-                         GetOutput(0)->native_mode()})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         modes[0].get()})
-              .c_str(),
-          kModesetOutcomeFailure,
-          // We first test-modeset the internal display with all other displays
-          // disabled, which will fail.
-          kTestModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0),
-                         GetOutput(0)->native_mode()})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         nullptr})
-              .c_str(),
-          kModesetOutcomeFailure,
-          // The configuration fails completely but still attempts to modeset
-          // the external display.
-          kTestModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         modes[0].get()})
-              .c_str(),
-          kModesetOutcomeFailure, kTestModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         modes[3].get()})
-              .c_str(),
-          kModesetOutcomeFailure, kTestModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         modes[4].get()})
-              .c_str(),
-          kModesetOutcomeFailure, kTestModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         modes[2].get()})
-              .c_str(),
-          kModesetOutcomeFailure,
-          // This configuration passes test-modeset.
-          kTestModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         modes[1].get()})
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcAction({GetOutput(0)->display_id(), gfx::Point(0, 0), nullptr})
-              .c_str(),
-          GetCrtcAction({GetOutput(1)->display_id(),
-                         gfx::Point(0, modes[0]->size().height() +
-                                           DisplayConfigurator::kVerticalGap),
-                         modes[1].get()})
+              {GetOutput(1)->display_id(), gfx::Point(0, 1660), modes[1].get()})
               .c_str(),
           kModesetOutcomeSuccess, nullptr),
       log_->GetActionsAndClear());
@@ -1531,11 +1416,12 @@ TEST_F(DisplayConfiguratorTest, DontRestoreStalePowerStateAfterResume) {
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
   EXPECT_EQ(2, observer_.num_changes());
   EXPECT_EQ(
-      JoinActions(kTestModesetStr,
-                  GetCrtcActions(DisplayConfig::kOff, nullptr, nullptr).c_str(),
-                  kModesetOutcomeSuccess, kCommitModesetStr,
-                  GetCrtcActions(DisplayConfig::kOff, nullptr, nullptr).c_str(),
-                  kModesetOutcomeSuccess, nullptr),
+      JoinActions(
+          kTestModesetStr,
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, nullptr).c_str(),
+          kModesetOutcomeSuccess, kCommitModesetStr,
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, nullptr).c_str(),
+          kModesetOutcomeSuccess, nullptr),
       log_->GetActionsAndClear());
 
   // Before the task runs, exit docked mode.
@@ -1547,16 +1433,12 @@ TEST_F(DisplayConfiguratorTest, DontRestoreStalePowerStateAfterResume) {
   EXPECT_EQ(CALLBACK_SUCCESS, config_waiter_.callback_result());
   EXPECT_EQ(3, observer_.num_changes());
   EXPECT_EQ(0, observer_.num_failures());
-  EXPECT_EQ(
-      JoinActions(
-          kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
 
   // Check that the display states are not changed after resuming.
   config_waiter_.Reset();
@@ -1569,16 +1451,12 @@ TEST_F(DisplayConfiguratorTest, DontRestoreStalePowerStateAfterResume) {
   EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
   // Now trigger that delayed configuration.
   EXPECT_EQ(kLongDelay, config_waiter_.Wait());
-  EXPECT_EQ(
-      JoinActions(
-          kTestModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
-          GetCrtcActions(DisplayConfig::kMirror, &small_mode_, &small_mode_)
-              .c_str(),
-          kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcActions(&small_mode_, &big_mode_).c_str(),
+                        kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
 }
 
 TEST_F(DisplayConfiguratorTest, ExternalControl) {
@@ -2777,174 +2655,6 @@ TEST_F(DisplayConfiguratorTest,
                     .c_str(),
                 kModesetOutcomeSuccess, nullptr),
             log_->GetActionsAndClear());
-}
-
-class DisplayConfiguratorMultiMirroringTest : public DisplayConfiguratorTest {
- public:
-  DisplayConfiguratorMultiMirroringTest() = default;
-
-  DisplayConfiguratorMultiMirroringTest(
-      const DisplayConfiguratorMultiMirroringTest&) = delete;
-  DisplayConfiguratorMultiMirroringTest& operator=(
-      const DisplayConfiguratorMultiMirroringTest&) = delete;
-
-  ~DisplayConfiguratorMultiMirroringTest() override = default;
-
-  void SetUp() override { DisplayConfiguratorTest::SetUp(); }
-
-  // Test that setting mirror mode with current outputs, all displays are set to
-  // expected mirror mode.
-  void TestHardwareMirrorModeExist(
-      std::unique_ptr<DisplayMode> expected_mirror_mode) {
-    UpdateOutputs(3, true);
-    log_->GetActionsAndClear();
-    observer_.Reset();
-    configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-    EXPECT_EQ(
-        JoinActions(kTestModesetStr,
-                    GetCrtcActions(
-                        DisplayConfig::kMirror, expected_mirror_mode.get(),
-                        expected_mirror_mode.get(), expected_mirror_mode.get())
-                        .c_str(),
-                    kModesetOutcomeSuccess, kCommitModesetStr,
-                    GetCrtcActions(
-                        DisplayConfig::kMirror, expected_mirror_mode.get(),
-                        expected_mirror_mode.get(), expected_mirror_mode.get())
-                        .c_str(),
-                    kModesetOutcomeSuccess, nullptr),
-        log_->GetActionsAndClear());
-    EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
-    EXPECT_EQ(1, observer_.num_changes());
-  }
-
-  // Test that setting mirror mode with current outputs, no matching mirror mode
-  // is found.
-  void TestHardwareMirrorModeNotExist() {
-    UpdateOutputs(3, true);
-    log_->GetActionsAndClear();
-    observer_.Reset();
-    configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-    EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
-    EXPECT_TRUE(mirroring_controller_.SoftwareMirroringEnabled());
-    EXPECT_EQ(1, observer_.num_changes());
-  }
-};
-
-TEST_F(DisplayConfiguratorMultiMirroringTest,
-       FindMirrorModeWithInternalDisplay) {
-  // Initialize with one internal display and two external displays.
-  SetOutput(0, FakeDisplaySnapshot::Builder()
-                   .SetId(kDisplayIds[0])
-                   .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
-                   .SetNativeMode(MakeDisplayMode(1920, 1600, false, 60.0))
-                   .AddMode(MakeDisplayMode(1920, 1600, false, 60.0))
-                   .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                   .AddMode(MakeDisplayMode(1920, 1080, true, 60.0))
-                   .AddMode(MakeDisplayMode(1440, 900, true, 60.0))
-                   .Build());
-  SetOutput(1,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[1])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1200, true, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1200, true, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1920, 1080, true, 60.0))
-                .AddMode(MakeDisplayMode(1680, 1050, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1440, 900, true, 60.0))    // same AR
-                .AddMode(MakeDisplayMode(500, 500, false, 60.0))
-                .Build());
-  SetOutput(2,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[2])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1920, 1080, true, 60.0))
-                .AddMode(MakeDisplayMode(1680, 1050, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1440, 900, true, 60.0))    // same AR
-                .Build());
-
-  // Find an exactly matching mirror mode while preserving aspect.
-  TestHardwareMirrorModeExist(MakeDisplayMode(1440, 900, true, 60.0));
-
-  // Find an exactly matching mirror mode while not preserving aspect.
-  SetOutput(2,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[2])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1920, 1080, true, 60.0))
-                .Build());
-  TestHardwareMirrorModeExist(MakeDisplayMode(1920, 1080, true, 60.0));
-
-  // Cannot find a matching mirror mode, so enable software mirroring.
-  SetOutput(2,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[2])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(500, 500, true, 60.0))
-                .Build());
-  TestHardwareMirrorModeNotExist();
-}
-
-TEST_F(DisplayConfiguratorMultiMirroringTest,
-       FindMirrorModeWithoutInternalDisplay) {
-  // Initialize with 3 external displays.
-  SetOutput(0, FakeDisplaySnapshot::Builder()
-                   .SetId(kDisplayIds[0])
-                   .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                   .SetNativeMode(MakeDisplayMode(1920, 1200, true, 60.0))
-                   .AddMode(MakeDisplayMode(1920, 1200, true, 60.0))  // same AR
-                   .AddMode(MakeDisplayMode(1920, 1080, false, 60.0))
-                   .AddMode(MakeDisplayMode(1680, 1050, true, 60.0))  // same AR
-                   .Build());
-  SetOutput(1,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[1])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1920, 1080, false, 60.0))
-                .AddMode(MakeDisplayMode(1680, 1050, true, 60.0))  // same AR
-                .Build());
-  SetOutput(2,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[2])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1920, 1080, false, 60.0))
-                .AddMode(MakeDisplayMode(1680, 1050, true, 60.0))  // same AR
-                .Build());
-
-  // Find an exactly matching mirror mode while preserving aspect.
-  TestHardwareMirrorModeExist(MakeDisplayMode(1680, 1050, true, 60.0));
-
-  // Find an exactly matching mirror mode while not preserving aspect.
-  SetOutput(2,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[2])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1600, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1600, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1080, false, 60.0))
-                .Build());
-  TestHardwareMirrorModeExist(MakeDisplayMode(1920, 1080, false, 60.0));
-
-  // Cannot find a matching mirror mode, so enable software mirroring.
-  SetOutput(2,
-            FakeDisplaySnapshot::Builder()
-                .SetId(kDisplayIds[2])
-                .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
-                .SetNativeMode(MakeDisplayMode(1920, 1600, false, 60.0))
-                .AddMode(MakeDisplayMode(1920, 1600, false, 60.0))  // same AR
-                .AddMode(MakeDisplayMode(1920, 1200, false, 60.0))
-                .Build());
-  TestHardwareMirrorModeNotExist();
 }
 
 }  // namespace display::test

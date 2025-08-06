@@ -130,8 +130,6 @@ constexpr size_t kTiledDisplayLength = std::size(kTiledDisplay);
 
 constexpr char kDefaultTestGraphicsCardPattern[] = "/test/dri/card%d";
 
-constexpr char kTestOnlyModesetOutcomeOneDisplay[] =
-    "ConfigureDisplays.Modeset.Test.OneDisplay.Outcome";
 constexpr char kTestOnlyModesetOutcomeTwoDisplays[] =
     "ConfigureDisplays.Modeset.Test.TwoDisplays.Outcome";
 constexpr char kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric[] =
@@ -876,57 +874,6 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
                   kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
               UnorderedElementsAre(AllOf(Field(&base::Bucket::min, Gt(0)),
                                          Field(&base::Bucket::count, Eq(1)))));
-}
-
-TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
-       NoConfigureDisplaysAlternateCrtcFallbackWithHardwareMirroring) {
-  // Enable hardware mirroring
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      display::features::kEnableHardwareMirrorMode);
-  ASSERT_TRUE(display::features::IsHardwareMirrorModeEnabled());
-  // Re-initialize DrmGpuDisplayManager with HW mirroring enabled.
-  drm_gpu_display_manager_ = std::make_unique<DrmGpuDisplayManager>(
-      screen_manager_.get(), device_manager_.get());
-
-  auto drm = AddDrmDevice();
-  drm->ResetStateWithAllProperties();
-
-  // Create a pool of 2 CRTCs
-  drm->AddCrtcWithPrimaryAndCursorPlanes();
-  drm->AddCrtcWithPrimaryAndCursorPlanes();
-
-  {
-    auto& encoder = drm->AddEncoder();
-    encoder.possible_crtcs = 0b11;
-    auto& connector = drm->AddConnector();
-    connector.connection = true;
-    connector.modes = std::vector<ResolutionAndRefreshRate>{
-        ResolutionAndRefreshRate{gfx::Size(7680, 4320), 144u}};
-    connector.encoders = std::vector<uint32_t>{encoder.id};
-  }
-
-  drm->InitializeState(/* use_atomic */ true);
-  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm.get());
-
-  auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
-  ASSERT_EQ(display_snapshots.size(), 1u);
-
-  // Test-modeset should only be called twice - without any fallbacks attempted.
-  EXPECT_CALL(*mock_drm, CommitProperties)
-      // Expect 2 calls as ScreenManager tests modeset with preferred modifiers
-      // and then linear modifiers on failure.
-      .Times(Exactly(2))
-      .WillRepeatedly(Return(false));
-
-  EXPECT_FALSE(ConfigureDisplays(display_snapshots,
-                                 {display::ModesetFlag::kTestModeset}));
-  histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeOneDisplay,
-                                      TestOnlyModesetOutcome::kFailure,
-                                      /*expected_count=*/1);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
-              IsEmpty());
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
