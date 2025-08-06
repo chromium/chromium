@@ -30,6 +30,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -601,10 +602,15 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
       net::SimplifyUrlForRequest(options.scope), options.type,
       options.update_via_cache);
 
-  // TODO(crbug.com/40056874): initialize remaining fields
   PolicyContainerPolicies policy_container_policies;
   policy_container_policies.is_web_secure_context =
       network::IsUrlPotentiallyTrustworthy(script_url);
+  // TODO(crbug.com/435246545): Add browser test to test extensions and LNA.
+  // TODO(crbug.com/436098661): Figure out the right address space for payment
+  // apps
+  policy_container_policies.ip_address_space = content::CalculateIPAddressSpace(
+      options.scope, nullptr, GetContentClient()->browser());
+
   // TODO(bashi): Pass a valid outside fetch client settings object. Perhaps
   // changing this method to take a settings object.
   context()->RegisterServiceWorker(
