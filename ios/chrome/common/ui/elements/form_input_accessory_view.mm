@@ -30,6 +30,9 @@ constexpr CGFloat kDefaultAccessoryHeight = 44;
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
+// Button target area for the liquid glass keyboard accessory.
+constexpr CGFloat kLiquidGlassButtonTargetArea = 48;
+
 // Trailing horizontal padding.
 constexpr CGFloat kKeyboardHorizontalPadding = 16;
 
@@ -51,7 +54,7 @@ constexpr CGFloat ManualFillCloseButtonLeadingInset = 7;
 constexpr CGFloat ManualFillCloseButtonTrailingInset = 15;
 
 // The trailing content inset for the close button when using liquid glass.
-constexpr CGFloat LiquidGlassCloseButtonTrailingInset = 24;
+constexpr CGFloat LiquidGlassCloseButtonTrailingInset = 28;
 
 // The bottom content inset for the close button.
 constexpr CGFloat ManualFillCloseButtonBottomInset = 4;
@@ -83,11 +86,11 @@ constexpr CGFloat kCornerRadius = 24;
 
 // Width for the small keyboard accessory. Only when liquid glass effect is
 // enabled.
-constexpr CGFloat kSmallAccessoryWidth = 3 * kLargeButtonTargetArea + 4;
+constexpr CGFloat kSmallAccessoryWidth = 3 * kLiquidGlassButtonTargetArea + 8;
 
 // Alpha of the tint color for the glass effect. A lower alpha will produce a
 // more pronounced glass effect.
-constexpr CGFloat kGlassTintAlpha = 0.5;
+constexpr CGFloat kGlassTintAlpha = 1.0;
 
 // Shadow parameters. Used when the liquid glass effect is enabled.
 constexpr CGFloat kShadowRadius = 16.0;
@@ -570,11 +573,12 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 // Sets the minimum size constraints for an image button.
 - (void)setMinimumSizeForButton:(UIButton*)button {
-  [button.widthAnchor
-      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+  CGFloat targetArea = [self isLiquidGlassEffectEnabled]
+                           ? kLiquidGlassButtonTargetArea
+                           : kLargeButtonTargetArea;
+  [button.widthAnchor constraintGreaterThanOrEqualToConstant:targetArea]
       .active = YES;
-  [button.heightAnchor
-      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+  [button.heightAnchor constraintGreaterThanOrEqualToConstant:targetArea]
       .active = YES;
 }
 

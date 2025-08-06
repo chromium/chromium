@@ -60,6 +60,9 @@ constexpr CGFloat kShadowOpacity = 1.0;
 // The preferred minimum width of the icon shown on the label.
 constexpr CGFloat kSuggestionIconWidth = 40;
 
+// The highlight color's alpha when using liquid glass.
+constexpr CGFloat kHighlightColorAlpha = 0.5;
+
 // Offset required to see half of the icon of the 2nd credit card suggestion
 // when the first credit card suggestion is at maximum width. This number
 // represents the width of the stack view minus the width of the first
@@ -502,7 +505,12 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 #pragma mark - UIResponder
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [self setBackgroundColor:[UIColor colorNamed:kGrey300Color]];
+  UIColor* highlightColor = [UIColor colorNamed:kGrey300Color];
+  if (IsLiquidGlassEffectEnabled()) {
+    highlightColor =
+        [highlightColor colorWithAlphaComponent:kHighlightColorAlpha];
+  }
+  [self setBackgroundColor:highlightColor];
 }
 
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
