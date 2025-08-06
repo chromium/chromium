@@ -419,10 +419,15 @@ class BrowserAutofillManager : public AutofillManager {
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
   // Returns a list of suggestions from the stored loyalty cards for the given
-  // `url` and value of `trigger_field`
+  // last committed primary main frame URL obtained from `client()` and the
+  // value of the trigger `field`.
+  // TODO(crbug.com/409962888): Remove after new suggestion generation logic is
+  // launched.
   std::vector<Suggestion> GetLoyaltyCardSuggestions(
-      const GURL& url,
-      const FormFieldData& trigger_field);
+      const FormData& form,
+      const FormStructure* form_structure,
+      const FormFieldData& field,
+      const AutofillField* autofill_field);
 
   // Fills or previews `form` with the information in `credit_card`.
   // `autofill_field` is the field that triggered the filling operation.

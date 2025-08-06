@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
 class GURL;
@@ -15,12 +16,17 @@ namespace autofill {
 
 class ValuablesDataManager;
 
-// Generates loyalty card suggestions for a given `url`. Loyalty cards are
-// extracted from the `valuables_manager`.
+// Generates loyalty card suggestions for the value of trigger `field` and the
+// last committed primary main frame URL obtained from `client`. Loyalty cards
+// are extracted from the `ValuablesDataManager` using `client`.
+// TODO(crbug.com/409962888): Remove after new suggestion generation logic is
+// launched.
 std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
-    const ValuablesDataManager& valuables_manager,
-    const GURL& url,
-    bool trigger_field_is_autofilled);
+    const FormData& form,
+    const FormStructure* form_structure,
+    const FormFieldData& field,
+    const AutofillField* autofill_field,
+    const AutofillClient& client);
 
 // Extends `email_suggestions` with loyalty cards suggestions.
 void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(

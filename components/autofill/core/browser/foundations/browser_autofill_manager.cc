@@ -3002,16 +3002,18 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetLoyaltyCardSuggestions(
-    const GURL& url,
-    const FormFieldData& trigger_field) {
+    const FormData& form,
+    const FormStructure* form_structure,
+    const FormFieldData& field,
+    const AutofillField* autofill_field) {
   ValuablesDataManager* valuables_manager = client().GetValuablesDataManager();
   if (!valuables_manager) {
     return {};
   }
   metrics_->loyalty_card_form_event_logger.OnDidPollSuggestions(
-      trigger_field.global_id());
-  return GetSuggestionsForLoyaltyCards(*valuables_manager, url,
-                                       trigger_field.is_autofilled());
+      field.global_id());
+  return GetSuggestionsForLoyaltyCards(form, form_structure, field,
+                                       autofill_field, client());
 }
 
 // TODO(crbug.com/40219607) Eliminate and replace with a listener?
@@ -3235,8 +3237,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
         if (ValuablesDataManager* valuables_manager =
                 client().GetValuablesDataManager()) {
           if (suggestions.empty()) {
-            suggestions = GetLoyaltyCardSuggestions(
-                client().GetLastCommittedPrimaryMainFrameURL(), field);
+            suggestions = GetLoyaltyCardSuggestions(form, form_structure, field,
+                                                    autofill_field);
           } else {
             ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                 *valuables_manager,
@@ -3256,8 +3258,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
         // Only loyalty card numbers filling is supported.
         if (autofill_field->Type().GetLoyaltyCardType() ==
             LOYALTY_MEMBERSHIP_ID) {
-          suggestions = GetLoyaltyCardSuggestions(
-              client().GetLastCommittedPrimaryMainFrameURL(), field);
+          suggestions = GetLoyaltyCardSuggestions(form, form_structure, field,
+                                                  autofill_field);
         }
       }
       break;

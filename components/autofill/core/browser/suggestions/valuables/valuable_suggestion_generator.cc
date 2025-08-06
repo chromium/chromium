@@ -135,18 +135,26 @@ std::vector<Suggestion> GetLoyaltyCardsFooterSuggestions(
 }  // namespace
 
 std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
-    const ValuablesDataManager& valuables_manager,
-    const GURL& url,
-    bool trigger_field_is_autofilled) {
+    const FormData& form,
+    const FormStructure* form_structure,
+    const FormFieldData& field,
+    const AutofillField* autofill_field,
+    const AutofillClient& client) {
+  const ValuablesDataManager* valuables_manager =
+      client.GetValuablesDataManager();
+  if (!valuables_manager) {
+    return {};
+  }
   std::vector<LoyaltyCard> all_loyalty_cards =
-      valuables_manager.GetLoyaltyCardsToSuggest();
+      valuables_manager->GetLoyaltyCardsToSuggest();
   if (all_loyalty_cards.empty()) {
     return {};
   }
 
   auto non_affiliated_cards = std::ranges::stable_partition(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
-        return card.GetAffiliationCategory(url) ==
+        return card.GetAffiliationCategory(
+                   client.GetLastCommittedPrimaryMainFrameURL()) ==
                LoyaltyCard::AffiliationCategory::kAffiliated;
       });
   // SAFETY: Bounds information contained in vector iterators.
@@ -162,17 +170,17 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
 #endif
 
   if (generate_flat_suggestions) {
-    std::vector<Suggestion> suggestions =
-        CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
+    std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
+        all_loyalty_cards, *valuables_manager);
     std::ranges::move(
-        GetLoyaltyCardsFooterSuggestions(trigger_field_is_autofilled),
+        GetLoyaltyCardsFooterSuggestions(field.is_autofilled()),
         std::back_inserter(suggestions));
     return suggestions;
   }
 
   // Build suggestions with 'all loyalty cards' submenu.
   std::vector<Suggestion> suggestions =
-      CreateSuggestionsFromLoyaltyCards(affiliated_cards, valuables_manager);
+      CreateSuggestionsFromLoyaltyCards(affiliated_cards, *valuables_manager);
   suggestions.emplace_back(SuggestionType::kSeparator);
 
   // Build 'all loyalty cards' submenu.
@@ -185,9 +193,9 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
 #endif
   submenu_suggestion.children = CreateSuggestionsFromLoyaltyCards(
-      valuables_manager.GetLoyaltyCardsToSuggest(), valuables_manager);
+      valuables_manager->GetLoyaltyCardsToSuggest(), *valuables_manager);
   std::ranges::move(
-      GetLoyaltyCardsFooterSuggestions(trigger_field_is_autofilled),
+      GetLoyaltyCardsFooterSuggestions(field.is_autofilled()),
       std::back_inserter(suggestions));
   return suggestions;
 }
