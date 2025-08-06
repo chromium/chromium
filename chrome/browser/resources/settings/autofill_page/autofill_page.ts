@@ -147,6 +147,8 @@ export class SettingsAutofillPageElement extends
       case 'payments':
         triggerId = 'paymentManagerButton';
         break;
+      default:
+        break;
     }
 
     assert(triggerId);
