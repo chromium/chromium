@@ -7,6 +7,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+PRESUBMIT_VERSION = '2.0.0'
+
 
 def CheckPrompts(input_api, output_api):
   """Checks that all .md files are up-to-date with their .tmpl.md sources."""
