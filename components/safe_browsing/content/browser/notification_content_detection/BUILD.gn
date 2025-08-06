@@ -2,14 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("notifications_global_cache_list") {
-  sources = [
-    "notifications_global_cache_list.cc",
-    "notifications_global_cache_list.h",
-  ]
+  sources = [ "notifications_global_cache_list.h" ]
+
+  if (is_chrome_branded) {
+    sources += [ "//components/safe_browsing/internal/content/browser/notification_content_detection/notifications_global_cache_list.cc" ]
+  } else {
+    sources += [ "notifications_global_cache_list.cc" ]
+  }
 
   deps = [
     "//base",
