@@ -223,14 +223,6 @@ void LensSearchController::IssueContextualSearchRequestWithQuery(
     std::map<std::string, std::string> additional_query_parameters,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion) {
-  // This method should only be used by the omnibox contextual suggestion flow
-  // or the homework action chip flow. There is no dependency on the callers, so
-  // this check is solely to ensure a new flow is not accidentally added.
-  CHECK(invocation_source ==
-            lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion ||
-        invocation_source ==
-            lens::LensOverlayInvocationSource::kHomeworkActionChip);
-
   // If the eligibility checks fail, do not procced with opening any UI.
   if (!RunLensEligibilityChecks(
           invocation_source,

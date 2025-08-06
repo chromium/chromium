@@ -348,6 +348,11 @@ class RenderViewContextMenu
   // network status, this check should be applied.
   bool IsUntrustedNetworkDisabled() const;
 
+  // Helper function for checking if text query should be opened in Lens. Checks
+  // whether Lens is available and whether the text selection entrypoint flag is
+  // enabled.
+  bool ShouldOpenTextQueryInLens() const;
+
   // Command enabled query functions.
   bool IsReloadEnabled() const;
   bool IsViewSourceEnabled() const;
@@ -414,6 +419,7 @@ class RenderViewContextMenu
                            const gfx::Rect& region_bounds);
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType plugin_action);
+  void OpenTextQueryInLens();
 
   // Returns a list of registered ProtocolHandlers that can handle the clicked
   // on URL.

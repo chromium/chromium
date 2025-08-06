@@ -114,6 +114,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Homework action chip"/>
   <int value="12" label="AI Hub"/>
   <int value="13" label="FRE Promo"/>
+  <int value="14" label="Content area text context menu"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

@@ -2643,7 +2643,8 @@ class LensOverlayBrowserTest : public LensBrowserBaseTest {
   void SetUp() override {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
-        {lens::features::kLensOverlay},
+        {lens::features::kLensOverlay,
+         lens::features::kLensOverlayTextSelectionContextMenuEntrypoint},
         {lens::features::kLensOverlayKeyboardSelection});
 
     // This does not use LensBrowserBaseTest::SetUp because that
@@ -2671,11 +2672,30 @@ class LensOverlayBrowserTest : public LensBrowserBaseTest {
   void OpenContextMenuAndSelectRegionSearchEntrypoint(
       int event_flags,
       ContextMenuNotificationObserver::MenuShownCallback callback) {
-    // |menu_observer_| will cause the search lens for image menu item to be
+    // `menu_observer_` will cause the search lens for image menu item to be
     // clicked.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, event_flags,
         std::move(callback));
+    RightClickToOpenContextMenu();
+  }
+
+  void OpenContextMenuAndSelectSelectAll(
+      int event_flags,
+      ContextMenuNotificationObserver::MenuShownCallback callback) {
+    // `menu_observer_` will cause the select all menu item to be clicked.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_SELECTALL, event_flags, std::move(callback));
+    RightClickToOpenContextMenu();
+  }
+
+  void OpenContextMenuAndSelectSearchWebFor(
+      int event_flags,
+      ContextMenuNotificationObserver::MenuShownCallback callback) {
+    // `menu_observer_` will cause the search web for text menu item to be
+    // clicked.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_SEARCHWEBFOR, event_flags, std::move(callback));
     RightClickToOpenContextMenu();
   }
 };
@@ -2697,6 +2717,35 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   // state.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return controller->state() == LensOverlayController::State::kOverlay;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
+                       SearchForTextContextMenuOpensLensOverlay) {
+  GURL page("data:text/html,text");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
+
+  OpenContextMenuAndSelectSelectAll(
+      ui::EF_MOUSE_BUTTON,
+      // Callback that will be called after the context menu item is clicked.
+      base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
+        OpenContextMenuAndSelectSearchWebFor(ui::EF_MOUSE_BUTTON,
+                                             base::NullCallback());
+      }));
+
+  // Clicking the search for text entrypoint should eventually result in CSB
+  // state.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->state() ==
+           LensOverlayController::State::kLivePageAndResults;
   }));
 }
 
