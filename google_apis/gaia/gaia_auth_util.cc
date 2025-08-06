@@ -106,14 +106,17 @@ bool AreEmailsSame(std::string_view email1, std::string_view email2) {
 
 std::string ExtractDomainName(std::string_view email_address) {
   // First canonicalize which will also verify we have proper domain part.
+  if (email_address == "") {
+    DUMP_WILL_BE_NOTREACHED();
+    return std::string();
+  }
   std::string email = CanonicalizeEmail(email_address);
   size_t separator_pos = email.find('@');
   if (separator_pos != std::string::npos &&
       separator_pos < email.length() - 1) {
     return email.substr(separator_pos + 1);
-  } else {
-    DUMP_WILL_BE_NOTREACHED() << "Not a proper email address: " << email;
   }
+  DUMP_WILL_BE_NOTREACHED() << "Not a proper email address: " << email;
   return std::string();
 }
 
