@@ -2133,6 +2133,14 @@ BuildUserReidentificationIssue(
                               : protocol::Audits::AffectedRequest::Create()
                                     .SetUrl(issue_details->request->url)
                                     .Build();
+  auto source_code_location =
+      issue_details->sourceCodeLocation.is_null()
+          ? nullptr
+          : protocol::Audits::SourceCodeLocation::Create()
+                .SetUrl(issue_details->sourceCodeLocation->url.value())
+                .SetLineNumber(issue_details->sourceCodeLocation->line)
+                .SetColumnNumber(issue_details->sourceCodeLocation->column)
+                .Build();
   std::string issue_type;
   switch (issue_details->type) {
     case blink::mojom::UserReidentificationIssueType::kBlockedFrameNavigation:
@@ -2142,6 +2150,10 @@ BuildUserReidentificationIssue(
     case blink::mojom::UserReidentificationIssueType::kBlockedSubresource:
       issue_type = protocol::Audits::UserReidentificationIssueTypeEnum::
           BlockedSubresource;
+      break;
+    case blink::mojom::UserReidentificationIssueType::kNoisedCanvasReadback:
+      issue_type = protocol::Audits::UserReidentificationIssueTypeEnum::
+          NoisedCanvasReadback;
       break;
     default:
       NOTREACHED();

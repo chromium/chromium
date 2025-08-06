@@ -3176,8 +3176,8 @@ void WebLocalFrameImpl::AddUserReidentificationIssueImpl(
     std::optional<std::string> devtools_request_id,
     const WebURL& affected_request_url) {
   DCHECK(GetFrame());
-  AuditsIssue::ReportUserReidentificationIssue(GetFrame(), devtools_request_id,
-                                               affected_request_url);
+  AuditsIssue::ReportUserReidentificationResourceBlockedIssue(
+      GetFrame(), devtools_request_id, affected_request_url);
 }
 
 void WebLocalFrameImpl::AddGenericIssueImpl(

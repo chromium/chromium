@@ -203,10 +203,14 @@ class CORE_EXPORT AuditsIssue {
       ElementAccessibilityIssueReason issue_reason,
       bool has_disallowed_attributes);
 
-  static void ReportUserReidentificationIssue(
+  static void ReportUserReidentificationResourceBlockedIssue(
       LocalFrame* frame,
       std::optional<std::string> devtools_request_id,
       const KURL& affected_request_url);
+
+  static void ReportUserReidentificationCanvasNoisedIssue(
+      SourceLocation* source_location,
+      ExecutionContext* execution_context);
 
  private:
 

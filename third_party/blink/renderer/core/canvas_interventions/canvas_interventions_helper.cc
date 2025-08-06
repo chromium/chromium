@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -164,6 +166,9 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   UMA_HISTOGRAM_EXACT_LINEAR(kCanvasOperationMetricName,
                              static_cast<int>(high_entropy_canvas_op_types),
                              canvas_op_exclusive_max);
+
+  AuditsIssue::ReportUserReidentificationCanvasNoisedIssue(
+      CaptureSourceLocation(execution_context), execution_context);
 
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kIntervention,

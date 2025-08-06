@@ -6,22 +6,17 @@
 #include <tuple>
 
 #include "base/test/scoped_feature_list.h"
-#include "base/test/values_test_util.h"
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "url/gurl.h"
 
 namespace fingerprinting_protection_filter {
 namespace {
-
-using testing::Eq;
-using testing::Pointee;
 
 class UserReideintificationDevtoolsProtocolTest
     : public content::TestDevToolsProtocolClient,
@@ -61,6 +56,28 @@ class UserReideintificationDevtoolsProtocolTest
               affected_url.possibly_invalid_spec());
   }
 
+  void WaitForCanvasNoiseIssueAdded() {
+    auto matcher = [](const base::Value::Dict& params) {
+      const std::string* maybe_issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return maybe_issue_code &&
+             *maybe_issue_code == "UserReidentificationIssue";
+    };
+
+    base::Value::Dict notification = WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(matcher));
+
+    EXPECT_EQ(*notification.FindStringByDottedPath(
+                  "issue.details.userReidentificationIssueDetails.type"),
+              "NoisedCanvasReadback");
+    // The canvas noise issue does not have a request.
+    EXPECT_FALSE(notification.FindDictByDottedPath(
+        "issue.details.userReidentificationIssueDetails.request"));
+    // But it should have a source code location.
+    EXPECT_TRUE(notification.FindDictByDottedPath(
+        "issue.details.userReidentificationIssueDetails.sourceCodeLocation"));
+  }
+
  protected:
   void Attach() { AttachToWebContents(web_contents()); }
 
@@ -88,6 +105,16 @@ class IncognitoUserReideintificationDevtoolsProtocolTest
       const IncognitoUserReideintificationDevtoolsProtocolTest&) = delete;
 
   ~IncognitoUserReideintificationDevtoolsProtocolTest() override = default;
+};
+
+class CanvasNoiseDevtoolsProtocolTest
+    : public UserReideintificationDevtoolsProtocolTest {
+ public:
+  CanvasNoiseDevtoolsProtocolTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        fingerprinting_protection_interventions::features::kCanvasNoise,
+        {{"enable_in_regular_mode", "true"}});
+  }
 };
 
 }  // namespace
@@ -162,6 +189,21 @@ IN_PROC_BROWSER_TEST_F(IncognitoUserReideintificationDevtoolsProtocolTest,
   WaitForIssueAddedWithProperties(
       /*type_enum_string=*/"BlockedFrameNavigation",
       /*affected_url=*/GetCrossSiteTestUrl("/frame_with_included_script.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(CanvasNoiseDevtoolsProtocolTest,
+                       CanvasNoiseApplied_IssueReported) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EnableAudits();
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "const canvas = document.createElement('canvas');"
+      "document.body.appendChild(canvas);"
+      "const ctx = canvas.getContext('2d');"
+      "ctx.fillText('CanvasNoiseTest', 0, 10); canvas.toDataURL();"));
+
+  WaitForCanvasNoiseIssueAdded();
 }
 
 }  // namespace fingerprinting_protection_filter

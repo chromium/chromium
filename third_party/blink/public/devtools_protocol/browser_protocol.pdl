@@ -1096,6 +1096,7 @@ experimental domain Audits
     enum
       BlockedFrameNavigation
       BlockedSubresource
+      NoisedCanvasReadback
 
   # This issue warns about uses of APIs that may be considered misuse to
   # re-identify users.
@@ -1104,6 +1105,8 @@ experimental domain Audits
       UserReidentificationIssueType type
       # Applies to BlockedFrameNavigation and BlockedSubresource issue types.
       optional AffectedRequest request
+      # Applies to NoisedCanvasReadback issue type.
+      optional SourceCodeLocation sourceCodeLocation
 
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific

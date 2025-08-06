@@ -345,13 +345,17 @@ struct DeprecationIssueDetails {
 enum UserReidentificationIssueType {
   kBlockedFrameNavigation,
   kBlockedSubresource,
+  kNoisedCanvasReadback,
 };
 
-// Information for an issue notifying on subresources or navigations that may be
-// blocked for suspected user reidentification.
+// Information for an issue notifying the user about an intervention that took
+// place as the result of a suspected user reidentification. This type of issue
+// is used for several interventions such as blocking subresources or
+// navigations, and canvas noise.
 struct UserReidentificationIssueDetails {
   UserReidentificationIssueType type;
   AffectedRequest? request;
+  AffectedLocation? sourceCodeLocation;
 };
 
 // A collection of optional fields that may store additional data depending
