@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
@@ -96,7 +97,8 @@ TabStripActionContainer::TabStripNudgeAnimationSession::
       opacity_animation_(container),
       session_type_(session_type),
       on_animation_ended_(std::move(on_animation_ended)),
-      is_opacity_animated_(is_opacity_animated) {
+      is_opacity_animated_(is_opacity_animated),
+      is_executing_show_or_hide_(false) {
   if (session_type_ == AnimationSessionType::HIDE) {
     expansion_animation_.Reset(1);
     if (is_opacity_animated) {
@@ -136,6 +138,7 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::
 }
 
 void TabStripActionContainer::TabStripNudgeAnimationSession::Show() {
+  base::AutoReset<bool> resetter(&is_executing_show_or_hide_, true);
   expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
   if (is_opacity_animated_) {
     opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
@@ -157,6 +160,7 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::Show() {
 }
 
 void TabStripActionContainer::TabStripNudgeAnimationSession::Hide() {
+  base::AutoReset<bool> resetter(&is_executing_show_or_hide_, true);
   // Animate and hide existing chip.
   if (session_type_ ==
       TabStripNudgeAnimationSession::AnimationSessionType::SHOW) {
@@ -215,7 +219,12 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
 
   if (expansion_animation_done_ && opacity_animation_not_running) {
     if (on_animation_ended_) {
-      std::move(on_animation_ended_).Run();
+      if (is_executing_show_or_hide_) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(on_animation_ended_));
+      } else {
+        std::move(on_animation_ended_).Run();
+      }
     }
   }
 }
