@@ -223,6 +223,8 @@ function handleScrollDepthMetric(data: ScrollDepthMetric) {
     case '100':
       scrollDepth = ScrollDepth.k100;
       break;
+    default:
+      break;
   }
   if (scrollDepth) {
     const {handler} = WhatsNewProxyImpl.getInstance();
@@ -331,6 +333,8 @@ function handleModuleEvent(data: ModuleImpressionMetric|GeneralLinkClickMetric|
     case EventType.RESTART_CLICKED:
       handler.recordModuleRestartClicked(
           formatModuleName(data.module_name), position);
+      break;
+    default:
       break;
   }
 }
