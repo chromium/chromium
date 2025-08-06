@@ -107,6 +107,10 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
     return content_view_->cookies_description_label_;
   }
 
+  views::View* third_party_cookies_description_wrapper() {
+    return content_view_->cookies_description_wrapper_;
+  }
+
   views::BoxLayoutView* third_party_cookies_container() {
     return content_view_->third_party_cookies_container_;
   }
@@ -979,7 +983,7 @@ TEST_F(PageInfoCookiesContentViewTrackingProtectionBubbleTest,
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_TRUE(tracking_protections_button()->GetVisible());
   EXPECT_FALSE(third_party_cookies_row()->GetVisible());
-  EXPECT_FALSE(third_party_cookies_description_label()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_description_wrapper()->GetVisible());
   EXPECT_EQ(tracking_protections_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL));
