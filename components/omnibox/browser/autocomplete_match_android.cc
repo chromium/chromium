@@ -227,8 +227,8 @@ void AutocompleteMatch::UpdateJavaNavigationDetails() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
 
-    std::vector<std::string> header_keys(extra_headers.size());
-    std::vector<std::string> header_vals(extra_headers.size());
+    std::vector<std::string> header_keys;
+    std::vector<std::string> header_vals;
     for (const auto& [key, val] : extra_headers) {
       header_keys.emplace_back(key);
       header_vals.emplace_back(val);
