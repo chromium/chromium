@@ -125,6 +125,10 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
       return GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything();
     case syncer::SyncService::UserActionableError::kNone:
       break;
+
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
+      // TODO(crbug.com/370026230): Implement UI support for this case.
+      break;
   }
 
   return nil;

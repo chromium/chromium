@@ -864,6 +864,9 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
       NOTREACHED();
   }
 
+  if (last_actionable_error_.action == UPGRADE_CLIENT) {
+    return UserActionableError::kNeedsClientUpgrade;
+  }
   if (user_settings_->IsPassphraseRequiredForPreferredDataTypes()) {
     return UserActionableError::kNeedsPassphrase;
   }

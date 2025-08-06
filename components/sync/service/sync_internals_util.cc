@@ -201,6 +201,18 @@ std::string GetUserActionableErrorString(
     case SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return "Trusted vault recoverability degraded for everything";
+#if !BUILDFLAG(IS_IOS)
+    case SyncService::UserActionableError::kNeedsSettingsConfirmation:
+      return "Needs settings confirmation";
+    case SyncService::UserActionableError::kUnrecoverableError:
+      return "Unrecoverable error";
+#endif  // !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+    case SyncService::UserActionableError::kNeedsUPMBackendUpgrade:
+      return "Needs UPM backend upgrade";
+#endif  // BUILDFLAG(IS_ANDROID)
+    case SyncService::UserActionableError::kNeedsClientUpgrade:
+      return "Client version is too old and needs upgrade";
   }
 
   NOTREACHED();

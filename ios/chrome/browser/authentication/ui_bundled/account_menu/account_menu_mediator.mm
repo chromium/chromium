@@ -354,6 +354,9 @@
               openTrustedVaultReauthForDegradedRecoverability];
       break;
     case syncer::SyncService::UserActionableError::kNone:
+    // TODO(crbug.com/370026230): Update this case once GetAccountErrorUIInfo()
+    // returns a non-nil value for it.
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       NOTREACHED();
   }
 }

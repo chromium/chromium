@@ -144,6 +144,11 @@ bool SyncErrorInfoBarDelegate::Accept() {
       [presenter_ showAccountSettings];
       break;
 
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
+      // TODO(crbug.com/370026230): Update this case once
+      // GetAccountErrorUIInfo() returns a non-nil value for it.
+      NOTREACHED();
+
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       [presenter_ showSyncPassphraseSettings];
       break;
@@ -231,6 +236,7 @@ bool SyncErrorInfoBarDelegate::DisplayPasswordErrorIcon() const {
                  syncer::kSyncTrustedVaultInfobarMessageImprovements);
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:

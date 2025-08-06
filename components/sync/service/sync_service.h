@@ -222,7 +222,25 @@ class SyncService : public KeyedService {
     // Same as above, but for the case where data loss may affect all
     // encryptable datatypes.
     kTrustedVaultRecoverabilityDegradedForEverything = 6,
-    kMaxValue = kTrustedVaultRecoverabilityDegradedForEverything,
+#if !BUILDFLAG(IS_IOS)
+    // Sync settings dialog not confirmed yet.
+    kNeedsSettingsConfirmation = 7,
+    // Sync has encountered an unrecoverable error. It won't attempt to start
+    // again until either the browser is restarted, or the user fully signs out
+    // and back in again. This error is only shown for syncing users, and will
+    // be removed with "Sync The Feature" deprecation.
+    kUnrecoverableError = 8,
+#endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID)
+    // Indicates that the Google Play services need to be upgraded.
+    kNeedsUPMBackendUpgrade = 9,
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    // Indicates that the version of the client/browser is too old and needs to
+    // be upgraded to a more recent version.
+    kNeedsClientUpgrade = 10,
+    kMaxValue = kNeedsClientUpgrade,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:UserActionableError)
 

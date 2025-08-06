@@ -72,6 +72,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return false;
+
+    // TODO(crbug.com/370026230): Update this case upon UI implementation.
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
+      return false;
   }
 
   NOTREACHED();

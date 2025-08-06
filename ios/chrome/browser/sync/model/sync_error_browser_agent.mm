@@ -76,6 +76,8 @@ bool UserActionRequiredToFixPasswordSyncError(ProfileIOS* profile) {
         kTrustedVaultRecoverabilityDegradedForPasswords:
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
+    // This error has no UI on iOS.
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       return false;
   }
 

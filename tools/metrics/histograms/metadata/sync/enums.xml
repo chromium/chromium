@@ -1514,6 +1514,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Needs trusted vault key for everything"/>
   <int value="5" label="Trusted vault recoverability degraded for passwords"/>
   <int value="6" label="Trusted vault recoverability degraded for everything"/>
+  <int value="7" label="Needs settings confirmation"/>
+  <int value="8" label="Unrecoverable error"/>
+  <int value="9" label="Needs UPM backend upgrade"/>
+  <int value="10" label="Needs client upgrade"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service.h:UserActionableError) -->
