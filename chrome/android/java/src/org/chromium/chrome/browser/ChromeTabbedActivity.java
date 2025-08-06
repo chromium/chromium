@@ -142,6 +142,7 @@ import org.chromium.chrome.browser.hub.HubProvider;
 import org.chromium.chrome.browser.hub.HubShowPaneHelper;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceController;
 import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
@@ -1689,13 +1690,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
         // TODO(crbug.com/435227138): Update the PaneId and conversion of dependence on
         // TabGroupSyncService to the TabGroupModelFilter when opening the tab group dialog.
         if (tabGroupSyncService != null && tabGroupId != null) {
+            PaneManager paneManager = mHubProvider.getHubManagerSupplier().get().getPaneManager();
             TabSwitcherPaneBase tabSwitcherPaneBase =
-                    (TabSwitcherPaneBase)
-                            mHubProvider
-                                    .getHubManagerSupplier()
-                                    .get()
-                                    .getPaneManager()
-                                    .getPaneForId(PaneId.TAB_SWITCHER);
+                    (TabSwitcherPaneBase) paneManager.getPaneForId(PaneId.TAB_SWITCHER);
             TabSwitcherUtils.openTabGroupDialog(
                     tabGroupId,
                     tabGroupSyncService,
@@ -1704,6 +1701,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             .getTabGroupModelFilterProvider()
                             .getTabGroupModelFilter(/* isIncognito= */ false),
                     (rootId) -> {
+                        if (paneManager.getFocusedPaneSupplier().get().getPaneId()
+                                != PaneId.TAB_SWITCHER) {
+                            paneManager.focusPane(PaneId.TAB_SWITCHER);
+                        }
                         tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);
                     });
             RecordUserAction.record("TabGroups.HubSearchTabGroupSuggestionClicked");
