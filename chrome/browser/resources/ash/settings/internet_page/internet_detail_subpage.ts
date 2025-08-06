@@ -1100,6 +1100,8 @@ export class SettingsInternetDetailPageElement extends
         managedProperties.typeProperties.wifi!.signalStrength =
             networkState.typeState.wifi!.signalStrength;
         break;
+      default:
+        break;
     }
     this.updateManagedProperties_(managedProperties);
     this.propertiesReceived_ = true;
@@ -2097,9 +2099,13 @@ export class SettingsInternetDetailPageElement extends
           case VpnType.kL2TPIPsec:
             fields.push('vpn.type', 'vpn.host', 'vpn.l2tp.username');
             break;
+          default:
+            break;
         }
         break;
       case NetworkType.kWiFi:
+        break;
+      default:
         break;
     }
     if (OncMojo.isRestrictedConnectivity(this.managedProperties_.portalState)) {
@@ -2165,7 +2171,11 @@ export class SettingsInternetDetailPageElement extends
                   'vpn.openVpn.tlsAuthContents', 'vpn.openVpn.keyDirection');
             }
             break;
+          default:
+            break;
         }
+        break;
+      default:
         break;
     }
     return fields;

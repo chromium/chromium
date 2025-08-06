@@ -565,6 +565,8 @@ export class SettingsInternetSubpageElement extends
             thirdPartyVpns[providerId] = thirdPartyVpns[providerId] || [];
             thirdPartyVpns[providerId].push(state);
             break;
+          default:
+            break;
         }
       });
       networkStates = builtinNetworkStates;
@@ -681,6 +683,8 @@ export class SettingsInternetSubpageElement extends
         return this.i18n('internetToggleMobileA11yLabel');
       case NetworkType.kWiFi:
         return this.i18n('internetToggleWiFiA11yLabel');
+      default:
+        break;
     }
     assertNotReached();
   }

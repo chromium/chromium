@@ -549,6 +549,8 @@ export class CellularNetworksListElement extends
         return this.i18n('cellularNetworkResettingESim');
       case InhibitReason.kRequestingAvailableProfiles:
         return this.i18n('cellularNetworkRequestingAvailableProfiles');
+      default:
+        break;
     }
 
     return '';
