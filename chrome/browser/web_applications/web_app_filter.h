@@ -51,14 +51,14 @@ class WebAppFilter {
   // installed by the user. Used by the Web Install API.
   static WebAppFilter LaunchableFromInstallApi();
 
-  WebAppFilter& operator=(const WebAppFilter&) = delete;
+  WebAppFilter(const WebAppFilter&);
+  WebAppFilter& operator=(const WebAppFilter&) = default;
   ~WebAppFilter() = default;
 
  private:
   friend class WebAppRegistrar;
 
   WebAppFilter();
-  WebAppFilter(const WebAppFilter&);
 
   bool opens_in_browser_tab_ = false;
   bool opens_in_dedicated_window_ = false;

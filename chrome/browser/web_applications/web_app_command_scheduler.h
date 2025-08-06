@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -657,6 +658,15 @@ class WebAppCommandScheduler {
                          const base::Location& location = FROM_HERE);
 
   base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();
+
+  // Safely gets all apps given the WebAppFilter.
+  void GetAllAppsForFilter(
+      const WebAppFilter&,
+      base::OnceCallback<void(std::vector<webapps::AppId>)> callback);
+
+  // Synchronizes the os integration of all apps that apply to the filter.
+  void SynchronizeOsIntegrationForAllApps(const WebAppFilter& filter,
+                                          base::OnceClosure callback);
 
   // TODO(crbug.com/40215411): expose all commands for web app
   // operations.

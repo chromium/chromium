@@ -138,6 +138,8 @@ class WebAppPolicyManager {
       base::OnceClosure callback);
   void RefreshPolicySettingsForTesting();
 
+  void SynchronizeOsWithPolicyDefinedFileHandlers();
+
   // Changes the manifest to conform to the WebAppInstallForceList policy.
   void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
                              blink::mojom::ManifestPtr& manifest) const;
