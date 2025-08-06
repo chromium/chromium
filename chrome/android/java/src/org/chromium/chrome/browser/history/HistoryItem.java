@@ -22,7 +22,7 @@ public class HistoryItem extends TimedItem {
     private final GURL mUrl;
     private final String mDomain;
     private final String mTitle;
-    private final String mAppId;
+    private final @Nullable String mAppId;
     private final boolean mWasBlockedVisit;
     private final long mMostRecentJavaTimestamp;
     private final long[] mNativeTimestampList;
@@ -44,7 +44,7 @@ public class HistoryItem extends TimedItem {
             GURL url,
             String domain,
             String title,
-            String appId,
+            @Nullable String appId,
             long mostRecentJavaTimestamp,
             long[] nativeTimestamps,
             boolean blockedVisit) {
@@ -80,7 +80,7 @@ public class HistoryItem extends TimedItem {
      * @return The app ID associated with the history item. Can be {@code null} on BrApp, or if app
      *     can't be identified.
      */
-    public String getAppId() {
+    public @Nullable String getAppId() {
         return mAppId;
     }
 

@@ -185,7 +185,10 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 long nativeBrowsingHistoryBridge, String hostName, Callback<Long> callback);
 
         void markItemForRemoval(
-                long nativeBrowsingHistoryBridge, GURL url, String appId, long[] nativeTimestamps);
+                long nativeBrowsingHistoryBridge,
+                GURL url,
+                @Nullable String appId,
+                long[] nativeTimestamps);
 
         void removeItems(long nativeBrowsingHistoryBridge);
 
