@@ -714,8 +714,6 @@ inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
 inline constexpr base::FeatureParam<bool> kMobileParityRetrieveBuiltinFavicon{
     &omnibox::kOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false};
 
-inline constexpr base::FeatureParam<bool> kMobileParityRetrieveTrueFavicon{
-    &omnibox::kOmniboxMobileParityUpdate, "retrieve_true_favicon", false};
 
 inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
     &omnibox::kOmniboxMobileParityUpdate, "enable_feed_for_google_only", true};

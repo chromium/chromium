@@ -129,9 +129,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
 
-    public static final CachedFlag sOmniboxMobileParityUpdate =
-            newFlag(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE, FeatureState.ENABLED_IN_PROD);
-
     public static final CachedFlag sOmniboxMobileParityUpdateV2 =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2,
@@ -148,12 +145,6 @@ public class OmniboxFeatures {
 
     public static final BooleanCachedFeatureParam sOmniboxParityRetrieveBuiltInEngineIcon =
             newBooleanParam(sOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false);
-
-    public static final BooleanCachedFeatureParam sOmniboxParityRetrieveTrueFavicon =
-            newBooleanParam(sOmniboxMobileParityUpdate, "retrieve_true_favicon", false);
-
-    public static final BooleanCachedFeatureParam sOmniboxParityEnableFeedOnlyForGoogle =
-            newBooleanParam(sOmniboxMobileParityUpdate, "enable_feed_for_google_only", true);
 
     public static final BooleanCachedFeatureParam sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);

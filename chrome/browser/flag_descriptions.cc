@@ -2819,11 +2819,6 @@ const char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "
     "autocompletion.";
 
-const char kOmniboxMobileParityUpdateName[] = "Omnibox Mobile parity update";
-const char kOmniboxMobileParityUpdateDescription[] =
-    "When set, applies certain assets to match Desktop visuals and "
-    "descriptions";
-
 const char kOmniboxMobileParityUpdateV2Name[] =
     "Omnibox Mobile parity update V2";
 const char kOmniboxMobileParityUpdateV2Description[] =

@@ -194,8 +194,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
             return;
         }
 
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
-                && !TextUtils.isEmpty(templateUrl.getShortName())) {
+        if (!TextUtils.isEmpty(templateUrl.getShortName())) {
             setSearchBoxHintText(
                     OmniboxResourceProvider.getString(
                             mContext,
@@ -282,29 +281,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
             }
         }
 
-        retrieveFaviconFromFaviconUrl(templateUrl);
-    }
-
-    private void retrieveFaviconFromFaviconUrl(TemplateUrl templateUrl) {
-        var faviconUrl = templateUrl.getFaviconURL();
-        if (!OmniboxFeatures.sOmniboxParityRetrieveTrueFavicon.getValue()
-                || GURL.isEmptyOrInvalid(faviconUrl)) {
-            // Fall back to next source.
-            retrieveFaviconFromOriginUrl(templateUrl);
-            return;
-        }
-
-        ImageFetcher.Params params =
-                ImageFetcher.Params.create(faviconUrl, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME);
-        mImageFetcher.fetchImage(
-                params,
-                bitmap -> {
-                    if (bitmap == null) {
-                        retrieveFaviconFromOriginUrl(templateUrl);
-                    } else {
-                        onFaviconRetrieveCompleted(faviconUrl, bitmap);
-                    }
-                });
+        retrieveFaviconFromOriginUrl(templateUrl);
     }
 
     private void retrieveFaviconFromOriginUrl(TemplateUrl templateUrl) {

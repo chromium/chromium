@@ -832,8 +832,7 @@ public class NewTabPage
     public static boolean isInSingleUrlBarMode(boolean isTablet, boolean searchProviderHasLogo) {
         return !isTablet
                 && (searchProviderHasLogo
-                        || (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
-                                && OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled()));
+                        || OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled());
     }
 
     /**

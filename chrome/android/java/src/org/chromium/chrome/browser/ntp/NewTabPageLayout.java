@@ -264,8 +264,7 @@ public class NewTabPageLayout extends LinearLayout
             mComposeplateUrlSupplier = composeplateUrlSupplier;
         }
         mIsOmniboxMobileParityUpdateV2Enabled =
-                OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
-                        && OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled();
+                OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled();
 
         if (mIsTablet) {
             mDisplayStyleObserver = this::onDisplayStyleChanged;
@@ -366,8 +365,6 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     private void initializeDseIconView(boolean shouldShowDesIconView) {
-        if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) return;
-
         mDseIconView = mFakeSearchBoxLayout.findViewById(R.id.search_box_engine_icon);
         if (mIsOmniboxMobileParityUpdateV2Enabled) {
             // Configures icon rounding.

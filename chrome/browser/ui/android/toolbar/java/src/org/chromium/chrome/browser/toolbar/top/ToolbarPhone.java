@@ -279,8 +279,6 @@ public class ToolbarPhone extends ToolbarLayout
     // to webpages.
     private boolean mIsInLoadingPhaseFromNtpToWebpage;
 
-    private final boolean mAlwaysShowDseIconOnNtp;
-
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
 
@@ -318,7 +316,6 @@ public class ToolbarPhone extends ToolbarLayout
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
                         LocationBarBackgroundColorAlphaForNtp);
-        mAlwaysShowDseIconOnNtp = OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled();
     }
 
     @Override
@@ -1095,9 +1092,7 @@ public class ToolbarPhone extends ToolbarLayout
             // state. If the DSE icon is always visible on the NTP, it should stay at full alpha and
             // in its final location rather than being affected by scroll offset.
             float ntpUrlExpansionFraction =
-                    mAlwaysShowDseIconOnNtp && isLocationBarShownInNtp
-                            ? 1.0f
-                            : mNtpSearchBoxScrollFraction;
+                    isLocationBarShownInNtp ? 1.0f : mNtpSearchBoxScrollFraction;
             mLocationBar.setUrlFocusChangeFraction(
                     ntpUrlExpansionFraction, mUrlFocusChangeFraction);
 

@@ -314,7 +314,7 @@ BASE_FEATURE(kUseFusedLocationProvider, "UseFusedLocationProvider", ENABLED);
 BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 
 // Updates various NTP/Omnibox assets and descriptions for visual alignment on
-// Android and iOS.
+// iOS.
 BASE_FEATURE(kOmniboxMobileParityUpdate, "OmniboxMobileParityUpdate", ENABLED);
 
 // Updates various NTP/Omnibox assets and descriptions for visual alignment on
@@ -433,7 +433,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kJumpStartOmnibox,
       &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,
-      &kOmniboxMobileParityUpdate,
       &kOmniboxMobileParityUpdateV2,
       &kOmniboxSiteSearch,
       &kOmniboxAimShortcutTypedState,
