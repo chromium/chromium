@@ -551,6 +551,29 @@ const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
   return node;
 }
 
+// Returns a function that, given the SourceLocation argument, tries to get the
+// spelling location (= the original code location before macro expansion) if
+// the given SourceLocation is at a macro argument.
+//
+// Note that `source_manager` and `lang_opts` arguments must outlive the
+// returned function because the returned function references them.
+//
+// Tests are in: gtest-macro-original.cc
+std::function<clang::SourceLocation(clang::SourceLocation)> GetSpellingLocFunc(
+    const clang::SourceManager& source_manager [[clang::lifetimebound]],
+    const clang::LangOptions& lang_opts [[clang::lifetimebound]]) {
+  return [&](clang::SourceLocation loc) -> clang::SourceLocation {
+    if (!loc.isMacroID()) [[likely]] {
+      return loc;
+    }
+    clang::SourceLocation original_loc = loc;
+    while (source_manager.isMacroArgExpansion(loc)) {
+      loc = source_manager.getImmediateSpellingLoc(loc);
+    }
+    return loc.isValid() && loc.isFileID() ? loc : original_loc;
+  };
+}
+
 // The semantics of `getBeginLoc()` and `getEndLoc()` are somewhat
 // surprising (e.g. https://stackoverflow.com/a/59718238). This function
 // tries to do the least surprising thing, specializing for
@@ -563,19 +586,7 @@ const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
 clang::SourceRange GetExprRange(const clang::Expr& expr,
                                 const clang::SourceManager& source_manager,
                                 const clang::LangOptions& lang_opts) {
-  // When the given `loc` is inside a macro expansion, tries to get the spelling
-  // location (= the original code location before the macro expansion).
-  // Tests are in: gtest-macro-original.cc
-  auto ToSpellingLoc = [&](clang::SourceLocation loc) -> clang::SourceLocation {
-    if (!loc.isMacroID()) [[likely]] {
-      return loc;
-    }
-    clang::SourceLocation original_loc = loc;
-    while (source_manager.isMacroArgExpansion(loc)) {
-      loc = source_manager.getImmediateSpellingLoc(loc);
-    }
-    return loc.isValid() && loc.isFileID() ? loc : original_loc;
-  };
+  auto ToSpellingLoc = GetSpellingLocFunc(source_manager, lang_opts);
 
   if (const auto* member_expr = clang::dyn_cast<clang::MemberExpr>(&expr)) {
     clang::SourceLocation member_loc =
@@ -655,20 +666,32 @@ static clang::SourceRange getSourceRange(
     const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::LangOptions& lang_opts = result.Context->getLangOpts();
+
+  auto ToSpellingLoc = GetSpellingLocFunc(source_manager, lang_opts);
+
   if (auto* op =
           result.Nodes.getNodeAs<clang::UnaryOperator>("unaryOperator")) {
     if (op->isPostfix()) {
-      return {op->getBeginLoc(), op->getEndLoc().getLocWithOffset(2)};
+      return {ToSpellingLoc(op->getBeginLoc()),
+              ToSpellingLoc(op->getEndLoc()).getLocWithOffset(2)};
     }
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
-    return {op->getBeginLoc(),
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MACRO(var) var
+    //     ++MACRO(rhs);  // The range will be `++MACRO(rhs`.
+    return {ToSpellingLoc(op->getBeginLoc()),
             GetExprRange(*expr, source_manager, lang_opts).getEnd()};
   }
+
   if (auto* op = result.Nodes.getNodeAs<clang::Expr>("binaryOperator")) {
     auto* sub_expr = result.Nodes.getNodeAs<clang::Expr>("binary_op_rhs");
     auto end_loc = GetExprRange(*sub_expr, source_manager, lang_opts).getEnd();
-    return {op->getBeginLoc(), end_loc};
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MACRO(var) var
+    //     MACRO(lhs) + MACRO(rhs);  // The range will be `lhs) + MACRO(rhs`.
+    return {ToSpellingLoc(op->getBeginLoc()), end_loc};
   }
+
   if (auto* op = result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
           "raw_ptr_operator++")) {
     auto* callee = op->getDirectCallee();
@@ -677,7 +700,8 @@ static clang::SourceRange getSourceRange(
       return clang::SourceRange(
           GetExprRange(*expr, source_manager, lang_opts).getEnd());
     }
-    return clang::SourceRange(op->getEndLoc().getLocWithOffset(2));
+    return clang::SourceRange(
+        ToSpellingLoc(op->getEndLoc()).getLocWithOffset(2));
   }
 
   if (auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr")) {
@@ -701,54 +725,6 @@ static clang::SourceRange getSourceRange(
                   "\n";
   DumpMatchResult(result);
   assert(false && "Unexpected match in getSourceRange()");
-}
-
-static void maybeUpdateSourceRangeIfInMacro(
-    const clang::SourceManager& source_manager,
-    const MatchFinder::MatchResult& result,
-    clang::SourceRange& range) {
-  if (!range.isValid() || !range.getBegin().isMacroID()) {
-    return;
-  }
-  // We need to find the reference to the object that might be getting
-  // accessed and rewritten to find the location to rewrite. SpellingLocation
-  // returns a different position if the source was pointing into the macro
-  // definition. See clang::SourceManager for details but relevant section:
-  //
-  // "Spelling locations represent where the bytes corresponding to a token came
-  // from and expansion locations represent where the location is in the user's
-  // view. In the case of a macro expansion, for example, the spelling location
-  // indicates where the expanded token came from and the expansion location
-  // specifies where it was expanded."
-  auto* rhs_decl_ref =
-      result.Nodes.getNodeAs<clang::DeclRefExpr>("declRefExpr");
-  if (!rhs_decl_ref) {
-    return;
-  }
-  // We're extracting the spellingLocation's position and then we'll move the
-  // location forward by the length of the variable. This will allow us to
-  // insert .data() at the end of the decl_ref.
-  clang::SourceLocation correct_start =
-      source_manager.getSpellingLoc(rhs_decl_ref->getLocation());
-
-  bool invalid_line, invalid_col = false;
-  auto line =
-      source_manager.getSpellingLineNumber(correct_start, &invalid_line);
-  auto col =
-      source_manager.getSpellingColumnNumber(correct_start, &invalid_col);
-  assert(correct_start.isValid() && !invalid_line && !invalid_col &&
-         "Unable to get SpellingLocation info");
-  // Get the name and find the end of the decl_ref.
-  std::string name = rhs_decl_ref->getFoundDecl()->getNameAsString();
-  clang::SourceLocation correct_end = source_manager.translateLineCol(
-      source_manager.getFileID(correct_start), line, col + name.size());
-  assert(correct_end.isValid() &&
-         "Incorrectly got an End SourceLocation for macro");
-  // This returns at the end of the variable being referenced so we can
-  // insert .data(), if we wanted it wrapped in params (variable).data()
-  // we'd need {correct_start, correct_end} but this doesn't seem needed in
-  // macros tested on so far.
-  range = clang::SourceRange{correct_end};
 }
 
 static std::string getNodeFromPointerTypeLoc(
@@ -1871,12 +1847,6 @@ void AddSpanFrontierChange(const std::string& lhs_key,
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
   auto rep_range = clang::SourceRange(getSourceRange(result).getEnd());
-
-  // If we're inside a macro the rep_range computed above is going to be
-  // incorrect because it will point into the file where the macro is defined.
-  // We need to get the "SpellingLocation", and then we figure out the end of
-  // the parameter so we can insert .data() at the end if needed.
-  maybeUpdateSourceRangeIfInMacro(source_manager, result, rep_range);
 
   std::string initial_text =
       clang::Lexer::getSourceText(
