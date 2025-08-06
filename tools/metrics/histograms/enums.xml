@@ -12621,6 +12621,7 @@ from previous Chrome versions.
   <int value="-551434067"
       label="QuickActionSearchWidgetAndroidDinoVariant:enabled"/>
   <int value="-551334994" label="NotificationPermissionVariant:enabled"/>
+  <int value="-550145191" label="AndroidThemeResourceProvider:disabled"/>
   <int value="-548082154" label="protect-sync-credential:disabled"/>
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
@@ -17736,6 +17737,7 @@ from previous Chrome versions.
   <int value="1314797690"
       label="CCTRealTimeEngagementSignalsAlternativeImpl:disabled"/>
   <int value="1315158510" label="CellularCarrierLock:enabled"/>
+  <int value="1315321504" label="AndroidThemeResourceProvider:enabled"/>
   <int value="1316142697" label="canvas-2d-layers"/>
   <int value="1316607485" label="MultiProfileAccountConsistency:enabled"/>
   <int value="1316844889" label="ScreenshotsForAndroidV2:disabled"/>

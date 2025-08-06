@@ -12405,6 +12405,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidThemeModule,
                                     kAndroidThemeModuleVariations,
                                     "AndroidThemeModule")},
+    {"android-theme-resource-provider",
+     flag_descriptions::kAndroidThemeResourceProviderName,
+     flag_descriptions::kAndroidThemeResourceProviderDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidThemeResourceProvider)},
 
     {"display-edge-to-edge-fullscreen",
      flag_descriptions::kDisplayEdgeToEdgeFullscreenName,

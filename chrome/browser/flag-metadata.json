@@ -370,6 +370,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "android-theme-resource-provider",
+    "owners": [ "wenyufu@chromium.org", "clank-app-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-use-correct-display-work-area",
     "owners": [
       "renkens@google.com",

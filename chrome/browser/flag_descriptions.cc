@@ -4758,6 +4758,11 @@ const char kAndroidThemeModuleName[] = "Android Theme Module";
 const char kAndroidThemeModuleDescription[] =
     "Enables external theme overlays for Chrome activities when available.";
 
+const char kAndroidThemeResourceProviderName[] =
+    "Android Theme Resource Provider";
+const char kAndroidThemeResourceProviderDescription[] =
+    "Enables the Android theme resource provider.";
+
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =
