@@ -131,6 +131,8 @@ Note: This is a jinja2 template, processed at build time into the final resource
 
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
 
+        <item name="android:forceDarkAllowed">false</item>
+
         <!-- Toolbar button dimensions. -->
         <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
         <item name="toolbarButtonHeight">@dimen/toolbar_button_height</item>
