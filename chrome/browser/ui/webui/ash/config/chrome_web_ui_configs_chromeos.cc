@@ -73,7 +73,6 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_overview_tracing/arc_overview_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
-#include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
@@ -247,7 +246,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
-  map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
+
   map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());

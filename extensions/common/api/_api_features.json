@@ -263,7 +263,6 @@
       "contexts": ["webui"],
       "matches": [
         "chrome://add-supervision/*",
-        "chrome://assistant-optin/*",
         "chrome://extensions/*",
         "chrome://glic/*",
         "chrome://glic-fre/*",
@@ -893,7 +892,6 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://add-supervision/*",
-      "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
@@ -938,7 +936,6 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://add-supervision/*",
-      "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
@@ -981,7 +978,6 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://add-supervision/*",
-      "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://glic/*",
       "chrome://graduation/*",

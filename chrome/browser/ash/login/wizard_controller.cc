@@ -60,7 +60,6 @@
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
-#include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
@@ -162,7 +161,6 @@
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/categories_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
@@ -777,10 +775,7 @@ WizardController::CreateScreens() {
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnUpdateRequiredScreenExit,
                           weak_factory_.GetWeakPtr())));
-  append(std::make_unique<AssistantOptInFlowScreen>(
-      oobe_ui->GetView<AssistantOptInFlowScreenHandler>()->AsWeakPtr(),
-      base::BindRepeating(&WizardController::OnAssistantOptInFlowScreenExit,
-                          weak_factory_.GetWeakPtr())));
+
   append(std::make_unique<MultiDeviceSetupScreen>(
       oobe_ui->GetView<MultiDeviceSetupScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnMultiDeviceSetupScreenExit,
@@ -1283,10 +1278,6 @@ void WizardController::ShowManagementTransitionScreen() {
 
 void WizardController::ShowUpdateRequiredScreen() {
   SetCurrentScreen(GetScreen(UpdateRequiredView::kScreenId));
-}
-
-void WizardController::ShowAssistantOptInFlowScreen() {
-  SetCurrentScreen(GetScreen(AssistantOptInFlowScreenView::kScreenId));
 }
 
 void WizardController::ShowMultiDeviceSetupScreen() {
@@ -2781,13 +2772,6 @@ void WizardController::OnGeminiIntroScreenExit(
     return;
   }
 
-  ShowAssistantOptInFlowScreen();
-}
-
-void WizardController::OnAssistantOptInFlowScreenExit(
-    AssistantOptInFlowScreen::Result result) {
-  OnScreenExit(AssistantOptInFlowScreenView::kScreenId,
-               AssistantOptInFlowScreen::GetResultString(result));
   AdvanceToScreen(SmartPrivacyProtectionView::kScreenId);
 }
 
@@ -3249,8 +3233,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowEncryptionMigrationScreen();
   } else if (screen_id == UpdateRequiredView::kScreenId) {
     ShowUpdateRequiredScreen();
-  } else if (screen_id == AssistantOptInFlowScreenView::kScreenId) {
-    ShowAssistantOptInFlowScreen();
   } else if (screen_id == MultiDeviceSetupScreenView::kScreenId) {
     ShowMultiDeviceSetupScreen();
   } else if (screen_id == GestureNavigationScreenView::kScreenId) {

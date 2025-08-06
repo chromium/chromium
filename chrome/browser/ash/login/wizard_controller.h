@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/screens/account_selection_screen.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
-#include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
@@ -321,7 +320,6 @@ class WizardController : public OobeUI::Observer {
   void ShowEncryptionMigrationScreen();
   void ShowManagementTransitionScreen();
   void ShowUpdateRequiredScreen();
-  void ShowAssistantOptInFlowScreen();
   void ShowMultiDeviceSetupScreen();
   void ShowGestureNavigationScreen();
   void ShowPinSetupScreenAsSecondaryFactor();
@@ -432,7 +430,7 @@ class WizardController : public OobeUI::Observer {
   void OnAppDownloadingScreenExit();
   void OnAiIntroScreenExit(AiIntroScreen::Result result);
   void OnGeminiIntroScreenExit(GeminiIntroScreen::Result result);
-  void OnAssistantOptInFlowScreenExit(AssistantOptInFlowScreen::Result result);
+
   void OnMultiDeviceSetupScreenExit(MultiDeviceSetupScreen::Result result);
   void OnGestureNavigationScreenExit(GestureNavigationScreen::Result result);
   void OnMarketingOptInScreenExit(MarketingOptInScreen::Result result);
