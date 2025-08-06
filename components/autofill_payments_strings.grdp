@@ -203,7 +203,11 @@
       Save
     </message>
   </if>
-
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission on IOS devices.">
+      For faster checkout, save this CVC in your account, <ph name="ACCOUNT_EMAIL">$1<ex>youraccount@email.com</ex></ph>
+    </message>
+  </if>
   <if expr="is_ios">
     <then>
       <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME" desc="The label text for the cardholder name textfield.">

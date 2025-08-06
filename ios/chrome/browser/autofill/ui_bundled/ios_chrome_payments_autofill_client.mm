@@ -58,9 +58,9 @@ using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
 
 // Creates and returns an infobar for saving credit cards.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
-    std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate) {
-  return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
-                                      std::move(delegate));
+    std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate,
+    InfobarType infobar_type) {
+  return std::make_unique<InfoBarIOS>(infobar_type, std::move(delegate));
 }
 }  // namespace
 
@@ -458,9 +458,16 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCard(
         autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
             kBottomSheet);
   }
+  InfobarType infobar_type =
+      (save_card_delegate->GetSaveCreditCardOptions().card_save_type ==
+       CardSaveType::kCvcSaveOnly)
+          ? InfobarType::kInfobarTypeSaveCvc
+          : InfobarType::kInfobarTypeSaveCard;
+
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
-          std::move(ui_info), std::move(save_card_delegate))));
+          std::move(ui_info), std::move(save_card_delegate)),
+      infobar_type));
 }
 
 bool IOSChromePaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable()

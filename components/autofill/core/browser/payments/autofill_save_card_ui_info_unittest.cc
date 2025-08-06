@@ -511,8 +511,9 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
       ui_info.title_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
   EXPECT_EQ(ui_info.description_text,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD));
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS,
+                base::UTF8ToUTF16(AccountInfo().email)));
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }

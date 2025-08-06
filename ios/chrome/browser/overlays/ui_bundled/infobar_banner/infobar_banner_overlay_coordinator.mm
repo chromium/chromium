@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/safe_browsing/enhanced_safe_browsing_infobar_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_cvc/save_cvc_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/sync_error/sync_error_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/tailored_security/tailored_security_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate/translate_infobar_banner_overlay_mediator.h"
@@ -65,6 +66,7 @@
     [ConfirmInfobarBannerOverlayMediator class],
     [TranslateInfobarBannerOverlayMediator class],
     [SaveCardInfobarBannerOverlayMediator class],
+    [SaveCVCInfobarBannerOverlayMediator class],
     [SaveAddressProfileInfobarBannerOverlayMediator class],
     [PermissionsBannerOverlayMediator class],
     [TailoredSecurityInfobarBannerOverlayMediator class],
@@ -249,6 +251,9 @@
       break;
     case InfobarType::kInfobarTypeSaveCard:
       mediatorClass = [SaveCardInfobarBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeSaveCvc:
+      mediatorClass = [SaveCVCInfobarBannerOverlayMediator class];
       break;
     case InfobarType::kInfobarTypeSyncError:
       mediatorClass = [SyncErrorInfobarBannerOverlayMediator class];

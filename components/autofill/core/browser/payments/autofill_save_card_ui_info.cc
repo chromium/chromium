@@ -176,7 +176,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
   // whether the feature is enabled and the card's strike count. This logic
   // mirrors the check in `ShouldShowSaveCardBottomSheetForLocalSave`.
   is_for_bottom_sheet =
-      options.num_strikes.has_value() && options.num_strikes.value() == 0 &&
+      options.num_strikes.value_or(0) == 0 &&
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillLocalSaveCardBottomSheet);
 
@@ -297,7 +297,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
   }
 #elif BUILDFLAG(IS_IOS)
   is_for_bottom_sheet =
-      options.num_strikes.has_value() && options.num_strikes.value() == 0 &&
+      options.num_strikes.value_or(0) == 0 &&
       !options.should_request_name_from_user &&
       !options.should_request_expiration_date_from_user &&
       base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
@@ -335,8 +335,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
           features::kAutofillEnableCvcStorageAndFilling));
       save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD;
-      description_text = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD);
+      description_text = l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS,
+          base::UTF8ToUTF16(displayed_target_account.email));
       break;
     }
   }
