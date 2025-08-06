@@ -122,6 +122,10 @@ void CheckGeminiEligibility(AuthenticationService* auth_service,
 // Resets the Gemini instance by clearing its state.
 void ResetGemini();
 
+// Updates the page attachment state of the floaty if it's invoked.
+void UpdatePageAttachmentState(
+    BWGPageContextAttachmentState bwg_attachment_state);
+
 // Returns true if a URL is protected.
 bool IsProtectedUrl(std::string url);
 

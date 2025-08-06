@@ -16,6 +16,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//url",
   ]
 }

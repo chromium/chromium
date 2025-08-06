@@ -36,6 +36,9 @@ void CheckGeminiEligibility(AuthenticationService* auth_service,
 
 void ResetGemini() {}
 
+void UpdatePageAttachmentState(
+    BWGPageContextAttachmentState bwg_attachment_state) {}
+
 bool IsProtectedUrl(std::string url) {
   return false;
 }
