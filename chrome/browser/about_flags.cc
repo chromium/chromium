@@ -11038,10 +11038,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-tab-highlighting", flag_descriptions::kAndroidTabHighlightingName,
      flag_descriptions::kAndroidTabHighlightingDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-             chrome::android::kAndroidTabHighlighting,
-             kAndroidTabHighlightingVariations,
-             "AndroidTabHighlightingVariations")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidTabHighlighting,
+                                    kAndroidTabHighlightingVariations,
+                                    "AndroidTabHighlightingVariations")},
 
     {"swap-new-tab-and-new-tab-in-group-android",
      flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidName,
@@ -13123,6 +13122,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kEnforceManagementDisclaimer)},
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-animated-composited-progress-bar",
+     flag_descriptions::kAndroidAnimatedCompositedProgressBarName,
+     flag_descriptions::kAndroidAnimatedCompositedProgressBarDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidAnimatedCompositedProgressBar)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

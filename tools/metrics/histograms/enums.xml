@@ -11532,6 +11532,7 @@ from previous Chrome versions.
       label="PreinstalledWebAppAlwaysMigrateCalculator:disabled"/>
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
+  <int value="-956597964" label="AndroidAnimatedCompositedProgressBar:enabled"/>
   <int value="-956563847" label="QueryTilesDisableCountryOverride:enabled"/>
   <int value="-955667686"
       label="AutofillSuppressCreditCardSaveForAssistant:enabled"/>
@@ -13211,6 +13212,8 @@ from previous Chrome versions.
   <int value="-327272022" label="AutofillRejectCompanyBirthyearName:enabled"/>
   <int value="-326535569" label="WebNotesStylize:disabled"/>
   <int value="-326083626" label="AppBanners:disabled"/>
+  <int value="-325709080"
+      label="AndroidAnimatedCompositedProgressBar:disabled"/>
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>

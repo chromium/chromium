@@ -4654,6 +4654,12 @@ const char kAccessibilityManageBroadcastReceiverOnBackgroundDescription[] =
     "When enabled, registering and un-registering the broadcast "
     "receiver will be on the background thread.";
 
+const char kAndroidAnimatedCompositedProgressBarName[] =
+    "Animate composited progress bar.";
+const char kAndroidAnimatedCompositedProgressBarDescription[] =
+    "Hides the android progress bar and enables animating load progress "
+    "updates for the composited progress bar.";
+
 const char kAndroidDesktopWebPrefsLargeDisplaysName[] =
     "Android Desktop WebPrefs for Large Displays";
 const char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =

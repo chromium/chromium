@@ -163,6 +163,8 @@ public abstract class ChromeFeatureList {
     public static final String ALLOW_TAB_CLOSING_UPON_MINIMIZATION =
             "AllowTabClosingUponMinimization";
     public static final String ALWAYS_BLOCK_3PCS_INCOGNITO = "AlwaysBlock3pcsIncognito";
+    public static final String ANDROID_ANIMATED_COMPOSITED_PROGRESS_BAR =
+            "AndroidAnimatedCompositedProgressBar";
     public static final String ANDROID_APPEARANCE_SETTINGS = "AndroidAppearanceSettings";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
     public static final String ANDROID_APP_INTEGRATION_MODULE = "AndroidAppIntegrationModule";
@@ -701,6 +703,8 @@ public abstract class ChromeFeatureList {
                     ALLOW_TAB_CLOSING_UPON_MINIMIZATION,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidAnimatedCompositedProgressBar =
+            newCachedFlag(ANDROID_ANIMATED_COMPOSITED_PROGRESS_BAR, false);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
@@ -1065,6 +1069,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     sAccountForSuppressedKeyboardInsets,
                     sAllowTabClosingUponMinimization,
+                    sAndroidAnimatedCompositedProgressBar,
                     sAndroidAppIntegration,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationMultiDataSource,

@@ -34,6 +34,14 @@
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
+// If this flag is enabled, only the composited progress bar will be visible,
+// and load progress updates will be animated instead of directly snapping to
+// the new position. The animation is done in the same manner as BCIV, where
+// OffsetTags and OffstTagValues will enable viz to move the progress bar.
+BASE_FEATURE(kAndroidAnimatedCompositedProgressBar,
+             "AndroidAnimatedCompositedProgressBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // During a scroll, enable viz to move browser controls according to the
 // offsets provided by the embedded renderer, circumventing browser main
 // involvement. For now, this applies only to top controls.
