@@ -1089,15 +1089,24 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_Check_Ukm) {
   }
 
   // Check Media_EME_Usage UKM. It is recorded for all key systems. Currently
-  // only update() will be called during playback.
+  // only setServerCertificate(), generateRequest() and update() will be called
+  // during playback.
   auto usage_entries = ukm_recorder.GetEntries(
       Media_EME_Usage::kEntryName,
       {Media_EME_Usage::kApiName, Media_EME_Usage::kIsPersistentSessionName,
        Media_EME_Usage::kKeySystemName,
        Media_EME_Usage::kUseHardwareSecureCodecsName});
-  EXPECT_EQ(usage_entries.size(), 2u);
+  EXPECT_EQ(usage_entries.size(), 3u);
+  EXPECT_THAT(usage_entries[0].metrics,
+              UnorderedElementsAre(
+                  Pair(Media_EME_Usage::kApiName,
+                       /*blink::EmeApiType::kSetServerCertificate=*/2),
+                  Pair(Media_EME_Usage::kIsPersistentSessionName, 0),
+                  Pair(Media_EME_Usage::kKeySystemName,
+                       media::GetKeySystemIntForUKM(CurrentKeySystem())),
+                  Pair(Media_EME_Usage::kUseHardwareSecureCodecsName, 0)));
   EXPECT_THAT(
-      usage_entries[0].metrics,
+      usage_entries[1].metrics,
       UnorderedElementsAre(
           Pair(Media_EME_Usage::kApiName,
                /*blink::EmeApiType::kGenerateRequest=*/4),
@@ -1106,7 +1115,7 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_Check_Ukm) {
                media::GetKeySystemIntForUKM(CurrentKeySystem())),
           Pair(Media_EME_Usage::kUseHardwareSecureCodecsName, /*false=*/0)));
   EXPECT_THAT(
-      usage_entries[1].metrics,
+      usage_entries[2].metrics,
       UnorderedElementsAre(
           Pair(Media_EME_Usage::kApiName, /*blink::EmeApiType::kUpdate=*/6),
           Pair(Media_EME_Usage::kIsPersistentSessionName, /*false=*/0),
