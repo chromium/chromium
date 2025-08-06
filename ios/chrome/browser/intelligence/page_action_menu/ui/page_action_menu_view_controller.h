@@ -12,6 +12,7 @@
 @protocol BWGCommands;
 @protocol LensOverlayCommands;
 @protocol PageActionMenuCommands;
+@protocol PageActionMenuMutator;
 @protocol PageActionMenuViewControllerDelegate;
 @protocol ReaderModeCommands;
 
@@ -22,19 +23,12 @@
 // The delegate for this view controller.
 @property(nonatomic, weak) id<PageActionMenuViewControllerDelegate> delegate;
 
-// Initializes the view controller adapted to whether Reader Mode is currently
-// active.
-- (instancetype)initWithReaderModeActive:(BOOL)readerModeActive
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-
 // Returns the appropriate detent value for a sheet presentation in `context`.
 - (CGFloat)resolveDetentValueForSheetPresentation:
     (id<UISheetPresentationControllerDetentResolutionContext>)context;
+
+// The mutator for communicating with the mediator.
+@property(nonatomic, weak) id<PageActionMenuMutator> mutator;
 
 // The handler for sending BWG commands.
 @property(nonatomic, weak) id<BWGCommands> BWGHandler;

@@ -4,17 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 
-#import "components/search/search.h"
-#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
-#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -57,18 +53,20 @@ const CGFloat kMenuCornerRadius = 20;
 - (void)start {
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  BOOL readerModeActive = NO;
-  BOOL readerModeAvailable = NO;
+
+  _viewController = [[PageActionMenuViewController alloc] init];
+
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(activeWebState);
-  if (readerModeTabHelper) {
-    readerModeActive = readerModeTabHelper->IsActive();
-    readerModeAvailable =
-        base::FeatureList::IsEnabled(
-            kEnableReaderModePageEligibilityForToolsMenu)
-            ? readerModeTabHelper->CurrentPageIsDistillable()
-            : readerModeTabHelper->CurrentPageIsEligibleForReaderMode();
+  _mediator = [[PageActionMenuMediator alloc]
+         initWithWebState:activeWebState
+       profilePrefService:self.profile->GetPrefs()
+       templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
+                              self.profile)
+               BWGService:BwgServiceFactory::GetForProfile(self.profile)
+      readerModeTabHelper:readerModeTabHelper];
 
+  if (readerModeTabHelper) {
     DistillerService* distillerService =
         DistillerServiceFactory::GetForProfile(self.profile);
     _readerModeOptionsMediator = [[ReaderModeOptionsMediator alloc]
@@ -76,31 +74,17 @@ const CGFloat kMenuCornerRadius = 20;
                       webStateList:self.browser->GetWebStateList()];
   }
 
-  _viewController = [[PageActionMenuViewController alloc]
-      initWithReaderModeActive:readerModeActive];
   _viewController.delegate = self;
-  _mediator = [[PageActionMenuMediator alloc] init];
-  if (readerModeAvailable) {
-    _viewController.readerModeHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ReaderModeCommands);
-  }
+  _viewController.mutator = _mediator;
 
+  _viewController.readerModeHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ReaderModeCommands);
   _viewController.pageActionMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
-
-  BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
-  if (BWGService->IsBwgAvailableForWebState(activeWebState)) {
-    CHECK(BWGService->IsProfileEligibleForBwg());
-    _viewController.BWGHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
-  }
-
-  if (IsLensOverlayAvailable(self.profile->GetPrefs()) &&
-      search::DefaultSearchProviderIsGoogle(
-          ios::TemplateURLServiceFactory::GetForProfile(self.profile))) {
-    _viewController.lensOverlayHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), LensOverlayCommands);
-  }
+  _viewController.BWGHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+  _viewController.lensOverlayHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), LensOverlayCommands);
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
