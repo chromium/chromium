@@ -1232,8 +1232,8 @@ TEST_F(EventConverterEvdevImplLogTest, ChangeKeyboardType) {
     ui::EvdevSetBit(key_bits.data(), key);
   }
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetKeyEvents(key_bits.data(), key_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetKeyEvents(key_bits);
 
   std::string log = LogSubst(kDefaultDeviceLogDescription, "keyboard_type",
                              "ui::KeyboardType::VALID_KEYBOARD");
@@ -1248,8 +1248,8 @@ TEST_F(EventConverterEvdevImplLogTest, ChangeCapslockLED) {
   ui::EvdevSetBit(ev_bits.data(), EV_LED);
   ui::EvdevSetBit(led_bits.data(), LED_CAPSL);
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetLedEvents(led_bits.data(), led_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetLedEvents(led_bits);
 
   std::string log =
       LogSubst(kDefaultDeviceLogDescription, "has_caps_lock_led", "1");

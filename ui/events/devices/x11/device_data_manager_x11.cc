@@ -351,12 +351,12 @@ void DeviceDataManagerX11::GetEventRawData(const x11::Event& x11_event,
   if (sourceid >= kMaxDeviceNum || deviceid >= kMaxDeviceNum)
     return;
   data->clear();
-  const x11::Input::Fp3232* valuators = xiev->axisvalues.data();
+  auto valuators_iter = xiev->axisvalues.begin();
   for (int i = 0; i <= valuator_count_[sourceid]; ++i) {
     if (IsXinputMaskSet(xiev->valuator_mask.data(), i)) {
       int type = data_type_lookup_[sourceid][i];
       if (type != DT_LAST_ENTRY) {
-        double valuator = Fp3232ToDouble(*valuators);
+        double valuator = Fp3232ToDouble(*valuators_iter);
         (*data)[type] = valuator;
         if (IsTouchDataType(type)) {
           int slot = -1;
@@ -364,7 +364,7 @@ void DeviceDataManagerX11::GetEventRawData(const x11::Event& x11_event,
             last_seen_valuator_[sourceid][slot][type] = valuator;
         }
       }
-      valuators++;
+      ++valuators_iter;
     }
   }
 }
@@ -400,12 +400,12 @@ bool DeviceDataManagerX11::GetEventData(const x11::Event& x11_event,
   int slot = 0;
   if (val_index >= 0) {
     if (IsXinputMaskSet(xiev->valuator_mask.data(), val_index)) {
-      const x11::Input::Fp3232* valuators = xiev->axisvalues.data();
+      auto valuators_iter = xiev->axisvalues.begin();
       while (val_index--) {
         if (IsXinputMaskSet(xiev->valuator_mask.data(), val_index))
-          ++valuators;
+          ++valuators_iter;
       }
-      *value = Fp3232ToDouble(*valuators);
+      *value = Fp3232ToDouble(*valuators_iter);
       if (IsTouchDataType(type)) {
         if (GetSlotNumber(*xiev, &slot) && slot >= 0 && slot < kMaxSlotNum)
           last_seen_valuator_[sourceid][slot][type] = *value;
@@ -578,7 +578,7 @@ void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
   auto deviceid = static_cast<uint16_t>(xiev->deviceid);
   if (sourceid >= kMaxDeviceNum || deviceid >= kMaxDeviceNum)
     return;
-  const x11::Input::Fp3232* valuators = xiev->axisvalues.data();
+  auto valuators_iter = xiev->axisvalues.begin();
 
   ScrollInfo* info = &scroll_data_[sourceid];
 
@@ -588,12 +588,12 @@ void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
   for (int i = 0; i <= valuator_count_[sourceid]; ++i) {
     if (!IsXinputMaskSet(xiev->valuator_mask.data(), i))
       continue;
-    auto valuator = Fp3232ToDouble(*valuators);
+    auto valuator = Fp3232ToDouble(*valuators_iter);
     if (i == horizontal_number)
       *x_offset = ExtractAndUpdateScrollOffset(&info->horizontal, valuator);
     else if (i == vertical_number)
       *y_offset = ExtractAndUpdateScrollOffset(&info->vertical, valuator);
-    valuators++;
+    ++valuators_iter;
   }
 }
 

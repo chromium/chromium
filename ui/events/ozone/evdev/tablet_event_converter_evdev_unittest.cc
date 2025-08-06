@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -321,9 +322,9 @@ class MockTabletEventConverterEvdev : public TabletEventConverterEvdev {
 
   ~MockTabletEventConverterEvdev() override = default;
 
-  void ConfigureReadMock(struct input_event* queue,
-                         long read_this_many,
-                         long queue_index);
+  void ConfigureReadMock(base::span<struct input_event> queue,
+                         size_t read_this_many,
+                         size_t queue_index);
 
   // Actually dispatch the event reader code.
   void ReadNow() {
@@ -392,10 +393,13 @@ MockTabletEventConverterEvdev::MockTabletEventConverterEvdev(
   write_pipe_ = fds[1];
 }
 
-void MockTabletEventConverterEvdev::ConfigureReadMock(struct input_event* queue,
-                                                      long read_this_many,
-                                                      long queue_index) {
-  int nwrite = HANDLE_EINTR(write(write_pipe_, queue + queue_index,
+void MockTabletEventConverterEvdev::ConfigureReadMock(
+    base::span<struct input_event> queue,
+    size_t read_this_many,
+    size_t queue_index) {
+  CHECK_GE(queue.size(), queue_index + read_this_many);
+  int nwrite = HANDLE_EINTR(write(write_pipe_,
+                                  queue.subspan(queue_index).data(),
                                   sizeof(struct input_event) * read_this_many));
   DPCHECK(nwrite ==
           static_cast<int>(sizeof(struct input_event) * read_this_many))
@@ -465,10 +469,9 @@ class TabletEventConverterEvdevTest : public testing::Test {
     return ev->AsKeyEvent();
   }
 
-  void CheckEvents(struct ExpectedEvent expected_events[],
-                   unsigned num_events) {
-    ASSERT_EQ(num_events, size());
-    for (unsigned i = 0; i < num_events; ++i) {
+  void CheckEvents(base::span<const ExpectedEvent> expected_events) {
+    ASSERT_EQ(expected_events.size(), size());
+    for (size_t i = 0; i < expected_events.size(); ++i) {
       ui::MouseEvent* event = dispatched_event(i);
       EXPECT_EQ(event->pointer_details().pointer_type,
                 expected_events[i].pointer_type)
@@ -930,7 +933,7 @@ TEST_F(TabletEventConverterEvdevTest, NoButtonPressedKernel5And6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel5) {
@@ -976,7 +979,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel5) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel6) {
@@ -1018,7 +1021,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel5) {
@@ -1073,7 +1076,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel5) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel6) {
@@ -1123,7 +1126,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest,
@@ -1182,7 +1185,7 @@ TEST_F(TabletEventConverterEvdevTest,
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, TailEraserKernel5And6) {
@@ -1232,7 +1235,7 @@ TEST_F(TabletEventConverterEvdevTest, TailEraserKernel5And6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel5) {
@@ -1283,7 +1286,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel5) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel6) {
@@ -1336,7 +1339,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel5) {
@@ -1407,7 +1410,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel5) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel6) {
@@ -1482,7 +1485,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel5) {
@@ -1539,7 +1542,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel5) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel6) {
@@ -1615,7 +1618,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button2AlwaysPressedKernel5And6) {
@@ -1676,7 +1679,7 @@ TEST_F(TabletEventConverterEvdevTest, Button2AlwaysPressedKernel5And6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button2ReleasedWhileTouchingKernel5And6) {
@@ -1738,7 +1741,7 @@ TEST_F(TabletEventConverterEvdevTest, Button2ReleasedWhileTouchingKernel5And6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Button2PressedWhileTouchingKernel5And6) {
@@ -1795,7 +1798,7 @@ TEST_F(TabletEventConverterEvdevTest, Button2PressedWhileTouchingKernel5And6) {
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest,
@@ -1860,7 +1863,7 @@ TEST_F(TabletEventConverterEvdevTest,
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest,
@@ -1927,7 +1930,7 @@ TEST_F(TabletEventConverterEvdevTest,
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest,
@@ -1990,7 +1993,7 @@ TEST_F(TabletEventConverterEvdevTest,
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest,
@@ -2057,7 +2060,7 @@ TEST_F(TabletEventConverterEvdevTest,
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest,
@@ -2125,7 +2128,7 @@ TEST_F(TabletEventConverterEvdevTest,
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest,
@@ -2190,7 +2193,7 @@ TEST_F(TabletEventConverterEvdevTest,
   };
 
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  CheckEvents(expected_events, std::size(expected_events));
+  CheckEvents(expected_events);
 }
 
 TEST_F(TabletEventConverterEvdevTest, Basic) {

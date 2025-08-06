@@ -2416,8 +2416,8 @@ TEST_F(TouchEventConverterEvdevTest, ChangePen) {
   ui::EvdevSetBit(ev_bits.data(), EV_KEY);
   ui::EvdevSetBit(key_bits.data(), BTN_TOOL_PEN);
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetKeyEvents(key_bits.data(), key_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetKeyEvents(key_bits);
 
   dev->Initialize(devinfo);
 
@@ -2540,8 +2540,8 @@ TEST_F(TouchEventConverterEvdevTest, ChangeQuirkLeftButton) {
   ui::EvdevSetBit(ev_bits.data(), EV_KEY);
   ui::EvdevSetBit(key_bits.data(), BTN_LEFT);
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetKeyEvents(key_bits.data(), key_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetKeyEvents(key_bits);
 
   dev->Initialize(devinfo);
 

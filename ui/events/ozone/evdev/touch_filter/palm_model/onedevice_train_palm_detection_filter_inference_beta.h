@@ -6,6 +6,8 @@
 #define UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_PALM_MODEL_ONEDEVICE_TRAIN_PALM_DETECTION_FILTER_INFERENCE_BETA_H_
 #include <cstdint>
 
+#include "base/containers/span.h"
+
 namespace ui::internal_onedevice::beta_model {
 struct alignas(16) FixedAllocations {
   float alloc0[20];
@@ -29,9 +31,10 @@ extern int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0Shape[2];
   1
 
 void Inference(
-    const float* __restrict input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,325 */
+    base::span<const float>
+        input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,325 */
     ,
-    float* __restrict logits_MatMul_merged_with_dnn_logits_BiasAdd0 /* shape:
+    base::span<float> logits_MatMul_merged_with_dnn_logits_BiasAdd0 /* shape:
                                                                        1,1 */
     ,
     FixedAllocations* __restrict fixed);

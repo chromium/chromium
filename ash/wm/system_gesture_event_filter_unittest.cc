@@ -104,18 +104,17 @@ TEST_F(SystemGestureEventFilterTest, TwoFingerDrag) {
   ui::test::EventGenerator generator(root_window, toplevel->GetNativeWindow());
 
   WindowState* toplevel_state = WindowState::Get(toplevel->GetNativeWindow());
-  const base::span<const gfx::Point> points_span(kInitialPoints);
   // Swipe down to minimize.
-  generator.GestureMultiFingerScroll(kTouchPoints, points_span.data(), 15,
-                                     kSteps, 0, 150);
+  generator.GestureMultiFingerScroll(kTouchPoints, kInitialPoints, 15, kSteps,
+                                     0, 150);
   EXPECT_TRUE(toplevel_state->IsMinimized());
 
   toplevel->Restore();
   toplevel->GetNativeWindow()->SetBounds(bounds);
 
   // Swipe up to maximize.
-  generator.GestureMultiFingerScroll(kTouchPoints, points_span.data(), 15,
-                                     kSteps, 0, -150);
+  generator.GestureMultiFingerScroll(kTouchPoints, kInitialPoints, 15, kSteps,
+                                     0, -150);
   EXPECT_TRUE(toplevel_state->IsMaximized());
 
   toplevel->Restore();
@@ -123,27 +122,25 @@ TEST_F(SystemGestureEventFilterTest, TwoFingerDrag) {
 
   // Swipe right to snap.
   gfx::Rect normal_bounds = toplevel->GetWindowBoundsInScreen();
-  generator.GestureMultiFingerScroll(kTouchPoints, points_span.data(), 15,
-                                     kSteps, 150, 0);
+  generator.GestureMultiFingerScroll(kTouchPoints, kInitialPoints, 15, kSteps,
+                                     150, 0);
   gfx::Rect right_tile_bounds = toplevel->GetWindowBoundsInScreen();
   EXPECT_NE(normal_bounds.ToString(), right_tile_bounds.ToString());
 
   // Swipe left to snap.
-  std::array<gfx::Point, kTouchPoints> left_points;
-  base::span<gfx::Point> left_span(left_points);
-  left_span.copy_from(points_span);
-  for (gfx::Point& point : left_span) {
+  std::array<gfx::Point, kTouchPoints> left_points = kInitialPoints;
+  for (gfx::Point& point : left_points) {
     point.Offset(right_tile_bounds.x(), right_tile_bounds.y());
   }
-  generator.GestureMultiFingerScroll(kTouchPoints, left_span.data(), 15, kSteps,
+  generator.GestureMultiFingerScroll(kTouchPoints, left_points, 15, kSteps,
                                      -150, 0);
   gfx::Rect left_tile_bounds = toplevel->GetWindowBoundsInScreen();
   EXPECT_NE(normal_bounds.ToString(), left_tile_bounds.ToString());
   EXPECT_NE(right_tile_bounds.ToString(), left_tile_bounds.ToString());
 
   // Swipe right again.
-  generator.GestureMultiFingerScroll(kTouchPoints, points_span.data(), 15,
-                                     kSteps, 150, 0);
+  generator.GestureMultiFingerScroll(kTouchPoints, kInitialPoints, 15, kSteps,
+                                     150, 0);
   gfx::Rect current_bounds = toplevel->GetWindowBoundsInScreen();
   EXPECT_NE(current_bounds.ToString(), left_tile_bounds.ToString());
   EXPECT_EQ(current_bounds.ToString(), right_tile_bounds.ToString());

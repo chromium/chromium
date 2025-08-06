@@ -50,11 +50,13 @@ float OneDeviceTrainNeuralStylusPalmDetectionFilterModel::Inference(
   if (config_.model_version == kBetaVersion) {
     std::unique_ptr<beta::FixedAllocations> fixed_allocations(
         new beta::FixedAllocations());
-    beta::Inference(&features[0], &output, fixed_allocations.get());
+    beta::Inference(features, base::span_from_ref(output),
+                    fixed_allocations.get());
   } else {
     std::unique_ptr<alpha::FixedAllocations> fixed_allocations(
         new alpha::FixedAllocations());
-    alpha::Inference(&features[0], &output, fixed_allocations.get());
+    alpha::Inference(features, base::span_from_ref(output),
+                     fixed_allocations.get());
   }
   return output;
 }

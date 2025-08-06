@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -73,9 +74,9 @@ class MockStylusButtonEventConverterEvdev
 
   ~MockStylusButtonEventConverterEvdev() override {}
 
-  void ConfigureReadMock(struct input_event* queue,
-                         long read_this_many,
-                         long queue_index);
+  void ConfigureReadMock(base::span<struct input_event> queue,
+                         size_t read_this_many,
+                         size_t queue_index);
 
   // Actually dispatch the event reader code.
   void ReadNow() {
@@ -113,12 +114,13 @@ MockStylusButtonEventConverterEvdev::MockStylusButtonEventConverterEvdev(
 }
 
 void MockStylusButtonEventConverterEvdev::ConfigureReadMock(
-    struct input_event* queue,
-    long read_this_many,
-    long queue_index) {
-  int nwrite = UNSAFE_TODO(
-      HANDLE_EINTR(write(write_pipe_, queue + queue_index,
-                         sizeof(struct input_event) * read_this_many)));
+    base::span<struct input_event> queue,
+    size_t read_this_many,
+    size_t queue_index) {
+  CHECK_GE(queue.size(), queue_index + read_this_many);
+  int nwrite = HANDLE_EINTR(write(write_pipe_,
+                                  queue.subspan(queue_index).data(),
+                                  sizeof(struct input_event) * read_this_many));
   DPCHECK(nwrite ==
           static_cast<int>(sizeof(struct input_event) * read_this_many))
       << "write() failed";

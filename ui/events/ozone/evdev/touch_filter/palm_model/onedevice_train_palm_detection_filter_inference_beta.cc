@@ -19,6 +19,7 @@
 #include <tuple>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 
 #ifndef USE_EIGEN
 #define USE_EIGEN 0
@@ -119,7 +120,7 @@ class BenchmarkTimer {
 #endif  // OP_LIB_BENCHMARK
 
 // The size of a shape in terms of number of coefficients.
-inline int32_t ShapeSize(const int32_t rank, const int32_t* shape) {
+inline int32_t ShapeSize(const int32_t rank, base::span<const int32_t> shape) {
   int32_t size = 1;
   for (int32_t i = 0; i < rank; ++i)
     size *= shape[i];
@@ -128,10 +129,11 @@ inline int32_t ShapeSize(const int32_t rank, const int32_t* shape) {
 
 // For convolutional operations, calculates the output size with VALID padding.
 // Returns (height, width).
-inline std::tuple<int, int> GetConvOutputSizeVALID(const int32_t* input_shape,
-                                                   const int32_t* kernel_shape,
-                                                   int32_t stride_y,
-                                                   int32_t stride_x) {
+inline std::tuple<int, int> GetConvOutputSizeVALID(
+    base::span<const int32_t> input_shape,
+    base::span<const int32_t> kernel_shape,
+    int32_t stride_y,
+    int32_t stride_x) {
   return std::make_tuple(
       (input_shape[1] + stride_y - kernel_shape[0]) / stride_y,
       (input_shape[2] + stride_x - kernel_shape[1]) / stride_x);
@@ -139,9 +141,10 @@ inline std::tuple<int, int> GetConvOutputSizeVALID(const int32_t* input_shape,
 
 // For convolutional operations, calculates the output size with SAME padding.
 // Returns (height, width).
-inline std::tuple<int, int> GetConvOutputSizeSAME(const int32_t* input_shape,
-                                                  int32_t stride_y,
-                                                  int32_t stride_x) {
+inline std::tuple<int, int> GetConvOutputSizeSAME(
+    base::span<const int32_t> input_shape,
+    int32_t stride_y,
+    int32_t stride_x) {
   return std::make_tuple((input_shape[1] + stride_y - 1) / stride_y,
                          (input_shape[2] + stride_x - 1) / stride_x);
 }
@@ -150,10 +153,10 @@ inline std::tuple<int, int> GetConvOutputSizeSAME(const int32_t* input_shape,
 // specify which axes are reduced.
 template <typename Tidx>
 int32_t GetReduceInnerSize(int32_t input_tensor_rank,
-                           const int32_t* __restrict input_shape,
+                           base::span<const int32_t> input_shape,
                            int32_t index_tensor_rank,
-                           const int32_t* __restrict index_shape,
-                           const Tidx* __restrict index_values) {
+                           base::span<const int32_t> index_shape,
+                           base::span<const Tidx> index_values) {
   assert(index_tensor_rank <= 1);
   const int32_t num_indices = index_tensor_rank > 0 ? index_shape[0] : 1;
   int32_t inner_size = 1;
@@ -169,47 +172,51 @@ int32_t GetReduceInnerSize(int32_t input_tensor_rank,
 
 template <typename T>
 void ConcatV2Args2(int32_t arg0_rank,
-                   const int32_t* __restrict arg0_shape,
-                   const T* __restrict arg0_values,
+                   base::span<const int32_t> arg0_shape,
+                   base::span<const T> arg0_values,
                    int32_t arg1_rank,
-                   const int32_t* __restrict arg1_shape,
-                   const T* __restrict arg1_values,
-                   const int32_t* __restrict axis_value,
-                   T* __restrict output_values) {
+                   base::span<const int32_t> arg1_shape,
+                   base::span<const T> arg1_values,
+                   base::span<const int32_t> axis_value,
+                   base::span<T> output_values) {
   BENCHMARK_TIMER("ConcatV2Args2");
-  const int32_t axis = axis_value[0];
+  const size_t axis = base::checked_cast<size_t>(axis_value[0]);
   const int32_t num_lines = ShapeSize(axis, arg0_shape);
-  const int32_t arg0_line_size = ShapeSize(arg0_rank - axis, arg0_shape + axis);
-  const int32_t arg1_line_size = ShapeSize(arg1_rank - axis, arg1_shape + axis);
+  const size_t arg0_line_size = base::checked_cast<size_t>(
+      ShapeSize(arg0_rank - axis, arg0_shape.subspan(axis)));
+  const size_t arg1_line_size = base::checked_cast<size_t>(
+      ShapeSize(arg1_rank - axis, arg1_shape.subspan(axis)));
   for (int32_t line = 0; line < num_lines; ++line) {
-    std::copy(arg0_values, arg0_values + arg0_line_size, output_values);
-    arg0_values += arg0_line_size;
-    output_values += arg0_line_size;
-    std::copy(arg1_values, arg1_values + arg1_line_size, output_values);
-    arg1_values += arg1_line_size;
-    output_values += arg1_line_size;
+    output_values.copy_prefix_from(arg0_values.first(arg0_line_size));
+    arg0_values = arg0_values.subspan(arg0_line_size);
+    output_values = output_values.subspan(arg0_line_size);
+    output_values.copy_prefix_from(arg1_values.first(arg1_line_size));
+    arg1_values = arg1_values.subspan(arg1_line_size);
+    output_values = output_values.subspan(arg1_line_size);
   }
 }
 
 template <typename T>
-void MatMul(const int32_t* __restrict input_shape,
-            const T* __restrict input_values,
-            const int32_t* __restrict weight_shape,
-            const T* __restrict weight_values,
-            T* __restrict output_values) {
+void MatMul(base::span<const int32_t> input_shape,
+            base::span<const T> input_values,
+            base::span<const int32_t> weight_shape,
+            base::span<const T> weight_values,
+            base::span<T> output_values) {
   BENCHMARK_TIMER("MatMul");
 #if USE_EIGEN
   const auto in =
-      ConstMatrixMap<T>(input_values, input_shape[1], input_shape[0]);
+      ConstMatrixMap<T>(input_values.data(), input_shape[1], input_shape[0]);
   const auto weight =
-      ConstMatrixMap<T>(weight_values, weight_shape[1], weight_shape[0]);
-  auto result = MatrixMap<T>(output_values, weight_shape[1], input_shape[0]);
+      ConstMatrixMap<T>(weight_values.data(), weight_shape[1], weight_shape[0]);
+  auto result =
+      MatrixMap<T>(output_values.data(), weight_shape[1], input_shape[0]);
   result.noalias() = weight * in;
 #else
   const int32_t batch_size = input_shape[0];
   const int32_t num_inputs = weight_shape[0];
   const int32_t num_outputs = weight_shape[1];
   assert(input_shape[1] == num_inputs);
+  auto output_iter = output_values.begin();
   for (int32_t batch = 0; batch < batch_size; ++batch) {
     for (int32_t out_i = 0; out_i < num_outputs; ++out_i) {
       T value = 0;
@@ -217,22 +224,22 @@ void MatMul(const int32_t* __restrict input_shape,
         value += input_values[batch * num_inputs + in_i] *
                  weight_values[in_i * num_outputs + out_i];
       }
-      *output_values++ = value;
+      *output_iter++ = value;
     }
   }
 #endif
 }
 
 template <typename T>
-void DepthwiseConv2dNative(const int32_t* __restrict input_shape,
-                           const T* __restrict input_values,
-                           const int32_t* __restrict kernel_shape,
-                           const T* __restrict kernel_values,
+void DepthwiseConv2dNative(base::span<const int32_t> input_shape,
+                           base::span<const T> input_values,
+                           base::span<const int32_t> kernel_shape,
+                           base::span<const T> kernel_values,
                            int32_t stride_y,
                            int32_t stride_x,
                            int32_t out_height,
                            int32_t out_width,
-                           T* __restrict output_values) {
+                           base::span<T> output_values) {
   BENCHMARK_TIMER("DepthwiseConv2dNative");
   // Give the shape values nicer names.
   assert(input_shape[3] == kernel_shape[2]);
@@ -264,7 +271,7 @@ void DepthwiseConv2dNative(const int32_t* __restrict input_shape,
       1,                                                    // channel mult
   };
 
-  T* out_write_ptr = output_values;
+  auto out_write_iter = output_values.begin();
   for (int32_t batch = 0; batch < batch_size; ++batch) {
     for (int32_t out_y = 0; out_y < out_height; ++out_y) {
       for (int32_t out_x = 0; out_x < out_width; ++out_x) {
@@ -284,7 +291,8 @@ void DepthwiseConv2dNative(const int32_t* __restrict input_shape,
             std::min(kernel_width, in_width - in_x_origin);
 
         for (int32_t in_c = 0; in_c < in_depth; ++in_c) {
-          for (int32_t mul_c = 0; mul_c < depth_mul; ++mul_c, ++out_write_ptr) {
+          for (int32_t mul_c = 0; mul_c < depth_mul;
+               ++mul_c, ++out_write_iter) {
             // Convolve.
             T sum = 0;
             for (int32_t k_y = kernel_y_start; k_y < kernel_y_end; ++k_y) {
@@ -306,7 +314,7 @@ void DepthwiseConv2dNative(const int32_t* __restrict input_shape,
                 sum += input_value * kernel_value;
               }
             }
-            *out_write_ptr = sum;
+            *out_write_iter++ = sum;
           }  // mul_c
         }    // in_c
       }      // out_x
@@ -315,13 +323,13 @@ void DepthwiseConv2dNative(const int32_t* __restrict input_shape,
 }
 
 template <typename T>
-void DepthwiseConv2dNativeVALID(const int32_t* __restrict input_shape,
-                                const T* __restrict input_values,
-                                const int32_t* __restrict kernel_shape,
-                                const T* __restrict kernel_values,
+void DepthwiseConv2dNativeVALID(base::span<const int32_t> input_shape,
+                                base::span<const T> input_values,
+                                base::span<const int32_t> kernel_shape,
+                                base::span<const T> kernel_values,
                                 int32_t stride_y,
                                 int32_t stride_x,
-                                T* __restrict output_values) {
+                                base::span<T> output_values) {
   const auto out_size =
       GetConvOutputSizeVALID(input_shape, kernel_shape, stride_y, stride_x);
   DepthwiseConv2dNative<T>(
@@ -330,13 +338,13 @@ void DepthwiseConv2dNativeVALID(const int32_t* __restrict input_shape,
 }
 
 template <typename T>
-void DepthwiseConv2dNativeSAME(const int32_t* __restrict input_shape,
-                               const T* __restrict input_values,
-                               const int32_t* __restrict kernel_shape,
-                               const T* __restrict kernel_values,
+void DepthwiseConv2dNativeSAME(base::span<const int32_t> input_shape,
+                               base::span<const T> input_values,
+                               base::span<const int32_t> kernel_shape,
+                               base::span<const T> kernel_values,
                                int32_t stride_y,
                                int32_t stride_x,
-                               T* __restrict output_values) {
+                               base::span<T> output_values) {
   const auto out_size = GetConvOutputSizeSAME(input_shape, stride_y, stride_x);
   DepthwiseConv2dNative<T>(
       input_shape, input_values, kernel_shape, kernel_values, stride_y,
@@ -344,21 +352,22 @@ void DepthwiseConv2dNativeSAME(const int32_t* __restrict input_shape,
 }
 
 template <typename T>
-void FullyConnected(const int32_t* __restrict input_shape,
-                    const T* __restrict input_values,
-                    const int32_t* __restrict weight_shape,
-                    const T* __restrict weight_values,
-                    const int32_t* __restrict bias_shape,
-                    const T* __restrict bias_values,
-                    T* __restrict output_values) {
+void FullyConnected(base::span<const int32_t> input_shape,
+                    base::span<const T> input_values,
+                    base::span<const int32_t> weight_shape,
+                    base::span<const T> weight_values,
+                    base::span<const int32_t> bias_shape,
+                    base::span<const T> bias_values,
+                    base::span<T> output_values) {
   BENCHMARK_TIMER("FullyConnected");
 #if USE_EIGEN
   const auto in =
-      ConstMatrixMap<T>(input_values, input_shape[1], input_shape[0]);
+      ConstMatrixMap<T>(input_values.data(), input_shape[1], input_shape[0]);
   const auto weight =
-      ConstMatrixMap<T>(weight_values, weight_shape[1], weight_shape[0]);
-  const auto bias = ConstRowVectorMap<T>(bias_values, bias_shape[0]);
-  auto result = MatrixMap<T>(output_values, weight_shape[1], input_shape[0]);
+      ConstMatrixMap<T>(weight_values.data(), weight_shape[1], weight_shape[0]);
+  const auto bias = ConstRowVectorMap<T>(bias_values.data(), bias_shape[0]);
+  auto result =
+      MatrixMap<T>(output_values.data(), weight_shape[1], input_shape[0]);
   result.noalias() = (weight * in).colwise() + bias;
 #else
   const int32_t batch_size = input_shape[0];
@@ -380,11 +389,11 @@ void FullyConnected(const int32_t* __restrict input_shape,
 }
 
 template <typename T, typename TBlocks, typename TPaddings>
-void SpaceToBatchNDRank4(const int32_t* __restrict input_shape,
-                         const T* __restrict input_values,
-                         const TBlocks* __restrict block_shape_values,
-                         const TPaddings* __restrict padding_values,
-                         T* __restrict output_values) {
+void SpaceToBatchNDRank4(base::span<const int32_t> input_shape,
+                         base::span<const T> input_values,
+                         base::span<const TBlocks> block_shape_values,
+                         base::span<const TPaddings> padding_values,
+                         base::span<T> output_values) {
   BENCHMARK_TIMER("SpaceToBatchNDRank4");
   const int32_t input_batch_size = input_shape[0];
   const int32_t input_height = input_shape[1];
@@ -414,10 +423,10 @@ void SpaceToBatchNDRank4(const int32_t* __restrict input_shape,
     const int32_t shift_h = (out_b / input_batch_size) / block_shape_width;
     for (int32_t out_h = 0; out_h < output_height; ++out_h) {
       for (int32_t out_w = 0; out_w < output_width; ++out_w) {
-        T* out = output_values +
-                 (((out_b * output_height + out_h) * output_width + out_w) *
-                      output_depth +
-                  0);
+        base::span<T> out = output_values.subspan(base::checked_cast<size_t>(
+            (((out_b * output_height + out_h) * output_width + out_w) *
+                 output_depth +
+             0)));
         // Check if padding cell are being handled.
         if (out_h * block_shape_height + shift_h < padding_top ||
             out_h * block_shape_height + shift_h >=
@@ -426,9 +435,10 @@ void SpaceToBatchNDRank4(const int32_t* __restrict input_shape,
             out_w * block_shape_width + shift_w >= padding_left + input_width) {
 // This may not execute correctly when pad_value != 0 and T != uint8.
 #if USE_TYPED_MEMSETMEMCPY
-          std::fill(out, out + input_depth, pad_value);
+          std::ranges::fill(out.first(base::checked_cast<size_t>(input_depth)),
+                            pad_value);
 #else
-          std::memset(out, pad_value, input_depth * sizeof(T));
+          std::memset(out.data(), pad_value, input_depth * sizeof(T));
 #endif
         } else {
           const int32_t i0 = input_batch;
@@ -436,13 +446,15 @@ void SpaceToBatchNDRank4(const int32_t* __restrict input_shape,
               (out_h * block_shape_height + shift_h) - padding_top;
           const int32_t i2 =
               (out_w * block_shape_width + shift_w) - padding_left;
-          const T* in =
-              input_values +
-              (((i0 * input_height + i1) * input_width + i2) * input_depth + 0);
+          base::span<const T> in =
+              input_values.subspan(base::checked_cast<size_t>(
+                  (((i0 * input_height + i1) * input_width + i2) * input_depth +
+                   0)));
 #if USE_TYPED_MEMSETMEMCPY
-          std::copy(in, in + input_depth, out);
+          out.copy_prefix_from(
+              in.first(base::checked_cast<size_t>(input_depth)));
 #else
-          std::memcpy(out, in, input_depth * sizeof(T));
+          std::memcpy(out.data(), in.data(), input_depth * sizeof(T));
 #endif
         }
       }
@@ -451,11 +463,11 @@ void SpaceToBatchNDRank4(const int32_t* __restrict input_shape,
 }
 
 template <typename T, typename TBlocks, typename TCrops>
-void BatchToSpaceNDRank4(const int32_t* __restrict input_shape,
-                         const T* __restrict input_values,
-                         const TBlocks* __restrict block_shape_values,
-                         const TCrops* __restrict crops_values,
-                         T* __restrict output_values) {
+void BatchToSpaceNDRank4(base::span<const int32_t> input_shape,
+                         base::span<const T> input_values,
+                         base::span<const TBlocks> block_shape_values,
+                         base::span<const TCrops> crops_values,
+                         base::span<T> output_values) {
   BENCHMARK_TIMER("BatchToSpaceNDRank4");
   const int32_t input_batch_size = input_shape[0];
   const int32_t input_height = input_shape[1];
@@ -492,18 +504,18 @@ void BatchToSpaceNDRank4(const int32_t* __restrict input_shape,
         if (out_w < 0 || out_w >= output_width) {
           continue;
         }
-        T* out = output_values +
-                 (((out_batch * output_height + out_h) * output_width + out_w) *
-                      output_depth +
-                  0);
-        const T* in = input_values +
-                      (((in_batch * input_height + in_h) * input_width + in_w) *
-                           input_depth +
-                       0);
+        base::span<T> out = output_values.subspan(base::checked_cast<size_t>(
+            (((out_batch * output_height + out_h) * output_width + out_w) *
+             output_depth)));
+        base::span<const T> in =
+            input_values.subspan(base::checked_cast<size_t>(
+                (((in_batch * input_height + in_h) * input_width + in_w) *
+                     input_depth +
+                 0)));
 #if USE_TYPED_MEMSETMEMCPY
-        std::copy(in, in + input_depth, out);
+        out.copy_prefix_from(in.first(input_depth));
 #else
-        std::memcpy(out, in, input_depth * sizeof(T));
+        std::memcpy(out.data(), in.data(), input_depth * sizeof(T));
 #endif
       }
     }
@@ -512,80 +524,83 @@ void BatchToSpaceNDRank4(const int32_t* __restrict input_shape,
 
 #if USE_EIGEN
 template <typename T, typename Tidx>
-void SparseDenseMatMulCSR(const int32_t* __restrict input_shape,
-                          const T* __restrict input_values,
+void SparseDenseMatMulCSR(base::span<const int32_t> input_shape,
+                          base::span<const T> input_values,
                           const int32_t num_rows,
-                          const int32_t* __restrict nnz_shape,
-                          const T* __restrict nnz_values,
-                          const Tidx* __restrict outer_index,
-                          const Tidx* __restrict cols,
-                          T* __restrict output_values) {
+                          base::span<const int32_t> nnz_shape,
+                          base::span<const T> nnz_values,
+                          base::span<const Tidx> outer_index,
+                          base::span<const Tidx> cols,
+                          base::span<T> output_values) {
   BENCHMARK_TIMER("SparseDenseMatMulCSR");
   const int32_t num_cols = input_shape[1];
   const auto in =
-      ConstMatrixMap<T>(input_values, input_shape[1], input_shape[0]);
+      ConstMatrixMap<T>(input_values.data(), input_shape[1], input_shape[0]);
   const Eigen::Map<const SparseMatrix<T, Tidx>> weight(
-      num_rows, num_cols, nnz_shape[0], outer_index, cols, nnz_values);
-  auto result = MatrixMap<T>(output_values, num_rows, input_shape[0]);
+      num_rows, num_cols, nnz_shape[0], outer_index.data(), cols.data(),
+      nnz_values.data());
+  auto result = MatrixMap<T>(output_values.data(), num_rows, input_shape[0]);
   result.noalias() = weight * in;
 }
 
 template <typename T, typename Tidx>
-void SparseFullyConnectedCSR(const int32_t* __restrict input_shape,
-                             const T* __restrict input_values,
+void SparseFullyConnectedCSR(base::span<const int32_t> input_shape,
+                             base::span<const T> input_values,
                              const int32_t num_rows,
-                             const int32_t* __restrict nnz_shape,
-                             const T* __restrict nnz_values,
-                             const Tidx* __restrict outer_index,
-                             const Tidx* __restrict cols,
-                             const int32_t* __restrict bias_shape,
-                             const T* __restrict bias_values,
-                             T* __restrict output_values) {
+                             base::span<const int32_t> nnz_shape,
+                             base::span<const T> nnz_values,
+                             base::span<const Tidx> outer_index,
+                             base::span<const Tidx> cols,
+                             base::span<const int32_t> bias_shape,
+                             base::span<const T> bias_values,
+                             base::span<T> output_values) {
   BENCHMARK_TIMER("SparseFullyConnectedCSR");
   const int32_t num_cols = input_shape[1];
   const auto in =
-      ConstMatrixMap<T>(input_values, input_shape[1], input_shape[0]);
-  const auto bias = ConstRowVectorMap<T>(bias_values, bias_shape[0]);
+      ConstMatrixMap<T>(input_values.data(), input_shape[1], input_shape[0]);
+  const auto bias = ConstRowVectorMap<T>(bias_values.data(), bias_shape[0]);
   const Eigen::Map<const SparseMatrix<T, Tidx>> weight(
-      num_rows, num_cols, nnz_shape[0], outer_index, cols, nnz_values);
-  auto result = MatrixMap<T>(output_values, num_rows, input_shape[0]);
+      num_rows, num_cols, nnz_shape[0], outer_index.data(), cols.data(),
+      nnz_values.data());
+  auto result = MatrixMap<T>(output_values.data(), num_rows, input_shape[0]);
   result.noalias() = (weight * in).colwise() + bias;
 }
 #endif
 
 template <typename T, typename TIndex>
 void Gather(int32_t params_rank,
-            const int32_t* __restrict params_shape,
-            const T* __restrict params_values,
+            base::span<const int32_t> params_shape,
+            base::span<const T> params_values,
             int32_t indices_rank,
-            const int32_t* __restrict indices_shape,
-            const TIndex* __restrict indices_values,
-            T* __restrict output_values) {
+            base::span<const int32_t> indices_shape,
+            base::span<const TIndex> indices_values,
+            base::span<T> output_values) {
   BENCHMARK_TIMER("Gather");
   const int32_t num_indices = ShapeSize(indices_rank, indices_shape);
   const int32_t num_params = params_shape[0];
-  const int32_t slice_size = ShapeSize(params_rank - 1, params_shape + 1);
+  const size_t slice_size = base::checked_cast<size_t>(
+      ShapeSize(params_rank - 1, params_shape.subspan(1u)));
   for (int32_t i = 0; i < num_indices; ++i) {
     const int32_t index = indices_values[i];
     if (index < 0 || index >= num_params) {
-      std::fill(output_values, output_values + slice_size, 0);
+      std::ranges::fill(output_values.first(slice_size), 0);
     } else {
-      std::copy(params_values + index * slice_size,
-                params_values + index * slice_size + slice_size, output_values);
+      output_values.copy_prefix_from(params_values.subspan(
+          base::checked_cast<size_t>(index) * slice_size, slice_size));
     }
-    output_values += slice_size;
+    output_values = output_values.subspan(slice_size);
   }
 }
 
 template <typename T>
-void Im2Row(const int32_t* __restrict input_shape,
-            const T* __restrict input_values,
-            const int32_t* __restrict kernel_shape,
+void Im2Row(base::span<const int32_t> input_shape,
+            base::span<const T> input_values,
+            base::span<const int32_t> kernel_shape,
             int32_t stride_y,
             int32_t stride_x,
             int32_t out_height,
             int32_t out_width,
-            T* __restrict output_values) {
+            base::span<T> output_values) {
   BENCHMARK_TIMER("Im2Row");
   // Give the shape values nicer names.
   assert(input_shape[3] == kernel_shape[2]);
@@ -628,36 +643,38 @@ void Im2Row(const int32_t* __restrict input_shape,
         // Padding top.
         if (kernel_y_start != 0) {
           const int32_t num_lines = kernel_y_start;
-          const int32_t num_coeffs = num_lines * kernel_width * in_depth;
+          const size_t num_coeffs =
+              base::checked_cast<size_t>(num_lines * kernel_width * in_depth);
 #if USE_TYPED_MEMSETMEMCPY
-          std::fill(output_values, output_values + num_coeffs, 0);
+          std::ranges::fill(output_values.first(num_coeffs), 0);
 #else
-          std::memset(output_values, 0, num_coeffs * sizeof(T));
+          std::memset(output_values.data(), 0, num_coeffs * sizeof(T));
 #endif
-          output_values += num_coeffs;
+          output_values = output_values.subspan(num_coeffs);
         }
         for (int32_t k_y = kernel_y_start; k_y < kernel_y_end; ++k_y) {
           // Padding left.
           if (kernel_x_start != 0) {
-            const int32_t num_coeffs = kernel_x_start * in_depth;
+            const size_t num_coeffs =
+                base::checked_cast<size_t>(kernel_x_start * in_depth);
 #if USE_TYPED_MEMSETMEMCPY
-            std::fill(output_values, output_values + num_coeffs, 0);
+            std::ranges::fill(output_values.first(num_coeffs), 0);
 #else
-            std::memset(output_values, 0, num_coeffs * sizeof(T));
+            std::memset(output_values.data(), 0, num_coeffs * sizeof(T));
 #endif
-            output_values += num_coeffs;
+            output_values = output_values.subspan(num_coeffs);
           }
           // Valid values.
           {
             const int32_t in_y = in_y_origin + k_y;
             const int32_t in_x = in_x_origin + kernel_x_start;
-            const int32_t num_coeffs =
-                (kernel_x_end - kernel_x_start) * in_depth;
+            const size_t num_coeffs = base::checked_cast<size_t>(
+                (kernel_x_end - kernel_x_start) * in_depth);
 #if USE_TYPED_MEMSETMEMCPY
             const int32_t offset =
                 batch * batch_stride + in_y * y_stride + in_x * x_stride;
-            std::copy(input_values + offset, input_values + offset + num_coeffs,
-                      output_values);
+            output_values.copy_prefix_from(input_values.subspan(
+                base::checked_cast<size_t>(offset), num_coeffs));
 #else
             std::memcpy(output_values,
                         input_values  // Reusing the restricted pointer.
@@ -666,29 +683,31 @@ void Im2Row(const int32_t* __restrict input_shape,
                             + in_x * x_stride,      // x
                         num_coeffs * sizeof(T));
 #endif
-            output_values += num_coeffs;
+            output_values = output_values.subspan(num_coeffs);
           }
           // Padding right.
           if (kernel_x_end != kernel_width) {
-            const int32_t num_coeffs = (kernel_width - kernel_x_end) * in_depth;
+            const size_t num_coeffs = base::checked_cast<size_t>(
+                (kernel_width - kernel_x_end) * in_depth);
 #if USE_TYPED_MEMSETMEMCPY
-            std::fill(output_values, output_values + num_coeffs, 0);
+            std::ranges::fill(output_values.first(num_coeffs), 0);
 #else
             std::memset(output_values, 0, num_coeffs * sizeof(T));
 #endif
-            output_values += num_coeffs;
+            output_values = output_values.subspan(num_coeffs);
           }
         }
         // Padding bottom.
         if (kernel_y_end != kernel_height) {
           const int32_t num_lines = kernel_height - kernel_y_end;
-          const int32_t num_coeffs = num_lines * kernel_width * in_depth;
+          const size_t num_coeffs =
+              base::checked_cast<size_t>(num_lines * kernel_width * in_depth);
 #if USE_TYPED_MEMSETMEMCPY
-          std::fill(output_values, output_values + num_coeffs, 0);
+          std::ranges::fill(output_values.first(num_coeffs), 0);
 #else
-          std::memset(output_values, 0, num_coeffs * sizeof(T));
+          std::memset(output_values.data(), 0, num_coeffs * sizeof(T));
 #endif
-          output_values += num_coeffs;
+          output_values = output_values.subspan(num_coeffs);
         }
       }
     }
@@ -696,12 +715,12 @@ void Im2Row(const int32_t* __restrict input_shape,
 }
 
 template <typename T>
-void Im2RowVALID(const int32_t* __restrict input_shape,
-                 const T* __restrict input_values,
-                 const int32_t* __restrict kernel_shape,
+void Im2RowVALID(base::span<const int32_t> input_shape,
+                 base::span<const T> input_values,
+                 base::span<const int32_t> kernel_shape,
                  int32_t stride_y,
                  int32_t stride_x,
-                 T* __restrict output_values) {
+                 base::span<T> output_values) {
   const auto out_size =
       GetConvOutputSizeVALID(input_shape, kernel_shape, stride_y, stride_x);
   Im2Row<T>(input_shape, input_values, kernel_shape, stride_y, stride_x,
@@ -709,12 +728,12 @@ void Im2RowVALID(const int32_t* __restrict input_shape,
 }
 
 template <typename T>
-void Im2RowSAME(const int32_t* __restrict input_shape,
-                const T* __restrict input_values,
-                const int32_t* __restrict kernel_shape,
+void Im2RowSAME(base::span<const int32_t> input_shape,
+                base::span<const T> input_values,
+                base::span<const int32_t> kernel_shape,
                 int32_t stride_y,
                 int32_t stride_x,
-                T* __restrict output_values) {
+                base::span<T> output_values) {
   const auto out_size = GetConvOutputSizeSAME(input_shape, stride_y, stride_x);
   Im2Row<T>(input_shape, input_values, kernel_shape, stride_y, stride_x,
             std::get<0>(out_size), std::get<1>(out_size), output_values);
@@ -724,11 +743,11 @@ void Im2RowSAME(const int32_t* __restrict input_shape,
 // because it's a lot less verbose and easier for the compiler to optimize.
 #define POOL_OP(OP_NAME, DEFAULT_VALUE, UPDATE_EXPR, RESULT_EXPR)              \
   template <typename T>                                                        \
-  void OP_NAME##Pool(const int32_t* __restrict input_shape,                    \
-                     const T* __restrict input_values, int32_t stride_y,       \
+  void OP_NAME##Pool(base::span<const int32_t> input_shape,                    \
+                     base::span<const T> input_values, int32_t stride_y,       \
                      int32_t stride_x, int32_t kernel_height,                  \
                      int32_t kernel_width, int32_t out_height,                 \
-                     int32_t out_width, T* __restrict output_values) {         \
+                     int32_t out_width, base::span<T> output_values) {         \
     BENCHMARK_TIMER(#OP_NAME, "Pool");                                         \
     const int32_t batch_size = input_shape[0];                                 \
     const int32_t in_height = input_shape[1];                                  \
@@ -747,7 +766,7 @@ void Im2RowSAME(const int32_t* __restrict input_shape,
         1,                                                                     \
     };                                                                         \
                                                                                \
-    T* out_write_ptr = output_values;                                          \
+    auto out_write_iter = output_values.begin();                               \
     for (int32_t batch = 0; batch < batch_size; ++batch) {                     \
       for (int32_t out_y = 0; out_y < out_height; ++out_y) {                   \
         for (int32_t out_x = 0; out_x < out_width; ++out_x) {                  \
@@ -765,7 +784,7 @@ void Im2RowSAME(const int32_t* __restrict input_shape,
                                 (kernel_x_end - kernel_x_start);               \
           (void)sizeof(count);                                                 \
                                                                                \
-          for (int32_t chan = 0; chan < depth; ++chan, ++out_write_ptr) {      \
+          for (int32_t chan = 0; chan < depth; ++chan, ++out_write_iter) {     \
             T value = DEFAULT_VALUE;                                           \
             for (int32_t k_y = kernel_y_start; k_y < kernel_y_end; ++k_y) {    \
               const int32_t in_y = in_y_origin + k_y;                          \
@@ -779,7 +798,7 @@ void Im2RowSAME(const int32_t* __restrict input_shape,
                 value = UPDATE_EXPR;                                           \
               }                                                                \
             }                                                                  \
-            *out_write_ptr = RESULT_EXPR;                                      \
+            *out_write_iter = RESULT_EXPR;                                     \
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -787,10 +806,10 @@ void Im2RowSAME(const int32_t* __restrict input_shape,
   }                                                                            \
                                                                                \
   template <typename T>                                                        \
-  void OP_NAME##PoolVALID(const int32_t* __restrict input_shape,               \
-                          const T* __restrict input_values, int32_t stride_y,  \
+  void OP_NAME##PoolVALID(base::span<const int32_t> input_shape,               \
+                          base::span<const T> input_values, int32_t stride_y,  \
                           int32_t stride_x, int32_t kernel_height,             \
-                          int32_t kernel_width, T* __restrict output_values) { \
+                          int32_t kernel_width, base::span<T> output_values) { \
     const int32_t kernel_shape[4] = {kernel_height, kernel_width, 1, 1};       \
     const auto out_size =                                                      \
         GetConvOutputSizeVALID(input_shape, kernel_shape, stride_y, stride_x); \
@@ -800,10 +819,10 @@ void Im2RowSAME(const int32_t* __restrict input_shape,
   }                                                                            \
                                                                                \
   template <typename T>                                                        \
-  void OP_NAME##PoolSAME(const int32_t* __restrict input_shape,                \
-                         const T* __restrict input_values, int32_t stride_y,   \
+  void OP_NAME##PoolSAME(base::span<const int32_t> input_shape,                \
+                         base::span<const T> input_values, int32_t stride_y,   \
                          int32_t stride_x, int32_t kernel_height,              \
-                         int32_t kernel_width, T* __restrict output_values) {  \
+                         int32_t kernel_width, base::span<T> output_values) {  \
     const auto out_size =                                                      \
         GetConvOutputSizeSAME(input_shape, stride_y, stride_x);                \
     OP_NAME##Pool<T>(input_shape, input_values, stride_y, stride_x,            \
@@ -816,9 +835,9 @@ POOL_OP(Avg, 0, value + next, value / count)
 
 template <typename T>
 void Memcpy(const int32_t rank,
-            const int32_t* __restrict input_shape,
-            const T* __restrict input_values,
-            T* __restrict output_values) {
+            base::span<const int32_t> input_shape,
+            base::span<const T> input_values,
+            base::span<T> output_values) {
   BENCHMARK_TIMER("Memcpy");
   const int32_t size = ShapeSize(rank, input_shape);
   for (int32_t i = 0; i < size; ++i) {
@@ -828,11 +847,11 @@ void Memcpy(const int32_t rank,
 
 template <typename T>
 void Softmax(const int32_t rank,
-             const int32_t* __restrict input_shape,
-             const T* __restrict input_values,
+             base::span<const int32_t> input_shape,
+             base::span<const T> input_values,
              const int32_t reduce_dim,
-             T* __restrict output_values,
-             T* __restrict scratch_values) {
+             base::span<T> output_values,
+             base::span<T> scratch_values) {
   BENCHMARK_TIMER("Softmax");
   const int32_t size = ShapeSize(rank, input_shape);
   if (rank == 2 && reduce_dim == 1) {
@@ -868,9 +887,9 @@ void Softmax(const int32_t rank,
 // Returns the start position for a slice in a single dimension.
 template <typename T>
 int32_t StridedSliceBegin(int32_t range_mask,
-                          const T* __restrict range_values,
-                          const T* __restrict strides,
-                          const int32_t* __restrict input_shape,
+                          base::span<const T> range_values,
+                          base::span<const T> strides,
+                          base::span<const int32_t> input_shape,
                           int32_t dim) {
   const bool is_explicit = 0 == (range_mask & (1 << dim));
   if (is_explicit) {
@@ -885,9 +904,9 @@ int32_t StridedSliceBegin(int32_t range_mask,
 // Returns the end position for a slice in a single dimension.
 template <typename T>
 int32_t StridedSliceEnd(int32_t range_mask,
-                        const T* __restrict range_values,
-                        const T* __restrict strides,
-                        const int32_t* __restrict input_shape,
+                        base::span<const T> range_values,
+                        base::span<const T> strides,
+                        base::span<const int32_t> input_shape,
                         int32_t dim) {
   const bool is_explicit = 0 == (range_mask & (1 << dim));
   if (is_explicit) {
@@ -901,14 +920,14 @@ int32_t StridedSliceEnd(int32_t range_mask,
 
 template <typename T, typename TIdx>
 void StridedSlice(const int32_t input_rank,
-                  const int32_t* __restrict input_shape,
-                  const T* __restrict input_values,
-                  const TIdx* __restrict begin,
-                  const TIdx* __restrict end,
-                  const TIdx* __restrict strides,
+                  base::span<const int32_t> input_shape,
+                  base::span<const T> input_values,
+                  base::span<const TIdx> begin,
+                  base::span<const TIdx> end,
+                  base::span<const TIdx> strides,
                   int32_t begin_mask,
                   int32_t end_mask,
-                  T* __restrict output_values) {
+                  base::span<T> output_values) {
   BENCHMARK_TIMER("StridedSlice");
   const int32_t MAX_RANK = 8;
   assert(input_rank < MAX_RANK);
@@ -969,13 +988,15 @@ void StridedSlice(const int32_t input_rank,
     }
 
 #if USE_TYPED_MEMSETMEMCPY
-    std::copy(input_values + read_offset,
-              input_values + read_offset + block_size, output_values);
+    output_values.copy_prefix_from(
+        input_values.subspan(base::checked_cast<size_t>(read_offset),
+                             base::checked_cast<size_t>(block_size)));
 #else
-    std::memcpy(output_values, input_values + read_offset,
+    std::memcpy(output_values.data(), input_values + read_offset,
                 block_size * sizeof(T));
 #endif
-    output_values += block_size;
+    output_values =
+        output_values.subspan(base::checked_cast<size_t>(block_size));
 
     // Advance the read position.
     for (int32_t dim = last_sliced_dim; dim >= 0; --dim) {
@@ -988,10 +1009,10 @@ void StridedSlice(const int32_t input_rank,
 }
 
 template <typename T>
-void TransposeRank3(const int32_t* __restrict input_shape,
-                    const T* __restrict input_values,
-                    const int32_t* __restrict perm,
-                    T* __restrict output_values) {
+void TransposeRank3(base::span<const int32_t> input_shape,
+                    base::span<const T> input_values,
+                    base::span<const int32_t> perm,
+                    base::span<T> output_values) {
   BENCHMARK_TIMER("TransposeRank3");
   const std::array<int32_t, 3> in_strides = {
       input_shape[1] * input_shape[2],
@@ -1017,10 +1038,10 @@ void TransposeRank3(const int32_t* __restrict input_shape,
 }
 
 template <typename T>
-void TransposeRank4(const int32_t* __restrict input_shape,
-                    const T* __restrict input_values,
-                    const int32_t* __restrict perm,
-                    T* __restrict output_values) {
+void TransposeRank4(base::span<const int32_t> input_shape,
+                    base::span<const T> input_values,
+                    base::span<const int32_t> perm,
+                    base::span<T> output_values) {
   BENCHMARK_TIMER("TransposeRank4");
   const std::array<int32_t, 4> in_strides = {
       input_shape[1] * input_shape[2] * input_shape[3],
@@ -1051,13 +1072,13 @@ void TransposeRank4(const int32_t* __restrict input_shape,
 
 template <typename T, typename TIdx, typename TDepth>
 void OneHot(const int32_t input_rank,
-            const int32_t* __restrict input_shape,
-            const TIdx* __restrict input_values,
-            const TDepth* __restrict depth,
-            const T* __restrict on_value,
-            const T* __restrict off_value,
+            base::span<const int32_t> input_shape,
+            base::span<const TIdx> input_values,
+            const TDepth* depth,
+            const T* on_value,
+            const T* off_value,
             const int32_t axis,
-            T* __restrict output_values) {
+            base::span<T> output_values) {
   BENCHMARK_TIMER("OneHot");
   const int32_t num_elements = ShapeSize(input_rank, input_shape);
   // We can assume axis >= 0 in this implementation.
@@ -1078,12 +1099,12 @@ void OneHot(const int32_t input_rank,
 
 template <typename T, typename TIdx, typename TDepth>
 void OneHotLastDim(const int32_t input_rank,
-                   const int32_t* __restrict input_shape,
-                   const TIdx* __restrict input_values,
+                   base::span<const int32_t> input_shape,
+                   base::span<const TIdx> input_values,
                    const TDepth* __restrict depth,
                    const T* __restrict on_value,
                    const T* __restrict off_value,
-                   T* __restrict output_values) {
+                   base::span<T> output_values) {
   BENCHMARK_TIMER("OneHotLastDim");
   const int32_t num_elements = ShapeSize(input_rank, input_shape);
   int32_t write_offset = 0;
@@ -1104,25 +1125,25 @@ void OneHotLastDim(const int32_t input_rank,
 
 #if USE_EIGEN
 
-#define SIMPLE_UNARY_OP(OP_NAME, _, EXPR_EIGEN)                           \
-  template <typename T>                                                   \
-  void OP_NAME(const int32_t rank, const int32_t* __restrict input_shape, \
-               const T* __restrict input_values,                          \
-               T* __restrict output_values) {                             \
-    BENCHMARK_TIMER(#OP_NAME);                                            \
-    const int32_t size = ShapeSize(rank, input_shape);                    \
-    auto values = ConstRowVectorMap<T>(input_values, size).array();       \
-    auto output = RowVectorMap<T>(output_values, size).array();           \
-    output = EXPR_EIGEN;                                                  \
+#define SIMPLE_UNARY_OP(OP_NAME, _, EXPR_EIGEN)                            \
+  template <typename T>                                                    \
+  void OP_NAME(const int32_t rank, base::span<const int32_t> input_shape,  \
+               base::span<const T> input_values,                           \
+               base::span<T> output_values) {                              \
+    BENCHMARK_TIMER(#OP_NAME);                                             \
+    const int32_t size = ShapeSize(rank, input_shape);                     \
+    auto values = ConstRowVectorMap<T>(input_values.data(), size).array(); \
+    auto output = RowVectorMap<T>(output_values.data(), size).array();     \
+    output = EXPR_EIGEN;                                                   \
   }
 
 #else
 
 #define SIMPLE_UNARY_OP(OP_NAME, EXPR, _)                                 \
   template <typename T>                                                   \
-  void OP_NAME(const int32_t rank, const int32_t* __restrict input_shape, \
-               const T* __restrict input_values,                          \
-               T* __restrict output_values) {                             \
+  void OP_NAME(const int32_t rank, base::span<const int32_t> input_shape, \
+               base::span<const T> input_values,                          \
+               base::span<T> output_values) {                             \
     BENCHMARK_TIMER(#OP_NAME);                                            \
     const int32_t size = ShapeSize(rank, input_shape);                    \
     for (int32_t i = 0; i < size; ++i) {                                  \
@@ -1177,19 +1198,19 @@ SIMPLE_UNARY_OP(Tanh, std::tanh(value), values.tanh())
 
 template <typename T, typename OP>
 void OpNoBroadcast(const int32_t left_rank,
-                   const int32_t* __restrict left_shape,
-                   const T* __restrict left_values,
+                   base::span<const int32_t> left_shape,
+                   base::span<const T> left_values,
                    const int32_t right_rank,
-                   const int32_t* __restrict right_shape,
-                   const T* __restrict right_values,
-                   T* __restrict output_values,
+                   base::span<const int32_t> right_shape,
+                   base::span<const T> right_values,
+                   base::span<T> output_values,
                    OP op) {
   BENCHMARK_TIMER(op.name, "NoBroadcast");
   const int32_t size = ShapeSize(left_rank, left_shape);
 #if USE_EIGEN
-  auto lhs = ConstRowVectorMap<T>(left_values, size).array();
-  auto rhs = ConstRowVectorMap<T>(right_values, size).array();
-  auto output = RowVectorMap<T>(output_values, size).array();
+  auto lhs = ConstRowVectorMap<T>(left_values.data(), size).array();
+  auto rhs = ConstRowVectorMap<T>(right_values.data(), size).array();
+  auto output = RowVectorMap<T>(output_values.data(), size).array();
   op.apply(lhs, rhs, output);
 #else
   for (int32_t i = 0; i < size; ++i) {
@@ -1200,12 +1221,12 @@ void OpNoBroadcast(const int32_t left_rank,
 
 template <typename T, typename OP>
 void OpInnerBroadcast(int32_t left_rank,
-                      const int32_t* __restrict left_shape,
-                      const T* __restrict left_values,
+                      base::span<const int32_t> left_shape,
+                      base::span<const T> left_values,
                       int32_t right_rank,
-                      const int32_t* __restrict right_shape,
-                      const T* __restrict right_values,
-                      T* __restrict output_values,
+                      base::span<const int32_t> right_shape,
+                      base::span<const T> right_values,
+                      base::span<T> output_values,
                       OP op) {
   BENCHMARK_TIMER(op.name, "InnerBroadcast");
   const int32_t output_size = ShapeSize(left_rank, left_shape);
@@ -1214,13 +1235,13 @@ void OpInnerBroadcast(int32_t left_rank,
 #if USE_EIGEN
   if (inner_size == 1) {
     // Apply the same value to all elements.
-    auto left = ConstMatrixMap<T>(left_values, inner_size, outer_size);
-    auto output = MatrixMap<T>(output_values, inner_size, outer_size);
+    auto left = ConstMatrixMap<T>(left_values.data(), inner_size, outer_size);
+    auto output = MatrixMap<T>(output_values.data(), inner_size, outer_size);
     op.apply(left.array(), right_values[0], output.array());
   } else {
-    auto left = ConstMatrixMap<T>(left_values, inner_size, outer_size);
-    auto right = ConstRowVectorMap<T>(right_values, inner_size);
-    auto output = MatrixMap<T>(output_values, inner_size, outer_size);
+    auto left = ConstMatrixMap<T>(left_values.data(), inner_size, outer_size);
+    auto right = ConstRowVectorMap<T>(right_values.data(), inner_size);
+    auto output = MatrixMap<T>(output_values.data(), inner_size, outer_size);
     for (int32_t col = 0; col < outer_size; col++) {
       op.apply(left.col(col).array(), right.array(), output.col(col).array());
     }
@@ -1243,7 +1264,7 @@ void OpInnerBroadcast(int32_t left_rank,
 // 0].
 inline bool IncrementIndices(int32_t rank,
                              base::span<const int32_t> shape,
-                             int32_t* indices) {
+                             base::span<int32_t> indices) {
   int32_t i = rank - 1;
   while (i >= 0 && indices[i] == shape[i] - 1) {
     --i;
@@ -1262,7 +1283,7 @@ inline bool IncrementIndices(int32_t rank,
 // E.g. if the shape is (2, 3) and indices are [1, 2] the offset is 1*3 + 2.
 inline int32_t Offset(int32_t rank,
                       base::span<const int32_t> shape,
-                      const int32_t* indices) {
+                      base::span<const int32_t> indices) {
   int32_t offset = 0;
   int32_t mul = 1;
   for (int32_t i = rank - 1; i >= 0; --i) {
@@ -1279,9 +1300,9 @@ inline int32_t Offset(int32_t rank,
 // indices_rank - input_rank indices are ignored.
 // E.g. if the input_shape is (4) and indices are [2, 3, 1] the offset is 1.
 inline int32_t BroadcastOffset(int32_t input_rank,
-                               const int32_t* input_shape,
+                               base::span<const int32_t> input_shape,
                                int32_t indices_rank,
-                               const int32_t* indices) {
+                               base::span<const int32_t> indices) {
   int32_t offset = 0;
   int32_t mul = 1;
   for (int32_t i = input_rank - 1; i >= 0; --i) {
@@ -1295,12 +1316,12 @@ inline int32_t BroadcastOffset(int32_t input_rank,
 
 template <typename T, typename OP>
 void OpGenericBroadcast(int32_t left_rank,
-                        const int32_t* __restrict left_shape,
-                        const T* __restrict left_values,
+                        base::span<const int32_t> left_shape,
+                        base::span<const T> left_values,
                         int32_t right_rank,
-                        const int32_t* __restrict right_shape,
-                        const T* __restrict right_values,
-                        T* __restrict output_values,
+                        base::span<const int32_t> right_shape,
+                        base::span<const T> right_values,
+                        base::span<T> output_values,
                         OP op) {
   BENCHMARK_TIMER(op.name, "GenericBroadcast");
   const int32_t output_rank = std::max(left_rank, right_rank);
@@ -1329,7 +1350,9 @@ void OpGenericBroadcast(int32_t left_rank,
   template <typename T>                                                        \
   struct Op##OP_NAME {                                                         \
     const char* name = #OP_NAME;                                               \
-    T operator()(const T lhs, const T rhs) { return EXPR; }                    \
+    T operator()(const T lhs, const T rhs) {                                   \
+      return EXPR;                                                             \
+    }                                                                          \
     template <typename X, typename Y, typename Z>                              \
     void apply(const X& lhs, const Y& rhs, Z out) {                            \
       out = EXPR_EIGEN;                                                        \
@@ -1337,29 +1360,29 @@ void OpGenericBroadcast(int32_t left_rank,
   };                                                                           \
   template <typename T>                                                        \
   void OP_NAME##NoBroadcast(                                                   \
-      const int32_t left_rank, const int32_t* __restrict left_shape,           \
-      const T* __restrict left_values, const int32_t right_rank,               \
-      const int32_t* __restrict right_shape, const T* __restrict right_values, \
-      T* __restrict output_values) {                                           \
+      const int32_t left_rank, base::span<const int32_t> left_shape,           \
+      base::span<const T> left_values, const int32_t right_rank,               \
+      base::span<const int32_t> right_shape, base::span<const T> right_values, \
+      base::span<T> output_values) {                                           \
     OpNoBroadcast(left_rank, left_shape, left_values, right_rank, right_shape, \
                   right_values, output_values, Op##OP_NAME<T>());              \
   }                                                                            \
   template <typename T>                                                        \
   void OP_NAME##InnerBroadcast(                                                \
-      const int32_t left_rank, const int32_t* __restrict left_shape,           \
-      const T* __restrict left_values, const int32_t right_rank,               \
-      const int32_t* __restrict right_shape, const T* __restrict right_values, \
-      T* __restrict output_values) {                                           \
+      const int32_t left_rank, base::span<const int32_t> left_shape,           \
+      base::span<const T> left_values, const int32_t right_rank,               \
+      base::span<const int32_t> right_shape, base::span<const T> right_values, \
+      base::span<T> output_values) {                                           \
     OpInnerBroadcast(left_rank, left_shape, left_values, right_rank,           \
                      right_shape, right_values, output_values,                 \
                      Op##OP_NAME<T>());                                        \
   }                                                                            \
   template <typename T>                                                        \
-  void OP_NAME(const int32_t left_rank, const int32_t* __restrict left_shape,  \
-               const T* __restrict left_values, const int32_t right_rank,      \
-               const int32_t* __restrict right_shape,                          \
-               const T* __restrict right_values,                               \
-               T* __restrict output_values) {                                  \
+  void OP_NAME(const int32_t left_rank, base::span<const int32_t> left_shape,  \
+               base::span<const T> left_values, const int32_t right_rank,      \
+               base::span<const int32_t> right_shape,                          \
+               base::span<const T> right_values,                               \
+               base::span<T> output_values) {                                  \
     OpGenericBroadcast(left_rank, left_shape, left_values, right_rank,         \
                        right_shape, right_values, output_values,               \
                        Op##OP_NAME<T>());                                      \
@@ -1382,212 +1405,218 @@ BROADCAST_BINARY_OP(SquaredDifference,
 
 // We use macros instead of template functions with templated functors here
 // because it's a lot less verbose and easier for the compiler to optimize.
-#define REDUCE_OP(OP_NAME, DEFAULT_VALUE, UPDATE_EXPR, RESULT_EXPR)           \
-  template <typename T, typename Tidx>                                        \
-  void OP_NAME##InnerReduce(                                                  \
-      int32_t input_rank, const int32_t* __restrict input_shape,              \
-      const T* __restrict input_values, int32_t index_tensor_rank,            \
-      const int32_t* __restrict index_shape,                                  \
-      const Tidx* __restrict index_values, T* __restrict output_values) {     \
-    BENCHMARK_TIMER(#OP_NAME, "InnerReduce");                                 \
-    const int32_t inner_size =                                                \
-        GetReduceInnerSize(input_rank, input_shape, index_tensor_rank,        \
-                           index_shape, index_values);                        \
-    const int32_t input_size = ShapeSize(input_rank, input_shape);            \
-    const int32_t outer_size = input_size / inner_size;                       \
-    for (int32_t idx_out = 0; idx_out < outer_size; ++idx_out) {              \
-      T value = DEFAULT_VALUE;                                                \
-      for (int32_t idx_in = 0; idx_in < inner_size; ++idx_in) {               \
-        const T prev = value;                                                 \
-        const T next = input_values[idx_out * inner_size + idx_in];           \
-        value = UPDATE_EXPR;                                                  \
-      }                                                                       \
-      const T count = inner_size;                                             \
-      /* Used by mean reduce. */                                              \
-      (void)sizeof(count);                                                    \
-      output_values[idx_out] = RESULT_EXPR;                                   \
-    }                                                                         \
-  }                                                                           \
-  template <typename T, typename Tidx>                                        \
-  void OP_NAME##GenericReduceRank2(                                           \
-      int32_t input_rank, const int32_t* __restrict input_shape,              \
-      const T* __restrict input_values, int32_t index_tensor_rank,            \
-      const int32_t* __restrict index_shape,                                  \
-      const Tidx* __restrict index_values, T* __restrict output_values) {     \
-    assert(input_rank == 2);                                                  \
-    assert(index_tensor_rank <= 1);                                           \
-    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank2");                          \
-    const int32_t output_size = input_shape[1];                               \
-    std::fill_n(output_values, output_size, DEFAULT_VALUE);                   \
-    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                   \
-      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1, ++input_values) { \
-        T* out_ptr = output_values + dim1;                                    \
-        const T prev = *out_ptr;                                              \
-        const T next = *input_values;                                         \
-        *out_ptr = UPDATE_EXPR;                                               \
-      }                                                                       \
-    }                                                                         \
-    const T count = input_shape[0];                                           \
-    /* Used by mean reduce. */                                                \
-    (void)sizeof(count);                                                      \
-    for (int32_t i = 0; i < output_size; ++i) {                               \
-      const T value = output_values[i];                                       \
-      output_values[i] = RESULT_EXPR;                                         \
-    }                                                                         \
-  }                                                                           \
-  template <typename T, typename Tidx>                                        \
-  void OP_NAME##GenericReduceRank3(                                           \
-      int32_t input_rank, const int32_t* __restrict input_shape,              \
-      const T* __restrict input_values, int32_t index_tensor_rank,            \
-      const int32_t* __restrict index_shape,                                  \
-      const Tidx* __restrict index_values, T* __restrict output_values) {     \
-    assert(input_rank == 3);                                                  \
-    assert(index_tensor_rank <= 1);                                           \
-    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank3");                          \
-    int32_t out_shape[3] = {input_shape[0], input_shape[1], input_shape[2]};  \
-    bool reduce_mask[3] = {false, false, false};                              \
-    const int32_t num_indices = index_tensor_rank > 0 ? index_shape[0] : 1;   \
-    for (int32_t i = 0; i < num_indices; ++i) {                               \
-      reduce_mask[index_values[i]] = true;                                    \
-      out_shape[index_values[i]] = 1;                                         \
-    }                                                                         \
-    const int32_t out_strides[3] = {                                          \
-        reduce_mask[0] ? 0 : out_shape[1] * out_shape[2],                     \
-        reduce_mask[1] ? 0 : out_shape[2],                                    \
-        reduce_mask[2] ? 0 : 1,                                               \
-    };                                                                        \
-    const int32_t output_size = ShapeSize(input_rank, out_shape);             \
-    std::fill_n(output_values, output_size, DEFAULT_VALUE);                   \
-    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                   \
-      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1) {                 \
-        for (int32_t dim2 = 0; dim2 < input_shape[2];                         \
-             ++dim2, ++input_values) {                                        \
-          T* out_ptr = output_values + out_strides[0] * dim0 +                \
-                       out_strides[1] * dim1 + out_strides[2] * dim2;         \
-          const T prev = *out_ptr;                                            \
-          const T next = *input_values;                                       \
-          *out_ptr = UPDATE_EXPR;                                             \
-        }                                                                     \
-      }                                                                       \
-    }                                                                         \
-    const T count = (reduce_mask[0] ? input_shape[0] : 1) *                   \
-                    (reduce_mask[1] ? input_shape[1] : 1) *                   \
-                    (reduce_mask[2] ? input_shape[2] : 1);                    \
-    /* Used by mean reduce. */                                                \
-    (void)sizeof(count);                                                      \
-    for (int32_t i = 0; i < output_size; ++i) {                               \
-      const T value = output_values[i];                                       \
-      output_values[i] = RESULT_EXPR;                                         \
-    }                                                                         \
-  }                                                                           \
-  template <typename T, typename Tidx>                                        \
-  void OP_NAME##GenericReduceRank4(                                           \
-      int32_t input_rank, const int32_t* __restrict input_shape,              \
-      const T* __restrict input_values, int32_t index_tensor_rank,            \
-      const int32_t* __restrict index_shape,                                  \
-      const Tidx* __restrict index_values, T* __restrict output_values) {     \
-    assert(input_rank == 4);                                                  \
-    assert(index_tensor_rank <= 1);                                           \
-    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank4");                          \
-    int32_t out_shape[4] = {input_shape[0], input_shape[1], input_shape[2],   \
-                            input_shape[3]};                                  \
-    bool reduce_mask[4] = {false, false, false, false};                       \
-    const int32_t num_indices = index_tensor_rank > 0 ? index_shape[0] : 1;   \
-    for (int32_t i = 0; i < num_indices; ++i) {                               \
-      reduce_mask[index_values[i]] = true;                                    \
-      out_shape[index_values[i]] = 1;                                         \
-    }                                                                         \
-    const int32_t out_strides[4] = {                                          \
-        reduce_mask[0] ? 0 : out_shape[1] * out_shape[2] * out_shape[3],      \
-        reduce_mask[1] ? 0 : out_shape[2] * out_shape[3],                     \
-        reduce_mask[2] ? 0 : out_shape[3],                                    \
-        reduce_mask[3] ? 0 : 1,                                               \
-    };                                                                        \
-    const int32_t output_size = ShapeSize(input_rank, out_shape);             \
-    std::fill_n(output_values, output_size, DEFAULT_VALUE);                   \
-    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                   \
-      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1) {                 \
-        for (int32_t dim2 = 0; dim2 < input_shape[2]; ++dim2) {               \
-          for (int32_t dim3 = 0; dim3 < input_shape[3];                       \
-               ++dim3, ++input_values) {                                      \
-            T* out_ptr = output_values + out_strides[0] * dim0 +              \
-                         out_strides[1] * dim1 + out_strides[2] * dim2 +      \
-                         out_strides[3] * dim3;                               \
-            const T prev = *out_ptr;                                          \
-            const T next = *input_values;                                     \
-            *out_ptr = UPDATE_EXPR;                                           \
-          }                                                                   \
-        }                                                                     \
-      }                                                                       \
-    }                                                                         \
-    const T count = (reduce_mask[0] ? input_shape[0] : 1) *                   \
-                    (reduce_mask[1] ? input_shape[1] : 1) *                   \
-                    (reduce_mask[2] ? input_shape[2] : 1) *                   \
-                    (reduce_mask[3] ? input_shape[3] : 1);                    \
-    /* Used by mean reduce. */                                                \
-    (void)sizeof(count);                                                      \
-    for (int32_t i = 0; i < output_size; ++i) {                               \
-      const T value = output_values[i];                                       \
-      output_values[i] = RESULT_EXPR;                                         \
-    }                                                                         \
-  }                                                                           \
-  template <typename T, typename Tidx>                                        \
-  void OP_NAME##GenericReduceRank5(                                           \
-      int32_t input_rank, const int32_t* __restrict input_shape,              \
-      const T* __restrict input_values, int32_t index_tensor_rank,            \
-      const int32_t* __restrict index_shape,                                  \
-      const Tidx* __restrict index_values, T* __restrict output_values) {     \
-    assert(input_rank == 5);                                                  \
-    assert(index_tensor_rank <= 1);                                           \
-    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank5");                          \
-    int32_t out_shape[5] = {input_shape[0], input_shape[1], input_shape[2],   \
-                            input_shape[3], input_shape[4]};                  \
-    /* If true, reduce the input across that dimension. */                    \
-    bool reduce_mask[5] = {false, false, false, false, false};                \
-    const int32_t num_indices = index_tensor_rank > 0 ? index_shape[0] : 1;   \
-    for (int32_t i = 0; i < num_indices; ++i) {                               \
-      reduce_mask[index_values[i]] = true;                                    \
-      out_shape[index_values[i]] = 1;                                         \
-    }                                                                         \
-    const int32_t out_strides[5] = {                                          \
-        reduce_mask[0]                                                        \
-            ? 0                                                               \
-            : out_shape[1] * out_shape[2] * out_shape[3] * out_shape[4],      \
-        reduce_mask[1] ? 0 : out_shape[2] * out_shape[3] * out_shape[4],      \
-        reduce_mask[2] ? 0 : out_shape[3] * out_shape[4],                     \
-        reduce_mask[3] ? 0 : out_shape[4],                                    \
-        reduce_mask[4] ? 0 : 1,                                               \
-    };                                                                        \
-    const int32_t output_size = ShapeSize(input_rank, out_shape);             \
-    std::fill_n(output_values, output_size, DEFAULT_VALUE);                   \
-    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                   \
-      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1) {                 \
-        for (int32_t dim2 = 0; dim2 < input_shape[2]; ++dim2) {               \
-          for (int32_t dim3 = 0; dim3 < input_shape[3]; ++dim3) {             \
-            for (int32_t dim4 = 0; dim4 < input_shape[4];                     \
-                 ++dim4, ++input_values) {                                    \
-              T* out_ptr = output_values + out_strides[0] * dim0 +            \
-                           out_strides[1] * dim1 + out_strides[2] * dim2 +    \
-                           out_strides[3] * dim3 + out_strides[4] * dim4;     \
-              const T prev = *out_ptr;                                        \
-              const T next = *input_values;                                   \
-              *out_ptr = UPDATE_EXPR;                                         \
-            }                                                                 \
-          }                                                                   \
-        }                                                                     \
-      }                                                                       \
-    }                                                                         \
-    const T count = (reduce_mask[0] ? input_shape[0] : 1) *                   \
-                    (reduce_mask[1] ? input_shape[1] : 1) *                   \
-                    (reduce_mask[2] ? input_shape[2] : 1) *                   \
-                    (reduce_mask[3] ? input_shape[3] : 1) *                   \
-                    (reduce_mask[4] ? input_shape[4] : 1);                    \
-    /* Used by mean reduce. */                                                \
-    (void)sizeof(count);                                                      \
-    for (int32_t i = 0; i < output_size; ++i) {                               \
-      const T value = output_values[i];                                       \
-      output_values[i] = RESULT_EXPR;                                         \
-    }                                                                         \
+#define REDUCE_OP(OP_NAME, DEFAULT_VALUE, UPDATE_EXPR, RESULT_EXPR)            \
+  template <typename T, typename Tidx>                                         \
+  void OP_NAME##InnerReduce(                                                   \
+      int32_t input_rank, base::span<const int32_t> input_shape,               \
+      base::span<const T> input_values, int32_t index_tensor_rank,             \
+      base::span<const int32_t> index_shape,                                   \
+      base::span<const Tidx> index_values, base::span<T> output_values) {      \
+    BENCHMARK_TIMER(#OP_NAME, "InnerReduce");                                  \
+    const int32_t inner_size =                                                 \
+        GetReduceInnerSize(input_rank, input_shape, index_tensor_rank,         \
+                           index_shape, index_values);                         \
+    const int32_t input_size = ShapeSize(input_rank, input_shape);             \
+    const int32_t outer_size = input_size / inner_size;                        \
+    for (int32_t idx_out = 0; idx_out < outer_size; ++idx_out) {               \
+      T value = DEFAULT_VALUE;                                                 \
+      for (int32_t idx_in = 0; idx_in < inner_size; ++idx_in) {                \
+        const T prev = value;                                                  \
+        const T next = input_values[idx_out * inner_size + idx_in];            \
+        value = UPDATE_EXPR;                                                   \
+      }                                                                        \
+      const T count = inner_size;                                              \
+      /* Used by mean reduce. */                                               \
+      (void)sizeof(count);                                                     \
+      output_values[idx_out] = RESULT_EXPR;                                    \
+    }                                                                          \
+  }                                                                            \
+  template <typename T, typename Tidx>                                         \
+  void OP_NAME##GenericReduceRank2(                                            \
+      int32_t input_rank, base::span<const int32_t> input_shape,               \
+      base::span<const T> input_values, int32_t index_tensor_rank,             \
+      base::span<const int32_t> index_shape,                                   \
+      base::span<const Tidx> index_values, base::span<T> output_values) {      \
+    assert(input_rank == 2);                                                   \
+    assert(index_tensor_rank <= 1);                                            \
+    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank2");                           \
+    const int32_t output_size = input_shape[1];                                \
+    std::ranges::fill(output_values, DEFAULT_VALUE);                           \
+    auto input_iter = input_values.begin();                                    \
+    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                    \
+      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1, ++input_iter) {    \
+        T* out_ptr = &output_values[dim1];                                     \
+        const T prev = *out_ptr;                                               \
+        const T next = *input_iter;                                            \
+        *out_ptr = UPDATE_EXPR;                                                \
+      }                                                                        \
+    }                                                                          \
+    const T count = input_shape[0];                                            \
+    /* Used by mean reduce. */                                                 \
+    (void)sizeof(count);                                                       \
+    for (int32_t i = 0; i < output_size; ++i) {                                \
+      const T value = output_values[i];                                        \
+      output_values[i] = RESULT_EXPR;                                          \
+    }                                                                          \
+  }                                                                            \
+  template <typename T, typename Tidx>                                         \
+  void OP_NAME##GenericReduceRank3(                                            \
+      int32_t input_rank, base::span<const int32_t> input_shape,               \
+      base::span<const T> input_values, int32_t index_tensor_rank,             \
+      base::span<const int32_t> index_shape,                                   \
+      base::span<const Tidx> index_values, base::span<T> output_values) {      \
+    assert(input_rank == 3);                                                   \
+    assert(index_tensor_rank <= 1);                                            \
+    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank3");                           \
+    int32_t out_shape[3] = {input_shape[0], input_shape[1], input_shape[2]};   \
+    bool reduce_mask[3] = {false, false, false};                               \
+    const int32_t num_indices = index_tensor_rank > 0 ? index_shape[0] : 1;    \
+    for (int32_t i = 0; i < num_indices; ++i) {                                \
+      reduce_mask[index_values[i]] = true;                                     \
+      out_shape[index_values[i]] = 1;                                          \
+    }                                                                          \
+    const int32_t out_strides[3] = {                                           \
+        reduce_mask[0] ? 0 : out_shape[1] * out_shape[2],                      \
+        reduce_mask[1] ? 0 : out_shape[2],                                     \
+        reduce_mask[2] ? 0 : 1,                                                \
+    };                                                                         \
+    const int32_t output_size = ShapeSize(input_rank, base::span(out_shape));  \
+    std::ranges::fill(output_values, DEFAULT_VALUE);                           \
+    auto input_iter = input_values.begin();                                    \
+    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                    \
+      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1) {                  \
+        for (int32_t dim2 = 0; dim2 < input_shape[2]; ++dim2, ++input_iter) {  \
+          T* out_ptr =                                                         \
+              &output_values[out_strides[0] * dim0 + out_strides[1] * dim1 +   \
+                             out_strides[2] * dim2];                           \
+          const T prev = *out_ptr;                                             \
+          const T next = *input_iter;                                          \
+          *out_ptr = UPDATE_EXPR;                                              \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+    const T count = (reduce_mask[0] ? input_shape[0] : 1) *                    \
+                    (reduce_mask[1] ? input_shape[1] : 1) *                    \
+                    (reduce_mask[2] ? input_shape[2] : 1);                     \
+    /* Used by mean reduce. */                                                 \
+    (void)sizeof(count);                                                       \
+    for (int32_t i = 0; i < output_size; ++i) {                                \
+      const T value = output_values[i];                                        \
+      output_values[i] = RESULT_EXPR;                                          \
+    }                                                                          \
+  }                                                                            \
+  template <typename T, typename Tidx>                                         \
+  void OP_NAME##GenericReduceRank4(                                            \
+      int32_t input_rank, base::span<const int32_t> input_shape,               \
+      base::span<const T> input_values, int32_t index_tensor_rank,             \
+      base::span<const int32_t> index_shape,                                   \
+      base::span<const Tidx> index_values, base::span<T> output_values) {      \
+    assert(input_rank == 4);                                                   \
+    assert(index_tensor_rank <= 1);                                            \
+    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank4");                           \
+    int32_t out_shape[4] = {input_shape[0], input_shape[1], input_shape[2],    \
+                            input_shape[3]};                                   \
+    bool reduce_mask[4] = {false, false, false, false};                        \
+    const int32_t num_indices = index_tensor_rank > 0 ? index_shape[0] : 1;    \
+    for (int32_t i = 0; i < num_indices; ++i) {                                \
+      reduce_mask[index_values[i]] = true;                                     \
+      out_shape[index_values[i]] = 1;                                          \
+    }                                                                          \
+    const int32_t out_strides[4] = {                                           \
+        reduce_mask[0] ? 0 : out_shape[1] * out_shape[2] * out_shape[3],       \
+        reduce_mask[1] ? 0 : out_shape[2] * out_shape[3],                      \
+        reduce_mask[2] ? 0 : out_shape[3],                                     \
+        reduce_mask[3] ? 0 : 1,                                                \
+    };                                                                         \
+    const int32_t output_size = ShapeSize(input_rank, base::span(out_shape));  \
+    std::ranges::fill(output_values, DEFAULT_VALUE);                           \
+    auto input_iter = input_values.begin();                                    \
+    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                    \
+      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1) {                  \
+        for (int32_t dim2 = 0; dim2 < input_shape[2]; ++dim2) {                \
+          for (int32_t dim3 = 0; dim3 < input_shape[3];                        \
+               ++dim3, ++input_iter) {                                         \
+            T* out_ptr =                                                       \
+                &output_values[out_strides[0] * dim0 + out_strides[1] * dim1 + \
+                               out_strides[2] * dim2 + out_strides[3] * dim3]; \
+            const T prev = *out_ptr;                                           \
+            const T next = *input_iter;                                        \
+            *out_ptr = UPDATE_EXPR;                                            \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+    const T count = (reduce_mask[0] ? input_shape[0] : 1) *                    \
+                    (reduce_mask[1] ? input_shape[1] : 1) *                    \
+                    (reduce_mask[2] ? input_shape[2] : 1) *                    \
+                    (reduce_mask[3] ? input_shape[3] : 1);                     \
+    /* Used by mean reduce. */                                                 \
+    (void)sizeof(count);                                                       \
+    for (int32_t i = 0; i < output_size; ++i) {                                \
+      const T value = output_values[i];                                        \
+      output_values[i] = RESULT_EXPR;                                          \
+    }                                                                          \
+  }                                                                            \
+  template <typename T, typename Tidx>                                         \
+  void OP_NAME##GenericReduceRank5(                                            \
+      int32_t input_rank, base::span<const int32_t> input_shape,               \
+      base::span<const T> input_values, int32_t index_tensor_rank,             \
+      base::span<const int32_t> index_shape,                                   \
+      base::span<const Tidx> index_values, base::span<T> output_values) {      \
+    assert(input_rank == 5);                                                   \
+    assert(index_tensor_rank <= 1);                                            \
+    BENCHMARK_TIMER(#OP_NAME, "GenericReduceRank5");                           \
+    int32_t out_shape[5] = {input_shape[0], input_shape[1], input_shape[2],    \
+                            input_shape[3], input_shape[4]};                   \
+    /* If true, reduce the input across that dimension. */                     \
+    bool reduce_mask[5] = {false, false, false, false, false};                 \
+    const int32_t num_indices = index_tensor_rank > 0 ? index_shape[0] : 1;    \
+    for (int32_t i = 0; i < num_indices; ++i) {                                \
+      reduce_mask[index_values[i]] = true;                                     \
+      out_shape[index_values[i]] = 1;                                          \
+    }                                                                          \
+    const int32_t out_strides[5] = {                                           \
+        reduce_mask[0]                                                         \
+            ? 0                                                                \
+            : out_shape[1] * out_shape[2] * out_shape[3] * out_shape[4],       \
+        reduce_mask[1] ? 0 : out_shape[2] * out_shape[3] * out_shape[4],       \
+        reduce_mask[2] ? 0 : out_shape[3] * out_shape[4],                      \
+        reduce_mask[3] ? 0 : out_shape[4],                                     \
+        reduce_mask[4] ? 0 : 1,                                                \
+    };                                                                         \
+    const int32_t output_size = ShapeSize(input_rank, base::span(out_shape));  \
+    std::ranges::fill(output_values, DEFAULT_VALUE);                           \
+    auto input_iter = input_values.begin();                                    \
+    for (int32_t dim0 = 0; dim0 < input_shape[0]; ++dim0) {                    \
+      for (int32_t dim1 = 0; dim1 < input_shape[1]; ++dim1) {                  \
+        for (int32_t dim2 = 0; dim2 < input_shape[2]; ++dim2) {                \
+          for (int32_t dim3 = 0; dim3 < input_shape[3]; ++dim3) {              \
+            for (int32_t dim4 = 0; dim4 < input_shape[4];                      \
+                 ++dim4, ++input_iter) {                                       \
+              T* out_ptr = &output_values[out_strides[0] * dim0 +              \
+                                          out_strides[1] * dim1 +              \
+                                          out_strides[2] * dim2 +              \
+                                          out_strides[3] * dim3 +              \
+                                          out_strides[4] * dim4];              \
+              const T prev = *out_ptr;                                         \
+              const T next = *input_iter;                                      \
+              *out_ptr = UPDATE_EXPR;                                          \
+            }                                                                  \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+    const T count = (reduce_mask[0] ? input_shape[0] : 1) *                    \
+                    (reduce_mask[1] ? input_shape[1] : 1) *                    \
+                    (reduce_mask[2] ? input_shape[2] : 1) *                    \
+                    (reduce_mask[3] ? input_shape[3] : 1) *                    \
+                    (reduce_mask[4] ? input_shape[4] : 1);                     \
+    /* Used by mean reduce. */                                                 \
+    (void)sizeof(count);                                                       \
+    for (int32_t i = 0; i < output_size; ++i) {                                \
+      const T value = output_values[i];                                        \
+      output_values[i] = RESULT_EXPR;                                          \
+    }                                                                          \
   }
 
 REDUCE_OP(Max, std::numeric_limits<T>::lowest(), std::max(prev, next), value)
@@ -1601,11 +1630,11 @@ REDUCE_OP(Mean, 0, prev + next, value / count)
 
 template <typename T>
 void DequantizeMinCombined(const int32_t rank,
-                           const int32_t* __restrict input_shape,
-                           const T* __restrict input_values,
-                           const float* __restrict min_range,
-                           const float* __restrict max_range,
-                           float* __restrict output_values) {
+                           base::span<const int32_t> input_shape,
+                           base::span<const T> input_values,
+                           base::span<const float> min_range,
+                           base::span<const float> max_range,
+                           base::span<float> output_values) {
   BENCHMARK_TIMER("DequantizeMinCombined");
   const int32_t size = ShapeSize(rank, input_shape);
   const float offset =
@@ -1626,11 +1655,11 @@ void DequantizeMinCombined(const int32_t rank,
 
 template <typename T>
 void DequantizeMinFirst(const int32_t rank,
-                        const int32_t* __restrict input_shape,
-                        const T* __restrict input_values,
-                        const float* __restrict min_range,
-                        const float* __restrict max_range,
-                        float* __restrict output_values) {
+                        base::span<const int32_t> input_shape,
+                        base::span<const T> input_values,
+                        base::span<const float> min_range,
+                        base::span<const float> max_range,
+                        base::span<float> output_values) {
   BENCHMARK_TIMER("DequantizeMinFirst");
   const int32_t size = ShapeSize(rank, input_shape);
   const float range_scale = (max_range[0] - min_range[0]) /
@@ -1654,21 +1683,21 @@ void DequantizeMinFirst(const int32_t rank,
 
 template <typename T>
 void AddN(const int32_t rank,
-          const int32_t* __restrict shape,
-          std::initializer_list<const T* __restrict> input_values,
-          T* __restrict output_values) {
+          base::span<const int32_t> shape,
+          std::initializer_list<base::span<const T>> input_values,
+          base::span<T> output_values) {
   BENCHMARK_TIMER("AddN");
   const int32_t size = ShapeSize(rank, shape);
 #if USE_EIGEN
-  auto output = RowVectorMap<T>(output_values, size).array();
-  std::fill_n(output_values, size, 0);
-  for (const auto input_value : input_values) {
-    output += ConstRowVectorMap<T>(input_value, size).array();
+  auto output = RowVectorMap<T>(output_values.data(), size).array();
+  std::ranges::fill(output_values, 0);
+  for (const auto& input_value : input_values) {
+    output += ConstRowVectorMap<T>(input_value.data(), size).array();
   }
 #else
   for (int32_t i = 0; i < size; ++i) {
     T output_value = 0;
-    for (auto input_value : input_values) {
+    for (const auto& input_value : input_values) {
       output_value += input_value[i];
     }
     output_values[i] = output_value;
@@ -3902,10 +3931,11 @@ int32_t input_from_feature_columns_input_layer_concat_concat0Shape[2] = {1,
 int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0Shape[2] = {1, 1};
 
 void Inference(
-    const float* __restrict input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,325 */
+    base::span<const float>
+        input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,325 */
     ,
-    float* __restrict logits_MatMul_merged_with_dnn_logits_BiasAdd0 /* shape:
-                                                                       1,1 */
+    base::span<float>
+        logits_MatMul_merged_with_dnn_logits_BiasAdd0 /* shape: 1,1 */
     ,
     FixedAllocations* __restrict fixed) {
   const int32_t input_from_feature_columns_input_layer_concat_concat0_shape[] =
