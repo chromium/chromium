@@ -328,11 +328,6 @@ BASE_FEATURE(kEnableADPFSetThreads,
              "EnableADPFSetThreads",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, surface activation and draw do not block on dependencies.
-BASE_FEATURE(kDrawImmediatelyWhenInteractive,
-             "DrawImmediatelyWhenInteractive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, we immediately send acks to clients when a viz surface
 // activates. This effectively removes back-pressure. This can result in wasted
 // work and contention, but should regularize the timing of client rendering.
@@ -522,10 +517,6 @@ bool ShouldOnBeginFrameThrottleVideo() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
 }
 
-bool ShouldDrawImmediatelyWhenInteractive() {
-  return base::FeatureList::IsEnabled(
-      features::kDrawImmediatelyWhenInteractive);
-}
 bool ShouldAckOnSurfaceActivationWhenInteractive() {
   return base::FeatureList::IsEnabled(
       features::kAckOnSurfaceActivationWhenInteractive);

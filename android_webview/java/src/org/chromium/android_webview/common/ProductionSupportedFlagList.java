@@ -183,9 +183,6 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                 "Enable optimization for skipping undamaged nonroot render passes."),
         Flag.baseFeature(
-                VizFeatures.DRAW_IMMEDIATELY_WHEN_INTERACTIVE,
-                "Enable optimization for immediate activation and draw when interactive."),
-        Flag.baseFeature(
                 VizFeatures.AVOID_DUPLICATE_DELAY_BEGIN_FRAME,
                 "For epsilonic judder avoid sending duplicate (delay source) begin frames."),
         Flag.baseFeature(

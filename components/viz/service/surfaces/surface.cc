@@ -52,10 +52,6 @@ void RequestCopyOfOutputOnRenderPass(std::unique_ptr<CopyOutputRequest> request,
   render_pass.copy_requests.push_back(std::move(request));
 }
 
-bool ShouldBlockActivationOnDependenciesWhenInteractive() {
-  return !features::ShouldDrawImmediatelyWhenInteractive();
-}
-
 }  // namespace
 
 Surface::PresentationHelper::PresentationHelper(
@@ -677,7 +673,6 @@ void Surface::UpdateActivationDependencies(
     return;
 
   bool should_block_on_dependencies =
-      ShouldBlockActivationOnDependenciesWhenInteractive() ||
       !current_frame.metadata.is_handling_interaction;
 
   if (!should_block_on_dependencies) {

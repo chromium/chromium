@@ -31,10 +31,6 @@ base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
   return base::Milliseconds(12);
 }
 
-bool DrawImmediatelyWhenInteractive() {
-  return features::ShouldDrawImmediatelyWhenInteractive();
-}
-
 bool AdpfCanUseSetThreads() {
 #if BUILDFLAG(IS_ANDROID)
   return android_get_device_api_level() >= __ANDROID_API_U__ &&
@@ -495,8 +491,7 @@ DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
   // Only wait if we actually have pending surfaces and we're not forcing draw
   // due to an ongoing interaction.
   bool wait_for_pending_surfaces =
-      has_pending_surfaces_ && !(DrawImmediatelyWhenInteractive() &&
-                                 damage_tracker_->HasDamageDueToInteraction());
+      has_pending_surfaces_ && !(damage_tracker_->HasDamageDueToInteraction());
 
   bool all_surfaces_ready =
       !wait_for_pending_surfaces && damage_tracker_->IsRootSurfaceValid() &&

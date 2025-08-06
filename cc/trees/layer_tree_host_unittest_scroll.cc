@@ -3089,7 +3089,6 @@ class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
     // variances relaxed in `SchedulerStateMachine` for when we disable frame
     // rates. The checks themselves are not useful anymore.
     std::vector<base::test::FeatureRef> disabled_features;
-    disabled_features.push_back(features::kDrawImmediatelyWhenInteractive);
     disabled_features.push_back(
         features::kAckOnSurfaceActivationWhenInteractive);
     scoped_feature_list_.InitWithFeatures(std::vector<base::test::FeatureRef>(),

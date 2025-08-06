@@ -3459,10 +3459,8 @@ class SurfaceSynchronizationTestDrawImmediatelyWithActivationAck
     : public SurfaceSynchronizationTest {
  public:
   SurfaceSynchronizationTestDrawImmediatelyWithActivationAck() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAckOnSurfaceActivationWhenInteractive,
-         features::kDrawImmediatelyWhenInteractive},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAckOnSurfaceActivationWhenInteractive);
   }
   ~SurfaceSynchronizationTestDrawImmediatelyWithActivationAck() override =
       default;

@@ -925,23 +925,7 @@ TEST_F(DisplaySchedulerTest, DefaultBeginFrameArgsDeadline) {
   EXPECT_EQ(args.deadline, next_frame_time);
 }
 
-// Tests the DisplayScheduler when we enable drawing immediately when
-// interactive.
-class ImmediateInteractiveDrawTest : public DisplaySchedulerTest {
- public:
-  ImmediateInteractiveDrawTest();
-  ~ImmediateInteractiveDrawTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-ImmediateInteractiveDrawTest::ImmediateInteractiveDrawTest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kDrawImmediatelyWhenInteractive);
-}
-
-TEST_F(ImmediateInteractiveDrawTest, DoNotWaitWhenInteracting) {
+TEST_F(DisplaySchedulerTest, DoNotWaitWhenInteracting) {
   SurfaceId root_surface_id(
       kArbitraryFrameSinkId,
       LocalSurfaceId(1, base::UnguessableToken::Create()));
@@ -971,7 +955,7 @@ TEST_F(ImmediateInteractiveDrawTest, DoNotWaitWhenInteracting) {
             scheduler_->DesiredBeginFrameDeadlineTimeForTest());
 }
 
-TEST_F(ImmediateInteractiveDrawTest, WaitWhenNotInteracting) {
+TEST_F(DisplaySchedulerTest, WaitWhenNotInteracting) {
   SurfaceId root_surface_id(
       kArbitraryFrameSinkId,
       LocalSurfaceId(1, base::UnguessableToken::Create()));
@@ -1001,7 +985,7 @@ TEST_F(ImmediateInteractiveDrawTest, WaitWhenNotInteracting) {
             scheduler_->DesiredBeginFrameDeadlineTimeForTest());
 }
 
-TEST_F(ImmediateInteractiveDrawTest, ResetScrollingBitAfterDrawAndSwap) {
+TEST_F(DisplaySchedulerTest, ResetScrollingBitAfterDrawAndSwap) {
   SurfaceId root_surface_id(
       kArbitraryFrameSinkId,
       LocalSurfaceId(1, base::UnguessableToken::Create()));
@@ -1043,7 +1027,7 @@ TEST_F(ImmediateInteractiveDrawTest, ResetScrollingBitAfterDrawAndSwap) {
             scheduler_->DesiredBeginFrameDeadlineTimeForTest());
 }
 
-TEST_F(ImmediateInteractiveDrawTest, ResetScrollingBitOnFrameFinished) {
+TEST_F(DisplaySchedulerTest, ResetScrollingBitOnFrameFinished) {
   SurfaceId root_surface_id(
       kArbitraryFrameSinkId,
       LocalSurfaceId(1, base::UnguessableToken::Create()));

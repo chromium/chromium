@@ -2144,12 +2144,6 @@ const char kFileSystemObserverDescription[] =
     "https://github.com/whatwg/fs/blob/main/proposals/FileSystemObserver.md "
     "for more information.";
 
-const char kDrawImmediatelyWhenInteractiveName[] =
-    "Enable Immediate Draw When Interactive";
-const char kDrawImmediatelyWhenInteractiveDescription[] =
-    "Causes viz to activate and draw frames immediately during a touch "
-    "interaction or scroll.";
-
 const char kAckOnSurfaceActivationWhenInteractiveName[] =
     "Ack On Surface Activation When Interactive";
 const char kAckOnSurfaceActivationWhenInteractiveDescription[] =

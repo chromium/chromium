@@ -1243,9 +1243,6 @@ extern const char kFileHandlingIconsDescription[];
 extern const char kFileSystemObserverName[];
 extern const char kFileSystemObserverDescription[];
 
-extern const char kDrawImmediatelyWhenInteractiveName[];
-extern const char kDrawImmediatelyWhenInteractiveDescription[];
-
 extern const char kAckOnSurfaceActivationWhenInteractiveName[];
 extern const char kAckOnSurfaceActivationWhenInteractiveDescription[];
 
