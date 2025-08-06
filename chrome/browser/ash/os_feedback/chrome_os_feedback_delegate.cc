@@ -29,20 +29,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
@@ -146,12 +143,18 @@ ChromeOsFeedbackDelegate::ChromeOsFeedbackDelegate(
     Profile* profile,
     scoped_refptr<extensions::FeedbackService> feedback_service)
     : profile_(profile), feedback_service_(feedback_service) {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    // Save the last active page url before opening the feedback tool.
-    page_url_ = chrome::GetTargetTabUrl(
-        browser->session_id(), browser->tab_strip_model()->active_index());
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+  if (!browser) {
+    return;
   }
+
+  auto* web_contents = (browser->GetType() == BrowserType::kDevTools)
+                           ? browser->GetInspectedWebContents()
+                           : browser->GetActiveWebContents();
+
+  // Save the last active page url before opening the feedback tool.
+  page_url_ = web_contents->GetLastCommittedURL();
 }
 
 // Static.

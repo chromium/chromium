@@ -12,6 +12,8 @@ BrowserWindowInterface::Type ToInternalBrowserType(ash::BrowserType type) {
       return BrowserWindowInterface::TYPE_APP;
     case BrowserType::kAppPopup:
       return BrowserWindowInterface::TYPE_APP_POPUP;
+    case BrowserType::kDevTools:
+      return BrowserWindowInterface::TYPE_DEVTOOLS;
     case BrowserType::kOther:
       NOTREACHED();
   }
@@ -24,6 +26,8 @@ BrowserType FromInternalBrowserType(
       return BrowserType::kApp;
     case BrowserWindowInterface::TYPE_APP_POPUP:
       return BrowserType::kAppPopup;
+    case BrowserWindowInterface::TYPE_DEVTOOLS:
+      return BrowserType::kDevTools;
     default:
       return BrowserType::kOther;
   }

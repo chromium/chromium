@@ -13,6 +13,7 @@ namespace ash {
 enum class BrowserType {
   kApp,
   kAppPopup,
+  kDevTools,
   kOther,
 };
 
