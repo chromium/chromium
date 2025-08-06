@@ -294,15 +294,6 @@ template("apple_mobile_create_signed_bundle") {
           "$bundle_root_dir/Versions/Current",
           "$bundle_root_dir/$_output_name",
         ]
-
-        if (defined(invoker.has_public_headers) && invoker.has_public_headers) {
-          post_processing_outputs += [
-            "$bundle_root_dir/Headers",
-            "$bundle_root_dir/Modules",
-          ]
-        }
-      } else {
-        not_needed(invoker, [ "has_public_headers" ])
       }
     }
 
