@@ -1043,12 +1043,12 @@ chromium-metrics-reviews@google.com.
     The user explicitly asked to move multiple passwords at once in Settings.
     Recorded only on Win/Mac/Linux.
   </int>
-  <int value="3" label="kUserOptedInAfterSavingLocally">
+  <int value="3" label="(obsolete) kUserOptedInAfterSavingLocally">
     After saving a password locally, the user opted in to saving this and future
     passwords in the account. Recorded only on Win/Mac/Linux.
   </int>
   <int value="4"
-      label="kExplicitlyTriggeredForSinglePasswordInDetailsInSettings">
+      label="(obsolete)ExplicitlyTriggeredForSinglePasswordInDetailsInSettings">
     The user explicitly asked to move a password to account store from password
     details page.
   </int>

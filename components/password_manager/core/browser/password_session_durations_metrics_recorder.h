@@ -20,8 +20,8 @@ class SyncService;
 
 namespace password_manager {
 
-// Tracks the active browsing time that the user spends in each state related to
-// the account-scoped password storage, i.e. signed in or not, opted in or not.
+// Tracks the active browsing time that the user spends in each
+// features_util::PasswordAccountStorageUserState.
 class PasswordSessionDurationsMetricsRecorder
     : public syncer::SyncServiceObserver {
  public:
