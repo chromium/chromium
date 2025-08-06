@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/views/media_progress_view.h"
 
 #include "base/i18n/rtl.h"
+#include "base/test/icu_test_util.h"
 #include "base/timer/mock_timer.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -65,8 +66,6 @@ class MediaProgressViewTest : public views::ViewsTestBase {
     progress_drag_started_delay_timer_ = mock_timer.get();
     view_->set_progress_drag_started_delay_timer_for_testing(
         std::move(mock_timer));
-
-    default_locale_ = base::i18n::GetConfiguredLocale();
   }
 
   void TearDown() override {
@@ -75,7 +74,6 @@ class MediaProgressViewTest : public views::ViewsTestBase {
     progress_drag_started_delay_timer_ = nullptr;
     view_ = nullptr;
     widget_->Close();
-    base::i18n::SetICUDefaultLocale(default_locale_);
     ViewsTestBase::TearDown();
   }
 
@@ -97,12 +95,12 @@ class MediaProgressViewTest : public views::ViewsTestBase {
   MOCK_METHOD1(OnProgressUpdated, void(base::TimeDelta));
 
  private:
+  base::test::ScopedRestoreICUDefaultLocale restore_default_locale_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<MediaProgressView> view_ = nullptr;
   raw_ptr<base::MockOneShotTimer> update_progress_timer_ = nullptr;
   raw_ptr<base::MockOneShotTimer> switch_progress_colors_delay_timer_ = nullptr;
   raw_ptr<base::MockOneShotTimer> progress_drag_started_delay_timer_ = nullptr;
-  std::string default_locale_;
 };
 
 TEST_F(MediaProgressViewTest, MediaPlaying) {

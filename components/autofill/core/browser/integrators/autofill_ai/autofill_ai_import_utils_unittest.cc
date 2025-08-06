@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -281,6 +282,8 @@ TEST_F(AutofillAiImportUtilsTest, DoNotImportOverloadedFields) {
 
 TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
   using enum AttributeTypeName;
+  base::test::ScopedRestoreICUDefaultLocale restore_default_locale;
+
   EntityInstance entity =
       test::GetPassportEntityInstance({.expiry_date = u"2025-12-30"});
   {
