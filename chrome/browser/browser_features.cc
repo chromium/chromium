@@ -34,11 +34,11 @@ BASE_FEATURE(kBookmarksTreeView,
              "BookmarksTreeView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This flag is used for enabling Bookmark triggered prerendering. See
-// crbug.com/1422819 for more details of Bookmark triggered prerendering.
-BASE_FEATURE(kBookmarkTriggerForPrerender2,
-             "BookmarkTriggerForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// This is used as a kill switch for Bookmark triggered prerendering. See
+// crbug.com/40259793 for more details of Bookmark triggered prerendering.
+BASE_FEATURE(kBookmarkTriggerForPrerender2KillSwitch,
+             "BookmarkTriggerForPrerender2KillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This flag is used for enabling BookmarkBar triggered preconnect.
 BASE_FEATURE(kBookmarkTriggerForPreconnect,

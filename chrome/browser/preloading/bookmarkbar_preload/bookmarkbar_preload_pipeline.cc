@@ -5,6 +5,7 @@
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -50,6 +51,11 @@ BookmarkBarPreloadPipeline::~BookmarkBarPreloadPipeline() = default;
 bool BookmarkBarPreloadPipeline::StartPrerender(
     content::WebContents& web_contents,
     content::PreloadingPredictor predictor) {
+  if (base::FeatureList::IsEnabled(
+          features::kBookmarkTriggerForPrerender2KillSwitch)) {
+    return false;
+  }
+
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&web_contents);

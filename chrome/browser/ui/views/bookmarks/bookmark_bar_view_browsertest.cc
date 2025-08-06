@@ -459,17 +459,6 @@ constexpr int kPreloadingTriggeringOutcomeSuccess = 5;
 class PrerenderBookmarkBarOnPressedNavigationTest
     : public PrerenderBookmarkBarNavigationTestBase {
  public:
-  PrerenderBookmarkBarOnPressedNavigationTest() {
-    // Mousedown prerender trigger is disabled explicitly and onHover delay is
-    // set to 0ms for testing.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kBookmarkTriggerForPrerender2,
-             {{"prerender_bookmarkbar_on_mouse_pressed_trigger", "true"}}},
-        },
-        /*disabled_features=*/{});
-  }
-
   const content::test::PreloadingAttemptUkmEntryBuilder& ukm_entry_builder() {
     return *ukm_entry_builder_;
   }
@@ -670,12 +659,8 @@ class PrerenderBookmarkBarDisabledNavigationTest
     : public PrerenderBookmarkBarNavigationTestBase {
  public:
   PrerenderBookmarkBarDisabledNavigationTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kBookmarkTriggerForPrerender2,
-             {{"prerender_bookmarkbar_on_mouse_pressed_trigger", "false"}}},
-        },
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kBookmarkTriggerForPrerender2KillSwitch);
   }
 
   const content::test::PreloadingAttemptUkmEntryBuilder& ukm_entry_builder() {

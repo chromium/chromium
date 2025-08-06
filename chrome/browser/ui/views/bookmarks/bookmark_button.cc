@@ -173,35 +173,30 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
                             base::Unretained(this), *url_));
   }
 
-  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect) ||
-      base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
-    // Now we should register the callback function that will be used to
-    // compute the preloading recall.
-    if (auto* web_contents =
-            browser_->tab_strip_model()->GetActiveWebContents()) {
-      content::PreloadingData* preloading_data =
-          content::PreloadingData::GetOrCreateForWebContents(web_contents);
-      preloading_data->SetIsNavigationInDomainCallback(
-          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
-          base::BindRepeating(
-              [](content::NavigationHandle* navigation_handle) -> bool {
-                return ui::PageTransitionCoreTypeIs(
-                           navigation_handle->GetPageTransition(),
-                           ui::PAGE_TRANSITION_AUTO_BOOKMARK) &&
-                       ui::PageTransitionIsNewNavigation(
-                           navigation_handle->GetPageTransition());
-              }));
-    }
+  // Now we should register the callback function that will be used to
+  // compute the preloading recall.
+  if (auto* web_contents =
+          browser_->tab_strip_model()->GetActiveWebContents()) {
+    content::PreloadingData* preloading_data =
+        content::PreloadingData::GetOrCreateForWebContents(web_contents);
+    preloading_data->SetIsNavigationInDomainCallback(
+        chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
+        base::BindRepeating(
+            [](content::NavigationHandle* navigation_handle) -> bool {
+              return ui::PageTransitionCoreTypeIs(
+                         navigation_handle->GetPageTransition(),
+                         ui::PAGE_TRANSITION_AUTO_BOOKMARK) &&
+                     ui::PageTransitionIsNewNavigation(
+                         navigation_handle->GetPageTransition());
+            }));
   }
 }
 
 void BookmarkButton::OnMouseExited(const ui::MouseEvent& event) {
   BookmarkButtonBase::OnMouseExited(event);
-  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
-    preloading_timer_.Stop();
-    if (bookmarkbar_preload_manager_) {
-      bookmarkbar_preload_manager_->ResetPrerender();
-    }
+  preloading_timer_.Stop();
+  if (bookmarkbar_preload_manager_) {
+    bookmarkbar_preload_manager_->ResetPrerender();
   }
 }
 
@@ -211,8 +206,7 @@ bool BookmarkButton::OnMousePressed(const ui::MouseEvent& event) {
     base::UmaHistogramEnumeration("Prerender.Experimental.BookmarkMetrics",
                                   PreloadBookmarkMetricsEvent::kMouseDown);
   }
-  if (event.IsOnlyLeftMouseButton() &&
-      base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
+  if (event.IsOnlyLeftMouseButton()) {
     StartPrerendering(*url_);
   }
   return result;
@@ -246,7 +240,6 @@ void BookmarkButton::StartPreconnecting(GURL url) {
 }
 
 void BookmarkButton::StartPrerendering(GURL url) {
-  CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
   auto* active_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!active_web_contents) {
