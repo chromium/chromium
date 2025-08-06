@@ -1,0 +1,68 @@
+// Imported from
+// //depot/google3/google/internal/chrome/cros/edu/schooltools/v1/receiver.proto
+syntax = "proto3";
+
+package boca;
+
+import "chromeos/ash/components/boca/proto/roster.proto";
+import "chromeos/ash/components/boca/proto/session.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Below copied proto are due to exist in `protobuf_full` source not
+// `protobuf_lite`. The former cannot be included into chrome due to its large
+// size. Copied from //third_party/protobuf/src/google/protobuf/timestamp.proto
+// Measured as seconds + nanos from the epoch (00:00:00 UTC on 1 January 1970).
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+message ReceiverConnection {
+  UserIdentity presenter = 1;
+
+  DeviceInfo presenter_device_info = 2;
+
+  UserIdentity initiator = 3;
+
+  DeviceInfo initiator_device_info = 4;
+
+  enum ConnectionType {
+    UNKNOWN = 0;
+
+    CRD = 1;
+  }
+
+  ConnectionType connection_type = 5;
+
+  string crd_connection_code = 6;
+
+  ReceiverState state = 7;
+
+  Timestamp request_time = 8;
+}
+
+enum ReceiverState {
+  UNKNOWN = 0;
+
+  DISCONNECTED = 1;
+
+  START_REQUESTED = 2;
+
+  STOP_REQUESTED = 3;
+
+  CONNECTING = 4;
+
+  CONNECTED = 5;
+
+  PENDING = 6;
+
+  CONNECTION_FAILED = 7;
+
+  ERROR_NETWORK = 8;
+
+  ERROR_HOST_DISCONNECT = 9;
+
+  // Generic error state.
+  ERROR = 10;
+}
