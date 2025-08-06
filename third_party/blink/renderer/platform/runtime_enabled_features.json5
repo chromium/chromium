@@ -2630,6 +2630,14 @@
       origin_trial_feature_name: "HTMLInterestForAttribute",
       origin_trial_allows_third_party: true,
     },
+    // Adds support for the `::interest-hint` pseudo element, which is a sub-
+    // feature of the HTMLInterestForAttribute feature.
+    // https://open-ui.org/components/interest-invokers.explainer/
+    {
+      name: "HTMLInterestForInterestHintPseudo",
+      status: "experimental",
+      depends_on: ["HTMLInterestForAttribute"],
+    },
     {
       // Prevents the HTMLLinkElement processing model from being invoked when
       // attributes are processed but their value doesn't change. See

@@ -1356,7 +1356,8 @@ void ElementRuleCollector::DidMatchRule(
     if ((dynamic_pseudo == kPseudoIdCheckMark ||
          dynamic_pseudo == kPseudoIdBefore ||
          dynamic_pseudo == kPseudoIdAfter ||
-         dynamic_pseudo == kPseudoIdPickerIcon) &&
+         dynamic_pseudo == kPseudoIdPickerIcon ||
+         dynamic_pseudo == kPseudoIdInterestHint) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent)) {
       return;
     }

@@ -1355,6 +1355,22 @@ button[interestfor] {
   user-select: none;
 }
 
+[interestfor]::interest-hint {
+  user-select: none;
+  color: buttontext;
+  display: inline-block;
+  text-align: center;
+  cursor: default;
+  background-color: buttonface;
+  margin-inline-start: 0.5em;
+  padding-block: 1px;
+  padding-inline: 6px;
+  border-width: 1px;
+  border-radius: 5px;
+  border-style: outset;
+  border-color: buttonborder;
+}
+
 html:focus-visible, body:focus-visible {
     outline: none
 }

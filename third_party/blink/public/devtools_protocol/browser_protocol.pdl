@@ -3019,6 +3019,7 @@ domain DOM
       before
       after
       picker-icon
+      interest-hint
       marker
       backdrop
       column

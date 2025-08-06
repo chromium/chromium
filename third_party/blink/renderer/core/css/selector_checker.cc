@@ -543,6 +543,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoHover:
     case CSSSelector::kPseudoIncrement:
     case CSSSelector::kPseudoIndeterminate:
+    case CSSSelector::kPseudoInterestHint:
     case CSSSelector::kPseudoInvalid:
     case CSSSelector::kPseudoLang:
     case CSSSelector::kPseudoLastChild:

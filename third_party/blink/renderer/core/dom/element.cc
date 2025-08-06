@@ -4724,6 +4724,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       }
     }
 
+    if (RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
+            GetExecutionContext()) &&
+        InterestForElement()) {
+      UpdatePseudoElement(kPseudoIdInterestHint, child_change,
+                          child_recalc_context);
+    }
+
     UpdateLayoutSiblingPseudoElement(kPseudoIdScrollMarkerGroupAfter,
                                      child_change, child_recalc_context);
 
@@ -5307,6 +5314,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     }
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdInterestHint, *child_attacher);
     if (GetShadowRoot()) {
       RebuildShadowRootLayoutTree(*child_attacher);
     } else {
@@ -9734,7 +9742,8 @@ const ComputedStyle* Element::StyleForPseudoElement(
 
   const bool is_before_or_after_like =
       pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
-      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdPickerIcon;
+      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdPickerIcon ||
+      pseudo_id == kPseudoIdInterestHint;
 
   if (is_before_or_after_like) {
     DCHECK(request.parent_override);
@@ -12300,6 +12309,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdBefore:
       case kPseudoIdAfter:
       case kPseudoIdPickerIcon:
+      case kPseudoIdInterestHint:
       case kPseudoIdBackdrop:
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:

@@ -45,6 +45,7 @@ std::optional<std::pair<unsigned, int>> DetermineCounterTypeAndValue(
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdPickerIcon:
+    case kPseudoIdInterestHint:
     case kPseudoIdMarker:
     case kPseudoIdScrollMarkerGroup:
     case kPseudoIdScrollMarker:

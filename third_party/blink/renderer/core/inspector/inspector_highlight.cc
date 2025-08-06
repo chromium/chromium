@@ -387,6 +387,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::after");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdPickerIcon) {
       class_names.Append("::picker-icon");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdInterestHint) {
+      class_names.Append("::interest-hint");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdMarker) {
       class_names.Append("::marker");
     } else if (pseudo_element->GetPseudoIdForStyling() ==
@@ -1995,10 +1997,10 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
-            kPseudoIdPickerIcon, kPseudoIdScrollMarkerGroupAfter,
-            kPseudoIdScrollMarker, kPseudoIdScrollButtonBlockStart,
-            kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonInlineEnd,
-            kPseudoIdScrollButtonBlockEnd}) {
+            kPseudoIdPickerIcon, kPseudoIdInterestHint,
+            kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarker,
+            kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
+            kPseudoIdScrollButtonInlineEnd, kPseudoIdScrollButtonBlockEnd}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

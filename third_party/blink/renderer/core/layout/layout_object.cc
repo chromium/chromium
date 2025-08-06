@@ -2643,6 +2643,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdBefore ||
          pseudo_style->StyleType() == kPseudoIdAfter ||
          pseudo_style->StyleType() == kPseudoIdPickerIcon ||
+         pseudo_style->StyleType() == kPseudoIdInterestHint ||
          pseudo_style->StyleType() == kPseudoIdMarker ||
          pseudo_style->StyleType() == kPseudoIdFirstLetter ||
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
@@ -4064,6 +4065,7 @@ Node* LayoutObject::NodeForHitTest() const {
   if (const LayoutObject* parent = Parent()) {
     if (parent->IsBeforeOrAfterContent() || parent->IsMarkerContent() ||
         parent->IsScrollButtonOrMarkerContent() ||
+        parent->IsInterestHintContent() ||
         parent->StyleRef().StyleType() == kPseudoIdFirstLetter) {
       for (; parent; parent = parent->Parent()) {
         if (Node* node = parent->GetNode())
@@ -4208,6 +4210,7 @@ const ComputedStyle* LayoutObject::GetCachedPseudoElementStyle(
   DCHECK_NE(pseudo, kPseudoIdCheckMark);
   DCHECK_NE(pseudo, kPseudoIdAfter);
   DCHECK_NE(pseudo, kPseudoIdPickerIcon);
+  DCHECK_NE(pseudo, kPseudoIdInterestHint);
   if (!GetNode())
     return nullptr;
 
@@ -4225,6 +4228,7 @@ const ComputedStyle* LayoutObject::GetUncachedPseudoElementStyle(
   DCHECK_NE(request.pseudo_id, kPseudoIdCheckMark);
   DCHECK_NE(request.pseudo_id, kPseudoIdAfter);
   DCHECK_NE(request.pseudo_id, kPseudoIdPickerIcon);
+  DCHECK_NE(request.pseudo_id, kPseudoIdInterestHint);
   if (!GetNode())
     return nullptr;
 

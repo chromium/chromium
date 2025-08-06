@@ -767,6 +767,10 @@ String CounterValueForElement(Element* element) {
           element->PseudoElementLayoutObject(kPseudoIdPickerIcon)) {
     WriteCounterValuesFromChildren(stream, picker_icon, is_first_counter);
   }
+  if (LayoutObject* interest_hint =
+          element->PseudoElementLayoutObject(kPseudoIdInterestHint)) {
+    WriteCounterValuesFromChildren(stream, interest_hint, is_first_counter);
+  }
   return stream.ReleaseString();
 }
 

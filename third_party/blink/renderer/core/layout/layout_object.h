@@ -1037,6 +1037,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsScrollMarkerContent() const;
   inline bool IsScrollButtonOrMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
+  inline bool IsInterestHintContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
   }
@@ -4242,6 +4243,11 @@ inline bool LayoutObject::IsScrollMarkerContent() const {
 inline bool LayoutObject::IsScrollButtonOrMarkerContent() const {
   NOT_DESTROYED();
   return IsScrollButtonContent() || IsScrollMarkerContent();
+}
+
+inline bool LayoutObject::IsInterestHintContent() const {
+  NOT_DESTROYED();
+  return IsPseudoElementContent(kPseudoIdInterestHint);
 }
 
 inline bool LayoutObject::IsBeforeOrAfterContent() const {

@@ -2076,6 +2076,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void AttachSucceedingPseudoElements(AttachContext& context) {
+    AttachPseudoElement(kPseudoIdInterestHint, context);
     AttachPseudoElement(kPseudoIdPickerIcon, context);
     AttachPseudoElement(kPseudoIdAfter, context);
     AttachDocumentElementSucceedingPseudoElements(context);
@@ -2105,6 +2106,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void DetachSucceedingPseudoElements(bool performing_reattach) {
+    DetachPseudoElement(kPseudoIdInterestHint, performing_reattach);
     DetachPseudoElement(kPseudoIdPickerIcon, performing_reattach);
     DetachPseudoElement(kPseudoIdAfter, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollButtonBlockStart, performing_reattach);

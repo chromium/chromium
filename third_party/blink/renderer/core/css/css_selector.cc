@@ -339,6 +339,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdAfter;
     case kPseudoPickerIcon:
       return kPseudoIdPickerIcon;
+    case kPseudoInterestHint:
+      return kPseudoIdInterestHint;
     case kPseudoMarker:
       return kPseudoIdMarker;
     case kPseudoBackdrop:
@@ -630,6 +632,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"in-range", CSSSelector::kPseudoInRange},
     {"increment", CSSSelector::kPseudoIncrement},
     {"indeterminate", CSSSelector::kPseudoIndeterminate},
+    {"interest-hint", CSSSelector::kPseudoInterestHint},
     {"invalid", CSSSelector::kPseudoInvalid},
     {"invalid-style", CSSSelector::kPseudoPermissionElementInvalidStyle},
     {"last-child", CSSSelector::kPseudoLastChild},
@@ -895,6 +898,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       [[fallthrough]];
     // For pseudo-elements
     case kPseudoPickerIcon:
+    case kPseudoInterestHint:
     case kPseudoCheckMark:
     case kPseudoBackdrop:
     case kPseudoCue:
@@ -1649,6 +1653,7 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
          (GetPseudoType() == kPseudoCheckMark ||
           GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
           GetPseudoType() == kPseudoPickerIcon ||
+          GetPseudoType() == kPseudoInterestHint ||
           GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
           GetPseudoType() == kPseudoFileSelectorButton ||
@@ -1687,6 +1692,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoBefore:
     case kPseudoAfter:
     case kPseudoPickerIcon:
+    case kPseudoInterestHint:
     case kPseudoPlaceholder:
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:

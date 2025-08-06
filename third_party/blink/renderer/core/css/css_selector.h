@@ -263,6 +263,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoHover,
     kPseudoIncrement,
     kPseudoIndeterminate,
+    kPseudoInterestHint,
     kPseudoInvalid,
     kPseudoIs,
     kPseudoLang,

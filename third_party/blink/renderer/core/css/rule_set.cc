@@ -264,6 +264,7 @@ bool ShouldStopExtractingAtPseudoElement(
     case CSSSelector::kPseudoScrollMarker:
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoBefore:
+    case CSSSelector::kPseudoInterestHint:
     case CSSSelector::kPseudoBackdrop:
     case CSSSelector::kPseudoMarker:
     case CSSSelector::kPseudoColumn:

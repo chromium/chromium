@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/input/touch.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
@@ -40,7 +41,8 @@ namespace blink {
 
 EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
   if (reference_node.IsPseudoElement() &&
-      !reference_node.IsScrollControlPseudoElement()) {
+      !reference_node.IsScrollControlPseudoElement() &&
+      !reference_node.IsInterestHintPseudoElement()) {
     DCHECK(reference_node.parentNode());
     return *reference_node.parentNode();
   }
