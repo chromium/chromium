@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_profile_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -148,9 +148,7 @@ class TabDesktopMediaListTest : public testing::Test,
   TabDesktopMediaListTest& operator=(const TabDesktopMediaListTest&) = delete;
 
  protected:
-  TabDesktopMediaListTest()
-      : picker_called_from_web_contents_(GetParam()),
-        local_state_(TestingBrowserProcess::GetGlobal()) {}
+  TabDesktopMediaListTest() : picker_called_from_web_contents_(GetParam()) {}
 
   std::unique_ptr<content::WebContents> CreateWebContents(
       int favicon_greyscale) {
@@ -320,7 +318,6 @@ class TabDesktopMediaListTest : public testing::Test,
 
   // The path to temporary directory used to contain the test operations.
   base::ScopedTempDir temp_dir_;
-  ScopedTestingLocalState local_state_;
 
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
@@ -342,7 +339,7 @@ class TabDesktopMediaListTest : public testing::Test,
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<ash::UserManagerDelegateImpl>(),
-          local_state_.Get(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           ash::CrosSettings::Get())};
 #endif
 };

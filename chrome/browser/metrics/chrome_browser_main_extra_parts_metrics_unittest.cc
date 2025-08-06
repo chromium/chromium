@@ -8,7 +8,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/variations_switches.h"
@@ -83,13 +82,10 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 
   // Dummy screen required by a ChromeBrowserMainExtraPartsMetrics test target.
   display::test::TestScreen test_screen_;
-
-  // Scoped local state required for unit tests.
-  ScopedTestingLocalState local_state_;
 };
 
-ChromeBrowserMainExtraPartsMetricsTest::ChromeBrowserMainExtraPartsMetricsTest()
-    : local_state_(TestingBrowserProcess::GetGlobal()) {
+ChromeBrowserMainExtraPartsMetricsTest::
+    ChromeBrowserMainExtraPartsMetricsTest() {
   display::Screen::SetScreenInstance(&test_screen_);
 }
 

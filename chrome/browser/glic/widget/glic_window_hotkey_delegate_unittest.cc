@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -53,8 +52,7 @@ class MockBrowserWindow : public TestBrowserWindow {
 
 class GlicWindowHotkeyDelegateTest : public testing::Test {
  public:
-  GlicWindowHotkeyDelegateTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  GlicWindowHotkeyDelegateTest() = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -100,7 +98,6 @@ class GlicWindowHotkeyDelegateTest : public testing::Test {
   std::unique_ptr<MockGlicView> mock_glic_view_;
   std::unique_ptr<GlicWindowHotkeyDelegate> delegate_;
   base::UserActionTester user_action_tester_;
-  ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MockBrowserWindow> mock_browser_window_;
   std::unique_ptr<Browser>
