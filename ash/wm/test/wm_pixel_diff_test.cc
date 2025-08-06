@@ -165,7 +165,7 @@ TEST_F(WmPixelDiffTest, DISABLED_WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_basic",
-      /*revision_number=*/25, widget));
+      /*revision_number=*/27, widget));
 }
 
 TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
