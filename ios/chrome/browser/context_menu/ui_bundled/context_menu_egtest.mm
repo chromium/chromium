@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
+#import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -976,11 +977,6 @@ void RelaunchApp() {
 // Tests that opening the context menu for a link in Reading mode
 // displays all options.
 - (void)testOpenContextMenuFromReadingMode {
-  // TODO(crbug.com/435671883): Support Reading mode interface on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Reading mode interface fails on iPad");
-  }
-
   const GURL initialURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -990,6 +986,10 @@ void RelaunchApp() {
   GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
                  @"Reader mode content could not be loaded");
 
+  // Wait for Reader Mode UI to appear on-screen.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
   [ChromeEarlGreyUI longPressElementOnWebView:ElementSelectorToLongPressLink()];
 
   // Make sure the context menu appeared.
@@ -1020,11 +1020,6 @@ void RelaunchApp() {
 
 // Tests that the context menu is displayed for an image url in Reading mode.
 - (void)testContextMenuDisplayedOnImageForReadingMode {
-  // TODO(crbug.com/435671883): Support Reading mode interface on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Reading mode interface fails on iPad");
-  }
-
   const GURL pageURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -1033,6 +1028,11 @@ void RelaunchApp() {
   [ChromeEarlGrey showReaderMode];
   GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
                  @"Reader mode content could not be loaded");
+
+  // Wait for Reader Mode UI to appear on-screen.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
   [ChromeEarlGreyUI
       longPressElementOnWebView:ElementSelectorToLongPressImage()];

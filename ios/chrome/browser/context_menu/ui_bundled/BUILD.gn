@@ -148,6 +148,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/test:eg_test_support+eg2",
+    "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/test:eg_test_support+eg2",
