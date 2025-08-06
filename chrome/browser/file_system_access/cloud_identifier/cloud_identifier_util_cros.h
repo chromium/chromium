@@ -15,9 +15,6 @@ class FileSystemURL;
 
 namespace cloud_identifier {
 
-void SetCloudIdentifierProviderForTesting(
-    crosapi::mojom::FileSystemAccessCloudIdentifierProvider* provider);
-
 // CrOS-specific implementation to retrieve cloud identifiers for files and
 // directories, which will reach out to
 // `FileSystemAccessCloudIdentifierProviderAsh` in ash-chrome via cros-api for

@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -60,11 +59,12 @@ bool MatchesExpectedProvidedFsType(
   }
 }
 
-void DidGetDriveFSMetadata(crosapi::mojom::HandleType expected_handle_type,
-                           crosapi::FileSystemAccessCloudIdentifierProviderAsh::
-                               GetCloudIdentifierCallback callback,
-                           drive::FileError error,
-                           drivefs::mojom::FileMetadataPtr metadata) {
+void DidGetDriveFSMetadata(
+    crosapi::mojom::HandleType expected_handle_type,
+    crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
+        GetCloudIdentifierCallback callback,
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK || metadata.is_null() ||
       !metadata->item_id.has_value() ||
       base::StartsWith(metadata->item_id.value(), kDriveFsLocalPrefix) ||
@@ -82,7 +82,7 @@ void DidGetDriveFSMetadata(crosapi::mojom::HandleType expected_handle_type,
 
 void DidGetProvidedFilesystemMetada(
     crosapi::mojom::HandleType expected_handle_type,
-    crosapi::FileSystemAccessCloudIdentifierProviderAsh::
+    crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
         GetCloudIdentifierCallback callback,
     std::unique_ptr<ash::file_system_provider::EntryMetadata> metadata,
     base::File::Error result) {
@@ -107,10 +107,11 @@ void DidGetProvidedFilesystemMetada(
 
 namespace cloud_identifier {
 
-void GetCloudIdentifier(const base::FilePath& virtual_path,
-                        crosapi::mojom::HandleType handle_type,
-                        crosapi::FileSystemAccessCloudIdentifierProviderAsh::
-                            GetCloudIdentifierCallback callback) {
+void GetCloudIdentifier(
+    const base::FilePath& virtual_path,
+    crosapi::mojom::HandleType handle_type,
+    crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
+        GetCloudIdentifierCallback callback) {
   Profile* profile =
       g_browser_process->profile_manager()->GetActiveUserProfile();
   CHECK(profile);

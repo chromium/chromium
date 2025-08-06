@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -87,8 +86,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
       document_scan_ash_(std::make_unique<DocumentScanAsh>()),
-      file_system_access_cloud_identifier_provider_ash_(
-          std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
           std::make_unique<FileSystemProviderServiceAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
@@ -153,13 +150,6 @@ void CrosapiAsh::BindDiagnosticsService(
 void CrosapiAsh::BindDocumentScan(
     mojo::PendingReceiver<mojom::DocumentScan> receiver) {
   document_scan_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(
-    mojo::PendingReceiver<
-        crosapi::mojom::FileSystemAccessCloudIdentifierProvider> receiver) {
-  file_system_access_cloud_identifier_provider_ash_->BindReceiver(
-      std::move(receiver));
 }
 
 void CrosapiAsh::BindHidManager(

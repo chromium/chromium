@@ -43,7 +43,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 namespace crosapi {
 
 class DocumentScanAsh;
-class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
 class KeystoreServiceAsh;
 class LocalPrinterAsh;
@@ -76,9 +75,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
-  void BindFileSystemAccessCloudIdentifierProvider(
-      mojo::PendingReceiver<mojom::FileSystemAccessCloudIdentifierProvider>
-          receiver) override;
   void BindHidManager(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void BindInSessionAuth(
@@ -129,11 +125,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
-  FileSystemAccessCloudIdentifierProviderAsh*
-  file_system_access_cloud_identifier_provider_ash() {
-    return file_system_access_cloud_identifier_provider_ash_.get();
-  }
-
   FileSystemProviderServiceAsh* file_system_provider_service_ash() {
     return file_system_provider_service_ash_.get();
   }
@@ -163,8 +154,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
-  std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
-      file_system_access_cloud_identifier_provider_ash_;
   std::unique_ptr<FileSystemProviderServiceAsh>
       file_system_provider_service_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;

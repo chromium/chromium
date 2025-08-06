@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_ash.h"
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
@@ -18,7 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
-#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom-shared.h"
+#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
@@ -31,14 +30,10 @@ namespace {
 crosapi::mojom::FileSystemAccessCloudIdentifierPtr GetCloudIdentifierBlocking(
     const base::FilePath& virtual_path,
     crosapi::mojom::HandleType handle_type) {
-  crosapi::FileSystemAccessCloudIdentifierProviderAsh* const provider =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->file_system_access_cloud_identifier_provider_ash();
-
   base::test::TestFuture<crosapi::mojom::FileSystemAccessCloudIdentifierPtr>
       future;
-  provider->GetCloudIdentifier(virtual_path, handle_type, future.GetCallback());
+  cloud_identifier::GetCloudIdentifier(virtual_path, handle_type,
+                                       future.GetCallback());
   return future.Take();
 }
 

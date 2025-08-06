@@ -5,29 +5,13 @@
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
 
 #include "base/check_is_test.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
+#include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_ash.h"
 #include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
 namespace {
-
-crosapi::mojom::FileSystemAccessCloudIdentifierProvider*
-    g_cloud_identifier_provider_for_testing = nullptr;
-
-crosapi::mojom::FileSystemAccessCloudIdentifierProvider*
-GetFileSystemAccessCloudIdentifierProvider() {
-  if (g_cloud_identifier_provider_for_testing) {
-    CHECK_IS_TEST();
-    return g_cloud_identifier_provider_for_testing;
-  }
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->file_system_access_cloud_identifier_provider_ash();
-}
 
 crosapi::mojom::HandleType TranslateHandleType(
     content::FileSystemAccessPermissionContext::HandleType handle_type) {
@@ -64,15 +48,10 @@ void OnCrosApiResult(
   handles.push_back(std::move(handle));
   std::move(callback).Run(FileSystemAccessErrorOk(), std::move(handles));
 }
+
 }  // namespace
 
 namespace cloud_identifier {
-void SetCloudIdentifierProviderForTesting(
-    crosapi::mojom::FileSystemAccessCloudIdentifierProvider* provider) {
-  CHECK_IS_TEST();
-  CHECK(!g_cloud_identifier_provider_for_testing);
-  g_cloud_identifier_provider_for_testing = provider;
-}
 
 void GetCloudIdentifierFromAsh(
     const storage::FileSystemURL& url,
@@ -86,20 +65,8 @@ void GetCloudIdentifierFromAsh(
     return;
   }
 
-  crosapi::mojom::FileSystemAccessCloudIdentifierProvider* provider =
-      GetFileSystemAccessCloudIdentifierProvider();
-  if (!provider) {
-    std::move(callback).Run(
-        blink::mojom::FileSystemAccessError::New(
-            blink::mojom::FileSystemAccessStatus::kOperationFailed,
-            base::File::Error::FILE_ERROR_FAILED, "Provider not available"),
-        {});
-    return;
-  }
-
-  provider->GetCloudIdentifier(
-      url.virtual_path(), TranslateHandleType(handle_type),
-      base::BindOnce(&OnCrosApiResult, std::move(callback)));
+  GetCloudIdentifier(url.virtual_path(), TranslateHandleType(handle_type),
+                     base::BindOnce(&OnCrosApiResult, std::move(callback)));
 }
 
 }  // namespace cloud_identifier

@@ -17,14 +17,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_file_system_access_permission_context.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -39,33 +37,6 @@ base::FilePath GetVirtualPath(const base::FilePath& absolute_path) {
   return virtual_path;
 }
 
-class MockFileSystemAccessCloudIdentifierProvider
-    : public crosapi::mojom::FileSystemAccessCloudIdentifierProvider {
- public:
-  MockFileSystemAccessCloudIdentifierProvider() = default;
-  MockFileSystemAccessCloudIdentifierProvider(
-      const MockFileSystemAccessCloudIdentifierProvider&) = delete;
-  MockFileSystemAccessCloudIdentifierProvider& operator=(
-      const MockFileSystemAccessCloudIdentifierProvider&) = delete;
-  ~MockFileSystemAccessCloudIdentifierProvider() override = default;
-
-  void BindReceiver(
-      mojo::PendingReceiver<
-          crosapi::mojom::FileSystemAccessCloudIdentifierProvider> receiver) {
-    receivers_.Add(this, std::move(receiver));
-  }
-
-  // crosapi::mojom::FileSystemAccessCloudIdentifierProvider:
-  MOCK_METHOD3(GetCloudIdentifier,
-               void(const base::FilePath& virtual_path,
-                    crosapi::mojom::HandleType handle_type,
-                    GetCloudIdentifierCallback callback));
-
- private:
-  mojo::ReceiverSet<crosapi::mojom::FileSystemAccessCloudIdentifierProvider>
-      receivers_;
-};
-
 class FileSystemAccessCloudIdentifierDelegateCrosBrowsertest
     : public InProcessBrowserTest {
  public:
@@ -77,23 +48,12 @@ class FileSystemAccessCloudIdentifierDelegateCrosBrowsertest
   void SetUp() override {
     // Set up local file system.
     ASSERT_TRUE(local_fs_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(drive_fs_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(provided_fs_dir_.CreateUniqueTempDir());
 
     storage::ExternalMountPoints* mount_points =
         storage::ExternalMountPoints::GetSystemInstance();
     ASSERT_TRUE(mount_points->RegisterFileSystem(
         "local_fs_mount", storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), local_fs_dir_.GetPath()));
-    ASSERT_TRUE(mount_points->RegisterFileSystem(
-        "drive_fs_mount", storage::kFileSystemTypeDriveFs,
-        storage::FileSystemMountOption(), drive_fs_dir_.GetPath()));
-    ASSERT_TRUE(mount_points->RegisterFileSystem(
-        "provided_fs_mount", storage::kFileSystemTypeProvided,
-        storage::FileSystemMountOption(), provided_fs_dir_.GetPath()));
-
-    cloud_identifier::SetCloudIdentifierProviderForTesting(
-        &mock_cloud_identifier_provider_);
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -166,10 +126,6 @@ class FileSystemAccessCloudIdentifierDelegateCrosBrowsertest
   content::FakeFileSystemAccessPermissionContext permission_context_;
 
   base::ScopedTempDir local_fs_dir_;
-  base::ScopedTempDir drive_fs_dir_;
-  base::ScopedTempDir provided_fs_dir_;
-  testing::StrictMock<MockFileSystemAccessCloudIdentifierProvider>
-      mock_cloud_identifier_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessCloudIdentifierDelegateCrosBrowsertest,
@@ -181,106 +137,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCloudIdentifierDelegateCrosBrowsertest,
   const base::FilePath local_fs_file_virtual_path =
       CreateTestFile(local_fs_dir_);
   const base::FilePath local_fs_dir_virtual_path = CreateTestDir(local_fs_dir_);
-  EXPECT_CALL(mock_cloud_identifier_provider_,
-              GetCloudIdentifier(local_fs_file_virtual_path,
-                                 crosapi::mojom::HandleType::kFile,
-                                 base::test::IsNotNullCallback()))
-      .Times(0);
-  EXPECT_CALL(mock_cloud_identifier_provider_,
-              GetCloudIdentifier(local_fs_dir_virtual_path,
-                                 crosapi::mojom::HandleType::kDirectory,
-                                 base::test::IsNotNullCallback()))
-      .Times(0);
   EXPECT_EQ(base::Value(base::Value::Type::LIST),
             GetCloudFileHandleForFile(local_fs_file_virtual_path));
   EXPECT_EQ(base::Value(base::Value::Type::LIST),
             GetCloudFileHandleForDir(local_fs_dir_virtual_path));
-  testing::Mock::VerifyAndClearExpectations(&mock_cloud_identifier_provider_);
-
-  // Drive-FS
-  const base::FilePath drive_fs_file_virtual_path =
-      CreateTestFile(drive_fs_dir_);
-  const base::FilePath drive_fs_dir_virtual_path = CreateTestDir(drive_fs_dir_);
-  EXPECT_CALL(mock_cloud_identifier_provider_,
-              GetCloudIdentifier(drive_fs_file_virtual_path,
-                                 crosapi::mojom::HandleType::kFile,
-                                 base::test::IsNotNullCallback()))
-      .Times(1)
-      .WillOnce(base::test::RunOnceCallback<2>(
-          crosapi::mojom::FileSystemAccessCloudIdentifier::New(
-              "drive-fs-provider-name", "drive-fs-file-item-id")));
-  EXPECT_CALL(mock_cloud_identifier_provider_,
-              GetCloudIdentifier(drive_fs_dir_virtual_path,
-                                 crosapi::mojom::HandleType::kDirectory,
-                                 base::test::IsNotNullCallback()))
-      .Times(1)
-      .WillOnce(base::test::RunOnceCallback<2>(
-          crosapi::mojom::FileSystemAccessCloudIdentifier::New(
-              "drive-fs-provider-name", "drive-fs-dir-item-id")));
-  const std::optional<base::Value> expected_drive_fs_file_result =
-      base::JSONReader::Read(R"(
-        [{
-          "id": "drive-fs-file-item-id",
-          "providerName": "drive-fs-provider-name"
-        }]
-      )");
-  const std::optional<base::Value> expected_drive_fs_dir_result =
-      base::JSONReader::Read(R"(
-        [{
-          "id": "drive-fs-dir-item-id",
-          "providerName": "drive-fs-provider-name"
-        }]
-      )");
-  ASSERT_TRUE(expected_drive_fs_file_result);
-  ASSERT_TRUE(expected_drive_fs_dir_result);
-  EXPECT_EQ(expected_drive_fs_file_result.value(),
-            GetCloudFileHandleForFile(drive_fs_file_virtual_path));
-  EXPECT_EQ(expected_drive_fs_dir_result.value(),
-            GetCloudFileHandleForDir(drive_fs_dir_virtual_path));
-  testing::Mock::VerifyAndClearExpectations(&mock_cloud_identifier_provider_);
-
-  // Provided-FS
-  const base::FilePath provided_fs_file_virtual_path =
-      CreateTestFile(provided_fs_dir_);
-  const base::FilePath provided_fs_dir_virtual_path =
-      CreateTestDir(provided_fs_dir_);
-  EXPECT_CALL(mock_cloud_identifier_provider_,
-              GetCloudIdentifier(provided_fs_file_virtual_path,
-                                 crosapi::mojom::HandleType::kFile,
-                                 base::test::IsNotNullCallback()))
-      .Times(1)
-      .WillOnce(base::test::RunOnceCallback<2>(
-          crosapi::mojom::FileSystemAccessCloudIdentifier::New(
-              "provided-fs-provider-name", "provided-fs-file-item-id")));
-  EXPECT_CALL(mock_cloud_identifier_provider_,
-              GetCloudIdentifier(provided_fs_dir_virtual_path,
-                                 crosapi::mojom::HandleType::kDirectory,
-                                 base::test::IsNotNullCallback()))
-      .Times(1)
-      .WillOnce(base::test::RunOnceCallback<2>(
-          crosapi::mojom::FileSystemAccessCloudIdentifier::New(
-              "provided-fs-provider-name", "provided-fs-dir-item-id")));
-  const std::optional<base::Value> expected_provided_fs_file_result =
-      base::JSONReader::Read(R"(
-        [{
-          "id": "provided-fs-file-item-id",
-          "providerName": "provided-fs-provider-name"
-        }]
-      )");
-  const std::optional<base::Value> expected_provided_fs_dir_result =
-      base::JSONReader::Read(R"(
-        [{
-          "id": "provided-fs-dir-item-id",
-          "providerName": "provided-fs-provider-name"
-        }]
-      )");
-  ASSERT_TRUE(expected_provided_fs_file_result);
-  ASSERT_TRUE(expected_provided_fs_dir_result);
-  EXPECT_EQ(expected_provided_fs_file_result.value(),
-            GetCloudFileHandleForFile(provided_fs_file_virtual_path));
-  EXPECT_EQ(expected_provided_fs_dir_result.value(),
-            GetCloudFileHandleForDir(provided_fs_dir_virtual_path));
-  testing::Mock::VerifyAndClearExpectations(&mock_cloud_identifier_provider_);
 }
 
 }  // anonymous namespace
