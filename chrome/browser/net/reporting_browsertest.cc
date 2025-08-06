@@ -237,18 +237,9 @@ class ReportingBrowserTestCrashReportingStorage
 
   ~ReportingBrowserTestCrashReportingStorage() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCrashReportingStorageAPI);
-    BaseReportingBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    BaseReportingBrowserTest::SetUpOnMainThread();
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kCrashReportingStorageAPI};
 };
 
 class ReportingBrowserTestSpecifyCrashEndpoint

@@ -820,6 +820,12 @@ interface LocalFrameHost {
   // refactoring the implementation to use a shared memory region with the
   // browser process, and some abstraction that serializes the internal map to
   // bytes in the shared memory region.
+  //
+  // This and the following IPC needs to be synchronous so that the browser
+  // process can obtain the relevant crash data before the JavaScript that
+  // triggered this IPC moves to the next line of code, which might crash the
+  // renderer process. See
+  // https://github.com/WICG/crash-reporting/blob/gh-pages/crashReport-explainer.md.
   [Sync]
   SetCrashReportStorageKey(string key, string value) => ();
 
