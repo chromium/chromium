@@ -287,8 +287,13 @@ bool Environment::IsExternalDataSupported(mojom::Device device_type) const {
   OrtHardwareDeviceType ort_device_type = GetOrtHardwareDeviceType(device_type);
   for (const auto* ep_device : ep_devices) {
     CHECK(ep_device);
-    if (ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device)) ==
-        ort_device_type) {
+    OrtHardwareDeviceType ep_device_type =
+        ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device));
+    // Check if the external data is supported when the EP device type
+    // matches the selected device type, or is CPU because CPU EPs might be
+    // selected by ORT as the fallback EP.
+    if (ep_device_type == ort_device_type ||
+        ep_device_type == OrtHardwareDeviceType_CPU) {
       const char* ep_name = ort_api->EpDevice_EpName(ep_device);
       // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
       const auto& iter =
