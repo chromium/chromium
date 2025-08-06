@@ -272,8 +272,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
                                                     ReplyBehavior::kWillReply);
   auto get_device_pixel_ratio = [this, &device_pixel_handler](
                                     const std::string& message) {
-    content::WebContents* active_tab =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* active_tab = GetActiveWebContents();
     ASSERT_TRUE(active_tab);
     content::RenderWidgetHostView* view = active_tab->GetRenderWidgetHostView();
     ASSERT_TRUE(view);
@@ -299,8 +298,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
                                                     ReplyBehavior::kWillReply);
   auto get_device_pixel_ratio = [this, &device_pixel_handler](
                                     const std::string& message) {
-    content::WebContents* active_tab =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* active_tab = GetActiveWebContents();
     ASSERT_TRUE(active_tab);
     content::RenderWidgetHostView* view = active_tab->GetRenderWidgetHostView();
     ASSERT_TRUE(view);

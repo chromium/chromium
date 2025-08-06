@@ -78,7 +78,7 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
             browser(), https_test_server_.GetURL(test_domain_, "/page.html"))) {
       ADD_FAILURE() << "Failed to navigate to test URL";
     }
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+    return content::EvalJs(GetActiveWebContents(),
                            "PublicKeyCredential."
                            "isUserVerifyingPlatformAuthenticatorAvailable();")
         .ExtractBool();
@@ -128,8 +128,7 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
               return err;
             })();)";
     return testing::Value(
-        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                        kMakeCredentialJs),
+        content::EvalJs(GetActiveWebContents(), kMakeCredentialJs),
         content::EvalJsResult::ErrorIs(testing::HasSubstr("AbortError")));
   }
 
@@ -146,8 +145,7 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
               }});
               return credential.id;
             })();)";
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           kGetAssertionJs);
+    return content::EvalJs(GetActiveWebContents(), kGetAssertionJs);
   }
 
   bool NavigateAndCallGetAssertionThenCancel() {
@@ -169,8 +167,7 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
               return err;
             })();)";
     return testing::Value(
-        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                        kGetAssertionJs),
+        content::EvalJs(GetActiveWebContents(), kGetAssertionJs),
         content::EvalJsResult::ErrorIs(testing::HasSubstr("AbortError")));
   }
 

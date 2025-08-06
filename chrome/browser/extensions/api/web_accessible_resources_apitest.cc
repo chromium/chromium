@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   test_page = test_page.AppendASCII("simple.html");
   GURL gurl = net::FilePathToFileURL(test_page);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   static constexpr char kScript[] =
       R"((async () => {
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
   ResultCatcher catcher;
   GURL gurl = embedded_test_server()->GetURL("example.com", "/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   static constexpr char kScript[] =
       R"((async () => {

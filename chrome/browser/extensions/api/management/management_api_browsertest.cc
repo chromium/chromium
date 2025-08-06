@@ -17,7 +17,6 @@
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -353,10 +352,7 @@ class ExtensionManagementApiEscalationTest :
     function->set_extension(extension);
     if (user_gesture)
       function->set_user_gesture(true);
-    function->SetRenderFrameHost(browser()
-                                     ->tab_strip_model()
-                                     ->GetActiveWebContents()
-                                     ->GetPrimaryMainFrame());
+    function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
     bool response = test_utils::RunFunction(
         function.get(),
         base::StringPrintf("[\"%s\", %s]", kId, base::ToString(enabled)),

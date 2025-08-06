@@ -1424,8 +1424,7 @@ IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
 
   // Open the developer tools and wait for the extension page to be loaded.
   ExtensionTestMessageListener listener("devtools page opened");
-  content::WebContents* inspected_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* inspected_web_contents = GetActiveWebContents();
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(inspected_web_contents,
                                                     open_docked);

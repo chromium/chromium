@@ -65,7 +65,7 @@ class ExternallyConnectableMessagingTest : public ExtensionApiTest {
   };
 
   bool AppendIframe(const GURL& src) {
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+    return content::EvalJs(GetActiveWebContents(),
                            "actions.appendIframe('" + src.spec() + "');")
         .ExtractBool();
   }
@@ -82,7 +82,7 @@ class ExternallyConnectableMessagingTest : public ExtensionApiTest {
   Result CanConnectAndSendMessagesToIFrame(const Extension* extension,
                                            const char* message = nullptr) {
     content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
+        GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
     return CanConnectAndSendMessagesToFrame(frame, extension, message);
   }
@@ -119,7 +119,7 @@ class ExternallyConnectableMessagingTest : public ExtensionApiTest {
 
   testing::AssertionResult AreAnyNonWebApisDefinedForIFrame() {
     content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
+        GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
     return AreAnyNonWebApisDefinedForFrame(frame);
   }
@@ -356,7 +356,7 @@ class ExternallyConnectableMessagingTest : public ExtensionApiTest {
       args += std::string(", '") + message + "'";
     }
     return content::EvalJs(
-               browser()->tab_strip_model()->GetActiveWebContents(),
+               GetActiveWebContents(),
                base::StringPrintf("assertions.%s(%s)", method, args.c_str()))
         .ExtractString();
   }
@@ -834,9 +834,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, IllegalArguments) {
   // Regression test for crbug.com/472700.
   LoadChromiumConnectableExtension();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
-  EXPECT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      "assertions.tryIllegalArguments()"));
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(),
+                                  "assertions.tryIllegalArguments()"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,

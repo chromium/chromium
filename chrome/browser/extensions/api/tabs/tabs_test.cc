@@ -2272,7 +2272,7 @@ content::WebContents* ExtensionTabsZoomTest::OpenUrlAndWaitForLoad(
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return GetActiveWebContents();
 }
 
 namespace {
@@ -2527,12 +2527,10 @@ class ExtensionApiPdfTest : public base::test::WithFeatureOverride,
 
 // Regression test for crbug.com/660498.
 IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
-  content::WebContents* first_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* first_web_contents = GetActiveWebContents();
   ASSERT_TRUE(first_web_contents);
   chrome::NewTab(browser());
-  content::WebContents* second_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* second_web_contents = GetActiveWebContents();
   ASSERT_NE(first_web_contents, second_web_contents);
   GURL url = embedded_test_server()->GetURL(
       "/extensions/api_test/tabs/pdf_extension_test.html");
@@ -2572,13 +2570,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_EQ(first_web_contents,
-            browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(first_web_contents, GetActiveWebContents());
   browser()->tab_strip_model()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_EQ(second_web_contents,
-            browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(second_web_contents, GetActiveWebContents());
 
   EXPECT_EQ(url, second_web_contents->GetVisibleURL());
 
@@ -2604,8 +2600,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
   // Navigate a tab to an extension page.
   GURL extension_url = extension->GetResourceURL("file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  content::WebContents* old_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* old_contents = GetActiveWebContents();
 
   // Execute chrome.windows.create and store the new tab in |new_contents|.
   content::WebContents* new_contents = nullptr;
@@ -2676,8 +2671,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
   // Navigate a tab to an extension page.
   GURL extension_url = extension->GetResourceURL("file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  content::WebContents* old_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* old_contents = GetActiveWebContents();
 
   // Execute chrome.windows.create and store the new tab in |new_contents|.
   content::WebContents* new_contents = nullptr;
@@ -2716,8 +2710,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
   // Navigate a tab to an extension page.
   GURL extension_url = extension->GetResourceURL("file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   const std::string extension_origin_str =
       url::Origin::Create(extension->url()).Serialize();
@@ -2803,8 +2796,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
 
   // Navigate a tab to an extension page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  content::WebContents* extension_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* extension_contents = GetActiveWebContents();
   EXPECT_EQ(
       extension_origin,
       extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -2869,8 +2861,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutNewTab) {
 
   // Navigate a tab to an extension page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  content::WebContents* extension_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* extension_contents = GetActiveWebContents();
   EXPECT_EQ(
       extension_origin,
       extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -2923,8 +2914,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
 
   // Navigate a tab to an extension page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  content::WebContents* extension_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* extension_contents = GetActiveWebContents();
   EXPECT_EQ(
       extension_origin,
       extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());

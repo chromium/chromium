@@ -115,8 +115,7 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest,
     content::WebContents* web_contents =
         browsertest_util::AddTab(browser(), GURL("about:blank"));
     ASSERT_TRUE(web_contents);
-    ExtensionActionRunner::GetForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents())
+    ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
         ->RunAction(extension_a, true);
   }
   EXPECT_TRUE(catcher.GetNextResult()) << message_;

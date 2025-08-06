@@ -394,8 +394,7 @@ IN_PROC_BROWSER_TEST_P(
     // Load the extension tab (and it's script).
     GURL ext_url = extension->GetResourceURL("test_ext_tab.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(ext_url)));
-    content::WebContents* new_ext_tab_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* new_ext_tab_web_contents = GetActiveWebContents();
     ASSERT_TRUE(new_ext_tab_web_contents);
 
     // Must load the tab content script second since it's loading sends a

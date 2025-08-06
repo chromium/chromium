@@ -71,7 +71,7 @@ class VirtualKeyboardPrivateApiTest : public extensions::ExtensionApiTest {
 
     // Select one part of the web page. Wait until the selection region updates.
     // Then copy the selected part to clipboard.
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = GetActiveWebContents();
     content::BoundingBoxUpdateWaiter select_waiter(web_contents);
     ASSERT_TRUE(ExecJs(web_contents, "selectPart1();"));
     select_waiter.Wait();
