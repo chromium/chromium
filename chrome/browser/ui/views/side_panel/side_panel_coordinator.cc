@@ -525,9 +525,9 @@ void SidePanelCoordinator::Show(
       browser_view_->browser(), entry->key().id(), open_trigger);
 
   waiter_->WaitForEntry(
-      entry,
-      base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
-                     base::Unretained(this), suppress_animations, input));
+      entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
+                            base::Unretained(this), suppress_animations, input,
+                            open_trigger));
 }
 
 base::CallbackListSubscription SidePanelCoordinator::RegisterSidePanelShown(
@@ -610,8 +610,10 @@ SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
 void SidePanelCoordinator::PopulateSidePanel(
     bool suppress_animations,
     const UniqueKey& unique_key,
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view) {
+  entry->set_last_open_trigger(open_trigger);
   actions::ActionItem* const action_item = GetActionItem(entry->key());
   UpdatePanelIconAndTitle(
       action_item->GetImage(), action_item->GetText(),
