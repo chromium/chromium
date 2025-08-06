@@ -1589,8 +1589,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         return getTabGroupTitle(groupedTab.getRootId());
     }
 
-    @Override
-    public @Nullable String getTabGroupTitle(int rootId) {
+    /*package*/ @Nullable String getTabGroupTitle(int rootId) {
         return TabGroupTitleUtils.getTabGroupTitle(rootId);
     }
 
@@ -1601,8 +1600,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         setTabGroupTitle(rootId, title);
     }
 
-    @Override
-    public void setTabGroupTitle(int rootId, @Nullable String title) {
+    /*package*/ void setTabGroupTitle(int rootId, @Nullable String title) {
         TabGroupTitleUtils.storeTabGroupTitle(rootId, title);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
         if (tabGroupId == null) return;
@@ -1618,8 +1616,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         deleteTabGroupTitle(rootId);
     }
 
-    @Override
-    public void deleteTabGroupTitle(int rootId) {
+    /*package*/ void deleteTabGroupTitle(int rootId) {
         TabGroupTitleUtils.deleteTabGroupTitle(rootId);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
         if (tabGroupId == null) return;
@@ -1635,8 +1632,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         return getTabGroupColor(rootId);
     }
 
-    @Override
-    public int getTabGroupColor(int rootId) {
+    /*package*/ int getTabGroupColor(int rootId) {
         return TabGroupColorUtils.getTabGroupColor(rootId);
     }
 
@@ -1653,8 +1649,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         return getTabGroupColorWithFallback(groupedTab.getRootId());
     }
 
-    @Override
-    public @TabGroupColorId int getTabGroupColorWithFallback(int rootId) {
+    /*package*/ @TabGroupColorId
+    int getTabGroupColorWithFallback(int rootId) {
         assert rootId != Tab.INVALID_TAB_ID;
         int color = getTabGroupColor(rootId);
         return color == TabGroupColorUtils.INVALID_COLOR_ID ? TabGroupColorId.GREY : color;
@@ -1667,8 +1663,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         setTabGroupColor(rootId, color);
     }
 
-    @Override
-    public void setTabGroupColor(int rootId, @TabGroupColorId int color) {
+    /*package*/ void setTabGroupColor(int rootId, @TabGroupColorId int color) {
         TabGroupColorUtils.storeTabGroupColor(rootId, color);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
         if (tabGroupId == null) return;
@@ -1684,8 +1679,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         deleteTabGroupColor(rootId);
     }
 
-    @Override
-    public void deleteTabGroupColor(int rootId) {
+    /*package*/ void deleteTabGroupColor(int rootId) {
         TabGroupColorUtils.deleteTabGroupColor(rootId);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
         if (tabGroupId == null) return;
@@ -1701,8 +1695,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         return getTabGroupCollapsed(rootId);
     }
 
-    @Override
-    public boolean getTabGroupCollapsed(int rootId) {
+    /*package*/ boolean getTabGroupCollapsed(int rootId) {
         return TabGroupCollapsedUtils.getTabGroupCollapsed(rootId);
     }
 
@@ -1713,8 +1706,11 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         setTabGroupCollapsed(rootId, isCollapsed, animate);
     }
 
-    @Override
-    public void setTabGroupCollapsed(int rootId, boolean isCollapsed, boolean animate) {
+    /*package*/ void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
+        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ false);
+    }
+
+    /*package*/ void setTabGroupCollapsed(int rootId, boolean isCollapsed, boolean animate) {
         TabGroupCollapsedUtils.storeTabGroupCollapsed(rootId, isCollapsed);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
         if (tabGroupId == null) return;
@@ -1730,8 +1726,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         deleteTabGroupCollapsed(rootId);
     }
 
-    @Override
-    public void deleteTabGroupCollapsed(int rootId) {
+    /*package*/ void deleteTabGroupCollapsed(int rootId) {
         TabGroupCollapsedUtils.deleteTabGroupCollapsed(rootId);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
         if (tabGroupId == null) return;
@@ -1741,15 +1736,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
     }
 
-    @Override
-    public void deleteTabGroupVisualData(Token tabGroupId) {
-        @TabId int rootId = getRootIdFromTabGroupId(tabGroupId);
-        assert rootId != Tab.INVALID_TAB_ID;
-        deleteTabGroupVisualData(rootId);
-    }
-
-    @Override
-    public void deleteTabGroupVisualData(int rootId) {
+    private void deleteTabGroupVisualData(int rootId) {
         deleteTabGroupTitle(rootId);
         deleteTabGroupColor(rootId);
         deleteTabGroupCollapsed(rootId);

@@ -111,6 +111,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -1693,8 +1694,8 @@ public class TabGridDialogTest {
                 selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    int rootId = filter.getTabModel().getTabAt(0).getRootId();
-                    filter.setTabGroupTitle(rootId, CUSTOMIZED_TITLE1);
+                    Token tabGroupId = filter.getTabModel().getTabAt(0).getTabGroupId();
+                    filter.setTabGroupTitle(tabGroupId, CUSTOMIZED_TITLE1);
                 });
         collapseTargetString = "Collapse " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
@@ -1732,8 +1733,8 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    int rootId = filter.getTabModel().getTabAt(0).getRootId();
-                    filter.deleteTabGroupTitle(rootId);
+                    Token tabGroupId = filter.getTabModel().getTabAt(0).getTabGroupId();
+                    filter.deleteTabGroupTitle(tabGroupId);
                 });
         verifyShowingDialog(cta, 2, null);
         collapseTargetString = "Collapse tab group with 2 tabs.";

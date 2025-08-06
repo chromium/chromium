@@ -42,7 +42,7 @@ public class TabGroupVisualDataManager {
                     public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         if (tabs.isEmpty()) return;
 
-                        TabGroupModelFilter filter = filterFromTab(tabs.get(0));
+                        TabGroupModelFilterImpl filter = filterFromTab(tabs.get(0));
                         LazyOneshotSupplier<Set<Token>> remainingTabGroupIds =
                                 filter.getLazyAllTabGroupIds(
                                         tabs, /* includePendingClosures= */ true);
@@ -85,7 +85,7 @@ public class TabGroupVisualDataManager {
                     @Override
                     public void willMergeTabToGroup(
                             Tab movedTab, int newRootId, @Nullable Token tabGroupId) {
-                        TabGroupModelFilter filter = filterFromTab(movedTab);
+                        TabGroupModelFilterImpl filter = filterFromTab(movedTab);
                         int rootId = movedTab.getRootId();
                         String sourceGroupTitle = filter.getTabGroupTitle(rootId);
                         String targetGroupTitle = filter.getTabGroupTitle(newRootId);
@@ -112,7 +112,7 @@ public class TabGroupVisualDataManager {
                     @Override
                     public void willMoveTabOutOfGroup(
                             Tab movedTab, @Nullable Token destinationTabGroupId) {
-                        TabGroupModelFilter filter = filterFromTab(movedTab);
+                        TabGroupModelFilterImpl filter = filterFromTab(movedTab);
 
                         // If the group will become empty (0 tabs) delete the title.
                         boolean shouldDeleteVisualData =
@@ -132,7 +132,7 @@ public class TabGroupVisualDataManager {
 
                     @Override
                     public void didChangeGroupRootId(int oldRootId, int newRootId) {
-                        TabGroupModelFilter filter =
+                        TabGroupModelFilterImpl filter =
                                 filterFromTab(
                                         assumeNonNull(mTabModelSelector.getTabById(newRootId)));
                         moveTabGroupMetadata(filter, oldRootId, newRootId);
@@ -147,16 +147,18 @@ public class TabGroupVisualDataManager {
                 .addTabGroupObserver(mFilterObserver);
     }
 
-    private TabGroupModelFilter filterFromTab(Tab tab) {
-        return assumeNonNull(
+    private TabGroupModelFilterImpl filterFromTab(Tab tab) {
+        TabGroupModelFilter filter =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(tab.isIncognito()));
+                        .getTabGroupModelFilter(tab.isIncognito());
+        assumeNonNull(filter);
+        return (TabGroupModelFilterImpl) filter;
     }
 
     /** Overwrites the tab group metadata at the new id with the data from the old id. */
     private static void moveTabGroupMetadata(
-            TabGroupModelFilter filter, int oldRootId, int newRootId) {
+            TabGroupModelFilterImpl filter, int oldRootId, int newRootId) {
         String title = filter.getTabGroupTitle(oldRootId);
         if (title != null) {
             filter.setTabGroupTitle(newRootId, title);

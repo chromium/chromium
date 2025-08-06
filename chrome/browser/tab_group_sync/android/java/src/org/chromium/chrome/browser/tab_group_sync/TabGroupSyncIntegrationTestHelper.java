@@ -8,11 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils.NEW_TAB_TITLE;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -379,10 +381,11 @@ public class TabGroupSyncIntegrationTestHelper {
      */
     public void verifyGroupInfoMatchesLocalData(int index, GroupInfo expectedGroup) {
         TabGroupModelFilter filter = getTabGroupFilter();
-        int rootId = getTabGroupRootIdAt(index);
-        String actualTitle = filter.getTabGroupTitle(rootId);
-        int actualColor = filter.getTabGroupColorWithFallback(rootId);
-        List<Tab> tabs = filter.getRelatedTabList(rootId);
+        Token tabGroupId = getTabGroupIdAt(index);
+        String actualTitle = runOnUiThreadBlocking(() -> filter.getTabGroupTitle(tabGroupId));
+        int actualColor =
+                runOnUiThreadBlocking(() -> filter.getTabGroupColorWithFallback(tabGroupId));
+        List<Tab> tabs = runOnUiThreadBlocking(() -> filter.getTabsInGroup(tabGroupId));
 
         // group details
         assertEquals(
@@ -403,21 +406,24 @@ public class TabGroupSyncIntegrationTestHelper {
         }
     }
 
-    private int getTabGroupRootIdAt(int index) {
-        List<Integer> rootIds = getTabGroupRootIds();
-        assertTrue(index < rootIds.size());
-        return rootIds.get(index);
+    private Token getTabGroupIdAt(int index) {
+        List<Token> tabGroupIds = getTabGroupIds();
+        assertTrue(index < tabGroupIds.size());
+        return tabGroupIds.get(index);
     }
 
-    private List<Integer> getTabGroupRootIds() {
-        Set<Integer> rootIds = new HashSet<>();
+    private List<Token> getTabGroupIds() {
+        Set<Token> tabGroupIds = new HashSet<>();
         TabModel tabModel = getTabModel();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAtChecked(i);
-            if (tab.getTabGroupId() == null) continue;
-            rootIds.add(tab.getRootId());
-        }
-        return new ArrayList<>(rootIds);
+        runOnUiThreadBlocking(
+                () -> {
+                    for (Tab tab : tabModel) {
+                        Token tabGroupId = tab.getTabGroupId();
+                        if (tabGroupId == null) continue;
+                        tabGroupIds.add(tabGroupId);
+                    }
+                });
+        return new ArrayList<>(tabGroupIds);
     }
 
     /**

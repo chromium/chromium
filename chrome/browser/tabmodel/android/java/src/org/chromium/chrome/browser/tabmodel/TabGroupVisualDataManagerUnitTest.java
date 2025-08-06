@@ -63,8 +63,8 @@ public class TabGroupVisualDataManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mContext;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
+    @Mock private TabGroupModelFilterImpl mTabGroupModelFilter;
+    @Mock private TabGroupModelFilterImpl mIncognitoTabGroupModelFilter;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
 

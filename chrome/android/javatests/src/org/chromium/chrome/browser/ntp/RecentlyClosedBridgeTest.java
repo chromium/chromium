@@ -670,7 +670,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
                     closeTabs(
@@ -709,7 +709,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                            "Bar",
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
@@ -736,7 +737,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabA.getId());
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
                     closeTabs(
@@ -796,7 +797,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabA.getId());
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
                     closeTabs(
@@ -855,7 +856,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(false).build());
@@ -901,7 +902,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(tabA);
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA))
@@ -936,7 +937,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                            "Bar",
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                 });
     }
@@ -954,7 +956,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(tabA);
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(false).build());
@@ -987,7 +989,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                            "Bar",
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                 });
     }
@@ -1005,7 +1008,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(tabA);
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(true).build());
@@ -1031,7 +1034,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(tabA);
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
                             TabClosureParams.closeTabs(List.of(tabA))
@@ -1067,7 +1070,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabA.getId());
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Bar");
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
@@ -1112,7 +1115,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                            "Bar",
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(3)));
@@ -1140,7 +1144,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                            "Bar",
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(3)));
@@ -1225,7 +1230,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Foo");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Foo");
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
@@ -1268,7 +1273,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Foo", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                            "Foo",
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
@@ -1336,7 +1342,8 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(groupUrls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertNull(mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                    Assert.assertNull(
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
@@ -1425,7 +1432,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
-                    Assert.assertNull(mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                    Assert.assertNull(
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
@@ -1619,9 +1627,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabB.getId());
-                    mTabGroupModelFilter.setTabGroupTitle(tabB.getId(), "Group 1");
+                    mTabGroupModelFilter.setTabGroupTitle(tabB.getTabGroupId(), "Group 1");
                     mTabGroupModelFilter.createSingleTabGroup(tabA);
-                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Group 2");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getTabGroupId(), "Group 2");
                     group2Titles[0] = tabA.getTitle();
                     group1Titles[1] = tabB.getTitle();
                     group1Titles[0] = tabC.getTitle();
@@ -1662,7 +1670,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Group 1", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                            "Group 1",
+                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),

@@ -262,29 +262,11 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      */
     @Nullable String getTabGroupTitle(Tab groupedTab);
 
-    /**
-     * @deprecated Use {@link #getTabGroupTitle(Token)} instead.
-     */
-    @Deprecated
-    @Nullable String getTabGroupTitle(@TabId int rootId);
-
     /** Stores the given title for the tab group. */
     void setTabGroupTitle(Token tabGroupId, @Nullable String title);
 
-    /**
-     * @deprecated Use {@link #setTabGroupTitle(Token, String)} instead.
-     */
-    @Deprecated
-    void setTabGroupTitle(@TabId int rootId, @Nullable String title);
-
     /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
     void deleteTabGroupTitle(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #deleteTabGroupTitle(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupTitle(@TabId int rootId);
 
     /**
      * This method fetches tab group colors id for the specified tab group. It will be a {@link
@@ -292,12 +274,6 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      * is no color entry for the group.
      */
     int getTabGroupColor(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #getTabGroupColor(Token)} instead.
-     */
-    @Deprecated
-    int getTabGroupColor(@TabId int rootId);
 
     /**
      * This method fetches tab group colors for the related tab group root ID. If the color does not
@@ -318,39 +294,14 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     @TabGroupColorId
     int getTabGroupColorWithFallback(Tab groupedTab);
 
-    /**
-     * @deprecated Use {@link #getTabGroupColorWithFallback(Token)} instead.
-     */
-    @Deprecated
-    @TabGroupColorId
-    int getTabGroupColorWithFallback(@TabId int rootId);
-
     /** Stores the given color for the tab group. */
     void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color);
-
-    /**
-     * @deprecated Use {@link #setTabGroupColor(Token, int)} instead.
-     */
-    @Deprecated
-    void setTabGroupColor(@TabId int rootId, @TabGroupColorId int color);
 
     /** Deletes the color that was recorded for the group. */
     void deleteTabGroupColor(Token tabGroupId);
 
-    /**
-     * @deprecated Use {@link #deleteTabGroupColor(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupColor(@TabId int rootId);
-
     /** Returns whether the tab group is expanded or collapsed. */
     boolean getTabGroupCollapsed(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #getTabGroupCollapsed(Token)} instead.
-     */
-    @Deprecated
-    boolean getTabGroupCollapsed(@TabId int rootId);
 
     /** Sets whether the tab group is expanded or collapsed. */
     default void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed) {
@@ -360,35 +311,6 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     /** Sets whether the tab group is expanded or collapsed, with optional animation. */
     void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate);
 
-    /**
-     * @deprecated Use {@link #setTabGroupCollapsed(Token, boolean)} instead.
-     */
-    @Deprecated
-    default void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed) {
-        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ false);
-    }
-
-    /**
-     * @deprecated Use {@link #setTabGroupCollapsed(Token, boolean, boolean)} instead.
-     */
-    @Deprecated
-    void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed, boolean animate);
-
     /** Deletes the record that the group is collapsed, setting it to expanded. */
     void deleteTabGroupCollapsed(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #deleteTabGroupCollapsed(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupCollapsed(@TabId int rootId);
-
-    /** Delete the title, color and collapsed state of a tab group. */
-    void deleteTabGroupVisualData(Token tabGroupId);
-
-    /**
-     * @deprecated Use {@link #deleteTabGroupVisualData(Token)} instead.
-     */
-    @Deprecated
-    void deleteTabGroupVisualData(@TabId int rootId);
 }

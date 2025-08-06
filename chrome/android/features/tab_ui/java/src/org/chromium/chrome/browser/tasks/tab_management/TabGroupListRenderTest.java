@@ -105,7 +105,7 @@ public class TabGroupListRenderTest {
                                             TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                                             null);
                     filter.createSingleTabGroup(tab);
-                    filter.setTabGroupTitle(tab.getRootId(), title);
+                    filter.setTabGroupTitle(tab.getTabGroupId(), title);
                 });
         if (wait) {
             onViewWaiting(withText(title)).check(matches(isDisplayed()));

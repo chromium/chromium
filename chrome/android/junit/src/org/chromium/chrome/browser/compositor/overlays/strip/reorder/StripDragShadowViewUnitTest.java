@@ -361,7 +361,8 @@ public class StripDragShadowViewUnitTest {
     private void testUpdate_GroupTinting(boolean incognito) {
         @TabGroupColorId int colorId = TabGroupColorId.GREY;
         when(mMockTab.isIncognitoBranded()).thenReturn(incognito);
-        when(mMockTabGroupModelFilter.getTabGroupColorWithFallback(anyInt())).thenReturn(colorId);
+        when(mMockTabGroupModelFilter.getTabGroupColorWithFallback(any(Token.class)))
+                .thenReturn(colorId);
         mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
 
         // Verify card color

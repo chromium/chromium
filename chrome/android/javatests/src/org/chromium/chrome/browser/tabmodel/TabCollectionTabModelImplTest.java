@@ -1380,51 +1380,6 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.removeTabGroupObserver(collapsedDeleteObserver);
                 });
         collapsedDeletedHelper.waitForOnly("deleteTabGroupCollapsed failed");
-
-        CallbackHelper deleteAllTitleHelper = new CallbackHelper();
-        CallbackHelper deleteAllColorHelper = new CallbackHelper();
-        CallbackHelper deleteAllCollapsedHelper = new CallbackHelper();
-
-        TabGroupModelFilterObserver deleteAllObserver =
-                new TabGroupModelFilterObserver() {
-                    @Override
-                    public void didChangeTabGroupTitle(Token id, String newTitle) {
-                        assertEquals(tabGroupId, id);
-                        assertEquals("", newTitle);
-                        deleteAllTitleHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didChangeTabGroupColor(Token id, int newColor) {
-                        assertEquals(tabGroupId, id);
-                        assertEquals(TabGroupColorId.GREY, newColor);
-                        deleteAllColorHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didChangeTabGroupCollapsed(
-                            Token id, boolean isCollapsed, boolean animate) {
-                        assertEquals(tabGroupId, id);
-                        assertFalse(isCollapsed);
-                        assertFalse(animate);
-                        deleteAllCollapsedHelper.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addTabGroupObserver(deleteAllObserver);
-                    mCollectionModel.deleteTabGroupVisualData(tabGroupId);
-                    assertEquals("", mCollectionModel.getTabGroupTitle(tabGroupId));
-                    assertEquals(
-                            TabGroupColorId.GREY,
-                            mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
-                    assertFalse(mCollectionModel.getTabGroupCollapsed(tabGroupId));
-                    mCollectionModel.removeTabGroupObserver(deleteAllObserver);
-                });
-        deleteAllTitleHelper.waitForOnly("deleteTabGroupTitle failed");
-        deleteAllColorHelper.waitForOnly("deleteTabGroupColor failed");
-        deleteAllCollapsedHelper.waitForOnly("deleteTabGroupCollapsed failed");
     }
 
     @Test

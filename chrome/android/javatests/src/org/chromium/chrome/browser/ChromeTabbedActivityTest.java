@@ -749,12 +749,12 @@ public class ChromeTabbedActivityTest {
                                     .getTabModelSelector()
                                     .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(false);
-                    Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(expectedRootId));
-                    Assert.assertEquals(0, filter.getTabGroupColor(expectedRootId));
+                    Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(TAB_GROUP_ID));
+                    Assert.assertEquals(0, filter.getTabGroupColor(TAB_GROUP_ID));
                     if (shouldApplyCollapse) {
-                        Assert.assertTrue(filter.getTabGroupCollapsed(expectedRootId));
+                        Assert.assertTrue(filter.getTabGroupCollapsed(TAB_GROUP_ID));
                     } else {
-                        Assert.assertFalse(filter.getTabGroupCollapsed(expectedRootId));
+                        Assert.assertFalse(filter.getTabGroupCollapsed(TAB_GROUP_ID));
                     }
 
                     // Verify histograms.
