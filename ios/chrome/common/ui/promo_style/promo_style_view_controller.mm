@@ -1514,21 +1514,29 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 }
 
 - (void)updateActionButtonsSpacing {
-  switch (self.actionButtonsVisibility) {
-    case ActionButtonsVisibility::kEquallyWeightedButtonShown:
-      // Spacing is needed when all buttons have filled background.
-      [_actionButtonsStackView
-          setCustomSpacing:kStackViewEquallyWeightedButtonSpacing
-                 afterView:_primaryActionButton];
-      break;
-    case ActionButtonsVisibility::kRegularButtonsShown:
-      [_actionButtonsStackView setCustomSpacing:kStackViewDefaultButtonSpacing
-                                      afterView:_primaryActionButton];
-      break;
-    default:
-      // Do not add button spacing by default or when buttons are hidden.
-      break;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    _actionButtonsStackView.spacing = kStackViewEquallyWeightedButtonSpacing;
+  } else {
+#endif
+    switch (self.actionButtonsVisibility) {
+      case ActionButtonsVisibility::kEquallyWeightedButtonShown:
+        // Spacing is needed when all buttons have filled background.
+        [_actionButtonsStackView
+            setCustomSpacing:kStackViewEquallyWeightedButtonSpacing
+                   afterView:_primaryActionButton];
+        break;
+      case ActionButtonsVisibility::kRegularButtonsShown:
+        [_actionButtonsStackView setCustomSpacing:kStackViewDefaultButtonSpacing
+                                        afterView:_primaryActionButton];
+        break;
+      default:
+        // Do not add button spacing by default or when buttons are hidden.
+        break;
+    }
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
 }
 
 - (void)updateActionButtonsStackAlpha:(CGFloat)alpha {

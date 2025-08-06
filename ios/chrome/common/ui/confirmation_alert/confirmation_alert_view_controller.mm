@@ -21,6 +21,9 @@ namespace {
 
 const CGFloat kDefaultActionsBottomMargin = 10;
 const CGFloat kActionButtonImageInsets = 10;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+const CGFloat kButtonStackViewSpacing = 12;
+#endif
 // Gradient height.
 const CGFloat kGradientHeight = 40.;
 const CGFloat kScrollViewBottomInsets = 20;
@@ -816,6 +819,12 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   actionStackView.axis = UILayoutConstraintAxisVertical;
   actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    actionStackView.spacing = kButtonStackViewSpacing;
+  }
+#endif
+
   if (self.primaryActionString) {
     _primaryButton = [self createPrimaryActionButton];
     [actionStackView addArrangedSubview:_primaryButton];
@@ -851,75 +860,39 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 // Helper to create the primary action button.
 - (UIButton*)createSecondaryActionButton {
   DCHECK(self.secondaryActionString);
-  UIButton* secondaryActionButton =
-      [UIButton buttonWithType:UIButtonTypeSystem];
+  UIButton* secondaryActionButton = SecondaryActionButton();
   [secondaryActionButton addTarget:self
                             action:@selector(didTapSecondaryActionButton)
                   forControlEvents:UIControlEventTouchUpInside];
 
   UIButtonConfiguration* buttonConfiguration =
-      secondaryActionButton.configuration
-          ? secondaryActionButton.configuration
-          : [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+      secondaryActionButton.configuration;
+  buttonConfiguration.title = self.secondaryActionString;
 
   if (self.secondaryActionImage) {
     buttonConfiguration.image = self.secondaryActionImage;
     buttonConfiguration.imagePadding = kActionButtonImageInsets;
   }
 
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-      initWithString:self.secondaryActionString];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
-
-  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.baseForegroundColor = titleColor;
   buttonConfiguration.background.backgroundColor = [UIColor clearColor];
   secondaryActionButton.configuration = buttonConfiguration;
 
-  secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   secondaryActionButton.accessibilityIdentifier =
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
-  secondaryActionButton.pointerInteractionEnabled = YES;
-  secondaryActionButton.pointerStyleProvider =
-      CreateOpaqueButtonPointerStyleProvider();
 
   return secondaryActionButton;
 }
 
 - (UIButton*)createTertiaryButton {
   DCHECK(self.tertiaryActionString);
-  UIButton* tertiaryActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  UIButton* tertiaryActionButton = SecondaryActionButton();
   [tertiaryActionButton addTarget:self
                            action:@selector(didTapTertiaryActionButton)
                  forControlEvents:UIControlEventTouchUpInside];
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
-  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-
-  // Customize title string.
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-      initWithString:self.tertiaryActionString];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
-  tertiaryActionButton.configuration = buttonConfiguration;
-
-  tertiaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
+  SetConfigurationTitle(tertiaryActionButton, self.tertiaryActionString);
   tertiaryActionButton.accessibilityIdentifier =
       kConfirmationAlertTertiaryActionAccessibilityIdentifier;
-  tertiaryActionButton.pointerInteractionEnabled = YES;
-  tertiaryActionButton.pointerStyleProvider =
-      CreateOpaqueButtonPointerStyleProvider();
 
   return tertiaryActionButton;
 }
@@ -986,7 +959,16 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
                              self.traitCollection.preferredContentSizeCategory,
                              UIContentSizeCategoryExtraExtraExtraLarge));
 
-    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    UIFont* newFont;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    } else {
+#endif
+      newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    }
+#endif
     if (self.secondaryActionString) {
       SetConfigurationFont(self.secondaryActionButton, newFont);
     }

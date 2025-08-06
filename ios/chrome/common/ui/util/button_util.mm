@@ -19,7 +19,16 @@ void CommonSetupButtonConfiguration(UIButtonConfiguration* configuration,
                                     UIFont* font) {
   configuration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  configuration.background.cornerRadius = kPrimaryButtonCornerRadius;
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  } else {
+#endif
+    configuration.background.cornerRadius = kPrimaryButtonCornerRadius;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
 
   configuration.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
@@ -34,8 +43,22 @@ void CommonSetupButtonConfiguration(UIButtonConfiguration* configuration,
 // Creates a button configured for all cases.
 ChromeButton* CreateCommonButton() {
   ChromeButton* button = [ChromeButton buttonWithType:UIButtonTypeSystem];
-
-  button.configuration = [UIButtonConfiguration plainButtonConfiguration];
+  button.tintColor = UIColor.greenColor;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    if ([UIButtonConfiguration
+            respondsToSelector:@selector(prominentGlassButtonConfiguration)]) {
+      button.configuration =
+          [UIButtonConfiguration prominentGlassButtonConfiguration];
+    } else {
+      button.configuration = [UIButtonConfiguration glassButtonConfiguration];
+    }
+  } else {
+#endif
+    button.configuration = [UIButtonConfiguration plainButtonConfiguration];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
 
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -48,14 +71,31 @@ ChromeButton* CreateCommonButton() {
 // Returns a configuration update handler to be used for primary action.
 UIButtonConfigurationUpdateHandler PrimaryActionConfigurationUpdateHandler() {
   return ^(UIButton* button) {
+    bool background_as_tint;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      background_as_tint = true;
+    } else {
+#endif
+      background_as_tint = false;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    }
+#endif
+
     UIColor* background_color = [UIColor colorNamed:kBlueColor];
     if (button.state & UIControlStateTunedDown) {
       background_color = [UIColor colorNamed:kBlue100Color];
     } else if (!button.enabled) {
       background_color = [UIColor colorNamed:kGrey100Color];
     }
+
     UIButtonConfiguration* configuration = button.configuration;
-    configuration.background.backgroundColor = background_color;
+    if (background_as_tint) {
+      configuration.background.backgroundColor = nil;
+      button.tintColor = background_color;
+    } else {
+      configuration.background.backgroundColor = background_color;
+    }
     button.configuration = configuration;
   };
 }
@@ -64,6 +104,17 @@ UIButtonConfigurationUpdateHandler PrimaryActionConfigurationUpdateHandler() {
 UIButtonConfigurationUpdateHandler
 PrimaryDestructiveActionConfigurationUpdateHandler() {
   return ^(UIButton* button) {
+    bool background_as_tint;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      background_as_tint = true;
+    } else {
+#endif
+      background_as_tint = false;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    }
+#endif
+
     UIColor* background_color = [UIColor colorNamed:kRedColor];
     if (button.state & UIControlStateTunedDown) {
       background_color = [UIColor colorNamed:kRed100Color];
@@ -71,52 +122,16 @@ PrimaryDestructiveActionConfigurationUpdateHandler() {
       background_color =
           [background_color colorWithAlphaComponent:kDisabledButtonAlpha];
     }
-    UIButtonConfiguration* configuration = button.configuration;
-    configuration.background.backgroundColor = background_color;
-    button.configuration = configuration;
-  };
-}
 
-// Returns a configuration update handler to be used for equal weight actions.
-UIButtonConfigurationUpdateHandler EqualWeightConfigurationUpdateHandler() {
-  return ^(UIButton* button) {
     UIButtonConfiguration* configuration = button.configuration;
-    UIColor* background_color = [UIColor colorNamed:kBlueHaloColor];
-    if (!button.enabled) {
-      background_color =
-          [background_color colorWithAlphaComponent:kDisabledButtonAlpha];
+    if (background_as_tint) {
+      configuration.background.backgroundColor = nil;
+      button.tintColor = background_color;
+    } else {
+      configuration.background.backgroundColor = background_color;
     }
-    configuration.background.backgroundColor = background_color;
     button.configuration = configuration;
   };
-}
-
-// Updates `configuration` to match a Primary action.
-void SetConfigurationForPrimaryAction(UIButtonConfiguration* configuration) {
-  CommonSetupButtonConfiguration(
-      configuration,
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
-  configuration.baseForegroundColor =
-      [UIColor colorNamed:kSolidButtonTextColor];
-  configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
-}
-
-// Updates `configuration` to match a Secondary action.
-void SetConfigurationForSecondaryAction(UIButtonConfiguration* configuration) {
-  CommonSetupButtonConfiguration(
-      configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
-  configuration.background.backgroundColor = [UIColor clearColor];
-  configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-}
-
-// Updates `configuration` to match an equal weight action.
-void SetConfigurationForEqualWeight(UIButtonConfiguration* configuration) {
-  CommonSetupButtonConfiguration(
-      configuration,
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
-  configuration.background.backgroundColor =
-      [UIColor colorNamed:kBlueHaloColor];
-  configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
 }
 
 }  // namespace
@@ -128,7 +143,20 @@ const CGFloat kPrimaryButtonCornerRadius = 15;
 
 void UpdateButtonToMatchPrimaryAction(ChromeButton* button) {
   UIButtonConfiguration* configuration = button.configuration;
-  SetConfigurationForPrimaryAction(configuration);
+  CommonSetupButtonConfiguration(
+      configuration,
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
+  configuration.baseForegroundColor =
+      [UIColor colorNamed:kSolidButtonTextColor];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    button.tintColor = [UIColor colorNamed:kBlueColor];
+  } else {
+#endif
+    configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
   button.configuration = configuration;
   button.configurationUpdateHandler = PrimaryActionConfigurationUpdateHandler();
 }
@@ -148,16 +176,51 @@ void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button) {
 
 void UpdateButtonToMatchSecondaryAction(ChromeButton* button) {
   UIButtonConfiguration* configuration = button.configuration;
-  SetConfigurationForSecondaryAction(configuration);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    CommonSetupButtonConfiguration(
+        configuration,
+        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
+  } else {
+#endif
+    CommonSetupButtonConfiguration(
+        configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    button.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+    configuration.baseForegroundColor = [UIColor colorNamed:kSolidBlackColor];
+  } else {
+#endif
+    configuration.background.backgroundColor = [UIColor clearColor];
+    configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
   button.configuration = configuration;
   button.configurationUpdateHandler = nil;
 }
 
 void UpdateButtonToMatchEqualWeightAction(ChromeButton* button) {
   UIButtonConfiguration* configuration = button.configuration;
-  SetConfigurationForEqualWeight(configuration);
+  CommonSetupButtonConfiguration(
+      configuration,
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    button.tintColor = [UIColor colorNamed:kBlueHaloColor];
+  } else {
+#endif
+    configuration.background.backgroundColor =
+        [UIColor colorNamed:kBlueHaloColor];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
+  configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
   button.configuration = configuration;
-  button.configurationUpdateHandler = EqualWeightConfigurationUpdateHandler();
 }
 
 ChromeButton* PrimaryActionButton() {
