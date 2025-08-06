@@ -244,16 +244,6 @@ bool BaseFile::ValidateDataInFile(int64_t offset,
   return base::span(buffer) == data;
 }
 
-bool BaseFile::ValidateDataInFile(int64_t offset,
-                                  const char* data,
-                                  size_t data_len) {
-  UNSAFE_BUFFERS(
-      // SAFETY TODO(https://crbug.com/435230896): get rid of this.
-      return ValidateDataInFile(
-                 offset,
-                 base::span(reinterpret_cast<const uint8_t*>(data), data_len));)
-}
-
 DownloadInterruptReason BaseFile::Rename(const base::FilePath& new_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DownloadInterruptReason rename_result = DOWNLOAD_INTERRUPT_REASON_NONE;

@@ -795,18 +795,19 @@ TEST_F(BaseFileTest, ValidateDataInFile) {
   ASSERT_TRUE(InitializeFile());
   ASSERT_TRUE(AppendDataToFile(kTestData1));
 
-  ASSERT_TRUE(base_file_->ValidateDataInFile(0, "Let's", 5));
-  ASSERT_TRUE(base_file_->ValidateDataInFile(1, "et's ", 5));
-  ASSERT_TRUE(
-      base_file_->ValidateDataInFile(0, base::as_byte_span(kTestData1)));
-  ASSERT_TRUE(base_file_->ValidateDataInFile(kTestData1.size() - 1, "\n", 1));
-  ASSERT_FALSE(base_file_->ValidateDataInFile(kTestData1.size(), "\n", 1));
-  ASSERT_FALSE(base_file_->ValidateDataInFile(kTestData1.size() - 1, "y\n", 2));
-  ASSERT_FALSE(base_file_->ValidateDataInFile(0, "et's ", 5));
-  ASSERT_FALSE(base_file_->ValidateDataInFile(
-      0, "Let's write some data to the file1\n", kTestData1.size()));
-  ASSERT_FALSE(base_file_->ValidateDataInFile(
-      0, "Let's write some data to the file1!\n", kTestData1.size() + 1));
+  auto validate = [&](int64_t offset, std::string_view data) {
+    return base_file_->ValidateDataInFile(offset, base::as_byte_span(data));
+  };
+
+  ASSERT_TRUE(validate(0, "Let's"));
+  ASSERT_TRUE(validate(1, "et's "));
+  ASSERT_TRUE(validate(0, kTestData1));
+  ASSERT_TRUE(validate(kTestData1.size() - 1, "\n"));
+  ASSERT_FALSE(validate(kTestData1.size(), "\n"));
+  ASSERT_FALSE(validate(kTestData1.size() - 1, "y\n"));
+  ASSERT_FALSE(validate(0, "et's "));
+  ASSERT_FALSE(validate(0, "Let's write some data to the file1\n"));
+  ASSERT_FALSE(validate(0, "Let's write some data to the file1!\n"));
 
   base_file_->Finish();
 }

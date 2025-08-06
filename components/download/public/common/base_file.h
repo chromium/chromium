@@ -130,7 +130,6 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   // Validates that the content starting from |offset| matches that of |data|
   // with the given length.
   bool ValidateDataInFile(int64_t offset, base::span<const uint8_t> data);
-  bool ValidateDataInFile(int64_t offset, const char* data, size_t data_len);
 
   // Rename the download file. Returns a DownloadInterruptReason indicating the
   // result of the operation. A return code of NONE indicates that the rename
