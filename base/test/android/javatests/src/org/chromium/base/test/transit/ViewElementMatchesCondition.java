@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -25,7 +27,12 @@ public class ViewElementMatchesCondition extends InstrumentationThreadCondition 
 
     @Override
     protected ConditionStatus checkWithSuppliers() throws Exception {
-        return whether(mViewMatcher.matches(mViewElement.get()));
+        try {
+            mViewElement.check(matches(mViewMatcher));
+            return fulfilled();
+        } catch (AssertionError e) {
+            return notFulfilled(e.getMessage());
+        }
     }
 
     @Override

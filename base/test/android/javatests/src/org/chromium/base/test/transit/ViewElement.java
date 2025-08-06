@@ -174,6 +174,11 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         Espresso.onView(mViewSpec.getViewMatcher()).check(assertion);
     }
 
+    /** Creates a Condition fulfilled if the View matches the |matcher|. */
+    public Condition matches(Matcher<View> matcher) {
+        return new ViewElementMatchesCondition(this, matcher);
+    }
+
     /** Extra options for declaring ViewElements. */
     public static class Options {
         static final Options DEFAULT = new Options();
