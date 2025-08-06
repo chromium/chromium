@@ -14,6 +14,23 @@ import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
 import {OneShotTimer} from './timer.js';
 
+// LINT.IfChange(GlicWebviewExitReason)
+enum WebviewExitReason {
+  NORMAL = 0,
+  ABNORMAL = 1,
+  CRASH = 2,
+  KILL = 3,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebviewExitReason)
+
+const WEBVIEW_EXIT_REASON_MAP = {
+  'normal': WebviewExitReason.NORMAL,
+  'abnormal': WebviewExitReason.ABNORMAL,
+  'crash': WebviewExitReason.CRASH,
+  'kill': WebviewExitReason.KILL,
+};
+
+
 export type PageType =
     // A login page.
     'login'
@@ -134,7 +151,7 @@ export class WebviewController {
         this.webview, 'permissionrequest', this.onPermissionRequest.bind(this));
     this.eventTracker.add(
         this.webview, 'unresponsive', this.onUnresponsive.bind(this));
-    this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
+    this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this) as any);
 
     this.webview.src = this.persistentState.useLoadUrl();
 
@@ -239,13 +256,19 @@ export class WebviewController {
     this.delegate.webviewUnresponsive();
   }
 
-  private onExit(e: any): void {
-    if (e.reason !== 'normal') {
-      this.destroyHost(WebClientState.ERROR);
-      chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
-      console.warn(`webview exit. reason: ${e.reason}`);
-    }
-  }
+  private onExit: ChromeEventFunctionType<typeof chrome.webviewTag.exit> =
+      (processID, reason) => {
+        const exitReason = WEBVIEW_EXIT_REASON_MAP[reason];
+        chrome.metricsPrivate.recordEnumerationValue(
+            'Glic.Session.WebClientCrash.ExitReason', exitReason,
+            Object.keys(WEBVIEW_EXIT_REASON_MAP).length);
+        if (reason !== 'normal') {
+          this.destroyHost(WebClientState.ERROR);
+          chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
+          console.warn(
+              `webview exit. processID: ${processID}, reason: ${reason}`);
+        }
+      };
 
   private loadCommit(url: string, isTopLevel: boolean) {
     if (!isTopLevel) {

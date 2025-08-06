@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -66,6 +67,8 @@ void WebUIContentsContainer::RequestMediaAccessPermission(
 
 void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
+  base::UmaHistogramEnumeration("Glic.Session.WebUiCrash.TerminationStatus",
+                                status, base::TERMINATION_STATUS_MAX_ENUM);
   if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
     base::RecordAction(base::UserMetricsAction("GlicSessionWebUiCrash"));
   }

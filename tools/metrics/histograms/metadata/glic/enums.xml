@@ -416,6 +416,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebClientMode) -->
 
+<!-- LINT.IfChange(GlicWebviewExitReason) -->
+
+<enum name="GlicWebviewExitReason">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Abnormal"/>
+  <int value="2" label="Crash"/>
+  <int value="3" label="Kill"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/webview.ts:WebviewExitReason) -->
+
 <!-- LINT.IfChange(LoadingStage) -->
 
 <enum name="LoadingStage">
