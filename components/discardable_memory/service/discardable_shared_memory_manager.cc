@@ -232,6 +232,10 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       enforce_memory_policy_pending_(false),
       mojo_thread_message_loop_(base::CurrentThread::GetNull()),
+      memory_pressure_listener_(
+          FROM_HERE,
+          base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
+                              base::Unretained(this))),
       memory_pressure_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::WithBaseSyncPrimitives()})) {
   DCHECK(!g_instance)
@@ -244,13 +248,6 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DiscardableSharedMemoryManager",
       base::SingleThreadTaskRunner::GetCurrentDefault());
-
-  // base::Unretained() is safe because memory pressure worker thread will be
-  // flushed in destructor if the thread is still running.
-  memory_pressure_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DiscardableSharedMemoryManager::
-                                    CreateMemoryPressureListenerOnWorkerThread,
-                                base::Unretained(this)));
 }
 
 DiscardableSharedMemoryManager::~DiscardableSharedMemoryManager() {
@@ -537,26 +534,6 @@ void DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
     BytesAllocatedChanged(bytes_allocated_);
 }
 
-void DiscardableSharedMemoryManager::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  DCHECK(memory_pressure_task_runner_->RunsTasksInCurrentSequence());
-
-  base::AutoLock lock(lock_);
-
-  switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-      // Purge memory until usage is within half of |memory_limit_|.
-      ReduceMemoryUsageUntilWithinLimit(memory_limit_ / 2);
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      // Purge everything possible when pressure is critical.
-      ReduceMemoryUsageUntilWithinLimit(0);
-      break;
-  }
-}
-
 void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinMemoryLimit() {
   lock_.AssertAcquired();
 
@@ -668,15 +645,42 @@ void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
     event->Signal();
 }
 
-void DiscardableSharedMemoryManager::
-    CreateMemoryPressureListenerOnWorkerThread() {
+void DiscardableSharedMemoryManager::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  memory_pressure_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::MemoryPressureListener::MemoryPressureLevel
+                 memory_pressure_level) {
+            // It is safe to access the global instance because memory pressure
+            // worker thread will be flushed in destructor if the thread is
+            // still running.
+            if (DiscardableSharedMemoryManager::Get()) {
+              DiscardableSharedMemoryManager::Get()
+                  ->HandleMemoryPressureOnSequence(memory_pressure_level);
+            }
+          },
+          memory_pressure_level));
+}
+
+void DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   DCHECK(memory_pressure_task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock lock(lock_);
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
-                          base::Unretained(this)));
+
+  switch (memory_pressure_level) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      // Purge memory until usage is within half of |memory_limit_|.
+      ReduceMemoryUsageUntilWithinLimit(memory_limit_ / 2);
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      // Purge everything possible when pressure is critical.
+      ReduceMemoryUsageUntilWithinLimit(0);
+      break;
+  }
 }
 
 }  // namespace discardable_memory
