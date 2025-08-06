@@ -21,6 +21,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable.Bounds;
@@ -142,9 +143,21 @@ public class OptionalButtonCoordinator {
     }
 
     /**
+     * Set a callback that allows the control of the animation to be performed together with the
+     * chip.
+     *
+     * @param callback {@link OnBeforeWidthTransitionCallback} with a transition type and the
+     *     animation delta to be used by other UI elements.
+     */
+    public void setOnBeforeWidthTransitionCallback(OnBeforeWidthTransitionCallback callback) {
+        mMediator.setOnBeforeWidthTransitionCallback(callback);
+    }
+
+    /**
      * Sets a callback that's invoked when any transition is finished.
+     *
      * @param transitionFinishedCallback A callback with an integer argument, this argument a value
-     *         from {@link TransitionType}.
+     *     from {@link TransitionType}.
      */
     public void setTransitionFinishedCallback(Callback<Integer> transitionFinishedCallback) {
         mTransitionFinishedCallback = transitionFinishedCallback;
