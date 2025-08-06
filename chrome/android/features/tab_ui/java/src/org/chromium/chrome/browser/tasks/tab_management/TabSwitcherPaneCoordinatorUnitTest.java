@@ -103,6 +103,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link TabSwitcherPaneCoordinator}. These are mostly for coverage and to confirm
@@ -279,8 +280,11 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         int index = 0;
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Token tabGroupId = new Token(1L, 2L);
+        tab.setTabGroupId(tabGroupId);
         when(mTabGroupModelFilter.representativeIndexOf(tab)).thenReturn(index);
         when(mTabGroupModelFilter.getRepresentativeTabAt(index)).thenReturn(tab);
+        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab));
         controller.resetWithListOfTabs(Collections.singletonList(tab));
 
         return controller;

@@ -525,7 +525,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      *     found).
      */
     Rect getTabThumbnailRect(int tabId) {
-        int index = getIndexForTabId(tabId);
+        int index = getIndexForTabIdWithRelatedTabs(tabId);
         if (index == TabModel.INVALID_TAB_INDEX) return new Rect();
 
         return mRecyclerView.getRectOfTabThumbnail(
@@ -547,7 +547,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             mAwaitingLayoutRunnable = null;
             mAwaitingTabId = Tab.INVALID_TAB_ID;
         }
-        int index = getIndexForTabId(tabId);
+        int index = getIndexForTabIdWithRelatedTabs(tabId);
         if (index == TabModel.INVALID_TAB_INDEX) {
             r.run();
             return;
@@ -997,7 +997,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         }
     }
 
-    private int getIndexForTabId(int tabId) {
+    /** Returns the index for the tab with related tabs. */
+    public int getIndexForTabIdWithRelatedTabs(int tabId) {
         return mMediator.getIndexForTabIdWithRelatedTabs(tabId);
     }
 

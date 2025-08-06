@@ -793,13 +793,18 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 });
     }
 
-    private @Nullable View getTabGridDialogAnimationSourceView(int tabId) {
+    private @Nullable View getTabGridDialogAnimationSourceView(Token tabGroupId) {
         // Returning null causes the animation to be a fade.
         // Do so if we are animating to show or hide the HubLayout or this is a low end device.
         if (mIsAnimatingSupplier.get() || SysUtils.isLowEndDevice()) return null;
 
+        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
+        int tabId = filter.getGroupLastShownTabId(tabGroupId);
+        if (tabId == Tab.INVALID_TAB_ID) return null;
+
         TabListCoordinator coordinator = mTabListCoordinator;
-        int index = coordinator.getTabIndexFromTabId(tabId);
+        int index = coordinator.getIndexForTabIdWithRelatedTabs(tabId);
         ViewHolder sourceViewHolder =
                 coordinator.getContainerView().findViewHolderForAdapterPosition(index);
         // TODO(crbug.com/41479135): This is band-aid fix that will show basic fade-in/fade-out
