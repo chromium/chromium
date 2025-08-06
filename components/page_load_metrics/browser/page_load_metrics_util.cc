@@ -361,4 +361,11 @@ std::optional<uint32_t> GetCategoryIdFromUrl(const GURL& url) {
   return std::nullopt;
 }
 
+bool IsServiceWorkerControlled(
+    const PageLoadMetricsObserverDelegate& delegate) {
+  return (delegate.GetMainFrameMetadata().behavior_flags &
+          blink::LoadingBehaviorFlag::
+              kLoadingBehaviorServiceWorkerControlled) != 0;
+}
+
 }  // namespace page_load_metrics

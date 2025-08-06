@@ -92,7 +92,6 @@ class ServiceWorkerPageLoadMetricsObserver
 
  private:
   void RecordTimingHistograms();
-  bool IsServiceWorkerControlled();
   bool IsServiceWorkerFetchHandlerSkippable();
   bool IsServiceWorkerEligibleForRaceNetworkRequest();
   void RecordSubresourceLoad();

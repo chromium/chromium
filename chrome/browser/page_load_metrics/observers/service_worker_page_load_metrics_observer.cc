@@ -188,7 +188,7 @@ ServiceWorkerPageLoadMetricsObserver::OnCommit(
 
 void ServiceWorkerPageLoadMetricsObserver::OnFirstPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!IsServiceWorkerControlled() ||
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate()) ||
       !page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_paint, GetDelegate())) {
     return;
@@ -199,7 +199,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstPaintInPage(
 
 void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!IsServiceWorkerControlled()) {
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
             timing.paint_timing->first_contentful_paint, GetDelegate())) {
       return;
@@ -288,7 +288,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnDomContentLoadedEventStart(
           GetDelegate())) {
     return;
   }
-  if (!IsServiceWorkerControlled()) {
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     if (!page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl()))
       return;
     PAGE_LOAD_HISTOGRAM(
@@ -311,7 +311,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnLoadEventStart(
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.document_timing->load_event_start, GetDelegate()))
     return;
-  if (!IsServiceWorkerControlled()) {
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     if (!page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl()))
       return;
     PAGE_LOAD_HISTOGRAM(internal::kHistogramNoServiceWorkerLoadSearch,
@@ -328,8 +328,9 @@ void ServiceWorkerPageLoadMetricsObserver::OnLoadEventStart(
 
 void ServiceWorkerPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!IsServiceWorkerControlled())
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     return;
+  }
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     return;
@@ -338,8 +339,9 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstInputInPage(
 
 void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!IsServiceWorkerControlled())
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     return;
+  }
 
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.parse_timing->parse_start, GetDelegate())) {
@@ -369,8 +371,10 @@ void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
 void ServiceWorkerPageLoadMetricsObserver::OnLoadingBehaviorObserved(
     content::RenderFrameHost* rfh,
     int behavior_flags) {
-  if (!IsServiceWorkerControlled() || logged_ukm_event_)
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate()) ||
+      logged_ukm_event_) {
     return;
+  }
   ukm::builders::PageLoad_ServiceWorkerControlled(
       GetDelegate().GetPageUkmSourceId())
       .Record(ukm::UkmRecorder::Get());
@@ -392,8 +396,9 @@ ServiceWorkerPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
-  if (!IsServiceWorkerControlled())
+  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     return;
+  }
 
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_largest_contentful_paint =
@@ -426,15 +431,9 @@ void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
   RecordSubresourceLoad();
 }
 
-bool ServiceWorkerPageLoadMetricsObserver::IsServiceWorkerControlled() {
-  return (GetDelegate().GetMainFrameMetadata().behavior_flags &
-          blink::LoadingBehaviorFlag::
-              kLoadingBehaviorServiceWorkerControlled) != 0;
-}
-
 bool ServiceWorkerPageLoadMetricsObserver::
     IsServiceWorkerFetchHandlerSkippable() {
-  DCHECK(IsServiceWorkerControlled());
+  DCHECK(page_load_metrics::IsServiceWorkerControlled(GetDelegate()));
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerFetchHandlerSkippable) != 0;
@@ -442,7 +441,7 @@ bool ServiceWorkerPageLoadMetricsObserver::
 
 bool ServiceWorkerPageLoadMetricsObserver::
     IsServiceWorkerEligibleForRaceNetworkRequest() {
-  CHECK(IsServiceWorkerControlled());
+  CHECK(page_load_metrics::IsServiceWorkerControlled(GetDelegate()));
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerRaceNetworkRequest);
