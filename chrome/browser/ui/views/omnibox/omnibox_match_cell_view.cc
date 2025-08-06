@@ -355,8 +355,18 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
       match.type == AutocompleteMatchType::HISTORY_CLUSTER;
   const bool is_instant_keyword_row =
       AutocompleteMatch::IsFeaturedSearchType(match.type);
-  if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
-      is_instant_keyword_row) {
+  bool should_draw_icon_background = is_pedal_suggestion_row ||
+                                     is_journeys_suggestion_row ||
+                                     is_instant_keyword_row;
+
+  // Do not apply the distinctive background color to the open lens action when
+  // the UI tweaks are enabled.
+  if (match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
+      omnibox_feature_configs::ContextualSearch::Get().open_lens_action_ui_tweaks) {
+    should_draw_icon_background = false;
+  }
+
+  if (should_draw_icon_background) {
     // When a PEDAL suggestion has been split out to its own row, apply a square
     // background with a distinctive color to the respective icon. Journeys
     // suggestion rows should also receive the same treatment.

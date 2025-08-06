@@ -112,7 +112,10 @@ void ContextualSearchOpenLensAction::Execute(ExecutionContext& context) const {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kGoogleLensMonochromeLogoIcon;
+  return omnibox_feature_configs::ContextualSearch::Get()
+                 .open_lens_action_ui_tweaks
+             ? vector_icons::kGoogleLensLogoIcon
+             : vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
   return vector_icons::kSearchChromeRefreshIcon;
 #endif
