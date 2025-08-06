@@ -18,7 +18,6 @@ source_set("mediator") {
     "//ios/chrome/browser/google/model:google_logo",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/search_engine_logo/ui",
-    "//ios/chrome/browser/ntp/ui_bundled:logo",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/symbols",

@@ -49,10 +49,7 @@ source_set("theme") {
 }
 
 source_set("logo") {
-  sources = [
-    "logo_animation_controller.h",
-    "logo_vendor.h",
-  ]
+  sources = [ "logo_animation_controller.h" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -121,7 +118,6 @@ source_set("coordinator") {
     ":component_factory_protocol",
     ":constants",
     ":feature_flags",
-    ":logo",
     ":ntp_internal",
     ":theme",
     ":ui_bundled",
@@ -244,7 +240,6 @@ source_set("ntp_internal") {
   deps = [
     ":constants",
     ":feature_flags",
-    ":logo",
     ":theme",
     ":ui_bundled",
     "//base",
@@ -356,7 +351,6 @@ source_set("unit_tests") {
     ":component_factory",
     ":coordinator",
     ":feature_flags",
-    ":logo",
     ":ntp_internal",
     ":theme",
     ":ui_bundled",

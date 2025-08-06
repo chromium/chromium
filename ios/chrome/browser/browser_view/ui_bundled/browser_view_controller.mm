@@ -2826,12 +2826,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   }
 }
 
-#pragma mark - LogoAnimationControllerOwnerOwner (Public)
-
-- (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  return nil;
-}
-
 #pragma mark - FindBarPresentationDelegate
 
 - (void)setHeadersForFindBarCoordinator:

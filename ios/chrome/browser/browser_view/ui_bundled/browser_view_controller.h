@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_presentation_environment.h"
-#import "ios/chrome/browser/ntp/ui_bundled/logo_animation_controller.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -83,7 +82,6 @@ typedef struct {
                         IncognitoReauthConsumer,
                         LensPresentationDelegate,
                         LensOverlayPresentationEnvironment,
-                        LogoAnimationControllerOwnerOwner,
                         TabConsumer,
                         OmniboxFocusDelegate,
                         OmniboxPopupPresenterDelegate,

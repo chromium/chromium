@@ -57,7 +57,6 @@ source_set("ui") {
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/ntp/search_engine_logo/mediator",
     "//ios/chrome/browser/ntp/search_engine_logo/ui",
-    "//ios/chrome/browser/ntp/ui_bundled:logo",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
