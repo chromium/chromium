@@ -527,6 +527,8 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
         case CheckupSubpage.WEAK:
           focusWithoutInk(this.$.weakRow);
           break;
+        default:
+          break;
       }
     });
   }

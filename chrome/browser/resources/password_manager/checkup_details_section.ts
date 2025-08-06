@@ -13,7 +13,7 @@ import './checkup_list_item.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -246,6 +246,8 @@ export class CheckupDetailsSectionElement extends
         return [chrome.passwordsPrivate.CompromiseType.REUSED];
       case CheckupSubpage.WEAK:
         return [chrome.passwordsPrivate.CompromiseType.WEAK];
+      default:
+        assertNotReached();
     }
   }
 

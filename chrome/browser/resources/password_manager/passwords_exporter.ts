@@ -147,6 +147,8 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
             this.i18n('exportPasswordsFailTitle', progress.folderName);
         this.showPasswordsExportErrorDialog_ = true;
         break;
+      default:
+        break;
     }
   }
 

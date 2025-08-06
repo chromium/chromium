@@ -72,6 +72,8 @@ export class Route {
       case Page.PASSWORD_CHANGE:
         path = '/' + Page.SETTINGS + '/' + Page.PASSWORD_CHANGE;
         break;
+      default:
+        assertNotReached();
     }
     const queryString = this.queryParameters.toString();
     if (queryString) {
