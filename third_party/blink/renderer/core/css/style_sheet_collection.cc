@@ -60,7 +60,44 @@ void StyleSheetCollection::AppendActiveStyleSheet(CSSStyleSheet* sheet) {
   active_style_sheets_.push_back(std::pair(sheet, nullptr));
 }
 
-void StyleSheetCollection::CreateRuleSets(StyleEngine& engine) {
+// FIXME(sesse): Store this somewhere (including the two-level Eval() form),
+// so that we know when we need to invalidate.
+static bool MatchMediaForMixins(const MediaQueryEvaluator& evaluator,
+                                const MediaQuerySet* media_queries) {
+  if (!media_queries) {
+    return true;
+  }
+  return evaluator.Eval(*media_queries);
+}
+
+static void ExtractMixinsFromRules(
+    base::span<const Member<StyleRuleBase>> rules,
+    const MediaQueryEvaluator& medium,
+    MixinMap& mixins) {
+  for (StyleRuleBase* rule : rules) {
+    // TODO(sesse): @container, @layer, @scope, @starting-style are waiting for
+    // a resolution in https://github.com/w3c/csswg-drafts/issues/12417.
+    if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
+      if (MatchMediaForMixins(medium, media_rule->MediaQueries())) {
+        ExtractMixinsFromRules(media_rule->ChildRules(), medium, mixins);
+      }
+    } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
+      if (supports_rule->ConditionIsSupported()) {
+        ExtractMixinsFromRules(supports_rule->ChildRules(), medium, mixins);
+      }
+    } else if (auto* mixin_rule = DynamicTo<StyleRuleMixin>(rule)) {
+      mixins.insert(mixin_rule->GetName(), mixin_rule);
+    }
+  }
+}
+
+void StyleSheetCollection::CreateRuleSets(StyleEngine& engine,
+                                          const MediaQueryEvaluator& medium) {
+  MixinMap mixins;
+  for (auto& [css_sheet, rule_set] : active_style_sheets_) {
+    ExtractMixinsFromRules(css_sheet->Contents()->ChildRules(), medium, mixins);
+  }
+
   // Keep track of ensured RuleSets with @layer rules to detect
   // StyleSheetContents sharing; RuleSets should not be shared
   // between two equal sheets with @layer rules, since anonymous
@@ -69,7 +106,7 @@ void StyleSheetCollection::CreateRuleSets(StyleEngine& engine) {
 
   for (auto& [css_sheet, rule_set] : active_style_sheets_) {
     CHECK_EQ(rule_set, nullptr);
-    rule_set = engine.RuleSetForSheet(*css_sheet);
+    rule_set = engine.RuleSetForSheet(*css_sheet, mixins);
 
     // NOTE: If the user has specified the same CSSStyleSheet object multiple
     // times (which is only possible for constructible stylesheets, in
@@ -94,7 +131,7 @@ void StyleSheetCollection::CreateRuleSets(StyleEngine& engine) {
       //
       // TODO(sesse): Can we detect this before creating the RuleSet?
       css_sheet->WillMutateRules();
-      rule_set = engine.RuleSetForSheet(*css_sheet);
+      rule_set = engine.RuleSetForSheet(*css_sheet, mixins);
     }
 
     if (css_sheet->Contents()->GetRuleSetDiff()) {

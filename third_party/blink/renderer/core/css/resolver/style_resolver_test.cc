@@ -1476,7 +1476,7 @@ TEST_F(StyleResolverTest, QuietlySwapActiveStyleSheets_ImplicitScope) {
 
   MediaQueryEvaluator* mq_evaluator =
       MakeGarbageCollected<MediaQueryEvaluator>(&GetFrame());
-  RuleSet& rule_set = contents->EnsureRuleSet(*mq_evaluator);
+  RuleSet& rule_set = contents->EnsureRuleSet(*mq_evaluator, /*mixins=*/{});
 
   ActiveStyleSheetVector active_stylesheets;
   active_stylesheets.push_back(std::make_pair(sheet, &rule_set));

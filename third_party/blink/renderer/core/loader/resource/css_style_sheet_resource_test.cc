@@ -143,7 +143,8 @@ TEST_F(CSSStyleSheetResourceTest, CreateFromCacheWithMediaQueries) {
   contents->CheckLoaded();
   EXPECT_TRUE(contents->IsCacheableForResource());
 
-  contents->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
+  contents->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
+                          /*mixins=*/{});
   EXPECT_TRUE(contents->HasRuleSet());
 
   css_resource->SaveParsedStyleSheet(contents);

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/document_style_sheet_collection.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/document_style_sheet_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -93,6 +94,7 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
 
 void DocumentStyleSheetCollection::CollectStyleSheets(
     StyleEngine& engine,
+    const MediaQueryEvaluator& medium,
     DocumentStyleSheetCollector& collector) {
   for (auto& sheet :
        GetDocument().GetStyleEngine().InjectedAuthorStyleSheets()) {
@@ -103,15 +105,16 @@ void DocumentStyleSheetCollection::CollectStyleSheets(
        GetDocument().GetStyleEngine().InspectorStyleSheets()) {
     collector.AppendActiveStyleSheet(inspector_sheet);
   }
-  collector.FinishCollectingStylesheets(engine);
+  collector.FinishCollectingStylesheets(engine, medium);
 }
 
 void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
-    StyleEngine& engine) {
+    StyleEngine& engine,
+    const MediaQueryEvaluator& medium) {
   // StyleSheetCollection is GarbageCollected<>, allocate it on the heap.
   auto* collection = MakeGarbageCollected<StyleSheetCollection>();
   ActiveDocumentStyleSheetCollector collector(*collection);
-  CollectStyleSheets(engine, collector);
+  CollectStyleSheets(engine, medium, collector);
   ApplyActiveStyleSheetChanges(*collection);
 }
 
