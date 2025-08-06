@@ -3790,6 +3790,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-lens-overlay-force-empty-csb-query",
+    "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-lens-overlay-image-context-menu-actions",
     "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 136

@@ -2550,6 +2550,11 @@ const char kLensOverlayEntrypointLabelAltName[] =
 const char kLensOverlayEntrypointLabelAltDescription[] =
     "Replaces the string used for the Lens overlay entrypoint label.";
 
+const char kLensOverlayForceEmptyCsbQueryName[] =
+    "Lens overlay force empty CSB query";
+const char kLensOverlayForceEmptyCsbQueryDescription[] =
+    "Forces Lens overlay to issue an empty CSB query on invocation.";
+
 const char kLensOverlayImageContextMenuActionsName[] =
     "Lens overlay image context menu actions";
 const char kLensOverlayImageContextMenuActionsDescription[] =

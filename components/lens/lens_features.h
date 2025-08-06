@@ -155,6 +155,11 @@ BASE_DECLARE_FEATURE(kLensOverlayEntrypointLabelAlt);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint);
 
+// Force Lens overlay invocations to perform an empty CSB query. For internal
+// debugging only.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayForceEmptyCsbQuery);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -960,6 +965,11 @@ extern std::string GetStraightToSrpQuery();
 // entrypoint.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayTextSelectionContextMenuEntrypointEnabled();
+
+// Whether to force Lens overlay invocations to perform an empty CSB query. For
+// internal debugging only.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayForceEmptyCsbQueryEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

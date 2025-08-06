@@ -151,6 +151,10 @@ BASE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint,
              "LensOverlayTextSelectionContextMenuEntrypoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayForceEmptyCsbQuery,
+             "LensOverlayForceEmptyCsbQuery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1210,6 +1214,10 @@ std::string GetStraightToSrpQuery() {
 bool IsLensOverlayTextSelectionContextMenuEntrypointEnabled() {
   return base::FeatureList::IsEnabled(
       kLensOverlayTextSelectionContextMenuEntrypoint);
+}
+
+bool IsLensOverlayForceEmptyCsbQueryEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayForceEmptyCsbQuery);
 }
 
 }  // namespace lens::features

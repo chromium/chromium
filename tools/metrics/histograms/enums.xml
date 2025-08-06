@@ -9521,6 +9521,7 @@ from previous Chrome versions.
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:enabled"/>
   <int value="-1675747412"
       label="TurnOffStreamingMediaCachingOnBattery:enabled"/>
+  <int value="-1674886480" label="LensOverlayForceEmptyCsbQuery:enabled"/>
   <int value="-1674868343" label="DlcSettingsUi:enabled"/>
   <int value="-1673342139"
       label="ImageServiceOptimizationGuideSalientImages:enabled"/>
@@ -12169,6 +12170,7 @@ from previous Chrome versions.
   <int value="-716953514" label="disable-password-separated-signin-flow"/>
   <int value="-716422020" label="CrosContentAdjustedRefreshRate:enabled"/>
   <int value="-716272467" label="AssistantAppSupport:disabled"/>
+  <int value="-716205693" label="LensOverlayForceEmptyCsbQuery:disabled"/>
   <int value="-715865629" label="HideShelfControlsInTabletMode:enabled"/>
   <int value="-715733307" label="force-effective-connection-type"/>
   <int value="-715552057" label="GridLayoutForNtpShortcuts:disabled"/>

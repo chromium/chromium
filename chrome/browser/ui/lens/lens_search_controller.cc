@@ -136,6 +136,20 @@ void LensSearchController::OpenLensOverlay(
     return;
   }
 
+  // If flag enabled, perform an empty contextual query instead of opening the
+  // overlay as normal. For internal debugging only.
+  if (lens::features::IsLensOverlayForceEmptyCsbQueryEnabled()) {
+    IssueContextualSearchRequestWithQuery(
+        lens::LensOverlayInvocationSource::kContentAreaContextMenuText,
+        /*query_text=*/"",
+        /*additional_query_parameters=*/{},
+        // TODO(crbug.com/432490312): Match type here is likely not ideal.
+        // Investigate removing match type from this function.
+        AutocompleteMatchType::Type::SEARCH_SUGGEST,
+        /*is_zero_prefix_suggestion=*/false);
+    return;
+  }
+
   // Setup all state necessary for this Lens session.
   StartLensSession(invocation_source);
 

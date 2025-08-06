@@ -13138,6 +13138,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAndroidAnimatedCompositedProgressBar)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-force-empty-csb-query",
+     flag_descriptions::kLensOverlayForceEmptyCsbQueryName,
+     flag_descriptions::kLensOverlayForceEmptyCsbQueryDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayForceEmptyCsbQuery)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
