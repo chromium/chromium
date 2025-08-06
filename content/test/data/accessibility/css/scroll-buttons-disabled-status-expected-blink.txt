@@ -1,7 +1,7 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++button name='Scroll left' restriction=disabled controlsIds=genericContainer
+++++++button name='x' restriction=disabled controlsIds=genericContainer
 ++++++++genericContainer
 ++++++++++staticText name='x'
 ++++++++++++inlineTextBox name='x'

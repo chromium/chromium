@@ -4934,7 +4934,14 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
     // Prioritize alt text if available.
     std::optional<String> alt_text = GetCSSAltText(element);
     if (alt_text && !alt_text->empty()) {
+      name_from = ax::mojom::blink::NameFrom::kCssAltText;
       return *alt_text;
+    }
+
+    if (!name.empty()) {
+      // Scroll button has a non-empty name, so there is no need to use a
+      // fallback.
+      return name;
     }
 
     // If the alt text is not available, return a "Scroll [direction]" name,
@@ -4954,6 +4961,8 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
         NOTREACHED()
             << "ScrollButtonPseudoElement must be one of known directions";
       }
+
+      name_from = ax::mojom::blink::NameFrom::kCssAltText;
 
       switch (physical) {
         case PhysicalDirection::kRight:
@@ -4976,11 +4985,13 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
   if (element && element->IsScrollMarkerPseudoElement()) {
     std::optional<String> alt_text = GetCSSAltText(element);
     if (alt_text && !alt_text->empty()) {
+      name_from = ax::mojom::blink::NameFrom::kCssAltText;
       return *alt_text;
     }
 
     std::optional<String> content = GetCSSContentText(element);
     if (content && !content->empty()) {
+      name_from = ax::mojom::blink::NameFrom::kContents;
       return *content;
     }
 

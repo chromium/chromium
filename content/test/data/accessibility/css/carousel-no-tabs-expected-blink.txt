@@ -1,25 +1,21 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++button name='Scroll up' restriction=disabled controlsIds=genericContainer
-++++++++staticText name='u'
-++++++++++inlineTextBox name='u'
-++++++button name='Scroll left' restriction=disabled controlsIds=genericContainer
-++++++++staticText name='<'
-++++++++++inlineTextBox name='<'
-++++++button focusable name='Scroll right' controlsIds=genericContainer
-++++++++staticText name='>'
-++++++++++inlineTextBox name='>'
-++++++button name='Scroll down' restriction=disabled controlsIds=genericContainer
-++++++++staticText name='d'
-++++++++++inlineTextBox name='d'
+++++++button name='u' nameFrom=contents restriction=disabled controlsIds=genericContainer
+++++++++staticText name='u' nameFrom=contents
+++++++++++inlineTextBox name='u' nameFrom=contents
+++++++button name='Scroll left' nameFrom=cssAltText restriction=disabled controlsIds=genericContainer
+++++++button focusable name='next' nameFrom=cssAltText controlsIds=genericContainer
+++++++button name='d' nameFrom=contents restriction=disabled controlsIds=genericContainer
+++++++++staticText name='d' nameFrom=contents
+++++++++++inlineTextBox name='d' nameFrom=contents
 ++++++genericContainer focusable
 ++++++++genericContainer
-++++++++++staticText name='One'
-++++++++++++inlineTextBox name='One'
+++++++++++staticText name='One' nameFrom=contents
+++++++++++++inlineTextBox name='One' nameFrom=contents
 ++++++++genericContainer
-++++++++++staticText name='Two'
-++++++++++++inlineTextBox name='Two'
+++++++++++staticText name='Two' nameFrom=contents
+++++++++++++inlineTextBox name='Two' nameFrom=contents
 ++++++++genericContainer
-++++++++++staticText name='Three'
-++++++++++++inlineTextBox name='Three'
+++++++++++staticText name='Three' nameFrom=contents
+++++++++++++inlineTextBox name='Three' nameFrom=contents
