@@ -405,6 +405,11 @@ void MultiCaptureUsageIndicatorService::ShowActiveMultiCaptureNotifications(
 }
 
 void MultiCaptureUsageIndicatorService::RefreshNotifications() {
+  if (!notification_display_service_) {
+    CHECK_IS_TEST();
+    return;
+  }
+
   const AllowListedAppNames apps = GetInstalledAndAllowlistedAppNames();
   if (apps.future_capture_notification_apps.empty() &&
       apps.future_capture_no_notification_apps.empty() &&
