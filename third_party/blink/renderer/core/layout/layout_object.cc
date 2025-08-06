@@ -197,6 +197,10 @@ inline bool CalculateCanTraversePhysicalFragments(const LayoutObject& obj) {
   if (obj.IsTextControl()) {
     return false;
   }
+  // Table columns don't generate fragments.
+  if (obj.IsLayoutTableCol()) {
+    return false;
+  }
   // SVG objects do their own things. The exception here is SVG block containers
   // (such as foreignObject or text), which are fully handled by the regular
   // layout engine.
