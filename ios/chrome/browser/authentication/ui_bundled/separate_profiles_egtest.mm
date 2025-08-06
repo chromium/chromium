@@ -117,15 +117,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time and that by default
 // existing browsing data is kept separate from the managed profile.
-// TODO(crbug.com/433320893): Re-enable this test on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSigninWithManagedAccountFromUnsignedStateSeparateData \
-  DISABLED_testSigninWithManagedAccountFromUnsignedStateSeparateData
-#else
-#define MAYBE_testSigninWithManagedAccountFromUnsignedStateSeparateData \
-  testSigninWithManagedAccountFromUnsignedStateSeparateData
-#endif
-- (void)MAYBE_testSigninWithManagedAccountFromUnsignedStateSeparateData {
+// TODO(crbug.com/433320893): Re-enable this test.
+- (void)DISABLED_testSigninWithManagedAccountFromUnsignedStateSeparateData {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -329,16 +322,9 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account shows
 // the enterprise onboarding only the first time. And the user cannot merge
 // existing browsing data because it is disabled by policy.
-// TODO(crbug.com/433320893): Re-enable this test on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled \
-  DISABLED_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled
-#else
-#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled \
-  testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled
-#endif
+// TODO(crbug.com/433320893): Re-enable this test.
 - (void)
-    MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled {
+    DISABLED_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
