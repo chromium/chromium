@@ -44,9 +44,7 @@ sk_sp<SkData> MakeData(const std::string& str) {
 GrShaderCache::GrShaderCache(size_t max_cache_size_bytes, Client* client)
     : cache_size_limit_(max_cache_size_bytes),
       store_(Store::NO_AUTO_EVICT),
-      client_(client),
-      enable_vk_pipeline_cache_(
-          base::FeatureList::IsEnabled(features::kEnableVkPipelineCache)) {
+      client_(client) {
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "GrShaderCache",
@@ -253,13 +251,11 @@ void GrShaderCache::StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context) {
     need_store_pipeline_cache = need_store_pipeline_cache_;
   }
 
-  if (enable_vk_pipeline_cache_ && need_store_pipeline_cache) {
+  if (need_store_pipeline_cache) {
+    gr_context->storeVkPipelineCacheData();
     {
-      gr_context->storeVkPipelineCacheData();
-      {
-        base::AutoLock auto_lock(lock_);
-        need_store_pipeline_cache_ = false;
-      }
+      base::AutoLock auto_lock(lock_);
+      need_store_pipeline_cache_ = false;
     }
   }
 }
