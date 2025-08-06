@@ -298,9 +298,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool HasOnlyTextAndImageChildren() const;
   bool HasListMarkerChild() const;
 
-  // Returns true if the accessible name source (kNameFrom) comes from
-  // kAttribute.
-  bool IsAccessibleNameFromAttribute() const;
+  // Returns true if the accessible name should be mapped to android's text
+  // property.
+  bool AccessibleNameMapsToTextProperty() const;
 
   // This method determines if a node should expose its value as a name, which
   // is placed in the Android API's "text" attribute. For controls that can take
