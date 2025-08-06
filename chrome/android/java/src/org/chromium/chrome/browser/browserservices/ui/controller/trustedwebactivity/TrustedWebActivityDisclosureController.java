@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -33,14 +35,15 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     public void onDisclosureAccepted() {
         TrustedWebActivityUmaRecorder.recordDisclosureAccepted();
         BrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(
-                mClientPackageNameProvider.get());
+                assertNonNull(mClientPackageNameProvider.get()));
         super.onDisclosureAccepted();
     }
 
     @Override
     public void onDisclosureShown() {
         TrustedWebActivityUmaRecorder.recordDisclosureShown();
-        BrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
+        BrowserServicesStore.setUserSeenTwaDisclosureForPackage(
+                assertNonNull(mClientPackageNameProvider.get()));
         super.onDisclosureShown();
     }
 
@@ -48,12 +51,12 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     protected boolean shouldShowDisclosure() {
         /* Has a disclosure been dismissed for this client package before? */
         return !BrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(
-                mClientPackageNameProvider.get());
+                assertNonNull(mClientPackageNameProvider.get()));
     }
 
     @Override
     protected boolean isFirstTime() {
         return !BrowserServicesStore.hasUserSeenTwaDisclosureForPackage(
-                mClientPackageNameProvider.get());
+                assertNonNull(mClientPackageNameProvider.get()));
     }
 }

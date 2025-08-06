@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.os.Bundle;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -23,14 +22,14 @@ public class ClientPackageNameProvider implements SaveInstanceStateObserver {
     /** Key for storing in Activity instance state. */
     private static final String KEY_CLIENT_PACKAGE = "twaClientPackageName";
 
-    private final String mClientPackageName;
+    private final @Nullable String mClientPackageName;
 
     public ClientPackageNameProvider(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
             Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mClientPackageName = assertNonNull(savedInstanceState.getString(KEY_CLIENT_PACKAGE));
+            mClientPackageName = savedInstanceState.getString(KEY_CLIENT_PACKAGE);
         } else {
             mClientPackageName =
                     CustomTabsConnection.getInstance()
@@ -46,7 +45,7 @@ public class ClientPackageNameProvider implements SaveInstanceStateObserver {
         outState.putString(KEY_CLIENT_PACKAGE, mClientPackageName);
     }
 
-    public String get() {
+    public @Nullable String get() {
         return mClientPackageName;
     }
 }
