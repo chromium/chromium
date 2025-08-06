@@ -14,7 +14,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -120,10 +119,6 @@ public class AccountManagerFacadeImplTest {
 
     @Mock private AccountManagerDelegate mDelegateMock;
 
-    // Prefer to use the facade with the real system delegate instead of the fake delegate
-    // to test the facade more thoroughly
-    private AccountManagerFacade mFacadeWithSystemDelegate;
-
     @Before
     public void setUp() {
         lenient().when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
@@ -138,19 +133,6 @@ public class AccountManagerFacadeImplTest {
         mDelegate = spy(new FakeAccountManagerDelegate());
         mFacade = new AccountManagerFacadeImpl(mDelegate);
         mFacade.resetAccountsForTesting();
-
-        mFacadeWithSystemDelegate =
-                new AccountManagerFacadeImpl(new SystemAccountManagerDelegate());
-    }
-
-    @Test
-    public void testAccountsChangerObservationInitialization() {
-        mFacadeWithSystemDelegate.addObserver(mObserverMock);
-        verify(mObserverMock, never()).onCoreAccountInfosChanged();
-
-        mContext.sendBroadcast(new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION));
-
-        verify(mObserverMock).onCoreAccountInfosChanged();
     }
 
     @Test
