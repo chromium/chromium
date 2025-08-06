@@ -61,6 +61,24 @@ enum class DisplayPosition {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DisplayPosition)
 
+// LINT.IfChange(PercentOverlap)
+enum class PercentOverlap {
+  k0 = 0,
+  k10 = 1,
+  k20 = 2,
+  k30 = 3,
+  k40 = 4,
+  k50 = 5,
+  k60 = 6,
+  k70 = 7,
+  k80 = 8,
+  k90 = 9,
+  k100 = 10,
+  kNoVisibleChromeBrowser = 11,
+  kMaxValue = kNoVisibleChromeBrowser,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PercentOverlap)
+
 // LINT.IfChange(Error)
 enum class Error {
   kResponseStartWithoutInput = 0,
@@ -241,7 +259,7 @@ class GlicMetrics {
   // Called just after the the glic window has been loaded into the UI.
   void OnGlicWindowShown(Browser* browser,
                          std::optional<display::Display> glic_display,
-                         const gfx::Point& glic_center_point);
+                         const gfx::Rect& glic_bounds);
   // Called when the glic window has been opened and is ready.
   void OnGlicWindowOpenAndReady();
   // Called when the glic window is resized.
@@ -251,9 +269,9 @@ class GlicMetrics {
   // Called when the glic window stops being resized by the user.
   void OnWidgetUserResizeEnded();
   // Called when the glic window finishes closing.
-  void OnGlicWindowClose(Browser* browser,
+  void OnGlicWindowClose(Browser* last_active_browser,
                          std::optional<display::Display> display,
-                         const gfx::Point& glic_center_point);
+                         const gfx::Rect& glic_bounds);
   // Called when glic requests a scroll.
   void OnGlicScrollAttempt();
   // Called when scrolling starts (after glic requests to scroll) or if
@@ -309,6 +327,11 @@ class GlicMetrics {
   ChromeRelativePosition GetChromeRelativePositionOfPoint(
       Browser* browser,
       const gfx::Point& glic_center_point);
+
+  // Returns the percent overlap of the given glic bounds and the given chrome
+  // browser.
+  PercentOverlap GetPercentOverlapWithBrowser(Browser* browser,
+                                              const gfx::Rect& glic_bounds);
 
   base::TimeTicks fre_accepted_time_;
 

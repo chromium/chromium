@@ -227,7 +227,7 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   metrics_->OnResponseStopped();
   metrics_->OnResponseRated(/*positive=*/true);
   metrics_->OnSessionTerminated();
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester_.ExpectTotalCount("Glic.Response.StopTime", 1);
   histogram_tester_.ExpectUniqueSample("Glic.Session.Open.BrowserActiveState",
@@ -330,7 +330,7 @@ TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped();
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
   histogram_tester_.ExpectBucketCount(
@@ -347,7 +347,7 @@ TEST_F(GlicMetricsTest, Segmentation3DotsMenuDetachedAudio) {
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped();
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
   histogram_tester_.ExpectBucketCount(
@@ -361,7 +361,7 @@ TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {
                              mojom::InvocationSource::kOsButton);
   int minutes = 10;
   task_environment_.FastForwardBy(base::Minutes(minutes));
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester_.ExpectTotalCount("Glic.Session.Duration", 1);
   histogram_tester_.ExpectTimeBucketCount(
@@ -370,7 +370,7 @@ TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {
 
 TEST_F(GlicMetricsTest, SessionDuration_LogsError) {
   // Trigger a call to |OnGlicWindowClose()| without opening the window first.
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester_.ExpectTotalCount("Glic.Session.Duration", 0);
   histogram_tester_.ExpectTotalCount("Glic.Metrics.Error", 1);
@@ -569,25 +569,25 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
 
 TEST_F(GlicMetricsTest, InputModesUsed) {
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 1);
   histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
                                       InputModesUsed::kOnlyText, 1);
 
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 2);
   histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
                                       InputModesUsed::kNone, 1);
 
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 3);
   histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
                                       InputModesUsed::kTextAndAudio, 1);
 
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 4);
   histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
                                       InputModesUsed::kOnlyAudio, 1);
@@ -596,12 +596,12 @@ TEST_F(GlicMetricsTest, InputModesUsed) {
 TEST_F(GlicMetricsTest, AttachStateChanges) {
   // Attach changes during initialization should not be counted.
   metrics_->OnAttachedToBrowser(AttachChangeReason::kInit);
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 1);
   histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 0, 1);
 
   metrics_->OnAttachedToBrowser(AttachChangeReason::kDrag);
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 2);
   histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 1, 1);
 
@@ -609,7 +609,7 @@ TEST_F(GlicMetricsTest, AttachStateChanges) {
   metrics_->OnDetachedFromBrowser(AttachChangeReason::kMenu);
   metrics_->OnAttachedToBrowser(AttachChangeReason::kMenu);
   metrics_->OnDetachedFromBrowser(AttachChangeReason::kMenu);
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 3);
   histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 4, 1);
 }
@@ -617,7 +617,7 @@ TEST_F(GlicMetricsTest, AttachStateChanges) {
 TEST_F(GlicMetricsTest, TimeElapsedBetweenSessions) {
   base::TimeDelta elapsed_time = base::Hours(2);
 
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   task_environment_.FastForwardBy(elapsed_time);
 
   metrics_->OnGlicWindowOpen(/*attached=*/true,
@@ -634,15 +634,15 @@ TEST_F(GlicMetricsTest, PositionOnOpenAndClose) {
   display::Display display;
   display.set_bounds(gfx::Rect(300, 350));
   display.set_work_area(gfx::Rect(0, 50, 300, 300));
-  metrics_->OnGlicWindowShown(nullptr, display, gfx::Point(50, 50));
-  metrics_->OnGlicWindowClose(nullptr, display, gfx::Point(50, 150));
-  metrics_->OnGlicWindowShown(nullptr, display, gfx::Point(50, 250));
-  metrics_->OnGlicWindowClose(nullptr, display, gfx::Point(150, 50));
-  metrics_->OnGlicWindowShown(nullptr, display, gfx::Point(150, 150));
-  metrics_->OnGlicWindowClose(nullptr, display, gfx::Point(150, 250));
-  metrics_->OnGlicWindowShown(nullptr, display, gfx::Point(250, 50));
-  metrics_->OnGlicWindowClose(nullptr, display, gfx::Point(250, 150));
-  metrics_->OnGlicWindowShown(nullptr, display, gfx::Point(250, 250));
+  metrics_->OnGlicWindowShown(nullptr, display, gfx::Rect(50, 50, 0, 0));
+  metrics_->OnGlicWindowClose(nullptr, display, gfx::Rect(50, 150, 0, 0));
+  metrics_->OnGlicWindowShown(nullptr, display, gfx::Rect(50, 250, 0, 0));
+  metrics_->OnGlicWindowClose(nullptr, display, gfx::Rect(150, 50, 0, 0));
+  metrics_->OnGlicWindowShown(nullptr, display, gfx::Rect(150, 150, 0, 0));
+  metrics_->OnGlicWindowClose(nullptr, display, gfx::Rect(150, 250, 0, 0));
+  metrics_->OnGlicWindowShown(nullptr, display, gfx::Rect(250, 50, 0, 0));
+  metrics_->OnGlicWindowClose(nullptr, display, gfx::Rect(250, 150, 0, 0));
+  metrics_->OnGlicWindowShown(nullptr, display, gfx::Rect(250, 250, 0, 0));
   histogram_tester_.ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
                                       DisplayPosition::kTopLeft, 1);
   histogram_tester_.ExpectBucketCount("Glic.PositionOnDisplay.OnClose",
@@ -662,14 +662,14 @@ TEST_F(GlicMetricsTest, PositionOnOpenAndClose) {
   histogram_tester_.ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
                                       DisplayPosition::kBottomRight, 1);
   // point is not within the work area bounds
-  metrics_->OnGlicWindowShown(nullptr, display, gfx::Point(-50, 50));
+  metrics_->OnGlicWindowShown(nullptr, display, gfx::Rect(-50, 50, 0, 0));
   histogram_tester_.ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
                                       DisplayPosition::kUnknown, 1);
-  metrics_->OnGlicWindowClose(nullptr, display, gfx::Point(50, -50));
+  metrics_->OnGlicWindowClose(nullptr, display, gfx::Rect(50, -50, 0, 0));
   histogram_tester_.ExpectBucketCount("Glic.PositionOnDisplay.OnClose",
                                       DisplayPosition::kUnknown, 1);
   // no display
-  metrics_->OnGlicWindowShown(nullptr, std::nullopt, gfx::Point(50, 50));
+  metrics_->OnGlicWindowShown(nullptr, std::nullopt, gfx::Rect(50, 50, 0, 0));
   histogram_tester_.ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
                                       DisplayPosition::kUnknown, 2);
 }
@@ -702,7 +702,7 @@ TEST_F(GlicMetricsTest, TabFocusStateReporting) {
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
 
   // Marks the panel as closed.
-  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Point());
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   // Should not record samples on denying tab access or with the panel not
   // considered open.
   profile_->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, false);

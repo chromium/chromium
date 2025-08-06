@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -107,6 +108,13 @@ bool IsBrowserInForeground(Browser* browser) {
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+bool IsBrowserVisible(Browser* browser) {
+  return browser && browser->window() &&
+         browser->GetBrowserView().GetWidget() &&
+         browser->window()->IsVisible() && !browser->window()->IsMinimized() &&
+         browser->capabilities()->IsVisibleOnScreen();
 }
 
 class BrowserAttachObservationImpl : public BrowserAttachObservation,

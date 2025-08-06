@@ -24,6 +24,9 @@ bool IsBrowserGlicAttachable(Profile* profile, Browser* browser);
 // state and on windows includes a occlusion check.
 bool IsBrowserInForeground(Browser* browser);
 
+// Returns whether 'browser' is visible with a valid widget and window.
+bool IsBrowserVisible(Browser* browser);
+
 // Observes changes to what value FindBrowserForAttachment() would return.
 class BrowserAttachObserver {
  public:

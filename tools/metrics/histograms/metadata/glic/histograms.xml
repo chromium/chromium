@@ -656,6 +656,20 @@ chromium-metrics-reviews@google.com.
   <summary>Record the current state when the the panel is closed.</summary>
 </histogram>
 
+<histogram name="Glic.PercentOverlapWithBrowser.{Event}" enum="PercentOverlap"
+    expires_after="2026-01-15">
+  <owner>andreaxg@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Record the percent overlap of Glic with the active Chrome window. Rounded to
+    the nearest 10%. {Event}
+  </summary>
+  <token key="Event">
+    <variant name="OnClose" summary="Recorded when the glic window is closed."/>
+    <variant name="OnOpen" summary="Recorded when the glic window is opened."/>
+  </token>
+</histogram>
+
 <histogram name="Glic.PositionOnChrome.{Event}" enum="ChromeRelativePosition"
     expires_after="2026-01-15">
   <owner>andreaxg@google.com</owner>

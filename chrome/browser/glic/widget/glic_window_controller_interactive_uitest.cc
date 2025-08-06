@@ -666,6 +666,58 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPositionMetrics) {
   // ChromeRelativePosition::kChromeOnOtherDisplay isn't being tested since
   // tests involving moving Glic to another display are flaky.
 }
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPercentOverlapMetrics) {
+  if (IsWorkAreaTooSmallForTest()) {
+    GTEST_SKIP()
+        << "Test's work area bounds are too small for consistent results.";
+  }
+  // The GlicButton and Tabstrip are not actually shown until a tab is created.
+  chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
+  // Set browser bounds to the center cell of the work area bounds.
+  gfx::Rect browser_bounds = gfx::Rect(50, 50, 500, 400);
+  browser()->window()->SetBounds(browser_bounds);
+  browser_bounds = browser()->window()->GetBounds();
+  gfx::Size glic_expected_size = GlicWidget::GetInitialSize();
+
+  base::HistogramTester tester;
+
+  auto open_and_close = [this,
+                         &tester](PercentOverlap expected_percent_overlap) {
+    RunTestSequence(ActivateSurface(kBrowserViewElementId),
+                    SimulateGlicHotkey(), WaitForAndInstrumentGlic(kNone),
+                    CheckControllerHasWidget(true),
+                    CheckControllerWidgetMode(GlicWindowMode::kDetached),
+                    SimulateOsButton(), WaitForHide(test::kGlicHostElementId),
+                    CheckControllerHasWidget(false));
+
+    tester.ExpectBucketCount("Glic.PercentOverlapWithBrowser.OnOpen",
+                             expected_percent_overlap, 1);
+    tester.ExpectBucketCount("Glic.PercentOverlapWithBrowser.OnClose",
+                             expected_percent_overlap, 1);
+  };
+
+  gfx::Point test_origin = browser_bounds.top_right();
+  window_controller().SetPreviousPositionForTesting(test_origin);
+  open_and_close(PercentOverlap::k0);
+
+  test_origin.Offset(-0.5 * glic_expected_size.width(), 0);
+  window_controller().SetPreviousPositionForTesting(test_origin);
+  open_and_close(PercentOverlap::k50);
+
+  test_origin = browser_bounds.origin();
+  window_controller().SetPreviousPositionForTesting(test_origin);
+  open_and_close(PercentOverlap::k100);
+
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  browser()->window()->Minimize();
+  ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
+  EXPECT_FALSE(browser()->window()->IsActive());
+  RunTestSequence(CloseGlicWindow());
+  tester.ExpectBucketCount("Glic.PositionOnChrome.OnClose",
+                           ChromeRelativePosition::kNoVisibleChromeBrowser, 1);
+}
+
 #endif
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, PermanentlyDeleteProfile) {
