@@ -17,8 +17,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 
@@ -78,25 +76,9 @@ public class OmniboxFeaturesTest {
 
         @Test
         @SmallTest
-        @DisableFeatures(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS)
-        public void testShouldRetainOmniboxOnFocus_withFeatureExplicitlyDisabled() {
-            testShouldRetainOmniboxOnFocus(/* expectFeatureEnabled= */ false);
-        }
-
-        @Test
-        @SmallTest
-        @EnableFeatures(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS)
-        public void testShouldRetainOmniboxOnFocus_withFeatureExplicitlyEnabled() {
-            testShouldRetainOmniboxOnFocus(/* expectFeatureEnabled= */ true);
-        }
-
-        private void testShouldRetainOmniboxOnFocus(boolean expectFeatureEnabled) {
-            boolean featureEnabled = OmniboxFeatures.sRetainOmniboxOnFocus.isEnabled();
-            Assert.assertEquals(expectFeatureEnabled, featureEnabled);
-
-            boolean expectRetainOmniboxOnFocus =
-                    featureEnabled
-                            && mDeviceFormFactorIsTablet
+        public void testShouldRetainOmniboxOnFocus() {
+            final boolean expectRetainOmniboxOnFocus =
+                    mDeviceFormFactorIsTablet
                             && mDeviceInputSupportsAlphabeticKeyboard
                             && mDeviceInputSupportsPrecisionPointer;
 

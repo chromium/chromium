@@ -397,14 +397,6 @@ BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", DISABLED);
 // scripts (e.g. Burmese).
 BASE_FEATURE(kOmniboxElegantTextHeight, "OmniboxElegantTextHeight", ENABLED);
 
-// Whether the contents of the omnibox should be retained on focus as opposed to
-// being cleared. When this feature flag is enabled and the omnibox contents are
-// retained, focus events will also result in the omnibox contents being fully
-// selected so as to allow for easy replacement by the user. Note that even with
-// this feature flag enabled, only large screen devices with an attached
-// keyboard and precision pointer will exhibit a change in behavior.
-BASE_FEATURE(kRetainOmniboxOnFocus, "RetainOmniboxOnFocus", ENABLED);
-
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.
 BASE_FEATURE(kJumpStartOmnibox, "JumpStartOmnibox", DISABLED);
@@ -438,7 +430,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kRichAutocompletion,
       &kUseFusedLocationProvider,
       &kOmniboxElegantTextHeight,
-      &kRetainOmniboxOnFocus,
       &kJumpStartOmnibox,
       &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,

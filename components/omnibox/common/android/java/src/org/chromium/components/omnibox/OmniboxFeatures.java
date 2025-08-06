@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.location.Priority;
 
@@ -126,11 +125,6 @@ public class OmniboxFeatures {
 
     public static final CachedFlag sJumpStartOmnibox =
             newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, FeatureState.ENABLED_IN_TEST);
-
-    /** See {@link #shouldRetainOmniboxOnFocus()}. */
-    @VisibleForTesting
-    public static final CachedFlag sRetainOmniboxOnFocus =
-            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
@@ -398,8 +392,7 @@ public class OmniboxFeatures {
         if (sShouldRetainOmniboxOnFocusForTesting != null) {
             return sShouldRetainOmniboxOnFocusForTesting;
         }
-        return sRetainOmniboxOnFocus.isEnabled()
-                && DeviceFormFactor.isTablet()
+        return DeviceFormFactor.isTablet()
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
     }

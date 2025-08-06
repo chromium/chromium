@@ -11695,9 +11695,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kJumpStartOmnibox,
                                     kJumpStartOmniboxVariations,
                                     "JumpStartOmnibox")},
-    {"retain-omnibox-on-focus", flag_descriptions::kRetainOmniboxOnFocusName,
-     flag_descriptions::kRetainOmniboxOnFocusDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kRetainOmniboxOnFocus)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-log-form-events-to-all-parsed-form-types",

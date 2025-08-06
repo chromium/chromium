@@ -8659,11 +8659,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "retain-omnibox-on-focus",
-    "owners": [ "dmblack@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "rewriter-api-for-gemini-nano",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
     "expiry_milestone": 140
