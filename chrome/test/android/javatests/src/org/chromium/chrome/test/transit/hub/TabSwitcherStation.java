@@ -16,6 +16,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -139,15 +142,17 @@ public abstract class TabSwitcherStation extends HubBaseStation {
             int index, Class<T> expectedDestination) {
         TabModelSelector tabModelSelector = tabModelSelectorElement.get();
         boolean incognitoModelSelected = tabModelSelector.isOffTheRecordModelSelected();
-        int expectedIncognitoTabs = tabModelSelector.getModel(/* incognito= */ true).getCount();
-        int expectedRegularTabs = tabModelSelector.getModel(/* incognito= */ false).getCount();
+        int expectedIncognitoTabs =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ true));
+        int expectedRegularTabs =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ false));
 
         // By default stay in the same tab switcher state, unless closing the last incognito tab.
         boolean landInIncognitoSwitcher = false;
         if (getPaneId() == PaneId.INCOGNITO_TAB_SWITCHER) {
             assertTrue(incognitoModelSelected);
             expectedIncognitoTabs--;
-            if (tabModelSelector.getCurrentModel().getCount() <= 1) {
+            if (getTabCountOnUiThread(tabModelSelector.getCurrentModel()) <= 1) {
                 landInIncognitoSwitcher = false;
             } else {
                 landInIncognitoSwitcher = true;
@@ -198,7 +203,9 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     /** Expect a tab group card to exist. */
     public TabSwitcherGroupCardFacility expectGroupCard(List<Integer> tabIdsInGroup, String title) {
         TabModel currentModel = tabModelElement.get();
-        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabIdsInGroup);
+        int expectedCardIndex =
+                runOnUiThreadBlocking(
+                        () -> TabBinningUtil.getBinIndex(currentModel, tabIdsInGroup));
         return noopTo().enterFacility(
                         new TabSwitcherGroupCardFacility(expectedCardIndex, tabIdsInGroup, title));
     }
@@ -206,7 +213,8 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     /** Expect a tab card to exist. */
     public TabSwitcherTabCardFacility expectTabCard(int tabId, String title) {
         TabModel currentModel = tabModelElement.get();
-        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabId);
+        int expectedCardIndex =
+                runOnUiThreadBlocking(() -> TabBinningUtil.getBinIndex(currentModel, tabId));
         return noopTo().enterFacility(
                         new TabSwitcherTabCardFacility(expectedCardIndex, tabId, title));
     }

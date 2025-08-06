@@ -39,7 +39,8 @@ public class FullscreenManagerTestUtils {
                 activity.getBrowserControlsManager();
         int browserControlsHeight = browserControlsStateProvider.getTopControlsHeight();
 
-        waitForPageToBeScrollable(activity.getActivityTab());
+        waitForPageToBeScrollable(
+                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab()));
 
         float dragX = 50f;
         // Use a larger scroll range than the height of the browser controls to ensure we overcome
@@ -149,7 +150,11 @@ public class FullscreenManagerTestUtils {
                 });
 
         float dragX = 50f;
-        float dragStartY = activity.getActivityTab().getView().getHeight() - 50f;
+        float dragStartY =
+                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab())
+                                .getView()
+                                .getHeight()
+                        - 50f;
 
         for (int i = 0; i < 10; i++) {
             float dragEndY = dragStartY - browserControlsStateProvider.getTopControlsHeight();

@@ -11,6 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import android.view.View;
 
 import org.chromium.base.test.transit.Condition;
@@ -50,13 +52,15 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
 
         if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
             if (mHostStation.isIncognito()
-                    && mHostStation.getTabModelSelector().getModel(false).getCount() > 0) {
+                    && getTabCountOnUiThread(mHostStation.getTabModelSelector().getModel(false))
+                            > 0) {
                 switchOutOfIncognitoMenuItemElement =
                         declareView(
                                 appMenuListElement.descendant(
                                         withText(R.string.menu_switch_out_of_incognito)));
             } else if (!mHostStation.isIncognito()
-                    && mHostStation.getTabModelSelector().getModel(true).getCount() > 0) {
+                    && getTabCountOnUiThread(mHostStation.getTabModelSelector().getModel(true))
+                            > 0) {
                 switchToIncognitoMenuItemElement =
                         declareView(
                                 appMenuListElement.descendant(
@@ -73,8 +77,10 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
      */
     public RegularTabSwitcherStation selectCloseTabAndDisplayTabSwitcher() {
         TabModelSelector tabModelSelector = mHostStation.getTabModelSelector();
-        int incognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
-        int regularTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
+        int incognitoTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ true));
+        int regularTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ false));
         if (mHostStation.isIncognito()) {
             incognitoTabCount--;
             assertEquals(

@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.CarryOn;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -14,10 +16,10 @@ public class TabThumbnailsCapturedCarryOn extends CarryOn {
         TabModel tabModel = tabModelSelector.getModel(isIncognito);
         int tabCount = tabModel.getCount();
         for (int i = 0; i < tabCount; i++) {
-            declareEnterCondition(
-                    TabThumbnailCondition.etc1(tabModelSelector, tabModel.getTabAt(i)));
-            declareEnterCondition(
-                    TabThumbnailCondition.jpeg(tabModelSelector, tabModel.getTabAt(i)));
+            int j = i; // Effectively final for the lambda.
+            Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(j));
+            declareEnterCondition(TabThumbnailCondition.etc1(tabModelSelector, tab));
+            declareEnterCondition(TabThumbnailCondition.jpeg(tabModelSelector, tab));
         }
     }
 }
