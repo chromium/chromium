@@ -11,6 +11,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
@@ -213,7 +214,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
   if (!submitted_form) {
     // Change password form disappeared, some websites practice updating form
     // dynamically which resets the form. Try to find a new change-pwd form.
-    form_waiter_ = std::make_unique<PasswordFormWaiter>(
+    form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
         web_contents_, client_,
         base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
                            OnChangePasswordFormFound,
@@ -364,16 +365,14 @@ void ChangePasswordFormFillingSubmissionHelper::
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnChangePasswordFormFound(
-    PasswordFormWaiter::Result result) {
+    password_manager::PasswordFormManager* form_manager) {
   form_waiter_.reset();
-
-  password_manager::PasswordFormManager* form_manager =
-      result.change_password_form_manager;
 
   if (!form_manager) {
     std::move(callback_).Run(false);
     return;
   }
+
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
 

@@ -13,7 +13,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -29,7 +28,7 @@ class PasswordManagerClient;
 
 class PasswordChangeSubmissionVerifier;
 class ModelQualityLogsUploader;
-class PasswordFormWaiter;
+class ChangePasswordFormWaiter;
 
 // Helper class which fills a form, submits it and verifies submission result.
 // Upon completion invokes `result_callback` to notify the result of submission.
@@ -80,7 +79,7 @@ class ChangePasswordFormFillingSubmissionHelper {
     return submission_verifier_.get();
   }
 
-  PasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
+  ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
 
   ButtonClickHelper* click_helper() { return click_helper_.get(); }
 
@@ -122,7 +121,8 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   void OnSubmissionDetectedOrTimeout();
 
-  void OnChangePasswordFormFound(PasswordFormWaiter::Result result);
+  void OnChangePasswordFormFound(
+      password_manager::PasswordFormManager* form_manager);
 
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
@@ -158,7 +158,7 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   // Helper object which finds for a new PasswordFormManager when filling of an
   // old form failed.
-  std::unique_ptr<PasswordFormWaiter> form_waiter_;
+  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
   base::WeakPtrFactory<ChangePasswordFormFillingSubmissionHelper>
       weak_ptr_factory_{this};

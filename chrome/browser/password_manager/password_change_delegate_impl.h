@@ -100,7 +100,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   void OnPasswordChangeFormFound(
       password_manager::PasswordFormManager* form_manager);
-  void OnLoginFormFound();
 
   void OnChangeFormSubmissionVerified(bool result);
 
