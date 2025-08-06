@@ -428,6 +428,8 @@ blink_core_sources_html = [
   "html_title_element.h",
   "html_ulist_element.cc",
   "html_ulist_element.h",
+  "display_ad_element_monitor.cc",
+  "display_ad_element_monitor.h",
   "html_unknown_element.cc",
   "html_unknown_element.h",
   "html_view_source_document.cc",
