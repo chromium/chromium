@@ -19,18 +19,18 @@ namespace {
 // Return the default size letter size (8.5" X 11") clip box. This just follows
 // the PDFium way of handling these corner cases. PDFium always considers
 // US-Letter as the default page size.
-PdfRectangle GetDefaultClipBox(bool rotated) {
+PdfRect GetDefaultClipBox(bool rotated) {
   constexpr int kDpi = 72;
   constexpr float kPaperWidth = 8.5 * kDpi;
   constexpr float kPaperHeight = 11 * kDpi;
-  return PdfRectangle(/*left=*/0, /*bottom=*/0,
-                      /*right=*/rotated ? kPaperHeight : kPaperWidth,
-                      /*top=*/rotated ? kPaperWidth : kPaperHeight);
+  return PdfRect(/*left=*/0, /*bottom=*/0,
+                 /*right=*/rotated ? kPaperHeight : kPaperWidth,
+                 /*top=*/rotated ? kPaperWidth : kPaperHeight);
 }
 
 }  // namespace
 
-void PdfRectangle::Normalize() {
+void PdfRect::Normalize() {
   if (top_ < bottom_) {
     std::swap(top_, bottom_);
   }
@@ -39,14 +39,14 @@ void PdfRectangle::Normalize() {
   }
 }
 
-void PdfRectangle::Scale(float scale_factor) {
+void PdfRect::Scale(float scale_factor) {
   left_ *= scale_factor;
   bottom_ *= scale_factor;
   right_ *= scale_factor;
   top_ *= scale_factor;
 }
 
-void PdfRectangle::Intersect(const PdfRectangle& rect) {
+void PdfRect::Intersect(const PdfRect& rect) {
   left_ = std::max(left_, rect.left_);
   bottom_ = std::max(bottom_, rect.bottom_);
   right_ = std::min(right_, rect.right_);
@@ -71,8 +71,8 @@ float CalculateScaleFactor(const gfx::Rect& content_rect,
 void CalculateMediaBoxAndCropBox(bool rotated,
                                  bool has_media_box,
                                  bool has_crop_box,
-                                 PdfRectangle* media_box,
-                                 PdfRectangle* crop_box) {
+                                 PdfRect* media_box,
+                                 PdfRect* crop_box) {
   if (has_media_box)
     media_box->Normalize();
   if (has_crop_box)
@@ -88,18 +88,17 @@ void CalculateMediaBoxAndCropBox(bool rotated,
   }
 }
 
-PdfRectangle CalculateClipBoxBoundary(const PdfRectangle& media_box,
-                                      const PdfRectangle& crop_box) {
+PdfRect CalculateClipBoxBoundary(const PdfRect& media_box,
+                                 const PdfRect& crop_box) {
   // Clip `media_box` to the size of `crop_box`, but ignore `crop_box` if it is
   // bigger than `media_box`.
-  PdfRectangle clip_box = crop_box;
+  PdfRect clip_box = crop_box;
   clip_box.Intersect(media_box);
   return clip_box;
 }
 
-gfx::Vector2dF CalculateScaledClipBoxOffset(
-    const gfx::Rect& content_rect,
-    const PdfRectangle& source_clip_box) {
+gfx::Vector2dF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
+                                            const PdfRect& source_clip_box) {
   // Center the intended clip region to real clip region.
   return gfx::Vector2dF((content_rect.width() - source_clip_box.width()) / 2 +
                             content_rect.x() - source_clip_box.left(),
@@ -107,11 +106,10 @@ gfx::Vector2dF CalculateScaledClipBoxOffset(
                             content_rect.y() - source_clip_box.bottom());
 }
 
-gfx::Vector2dF CalculateNonScaledClipBoxOffset(
-    int rotation,
-    int page_width,
-    int page_height,
-    const PdfRectangle& source_clip_box) {
+gfx::Vector2dF CalculateNonScaledClipBoxOffset(int rotation,
+                                               int page_width,
+                                               int page_height,
+                                               const PdfRect& source_clip_box) {
   // Align the intended clip region to left-top corner of real clip region.
   switch (rotation) {
     case 0:

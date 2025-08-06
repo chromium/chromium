@@ -125,8 +125,8 @@ void TransformPDFPageForPrinting(
   }
 
   // Calculate positions for the clip box.
-  PdfRectangle media_box;
-  PdfRectangle crop_box;
+  PdfRect media_box;
+  PdfRect crop_box;
   bool has_media_box = !!FPDFPage_GetMediaBox(
       page, media_box.writable_left(), media_box.writable_bottom(),
       media_box.writable_right(), media_box.writable_top());
@@ -135,7 +135,7 @@ void TransformPDFPageForPrinting(
       crop_box.writable_right(), crop_box.writable_top());
   CalculateMediaBoxAndCropBox(rotated, has_media_box, has_crop_box, &media_box,
                               &crop_box);
-  PdfRectangle source_clip_box = CalculateClipBoxBoundary(media_box, crop_box);
+  PdfRect source_clip_box = CalculateClipBoxBoundary(media_box, crop_box);
   source_clip_box.Scale(scale_factor);
 
   // Calculate the translation offset values.

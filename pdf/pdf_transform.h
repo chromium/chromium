@@ -19,12 +19,12 @@ namespace chrome_pdf {
 
 // Represents PDF rectangles with the properties stated above.
 // Can be easily used with PDFium's bounding box functions.
-class PdfRectangle {
+class PdfRect {
  public:
-  constexpr PdfRectangle() : PdfRectangle(0, 0, 0, 0) {}
-  constexpr PdfRectangle(float left, float bottom, float right, float top)
+  constexpr PdfRect() : PdfRect(0, 0, 0, 0) {}
+  constexpr PdfRect(float left, float bottom, float right, float top)
       : left_(left), bottom_(bottom), right_(right), top_(top) {}
-  constexpr ~PdfRectangle() = default;
+  constexpr ~PdfRect() = default;
 
   float left() const { return left_; }
   float bottom() const { return bottom_; }
@@ -41,13 +41,13 @@ class PdfRectangle {
   float width() const { return right_ - left_; }
   float height() const { return top_ - bottom_; }
 
-  // When a PdfRectangle has top < bottom, or right < left, the values should be
+  // When a PdfRect has top < bottom, or right < left, the values should be
   // swapped.
   void Normalize();
 
   void Scale(float scale_factor);
 
-  void Intersect(const PdfRectangle& rect);
+  void Intersect(const PdfRect& rect);
 
  private:
   float left_;
@@ -72,8 +72,8 @@ float CalculateScaleFactor(const gfx::Rect& content_rect,
 void CalculateMediaBoxAndCropBox(bool rotated,
                                  bool has_media_box,
                                  bool has_crop_box,
-                                 PdfRectangle* media_box,
-                                 PdfRectangle* crop_box);
+                                 PdfRect* media_box,
+                                 PdfRect* crop_box);
 
 // Compute source clip box boundaries based on the crop box / media box of
 // source page and scale factor.
@@ -81,8 +81,8 @@ void CalculateMediaBoxAndCropBox(bool rotated,
 //
 // `media_box` The PDF's media box.
 // `crop_box` The PDF's crop box.
-PdfRectangle CalculateClipBoxBoundary(const PdfRectangle& media_box,
-                                      const PdfRectangle& crop_box);
+PdfRect CalculateClipBoxBoundary(const PdfRect& media_box,
+                                 const PdfRect& crop_box);
 
 // Calculate the clip box translation offset for a page that does need to be
 // scaled.
@@ -92,9 +92,8 @@ PdfRectangle CalculateClipBoxBoundary(const PdfRectangle& media_box,
 // origin.
 // Returns the final translation offsets for the source clip box, relative to
 // the origin.
-gfx::Vector2dF CalculateScaledClipBoxOffset(
-    const gfx::Rect& content_rect,
-    const PdfRectangle& source_clip_box);
+gfx::Vector2dF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
+                                            const PdfRect& source_clip_box);
 
 // Calculate the clip box offset for a page that does not need to be scaled.
 //
@@ -106,11 +105,10 @@ gfx::Vector2dF CalculateScaledClipBoxOffset(
 // origin.
 // Returns the final translation offsets for the source clip box, relative to
 // the origin.
-gfx::Vector2dF CalculateNonScaledClipBoxOffset(
-    int rotation,
-    int page_width,
-    int page_height,
-    const PdfRectangle& source_clip_box);
+gfx::Vector2dF CalculateNonScaledClipBoxOffset(int rotation,
+                                               int page_width,
+                                               int page_height,
+                                               const PdfRect& source_clip_box);
 
 }  // namespace chrome_pdf
 
