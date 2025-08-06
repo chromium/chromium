@@ -1694,9 +1694,11 @@ Unknown properties are collapsed to zero. -->
   <int value="24"
       label="Open the context menu for the keyboard-focused tab strip item"/>
   <int value="25"
-      label="Reorder the keyboard-focused tab strip item to the left"/>
+      label="Reorder the keyboard-focused tab strip item to the left (not
+             implemented)"/>
   <int value="26"
-      label="Reorder the keyboard-focused tab strip item to the right"/>
+      label="Reorder the keyboard-focused tab strip item to the right (not
+             implemented)"/>
   <int value="27"
       label="Reorder the currently-open tab to the left (not implemented)"/>
   <int value="28"

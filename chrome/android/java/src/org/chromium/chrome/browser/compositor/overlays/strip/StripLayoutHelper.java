@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -389,7 +388,6 @@ public class StripLayoutHelper
             };
 
     // External influences
-    private final SceneOverlay mSceneOverlay;
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
     private final LayoutManagerHost mManagerHost;
@@ -616,7 +614,6 @@ public class StripLayoutHelper
      */
     public StripLayoutHelper(
             Context context,
-            StripLayoutHelperManager manager,
             LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
@@ -655,7 +652,6 @@ public class StripLayoutHelper
         mReservedEndMargin = mFixedEndPadding + mNewTabButtonWidth;
         updateMargins(false);
 
-        mSceneOverlay = manager;
         mManagerHost = managerHost;
         mUpdateHost = updateHost;
         mRenderHost = renderHost;
@@ -1903,15 +1899,6 @@ public class StripLayoutHelper
                     mNewTabButton,
                     mIsFirstLayoutPass);
         }
-        // If close buttons appear / disappear, the CompositorView's keyboard focus index will be
-        // wrong; fix it.
-        mUpdateHost.requestUpdate(
-                () -> {
-                    @Nullable StripLayoutView keyboardFocusedView = getKeyboardFocusedView();
-                    if (keyboardFocusedView != null) {
-                        mManagerHost.requestKeyboardFocus(mSceneOverlay, keyboardFocusedView);
-                    }
-                });
     }
 
     private void updateTabContainersAndDividers() {
@@ -2290,23 +2277,13 @@ public class StripLayoutHelper
      * @return Whether the context menu was successfully opened.
      */
     public boolean openKeyboardFocusedContextMenu() {
-        @Nullable StripLayoutView focusedView = getKeyboardFocusedView();
-        if (focusedView == null) return false;
-        return showContextMenu(focusedView);
-    }
-
-    /**
-     * Moves the currently keyboard-selected strip view to the left or right by one position.
-     *
-     * @param toLeft Whether to move towards the left (note: this is left even in RTL).
-     * @return Whether the item was successfully reordered.
-     */
-    public boolean moveSelectedStripView(boolean toLeft) {
-        @Nullable StripLayoutView focusedView = getKeyboardFocusedView();
-        if (focusedView == null) return false;
-        mReorderDelegate.reorderViewInDirection(
-                mTabDelegate, mStripViews, mStripGroupTitles, mStripTabs, focusedView, toLeft);
-        return true;
+        List<VirtualView> virtualViews = new ArrayList<>();
+        getVirtualViews(virtualViews);
+        for (VirtualView view : virtualViews) {
+            if (!view.isKeyboardFocused()) continue;
+            return showContextMenu((StripLayoutView) view);
+        }
+        return false;
     }
 
     /* package */ void showTabContextMenuForTesting(StripLayoutTab tab) {
@@ -3966,14 +3943,7 @@ public class StripLayoutHelper
         } else {
             copyTabs();
         }
-        // If views are reordered, the CompositorView's keyboard focus index will be wrong; fix it.
-        mUpdateHost.requestUpdate(
-                () -> {
-                    @Nullable StripLayoutView keyboardFocusedView = getKeyboardFocusedView();
-                    if (keyboardFocusedView != null) {
-                        mManagerHost.requestKeyboardFocus(mSceneOverlay, keyboardFocusedView);
-                    }
-                });
+        mUpdateHost.requestUpdate();
     }
 
     private void rebuildStripViewsAfterMove() {
@@ -5462,16 +5432,6 @@ public class StripLayoutHelper
         intent.putExtra("MOVE_WINDOW_START_X", startXInScreen);
         intent.putExtra("MOVE_WINDOW_START_Y", startYInScreen);
         mWindowAndroid.sendBroadcast(intent);
-    }
-
-    /** Returns the keyboard-focused view, or null if there is none. */
-    private @Nullable StripLayoutView getKeyboardFocusedView() {
-        List<VirtualView> virtualViews = new ArrayList<>();
-        getVirtualViews(virtualViews);
-        for (VirtualView view : virtualViews) {
-            if (view.isKeyboardFocused()) return (StripLayoutView) view;
-        }
-        return null;
     }
 
     void startDragAndDropTabForTesting(StripLayoutTab clickedTab, PointF dragStartPointF) {

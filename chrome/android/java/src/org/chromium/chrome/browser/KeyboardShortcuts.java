@@ -85,8 +85,8 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS,
         KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
         KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
-        KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
-        KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING,
@@ -161,8 +161,8 @@ public class KeyboardShortcuts {
         int KEYBOARD_FOCUS_BOOKMARKS = 22;
         int KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS = 23;
         int FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU = 24;
-        int FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT = 25;
-        int FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT = 26;
+        int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT = 25;
+        int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT = 26;
         int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT = 27;
         int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT = 28;
 
@@ -592,14 +592,9 @@ public class KeyboardShortcuts {
                 KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
                 new KeyCombo(KeyEvent.KEYCODE_F6, NO_MODIFIER));
         new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
+                KeyboardShortcutsSemanticMeaning
+                        .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
                 new KeyCombo(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
-                new KeyCombo(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_CTRL_ON));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
-                new KeyCombo(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON));
 
         // Bookmark shortcuts.
         new KeyboardShortcutDefinition(
@@ -705,6 +700,14 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP,
                 new KeyCombo(KeyEvent.KEYCODE_SPACE, KeyEvent.META_SHIFT_ON));
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
+                new KeyCombo(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_CTRL_ON));
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
+                new KeyCombo(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON));
         // TODO(crbug.com/402775002): Change fn signature to allow CTRL+SHIFT+FN+UpArrow.
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT,
@@ -1126,16 +1129,12 @@ public class KeyboardShortcuts {
                         .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.open_tab_strip_context_menu, /* fromMenu= */ false);
-                case KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT:
-                    return toolbarManager.reorderKeyboardFocusedItem(/* toLeft= */ true);
-                case KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT:
-                    return toolbarManager.reorderKeyboardFocusedItem(/* toLeft= */ false);
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR:
-                    toolbarManager.requestFocus();
-                    return true;
+                        toolbarManager.requestFocus();
+                        return true;
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS:
-                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                            R.id.focus_bookmarks, /* fromMenu= */ false);
+                        return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.focus_bookmarks, /* fromMenu= */ false);
             }
         }
 

@@ -549,7 +549,6 @@ public class StripLayoutHelperManager
         mNormalHelper =
                 new StripLayoutHelper(
                         context,
-                        this,
                         managerHost,
                         updateHost,
                         renderHost,
@@ -568,7 +567,6 @@ public class StripLayoutHelperManager
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
-                        this,
                         managerHost,
                         updateHost,
                         renderHost,
@@ -1714,17 +1712,6 @@ public class StripLayoutHelperManager
      */
     public boolean openKeyboardFocusedContextMenu() {
         return getActiveStripLayoutHelper().openKeyboardFocusedContextMenu();
-    }
-
-    /**
-     * Reorders the currently keyboard-focused item, if applicable.
-     *
-     * @param toLeft Whether the focused item should be reordered to the left (note: this is still
-     *     left in RTL).
-     * @return Whether the item was successfully reordered.
-     */
-    public boolean reorderKeyboardFocusedItem(boolean toLeft) {
-        return getActiveStripLayoutHelper().moveSelectedStripView(toLeft);
     }
 
     private boolean isActivityInXrFullSpaceModeNow() {
