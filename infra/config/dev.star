@@ -9,7 +9,11 @@
 load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//builders.star", "os")
 load("@chromium-luci//chromium_luci.star", "chromium_luci")
-load("//lib/builder_exemptions.star", "exempted_from_contact_builders")
+load(
+    "//lib/builder_exemptions.star",
+    "exempted_from_contact_builders",
+    "exempted_from_description_builders",
+)
 load("//project.star", "settings")
 
 lucicfg.check_version(
@@ -77,6 +81,7 @@ chromium_luci.configure_builders(
         os.MAC_BETA: "Mac-15|Mac-26",
         os.WINDOWS_DEFAULT: os.WINDOWS_10,
     },
+    exempted_from_description_builders = exempted_from_description_builders,
 )
 
 chromium_luci.configure_builder_health_indicators(
