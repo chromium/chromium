@@ -503,13 +503,8 @@ bool SlowMatchWithNoResultFlags(
     unsigned expected_proximity = std::numeric_limits<unsigned>::max()) {
   SelectorChecker::MatchResult result;
   context.selector = &selector;
-  if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-    // Match :visited only when we're actually inside a :visited link.
-    context.match_visited = inside_link == EInsideLink::kInsideVisitedLink;
-  } else {
-    context.match_visited = !suppress_visited && rule_data.LinkMatchType() ==
-                                                     CSSSelector::kMatchVisited;
-  }
+  context.match_visited = !suppress_visited && rule_data.LinkMatchType() ==
+                                                   CSSSelector::kMatchVisited;
   bool match = checker.Match(context, result);
   DCHECK_EQ(0, result.flags);
   DCHECK_EQ(kPseudoIdNone, result.dynamic_pseudo);
@@ -624,14 +619,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
     } else {
       context.selector = &selector;
-      if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-        // Match :visited only when we're actually inside a :visited link.
-        context.match_visited = inside_link_ == EInsideLink::kInsideVisitedLink;
-      } else {
-        context.match_visited =
-            !suppress_visited_ &&
-            rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
-      }
+      context.match_visited =
+          !suppress_visited_ &&
+          rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
 
       bool match = checker.Match(context, result);
       result_.AddFlags(result.flags);
@@ -1207,11 +1197,9 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   // rules may appear to match from ElementRuleCollector's output. This behavior
   // is not correct for Inspector purposes, hence we explicitly filter out
   // rules that don't match the current link state here.
-  if (!RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-    if (!(matched_rule.LinkMatchType() &
-          LinkMatchTypeFromInsideLink(inside_link_))) {
-      return;
-    }
+  if (!(matched_rule.LinkMatchType() &
+        LinkMatchTypeFromInsideLink(inside_link_))) {
+    return;
   }
 
   CSSRule* css_rule = nullptr;

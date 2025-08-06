@@ -852,25 +852,6 @@
     "expires": "Dev 31, 2024"
   },
   {
-    "prefix": "do-not-hide-visited-color",
-    "owners": [
-      "sesse@google.com"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/css/css-animations/",
-      "external/wpt/css/css-cascade/",
-      "external/wpt/css/css-color/",
-      "external/wpt/css/css-pseudo/"
-    ],
-    "args": [
-      "--enable-features=CSSDoNotHideVisitedColor"
-    ],
-    "expires": "Jun 3, 2026"
-  },
-  {
     "prefix": "document-picture-in-picture-user-activation",
     "platforms": [
       "Linux",

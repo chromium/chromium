@@ -911,14 +911,6 @@ virtual/direct-sockets/external/wpt/direct-sockets/udp_socket.https.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-024.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-025.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-036.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/composited-filters-under-opacity.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/deprecated-sameas-010.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/filters-under-will-change-opacity.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/system-color-consistency.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/system-color-hightlights-vs-getSelection-001.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/system-color-hightlights-vs-getSelection-002.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/system-color-support.html
-virtual/do-not-hide-visited-color/external/wpt/css/css-color/t424-hsl-basic-a.xht
 external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html
 external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html
 virtual/fedcm-register/external/wpt/fedcm/fedcm-register/fedcm-no-registered-idps.https.html

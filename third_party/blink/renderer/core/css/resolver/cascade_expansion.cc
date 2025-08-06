@@ -42,24 +42,11 @@ CascadeFilter AddLinkFilter(CascadeFilter filter,
                             const MatchedProperties& matched_properties) {
   switch (matched_properties.data_.link_match_type) {
     case CSSSelector::kMatchVisited:
-      if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-        // For web-compat reasons, we cannot have e.g. font-size
-        // properties in :visited selectors.
-        return filter.Add(CSSProperty::kValidForVisited);
-      } else {
-        return filter.Add(CSSProperty::kVisited);
-      }
+      return filter.Add(CSSProperty::kVisited);
     case CSSSelector::kMatchLink:
       return filter.Add(CSSProperty::kNotVisited);
     case CSSSelector::kMatchAll:
-      if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-        // We don't have any use for the -internal-visited properties
-        // with this flag on (they should never be read), so filter
-        // them out for performance.
-        return filter.Add(CSSProperty::kNotVisited);
-      } else {
-        return filter;
-      }
+      return filter;
     default:
       return filter.Add(CSSProperty::kVisited).Add(CSSProperty::kNotVisited);
   }

@@ -397,17 +397,11 @@ void StyleResolverState::SetComputedStyleFlagsFromAuthorFlags(
     StyleBuilder().SetHasAuthorBorderRadius();
   }
 
-  if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-    if (author_flags & CSSProperty::kHighlightColors) {
-      StyleBuilder().SetHasAuthorHighlightColors();
-    }
-  } else {
-    if ((InsideLink() != EInsideLink::kInsideVisitedLink &&
-         (author_flags & CSSProperty::kHighlightColors)) ||
-        (InsideLink() == EInsideLink::kInsideVisitedLink &&
-         (author_flags & CSSProperty::kVisitedHighlightColors))) {
-      StyleBuilder().SetHasAuthorHighlightColors();
-    }
+  if ((InsideLink() != EInsideLink::kInsideVisitedLink &&
+       (author_flags & CSSProperty::kHighlightColors)) ||
+      (InsideLink() == EInsideLink::kInsideVisitedLink &&
+       (author_flags & CSSProperty::kVisitedHighlightColors))) {
+    StyleBuilder().SetHasAuthorHighlightColors();
   }
 }
 

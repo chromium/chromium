@@ -112,41 +112,14 @@ static bool SelectorListHasLinkOrVisited(const CSSSelector* selector_list) {
   return false;
 }
 
-static bool SelectorListHasVisited(const CSSSelector* selector_list) {
-  for (const CSSSelector* complex = selector_list; complex;
-       complex = CSSSelectorList::Next(*complex)) {
-    if (complex->HasVisited()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 static bool StyleScopeHasLinkOrVisited(const StyleScope* style_scope) {
   return style_scope && (SelectorListHasLinkOrVisited(style_scope->From()) ||
                          SelectorListHasLinkOrVisited(style_scope->To()));
 }
 
-static bool StyleScopeHasVisited(const StyleScope* style_scope) {
-  return style_scope && (SelectorListHasVisited(style_scope->From()) ||
-                         SelectorListHasVisited(style_scope->To()));
-}
-
 static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
                                        const CSSSelector& selector,
                                        const StyleScope* style_scope) {
-  if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-    // When this flag is on, RuleDatas are never added with
-    // kRuleIsVisitedDependent; we have exactly one RuleData per selector,
-    // and its LinkMatchType is truthful (i.e., specifies whether we
-    // have :visited or not; we don't care about :link and can eventually
-    // remove kMatchLink when the flag goes permanent).
-    if (selector.HasVisited() || StyleScopeHasVisited(style_scope)) {
-      return CSSSelector::kMatchVisited;
-    } else {
-      return CSSSelector::kMatchAll;
-    }
-  }
   if (selector.HasLinkOrVisited() || StyleScopeHasLinkOrVisited(style_scope)) {
     return (add_rule_flags & kRuleIsVisitedDependent)
                ? CSSSelector::kMatchVisited
@@ -846,25 +819,23 @@ void RuleSet::AddRule(StyleRule* rule,
   FindBestRuleSetAndAdd<BucketCoverage::kCompute>(rule_data.MutableSelector(),
                                                   rule_data, style_scope);
 
-  if (!RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-    // If the rule has CSSSelector::kMatchLink, it means that there is a
-    // :visited or :link pseudo-class somewhere in the selector. In those cases,
-    // we effectively split the rule into two: one which covers the situation
-    // where we are in an unvisited link (kMatchLink), and another which covers
-    // the visited link case (kMatchVisited).
-    if (rule_data.LinkMatchType() == CSSSelector::kMatchLink) {
-      // Now the selector will be in two buckets.
-      rule_data.ResetEntirelyCoveredByBucketing();
+  // If the rule has CSSSelector::kMatchLink, it means that there is a
+  // :visited or :link pseudo-class somewhere in the selector. In those cases,
+  // we effectively split the rule into two: one which covers the situation
+  // where we are in an unvisited link (kMatchLink), and another which covers
+  // the visited link case (kMatchVisited).
+  if (rule_data.LinkMatchType() == CSSSelector::kMatchLink) {
+    // Now the selector will be in two buckets.
+    rule_data.ResetEntirelyCoveredByBucketing();
 
-      RuleData visited_dependent(
-          rule, rule_data.SelectorIndex(), rule_data.GetPosition(), style_scope,
-          add_rule_flags | kRuleIsVisitedDependent, bloom_hash_backing_);
-      // Since the selector now is in two buckets, we use
-      // BucketCoverage::kIgnore to prevent
-      // CSSSelector::is_covered_by_bucketing_ from being set.
-      FindBestRuleSetAndAdd<BucketCoverage::kIgnore>(
-          visited_dependent.MutableSelector(), visited_dependent, style_scope);
-    }
+    RuleData visited_dependent(
+        rule, rule_data.SelectorIndex(), rule_data.GetPosition(), style_scope,
+        add_rule_flags | kRuleIsVisitedDependent, bloom_hash_backing_);
+    // Since the selector now is in two buckets, we use
+    // BucketCoverage::kIgnore to prevent
+    // CSSSelector::is_covered_by_bucketing_ from being set.
+    FindBestRuleSetAndAdd<BucketCoverage::kIgnore>(
+        visited_dependent.MutableSelector(), visited_dependent, style_scope);
   }
 
   AddRuleToLayerIntervals(cascade_layer, rule_data.GetPosition());

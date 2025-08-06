@@ -2529,11 +2529,6 @@ Color ComputedStyle::VisitedDependentColor(const Longhand& color_property,
 
   blink::Color unvisited_color =
       color_property.ColorIncludingFallback(false, *this, is_current_color);
-  if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-    // Under this flag, we treat :visited like any other pseudo-class,
-    // and we never touch the -internal-visited-* properties.
-    return unvisited_color;
-  }
   if (InsideLink() != EInsideLink::kInsideVisitedLink) {
     return unvisited_color;
   }
