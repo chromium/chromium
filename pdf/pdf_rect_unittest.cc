@@ -1,0 +1,71 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "pdf/pdf_rect.h"
+
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace chrome_pdf {
+
+TEST(PdfRectTest, DefaultConstructor) {
+  static constexpr PdfRect kRect;
+  EXPECT_EQ(0, kRect.left());
+  EXPECT_EQ(0, kRect.bottom());
+  EXPECT_EQ(0, kRect.right());
+  EXPECT_EQ(0, kRect.top());
+  EXPECT_EQ(0, kRect.width());
+  EXPECT_EQ(0, kRect.height());
+}
+
+TEST(PdfRectTest, Constructor) {
+  static constexpr PdfRect kRect(1.0f, 2.0f, 3.0f, 5.0f);
+  EXPECT_EQ(1.0f, kRect.left());
+  EXPECT_EQ(2.0f, kRect.bottom());
+  EXPECT_EQ(3.0f, kRect.right());
+  EXPECT_EQ(5.0f, kRect.top());
+  EXPECT_EQ(2.0f, kRect.width());
+  EXPECT_EQ(3.0f, kRect.height());
+}
+
+TEST(PdfRectTest, WritableAccessors) {
+  PdfRect rect;
+  *rect.writable_left() = 5.0f;
+  *rect.writable_bottom() = 6.0f;
+  *rect.writable_right() = 7.0f;
+  *rect.writable_top() = 8.0f;
+  EXPECT_EQ(5.0f, rect.left());
+  EXPECT_EQ(6.0f, rect.bottom());
+  EXPECT_EQ(7.0f, rect.right());
+  EXPECT_EQ(8.0f, rect.top());
+}
+
+TEST(PdfRectTest, Normalize) {
+  PdfRect rect(3.0f, 4.0f, 1.0f, 2.0f);
+  rect.Normalize();
+  EXPECT_EQ(1.0f, rect.left());
+  EXPECT_EQ(2.0f, rect.bottom());
+  EXPECT_EQ(3.0f, rect.right());
+  EXPECT_EQ(4.0f, rect.top());
+}
+
+TEST(PdfRectTest, Scale) {
+  PdfRect rect(1.0f, 2.0f, 3.0f, 4.0f);
+  rect.Scale(2.0f);
+  EXPECT_EQ(2.0f, rect.left());
+  EXPECT_EQ(4.0f, rect.bottom());
+  EXPECT_EQ(6.0f, rect.right());
+  EXPECT_EQ(8.0f, rect.top());
+}
+
+TEST(PdfRectTest, Intersect) {
+  PdfRect rect(0.0f, 0.0f, 2.0f, 2.0f);
+  static constexpr PdfRect kRect(1.0f, 1.0f, 3.0f, 3.0f);
+  rect.Intersect(kRect);
+  EXPECT_EQ(1.0f, rect.left());
+  EXPECT_EQ(1.0f, rect.bottom());
+  EXPECT_EQ(2.0f, rect.right());
+  EXPECT_EQ(2.0f, rect.top());
+}
+
+}  // namespace chrome_pdf

@@ -5,9 +5,9 @@
 #include "pdf/pdf_transform.h"
 
 #include <algorithm>
-#include <utility>
 
 #include "base/notreached.h"
+#include "pdf/pdf_rect.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -29,29 +29,6 @@ PdfRect GetDefaultClipBox(bool rotated) {
 }
 
 }  // namespace
-
-void PdfRect::Normalize() {
-  if (top_ < bottom_) {
-    std::swap(top_, bottom_);
-  }
-  if (right_ < left_) {
-    std::swap(right_, left_);
-  }
-}
-
-void PdfRect::Scale(float scale_factor) {
-  left_ *= scale_factor;
-  bottom_ *= scale_factor;
-  right_ *= scale_factor;
-  top_ *= scale_factor;
-}
-
-void PdfRect::Intersect(const PdfRect& rect) {
-  left_ = std::max(left_, rect.left_);
-  bottom_ = std::max(bottom_, rect.bottom_);
-  right_ = std::min(right_, rect.right_);
-  top_ = std::min(top_, rect.top_);
-}
 
 float CalculateScaleFactor(const gfx::Rect& content_rect,
                            const gfx::SizeF& src_size,

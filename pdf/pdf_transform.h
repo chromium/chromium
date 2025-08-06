@@ -5,6 +5,7 @@
 #ifndef PDF_PDF_TRANSFORM_H_
 #define PDF_PDF_TRANSFORM_H_
 
+#include "pdf/pdf_rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
@@ -16,45 +17,6 @@ namespace chrome_pdf {
 
 // All the code here works in the PDF coordinate space. The origin is at the
 // bottom-left, and all units are in points.
-
-// Represents PDF rectangles with the properties stated above.
-// Can be easily used with PDFium's bounding box functions.
-class PdfRect {
- public:
-  constexpr PdfRect() : PdfRect(0, 0, 0, 0) {}
-  constexpr PdfRect(float left, float bottom, float right, float top)
-      : left_(left), bottom_(bottom), right_(right), top_(top) {}
-  constexpr ~PdfRect() = default;
-
-  float left() const { return left_; }
-  float bottom() const { return bottom_; }
-  float right() const { return right_; }
-  float top() const { return top_; }
-
-  // These return pointers so they can be directly passed into PDFium's public
-  // API, which is written in C.
-  float* writable_left() { return &left_; }
-  float* writable_bottom() { return &bottom_; }
-  float* writable_right() { return &right_; }
-  float* writable_top() { return &top_; }
-
-  float width() const { return right_ - left_; }
-  float height() const { return top_ - bottom_; }
-
-  // When a PdfRect has top < bottom, or right < left, the values should be
-  // swapped.
-  void Normalize();
-
-  void Scale(float scale_factor);
-
-  void Intersect(const PdfRect& rect);
-
- private:
-  float left_;
-  float bottom_;
-  float right_;
-  float top_;
-};
 
 // Calculate the scale factor between `content_rect` and a page of `src_size`.
 //

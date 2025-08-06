@@ -4,6 +4,7 @@
 
 #include "pdf/pdf_transform.h"
 
+#include "pdf/pdf_rect.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"

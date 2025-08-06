@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "pdf/flatten_pdf_result.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
