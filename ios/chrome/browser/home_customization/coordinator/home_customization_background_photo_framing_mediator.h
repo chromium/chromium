@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_MEDIATOR_H_
 
 #import "base/files/file_path.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_mutator.h"
 
 class HomeBackgroundCustomizationService;
 
@@ -25,4 +25,4 @@ class HomeBackgroundCustomizationService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_MEDIATOR_H_

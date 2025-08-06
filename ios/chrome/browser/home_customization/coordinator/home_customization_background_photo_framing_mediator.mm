@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mediator.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_framing_mediator.h"
 
 #import <Foundation/Foundation.h>
 
@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
-#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_mutator.h"
 
 namespace {
 // Compresses and saves `image` to the provided `directory_path`. Also generates

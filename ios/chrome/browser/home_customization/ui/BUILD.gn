@@ -10,6 +10,7 @@ source_set("ui") {
     "home_customization_background_color_picker_mutator.h",
     "home_customization_background_color_picker_view_controller.h",
     "home_customization_background_color_picker_view_controller.mm",
+    "home_customization_background_photo_framing_mutator.h",
     "home_customization_background_photo_framing_view_controller.h",
     "home_customization_background_photo_framing_view_controller.mm",
     "home_customization_background_photo_library_picker_view_controller.h",
@@ -52,6 +53,7 @@ source_set("ui") {
     "home_cutomization_color_palette_cell.mm",
   ]
   deps = [
+    "//base",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/home_customization/model",
     "//ios/chrome/browser/home_customization/utils",

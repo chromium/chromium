@@ -24,9 +24,6 @@ source_set("model") {
     "home_background_image_service_factory.mm",
     "home_customization_background_photo_framing_coordinates.h",
     "home_customization_background_photo_framing_coordinates.mm",
-    "home_customization_background_photo_framing_mediator.h",
-    "home_customization_background_photo_framing_mediator.mm",
-    "home_customization_background_photo_framing_mutator.h",
     "ntp_background_service_factory.h",
     "ntp_background_service_factory.mm",
   ]

@@ -7,9 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/values.h"
-#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mediator.h"
-
 @protocol HomeCustomizationBackgroundPhotoFramingMutator;
 @class HomeCustomizationImageFramingViewController;
 @class SearchEngineLogoMediator;
