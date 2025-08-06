@@ -200,8 +200,7 @@ export class SpeechController {
     // If the locales are identical, the voices are likely from the same
     // TTS engine, therefore, we don't need to reset the word boundary state.
     if (currentVoice?.lang.toLowerCase() !== selectedVoice.lang.toLowerCase()) {
-      this.wordBoundaries_.resetToDefaultState(
-          /*possibleWordBoundarySupportChange=*/ true);
+      this.wordBoundaries_.setNotSupported();
     }
   }
 

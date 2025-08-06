@@ -66,6 +66,25 @@ suite('WordBoundaries', () => {
     assertFalse(wordBoundaries.hasBoundaries());
   });
 
+  test('setNotSupported', () => {
+    wordBoundaries.updateBoundary(15, 10);
+    wordBoundaries.setNotSupported();
+    assertTrue(wordBoundaries.notSupported());
+  });
+
+  test('update boundary after setNotSupported', () => {
+    wordBoundaries.updateBoundary(15, 10);
+
+    wordBoundaries.setNotSupported();
+    wordBoundaries.updateBoundary(25, 5);
+
+    const state: WordBoundaryState = wordBoundaries.state;
+    assertEquals(25, state.previouslySpokenIndex);
+    assertEquals(0, state.speechUtteranceStartIndex);
+    assertEquals(5, state.speechUtteranceLength);
+    assertTrue(wordBoundaries.hasBoundaries());
+  });
+
   test('getResumeBoundary', () => {
     wordBoundaries.updateBoundary(5);
     assertEquals(5, wordBoundaries.getResumeBoundary());
