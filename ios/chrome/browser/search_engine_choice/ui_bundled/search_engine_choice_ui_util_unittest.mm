@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
 
 #import "build/branding_buildflags.h"
-#import "components/grit/components_scaled_resources.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
 #import "testing/platform_test.h"
