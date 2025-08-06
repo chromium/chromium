@@ -3657,6 +3657,77 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   ASSERT_TRUE(root->child_at(1)->current_frame_host()->IsRenderFrameLive());
 }
 
+// Check that file:// URLs are correctly isolated. This test runs with the
+// default site isolation of the platform, e.g. enabled on desktop and disabled
+// on Android.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, FileURLIsolation) {
+  StartEmbeddedServer();
+
+  // Navigate to a main frame file:// URL.
+  GURL file_url = GetTestUrl("", "title1.html");
+  ASSERT_TRUE(file_url.SchemeIsFile());
+  ASSERT_TRUE(NavigateToURL(shell(), file_url));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ChildProcessId file_process_id =
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+
+  // Navigate to a regular web page, a.com, with a same-site subframe.
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), a_url));
+
+  // The file:// URL and a.com should be in different processes, to avoid file
+  // permission grants accumulating on a single process.
+  RenderProcessHost* a_process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_NE(a_process->GetID(), file_process_id);
+  // With full site isolation, the process should be locked to the file:// URL
+  // like any other site. Otherwise, it will be in an unlocked process. On
+  // Android WebView (though this test doesn't run there), navigating to a
+  // file:// URL should not cause a process swap.
+  EXPECT_EQ(a_process->IsProcessLockedToSiteForTesting(),
+            AreAllSitesIsolatedForTesting());
+
+  // Do a browser initiated navigation of the a.com subframe to a file:// URL.
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  scoped_refptr<SiteInstanceImpl> root_instance =
+      root->current_frame_host()->GetSiteInstance();
+  FrameTreeNode* child = root->child_at(0);
+  NavigateFrameToURL(child, file_url);
+
+  scoped_refptr<SiteInstanceImpl> child_instance =
+      child->current_frame_host()->GetSiteInstance();
+  RenderProcessHost* child_process = child->current_frame_host()->GetProcess();
+
+  // With full site isolation, the file:// URL should get its own process.
+  // Otherwise, it should share a process with the parent.
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(a_process, child_process);
+
+    // With full site isolation, the file:// subframe should be in a different
+    // SiteInstance from the parent.
+    EXPECT_NE(root_instance, child_instance);
+    EXPECT_NE(root_instance->group(), child_instance->group());
+  } else {
+    // TODO(crbug.com/40704573): When default SiteInstanceGroup supports file://
+    // URLs on Android WebView and low-end Clank, the file:// SiteInstance
+    // should be in the default SiteInstanceGroup when site isolation is not
+    // enabled.
+    EXPECT_EQ(a_process, child_process);
+
+    // With default SiteInstanceGroup enabled, the file:// subframe should be in
+    // a different SiteInstance from the parent. Otherwise it should share a
+    // site instance with the parent.
+    if (ShouldUseDefaultSiteInstanceGroup()) {
+      EXPECT_NE(root_instance, child_instance);
+      EXPECT_NE(root_instance->group(), child_instance->group());
+    } else {
+      EXPECT_EQ(root_instance, child_instance);
+      EXPECT_EQ(root_instance->group(), child_instance->group());
+    }
+  }
+}
+
 // Ensure that navigating back from a sad tab to an existing process works
 // correctly. See https://crbug.com/591984.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
