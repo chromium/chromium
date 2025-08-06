@@ -4235,8 +4235,8 @@
   },
   {
       "name": "enable-secure-payment-confirmation-availability-api",
-      "owners": [ "smcgruer@chromium.org", "chrome-payments-team@google.com" ],
-      "expiry_milestone": 140
+      "owners": [ "smcgruer@chromium.org", "chrome-payments-eng@google.com" ],
+      "expiry_milestone": 145
   },
   {
     "name": "enable-secure-payment-confirmation-browser-bound-key",
