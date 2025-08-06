@@ -222,8 +222,9 @@ void SynchronizeVideoFrameRead(
     std::unique_ptr<gpu::RasterScopedAccess> ri_access = nullptr) {
   WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));
   video_frame->UpdateReleaseSyncToken(&client);
-  if (!video_frame->metadata().read_lock_fences_enabled)
+  if (!video_frame->metadata().read_lock_fences_enabled) {
     return;
+  }
 
   unsigned query_id = 0;
   ri->GenQueriesEXT(1, &query_id);
@@ -247,8 +248,9 @@ void SynchronizeVideoFrameRead(
     std::unique_ptr<gpu::RasterScopedAccess> ri_access = nullptr) {
   WaitAndReplaceSyncTokenClient client(gl, std::move(ri_access));
   video_frame->UpdateReleaseSyncToken(&client);
-  if (!video_frame->metadata().read_lock_fences_enabled)
+  if (!video_frame->metadata().read_lock_fences_enabled) {
     return;
+  }
 
   unsigned query_id = 0;
   gl->GenQueriesEXT(1, &query_id);
@@ -312,8 +314,9 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
 
   // Indivisible heights must process any remaining rows in the last task.
   size_t rows = (chunk_end - chunk_start) * rows_per_chunk;
-  if (task_index + 1 == n_tasks)
+  if (task_index + 1 == n_tasks) {
     rows += height % rows_per_chunk;
+  }
 
   struct PlaneMetaData {
     size_t stride;
@@ -570,8 +573,9 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
               plane_meta[VideoFrame::Plane::kUV].data.get()),
           plane_meta[VideoFrame::Plane::kUV].stride, pixels, row_bytes, matrix,
           width, rows);
-      if (!OUTPUT_ARGB)
+      if (!OUTPUT_ARGB) {
         libyuv::ARGBToABGR(pixels, row_bytes, pixels, row_bytes, width, rows);
+      }
       break;
 
     case PIXEL_FORMAT_YUV422P12:
@@ -607,9 +611,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
 
 #if !BUILDFLAG(IS_ANDROID)
 // Valid gl texture internal format that can try to use direct uploading path.
-bool ValidFormatForDirectUploading(
-    GrGLenum format,
-    unsigned int type) {
+bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
   switch (format) {
     case GL_RGBA:
       return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_4_4_4_4;
@@ -745,8 +747,9 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     SkYUVAInfo::Subsampling subsampling;
     std::tie(plane_config, subsampling) =
         VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
-    if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown)
+    if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown) {
       return false;
+    }
 
     // Don't use the YUV conversion path for multi-plane RGB frames.
     if (frame_->format() == PIXEL_FORMAT_I444 &&
@@ -754,8 +757,9 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
       return false;
     }
 
-    if (!info)
+    if (!info) {
       return true;
+    }
 
     SkYUVColorSpace yuv_color_space;
     if (!frame_->ColorSpace().ToSkYUVColorSpace(frame_->BitDepth(),
@@ -1109,10 +1113,11 @@ void PaintCanvasVideoRenderer::Paint(
     auto sy = SkFloatToScalar(rotated_dest_size.height() /
                               video_frame->visible_rect().height());
     if (needs_mirror) {
-      if (has_flipped_size)
+      if (has_flipped_size) {
         sy *= -1;
-      else
+      } else {
         sx *= -1;
+      }
     }
     canvas->scale(sx, sy);
     canvas->translate(
@@ -1259,8 +1264,9 @@ void FlipAndConvertY16(const VideoFrame* video_frame,
         }
         continue;
       } else if (format == GL_RED) {
-        while (row < row_end)
+        while (row < row_end) {
           *out_row++ = *row++ / 65535.f;
+        }
         continue;
       }
       // For other formats, hit NOTREACHED below.
@@ -1653,12 +1659,12 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   }
 
   // Recreate both the caches if not set.
-  if (!rgb_shared_image_cache_ && !yuv_shared_image_cache_) {
+  if (!rgb_shared_image_cache_) {
     rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
+  }
+  if (!yuv_shared_image_cache_) {
     yuv_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
   }
-
-  DCHECK(rgb_shared_image_cache_ && yuv_shared_image_cache_);
 
   // We need a shared image to receive the intermediate RGB result. Try to reuse
   // one if compatible, otherwise create a new one.
@@ -1796,8 +1802,9 @@ PaintCanvasVideoRenderer::Cache::~Cache() = default;
 
 bool PaintCanvasVideoRenderer::Cache::Recycle() {
   paint_image = cc::PaintImage();
-  if (!texture_backing->unique())
+  if (!texture_backing->unique()) {
     return false;
+  }
 
   // Flush any pending GPU work using this texture.
   texture_backing->FlushPendingSkiaOps();
