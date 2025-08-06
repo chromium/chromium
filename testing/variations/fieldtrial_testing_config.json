@@ -13221,7 +13221,8 @@
                     "enable_features": [
                         "EnableReaderMode",
                         "EnableReaderModeDefaultBrowserPromo",
-                        "EnableReaderModePageEligibilityForToolsMenu"
+                        "EnableReaderModePageEligibilityForToolsMenu",
+                        "ReaderModeUseReadability"
                     ]
                 }
             ]
