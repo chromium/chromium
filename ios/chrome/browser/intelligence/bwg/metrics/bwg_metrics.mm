@@ -5,7 +5,20 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+
+namespace {
+// Minimum time between FRE entry point impression logs.
+const base::TimeDelta kGeminiImpressionThrottleInterval = base::Minutes(10);
+
+// Returns the last impression time, persisting within the app session.
+base::TimeTicks& GetLastGeminiImpressionTime() {
+  static base::TimeTicks last_impression_time;
+  return last_impression_time;
+}
+}  // namespace
 
 const char kEligibilityHistogram[] = "IOS.Gemini.Eligibility";
 
@@ -33,4 +46,17 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
 
 void RecordBWGSessionTime(base::TimeDelta session_duration) {
   base::UmaHistogramTimes(kBWGSessionTimeHistogram, session_duration);
+}
+
+void RecordGeminiEntryPointImpression() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks& last_impression_time = GetLastGeminiImpressionTime();
+
+  // Check if enough time has passed since last impression.
+  if (last_impression_time.is_null() ||
+      (now - last_impression_time) >= kGeminiImpressionThrottleInterval) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileGeminiEntryPointImpression"));
+    last_impression_time = now;
+  }
 }
