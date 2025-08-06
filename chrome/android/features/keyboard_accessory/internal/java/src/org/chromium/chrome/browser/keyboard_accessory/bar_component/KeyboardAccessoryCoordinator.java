@@ -185,6 +185,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         mMediator =
                 new KeyboardAccessoryMediator(
                         mModel,
+                        profile,
                         barVisibilityDelegate,
                         sheetVisibilityDelegate,
                         mButtonGroup.getTabSwitchingDelegate(),

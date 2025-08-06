@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
@@ -126,7 +125,6 @@ public class KeyboardAccessoryChipViewRenderTest {
         when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
                         SuggestionType.LOYALTY_CARD_ENTRY))
                 .thenReturn(FillingProduct.LOYALTY_CARD);
-        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         mContentView =
                 runOnUiThreadBlocking(
@@ -208,9 +206,9 @@ public class KeyboardAccessoryChipViewRenderTest {
                         mKeyboardAccessoryView,
                         mUiConfiguration,
                         mContentView,
-                        AutofillBarItem.getBarItemType(suggestion));
+                        AutofillBarItem.getBarItemType(suggestion, mMockProfile));
         ChipView chipView = (ChipView) viewHolder.itemView;
-        viewHolder.bind(new AutofillBarItem(suggestion, action), chipView);
+        viewHolder.bind(new AutofillBarItem(suggestion, action, mMockProfile), chipView);
         chipView.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.AutofillProfilePayload;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -193,9 +193,10 @@ class KeyboardAccessoryProperties {
          *
          * @param suggestion An {@link AutofillSuggestion}.
          * @param action An {@link Action}.
+         * @param profile The {@link Profile} associated with the autofill data.
          */
-        AutofillBarItem(AutofillSuggestion suggestion, Action action) {
-            super(getBarItemType(suggestion), action, 0);
+        AutofillBarItem(AutofillSuggestion suggestion, Action action, Profile profile) {
+            super(getBarItemType(suggestion, profile), action, 0);
             mSuggestion = suggestion;
         }
 
@@ -222,18 +223,17 @@ class KeyboardAccessoryProperties {
         }
 
         @VisibleForTesting
-        public static @Type int getBarItemType(AutofillSuggestion suggestion) {
+        public static @Type int getBarItemType(AutofillSuggestion suggestion, Profile profile) {
             AutofillProfilePayload payload = suggestion.getAutofillProfilePayload();
             if (FillingProductBridge.getFillingProductFromSuggestionType(
                                     suggestion.getSuggestionType())
                             == FillingProduct.ADDRESS
                     && payload != null) {
                 PersonalDataManager personalDataManager =
-                        PersonalDataManagerFactory.getForProfile(
-                                ProfileManager.getLastUsedRegularProfile());
-                AutofillProfile profile = personalDataManager.getProfile(payload.getGuid());
-                if (profile != null) {
-                    @RecordType int type = profile.getRecordType();
+                        PersonalDataManagerFactory.getForProfile(profile);
+                AutofillProfile autofillProfile = personalDataManager.getProfile(payload.getGuid());
+                if (autofillProfile != null) {
+                    @RecordType int type = autofillProfile.getRecordType();
                     if (type == RecordType.ACCOUNT_HOME || type == RecordType.ACCOUNT_WORK) {
                         return Type.HOME_AND_WORK_SUGGESTION;
                     }

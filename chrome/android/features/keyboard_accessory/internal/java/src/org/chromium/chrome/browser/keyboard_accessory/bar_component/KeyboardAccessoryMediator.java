@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
@@ -66,18 +67,21 @@ class KeyboardAccessoryMediator
     private final AccessorySheetCoordinator.SheetVisibilityDelegate mSheetVisibilityDelegate;
     private final TabSwitchingDelegate mTabSwitcher;
     private final Supplier<Integer> mBackgroundColorSupplier;
+    private final Profile mProfile;
     private Optional<Boolean> mHasFilteredTouchEvent = Optional.empty();
     private final ObserverList<KeyboardAccessoryVisualStateProvider.Observer> mVisualObservers =
             new ObserverList<>();
 
     KeyboardAccessoryMediator(
             PropertyModel model,
+            Profile profile,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             TabSwitchingDelegate tabSwitcher,
             KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks,
             Supplier<Integer> backgroundColorSupplier) {
         mModel = model;
+        mProfile = profile;
         mBarVisibilityDelegate = barVisibilityDelegate;
         mSheetVisibilityDelegate = sheetVisibilityDelegate;
         mTabSwitcher = tabSwitcher;
@@ -189,7 +193,9 @@ class KeyboardAccessoryMediator
         for (int position = 0; position < suggestions.size(); ++position) {
             AutofillSuggestion suggestion = suggestions.get(position);
             if (!shouldShowSuggestion(suggestion)) continue;
-            barItems.add(new AutofillBarItem(suggestion, createAutofillAction(delegate, position)));
+            barItems.add(
+                    new AutofillBarItem(
+                            suggestion, createAutofillAction(delegate, position), mProfile));
         }
 
         // Annotates the first suggestion in with an in-product help bubble. For password
