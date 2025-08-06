@@ -4,7 +4,12 @@
 
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 
+#include <memory>
+#include <string_view>
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,18 +58,20 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(
                      &SupervisedUserNavigationObserverAndroidBrowserTest::
-                         BuildSupervisedUserService,
+                         BuildTestSupervisedUserService,
                      base::Unretained(this)));
   }
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
-  FakeContentFiltersObserverBridge* search_content_filters_observer() {
-    return search_content_filters_observer_.get();
+  base::WeakPtr<FakeContentFiltersObserverBridge> search_content_filter() {
+    return supervised_user_service()
+        ->search_content_filters_observer_weak_ptr();
   }
-  FakeContentFiltersObserverBridge* browser_content_filters_observer() {
-    return browser_content_filters_observer_.get();
+  base::WeakPtr<FakeContentFiltersObserverBridge> browser_content_filter() {
+    return supervised_user_service()
+        ->browser_content_filters_observer_weak_ptr();
   }
   MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -96,9 +103,9 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
 
-  // Builds a SupervisedUserService with a fake content filters observer bridge
-  // exposed for testing.
-  std::unique_ptr<KeyedService> BuildSupervisedUserService(
+  // TestSupervisedUserService is a wrapper around SupervisedUserService that
+  // provides test-only interfaces.
+  std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
       content::BrowserContext* browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
 
@@ -109,7 +116,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
         std::make_unique<MockUrlCheckerClient>();
     url_checker_client_ = url_checker_client.get();
 
-    return std::make_unique<SupervisedUserService>(
+    return std::make_unique<TestSupervisedUserService>(
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
@@ -123,33 +130,17 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
             *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
             std::move(url_checker_client)),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        base::BindRepeating(
-            &SupervisedUserNavigationObserverAndroidBrowserTest::CreateBridge,
-            base::Unretained(this)));
+        InitialSupervisionState::kUnsupervised);
   }
 
-  // Creates a fake content filters observer bridge for testing, and binds it to
-  // this test fixture.
-  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled) {
-    std::unique_ptr<FakeContentFiltersObserverBridge> bridge =
-        std::make_unique<FakeContentFiltersObserverBridge>(
-            setting_name, on_enabled, on_disabled);
-    if (setting_name == kSearchContentFiltersSettingName) {
-      search_content_filters_observer_ = bridge.get();
-    }
-    if (setting_name == kBrowserContentFiltersSettingName) {
-      browser_content_filters_observer_ = bridge.get();
-    }
-    return bridge;
+  TestSupervisedUserService* supervised_user_service() {
+    return static_cast<TestSupervisedUserService*>(
+        SupervisedUserServiceFactory::GetInstance()->GetForProfile(
+            GetProfile()));
   }
 
   base::HistogramTester histogram_tester_;
   raw_ptr<MockUrlCheckerClient> url_checker_client_;
-  raw_ptr<FakeContentFiltersObserverBridge> search_content_filters_observer_;
-  raw_ptr<FakeContentFiltersObserverBridge> browser_content_filters_observer_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kPropagateDeviceContentFiltersToSupervisedUser};
 };
@@ -158,7 +149,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
 // search query params are not appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        DontPropagateSearchContentFilterSettingWhenDisabled) {
-  ASSERT_FALSE(search_content_filters_observer()->IsEnabled());
+  ASSERT_FALSE(search_content_filter()->IsEnabled());
 
   // The loaded URL is exactly as requested.
   EXPECT_TRUE(content::NavigateToURL(
@@ -172,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // feature consistency.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        LoadSafeSearchResultsWithSearchContentFilterPreset) {
-  search_content_filters_observer()->SetEnabled(true);
+  search_content_filter()->SetEnabled(true);
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
 
   // The final url will be different: with safe search query params.
@@ -186,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // params are appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        PreexistingSafeSearchParamsAreRemovedBeforeAppending) {
-  search_content_filters_observer()->SetEnabled(true);
+  search_content_filter()->SetEnabled(true);
   GURL url = embedded_test_server()->GetURL("google.com",
                                             "/search?safe=off&ssui=on&q=cat");
 
@@ -210,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
   content::TestNavigationObserver navigation_observer(web_contents());
-  search_content_filters_observer()->SetEnabled(true);
+  search_content_filter()->SetEnabled(true);
   navigation_observer.Wait();
 
   // Key part: the search results are reloaded with extra query params.
@@ -227,7 +218,7 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     content::TestNavigationObserver navigation_observer(web_contents());
     // Turn the filtering on. That will trigger a url check which is resolved to
     // restricted.
-    browser_content_filters_observer()->SetEnabled(true);
+    browser_content_filter()->SetEnabled(true);
     navigation_observer.Wait();
   }
 
@@ -336,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // In this test to facilitate the back button click, one url is allowed but
   // others are not. All navigations are subject to classification in this test.
-  browser_content_filters_observer()->SetEnabled(true);
+  browser_content_filter()->SetEnabled(true);
 
   // Three classification calls are expected:
   // 1. when the page is first loaded
