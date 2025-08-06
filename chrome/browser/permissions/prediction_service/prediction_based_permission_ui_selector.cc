@@ -401,7 +401,13 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     ModelExecutionCallback model_execution_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   VLOG(1) << "[PermissionsAI] OnGetInnerTextForOnDeviceModel";
-  if (result && result->inner_text.size() > kPageContentMinLength) {
+
+  bool rendered_text_useful =
+      result && result->inner_text.size() > kPageContentMinLength;
+  PermissionUmaUtil::RecordRenderedTextAcquireSuccessForAivX(
+      /*success=*/rendered_text_useful, model_data.model_type);
+
+  if (rendered_text_useful) {
     std::string inner_text = std::move(result->inner_text);
     if (model_data.model_type == PredictionModelType::kOnDeviceAiV1Model) {
       if (inner_text.size() > kPageContentMaxLength) {
@@ -883,13 +889,7 @@ void PredictionBasedPermissionUiSelector::
         std::string rendered_text,
         ComputePassagesEmbeddingsCallback callback) {
   VLOG(1) << "[PermissionsAI] CreatePassageEmbeddingFromRenderedText";
-  if (rendered_text.size() == 0) {
-    VLOG(1) << "[PermissionsAIv4]: rendered_text size is 0";
-    // TODO(chrbug.com/382447738) Add histogram to track this
-    return std::move(callback).Run(
-        {}, {}, -1,
-        passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
-  }
+  DCHECK(rendered_text.size() != 0);
 
   if (auto* prediction_model_handler_provider =
           PredictionModelHandlerProviderFactory::GetForBrowserContext(

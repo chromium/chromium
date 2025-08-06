@@ -172,6 +172,8 @@ constexpr char kAIv4NotificationsHoldbackResponseHistogram[] =
     "Permissions.AIv4.Response.Notifications";
 constexpr char kAiv4LanguageDetectionStatusHistogram[] =
     "Permissions.AIv4.LanguageDetectionStatus";
+constexpr char kAiv4RenderedTextAcquireSuccess[] =
+    "Permissions.AIv4.RenderedTextAcquireSuccess";
 
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
@@ -1388,7 +1390,7 @@ std::vector<ModelMetadata> aiv4_model_data_testcase = {
         /*success_count_model_execution=*/1,
     },
     {
-        /*test_name=*/"FailingAiv3ModelStillResultsInValid"
+        /*test_name=*/"FailingAiv4ModelStillResultsInValid"
                       "ServerSideExecution",
         /*model_name=*/kNotExistingModel,
         /*expected_relevance=*/
@@ -1477,6 +1479,10 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
                                       /*expected_count=*/1);
   histogram_tester().ExpectTotalCount(kAIv4InquiryDurationHistogram,
                                       /*expected_count=*/1);
+
+  histogram_tester().ExpectBucketCount(kAiv4RenderedTextAcquireSuccess,
+                                       /*sample=*/1,
+                                       /*expected_count=*/1);
 
   histogram_tester().ExpectBucketCount(
       request_type() == RequestType::kNotifications

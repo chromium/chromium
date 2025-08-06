@@ -871,6 +871,12 @@ class PermissionUmaUtil {
       base::TimeTicks snapshot_inquire_start_time,
       PredictionModelType model_type);
 
+  // Records whether we could fetch the rendered text successfully and it was
+  // useful for prediction (i.e. longer than 10 characters).
+  static void RecordRenderedTextAcquireSuccessForAivX(
+      bool success,
+      PredictionModelType model_type);
+
   // Records the status of language detection during the Aiv4 workflow.
   static void RecordLanguageDetectionStatus(LanguageDetectionStatus status);
 
