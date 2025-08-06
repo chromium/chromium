@@ -222,11 +222,11 @@ void ShowFilledCardInformationBubble(Browser* browser);
 void ShowVirtualCardEnrollBubble(Browser* browser);
 void StartTabOrganizationRequest(Browser* browser);
 void ShowTranslateBubble(BrowserWindowInterface* bwi);
-void ManagePasswordsForPage(Browser* browser);
+void ManagePasswordsForPage(BrowserWindowInterface* bwi);
 bool CanSendTabToSelf(BrowserWindowInterface* bwi);
 void SendTabToSelf(Browser* browser);
 bool CanGenerateQrCode(const Browser* browser);
-void GenerateQRCode(Browser* browser);
+void GenerateQRCode(BrowserWindowInterface* bwi);
 void SharingHub(Browser* browser);
 void ScreenshotCapture(Browser* browser);
 void SavePage(Browser* browser);
@@ -237,7 +237,7 @@ bool CanPrint(BrowserWindowInterface* bwi);
 void BasicPrint(Browser* browser);
 bool CanBasicPrint(Browser* browser);
 #endif  // ENABLE_PRINTING
-bool CanRouteMedia(Browser* browser);
+bool CanRouteMedia(BrowserWindowInterface* bwi);
 // NOTE: For metrics collection purposes, this method is assumed to be invoked
 // from the app menu. That will need to be changed if this is to be invoked from
 // elsewhere.
@@ -291,10 +291,10 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab);
 void ToggleFullscreenMode(Browser* browser, bool user_initiated = false);
 void ClearCache(Browser* browser);
 bool IsDebuggerAttachedToCurrentTab(Browser* browser);
-void CopyURL(Browser* browser, content::WebContents* web_contents);
-bool CanCopyUrl(const Browser* browser);
+void CopyURL(BrowserWindowInterface* bwi, content::WebContents* web_contents);
+bool CanCopyUrl(BrowserWindowInterface* bwi);
 // Returns true if the browser window is for a web app or custom tab.
-bool IsWebAppOrCustomTab(const Browser* browser);
+bool IsWebAppOrCustomTab(const BrowserWindowInterface* bwi);
 // Moves the WebContents of a hosted app Browser to a tabbed Browser. Returns
 // the tabbed Browser.
 Browser* OpenInChrome(Browser* hosted_app_browser);

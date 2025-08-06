@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -521,21 +522,22 @@ void ShowClearBrowsingDataDialog(Browser* browser) {
   ShowSettingsSubPage(browser, kClearBrowserDataSubPage);
 }
 
-void ShowPasswordManager(Browser* browser) {
+void ShowPasswordManager(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordManager"));
   // This code is necessary to fix a bug (crbug.com/1448559) during Password
   // Manager Shortcut tutorial flow.
   auto* service =
-      UserEducationServiceFactory::GetForBrowserContext(browser->profile());
+      UserEducationServiceFactory::GetForBrowserContext(bwi->GetProfile());
   if (service) {
     auto* tutorial_service = &service->tutorial_service();
     if (tutorial_service &&
         tutorial_service->IsRunningTutorial(kPasswordManagerTutorialId)) {
-      ShowSingletonTab(browser, GURL(kChromeUIPasswordManagerSettingsURL));
+      ShowSingletonTab(bwi->GetBrowserForMigrationOnly(),
+                       GURL(kChromeUIPasswordManagerSettingsURL));
       return;
     }
   }
-  ShowSingletonTabIgnorePathOverwriteNTP(browser,
+  ShowSingletonTabIgnorePathOverwriteNTP(bwi->GetBrowserForMigrationOnly(),
                                          GURL(kChromeUIPasswordManagerURL));
 }
 
@@ -610,14 +612,14 @@ void ShowPrivacySandboxAdMeasurementSettings(Browser* browser) {
   ShowSettingsSubPage(browser, kPrivacySandboxMeasurementSubpage);
 }
 
-void ShowAddresses(Browser* browser) {
+void ShowAddresses(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowAddresses"));
-  ShowSettingsSubPage(browser, kAddressesSubPage);
+  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kAddressesSubPage);
 }
 
-void ShowPaymentMethods(Browser* browser) {
+void ShowPaymentMethods(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowPaymentMethods"));
-  ShowSettingsSubPage(browser, kPaymentsSubPage);
+  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kPaymentsSubPage);
 }
 
 void ShowAllSitesSettingsFilteredByRwsOwner(

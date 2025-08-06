@@ -1841,8 +1841,8 @@ void ShowTranslateBubble(BrowserWindowInterface* bwi) {
       translate::TranslateErrors::NONE, true);
 }
 
-void ManagePasswordsForPage(Browser* browser) {
-  auto* const user_education = BrowserUserEducationInterface::From(browser);
+void ManagePasswordsForPage(BrowserWindowInterface* bwi) {
+  auto* const user_education = BrowserUserEducationInterface::From(bwi);
   user_education->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
@@ -1852,8 +1852,8 @@ void ManagePasswordsForPage(Browser* browser) {
   user_education->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordManagerShortcutFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* const web_contents =
+      bwi->GetTabStripModel()->GetActiveWebContents();
   ManagePasswordsUIController* controller =
       ManagePasswordsUIController::FromWebContents(web_contents);
   TabDialogs::FromWebContents(web_contents)
@@ -1881,9 +1881,8 @@ bool CanGenerateQrCode(const Browser* browser) {
                                       ->GetURL());
 }
 
-void GenerateQRCode(Browser* browser) {
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+void GenerateQRCode(BrowserWindowInterface* bwi) {
+  WebContents* web_contents = bwi->GetTabStripModel()->GetActiveWebContents();
   qrcode_generator::QRCodeGeneratorBubbleController* controller =
       qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents);
   content::NavigationEntry* entry =
@@ -2007,11 +2006,11 @@ bool CanBasicPrint(Browser* browser) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-bool CanRouteMedia(Browser* browser) {
+bool CanRouteMedia(BrowserWindowInterface* bwi) {
   // Do not allow user to open Media Router dialog when there is already an
   // active modal dialog. This avoids overlapping dialogs.
-  return media_router::MediaRouterEnabled(browser->profile()) &&
-         !IsShowingWebContentsModalDialog(browser);
+  return media_router::MediaRouterEnabled(bwi->GetProfile()) &&
+         !IsShowingWebContentsModalDialog(bwi);
 }
 
 void RouteMediaInvokedFromAppMenu(Browser* browser) {
@@ -2309,14 +2308,14 @@ bool IsDebuggerAttachedToCurrentTab(Browser* browser) {
                   : false;
 }
 
-void CopyURL(Browser* browser, content::WebContents* web_contents) {
+void CopyURL(BrowserWindowInterface* bwi, content::WebContents* web_contents) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(base::UTF8ToUTF16(web_contents->GetVisibleURL().spec()));
 
 #if !BUILDFLAG(IS_ANDROID)
   if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
     ToastController* const toast_controller =
-        browser->GetFeatures().toast_controller();
+        bwi->GetFeatures().toast_controller();
     if (toast_controller) {
       toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
     }
@@ -2324,17 +2323,17 @@ void CopyURL(Browser* browser, content::WebContents* web_contents) {
 #endif
 }
 
-bool CanCopyUrl(const Browser* browser) {
-  return IsWebAppOrCustomTab(browser) ||
-         !sharing_hub::SharingIsDisabledByPolicy(browser->profile());
+bool CanCopyUrl(BrowserWindowInterface* bwi) {
+  return IsWebAppOrCustomTab(bwi) ||
+         !sharing_hub::SharingIsDisabledByPolicy(bwi->GetProfile());
 }
 
-bool IsWebAppOrCustomTab(const Browser* browser) {
+bool IsWebAppOrCustomTab(const BrowserWindowInterface* bwi) {
   return
 #if BUILDFLAG(IS_CHROMEOS)
-      browser->is_type_custom_tab() ||
+      bwi->GetType() == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
 #endif
-      web_app::AppBrowserController::IsWebApp(browser);
+      !!bwi->GetAppBrowserController();
 }
 
 Browser* OpenInChrome(Browser* hosted_app_browser) {

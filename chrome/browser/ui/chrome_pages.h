@@ -46,6 +46,7 @@ enum class AppSettingsPageEntryPoint;
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace chrome {
@@ -123,7 +124,7 @@ void ShowContentSettings(Browser* browser,
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
                                         std::string_view sub_page);
 void ShowClearBrowsingDataDialog(Browser* browser);
-void ShowPasswordManager(Browser* browser);
+void ShowPasswordManager(BrowserWindowInterface* bwi);
 void ShowPasswordDetailsPage(Browser* browser,
                              const std::string& password_domain_name);
 void ShowPasswordCheck(Browser* browser);
@@ -137,8 +138,8 @@ void ShowSearchEngineSettings(Browser* browser);
 void ShowWebStore(Browser* browser, std::string_view utm_source_value);
 void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
-void ShowAddresses(Browser* browser);
-void ShowPaymentMethods(Browser* browser);
+void ShowAddresses(BrowserWindowInterface* bwi);
+void ShowPaymentMethods(BrowserWindowInterface* bwi);
 void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
     const std::string& rws_owner_host_name);
