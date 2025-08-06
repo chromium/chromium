@@ -118,8 +118,10 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
                              : gfx::ColorSpace::CreateSRGBLinear();
       switch (buffer_format_preference) {
         case mojom::BufferFormatPreference::kPreferGpuMemoryBuffer:
+        case mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle:
           return std::make_unique<GpuMemoryBufferVideoFramePool>(
-              capacity, format, color_space, context_provider);
+              capacity, format, color_space, context_provider,
+              buffer_format_preference);
         case mojom::BufferFormatPreference::kDefault:
           return std::make_unique<SharedMemoryVideoFramePool>(capacity);
         default:
@@ -128,7 +130,8 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
     }
     case media::PIXEL_FORMAT_NV12:
       return std::make_unique<GpuMemoryBufferVideoFramePool>(
-          capacity, format, gfx::ColorSpace::CreateREC709(), context_provider);
+          capacity, format, gfx::ColorSpace::CreateREC709(), context_provider,
+          buffer_format_preference);
     default:
       NOTREACHED();
   }
@@ -327,7 +330,6 @@ void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format) {
       frame_pool_ = GetVideoFramePoolForFormat(
           pixel_format_, kFramePoolCapacity, buffer_format_preference_,
           gmb_video_frame_pool_context_provider_);
-
       RefreshEntireSourceNow();
     }
   }

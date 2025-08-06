@@ -2229,6 +2229,28 @@ TEST_P(FrameSinkVideoCapturerTest, HandlesNullSubTargetPtrCorrectly) {
   EXPECT_EQ(RegionCaptureCropId(), frame_sink_.current_crop_id());
 }
 
+// Tests that buffer_format_preference is correctly passed to the
+// GpuVideoFramePool
+TEST_P(FrameSinkVideoCapturerTest, BufferFormatPreferencePassedToGpuFramePool) {
+  // GpuMemoryBuffer only kicks in for ARGB and NV12 pixel formats.
+  if (pixel_format_ != media::PIXEL_FORMAT_ARGB &&
+      pixel_format_ != media::PIXEL_FORMAT_NV12) {
+    return;
+  }
+
+  // GpuMemoryBuffer only kicks in for the kPreferGpuMemoryBuffer and
+  // kPreferSharedImageWithNativeHandle formats.
+  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
+    return;
+  }
+
+  NiceMock<MockConsumer> consumer;
+  StartCapture(&consumer);
+  EXPECT_EQ(capturer_->gpu_frame_pool_buffer_format_for_testing(),
+            buffer_format_preference_);
+  StopCapture();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FrameSinkVideoCapturerTest,

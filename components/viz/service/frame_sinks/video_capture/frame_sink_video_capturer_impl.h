@@ -26,6 +26,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
+#include "components/viz/service/frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.h"
 #include "components/viz/service/frame_sinks/video_capture/in_flight_frame_delivery.h"
 #include "components/viz/service/frame_sinks/video_capture/video_capture_overlay.h"
 #include "components/viz/service/frame_sinks/video_capture/video_frame_pool.h"
@@ -188,6 +189,16 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   static gfx::Rect GetContentRectangle(const gfx::Rect& visible_rect,
                                        const gfx::Size& source_size,
                                        media::VideoPixelFormat pixel_format);
+
+  // Returns the BufferFormatPreference currently used by the gpu frame pool.
+  // Intended for test verification. Assumes that the frame pool is of type
+  // GpuMemoryBufferVideoFramePool, which must hold true for tests that
+  // query this method.
+  mojom::BufferFormatPreference gpu_frame_pool_buffer_format_for_testing()
+      const {
+    return static_cast<GpuMemoryBufferVideoFramePool*>(frame_pool_.get())
+        ->buffer_format_preference();
+  }
 
  private:
   friend class FrameSinkVideoCapturerTest;

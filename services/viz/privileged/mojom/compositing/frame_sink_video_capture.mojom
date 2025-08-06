@@ -91,6 +91,12 @@ interface FrameSinkVideoConsumer {
 enum BufferFormatPreference {
   kDefault = 0,
   kPreferGpuMemoryBuffer,
+  // Indicates a preference for using SharedImages that have exportable native
+  // handles (e.g., DMA BUF FDs on Linux). These buffers may not be CPU
+  // mappable, allowing for more efficient GPU usage. This option is useful
+  // when the consumer does not need CPU access to the frame but requires
+  // interop with other GPU pipelines or platforms.
+  kPreferSharedImageWithNativeHandle
 };
 
 // Interface to an implementation that captures the frames of a
