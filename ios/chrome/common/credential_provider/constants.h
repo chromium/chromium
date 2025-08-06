@@ -56,6 +56,10 @@ NSString* AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled();
 // currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled();
 
+// Key for the app group user defaults containing whether passkey Large Blob
+// support is currently enabled.
+NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled();
+
 // Key for the app group user defaults containing whether signal API is
 // currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderSignalAPIEnabled();

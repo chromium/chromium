@@ -349,6 +349,12 @@ const char kCredentialProviderAutomaticPasskeyUpgradeName[] =
 const char kCredentialProviderAutomaticPasskeyUpgradeDescription[] =
     "Enables automatic passkey upgrade in the Credential Provider Extension.";
 
+const char kCredentialProviderPasskeyLargeBlobName[] =
+    "Credential Provider Large Blob support";
+const char kCredentialProviderPasskeyLargeBlobDescription[] =
+    "Enables support for the Large Blob extension for Passkeys in the "
+    "Credential Provider Extension.";
+
 const char kCredentialProviderPasskeyPRFName[] =
     "Credential Provider PRF support";
 const char kCredentialProviderPasskeyPRFDescription[] =

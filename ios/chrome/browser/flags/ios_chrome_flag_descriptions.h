@@ -200,6 +200,9 @@ extern const char kContextualPanelDescription[];
 extern const char kCredentialProviderAutomaticPasskeyUpgradeName[];
 extern const char kCredentialProviderAutomaticPasskeyUpgradeDescription[];
 
+extern const char kCredentialProviderPasskeyLargeBlobName[];
+extern const char kCredentialProviderPasskeyLargeBlobDescription[];
+
 extern const char kCredentialProviderPasskeyPRFName[];
 extern const char kCredentialProviderPasskeyPRFDescription[];
 

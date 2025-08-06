@@ -21,6 +21,13 @@ BOOL IsPasskeyPRFEnabled() {
       boolValue];
 }
 
+BOOL IsPasskeyLargeBlobEnabled() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()]
+      boolValue];
+}
+
 BOOL IsSignalApiEnabled() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:AppGroupUserDefaulsCredentialProviderSignalAPIEnabled()]

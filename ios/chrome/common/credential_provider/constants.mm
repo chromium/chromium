@@ -77,6 +77,11 @@ NSString* const kUserDefaultsCredentialProviderPasskeyPRFSetting =
     @"kUserDefaultsCredentialProviderPasskeyPRFSetting";
 
 // Used to generate the key for the app group user defaults containing whether
+// passkey Large Blob support is currently enabled.
+NSString* const kUserDefaultsCredentialProviderPasskeyLargeBlobSetting =
+    @"kUserDefaultsCredentialProviderPasskeyLargeBlobSetting";
+
+// Used to generate the key for the app group user defaults containing whether
 // signal API is currently enabled.
 NSString* const kUserDefaultsCredentialProviderSignalAPISetting =
     @"kUserDefaultsCredentialProviderSignalAPISetting";
@@ -180,6 +185,12 @@ AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled() {
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:kUserDefaultsCredentialProviderPasskeyPRFSetting];
+}
+
+NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:
+          kUserDefaultsCredentialProviderPasskeyLargeBlobSetting];
 }
 
 NSString* AppGroupUserDefaulsCredentialProviderSignalAPIEnabled() {

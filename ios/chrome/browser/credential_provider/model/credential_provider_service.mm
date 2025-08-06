@@ -218,6 +218,7 @@ CredentialProviderService::CredentialProviderService(
   UpdatePasswordSyncSetting();
   UpdateAutomaticPasskeyUpgradeSetting();
   UpdatePasskeyPRFSetting();
+  UpdatePasskeyLargeBlobSetting();
   UpdateSignalAPISetting();
 }
 
@@ -594,6 +595,18 @@ void CredentialProviderService::UpdatePasskeyPRFSetting() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_enabled]
          forKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()];
+}
+
+void CredentialProviderService::UpdatePasskeyLargeBlobSetting() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
+  BOOL is_enabled =
+      base::FeatureList::IsEnabled(kCredentialProviderPasskeyLargeBlob);
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:is_enabled]
+         forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
 }
 
 void CredentialProviderService::UpdateSignalAPISetting() {

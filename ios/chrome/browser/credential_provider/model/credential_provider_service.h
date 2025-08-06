@@ -147,6 +147,9 @@ class CredentialProviderService
   // Syncs whether or not PRF is enabled.
   void UpdatePasskeyPRFSetting();
 
+  // Syncs whether or not Large Blob is enabled.
+  void UpdatePasskeyLargeBlobSetting();
+
   // Syncs whether or not signal API is enabled.
   void UpdateSignalAPISetting();
 

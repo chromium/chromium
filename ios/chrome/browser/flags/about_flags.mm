@@ -2870,6 +2870,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"page-context-anchor-tags", flag_descriptions::kPageContextAnchorTagsName,
      flag_descriptions::kPageContextAnchorTagsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPageContextAnchorTags)},
+    {"cpe-passkey-largeblob-support",
+     flag_descriptions::kCredentialProviderPasskeyLargeBlobName,
+     flag_descriptions::kCredentialProviderPasskeyLargeBlobDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderPasskeyLargeBlob)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
