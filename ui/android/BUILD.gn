@@ -509,6 +509,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/text/DownloadableFontTextAppearanceSpan.java",
     "java/src/org/chromium/ui/text/EmptyTextWatcher.java",
     "java/src/org/chromium/ui/text/SpanApplier.java",
+    "java/src/org/chromium/ui/theme/ThemeResourceWrapper.java",
     "java/src/org/chromium/ui/util/AccessibilityUtil.java",
     "java/src/org/chromium/ui/util/AttrUtils.java",
     "java/src/org/chromium/ui/util/ClickWithMetaStateCallback.java",
@@ -749,6 +750,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/shadows/ShadowAppCompatResourcesTest.java",
     "junit/src/org/chromium/ui/test/util/WindowInsetsTestUtilsUnitTest.java",
     "junit/src/org/chromium/ui/text/SpanApplierTest.java",
+    "junit/src/org/chromium/ui/theme/ThemeResourceWrapperUnitTest.java",
     "junit/src/org/chromium/ui/util/ColorBlendAnimationFactoryTest.java",
     "junit/src/org/chromium/ui/util/ColorUtilsTest.java",
     "junit/src/org/chromium/ui/util/RunnableTimerTest.java",
@@ -764,6 +766,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/widget/ViewRectProviderTest.java",
   ]
   deps = [
+    ":test_java_resources",
     ":ui_android_features_java",
     ":ui_java",
     ":ui_java_resources",
@@ -778,6 +781,7 @@ robolectric_library("ui_android_junit_tests") {
     "//base/test:test_support_java",
     "//build/android:build_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -881,6 +885,7 @@ android_resources("test_java_resources") {
 android_library("ui_unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.ui"
+  mergeable_android_manifests = [ "junit/AndroidManifest.xml" ]
 
   sources = [
     "java/src/org/chromium/ui/UiUtilsTest.java",
@@ -890,6 +895,7 @@ android_library("ui_unit_device_javatests") {
     "javatests/src/org/chromium/ui/animation/ViewCurvedMotionAnimatorFactoryRenderTest.java",
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
     "javatests/src/org/chromium/ui/insets/WindowInsetsUtilsJavaUnitTest.java",
+    "javatests/src/org/chromium/ui/theme/ThemeResourceWrapperJavaUnitTest.java",
     "junit/src/org/chromium/ui/widget/TextViewWithLeadingTest.java",
   ]
 
@@ -903,8 +909,11 @@ android_library("ui_unit_device_javatests") {
     "//base:base_java_test_support",
     "//components/browser_ui/widget/android:java_resources",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
