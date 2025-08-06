@@ -984,6 +984,11 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
                                               has_line_left_edge));
   }
 
+  // A non-atomic inline box fragment belongs on a line, and a line is always
+  // monolithic (cannot block-fragment inside it). However, there may be blocks
+  // inside such inline fragments, and those may be block-fragmentable.
+  box.SetIsMonolithic(!space.HasBlockFragmentation());
+
   auto handle_box_child = [&](LogicalLineItem& child) {
     if (child.out_of_flow_positioned_box) {
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
