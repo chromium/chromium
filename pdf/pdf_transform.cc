@@ -25,6 +25,18 @@ void SwapPdfRectangleValuesIfNeeded(PdfRectangle* rect) {
     std::swap(rect->right, rect->left);
 }
 
+// Return the default size letter size (8.5" X 11") clip box. This just follows
+// the PDFium way of handling these corner cases. PDFium always considers
+// US-Letter as the default page size.
+PdfRectangle GetDefaultClipBox(bool rotated) {
+  constexpr int kDpi = 72;
+  constexpr float kPaperWidth = 8.5 * kDpi;
+  constexpr float kPaperHeight = 11 * kDpi;
+  return {/*left=*/0, /*bottom=*/0,
+          /*right=*/rotated ? kPaperHeight : kPaperWidth,
+          /*top=*/rotated ? kPaperWidth : kPaperHeight};
+}
+
 }  // namespace
 
 float CalculateScaleFactor(const gfx::Rect& content_rect,
@@ -42,16 +54,6 @@ float CalculateScaleFactor(const gfx::Rect& content_rect,
   return std::min(ratio_x, ratio_y);
 }
 
-void SetDefaultClipBox(bool rotated, PdfRectangle* clip_box) {
-  constexpr int kDpi = 72;
-  constexpr float kPaperWidth = 8.5 * kDpi;
-  constexpr float kPaperHeight = 11 * kDpi;
-  clip_box->left = 0;
-  clip_box->bottom = 0;
-  clip_box->right = rotated ? kPaperHeight : kPaperWidth;
-  clip_box->top = rotated ? kPaperWidth : kPaperHeight;
-}
-
 void CalculateMediaBoxAndCropBox(bool rotated,
                                  bool has_media_box,
                                  bool has_crop_box,
@@ -63,8 +65,8 @@ void CalculateMediaBoxAndCropBox(bool rotated,
     SwapPdfRectangleValuesIfNeeded(crop_box);
 
   if (!has_media_box && !has_crop_box) {
-    SetDefaultClipBox(rotated, crop_box);
-    SetDefaultClipBox(rotated, media_box);
+    *crop_box = GetDefaultClipBox(rotated);
+    *media_box = *crop_box;
   } else if (has_crop_box && !has_media_box) {
     *media_box = *crop_box;
   } else if (has_media_box && !has_crop_box) {

@@ -33,15 +33,10 @@ float CalculateScaleFactor(const gfx::Rect& content_rect,
                            const gfx::SizeF& src_size,
                            bool rotated);
 
-// Make the default size to be letter size (8.5" X 11"). We are just following
-// the PDFium way of handling these corner cases. PDFium always consider
-// US-Letter as the default page size.
-void SetDefaultClipBox(bool rotated, PdfRectangle* clip_box);
-
 // Set the media box and/or crop box as needed. If both boxes are there, then
 // nothing needs to be done. If one box is missing, then fill it with the value
 // from the other box. If both boxes are missing, then they both get the default
-// value from SetDefaultClipBox(), based on `rotated`.
+// value from GetDefaultClipBox(), based on `rotated`.
 void CalculateMediaBoxAndCropBox(bool rotated,
                                  bool has_media_box,
                                  bool has_crop_box,

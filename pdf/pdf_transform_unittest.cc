@@ -101,16 +101,6 @@ TEST(PdfTransformTest, CalculateScaleFactor) {
   EXPECT_NEAR(0.01263f, scale, kTolerance);
 }
 
-TEST(PdfTransformTest, SetDefaultClipBox) {
-  PdfRectangle box;
-
-  SetDefaultClipBox(false, &box);
-  ExpectDefaultPortraitBox(box);
-
-  SetDefaultClipBox(true, &box);
-  ExpectDefaultLandscapeBox(box);
-}
-
 TEST(PdfTransformTest, CalculateMediaBoxAndCropBox) {
   PdfRectangle media_box;
   PdfRectangle crop_box;
