@@ -701,6 +701,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kCustomMedia:
         break;
       case StyleRuleBase::kApplyMixin:
+      case StyleRuleBase::kContents:
         // TODO(sesse): Should we go down into the rules here?
         // Do we need to do a new name lookup then?
         break;
