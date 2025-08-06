@@ -17,7 +17,8 @@
                          cardNumber:(NSString*)cardNumber
                     expirationMonth:(NSString*)expirationMonth
                      expirationYear:(NSString*)expirationYear
-                       cardNickname:(NSString*)cardNickname;
+                       cardNickname:(NSString*)cardNickname
+                            cardCvc:(NSString*)cardCvc;
 
 // Notifies the class which conform this delegate for cancel button tap in
 // received view controller.
@@ -44,14 +45,20 @@
             (AutofillAddCreditCardViewController*)viewController
                 isValidCardNickname:(NSString*)cardNickname;
 
+// Checks if a credit card has a valid `cardCvc`.
+- (bool)addCreditCardViewController:
+            (AutofillAddCreditCardViewController*)viewController
+                     isValidCardCvc:(NSString*)cardCvc;
+
 // Checks if a credit card has a valid `cardNumber`, `expirationMonth`, a
-// `expirationYear`, and `cardNickname`.
+// `expirationYear`, `cardNickname` and `cardCvc`.
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
             isValidCreditCardNumber:(NSString*)cardNumber
                     expirationMonth:(NSString*)expirationMonth
                      expirationYear:(NSString*)expirationYear
-                       cardNickname:(NSString*)cardNickname;
+                       cardNickname:(NSString*)cardNickname
+                            cardCvc:(NSString*)cardCvc;
 
 @end
 

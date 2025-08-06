@@ -17,6 +17,7 @@ enum class AutofillCreditCardUIType {
   kExpMonth,
   kExpYear,
   kExpDate,
+  kSecurityCode,
   kBillingAddress,
   kSaveToChrome
 };

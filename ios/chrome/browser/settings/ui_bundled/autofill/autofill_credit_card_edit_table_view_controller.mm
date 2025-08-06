@@ -484,6 +484,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         expirationMonth:expirationMonth
          expirationYear:expirationYear
            cardNickname:nickname
+                cardCvc:nil
                appLocal:GetApplicationContext()
                             ->GetApplicationLocaleStorage()
                             ->Get()];

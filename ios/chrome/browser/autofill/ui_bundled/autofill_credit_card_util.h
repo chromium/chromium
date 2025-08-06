@@ -20,6 +20,7 @@
                                  expirationMonth:(NSString*)expirationMonth
                                   expirationYear:(NSString*)expirationYear
                                     cardNickname:(NSString*)cardNickname
+                                         cardCvc:(NSString*)cardCvc
                                         appLocal:(const std::string&)appLocal;
 
 // Returns true if the card details are valid.
@@ -27,6 +28,7 @@
           expirationMonth:(NSString*)expirationMonth
            expirationYear:(NSString*)expirationYear
              cardNickname:(NSString*)cardNickname
+                  cardCvc:(NSString*)cardCvc
                  appLocal:(const std::string&)appLocal;
 
 // Updates received credit card with received data.
@@ -36,6 +38,7 @@
          expirationMonth:(NSString*)expirationMonth
           expirationYear:(NSString*)expirationYear
             cardNickname:(NSString*)cardNickname
+                 cardCvc:(NSString*)cardCvc
                 appLocal:(const std::string&)appLocal;
 
 // Checks if a credit card has a valid `cardNumber`.
@@ -51,6 +54,9 @@
 
 // Checks if a credit card has a valid `nickname`.
 + (BOOL)isValidCardNickname:(NSString*)cardNickname;
+
+// Checks if a credit card has a valid `cardCvc`.
++ (BOOL)isValidCardCvc:(NSString*)cardCvc;
 
 // Evaluates whether the passed `card` should be edited from the Payments web
 // page.

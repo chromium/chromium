@@ -445,6 +445,9 @@
       <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_NUMBER" desc="The placeholder text for credit card number in the payments card unmask dialog. [iOS only]">
           Number
       </message>
+      <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL" desc="The placeholder text for credit card CVC in the payment settings page. [iOS only]">
+        Optional
+      </message>
       <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRATION_YEAR" desc="The placeholder text for credit card expiration year in the payments card unmask dialog. [iOS only]">
           YYYY
       </message>
@@ -520,6 +523,9 @@
       </message>
       <message name="IDS_IOS_AUTOFILL_SAVE_ELLIPSIS" desc="Title for the button that presents the View for Saving a credit card. The ellipsis indicate that a following action (the presentation) will take place. [Length: 10em] [iOS only]">
         Save…
+      </message>
+      <message name="IDS_IOS_AUTOFILL_SECURITY_CODE" desc="Title of the field representing the CVC of a credit card. [Length: 4em] [iOS only]">
+        Security code
       </message>
       <message name="IDS_IOS_AUTOFILL_SELECT_COUNTRY" desc="Title for the edit view of country selection when saving a new address profile. [Length: 20em] [iOS only]">
         Country
@@ -5419,25 +5425,25 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_TITLE" desc="Safari import entry point screen - Title.">
         Bring your data from Safari
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_1_TITLE" desc="Title of the 1st screen displayed by the Lottie animation educating user on the Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -> Apps'">
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_1_TITLE" desc="Title of the 1st screen displayed by the Lottie animation educating user on the Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -&gt; Apps'">
         Apps
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_CLEAR_DATA" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -> Apps -> Safari' and scrolls down to 'History and Website Data'">
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_CLEAR_DATA" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -&gt; Apps -&gt; Safari' and scrolls down to 'History and Website Data'">
         Clear History and Website Data
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_EXPORT" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -> Apps -> Safari' and scrolls down to 'History and Website Data'">
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_EXPORT" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -&gt; Apps -&gt; Safari' and scrolls down to 'History and Website Data'">
         Export
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_IMPORT" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -> Apps -> Safari' and scrolls down to 'History and Website Data'">
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_IMPORT" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -&gt; Apps -&gt; Safari' and scrolls down to 'History and Website Data'">
         Import
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_BUTTON" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the bottom button displayed when the user goes to '(iOS) Settings -> Apps -> Safari -> Export'">
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_BUTTON" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the bottom button displayed when the user goes to '(iOS) Settings -&gt; Apps -&gt; Safari -&gt; Export'">
         Save to Downloads
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_TITLE" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -> Apps -> Safari -> Export'">
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_TITLE" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -&gt; Apps -&gt; Safari -&gt; Export'">
         Export Browsing Data
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_4_TITLE" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -> Apps -> Safari -> Export -> Save to Downloads'">
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_4_TITLE" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -&gt; Apps -&gt; Safari -&gt; Export -&gt; Save to Downloads'">
         Export Successful
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_BUTTON_CONTINUE" desc="Safari import export education screen - Button text to let the user indicate that Safari data has been exported, and can continue the import process. [iOS only]">

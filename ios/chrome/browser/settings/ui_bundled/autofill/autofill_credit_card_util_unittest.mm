@@ -57,12 +57,21 @@ TEST_F(AutofillCreditCardUtilTest, TestCreditCardValidity) {
         expirationMonth:@"13"
          expirationYear:SysUTF8ToNSString(autofill::test::LastYear())
            cardNickname:@""
+                cardCvc:@""
+               appLocal:"en"]);
+  EXPECT_FALSE([AutofillCreditCardUtil
+      isValidCreditCard:@"5105105105105100"
+        expirationMonth:@"12"
+         expirationYear:SysUTF8ToNSString(autofill::test::NextYear())
+           cardNickname:@""
+                cardCvc:@"12345"
                appLocal:"en"]);
   EXPECT_TRUE([AutofillCreditCardUtil
       isValidCreditCard:@"5105105105105100"
         expirationMonth:@"12"
          expirationYear:SysUTF8ToNSString(autofill::test::NextYear())
            cardNickname:@""
+                cardCvc:@"1234"
                appLocal:"en"]);
 }
 
@@ -75,6 +84,7 @@ TEST_F(AutofillCreditCardUtilTest, TestCreditCardData) {
                                        expirationMonth:@"12"
                                         expirationYear:@"2030"
                                           cardNickname:@""
+                                               cardCvc:@""
                                               appLocal:"en"];
   EXPECT_EQ(card.expiration_month(), 12);
   EXPECT_EQ(card.expiration_year(), 2030);
@@ -86,6 +96,7 @@ TEST_F(AutofillCreditCardUtilTest, TestCreditCardData) {
                            expirationMonth:@"03"
                             expirationYear:@"2031"
                               cardNickname:@""
+                                   cardCvc:@""
                                   appLocal:"en"];
   EXPECT_EQ(card.expiration_month(), 3);
   EXPECT_EQ(card.expiration_year(), 2031);

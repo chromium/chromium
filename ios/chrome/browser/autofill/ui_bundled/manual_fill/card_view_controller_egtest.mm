@@ -347,6 +347,8 @@ void DismissPaymentBottomSheet() {
     config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
 
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
   return config;
 }
 

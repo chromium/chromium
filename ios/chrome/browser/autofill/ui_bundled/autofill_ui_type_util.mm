@@ -20,6 +20,8 @@ autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
       return autofill::CREDIT_CARD_EXP_MONTH;
     case AutofillCreditCardUIType::kExpYear:
       return autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    case AutofillCreditCardUIType::kSecurityCode:
+      return autofill::CREDIT_CARD_VERIFICATION_CODE;
     case AutofillCreditCardUIType::kExpDate:
     case AutofillCreditCardUIType::kBillingAddress:
     case AutofillCreditCardUIType::kSaveToChrome:
