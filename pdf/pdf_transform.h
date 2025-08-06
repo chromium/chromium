@@ -17,12 +17,43 @@ namespace chrome_pdf {
 // All the code here works in the PDF coordinate space. The origin is at the
 // bottom-left, and all units are in points.
 
-// A rect struct for use with FPDF bounding box functions.
-struct PdfRectangle {
-  float left;
-  float bottom;
-  float right;
-  float top;
+// Represents PDF rectangles with the properties stated above.
+// Can be easily used with PDFium's bounding box functions.
+class PdfRectangle {
+ public:
+  constexpr PdfRectangle() : PdfRectangle(0, 0, 0, 0) {}
+  constexpr PdfRectangle(float left, float bottom, float right, float top)
+      : left_(left), bottom_(bottom), right_(right), top_(top) {}
+  constexpr ~PdfRectangle() = default;
+
+  float left() const { return left_; }
+  float bottom() const { return bottom_; }
+  float right() const { return right_; }
+  float top() const { return top_; }
+
+  // These return pointers so they can be directly passed into PDFium's public
+  // API, which is written in C.
+  float* writable_left() { return &left_; }
+  float* writable_bottom() { return &bottom_; }
+  float* writable_right() { return &right_; }
+  float* writable_top() { return &top_; }
+
+  float width() const { return right_ - left_; }
+  float height() const { return top_ - bottom_; }
+
+  // When a PdfRectangle has top < bottom, or right < left, the values should be
+  // swapped.
+  void Normalize();
+
+  void Scale(float scale_factor);
+
+  void Intersect(const PdfRectangle& rect);
+
+ private:
+  float left_;
+  float bottom_;
+  float right_;
+  float top_;
 };
 
 // Calculate the scale factor between `content_rect` and a page of `src_size`.
@@ -52,9 +83,6 @@ void CalculateMediaBoxAndCropBox(bool rotated,
 // `crop_box` The PDF's crop box.
 PdfRectangle CalculateClipBoxBoundary(const PdfRectangle& media_box,
                                       const PdfRectangle& crop_box);
-
-// Scale `rect` by `scale_factor`.
-void ScalePdfRectangle(float scale_factor, PdfRectangle* rect);
 
 // Calculate the clip box translation offset for a page that does need to be
 // scaled.

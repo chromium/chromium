@@ -20,43 +20,37 @@ constexpr float kDefaultRatio = kDefaultWidth / kDefaultHeight;
 constexpr float kTolerance = 0.0001f;
 
 void ExpectDefaultPortraitBox(const PdfRectangle& box) {
-  EXPECT_FLOAT_EQ(0, box.left);
-  EXPECT_FLOAT_EQ(0, box.bottom);
-  EXPECT_FLOAT_EQ(kDefaultWidth, box.right);
-  EXPECT_FLOAT_EQ(kDefaultHeight, box.top);
+  EXPECT_FLOAT_EQ(0, box.left());
+  EXPECT_FLOAT_EQ(0, box.bottom());
+  EXPECT_FLOAT_EQ(kDefaultWidth, box.right());
+  EXPECT_FLOAT_EQ(kDefaultHeight, box.top());
 }
 
 void ExpectDefaultLandscapeBox(const PdfRectangle& box) {
-  EXPECT_FLOAT_EQ(0, box.left);
-  EXPECT_FLOAT_EQ(0, box.bottom);
-  EXPECT_FLOAT_EQ(kDefaultHeight, box.right);
-  EXPECT_FLOAT_EQ(kDefaultWidth, box.top);
+  EXPECT_FLOAT_EQ(0, box.left());
+  EXPECT_FLOAT_EQ(0, box.bottom());
+  EXPECT_FLOAT_EQ(kDefaultHeight, box.right());
+  EXPECT_FLOAT_EQ(kDefaultWidth, box.top());
 }
 
 void ExpectBoxesAreEqual(const PdfRectangle& expected,
                          const PdfRectangle& actual) {
-  EXPECT_FLOAT_EQ(expected.left, actual.left);
-  EXPECT_FLOAT_EQ(expected.bottom, actual.bottom);
-  EXPECT_FLOAT_EQ(expected.right, actual.right);
-  EXPECT_FLOAT_EQ(expected.top, actual.top);
+  EXPECT_FLOAT_EQ(expected.left(), actual.left());
+  EXPECT_FLOAT_EQ(expected.bottom(), actual.bottom());
+  EXPECT_FLOAT_EQ(expected.right(), actual.right());
+  EXPECT_FLOAT_EQ(expected.top(), actual.top());
 }
 
 void InitializeBoxToInvalidValues(PdfRectangle* box) {
-  box->left = box->bottom = box->right = box->top = -1;
+  *box = PdfRectangle(-1, -1, -1, -1);
 }
 
 void InitializeBoxToDefaultPortraitValues(PdfRectangle* box) {
-  box->left = 0;
-  box->bottom = 0;
-  box->right = kDefaultWidth;
-  box->top = kDefaultHeight;
+  *box = PdfRectangle(0, 0, kDefaultWidth, kDefaultHeight);
 }
 
 void InitializeBoxToDefaultLandscapeValue(PdfRectangle* box) {
-  box->left = 0;
-  box->bottom = 0;
-  box->right = kDefaultHeight;
-  box->top = kDefaultWidth;
+  *box = PdfRectangle(0, 0, kDefaultHeight, kDefaultWidth);
 }
 
 }  // namespace
@@ -123,18 +117,18 @@ TEST(PdfTransformTest, CalculateMediaBoxAndCropBox) {
   ExpectDefaultLandscapeBox(crop_box);
 
   // Assume crop box is missing.
-  constexpr PdfRectangle expected_box = {0, 0, 42, 420};
-  media_box = expected_box;
+  constexpr PdfRectangle kExpctedBox(0, 0, 42, 420);
+  media_box = kExpctedBox;
   InitializeBoxToInvalidValues(&crop_box);
   CalculateMediaBoxAndCropBox(false, true, false, &media_box, &crop_box);
-  ExpectBoxesAreEqual(expected_box, media_box);
-  ExpectBoxesAreEqual(expected_box, crop_box);
+  ExpectBoxesAreEqual(kExpctedBox, media_box);
+  ExpectBoxesAreEqual(kExpctedBox, crop_box);
 
   // Assume media box is missing.
   InitializeBoxToInvalidValues(&media_box);
   CalculateMediaBoxAndCropBox(false, false, true, &media_box, &crop_box);
-  ExpectBoxesAreEqual(expected_box, media_box);
-  ExpectBoxesAreEqual(expected_box, crop_box);
+  ExpectBoxesAreEqual(kExpctedBox, media_box);
+  ExpectBoxesAreEqual(kExpctedBox, crop_box);
 }
 
 TEST(PdfTransformTest, CalculateClipBoxBoundary) {
@@ -151,33 +145,35 @@ TEST(PdfTransformTest, CalculateClipBoxBoundary) {
   // media box is portrait and crop box is landscape.
   InitializeBoxToDefaultLandscapeValue(&crop_box);
   result = CalculateClipBoxBoundary(media_box, crop_box);
-  EXPECT_FLOAT_EQ(0, result.left);
-  EXPECT_FLOAT_EQ(0, result.bottom);
-  EXPECT_FLOAT_EQ(kDefaultWidth, result.right);
-  EXPECT_FLOAT_EQ(kDefaultWidth, result.top);
+  EXPECT_FLOAT_EQ(0, result.left());
+  EXPECT_FLOAT_EQ(0, result.bottom());
+  EXPECT_FLOAT_EQ(kDefaultWidth, result.right());
+  EXPECT_FLOAT_EQ(kDefaultWidth, result.top());
 
   // crop box is smaller than media box.
-  crop_box.left = 0;
-  crop_box.bottom = 0;
-  crop_box.right = 100;
-  crop_box.top = 200;
+  crop_box = PdfRectangle(
+      /*left=*/0,
+      /*bottom=*/0,
+      /*right=*/100,
+      /*top=*/200);
   result = CalculateClipBoxBoundary(media_box, crop_box);
-  EXPECT_FLOAT_EQ(0, result.left);
-  EXPECT_FLOAT_EQ(0, result.bottom);
-  EXPECT_FLOAT_EQ(100, result.right);
-  EXPECT_FLOAT_EQ(200, result.top);
+  EXPECT_FLOAT_EQ(0, result.left());
+  EXPECT_FLOAT_EQ(0, result.bottom());
+  EXPECT_FLOAT_EQ(100, result.right());
+  EXPECT_FLOAT_EQ(200, result.top());
 
   // crop box is smaller than the media box in one dimension and longer in the
   // other.
-  crop_box.left = 0;
-  crop_box.bottom = 0;
-  crop_box.right = 100;
-  crop_box.top = 2000;
+  crop_box = PdfRectangle(
+      /*left=*/0,
+      /*bottom=*/0,
+      /*right=*/100,
+      /*top=*/2000);
   result = CalculateClipBoxBoundary(media_box, crop_box);
-  EXPECT_FLOAT_EQ(0, result.left);
-  EXPECT_FLOAT_EQ(0, result.bottom);
-  EXPECT_FLOAT_EQ(100, result.right);
-  EXPECT_FLOAT_EQ(kDefaultHeight, result.top);
+  EXPECT_FLOAT_EQ(0, result.left());
+  EXPECT_FLOAT_EQ(0, result.bottom());
+  EXPECT_FLOAT_EQ(100, result.right());
+  EXPECT_FLOAT_EQ(kDefaultHeight, result.top());
 }
 
 TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
@@ -191,8 +187,8 @@ TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
   EXPECT_FLOAT_EQ(0, offset.y());
 
   // `rect` is larger than `clip_box`.
-  clip_box.top /= 2;
-  clip_box.right /= 4;
+  *clip_box.writable_top() /= 2;
+  *clip_box.writable_right() /= 4;
   offset = CalculateScaledClipBoxOffset(rect, clip_box);
   EXPECT_FLOAT_EQ(229.5f, offset.x());
   EXPECT_FLOAT_EQ(198, offset.y());
@@ -223,8 +219,8 @@ TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   EXPECT_FLOAT_EQ(-180, offset.y());
 
   // Smaller `clip_box`.
-  clip_box.top /= 4;
-  clip_box.right /= 2;
+  *clip_box.writable_top() /= 4;
+  *clip_box.writable_right() /= 2;
   offset =
       CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box);
   EXPECT_FLOAT_EQ(0, offset.x());
