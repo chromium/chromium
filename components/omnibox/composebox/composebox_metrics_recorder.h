@@ -79,6 +79,11 @@ class ComposeboxMetricsRecorder {
 
   void RecordFileSizeMetric(lens::MimeType mime_type, uint64_t file_size_bytes);
 
+  // Should be called when a file has been deleted.
+  void RecordFileDeletedMetrics(bool success,
+                                lens::MimeType file_type,
+                                FileUploadStatus file_status);
+
  private:
   // Called when the session starts to correctly track session
   // durations.

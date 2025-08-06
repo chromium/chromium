@@ -211,6 +211,9 @@ class ComposeboxQueryController {
 
   int num_files_in_request() { return num_files_in_request_; }
 
+  // Return the file from `active_files_` map or nullptr if not found.
+  virtual FileInfo* GetFileInfo(const base::UnguessableToken& file_token);
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
@@ -318,9 +321,6 @@ class ComposeboxQueryController {
   void HandleFileUploadResponse(
       const base::UnguessableToken& file_token,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
-
-  // Return the file from `active_files_` map or nullptr if not found.
-  FileInfo* GetFileInfo(const base::UnguessableToken& file_token);
 
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
