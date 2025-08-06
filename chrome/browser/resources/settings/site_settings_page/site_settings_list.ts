@@ -68,6 +68,11 @@ class SettingsSiteSettingsListElement extends
     return {
       categoryList: Array,
 
+      categoryMap_: {
+        type: Map,
+        computed: 'computeCategoryMap(categoryList)',
+      },
+
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -89,6 +94,7 @@ class SettingsSiteSettingsListElement extends
 
   declare categoryList: CategoryListItem[];
   declare focusConfig: FocusConfig;
+  declare private categoryMap_: Map<ContentSettingsTypes, number>;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
@@ -110,6 +116,11 @@ class SettingsSiteSettingsListElement extends
     }
   }
 
+  private computeCategoryMap(categoryList: CategoryListItem[]):
+      Map<ContentSettingsTypes, number> {
+    return new Map(categoryList.map((e, index) => [e.id, index]));
+  }
+
   override ready() {
     super.ready();
 
@@ -125,9 +136,8 @@ class SettingsSiteSettingsListElement extends
         (category: ContentSettingsTypes) =>
             this.refreshDefaultValueLabel_(category));
 
-    const hasProtocolHandlers = this.categoryList.some(item => {
-      return item.id === ContentSettingsTypes.PROTOCOL_HANDLERS;
-    });
+    const hasProtocolHandlers =
+        this.categoryMap_.has(ContentSettingsTypes.PROTOCOL_HANDLERS);
 
     if (hasProtocolHandlers) {
       // The protocol handlers have a separate enabled/disabled notifier.
@@ -166,11 +176,14 @@ class SettingsSiteSettingsListElement extends
     }
 
     if (category === ContentSettingsTypes.PERFORMANCE) {
-      const index = this.categoryList.map(e => e.id).indexOf(
-          ContentSettingsTypes.PERFORMANCE);
+      const index = this.categoryMap_.get(ContentSettingsTypes.PERFORMANCE);
       this.set(
           `categoryList.${index}.subLabel`,
           this.i18n('siteSettingsPerformanceSublabel'));
+      return Promise.resolve();
+    }
+
+    if (!this.categoryMap_.has(category)) {
       return Promise.resolve();
     }
 
@@ -220,8 +233,7 @@ class SettingsSiteSettingsListElement extends
    */
   private updateLocationLabel_() {
     const state = this.getPref('generated.geolocation').value;
-    const index = this.categoryList.map(e => e.id).indexOf(
-        ContentSettingsTypes.GEOLOCATION);
+    const index = this.categoryMap_.get(ContentSettingsTypes.GEOLOCATION);
 
     // The location row might not be part of the current site-settings-list
     // but the class always observes the preference.
@@ -247,8 +259,7 @@ class SettingsSiteSettingsListElement extends
    */
   private updateNotificationsLabel_() {
     const state = this.getPref('generated.notification').value;
-    const index = this.categoryList.map(e => e.id).indexOf(
-        ContentSettingsTypes.NOTIFICATIONS);
+    const index = this.categoryMap_.get(ContentSettingsTypes.NOTIFICATIONS);
 
     // The notification row might not be part of the current site-settings-list
     // but the class always observes the preference.
@@ -274,8 +285,7 @@ class SettingsSiteSettingsListElement extends
   private updateSiteDataLabel_() {
     const state =
         this.getPref('generated.cookie_default_content_setting').value;
-    const index = this.categoryList.map(e => e.id).indexOf(
-        ContentSettingsTypes.SITE_DATA);
+    const index = this.categoryMap_.get(ContentSettingsTypes.SITE_DATA);
 
     // The site data row might not be part of the current site-settings-list
     // but the class always observes the preference.
@@ -299,8 +309,7 @@ class SettingsSiteSettingsListElement extends
    * Update the third-party cookies link row label when the pref changes.
    */
   private updateThirdPartyCookiesLabel_() {
-    const index =
-        this.categoryList.map(e => e.id).indexOf(ContentSettingsTypes.COOKIES);
+    const index = this.categoryMap_.get(ContentSettingsTypes.COOKIES);
     // The third-party cookies might not be part of the current
     // site-settings-list but the class always observes the preference.
     if (index === -1) {
@@ -338,8 +347,8 @@ class SettingsSiteSettingsListElement extends
     }
 
     const enabled = this.getPref('compose.proactive_nudge_enabled').value;
-    const index = this.categoryList.map(e => e.id).indexOf(
-        ContentSettingsTypes.OFFER_WRITING_HELP);
+    const index =
+        this.categoryMap_.get(ContentSettingsTypes.OFFER_WRITING_HELP);
 
     // The writing help data row might not be part of the current
     // site-settings-list but the class always observes the preference.
