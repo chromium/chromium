@@ -23,6 +23,8 @@ namespace content {
 // A helper method that gives access to
 // content/browser/PermissionControllerImpl::SetOverrideForDevTools to //content
 // embedders in tests.
+// TODO(crbug.com/434726996): Update SetPermissionControllerOverrideForDevTools
+// to accept a requesting and embedding origin.
 void SetPermissionControllerOverrideForDevTools(
     PermissionController* permission_controller,
     const std::optional<url::Origin>& origin,

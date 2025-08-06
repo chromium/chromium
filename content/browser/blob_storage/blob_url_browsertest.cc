@@ -451,7 +451,8 @@ IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
 
   static_cast<PermissionControllerImpl*>(
       rfh_c_2->GetBrowserContext()->GetPermissionController())
-      ->SetPermissionOverride(/*origin=*/std::nullopt,
+      ->SetPermissionOverride(/*requesting_origin=*/std::nullopt,
+                              /*embedding_origin=*/std::nullopt,
                               blink::PermissionType::STORAGE_ACCESS_GRANT,
                               blink::mojom::PermissionStatus::DENIED);
 

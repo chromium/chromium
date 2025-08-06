@@ -15,6 +15,7 @@
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/display/screen_base.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -102,9 +103,11 @@ IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest, MAYBE_GetScreensFaked) {
   PermissionControllerImpl* permission_controller =
       PermissionControllerImpl::FromBrowserContext(
           contents->GetBrowserContext());
+
+  url::Origin origin =
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   permission_controller->GrantPermissionOverrides(
-      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-      {blink::PermissionType::WINDOW_MANAGEMENT});
+      origin, origin, {blink::PermissionType::WINDOW_MANAGEMENT});
 
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);

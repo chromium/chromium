@@ -92,7 +92,8 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
       PermissionType type,
       blink::mojom::PermissionStatus last_status,
       blink::mojom::PermissionStatus current_status) {
-    permission_controller()->SetOverrideForDevTools(origin_, type, last_status);
+    permission_controller()->SetOverrideForDevTools(origin_, origin_, type,
+                                                    last_status);
     auto observer = std::make_unique<TestPermissionObserver>();
     permission_service_context()->CreateSubscription(
         content::PermissionDescriptorUtil::
@@ -105,7 +106,8 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
 
   void SimulatePermissionChangedEvent(PermissionType type,
                                       blink::mojom::PermissionStatus status) {
-    permission_controller()->SetOverrideForDevTools(origin_, type, status);
+    permission_controller()->SetOverrideForDevTools(origin_, origin_, type,
+                                                    status);
     WaitForAsyncTasksToComplete();
   }
 

@@ -16,7 +16,7 @@ void SetPermissionControllerOverrideForDevTools(
     const blink::mojom::PermissionStatus& status) {
   PermissionControllerImpl* permission_controller_impl =
       static_cast<PermissionControllerImpl*>(permission_controller);
-  permission_controller_impl->SetOverrideForDevTools(origin, permission,
+  permission_controller_impl->SetOverrideForDevTools(origin, origin, permission,
                                                      status);
 }
 

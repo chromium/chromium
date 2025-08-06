@@ -397,9 +397,12 @@ Response BrowserHandler::SetPermission(
       return Response::InvalidParams(
           "Permission can't be granted to opaque origins.");
   }
+  // TODO(crbug.com/434724810): Once SetPermission accepts a requesting
+  // and embedding origin, we will pass those rather than just
+  // 'overridden_origin.'
   PermissionControllerImpl::OverrideStatus status =
-      permission_controller->SetOverrideForDevTools(overridden_origin, type,
-                                                    permission_status);
+      permission_controller->SetOverrideForDevTools(
+          overridden_origin, overridden_origin, type, permission_status);
   if (status != PermissionControllerImpl::OverrideStatus::kOverrideSet) {
     return Response::InvalidParams(
         "Permission can't be granted in current context.");
@@ -438,9 +441,12 @@ Response BrowserHandler::GrantPermissions(
       return Response::InvalidParams(
           "Permission can't be granted to opaque origins.");
   }
+  // TODO(crbug.com/434724810): Once GrantPermissions accepts a requesting
+  // and embedding origin, we will pass those rather than just
+  // 'overridden_origin.'
   PermissionControllerImpl::OverrideStatus status =
-      permission_controller->GrantOverridesForDevTools(overridden_origin,
-                                                       internal_permissions);
+      permission_controller->GrantOverridesForDevTools(
+          overridden_origin, overridden_origin, internal_permissions);
 
   if (status != PermissionControllerImpl::OverrideStatus::kOverrideSet) {
     return Response::InvalidParams(
