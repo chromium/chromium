@@ -37,12 +37,12 @@
 ] interface FileReader : EventTarget {
     [CallWith=ExecutionContext] constructor();
     // async read methods
-    [RaisesException] void readAsArrayBuffer(Blob blob);
-    [RaisesException] void readAsBinaryString(Blob blob);
-    [RaisesException] void readAsText(Blob blob, optional DOMString label);
-    [RaisesException] void readAsDataURL(Blob blob);
+    [RaisesException] undefined readAsArrayBuffer(Blob blob);
+    [RaisesException] undefined readAsBinaryString(Blob blob);
+    [RaisesException] undefined readAsText(Blob blob, optional DOMString encoding);
+    [RaisesException] undefined readAsDataURL(Blob blob);
 
-    void abort();
+    undefined abort();
 
     // states
     const unsigned short EMPTY = 0;

@@ -7,5 +7,5 @@
     ImplementedAs=URLFileAPI
 ] partial interface URL {
     [Exposed=(Window,DedicatedWorker,SharedWorker), CallWith=ScriptState, RaisesException] static DOMString createObjectURL(Blob blob);
-    [Exposed=(Window,DedicatedWorker,SharedWorker), CallWith=ScriptState] static void revokeObjectURL(DOMString url);
+    [Exposed=(Window,DedicatedWorker,SharedWorker), CallWith=ScriptState] static undefined revokeObjectURL(DOMString url);
 };
