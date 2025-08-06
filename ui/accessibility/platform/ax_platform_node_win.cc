@@ -1922,7 +1922,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accState(VARIANT var_id, VARIANT* state) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_STATE);
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, state, target);
-  OnPropertiesUsed();
+  AXPlatform::GetInstance().OnMinimalPropertiesUsed();
 
   state->vt = VT_I4;
   state->lVal = target->MSAAState();
@@ -5910,8 +5910,7 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
               "riid", base::WideToASCII(base::win::WStringFromGUID(riid)));
   COM_OBJECT_VALIDATE_1_ARG(object);
 
-  if (riid == IID_IAccessible2 || riid == IID_IAccessible2_2 ||
-      riid == IID_IAccessible2_3 || riid == IID_IAccessible2_4) {
+  if (riid == IID_IAccessible2) {
     OnPropertiesUsed();
   }
 
