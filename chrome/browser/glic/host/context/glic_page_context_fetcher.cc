@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -45,13 +46,18 @@ void HandleFetchPageResult(
     glic::mojom::TabDataPtr tab_data,
     url::Origin last_committed_origin,
     std::unique_ptr<optimization_guide::proto::ContentNode> media_root_node,
-    mojom::WebClientHandler::GetContextFromFocusedTabCallback callback,
+    base::OnceCallback<void(
+        base::expected<glic::mojom::GetContextResultPtr,
+                       page_content_annotations::FetchPageContextErrorDetails>)>
+        callback,
     base::expected<
         std::unique_ptr<page_content_annotations::FetchPageContextResult>,
-        std::string> fetch_result) {
+        page_content_annotations::FetchPageContextErrorDetails> fetch_result) {
   if (!fetch_result.has_value()) {
     std::move(callback).Run(
-        mojom::GetContextResult::NewErrorReason(fetch_result.error()));
+        base::unexpected(page_content_annotations::FetchPageContextErrorDetails{
+            page_content_annotations::FetchPageContextError::kUnknown,
+            fetch_result.error().message}));
     return;
   }
 
@@ -123,7 +129,7 @@ void HandleFetchPageResult(
     tab_context->annotated_page_data = std::move(annotated_page_data);
   }
   std::move(callback).Run(
-      mojom::GetContextResult::NewTabContext(std::move(tab_context)));
+      base::ok(mojom::GetContextResult::NewTabContext(std::move(tab_context))));
 }
 
 }  // namespace
@@ -131,7 +137,10 @@ void HandleFetchPageResult(
 void FetchPageContext(
     tabs::TabInterface* tab,
     const mojom::GetTabContextOptions& tab_context_options,
-    glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
+    base::OnceCallback<void(
+        base::expected<glic::mojom::GetContextResultPtr,
+                       page_content_annotations::FetchPageContextErrorDetails>)>
+        callback) {
   CHECK(tab);
   CHECK(callback);
 

@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/tabs/public/tab_interface.h"
@@ -72,6 +73,8 @@ void GlicActorController::ResumeTask(
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
+  // TODO(https://crbug.com/433328453): Add stability metrics specific to actor
+  // tasks.
   actor::ActorTask* task = GetCurrentTask();
   if (!task || !task->IsPaused()) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
@@ -86,9 +89,24 @@ void GlicActorController::ResumeTask(
     return;
   }
 
+  auto fetcher_callback = base::BindOnce(
+      [](glic::mojom::WebClientHandler::ResumeActorTaskCallback final_callback,
+         base::expected<glic::mojom::GetContextResultPtr,
+                        page_content_annotations::FetchPageContextErrorDetails>
+             result) {
+        if (!result.has_value()) {
+          std::move(final_callback)
+              .Run(glic::mojom::GetContextResult::NewErrorReason(
+                  result.error().message));
+        } else {
+          std::move(final_callback).Run(std::move(result.value()));
+        }
+      },
+      std::move(callback));
+
   glic::FetchPageContext(tab_of_resumed_task,
                          *ActionableOptions(context_options),
-                         std::move(callback));
+                         std::move(fetcher_callback));
 }
 
 actor::ActorTask* GlicActorController::GetCurrentTask() const {

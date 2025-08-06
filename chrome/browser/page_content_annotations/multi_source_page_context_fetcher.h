@@ -65,8 +65,18 @@ struct FetchPageContextResult {
       annotated_page_content_result;
 };
 
+enum class FetchPageContextError {
+  kUnknown,
+  kWebContentsChanged,
+};
+
+struct FetchPageContextErrorDetails {
+  FetchPageContextError error_code = FetchPageContextError::kUnknown;
+  std::string message;
+};
 using FetchPageContextResultCallbackArg =
-    base::expected<std::unique_ptr<FetchPageContextResult>, std::string>;
+    base::expected<std::unique_ptr<FetchPageContextResult>,
+                   FetchPageContextErrorDetails>;
 using FetchPageContextResultCallback =
     base::OnceCallback<void(FetchPageContextResultCallbackArg)>;
 void FetchPageContext(content::WebContents& web_contents,

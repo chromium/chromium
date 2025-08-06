@@ -512,17 +512,23 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
       if (data.focus()) {
         FetchPageContext(
             data.focus(), *options,
-            base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
-              mojo_base::ProtoWrapper& serialized_apc =
-                  *result->get_tab_context()
-                       ->annotated_page_data->annotated_page_content;
-              // Also update the cached apc in ExecutionEngine.
-              GetActorTask()->GetExecutionEngine()->DidObserveContext(
-                  serialized_apc);
-              annotated_page_content_ = std::make_unique<AnnotatedPageContent>(
-                  serialized_apc.As<AnnotatedPageContent>().value());
-              run_loop.Quit();
-            }));
+            base::BindLambdaForTesting(
+                [&](base::expected<
+                    glic::mojom::GetContextResultPtr,
+                    page_content_annotations::FetchPageContextErrorDetails>
+                        result) {
+                  mojo_base::ProtoWrapper& serialized_apc =
+                      *result.value()
+                           ->get_tab_context()
+                           ->annotated_page_data->annotated_page_content;
+                  // Also update the cached apc in ExecutionEngine.
+                  GetActorTask()->GetExecutionEngine()->DidObserveContext(
+                      serialized_apc);
+                  annotated_page_content_ =
+                      std::make_unique<AnnotatedPageContent>(
+                          serialized_apc.As<AnnotatedPageContent>().value());
+                  run_loop.Quit();
+                }));
 
         run_loop.Run();
       }

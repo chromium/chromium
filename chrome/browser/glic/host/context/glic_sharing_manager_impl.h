@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
@@ -15,6 +16,16 @@
 namespace glic {
 
 class GlicMetrics;
+
+// The error returned by the GlicSharingManager when requesting context.
+struct GlicGetContextError {
+  GlicGetContextFromFocusedTabError error_code;
+  std::string message;
+};
+
+// The result passed from the sharing manager up to the page handler.
+using GlicGetContextResult =
+    base::expected<mojom::GetContextResultPtr, GlicGetContextError>;
 
 // Implements GlicSharingManager and provides additional functionality needed
 // by chrome/browser/glic. It also provides some common sharing-related
@@ -95,12 +106,12 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   void GetContextFromTab(
       tabs::TabHandle tab_handle,
       const mojom::GetTabContextOptions& options,
-      base::OnceCallback<void(mojom::GetContextResultPtr)> callback);
+      base::OnceCallback<void(GlicGetContextResult)> callback);
 
   void GetContextForActorFromTab(
       tabs::TabHandle tab_handle,
       const mojom::GetTabContextOptions& options,
-      base::OnceCallback<void(mojom::GetContextResultPtr)> callback);
+      base::OnceCallback<void(GlicGetContextResult)> callback);
 
   // Fetches the current list of pinned tabs.
   std::vector<content::WebContents*> GetPinnedTabs() const;
@@ -111,6 +122,11 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer);
 
  private:
+  void GetContextFromTabImpl(
+      tabs::TabInterface* tab,
+      const mojom::GetTabContextOptions& options,
+      base::OnceCallback<void(GlicGetContextResult)> callback);
+
   GlicFocusedBrowserManager focused_browser_manager_;
   GlicFocusedTabManager focused_tab_manager_;
   GlicPinnedTabManager pinned_tab_manager_;

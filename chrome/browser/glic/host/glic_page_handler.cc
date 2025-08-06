@@ -102,6 +102,16 @@ namespace glic {
 
 namespace {
 
+mojom::GetContextResultPtr LogErrorAndUnwrapResult(
+    base::OnceCallback<void(GlicGetContextFromFocusedTabError)> error_logger,
+    GlicGetContextResult result) {
+  if (!result.has_value()) {
+    std::move(error_logger).Run(result.error().error_code);
+    return mojom::GetContextResult::NewErrorReason(result.error().message);
+  }
+  return std::move(result.value());
+}
+
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
 // inactive = (panel hidden) || (panel attached) && (window not active)
@@ -753,8 +763,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetModelQualityClientId(
       GetModelQualityClientIdCallback callback) override {
     auto* local_state = g_browser_process->local_state();
-    std::string client_id = optimization_guide::
-        GetOrCreateGlicModelQualityClientId(local_state);
+    std::string client_id =
+        optimization_guide::GetOrCreateGlicModelQualityClientId(local_state);
     std::move(callback).Run(std::move(client_id));
   }
 
@@ -762,35 +772,50 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
     if (ShouldDoApiActivationGating()) {
+      glic_service_->metrics()->LogGetContextFromFocusedTabError(
+          GlicGetContextFromFocusedTabError::kPermissionDeniedWindowNotShowing);
       std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
           "permission denied: window not showing"));
       return;
     }
     auto* tab = glic_sharing_manager_->GetFocusedTabData().focus();
     auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
-    glic_sharing_manager_->GetContextFromTab(tab_handle, *options,
-                                             std::move(callback));
+
+    glic_sharing_manager_->GetContextFromTab(
+        tab_handle, *options,
+        base::BindOnce(
+            &LogErrorAndUnwrapResult,
+            base::BindOnce(&GlicMetrics::LogGetContextFromFocusedTabError,
+                           base::Unretained(glic_service_->metrics())))
+            .Then(std::move(callback)));
   }
 
   void GetContextFromTab(int32_t tab_id,
                          glic::mojom::GetTabContextOptionsPtr options,
                          GetContextFromTabCallback callback) override {
+    // TODO(b/433328453): add GetContextFromTab error histogram.
     if (ShouldDoApiActivationGating()) {
       std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
           "permission denied: window not showing"));
       return;
     }
     // Extra activation gating is done in this function.
-    glic_sharing_manager_->GetContextFromTab(tabs::TabHandle(tab_id), *options,
-                                             std::move(callback));
+    glic_sharing_manager_->GetContextFromTab(
+        tabs::TabHandle(tab_id), *options,
+        base::BindOnce(&LogErrorAndUnwrapResult, base::DoNothing())
+            .Then(std::move(callback)));
   }
 
   void GetContextForActorFromTab(
       int32_t tab_id,
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextForActorFromTabCallback callback) override {
+    // TODO(b/433328453): add GetContextForActorFromTab Error
+    // histogram.
     glic_sharing_manager_->GetContextForActorFromTab(
-        tabs::TabHandle(tab_id), *options, std::move(callback));
+        tabs::TabHandle(tab_id), *options,
+        base::BindOnce(&LogErrorAndUnwrapResult, base::DoNothing())
+            .Then(std::move(callback)));
   }
 
   void SetMaximumNumberOfPinnedTabs(

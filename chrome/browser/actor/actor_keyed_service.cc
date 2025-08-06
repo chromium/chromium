@@ -154,7 +154,8 @@ void ActorKeyedService::RequestTabObservation(
       *tab.GetContents(), options,
       base::BindOnce(
           [](base::OnceCallback<void(TabObservationResult)> callback,
-             TabObservationResult result) {
+             page_content_annotations::FetchPageContextResultCallbackArg
+                 result) {
             if (result.has_value()) {
               // Context for actor observations should always have an APC and a
               // screenshot, return failure if either is missing.
@@ -169,7 +170,7 @@ void ActorKeyedService::RequestTabObservation(
                 return;
               }
 
-              std::move(callback).Run(std::move(result));
+              std::move(callback).Run(std::move(result).value());
             }
           },
           std::move(callback)));

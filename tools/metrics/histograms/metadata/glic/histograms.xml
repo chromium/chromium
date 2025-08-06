@@ -32,6 +32,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Api.GetContextFromFocusedTab.Error.{Mode}"
+    enum="GlicGetContextFromFocusedTabError" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records an error that occurred while trying to get context from the focused
+    tab. The error is broken down by the last known user input mode.
+  </summary>
+  <token key="Mode">
+    <variant name="Audio"/>
+    <variant name="Text"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

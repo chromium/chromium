@@ -198,6 +198,18 @@ enum class GlicRequestEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
 
+// LINT.IfChange(GlicGetContextFromFocusedTabError)
+enum class GlicGetContextFromFocusedTabError {
+  kUnknown = 0,
+  kPermissionDeniedWindowNotShowing = 1,
+  kTabNotFound = 2,
+  kPermissionDeniedContextPermissionNotEnabled = 3,
+  kPermissionDenied = 4,
+  kWebContentsChanged = 5,
+  kMaxValue = kWebContentsChanged,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicGetContextFromFocusedTabError)
+
 // The different states of active tab sharing.
 // LINT.IfChange(ActiveTabSharingState)
 enum class ActiveTabSharingState {
@@ -281,6 +293,14 @@ class GlicMetrics {
 
   // Called when a response is received with closed captions showing.
   void LogClosedCaptionsShown();
+
+  // Logs an error that occurred while trying to get context from the focused
+  // tab.
+  void LogGetContextFromFocusedTabError(
+      GlicGetContextFromFocusedTabError error);
+
+  // See `last_input_mode_` for details.
+  mojom::WebClientMode last_input_mode() const { return last_input_mode_; }
 
   // Must be called immediately after constructor before any calls from
   // glic.mojom.
@@ -402,6 +422,12 @@ class GlicMetrics {
   // `input_mode_`.
   base::TimeTicks scroll_input_submitted_time_;
   mojom::WebClientMode scroll_input_mode_;
+
+  // The last input mode used by the user. This is not cleared when the response
+  // is finished, so it can be used to attribute events that happen after the
+  // response has completed to the input mode that triggered them.
+  mojom::WebClientMode last_input_mode_ = mojom::WebClientMode::kUnknown;
+
   std::unique_ptr<internal::BrowserActivityObserver> browser_activity_observer_;
 };
 

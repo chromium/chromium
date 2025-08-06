@@ -268,6 +268,7 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
   inputs_modes_used_.insert(mode);
+  last_input_mode_ = mode;
 }
 
 void GlicMetrics::OnResponseStarted() {
@@ -577,6 +578,25 @@ void GlicMetrics::LogClosedCaptionsShown() {
   bool pref_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
   base::UmaHistogramBoolean("Glic.Response.ClosedCaptionsShown", pref_enabled);
+}
+
+void GlicMetrics::LogGetContextFromFocusedTabError(
+    GlicGetContextFromFocusedTabError error) {
+  std::string mode_string;
+  switch (last_input_mode_) {
+    case mojom::WebClientMode::kText:
+      mode_string = "Text";
+      break;
+    case mojom::WebClientMode::kAudio:
+      mode_string = "Audio";
+      break;
+    case mojom::WebClientMode::kUnknown:
+      mode_string = "Unknown";
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Glic.Api.GetContextFromFocusedTab.Error.", mode_string}),
+      error);
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,

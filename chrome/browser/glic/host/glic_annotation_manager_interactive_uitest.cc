@@ -165,9 +165,14 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
       if (data.focus()) {
         FetchPageContext(
             data.focus(), *options,
-            base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
+            base::BindLambdaForTesting([&](base::expected<
+                                           glic::mojom::GetContextResultPtr,
+                                           page_content_annotations::
+                                               FetchPageContextErrorDetails>
+                                               result) {
               mojo_base::ProtoWrapper& serialized_apc =
-                  *result->get_tab_context()
+                  *result.value()
+                       ->get_tab_context()
                        ->annotated_page_data->annotated_page_content;
               annotated_page_content_ = std::make_unique<
                   optimization_guide::proto::AnnotatedPageContent>(

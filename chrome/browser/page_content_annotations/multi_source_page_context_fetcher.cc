@@ -343,8 +343,8 @@ class PageContextFetcher : public content::WebContentsObserver {
 
     if (primary_page_changed_ || !web_contents() ||
         !web_contents()->GetPrimaryMainFrame()) {
-      std::move(callback_).Run(
-          base::unexpected<std::string>("web contents changed"));
+      std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
+          FetchPageContextError::kWebContentsChanged, "web contents changed"}));
       return;
     }
 
