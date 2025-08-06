@@ -243,6 +243,8 @@ void PageInfoMainView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,
     ChosenObjectInfoList chosen_object_info_list) {
   if (permission_info_list.empty() && chosen_object_info_list.empty()) {
+    toggle_rows_.clear();
+    syncable_permission_rows_.clear();
     permissions_view_->RemoveAllChildViews();
     return;
   }
