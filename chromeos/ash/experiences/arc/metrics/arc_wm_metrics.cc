@@ -180,6 +180,7 @@ class ArcWmMetrics::WindowCloseObserver : public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {
     RecordWindowCloseDelay();
+    window_observation_.Reset();
     std::move(window_close_completed_callback_).Run();
   }
 
@@ -224,6 +225,9 @@ class ArcWmMetrics::WindowRotationObserver : public aura::WindowObserver {
       RecordWindowRotateDelay();
       std::move(window_bounds_changed_completed_callback_).Run();
     }
+  }
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
   }
 
  private:
