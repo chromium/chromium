@@ -209,9 +209,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
     // Load an extension page with a file iframe.
     GURL page = extension->GetResourceURL("file_iframe.html");
     ExtensionTestMessageListener listener;
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), page, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    NavigateToURLInNewTab(page);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
 
     EXPECT_TRUE(listener.message() == "allowed" ||

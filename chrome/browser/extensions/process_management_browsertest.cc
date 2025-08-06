@@ -197,36 +197,18 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
   // Tab 1: Hosted app 1.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("hosted_app/main.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(base_url.Resolve("hosted_app/main.html"));
   // Tab 2: Web page 1.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("test_file.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
+  NavigateToURLInNewTab(base_url.Resolve("test_file.html"));
   // Tab 3: NTP 2.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(GURL(chrome::kChromeUINewTabURL));
   // Tab 4: Hosted app 2.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("api_test/app_process/path1/empty.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(
+      base_url.Resolve("api_test/app_process/path1/empty.html"));
   // Tab 5: Web page 2.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("test_file_with_body.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(base_url.Resolve("test_file_with_body.html"));
   // Tab 6: Second instance of Hosted app 1.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("hosted_app/main.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(base_url.Resolve("hosted_app/main.html"));
 
   // Load another extension (in background).
   const extensions::Extension* extension2 = LoadExtension(
@@ -360,14 +342,10 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   WebContents* web_contents1 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), web_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(web_url2);
   WebContents* web_contents2 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), web_url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(web_url3);
   WebContents* web_contents3 =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -394,9 +372,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
       browser()->tab_strip_model()->GetActiveWebContents(), {"bar.com"});
   GURL cross_site_url(
       embedded_test_server()->GetURL("bar.com", "/title1.html"));
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), cross_site_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(cross_site_url);
   WebContents* web_contents4 =
       browser()->tab_strip_model()->GetActiveWebContents();
   process_ids.insert(
@@ -642,10 +618,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
 
   // Open a new tab to about:blank, which will result in a new SiteInstance
   // without an explicit site URL set.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(GURL(url::kAboutBlankURL));
   WebContents* new_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

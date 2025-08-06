@@ -874,10 +874,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 
   // We're going to close a tab in this test, so make a new one (to ensure
   // we don't close the browser).
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/empty.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(embedded_test_server()->GetURL("/empty.html"));
 
   // Set up the same as the previous test case.
   TestExtensionDir ext_dir1;

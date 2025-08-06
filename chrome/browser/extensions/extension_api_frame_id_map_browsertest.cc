@@ -47,10 +47,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiFrameIdMapBrowserTest, ContextIdsAreUnique) {
   ASSERT_TRUE(page1_b_host);
 
   content::RenderFrameHost* page2_host =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension->GetResourceURL("page2.html"),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      NavigateToURLInNewTab(extension->GetResourceURL("page2.html"));
   ASSERT_TRUE(page2_host);
 
   base::Uuid page1_a_context_id =

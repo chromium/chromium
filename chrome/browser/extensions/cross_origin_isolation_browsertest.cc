@@ -502,10 +502,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   ASSERT_TRUE(extension_iframe);
 
   content::RenderFrameHost* extension_tab =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension_test_url,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      NavigateToURLInNewTab(extension_test_url);
   ASSERT_TRUE(extension_tab);
 
   // getBackgroundPage API.
@@ -606,10 +603,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   ASSERT_TRUE(extension_iframe);
 
   content::RenderFrameHost* extension_tab =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension_test_url,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      NavigateToURLInNewTab(extension_test_url);
   ASSERT_TRUE(extension_tab);
 
   // `extension_iframe` and `extension_tab` should not share a process as they

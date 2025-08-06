@@ -548,10 +548,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
 
   ASSERT_TRUE(embedded_test_server()->Started());
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/simple.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(
+      NavigateToURLInNewTab(embedded_test_server()->GetURL("/simple.html")));
   const int tab_id2 =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
 

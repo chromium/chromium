@@ -158,9 +158,7 @@ class ScriptInjectionTrackerBrowserTest : public ExtensionBrowserTest {
 
     // Opening the URL in a new tab should force it into a new process.
     GURL url = embedded_test_server()->GetURL(hostname, relative_url);
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    NavigateToURLInNewTab(url);
 
     content::WebContents* new_web_contents = GetActiveWebContents();
     return original_web_contents->GetPrimaryMainFrame()->GetProcess() !=
