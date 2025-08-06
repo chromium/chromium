@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action.h"
@@ -127,8 +126,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
   // Navigation prompts the location bar to load page actions.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));
 
   UnloadExtension(last_loaded_extension_id());

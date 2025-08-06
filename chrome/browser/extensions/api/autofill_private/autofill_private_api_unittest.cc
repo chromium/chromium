@@ -93,8 +93,7 @@ class MandatoryReauthSettingsPageMetricsTest
   }
 
   autofill::TestContentAutofillClient* autofill_client() {
-    return test_autofill_client_injector_
-        [browser()->tab_strip_model()->GetActiveWebContents()];
+    return test_autofill_client_injector_[GetActiveWebContents()];
   }
   autofill::TestPersonalDataManager& personal_data_manager() {
     return autofill_client()->GetPersonalDataManager();
@@ -102,10 +101,7 @@ class MandatoryReauthSettingsPageMetricsTest
 
  private:
   content::BrowserContext* browser_context() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetBrowserContext();
+    return GetActiveWebContents()->GetBrowserContext();
   }
 
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
@@ -212,8 +208,7 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
     return personal_data_manager().test_address_data_manager();
   }
   autofill::TestContentAutofillClient* autofill_client() {
-    return test_autofill_client_injector_
-        [browser()->tab_strip_model()->GetActiveWebContents()];
+    return test_autofill_client_injector_[GetActiveWebContents()];
   }
   autofill::TestPaymentsDataManager& payments_data_manager() {
     return personal_data_manager().test_payments_data_manager();

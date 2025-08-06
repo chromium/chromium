@@ -162,8 +162,7 @@ void DebuggerApiTest::SetUpOnMainThread() {
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
     const GURL& url, const std::string& expected_error) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  return RunAttachFunction(browser()->tab_strip_model()->GetActiveWebContents(),
-                           expected_error);
+  return RunAttachFunction(GetActiveWebContents(), expected_error);
 }
 
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
@@ -313,8 +312,7 @@ class TestInterstitialPage
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnRestrictedBlobUrls) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://settings")));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   ASSERT_TRUE(content::ExecJs(web_contents, R"(
@@ -324,8 +322,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
     var burl = URL.createObjectURL(blob, 'application/json');
     window.open(burl);
   )"));
-  content::WebContents* blob_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* blob_web_contents = GetActiveWebContents();
   EXPECT_NE(blob_web_contents, web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(blob_web_contents));
   EXPECT_EQ("{\"foo\":\"bar\"}",
@@ -337,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnPolicyRestrictedBlobUrls) {
   GURL url(embedded_test_server()->GetURL("a.com", "/simple.html"));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   ASSERT_TRUE(content::ExecJs(web_contents, R"(
@@ -347,8 +343,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
     });
     window.open(URL.createObjectURL(blob, 'application/json'));
   )"));
-  content::WebContents* blob_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* blob_web_contents = GetActiveWebContents();
   EXPECT_NE(blob_web_contents, web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(blob_web_contents));
   EXPECT_EQ("{\"foo\":\"bar\"}",
@@ -366,8 +361,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnSecurityInterstitials) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       std::make_unique<content::MockNavigationHandle>(
           GURL("https://google.com/"), web_contents->GetPrimaryMainFrame());
@@ -386,9 +380,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
-  int tab_id = sessions::SessionTabHelper::IdForTab(
-                   browser()->tab_strip_model()->GetActiveWebContents())
-                   .id();
+  int tab_id =
+      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
   scoped_refptr<DebuggerAttachFunction> attach_function;
   scoped_refptr<DebuggerDetachFunction> detach_function;
 
@@ -401,8 +394,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
                     .id();
 
   infobars::ContentInfoBarManager* manager1 =
-      infobars::ContentInfoBarManager::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
   infobars::ContentInfoBarManager* manager2 =
       infobars::ContentInfoBarManager::FromWebContents(
           another_browser->tab_strip_model()->GetWebContentsAt(0));
@@ -512,12 +504,10 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
-  int tab_id = sessions::SessionTabHelper::IdForTab(
-                   browser()->tab_strip_model()->GetActiveWebContents())
-                   .id();
+  int tab_id =
+      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
   infobars::ContentInfoBarManager* manager =
-      infobars::ContentInfoBarManager::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
 
   // Attaching to the tab should create an infobar.
   auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
@@ -552,21 +542,18 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedWhenAnotherDebuggerAttached) {
-  const int tab_id1 = sessions::SessionTabHelper::IdForTab(
-                          browser()->tab_strip_model()->GetActiveWebContents())
-                          .id();
+  const int tab_id1 =
+      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
   infobars::ContentInfoBarManager* manager =
-      infobars::ContentInfoBarManager::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
 
   ASSERT_TRUE(embedded_test_server()->Started());
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/simple.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  const int tab_id2 = sessions::SessionTabHelper::IdForTab(
-                          browser()->tab_strip_model()->GetActiveWebContents())
-                          .id();
+  const int tab_id2 =
+      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
 
   // Attaching to a tab should create an infobar.
   {
@@ -761,12 +748,10 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedIfAttachAgainBeforeFiveSeconds) {
-  int tab_id = sessions::SessionTabHelper::IdForTab(
-                   browser()->tab_strip_model()->GetActiveWebContents())
-                   .id();
+  int tab_id =
+      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
   infobars::ContentInfoBarManager* manager =
-      infobars::ContentInfoBarManager::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
 
   // Attaching to the tab should create an infobar.
   auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
@@ -890,8 +875,7 @@ class DebuggerExtensionApiOopifPdfTest : public DebuggerExtensionApiTest {
   }
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
-    return factory_.GetTestPdfViewerStreamManager(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    return factory_.GetTestPdfViewerStreamManager(GetActiveWebContents());
   }
 
  private:
@@ -906,8 +890,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
 
   // Load a full-page PDF.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(
       web_contents->GetPrimaryMainFrame()));
 
@@ -995,8 +978,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
       "a.com", "/extensions/api_test/debugger/oopif.html"));
   GURL iframe_url(embedded_test_server()->GetURL(
       "b.com", "/extensions/api_test/debugger/oopif_frame.html"));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
   content::TestNavigationManager navigation_manager(tab, url);
   content::TestNavigationManager navigation_manager_iframe(tab, iframe_url);
   tab->GetController().LoadURL(url, content::Referrer(),

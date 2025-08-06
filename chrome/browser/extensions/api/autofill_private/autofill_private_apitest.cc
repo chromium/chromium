@@ -77,16 +77,12 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   }
 
   autofill::TestContentAutofillClient* autofill_client() {
-    return test_autofill_client_injector_
-        [browser()->tab_strip_model()->GetActiveWebContents()];
+    return test_autofill_client_injector_[GetActiveWebContents()];
   }
 
  private:
   content::BrowserContext* browser_context() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetBrowserContext();
+    return GetActiveWebContents()->GetBrowserContext();
   }
 
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>

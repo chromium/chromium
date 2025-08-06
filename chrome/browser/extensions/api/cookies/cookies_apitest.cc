@@ -218,8 +218,7 @@ IN_PROC_BROWSER_TEST_P(CookiesApiMV3Test, TestGetPartitionKey) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.com", default_response)));
 
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* contents = GetActiveWebContents();
   // Inject two iframes and navigate one to a cross-site with host permissions
   // (b.com) and the other to a cross-site (c.com) with no host permissions.
   const GURL cross_site_url =

@@ -266,8 +266,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
   GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
 
   const ExtensionAction* extension_action =
       ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);

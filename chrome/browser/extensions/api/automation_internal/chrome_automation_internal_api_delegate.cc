@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/common/api/automation_internal.h"

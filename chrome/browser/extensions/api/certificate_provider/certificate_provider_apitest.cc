@@ -328,7 +328,7 @@ class CertificateProviderApiMockedExtensionTest
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), extension_->GetResourceURL("basic.html")));
 
-    extension_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    extension_contents_ = GetActiveWebContents();
 
     std::string raw_certificate = GetCertificateData();
     std::vector<uint8_t> certificate_bytes(raw_certificate.begin(),
@@ -391,8 +391,7 @@ class CertificateProviderApiMockedExtensionTest
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
 
-    content::WebContents* const https_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* const https_contents = GetActiveWebContents();
 
     // Wait for the extension to receive the sign request.
     ASSERT_TRUE(sign_digest_listener.WaitUntilSatisfied());
@@ -456,7 +455,7 @@ class CertificateProviderApiMockedExtensionTest
         browser(), GetHttpsClientCertUrl(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* tab = GetActiveWebContents();
 
     // Proceed through the interstitial to set an SSL bypass for this host.
     content::TestNavigationObserver nav_observer(tab,
@@ -929,9 +928,8 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(test_certificate_provider_extension.certificate_request_count(), 2);
-  EXPECT_EQ(
-      GetPageTextContent(browser()->tab_strip_model()->GetActiveWebContents()),
-      "got client cert with fingerprint: " + client_cert_fingerprint);
+  EXPECT_EQ(GetPageTextContent(GetActiveWebContents()),
+            "got client cert with fingerprint: " + client_cert_fingerprint);
 }
 
 // User enters the correct PIN.

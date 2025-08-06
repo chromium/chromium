@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -537,14 +536,12 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   ResultCatcher catcher;
   ExecuteExtensionAction(browser(), extension);
   ASSERT_TRUE(catcher.GetNextResult());
-  int first_tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int first_tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
   EXPECT_EQ("Showing icon 2", extension_action->GetTitle(first_tab_id));
 
   // Open a new tab, the title should go back.
   chrome::NewTab(browser());
-  int second_tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int second_tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
   EXPECT_EQ("hi!", extension_action->GetTitle(second_tab_id));
 
   // Go back to first tab, changed title should reappear.
@@ -565,8 +562,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, SetIcon) {
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
 
   ExtensionAction* browser_action = GetBrowserAction(browser(), *extension);
   ASSERT_TRUE(browser_action)
@@ -599,8 +595,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
 
   ExtensionAction* browser_action = GetBrowserAction(browser(), *extension);
   ASSERT_TRUE(browser_action)
@@ -654,8 +649,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
 
   ExtensionAction* browser_action = GetBrowserAction(browser(), *extension);
   ASSERT_TRUE(browser_action)
@@ -966,8 +960,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
     EXPECT_TRUE(catcher.GetNextResult());
   }
 
-  WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetActiveWebContents();
   EXPECT_TRUE(tab);
 
   // Verify that the browser action turned the background color red.

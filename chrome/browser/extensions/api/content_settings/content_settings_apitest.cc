@@ -516,8 +516,7 @@ IN_PROC_BROWSER_TEST_F(ImageContentSettingApiTest, OriginBlocking) {
                        temp_dir_.GetPath().AppendASCII("test.png")));
   }
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver body_load_observer(web_contents);
   body_load_observer.SetPattern("body load");
   content::WebContentsConsoleObserver observer(web_contents);

@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -104,8 +103,7 @@ const char kRedirectToDataNoRules[] =
 class DeclarativeApiTest : public ExtensionApiTest {
  public:
   std::string GetTitle() {
-    std::u16string title(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+    std::u16string title(GetActiveWebContents()->GetTitle());
     return base::UTF16ToUTF8(title);
   }
 
