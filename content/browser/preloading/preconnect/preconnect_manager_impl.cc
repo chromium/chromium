@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/preloading/preconnect_manager_impl.h"
+#include "content/browser/preloading/preconnect/preconnect_manager_impl.h"
 
 #include <utility>
 
@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
+#include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

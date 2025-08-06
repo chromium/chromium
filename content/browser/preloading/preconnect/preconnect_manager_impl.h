@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PRELOADING_PRECONNECT_MANAGER_IMPL_H_
-#define CONTENT_BROWSER_PRELOADING_PRECONNECT_MANAGER_IMPL_H_
+#ifndef CONTENT_BROWSER_PRELOADING_PRECONNECT_PRECONNECT_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_PRELOADING_PRECONNECT_PRECONNECT_MANAGER_IMPL_H_
 
 #include <list>
 #include <map>
@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
+#include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/resolve_host_client_impl.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/preconnect_request.h"
@@ -196,4 +196,4 @@ class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_PRELOADING_PRECONNECT_MANAGER_IMPL_H_
+#endif  // CONTENT_BROWSER_PRELOADING_PRECONNECT_PRECONNECT_MANAGER_IMPL_H_

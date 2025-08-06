@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/preloading/preconnect_manager_impl.h"
+#include "content/browser/preloading/preconnect/preconnect_manager_impl.h"
 
 #include <algorithm>
 #include <map>
@@ -15,7 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
+#include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/resolve_host_client_impl.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/preconnect_request.h"

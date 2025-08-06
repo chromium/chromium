@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
+#include "content/browser/preloading/proxy_lookup_client_impl.h"
 
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
