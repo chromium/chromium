@@ -11,6 +11,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using InterstitialReason =
+    security_interstitials::https_only_mode::InterstitialReason;
+
 void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
     const GURL& url,
@@ -27,16 +30,13 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
     primary_paragraph_id = IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH;
   }
 
-  // Multiple interstitial flags might be true here, but we assign higher
-  // priority to Site Engagement heuristic because we expect SE interstitials
-  // to be rare. Advanced Protection locks the HTTPS-First Mode UI setting so
-  // it's higher priority than the HFM string as well. The lowest priority is
-  // given to HFM-in-Incognito, where we want to use different strings only if
-  // the user is not opted in to HFM for any other reason.
-  if (interstitial_state.enabled_by_engagement_heuristic) {
+  InterstitialReason reason =
+      security_interstitials::https_only_mode::GetInterstitialReason(
+          interstitial_state);
+  if (reason == InterstitialReason::kSiteEngagementHeuristic) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_SITE_ENGAGEMENT_PRIMARY_PARAGRAPH;
-  } else if (interstitial_state.enabled_by_advanced_protection) {
+  } else if (reason == InterstitialReason::kAdvancedProtection) {
 #if BUILDFLAG(IS_ANDROID)
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH_ANDROID;
@@ -44,12 +44,10 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH;
 #endif
-  } else if (interstitial_state.enabled_by_typically_secure_browsing) {
+  } else if (reason == InterstitialReason::kTypicallySecureUserHeuristic) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH;
-  } else if (interstitial_state.enabled_by_incognito &&
-             !interstitial_state.enabled_by_pref &&
-             !interstitial_state.enabled_in_balanced_mode) {
+  } else if (reason == InterstitialReason::kIncognito) {
     primary_paragraph_id = IDS_HTTPS_ONLY_MODE_FOR_INCOGNITO_PRIMARY_PARAGRAPH;
   }
 

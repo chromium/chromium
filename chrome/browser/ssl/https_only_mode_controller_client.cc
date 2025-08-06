@@ -47,6 +47,7 @@ void HttpsOnlyModeControllerClient::GoBack() {
 }
 
 void HttpsOnlyModeControllerClient::Proceed() {
+  // LINT.IfChange(HttpsFirstModeProceedLogic)
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =
@@ -69,4 +70,5 @@ void HttpsOnlyModeControllerClient::Proceed() {
   // The failed https navigation will remain as a forward entry, so it needs to
   // be removed.
   web_contents_->GetController().PruneForwardEntries();
+  // LINT.ThenChange(chrome/browser/ssl/ask_before_http_dialog_controller.cc:HttpsFirstModeProceedLogic)
 }

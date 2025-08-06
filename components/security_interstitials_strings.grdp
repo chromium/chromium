@@ -536,4 +536,33 @@
     Continue to site
   </message>
 
+  <!-- Ask-before-HTTP Prompt -->
+  <message name="IDS_ABH_PROMPT_TITLE" desc="Title shown in the Ask-before-HTTP warning dialog. This is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
+    This site doesn’t support a secure connection
+  </message>
+  <message name="IDS_ABH_PROMPT_BALANCED_MODE_FIRST_ITEM_TEXT" desc="First bullet point shown in the Ask-before-HTTP warning dialog. This is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
+    Attackers can see and change information you send or receive from the site.
+  </message>
+  <message name="IDS_ABH_PROMPT_BALANCED_MODE_SECOND_ITEM_TEXT" desc="Second bullet point shown in the Ask-before-HTTP warning dialog. This is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
+    It’s safest to visit this site later if you're using a public network. There is less risk from a trusted network, like your home or work Wi-Fi.
+  </message>
+  <message name="IDS_ABH_PROMPT_SECONDARY_TEXT" desc="Additional text shown in the Ask-before-HTTP warning dialog (after the two bullet points). This is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS/">
+    You might also contact the site owner and suggest they upgrade to HTTPS. <ph name="LEARN_MORE">$1<ex>Learn more about this warning</ex></ph>
+  </message>
+  <message name="IDS_ABH_PROMPT_LEARN_MORE_LINK" desc="Clickable link in the Ask-before-HTTP warning dialog to guide the user to learn why the warning was shown.">
+    Learn more about this warning
+  </message>
+  <message name="IDS_ABH_PROMPT_SITE_ENGAGEMENT_PRIMARY_PARAGRAPH" desc="Main paragraph shown in the Ask-before-HTTP warning dialog. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they typically visit HTTPS URLs.">
+    You usually connect to this site securely, but Chrome couldn’t use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="LEARN_MORE">$1<ex>Learn more about this warning</ex></ph>
+  </message>
+  <message name="IDS_ABH_PROMPT_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH" desc="Main paragraph of the Ask-before-HTTP warning dialog. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user has previously engaged with the HTTPS version of the site.">
+    You usually connect to sites securely, but Chrome couldn’t use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="LEARN_MORE">$1<ex>Learn more about this warning</ex></ph>
+  </message>
+  <message name="IDS_ABH_PROMPT_INCOGNITO_PRIMARY_PARAGRAPH" desc="Main paragrpah of the Ask-before-HTTP warning dialog. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they are browsing in Incognito mode.">
+    You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="LEARN_MORE">$1<ex>Learn more about this warning</ex></ph>
+  </message>
+  <message name="IDS_ABH_PROMPT_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH" desc="Main paragraph of the Ask-before-HTTP warning dialog. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user also has Advanced Protection enabled.">
+    This site will remain blocked because you are under Google’s Advanced Protection Program. <ph name="LEARN_MORE">$1<ex>Learn more about this warning</ex></ph>
+  </message>
+
 </grit-part>

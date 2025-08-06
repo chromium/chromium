@@ -13,6 +13,7 @@
 #include "chrome/common/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
+class AskBeforeHttpDialogController;
 class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class IntentPickerViewPageActionController;
@@ -271,6 +272,10 @@ class TabFeatures {
     return autofill_bubble_manager_.get();
   }
 
+  AskBeforeHttpDialogController* ask_before_http_dialog_controller() {
+    return ask_before_http_dialog_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -413,6 +418,9 @@ class TabFeatures {
       tab_creation_metrics_controller_;
 
   std::unique_ptr<autofill::BubbleManager> autofill_bubble_manager_;
+
+  std::unique_ptr<AskBeforeHttpDialogController>
+      ask_before_http_dialog_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
