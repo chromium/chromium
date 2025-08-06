@@ -252,7 +252,7 @@ UIView* GetCheckmark() {
   CHECK(item);
   TableViewDetailIconCell* cell =
       DequeueTableViewCell<TableViewDetailIconCell>(self);
-  cell.backgroundColor = [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.textLabel.text = GetTextForItemType(item.type);
   [self setupDescriptionForItem:item forCell:cell];
   cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
