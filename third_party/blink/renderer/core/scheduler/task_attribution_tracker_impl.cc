@@ -120,18 +120,6 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
       previous_task_state ? previous_task_state->GetTaskAttributionInfo()
                           : nullptr;
 
-  // Fire observer callbacks after updating the CPED to keep
-  // `CurrentTaskState()` in sync with what is passed to the observer.
-  //
-  // TODO(crbug.com/40942324): The purpose of the `Observer` mechanism is so the
-  // soft navigation layer can learn if an event ran while the scope is active,
-  // which is why we filter out soft navigation task scopes. It might be better
-  // to move event observation into event handling itself.
-  if (observer_ && type != TaskScopeType::kSoftNavigation &&
-      running_task_state) {
-    observer_->OnCreateTaskScope(*current);
-  }
-
   TRACE_EVENT_BEGIN(
       "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -153,15 +141,6 @@ TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
     return CreateTaskScope(task_state, TaskScopeType::kCallback);
   }
 
-  // Even though we don't need to create a `TaskScope`, we still need to notify
-  // the `observer_` since it relies on the callback to set up internal state.
-  // And the `observer_` might not have been notified previously, e.g. if
-  // the outermost `TaskScope` is for propagating soft navigation state.
-  TaskAttributionInfo* current_task_state = CurrentTaskState();
-  if (observer_ && current_task_state) {
-    observer_->OnCreateTaskScope(*current_task_state);
-  }
-
   return std::nullopt;
 }
 
@@ -170,19 +149,6 @@ void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
   TaskAttributionTaskState::SetCurrent(isolate_,
                                        task_scope.previous_task_state_);
   TRACE_EVENT_END("scheduler");
-}
-
-TaskAttributionTracker::ObserverScope
-TaskAttributionTrackerImpl::RegisterObserver(Observer* observer) {
-  CHECK(observer);
-  Observer* previous_observer = observer_.Get();
-  observer_ = observer;
-  return ObserverScope(this, observer, previous_observer);
-}
-
-void TaskAttributionTrackerImpl::OnObserverScopeDestroyed(
-    const ObserverScope& observer_scope) {
-  observer_ = observer_scope.PreviousObserver();
 }
 
 std::optional<TaskAttributionId>

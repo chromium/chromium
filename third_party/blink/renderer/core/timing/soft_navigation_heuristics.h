@@ -20,10 +20,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-namespace scheduler {
-class TaskAttributionInfo;
-}  // namespace scheduler
-
 class HTMLVideoElement;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
@@ -31,8 +27,7 @@ class SoftNavigationPaintAttributionTracker;
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
 class CORE_EXPORT SoftNavigationHeuristics
-    : public GarbageCollected<SoftNavigationHeuristics>,
-      public scheduler::TaskAttributionTracker::Observer {
+    : public GarbageCollected<SoftNavigationHeuristics> {
  public:
   FRIEND_TEST_ALL_PREFIXES(SoftNavigationHeuristicsTest,
                            EarlyReturnOnInvalidPendingInteractionTimestamp);
@@ -59,19 +54,16 @@ class CORE_EXPORT SoftNavigationHeuristics
     EventScope& operator=(EventScope&&);
 
    private:
-    using ObserverScope = scheduler::TaskAttributionTracker::ObserverScope;
     using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
 
     friend class SoftNavigationHeuristics;
 
     EventScope(SoftNavigationHeuristics*,
-               std::optional<ObserverScope>,
                std::optional<TaskScope>,
                Type,
                bool is_nested);
 
     SoftNavigationHeuristics* heuristics_;
-    std::optional<ObserverScope> observer_scope_;
     std::optional<TaskScope> task_scope_;
     Type type_;
     bool is_nested_;
@@ -99,7 +91,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   static void OnVideoSrcChanged(HTMLVideoElement*);
 
   // GarbageCollected boilerplate.
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   void Shutdown();
 
@@ -107,9 +99,6 @@ class CORE_EXPORT SoftNavigationHeuristics
                                        SoftNavigationContext*);
   bool ModifiedDOM(Node* node);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
-
-  // TaskAttributionTracker::Observer's implementation.
-  void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
 
   SoftNavigationContext* MaybeGetSoftNavigationContextForTiming(Node* node);
   void OnPaintFinished();

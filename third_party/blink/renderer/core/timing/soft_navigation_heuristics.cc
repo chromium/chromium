@@ -590,31 +590,6 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
       &SoftNavigationHeuristics::ProcessCustomWeakness>(this);
 }
 
-// This is invoked when executing a callback with an active `EventScope`,
-// which happens for click and keyboard input events, as well as
-// user-initiated navigation and popstate events. Running such an event
-// listener "activates" the `SoftNavigationContext` as a candidate soft
-// navigation.
-void SoftNavigationHeuristics::OnCreateTaskScope(
-    scheduler::TaskAttributionInfo& task_state) {
-  CHECK(active_interaction_context_);
-  // A task scope can be created without a `SoftNavigationContext` or one that
-  // differs from the one associated with the current `EventScope` if, for
-  // example, a previously created and awaited promise is resolved in an event
-  // handler.
-  if (task_state.GetSoftNavigationContext() !=
-      active_interaction_context_.Get()) {
-    return;
-  }
-
-  // TODO(crbug.com/40942324): Replace task_id with either an id for the
-  // `SoftNavigationContext` or a serialized version of the object.
-  TRACE_EVENT_INSTANT("loading", "SoftNavigationHeuristics::OnCreateTaskScope",
-                      perfetto::Track::FromPointer(active_interaction_context_),
-                      "context", active_interaction_context_.Get(), "task_id",
-                      task_state.Id().value());
-}
-
 void SoftNavigationHeuristics::ProcessCustomWeakness(
     const LivenessBroker& info) {
   if (potential_soft_navigations_.empty()) {
@@ -685,13 +660,11 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
   // is enabled.
   if (!tracker) {
     return SoftNavigationHeuristics::EventScope(this,
-                                                /*observer_scope=*/std::nullopt,
                                                 /*task_scope=*/std::nullopt,
                                                 type, is_nested);
   }
   return SoftNavigationHeuristics::EventScope(
-      this, tracker->RegisterObserver(this),
-      tracker->CreateTaskScope(active_interaction_context_.Get()), type,
+      this, tracker->CreateTaskScope(active_interaction_context_.Get()), type,
       is_nested);
 }
 
@@ -795,12 +768,10 @@ void SoftNavigationHeuristics::OnVideoSrcChanged(HTMLVideoElement* element) {
 // ///////////////////////////////////////////
 SoftNavigationHeuristics::EventScope::EventScope(
     SoftNavigationHeuristics* heuristics,
-    std::optional<ObserverScope> observer_scope,
     std::optional<TaskScope> task_scope,
     Type type,
     bool is_nested)
     : heuristics_(heuristics),
-      observer_scope_(std::move(observer_scope)),
       task_scope_(std::move(task_scope)),
       type_(type),
       is_nested_(is_nested) {
@@ -809,7 +780,6 @@ SoftNavigationHeuristics::EventScope::EventScope(
 
 SoftNavigationHeuristics::EventScope::EventScope(EventScope&& other)
     : heuristics_(std::exchange(other.heuristics_, nullptr)),
-      observer_scope_(std::move(other.observer_scope_)),
       task_scope_(std::move(other.task_scope_)),
       type_(other.type_),
       is_nested_(other.is_nested_) {}
@@ -817,7 +787,6 @@ SoftNavigationHeuristics::EventScope::EventScope(EventScope&& other)
 SoftNavigationHeuristics::EventScope&
 SoftNavigationHeuristics::EventScope::operator=(EventScope&& other) {
   heuristics_ = std::exchange(other.heuristics_, nullptr);
-  observer_scope_ = std::move(other.observer_scope_);
   task_scope_ = std::move(other.task_scope_);
   type_ = other.type_;
   is_nested_ = other.is_nested_;

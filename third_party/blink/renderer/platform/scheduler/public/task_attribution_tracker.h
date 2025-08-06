@@ -12,7 +12,6 @@
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -92,46 +91,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     TaskAttributionTaskState* previous_task_state_;
   };
 
-  class Observer : public GarbageCollectedMixin {
-   public:
-    virtual void OnCreateTaskScope(TaskAttributionInfo&) = 0;
-  };
-
-  class PLATFORM_EXPORT ObserverScope {
-    STACK_ALLOCATED();
-
-   public:
-    ObserverScope(ObserverScope&& other)
-        : task_tracker_(std::exchange(other.task_tracker_, nullptr)),
-          previous_observer_(std::exchange(other.previous_observer_, nullptr)) {
-    }
-
-    ObserverScope& operator=(ObserverScope&& other) {
-      task_tracker_ = std::exchange(other.task_tracker_, nullptr);
-      previous_observer_ = std::exchange(other.previous_observer_, nullptr);
-      return *this;
-    }
-
-    ~ObserverScope() {
-      if (task_tracker_) {
-        task_tracker_->OnObserverScopeDestroyed(*this);
-      }
-    }
-
-   private:
-    friend class TaskAttributionTrackerImpl;
-
-    ObserverScope(TaskAttributionTracker* tracker,
-                  Observer* observer,
-                  Observer* previous_observer)
-        : task_tracker_(tracker), previous_observer_(previous_observer) {}
-
-    Observer* PreviousObserver() const { return previous_observer_; }
-
-    TaskAttributionTracker* task_tracker_;
-    Observer* previous_observer_;
-  };
-
   static TaskAttributionTracker* From(v8::Isolate* isolate) {
     return V8PerIsolateData::From(isolate)->GetTaskAttributionTracker();
   }
@@ -164,11 +123,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* CurrentTaskState() const = 0;
 
-  // Registers an observer to be notified when a `TaskScope` has been created.
-  // Multiple `Observer`s can be registered, but only the innermost one will
-  // receive callbacks.
-  virtual ObserverScope RegisterObserver(Observer* observer) = 0;
-
   // Registers the current task state as being associated with a same-document
   // navigation, managing its lifetime until the navigation is committed
   // or aborted. Returns the `TaskAttributionId` associated with the current
@@ -185,7 +139,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
  protected:
   virtual void OnTaskScopeDestroyed(const TaskScope&) = 0;
-  virtual void OnObserverScopeDestroyed(const ObserverScope&) = 0;
 };
 
 }  // namespace blink::scheduler

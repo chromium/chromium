@@ -113,13 +113,6 @@ TEST_F(SoftNavigationHeuristicsTest,
       CreateEvent(SoftNavigationHeuristics::EventScope::Type::kKeypress);
   std::optional<SoftNavigationHeuristics::EventScope> event_scope(
       test_heuristics->MaybeCreateEventScopeForEvent(*event));
-  auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
-  ASSERT_TRUE(tracker);
-  {
-    // Simulate a top-level event dispatch with no context to propagate.
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(nullptr);
-  }
 }
 
 TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
@@ -137,14 +130,6 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
         CreateEvent(SoftNavigationHeuristics::EventScope::Type::kClick);
     std::optional<SoftNavigationHeuristics::EventScope> event_scope(
         heuristics->MaybeCreateEventScopeForEvent(*event));
-
-    // Simulate a top-level event dispatch with no context to propagate.
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(nullptr);
-    // This won't create a new task scope because there's already one on the
-    // stack to propagate the soft navigation context, but it should notify
-    // `heuristics`.
-    EXPECT_FALSE(task_scope);
     root_task_state = tracker->CurrentTaskState();
   }
   EXPECT_TRUE(root_task_state);
@@ -183,12 +168,8 @@ TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
   auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
   ASSERT_TRUE(tracker);
 
-  SoftNavigationContext* context1 = nullptr;
-  {
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(nullptr);
-    context1 = tracker->CurrentTaskState()->GetSoftNavigationContext();
-  }
+  SoftNavigationContext* context1 =
+      tracker->CurrentTaskState()->GetSoftNavigationContext();
   EXPECT_TRUE(context1);
 
   auto* inner_event =
@@ -196,12 +177,8 @@ TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
   std::optional<SoftNavigationHeuristics::EventScope> inner_event_scope(
       heuristics->MaybeCreateEventScopeForEvent(*inner_event));
 
-  SoftNavigationContext* context2 = nullptr;
-  {
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(nullptr);
-    context2 = tracker->CurrentTaskState()->GetSoftNavigationContext();
-  }
+  SoftNavigationContext* context2 =
+      tracker->CurrentTaskState()->GetSoftNavigationContext();
   EXPECT_TRUE(context2);
 
   EXPECT_EQ(context1, context2);
@@ -218,12 +195,7 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
 
   auto* context = tracker->CurrentTaskState()->GetSoftNavigationContext();
   ASSERT_TRUE(context);
-
-  {
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(nullptr);
-    heuristics->ModifiedDOM(CreateNodeForTest());
-  }
+  heuristics->ModifiedDOM(CreateNodeForTest());
 
   // Simulate default action link navigation after the click event.
   heuristics->SameDocumentNavigationCommitted("foo", context);
@@ -232,19 +204,6 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
         CreateEvent(SoftNavigationHeuristics::EventScope::Type::kNavigate);
     std::optional<SoftNavigationHeuristics::EventScope> inner_event_scope(
         heuristics->MaybeCreateEventScopeForEvent(*inner_event));
-  }
-
-  // crbug.com/335945346: Some events, e.g. blur, can fire after all of the soft
-  // navigation criteria have been met and all of the input event handlers have
-  // run, while there's still an EventScope on the stack. Since
-  // SoftNavigationHeuristics::OnCreateTaskScope relies on the active context
-  // being non-null, emitting a soft navigation entry and resetting the
-  // heuristic prematurely would clear the context while it still may be needed.
-  // An event firing here, after the criteria have been met, should not cause a
-  // crash.
-  {
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(nullptr);
   }
 }
 
@@ -259,10 +218,6 @@ TEST_F(SoftNavigationHeuristicsTest,
         CreateEvent(SoftNavigationHeuristics::EventScope::Type::kClick);
     std::optional<SoftNavigationHeuristics::EventScope> event_scope(
         heuristics->MaybeCreateEventScopeForEvent(*event));
-    {
-      std::optional<TaskScope> task_scope =
-          tracker->MaybeCreateTaskScopeForCallback(nullptr);
-    }
   }
   // At this point there is a single `SoftNavigationContext` being tracked, but
   // it wasn't propagated anywhere, so it is eligible for GC.
@@ -278,8 +233,6 @@ TEST_F(SoftNavigationHeuristicsTest,
   ThreadState::Current()->CollectAllGarbageForTesting(
       cppgc::EmbedderStackState::kMayContainHeapPointers);
 
-  std::optional<TaskScope> task_scope =
-      tracker->MaybeCreateTaskScopeForCallback(nullptr);
   EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
 }
 
@@ -303,8 +256,6 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
         CreateEvent(SoftNavigationHeuristics::EventScope::Type::kClick);
     std::optional<SoftNavigationHeuristics::EventScope> event_scope(
         heuristics->MaybeCreateEventScopeForEvent(*event));
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(nullptr);
     task_state = tracker->CurrentTaskState();
     ASSERT_TRUE(task_state);
     context = task_state->GetSoftNavigationContext();
@@ -409,12 +360,8 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {
 
   // Simulate starting a same-document navigation in a JavaScript task that
   // isn't associated with a `SoftNavigationContext`
-  std::optional<scheduler::TaskAttributionId> navigation_task_id;
-  {
-    std::optional<TaskScope> task_scope =
-        tracker->MaybeCreateTaskScopeForCallback(/*task_state=*/nullptr);
-    navigation_task_id = tracker->AsyncSameDocumentNavigationStarted();
-  }
+  std::optional<scheduler::TaskAttributionId> navigation_task_id =
+      tracker->AsyncSameDocumentNavigationStarted();
   EXPECT_FALSE(navigation_task_id);
 
   // Simulate committing the same-document navigation asynchronously without a
