@@ -125,8 +125,13 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
                          : VideoEncodeAccelerator::kNoMode) |
         (cqp.IsSupported ? VideoEncodeAccelerator::kExternalMode
                          : VideoEncodeAccelerator::kNoMode);
-    // TODO(crbug.com/40275246): support L1T2/L1T3.
-    supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
+    supported_profile.scalability_modes = {
+        SVCScalabilityMode::kL1T1,
+        SVCScalabilityMode::kL1T2,
+    };
+    if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAcceleratorL1T3)) {
+      supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+    }
     supported_profile.is_software_codec = false;
 
     std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
@@ -190,8 +195,12 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
 
   output_profile_ = config.output_profile;
 
-  CHECK(!config.HasSpatialLayer() && !config.HasTemporalLayer())
-      << "D3D12VideoEncoder only support L1T1 mode.";
+  svc_layers_.emplace(
+      SVCLayers::Config({config.input_visible_size}, 0, 1,
+                        config.spatial_layers.empty()
+                            ? 1
+                            : config.spatial_layers[0].num_of_temporal_layers,
+                        SVCInterLayerPredMode::kOff));
 
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();
@@ -215,6 +224,8 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
     return EncoderStatus::Codes::kEncoderInitializationError;
   }
 
+  config_ = config;
+
   return InitializeVideoEncoder(config);
 }
 
@@ -232,6 +243,8 @@ bool D3D12VideoEncodeDelegate::UpdateRateControl(const Bitrate& bitrate,
     return false;
   }
 
+  config_.bitrate = bitrate;
+  config_.framerate = framerate;
   rate_control_ = rate_control;
   return true;
 }
@@ -298,6 +311,11 @@ D3D12VideoEncodeDelegate::Encode(
   encode_result.metadata.payload_size_bytes =
       std::move(payload_size_or_error).value();
   return encode_result;
+}
+
+uint8_t D3D12VideoEncodeDelegate::GetNumTemporalLayers() const {
+  return svc_layers_.has_value() ? svc_layers_->config().num_temporal_layers
+                                 : 1;
 }
 
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::

@@ -11,6 +11,8 @@
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,11 +28,11 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/command_buffer_helper.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
-#include "media/gpu/windows/format_utils.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -357,9 +359,21 @@ EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
     return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
-  if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
-    MEDIA_LOG(ERROR, media_log_) << "Only L1T1 mode is supported";
-    return {EncoderStatus::Codes::kEncoderInitializationError};
+  if (config.HasSpatialLayer()) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "D3D12VideoEncodeAccelerator don't support spatial layers";
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig};
+  }
+  uint8_t num_of_temporal_layers =
+      config.spatial_layers.empty()
+          ? 1
+          : config.spatial_layers[0].num_of_temporal_layers;
+  CHECK_GT(num_of_temporal_layers, 0u);
+  if (num_of_temporal_layers > 3) {
+    MEDIA_LOG(ERROR, media_log_) << base::StringPrintf(
+        "D3D12VideoEncodeAccelerator don't support %u temporal layers",
+        num_of_temporal_layers);
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig};
   }
 
   SupportedProfiles profiles = GetSupportedProfiles();
@@ -369,6 +383,15 @@ EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
     MEDIA_LOG(ERROR, media_log_) << "Unsupported output profile "
                                  << GetProfileName(config.output_profile);
     return {EncoderStatus::Codes::kEncoderUnsupportedProfile};
+  }
+  SVCScalabilityMode scalability_mode = GetSVCScalabilityMode(
+      1, num_of_temporal_layers, SVCInterLayerPredMode::kOff);
+  if (std::ranges::find(profile->scalability_modes, scalability_mode) ==
+      std::ranges::end(profile->scalability_modes)) {
+    MEDIA_LOG(ERROR, media_log_)
+        << base::StrCat({"Unsupported scalability mode ",
+                         GetScalabilityModeName(scalability_mode)});
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig};
   }
 
   if (config.input_visible_size.width() > profile->max_resolution.width() ||
@@ -483,13 +506,14 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
       BindOnce(&Client::RequireBitstreamBuffers, client_, num_frames_in_flight_,
                config.input_visible_size, bitstream_buffer_size_));
 
-  // TODO(crbug.com/40275246): This needs to be populated when temporal layers
-  // support is implemented.
-  constexpr uint8_t kFullFramerate = 255;
-  encoder_info_.fps_allocation[0] = {kFullFramerate};
+  // Set the fps allocation for the first spatial layer
+  encoder_info_.fps_allocation[0] =
+      GetFpsAllocation(encoder_->GetNumTemporalLayers());
   encoder_info_.reports_average_qp = encoder_->ReportsAverageQp();
   encoder_info_.requested_resolution_alignment = 2;
   encoder_info_.apply_alignment_to_all_simulcast_layers = true;
+  encoder_info_.number_of_manual_reference_buffers =
+      encoder_->GetMaxNumOfRefFrames();
 
   child_task_runner_->PostTask(
       FROM_HERE,

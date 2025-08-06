@@ -1767,6 +1767,9 @@ BASE_FEATURE(kD3D12VideoDecoder,
 BASE_FEATURE(kD3D12VideoEncodeAccelerator,
              "D3D12VideoEncodeAccelerator",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kD3D12VideoEncodeAcceleratorL1T3,
+             "D3D12VideoEncodeAcceleratorL1T3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)

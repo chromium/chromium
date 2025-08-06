@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d12_video_encode_accelerator.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -103,6 +104,7 @@ class MockVideoEncoderDelegateFactory
     EXPECT_TRUE(video_device);
     VideoEncodeAccelerator::SupportedProfile profile(kSupportedProfile,
                                                      kSupportedSize, 30, 1);
+    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
     profile.gpu_supported_pixel_formats.push_back(PIXEL_FORMAT_NV12);
     return {profile};
   }
@@ -209,13 +211,29 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, SupportedProfilesCanBeInitialized) {
   for (const auto& profile :
        d3d12_video_encode_accelerator->GetSupportedProfiles()) {
     auto config = SupportedProfileToConfig(profile);
-    EXPECT_TRUE(d3d12_video_encode_accelerator
-                    ->Initialize(config, client_.get(), media_log_->Clone())
-                    .is_ok());
-    EXPECT_CALL(*client_, NotifyEncoderInfoChange(_)).Times(1);
-    EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(0);
-    WaitForEncoderTasksToComplete();
-    Mock::VerifyAndClearExpectations(&client_);
+    for (SVCScalabilityMode svc_mode : profile.scalability_modes) {
+      SCOPED_TRACE(base::StringPrintf("Testing profile %s, scalability mode %s",
+                                      GetProfileName(profile.profile).c_str(),
+                                      GetScalabilityModeName(svc_mode)));
+      ASSERT_GE(svc_mode, SVCScalabilityMode::kL1T1);
+      ASSERT_LE(svc_mode, SVCScalabilityMode::kL1T3);
+      config.spatial_layers = {{
+          .width = config.input_visible_size.width(),
+          .height = config.input_visible_size.height(),
+          .bitrate_bps = config.bitrate.target_bps(),
+          .framerate = config.framerate,
+          .num_of_temporal_layers = static_cast<uint8_t>(
+              static_cast<int>(svc_mode) -
+              static_cast<int>(SVCScalabilityMode::kL1T1) + 1u),
+      }};
+      EXPECT_TRUE(d3d12_video_encode_accelerator
+                      ->Initialize(config, client_.get(), media_log_->Clone())
+                      .is_ok());
+      EXPECT_CALL(*client_, NotifyEncoderInfoChange(_)).Times(1);
+      EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(0);
+      WaitForEncoderTasksToComplete();
+      Mock::VerifyAndClearExpectations(&client_);
+    }
   }
 }
 
@@ -251,6 +269,24 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, RejectsUnsupportedConfig) {
     WaitForEncoderTasksToComplete();
     Mock::VerifyAndClearExpectations(&client_);
   }
+
+  // Unsupported number of temporal layers.
+  auto bad_config = supported_config;
+  bad_config.spatial_layers = {{
+      .width = supported_config.input_visible_size.width(),
+      .height = supported_config.input_visible_size.height(),
+      .bitrate_bps = supported_config.bitrate.target_bps(),
+      .framerate = supported_config.framerate,
+      .num_of_temporal_layers = 4,  // Unsupported number of temporal layers.
+  }};
+
+  EXPECT_FALSE(d3d12_video_encode_accelerator
+                   ->Initialize(bad_config, client_.get(), media_log_->Clone())
+                   .is_ok());
+  EXPECT_CALL(*client_, NotifyEncoderInfoChange(_)).Times(0);
+  EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(0);
+  WaitForEncoderTasksToComplete();
+  Mock::VerifyAndClearExpectations(&client_);
 }
 
 TEST_F(D3D12VideoEncodeAcceleratorTest,

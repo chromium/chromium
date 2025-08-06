@@ -14,6 +14,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/svc_layers.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
@@ -63,6 +64,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       UINT input_frame_subresource,
       const VideoEncoder::EncodeOptions& options,
       const gfx::ColorSpace& input_color_space) = 0;
+
+  uint8_t GetNumTemporalLayers() const;
 
   void SetFactoriesForTesting(
       base::RepeatingCallback<decltype(CreateD3D12VideoEncoderWrapper)>
@@ -141,6 +144,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   Microsoft::WRL::ComPtr<ID3D12Device> device_;
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device_;
 
+  // The current used config. Used for reconstructing bitrate allocation when
+  // rate control is updated.
+  VideoEncodeAccelerator::Config config_;
+
   // The the size and format for the input of the D3D12VideoEncoder. The format
   // may be different to input frame, in which case we do internal conversion.
   D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC input_size_{};
@@ -157,6 +164,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       video_encoder_wrapper_factory_ =
           base::BindRepeating(&CreateD3D12VideoEncoderWrapper);
   std::unique_ptr<D3D12VideoEncoderWrapper> video_encoder_wrapper_;
+
+  std::optional<SVCLayers> svc_layers_;
 
  private:
   // The video processor factory that may be changed for testing.

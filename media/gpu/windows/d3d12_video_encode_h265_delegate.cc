@@ -9,6 +9,8 @@
 #include "base/bits.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/stringprintf.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
+#include "media/gpu/h264_rate_control_util.h"
 #include "media/gpu/h265_builder.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/format_utils.h"
@@ -209,28 +211,49 @@ bool D3D12VideoEncodeH265Delegate::UpdateRateControl(const Bitrate& bitrate,
       return false;
     }
 
+    config_.bitrate = bitrate;
+    config_.framerate = framerate;
+    VideoBitrateAllocation bitrate_allocation =
+        AllocateBitrateForDefaultEncoding(config_);
+    if (bitrate_allocation.GetSumBps() == 0) {
+      return false;
+    }
+    float peak_target_ratio =
+        1.f * bitrate_allocation.GetPeakBps() / bitrate_allocation.GetSumBps();
+    uint32_t sum_bitrate = 0;
     if (framerate != rate_controller_settings_.frame_rate_max) {
       // Frame rate has changed, resetting the rate controller.
       rate_controller_settings_.frame_rate_max = framerate;
       CHECK_GT(framerate, 0u);
       rate_controller_settings_.gop_max_duration =
           base::Seconds((gop_structure_.GOPLength + framerate - 1) / framerate);
-      H264RateControllerLayerSettings& layer_settings =
-          rate_controller_settings_.layer_settings[0];
-      layer_settings.avg_bitrate = bitrate.target_bps();
-      // Bitrate::Mode::kConstant only has target_bps. Using the target_bps for
-      // peak_bitrate.
-      layer_settings.peak_bitrate = bitrate.mode() == Bitrate::Mode::kConstant
-                                        ? bitrate.target_bps()
-                                        : bitrate.peak_bps();
-      layer_settings.frame_rate = framerate;
+      for (size_t i = 0; i < rate_controller_settings_.layer_settings.size();
+           i++) {
+        H264RateControllerLayerSettings& layer_settings =
+            rate_controller_settings_.layer_settings[i];
+        sum_bitrate += bitrate_allocation.GetBitrateBps(0, i);
+        layer_settings.avg_bitrate = sum_bitrate;
+        layer_settings.peak_bitrate =
+            bitrate.mode() == Bitrate::Mode::kConstant
+                ? sum_bitrate
+                : base::saturated_cast<uint32_t>(sum_bitrate *
+                                                 peak_target_ratio);
+        layer_settings.frame_rate = framerate / static_cast<float>(1u << i);
+      }
       software_rate_controller_.emplace(rate_controller_settings_);
     } else {
       // Frame rate has not changed, updating the bitrate.
-      software_rate_controller_->temporal_layers(0).SetBufferParameters(
-          rate_controller_settings_.layer_settings[0].hrd_buffer_size,
-          bitrate.target_bps(), bitrate.target_bps(),
-          rate_controller_settings_.ease_hrd_reduction);
+      for (size_t i = 0; i < GetNumTemporalLayers(); i++) {
+        sum_bitrate += bitrate_allocation.GetBitrateBps(0, i);
+        software_rate_controller_->temporal_layers(i).SetBufferParameters(
+            rate_controller_settings_.layer_settings[i].hrd_buffer_size,
+            sum_bitrate,
+            bitrate.mode() == Bitrate::Mode::kConstant
+                ? sum_bitrate
+                : base::saturated_cast<uint32_t>(sum_bitrate *
+                                                 peak_target_ratio),
+            rate_controller_settings_.ease_hrd_reduction);
+      }
     }
     return true;
   }
@@ -256,10 +279,37 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
   absl::InlinedVector<uint8_t, 4> reference_buffers;
   std::optional<uint8_t> update_buffer;
   std::optional<uint8_t> destroy_buffer;
-  if (!is_keyframe) {
-    reference_buffers.push_back(0);
+  if (svc_layers_) {
+    if (is_keyframe) {
+      svc_layers_->Reset();
+    }
+    SVCLayers::PictureParam pic_param;
+    svc_layers_->GetPictureParamAndMetadata(pic_param, &*metadata_.svc_generic);
+    CHECK_LE(pic_param.reference_frame_indices.size(), 1u);
+    if (!pic_param.reference_frame_indices.empty()) {
+      reference_buffers.push_back(pic_param.reference_frame_indices[0]);
+    }
+    if (is_keyframe) {
+      // SVCLayers returns 0xff for AV1, we only need one at zero slot for H26x.
+      pic_param.refresh_frame_flags = 1;
+    }
+    CHECK_LE(std::popcount(pic_param.refresh_frame_flags), 1);
+    if (pic_param.refresh_frame_flags) {
+      update_buffer = std::countr_zero(pic_param.refresh_frame_flags);
+    }
+    // In L1T3 SVC mode, the slot 1 is not used for reference once it is used
+    // at the last frame of each 4 frames, so we need to manually remove it.
+    // In L1Tx, The slot 0 is always replaced by the current frame when it is
+    // referenced for the last time, so we don't need to explicitly remove it.
+    if (GetNumTemporalLayers() == 3 &&
+        pic_params_.PictureOrderCountNumber % 4 == 3) {
+      destroy_buffer = 1;
+    }
+  } else {
+    reference_buffers = options.reference_buffers;
+    update_buffer = options.update_buffer;
   }
-  update_buffer = 0;
+
   if (update_buffer.has_value() &&
       update_buffer.value() >= max_num_ref_frames_) {
     return {EncoderStatus::Codes::kBadReferenceBuffer,
@@ -332,16 +382,19 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
   // Rate control.
   int qp = -1;
   if (software_rate_controller_) {
-    software_rate_controller_->temporal_layers(0).ShrinkHRDBuffer(
-        rate_controller_timestamp_);
+    software_rate_controller_
+        ->temporal_layers(metadata_.svc_generic->temporal_idx)
+        .ShrinkHRDBuffer(rate_controller_timestamp_);
     if (is_keyframe) {
       software_rate_controller_->EstimateIntraFrameQP(
           rate_controller_timestamp_);
     } else {
       software_rate_controller_->EstimateInterFrameQP(
-          0, rate_controller_timestamp_);
+          metadata_.svc_generic->temporal_idx, rate_controller_timestamp_);
     }
-    qp = software_rate_controller_->temporal_layers(0).curr_frame_qp();
+    qp = software_rate_controller_
+             ->temporal_layers(metadata_.svc_generic->temporal_idx)
+             .curr_frame_qp();
   } else if (options.quantizer.has_value()) {
     qp = options.quantizer.value();
   }
@@ -395,6 +448,8 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
         pic_params_.PictureOrderCountNumber, update_buffer.value(), false);
   }
 
+  svc_layers_->PostEncode(0);
+
   metadata_.key_frame = is_keyframe;
   metadata_.qp = qp;
   return metadata_;
@@ -426,17 +481,22 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
             "D3D12VideoEncoder doesn't support long term reference for HEVC"};
   }
 
-  max_num_ref_frames_ = 1;
-  if (picture_control_support_h265.MaxDPBCapacity < max_num_ref_frames_) {
-    return {
-        EncoderStatus::Codes::kEncoderUnsupportedConfig,
-        base::StringPrintf(
-            "D3D12VideoEncoder only support DPB capacity %u, got %u",
-            picture_control_support_h265.MaxDPBCapacity, max_num_ref_frames_)};
+  if (svc_layers_.has_value()) {
+    max_num_ref_frames_ = GetNumTemporalLayers() == 3 ? 2 : 1;
+    if (picture_control_support_h265.MaxDPBCapacity < max_num_ref_frames_) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+              base::StringPrintf(
+                  "D3D12VideoEncoder only support DPB capacity %u, got %u",
+                  picture_control_support_h265.MaxDPBCapacity,
+                  max_num_ref_frames_)};
+    }
+  } else {
+    max_num_ref_frames_ = picture_control_support_h265.MaxDPBCapacity;
   }
 
-  if (config.bitrate.mode() == Bitrate::Mode::kConstant ||
-      config.bitrate.mode() == Bitrate::Mode::kVariable) {
+  if ((config.bitrate.mode() == Bitrate::Mode::kConstant ||
+       config.bitrate.mode() == Bitrate::Mode::kVariable) &&
+      GetNumTemporalLayers() <= h264_rate_control_util::kMaxNumTemporalLayers) {
     constexpr uint32_t kDefaultQp = 26;
     rate_control_ = D3D12VideoEncoderRateControl::CreateCqp(
         kDefaultQp, kDefaultQp, kDefaultQp);
@@ -447,21 +507,32 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
         (config.gop_length.value() + config.framerate - 1) / config.framerate);
     rate_controller_settings_.fixed_delta_qp = false;
     rate_controller_settings_.ease_hrd_reduction = false;
-    rate_controller_settings_.num_temporal_layers = 1;
+    rate_controller_settings_.num_temporal_layers = GetNumTemporalLayers();
     H264RateControllerLayerSettings layer_settings;
-    layer_settings.avg_bitrate = config.bitrate.target_bps();
-    // Bitrate::Mode::kConstant only has target_bps. Using the target_bps for
-    // peak_bitrate.
-    layer_settings.peak_bitrate =
-        config.bitrate.mode() == Bitrate::Mode::kConstant
-            ? config.bitrate.target_bps()
-            : config.bitrate.peak_bps();
     constexpr size_t kHRDBufferSize = 40000;
     layer_settings.hrd_buffer_size = kHRDBufferSize;
     layer_settings.min_qp = kH265MinQuantizer;
     layer_settings.max_qp = kH265MaxQuantizer;
-    layer_settings.frame_rate = config.framerate;
-    rate_controller_settings_.layer_settings.push_back(layer_settings);
+    VideoBitrateAllocation bitrate_allocation =
+        AllocateBitrateForDefaultEncoding(config);
+    if (bitrate_allocation.GetSumBps() == 0) {
+      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+              "Bitrate is zero"};
+    }
+    float peak_target_ratio =
+        1.f * bitrate_allocation.GetPeakBps() / bitrate_allocation.GetSumBps();
+    uint32_t sum_bitrate = 0;
+    for (size_t i = 0; i < rate_controller_settings_.num_temporal_layers; i++) {
+      sum_bitrate += bitrate_allocation.GetBitrateBps(0, i);
+      layer_settings.avg_bitrate = sum_bitrate;
+      layer_settings.peak_bitrate =
+          config.bitrate.mode() == Bitrate::Mode::kConstant
+              ? sum_bitrate
+              : base::saturated_cast<uint32_t>(sum_bitrate * peak_target_ratio);
+      layer_settings.frame_rate =
+          config.framerate / static_cast<float>(1u << i);
+      rate_controller_settings_.layer_settings.push_back(layer_settings);
+    }
     software_rate_controller_.emplace(rate_controller_settings_);
   }
 
@@ -585,6 +656,11 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
   input_arguments_.SequenceControlDesc.RateControl =
       current_rate_control_.GetD3D12VideoEncoderRateControl();
   input_arguments_.SequenceControlDesc.PictureTargetResolution = input_size_;
+
+  if (svc_layers_) {
+    metadata_.svc_generic.emplace(SVCGenericMetadata{.follow_svc_spec = true});
+  }
+
   return EncoderStatus::Codes::kOk;
 }
 
@@ -622,8 +698,9 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeH265Delegate::ReadbackBitstream(
       software_rate_controller_->FinishIntraFrame(payload_size,
                                                   rate_controller_timestamp_);
     } else {
-      software_rate_controller_->FinishInterFrame(0, payload_size,
-                                                  rate_controller_timestamp_);
+      software_rate_controller_->FinishInterFrame(
+          metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0,
+          payload_size, rate_controller_timestamp_);
     }
     // The next frame should be decoded at (1 / frame_rate) seconds later.
     rate_controller_timestamp_ +=
