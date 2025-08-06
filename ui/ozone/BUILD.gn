@@ -88,6 +88,7 @@ component("ozone_base") {
     "public/input_controller.h",
     "public/native_pixmap_gl_binding.cc",
     "public/native_pixmap_gl_binding.h",
+    "public/native_pixmap_usage.h",
     "public/overlay_candidates_ozone.cc",
     "public/overlay_candidates_ozone.h",
     "public/overlay_manager_ozone.h",
