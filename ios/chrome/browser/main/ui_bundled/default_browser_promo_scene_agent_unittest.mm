@@ -584,7 +584,7 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestDefaultBrowserOffCyclePromoRegistration) {
   scoped_feature_list_.InitWithFeatures({kIOSDefaultBrowserOffCyclePromo},
                                         {kEnableReaderModeDefaultBrowserPromo});
-  if (@available(iOS 18.3, *)) {
+  if (IsDefaultBrowserOffCyclePromoEnabled()) {
     VerifyPromoRegistration({promos_manager::Promo::DefaultBrowserOffCycle});
     EXPECT_CALL(*promos_manager_.get(),
                 DeregisterPromo(promos_manager::Promo::DefaultBrowser))
