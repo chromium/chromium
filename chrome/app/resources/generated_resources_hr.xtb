@@ -1569,7 +1569,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2081816110395725788">Neaktivnost tijekom baterijskog napajanja</translation>
 <translation id="2082187087049518845">Dodaj karticu u grupu</translation>
 <translation id="2082510809738716738">Odaberite boju teme</translation>
-<translation id="208586643495776849">Pokušajte ponovo</translation>
+<translation id="208586643495776849">Pokušajte ponovno</translation>
 <translation id="208634871997892083">Uvijek uključeni VPN</translation>
 <translation id="208654914566977272">Predložene radnje prilikom pretraživanja zaslona</translation>
 <translation id="2087822576218954668">Ispis: <ph name="PRINT_NAME" /></translation>
@@ -3249,7 +3249,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3255747772218936245">Instaliraj ažuriranje</translation>
 <translation id="3257733480216378006">Dopustiti <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Blokirano je sumnjivo preuzimanje</translation>
-<translation id="3259723213051400722">Pokušajte ponovo.</translation>
+<translation id="3259723213051400722">Pokušajte ponovno.</translation>
 <translation id="3261090393424563833">Povećaj brzinu</translation>
 <translation id="3261268979727295785">Za stariju djecu možete dodati roditeljski nadzor kad dovršite postavljanje. Informacije o roditeljskom nadzoru možete pronaći u aplikaciji Istražite.</translation>
 <translation id="3261832505033014216">Pristupni ključ za <ph name="USER_EMAIL" /></translation>
@@ -5074,7 +5074,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4532646538815530781">Web-lokacija upotrebljava senzore kretanja.</translation>
 <translation id="4533846798469727141">Sada recite "Hej Google"</translation>
 <translation id="4533985347672295764">Vrijeme CPU-a</translation>
-<translation id="4534661889221639075">Pokušajte ponovo.</translation>
+<translation id="4534661889221639075">Pokušajte ponovno.</translation>
 <translation id="4535127706710932914">Zadani profil</translation>
 <translation id="4536769240747010177">Mogućnosti modemskog povezivanja:</translation>
 <translation id="4538417792467843292">Izbriši riječ</translation>
@@ -10943,7 +10943,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8724405322205516354">Kada se prikaže ta ikona, upotrijebite otisak prsta da biste se identificirali ili odobrili kupnju.</translation>
 <translation id="8724409975248965964">Otisak prsta je dodan</translation>
 <translation id="8724859055372736596">&amp;Prikaži u mapi</translation>
-<translation id="8725066075913043281">Pokušajte ponovo</translation>
+<translation id="8725066075913043281">Pokušajte ponovno</translation>
 <translation id="8725178340343806893">Favoriti/oznake</translation>
 <translation id="87254326763805752">Potvrdite pristupni ključ</translation>
 <translation id="8726206820263995930">Pogreška pri dohvaćanju postavki pravila s poslužitelja: <ph name="CLIENT_ERROR" />.</translation>
@@ -11402,7 +11402,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9030754204056345429">Brže</translation>
 <translation id="9030855135435061269">Dodatak <ph name="PLUGIN_NAME" /> više nije podržan</translation>
 <translation id="9031549947500880805">Sigurnosno kopiranje na Google disku. Jednostavno vratite svoje podatke ili promijenite uređaj u bilo kojem trenutku. Sigurnosna kopija uključuje podatke aplikacija.</translation>
-<translation id="9031811691986152304">pokušajte ponovo</translation>
+<translation id="9031811691986152304">pokušajte ponovno</translation>
 <translation id="9032004780329249150">Upotreba zaporki na iOS uređajima</translation>
 <translation id="9032097289595078011">Onemogući Brzo uparivanje</translation>
 <translation id="9032513103438497286">Blokiraj aplikacije instalirane na uređaju <ph name="DEVICE_TYPE" />. Da biste ograničili preuzimanje aplikacija ili sadržaja, otvorite postavke Google Playa.</translation>
