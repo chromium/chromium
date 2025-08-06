@@ -124,8 +124,15 @@
   }
 }
 
-// TODO(crbug.com/433320893): Re-enable this test.
-- (void)DISABLED_testMigrateWithManagedPrimaryAccount {
+// TODO(crbug.com/433320893): Re-enable this test on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testMigrateWithManagedPrimaryAccount \
+  DISABLED_testMigrateWithManagedPrimaryAccount
+#else
+#define MAYBE_testMigrateWithManagedPrimaryAccount \
+  testMigrateWithManagedPrimaryAccount
+#endif
+- (void)MAYBE_testMigrateWithManagedPrimaryAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
