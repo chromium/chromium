@@ -28,6 +28,8 @@ enum CredentialLeakFlags {
   kPasswordSynced = 1 << 2,
   // Password change url is available for this site.
   kHasChangePasswordUrl = 1 << 3,
+  // Password is saved as backup for current site.
+  kPasswordSavedAsBackup = 1 << 4,
 };
 
 enum class PasswordCheckupReferrer {
@@ -70,15 +72,20 @@ using IsReused = base::StrongAlias<class IsReusedTag, bool>;
 using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;
 using HasChangePasswordUrl =
     base::StrongAlias<class HasChangePasswordUrlTag, bool>;
+using IsSavedAsBackup = base::StrongAlias<class IsSavedAsBackupTag, bool>;
 // Creates CredentialLeakType from strong booleans.
 CredentialLeakType CreateLeakType(
     IsSaved is_saved,
     IsReused is_reused,
     IsSyncing is_syncing,
-    HasChangePasswordUrl has_change_password = HasChangePasswordUrl(false));
+    HasChangePasswordUrl has_change_password = HasChangePasswordUrl(false),
+    IsSavedAsBackup is_saved_as_backup = IsSavedAsBackup(false));
 
 // Checks whether the password is saved in Chrome.
 bool IsPasswordSaved(CredentialLeakType leak_type);
+
+// Checks whether the password is saved as backup in Chrome.
+bool IsPasswordSavedAsBackup(CredentialLeakType leak_type);
 
 // Checks whether the password is reused on other sites.
 bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);

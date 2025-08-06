@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
@@ -100,8 +101,16 @@ void LeakDetectionDelegateHelper::ProcessResults() {
                 form->username_value != username_);
       }));
 
-  std::move(callback_).Run(in_stores, is_reused, std::move(url_),
-                           std::move(username_), std::move(password_),
+  IsSavedAsBackup is_saved_as_backup(std::ranges::any_of(
+      partial_results_, [this, are_urls_equivalent](const auto& form) {
+        return form->GetPasswordBackup() == password_ &&
+               form->username_value == username_ &&
+               are_urls_equivalent(form->url, url_);
+      }));
+
+  std::move(callback_).Run(in_stores, is_reused, is_saved_as_backup,
+                           std::move(url_), std::move(username_),
+                           std::move(password_),
                            std::move(all_urls_with_leaked_credentials));
 }
 

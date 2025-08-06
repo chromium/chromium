@@ -62,6 +62,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   LeakedPasswordDetails PrepareLeakDetails(
       PasswordForm::Store in_stores,
       IsReused is_reused,
+      IsSavedAsBackup is_saved_as_backup,
       GURL url,
       std::u16string username,
       std::u16string password,

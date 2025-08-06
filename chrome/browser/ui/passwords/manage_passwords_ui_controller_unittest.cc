@@ -42,6 +42,7 @@
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -1654,6 +1655,47 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
       password_manager::CreateLeakType(password_manager::IsSaved(true),
                                        password_manager::IsReused(false),
                                        password_manager::IsSyncing(false)),
+      GURL(kExampleUrl), kExampleUsername, kExamplePassword,
+      /*in_account_store=*/false));
+  // The bubble is gone.
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
+
+  // Close the dialog.
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  dialog_controller->OnAcceptDialog();
+
+  // The update bubble is back.
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
+}
+
+// If the leaked password is the backup password of the login credentials, we
+// should not offer password change and instead, we will show the old leak
+// warning dialogue.
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordChangeDialogueIsSupressedForBackupPassword) {
+  std::vector<PasswordForm> matches = {test_local_form()};
+  auto test_form_manager =
+      CreateFormManagerWithBestMatches(matches, &submitted_form());
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+
+  // Leak detection dialog hides the bubble.
+  auto dialog_prompt = std::make_unique<PasswordLeakDialogMock>();
+  auto* dialog_prompt_ptr = dialog_prompt.get();
+  CredentialLeakDialogController* dialog_controller = nullptr;
+  EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
+      .WillOnce(DoAll(SaveArg<0>(&dialog_controller),
+                      Return(std::move(dialog_prompt))));
+  EXPECT_CALL(*dialog_prompt_ptr, ShowCredentialLeakPrompt);
+  controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(true), password_manager::IsReused(false),
+          password_manager::IsSyncing(false),
+          password_manager::HasChangePasswordUrl(true),
+          password_manager::IsSavedAsBackup(true)),
       GURL(kExampleUrl), kExampleUsername, kExamplePassword,
       /*in_account_store=*/false));
   // The bubble is gone.
