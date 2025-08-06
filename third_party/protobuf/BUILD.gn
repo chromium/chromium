@@ -43,7 +43,15 @@ config("using_proto") {
   include_dirs = [ "src" ]
 }
 
-component("protobuf_lite") {
+# On Android, we must use a static library to avoid symbol conflicts with
+# the system's version of protobuf.
+if (is_android) {
+  _protobuf_lite_target_type = "static_library"
+} else {
+  _protobuf_lite_target_type = "component"
+}
+
+target(_protobuf_lite_target_type, "protobuf_lite") {
   sources = protobuf_lite_sources
   public = protobuf_headers
 
@@ -76,7 +84,7 @@ component("protobuf_lite") {
   public_deps = [ "${protobuf_abseil_dir}:absl" ]
 
   # Required for component builds. See http://crbug.com/172800.
-  if (is_component_build) {
+  if (is_component_build && _protobuf_lite_target_type == "component") {
     public_configs += [ ":protobuf_use_dlls" ]
     defines = [ "LIBPROTOBUF_EXPORTS" ]
   }
