@@ -19,6 +19,8 @@ namespace user_data_importer {
 BookmarksImportError ConvertBookmarkError(
     BookmarkParser::BookmarkParsingError error) {
   switch (error) {
+    case BookmarkParser::BookmarkParsingError::kFailedToReadFile:
+      return BookmarksImportError::kFailedToRead;
     case BookmarkParser::BookmarkParsingError::kTooBig:
       return BookmarksImportError::kTooBig;
     case BookmarkParser::BookmarkParsingError::kParsingFailed:
@@ -44,6 +46,8 @@ std::string GetSourceName(ImporterMetricsRecorder::Source source) {
       return "OSMigration";
     case ImporterMetricsRecorder::Source::kSafari:
       return "Safari";
+    case ImporterMetricsRecorder::Source::kStablePortabilityData:
+      return "StablePortabilityData";
   }
 }
 
@@ -162,6 +166,10 @@ void ImporterMetricsRecorder::OnFlowFinished() {
 
 void ImporterMetricsRecorder::LogBookmarksError(BookmarksImportError error) {
   base::UmaHistogramEnumeration(GetMetricName("Bookmarks.Error"), error);
+}
+
+void ImporterMetricsRecorder::LogReadingListError(BookmarksImportError error) {
+  base::UmaHistogramEnumeration(GetMetricName("ReadingList.Error"), error);
 }
 
 void ImporterMetricsRecorder::LogPasswordsError(PasswordsImportError error) {
