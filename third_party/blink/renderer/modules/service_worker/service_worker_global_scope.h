@@ -118,6 +118,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // ExecutionContext overrides:
   bool IsServiceWorkerGlobalScope() const override { return true; }
   bool ShouldInstallV8Extensions() const final;
+  void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) override;
   bool IsInFencedFrame() const override;
   void NotifyWebSocketActivity() override;
 
@@ -508,6 +509,9 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       DispatchNotificationCloseEventCallback callback) override;
   void DispatchPushEvent(const String& payload,
                          DispatchPushEventCallback callback) override;
+  void DispatchPushEventRecordingNetworkRequests(
+      const String& payload,
+      DispatchPushEventRecordingNetworkRequestsCallback callback) override;
   void DispatchPushSubscriptionChangeEvent(
       mojom::blink::PushSubscriptionPtr old_subscription,
       mojom::blink::PushSubscriptionPtr new_subscription,
@@ -706,6 +710,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   HashMap<int, DispatchNotificationCloseEventCallback>
       notification_close_event_callbacks_;
   HashMap<int, DispatchPushEventCallback> push_event_callbacks_;
+  HashMap<int, DispatchPushEventRecordingNetworkRequestsCallback>
+      push_event_recording_network_requests_callback_;
   HashMap<int, DispatchPushSubscriptionChangeEventCallback>
       push_subscription_change_event_callbacks_;
   HashMap<int, DispatchFetchEventInternalCallback> fetch_event_callbacks_;
@@ -760,6 +766,16 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
 
   // Whether `PrepareForEvaluation` should be deferred.
   bool defer_prepare_for_evaluation_ = false;
+
+  // Whether network requests made during a push event should be recorded for
+  // later forwarding to the browser process.
+  mojom::blink::RecordNetworkRequestsDuringPushEvent
+      should_record_network_requests_ =
+          mojom::blink::RecordNetworkRequestsDuringPushEvent::kDoNotRecord;
+
+  // The collection of network request urls contacted during the life of a push
+  // event.
+  Vector<KURL> push_event_network_request_urls_;
 
   // Connected by the ServiceWorkerHost in the browser process and by the
   // controllees. |controller_bindings_| should be destroyed before

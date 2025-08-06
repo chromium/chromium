@@ -345,6 +345,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // Called when a Service Worker navigates an existing tab.
   void OnClientNavigated(const GURL& script_url, const GURL& url);
 
+  // Called when a Service Worker (of an ESB user) makes network requests during
+  // a push event.
+  void OnPushEventFinished(
+      const GURL& script_url,
+      const std::optional<std::vector<GURL>>& requested_urls);
+
   // OnControlleeAdded/Removed are called asynchronously. It is possible the
   // service worker client identified by |client_uuid| was already destroyed
   // when they are called. Note regarding BackForwardCache integration:

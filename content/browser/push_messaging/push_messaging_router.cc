@@ -123,19 +123,22 @@ void PushMessagingRouter::DeliverMessage(
     int64_t service_worker_registration_id,
     const std::string& message_id,
     std::optional<std::string> payload,
+    bool record_network_requests,
     PushEventCallback deliver_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartServiceWorkerForDispatch(
       ServiceWorkerMetrics::EventType::PUSH, browser_context, origin,
       service_worker_registration_id,
       base::BindOnce(&PushMessagingRouter::DeliverMessageToWorker, message_id,
-                     std::move(payload), std::move(deliver_message_callback)));
+                     std::move(payload), record_network_requests,
+                     std::move(deliver_message_callback)));
 }
 
 // static
 void PushMessagingRouter::DeliverMessageToWorker(
     const std::string& message_id,
     std::optional<std::string> payload,
+    bool record_network_requests,
     PushEventCallback deliver_message_callback,
     scoped_refptr<ServiceWorkerVersion> service_worker,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
@@ -169,8 +172,13 @@ void PushMessagingRouter::DeliverMessageToWorker(
       base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
       ServiceWorkerVersion::KILL_ON_TIMEOUT);
 
-  service_worker->endpoint()->DispatchPushEvent(
-      payload, service_worker->CreateSimpleEventCallback(request_id));
+  if (record_network_requests) {
+    service_worker->endpoint()->DispatchPushEventRecordingNetworkRequests(
+        payload, service_worker->CreatePushEventCallback(request_id));
+  } else {
+    service_worker->endpoint()->DispatchPushEvent(
+        payload, service_worker->CreateSimpleEventCallback(request_id));
+  }
 
   auto* devtools_context =
       GetDevTools(CHECK_DEREF(service_worker_context.get()));

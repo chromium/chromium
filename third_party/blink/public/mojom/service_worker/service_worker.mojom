@@ -26,6 +26,7 @@ import "third_party/blink/public/mojom/service_worker/service_worker_error_type.
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_object.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_record_network_requests_during_push_event.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -275,6 +276,10 @@ interface ServiceWorker {
   // content, or null.
   DispatchPushEvent(string? payload)
       => (ServiceWorkerEventStatus status);
+  // Like DispatchPushEvent, but records any network requests made during the
+  // push event in |requested_urls|.
+  DispatchPushEventRecordingNetworkRequests(string? payload)
+      => (ServiceWorkerEventStatus status, array<url.mojom.Url>? requested_urls);
   // Whenever a PushSubscription changes, a change event is generated with
   // (optionally) the previous subscription and the new subscription.
   // |old_subscription| can be null when there was a partial database corruption

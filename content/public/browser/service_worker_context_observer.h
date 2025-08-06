@@ -135,6 +135,14 @@ class ServiceWorkerContextObserver {
   // |url| is the destination URL.
   virtual void OnClientNavigated(const GURL& script_url, const GURL& url) {}
 
+  // Called when a Service Worker of an ESB user makes network requests during a
+  // push event. |script_url| is the URL of the service worker. |request_chains|
+  // are the network requests (including any redirects) made during the push
+  // event.
+  virtual void OnPushEventFinished(
+      const GURL& script_url,
+      const std::optional<std::vector<GURL>>& requested_urls) {}
+
  protected:
   virtual ~ServiceWorkerContextObserver() {}
 };

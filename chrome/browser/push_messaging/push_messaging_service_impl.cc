@@ -260,11 +260,14 @@ void PushMessagingServiceImpl::UnexpectedChange(
   }
 }
 
-PushMessagingServiceImpl::PushMessagingServiceImpl(Profile* profile)
+PushMessagingServiceImpl::PushMessagingServiceImpl(
+    Profile* profile,
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager)
     : profile_(profile),
       push_subscription_count_(0),
       pending_push_subscription_count_(0),
-      notification_manager_(profile) {
+      notification_manager_(profile),
+      database_manager_(database_manager) {
   DCHECK(profile);
   HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 
@@ -524,11 +527,35 @@ void PushMessagingServiceImpl::
         std::move(deliver_message_callback));
     return;
   }
+  if (database_manager_) {
+    database_manager_->CheckUrlForHighConfidenceAllowlist(
+        origin,
+        base::BindOnce(
+            &PushMessagingServiceImpl::DidCheckHighConfidenceAllowlist,
+            weak_factory_.GetWeakPtr(), origin, service_worker_registration_id,
+            message.message_id, payload, std::move(deliver_message_callback)));
+  } else {
+    // Dispatch the message to the appropriate Service Worker.
+    profile_->DeliverPushMessage(origin, service_worker_registration_id,
+                                 message.message_id, payload,
+                                 /* record_network_requests= */ false,
+                                 std::move(deliver_message_callback));
+  }
+}
 
-  // Dispatch the message to the appropriate Service Worker.
-  profile_->DeliverPushMessage(origin, service_worker_registration_id,
-                               message.message_id, payload,
-                               std::move(deliver_message_callback));
+void PushMessagingServiceImpl::DidCheckHighConfidenceAllowlist(
+    const GURL& origin,
+    int64_t service_worker_registration_id,
+    const std::string& message_id,
+    std::optional<std::string> payload,
+    base::OnceCallback<void(blink::mojom::PushEventStatus)> callback,
+    bool allowlisted,
+    std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                      HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details) {
+  profile_->DeliverPushMessage(
+      origin, service_worker_registration_id, message_id, payload,
+      /*record_network_requests=*/!allowlisted, std::move(callback));
 }
 
 void PushMessagingServiceImpl::DeliverMessageCallback(

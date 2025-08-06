@@ -1179,6 +1179,14 @@ void ServiceWorkerContextCore::OnClientNavigated(const GURL& script_url,
                          script_url, url);
 }
 
+void ServiceWorkerContextCore::OnPushEventFinished(
+    const GURL& script_url,
+    const std::optional<std::vector<GURL>>& requested_urls) {
+  observer_list_->Notify(FROM_HERE,
+                         &ServiceWorkerContextCoreObserver::OnPushEventFinished,
+                         script_url, requested_urls);
+}
+
 void ServiceWorkerContextCore::OnControlleeAdded(
     ServiceWorkerVersion* version,
     const std::string& client_uuid,

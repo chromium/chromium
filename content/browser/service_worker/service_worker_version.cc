@@ -920,6 +920,12 @@ ServiceWorkerVersion::CreateSimpleEventCallback(int request_id) {
                         base::Unretained(this), request_id);
 }
 
+ServiceWorkerVersion::PushEventCallback
+ServiceWorkerVersion::CreatePushEventCallback(int request_id) {
+  return base::BindOnce(&ServiceWorkerVersion::OnPushEventFinished,
+                        base::Unretained(this), request_id);
+}
+
 void ServiceWorkerVersion::RunAfterStartWorker(
     ServiceWorkerMetrics::EventType purpose,
     StatusCallback callback) {
@@ -2096,6 +2102,27 @@ void ServiceWorkerVersion::OnSimpleEventFinished(
                 status == blink::mojom::ServiceWorkerEventStatus::COMPLETED);
   // TODO(http://crbug.com/1251834): Why are we running the "error callback"
   // even when there is no error? Clean this up.
+  std::move(error_callback)
+      .Run(mojo::ConvertTo<blink::ServiceWorkerStatusCode>(status));
+}
+
+void ServiceWorkerVersion::OnPushEventFinished(
+    int request_id,
+    blink::mojom::ServiceWorkerEventStatus status,
+    const std::optional<std::vector<GURL>>& requested_urls) {
+  InflightRequest* request = inflight_requests_.Lookup(request_id);
+  // |request| will be null when the request has been timed out.
+  if (!request) {
+    return;
+  }
+  if (context_) {
+    context_->OnPushEventFinished(script_url_, requested_urls);
+  }
+  // Copy error callback before calling FinishRequest.
+  StatusCallback error_callback = std::move(request->error_callback);
+
+  FinishRequest(request_id,
+                status == blink::mojom::ServiceWorkerEventStatus::COMPLETED);
   std::move(error_callback)
       .Run(mojo::ConvertTo<blink::ServiceWorkerStatusCode>(status));
 }

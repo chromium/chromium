@@ -33,6 +33,7 @@
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
@@ -94,7 +95,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // If any Service Workers are using push, starts GCM and adds an app handler.
   static void InitializeForProfile(Profile* profile);
 
-  explicit PushMessagingServiceImpl(Profile* profile);
+  explicit PushMessagingServiceImpl(
+      Profile* profile,
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager);
 
   PushMessagingServiceImpl(const PushMessagingServiceImpl&) = delete;
   PushMessagingServiceImpl& operator=(const PushMessagingServiceImpl&) = delete;
@@ -395,6 +399,21 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                              const std::vector<uint8_t>& p256dh,
                              const std::vector<uint8_t>& auth,
                              blink::mojom::PushRegistrationStatus status);
+
+  // SafeBrowsingDatabaseManager callbacks -------------------------------------
+
+  // Callback for Safe Browsing URL allowlist lookups.
+  void DidCheckHighConfidenceAllowlist(
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      const std::string& message_id,
+      std::optional<std::string> payload,
+      base::OnceCallback<void(blink::mojom::PushEventStatus)> callback,
+      bool allowlisted,
+      std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                        HighConfidenceAllowlistCheckLoggingDetails>
+          logging_details);
+
   // Helper methods ------------------------------------------------------------
 
   // The subscription given in |identifier| will be unsubscribed (and a
@@ -517,6 +536,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // requirement on push notifications. E.g. they set userVisibleOnly to false
   // on push registration.
   std::set<GURL> origins_requesting_user_visible_requirement_bypass;
+
+  // Enables Safe Browsing URL allowlist lookups. May be a nullptr when ESB was
+  // not enabled at profile initialisation time.
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 };

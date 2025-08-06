@@ -468,6 +468,15 @@ void ServiceWorkerContextWrapper::OnClientNavigated(const GURL& script_url,
   }
 }
 
+void ServiceWorkerContextWrapper::OnPushEventFinished(
+    const GURL& script_url,
+    const std::optional<std::vector<GURL>>& requested_urls) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (auto& observer : observer_list_) {
+    observer.OnPushEventFinished(script_url, requested_urls);
+  }
+}
+
 void ServiceWorkerContextWrapper::OnStarting(int64_t version_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
