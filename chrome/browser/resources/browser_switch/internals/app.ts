@@ -138,6 +138,8 @@ export class AppElement extends AppElementBase {
       case 'go':
         opensIn = this.i18n('openBrowser', altBrowserName) + '\n';
         break;
+      default:
+        break;
     }
 
     let reason = '';
@@ -167,6 +169,8 @@ export class AppElement extends AppElementBase {
         break;
       case 'default':
         reason += this.i18n('openBrowserDefaultReason', browserName) + '\n';
+        break;
+      default:
         break;
     }
 
