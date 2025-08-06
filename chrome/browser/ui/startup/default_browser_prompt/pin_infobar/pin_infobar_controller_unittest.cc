@@ -77,7 +77,7 @@ class PinInfoBarControllerTest : public testing::Test {
             std::make_unique<MockBrowserWindowInterface>()) {
     feature_list_.InitAndEnableFeature(features::kOfferPinToTaskbarInfoBar);
 
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
+    ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model()));
     ON_CALL(*browser_window_interface_, GetProfile)
         .WillByDefault(::testing::Return(profile()));

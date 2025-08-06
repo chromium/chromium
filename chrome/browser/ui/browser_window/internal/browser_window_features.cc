@@ -238,7 +238,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<memory_saver::MemorySaverBubbleController>(browser);
 
   translate_bubble_controller_ = std::make_unique<TranslateBubbleController>(
-      browser->GetActions()->root_action_item());
+      browser_actions_->root_action_item());
 
   cookie_controls_bubble_coordinator_ =
       std::make_unique<CookieControlsBubbleCoordinator>();

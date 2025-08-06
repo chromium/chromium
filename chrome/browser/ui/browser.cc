@@ -1120,6 +1120,10 @@ TabStripModel* Browser::GetTabStripModel() {
   return tab_strip_model_.get();
 }
 
+const TabStripModel* Browser::GetTabStripModel() const {
+  return tab_strip_model_.get();
+}
+
 bool Browser::IsTabStripVisible() {
   return window_ && window_->IsToolbarShowing();
 }

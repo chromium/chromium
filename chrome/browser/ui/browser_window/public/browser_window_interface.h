@@ -129,6 +129,7 @@ class BrowserWindowInterface : public content::PageNavigator {
                         WindowOpenDisposition disposition) = 0;
 
   virtual TabStripModel* GetTabStripModel() = 0;
+  virtual const TabStripModel* GetTabStripModel() const = 0;
 
   // Returns true if the tab strip is currently visible for this browser window.
   // Will return false on browser initialization before the tab strip is

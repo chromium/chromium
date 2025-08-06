@@ -982,7 +982,7 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
         tab_strip_model_delegate_.get(), testing_profile_.get());
 
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
+    ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
 
     tab_declutter_controller_ = std::make_unique<MockTabDeclutterController>(

@@ -90,7 +90,7 @@ class ActorUiTabControllerTest : public testing::Test {
         .WillByDefault(Return(&mock_browser_window_interface_));
     ON_CALL(mock_browser_window_interface_, GetProfile)
         .WillByDefault(Return(profile()));
-    ON_CALL(mock_browser_window_interface_, GetTabStripModel)
+    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
         .WillByDefault(Return(&tab_strip_model_));
 
     actor_ui_tab_controller_ = std::make_unique<ActorUiTabController>(

@@ -793,7 +793,7 @@ TEST_F(TabStripModelTest, TestTabHandlesOutOfBounds) {
 TEST_F(TabStripModelTest, TestTabHandlesAcrossModels) {
   MockBrowserWindowInterface bwi;
   delegate()->SetBrowserWindowInterface(&bwi);
-  ON_CALL(bwi, GetTabStripModel).WillByDefault(::testing::Return(tabstrip()));
+  ON_CALL(bwi, GetTabStripModel()).WillByDefault(::testing::Return(tabstrip()));
 
   tabstrip()->AppendWebContents(CreateWebContentsWithID(1), true);
   const tabs::TabHandle handle = tabstrip()->GetTabAtIndex(0)->GetHandle();
@@ -5552,7 +5552,7 @@ TEST_F(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
 TEST_F(TabStripModelTest, AppendTab) {
   MockBrowserWindowInterface bwi;
   delegate()->SetBrowserWindowInterface(&bwi);
-  ON_CALL(bwi, GetTabStripModel).WillByDefault(::testing::Return(tabstrip()));
+  ON_CALL(bwi, GetTabStripModel()).WillByDefault(::testing::Return(tabstrip()));
   ASSERT_TRUE(tabstrip()->empty());
 
   // Create a 2 tabs to serve as an opener and the previous opener.

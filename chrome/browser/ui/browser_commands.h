@@ -58,7 +58,7 @@ void UpdateCommandEnabled(Browser* browser, int command, bool enabled);
 void AddCommandObserver(Browser*, int command, CommandObserver* observer);
 void RemoveCommandObserver(Browser*, int command, CommandObserver* observer);
 
-int GetContentRestrictions(const Browser* browser);
+int GetContentRestrictions(const BrowserWindowInterface* bwi);
 
 // Opens a new window. If the |should_trigger_session_restore| is true, a new
 // window opening should be treated like the start of a session (with potential
@@ -221,9 +221,9 @@ void SaveAutofillAddress(Browser* browser);
 void ShowFilledCardInformationBubble(Browser* browser);
 void ShowVirtualCardEnrollBubble(Browser* browser);
 void StartTabOrganizationRequest(Browser* browser);
-void ShowTranslateBubble(Browser* browser);
+void ShowTranslateBubble(BrowserWindowInterface* bwi);
 void ManagePasswordsForPage(Browser* browser);
-bool CanSendTabToSelf(const Browser* browser);
+bool CanSendTabToSelf(BrowserWindowInterface* bwi);
 void SendTabToSelf(Browser* browser);
 bool CanGenerateQrCode(const Browser* browser);
 void GenerateQRCode(Browser* browser);
@@ -231,8 +231,8 @@ void SharingHub(Browser* browser);
 void ScreenshotCapture(Browser* browser);
 void SavePage(Browser* browser);
 bool CanSavePage(const Browser* browser);
-void Print(Browser* browser);
-bool CanPrint(Browser* browser);
+void Print(BrowserWindowInterface* bwi);
+bool CanPrint(BrowserWindowInterface* bwi);
 #if BUILDFLAG(ENABLE_PRINTING)
 void BasicPrint(Browser* browser);
 bool CanBasicPrint(Browser* browser);
@@ -246,7 +246,7 @@ void Find(Browser* browser);
 void FindNext(Browser* browser);
 void FindPrevious(Browser* browser);
 void FindInPage(Browser* browser, bool find_next, bool forward_direction);
-void ShowTabSearch(Browser* browser);
+void ShowTabSearch(BrowserWindowInterface* bwi);
 void CloseTabSearch(Browser* browser);
 void ShowTabDeclutter(Browser* browser);
 bool CanCloseFind(Browser* browser);
@@ -261,14 +261,14 @@ void FocusInactivePopupForAccessibility(Browser* browser);
 void FocusNextPane(Browser* browser);
 void FocusPreviousPane(Browser* browser);
 void FocusWebContentsPane(Browser* browser);
-void ToggleDevToolsWindow(Browser* browser,
+void ToggleDevToolsWindow(BrowserWindowInterface* bwi,
                           DevToolsToggleAction action,
                           DevToolsOpenedByAction opened_by);
 bool CanOpenTaskManager();
 // Opens task manager UI. Note that |browser| can be nullptr as input.
 // StartAction denotes which location the task manager UI was started from.
 void OpenTaskManager(
-    Browser* browser,
+    BrowserWindowInterface* bwi,
     task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void OpenFeedbackDialog(Browser* browser,
                         feedback::FeedbackSource source,

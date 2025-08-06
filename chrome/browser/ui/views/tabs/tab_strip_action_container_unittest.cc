@@ -132,7 +132,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_interface_ = std::make_unique<tabs::MockTabInterface>();
 
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
+    ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
     ON_CALL(*browser_window_interface_, GetProfile)
         .WillByDefault(

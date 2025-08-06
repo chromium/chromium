@@ -37,7 +37,7 @@ class PdfInfoBarControllerTest : public testing::Test {
             std::make_unique<TabStripModel>(delegate(), profile())),
         browser_window_interface_(
             std::make_unique<MockBrowserWindowInterface>()) {
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
+    ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model()));
     ON_CALL(*browser_window_interface_, GetProfile)
         .WillByDefault(::testing::Return(profile()));

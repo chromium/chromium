@@ -25,7 +25,7 @@ class TriggerTest : public testing::Test {
         delegate_(new TestTabStripModelDelegate),
         tab_strip_model_(new TabStripModel(delegate(), profile())),
         browser_window_interface_(new MockBrowserWindowInterface()) {
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
+    ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
     delegate_->SetBrowserWindowInterface(browser_window_interface_.get());
   }

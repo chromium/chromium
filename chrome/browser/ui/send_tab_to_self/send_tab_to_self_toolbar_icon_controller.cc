@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
@@ -31,8 +32,9 @@ SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
     : profile_(profile) {}
 
 // static
-bool SendTabToSelfToolbarIconController::CanShowOnBrowser(Browser* browser) {
-  return browser->is_type_normal();
+bool SendTabToSelfToolbarIconController::CanShowOnBrowser(
+    BrowserWindowInterface* bwi) {
+  return bwi->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 void SendTabToSelfToolbarIconController::DisplayNewEntries(

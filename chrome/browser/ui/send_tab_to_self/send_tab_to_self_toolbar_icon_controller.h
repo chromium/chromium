@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace send_tab_to_self {
@@ -28,7 +29,7 @@ class SendTabToSelfToolbarIconController
   ~SendTabToSelfToolbarIconController() override;
 
   // Returns true if the toolbar button can be shown for the provided browser.
-  static bool CanShowOnBrowser(Browser* browser);
+  static bool CanShowOnBrowser(BrowserWindowInterface* bwi);
 
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(

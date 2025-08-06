@@ -801,6 +801,7 @@ class Browser : public TabStripModelObserver,
           navigation_handle_callback) override;
   const SessionID& GetSessionID() const override;
   TabStripModel* GetTabStripModel() override;
+  const TabStripModel* GetTabStripModel() const override;
   bool IsTabStripVisible() override;
   bool ShouldHideUIForFullscreen() const override;
   base::CallbackListSubscription RegisterBrowserDidClose(

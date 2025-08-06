@@ -537,9 +537,9 @@ void ReloadInternal(Browser* browser,
   }
 }
 
-bool IsShowingWebContentsModalDialog(Browser* browser) {
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+bool IsShowingWebContentsModalDialog(BrowserWindowInterface* bwi) {
+  WebContents* const web_contents =
+      bwi->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return false;
   }
@@ -604,9 +604,10 @@ void RemoveCommandObserver(Browser* browser,
   browser->command_controller()->RemoveCommandObserver(command, observer);
 }
 
-int GetContentRestrictions(const Browser* browser) {
+int GetContentRestrictions(const BrowserWindowInterface* bwi) {
   int content_restrictions = 0;
-  WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* const current_tab =
+      bwi->GetTabStripModel()->GetActiveWebContents();
   if (current_tab) {
     CoreTabHelper* core_tab_helper =
         CoreTabHelper::FromWebContents(current_tab);
@@ -1795,13 +1796,13 @@ void StartTabOrganizationRequest(Browser* browser) {
                                    TabOrganizationEntryPoint::kThreeDotMenu);
 }
 
-void ShowTranslateBubble(Browser* browser) {
-  if (!browser->window()->IsActive()) {
+void ShowTranslateBubble(BrowserWindowInterface* bwi) {
+  if (!bwi->GetWindow()->IsActive()) {
     return;
   }
 
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* const web_contents =
+      bwi->GetTabStripModel()->GetActiveWebContents();
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(web_contents);
 
@@ -1835,7 +1836,7 @@ void ShowTranslateBubble(Browser* browser) {
   } else if (language_state->IsPageTranslated()) {
     step = translate::TRANSLATE_STEP_AFTER_TRANSLATE;
   }
-  browser->window()->ShowTranslateBubble(
+  bwi->GetBrowserForMigrationOnly()->window()->ShowTranslateBubble(
       web_contents, step, source_language, target_language,
       translate::TranslateErrors::NONE, true);
 }
@@ -1859,9 +1860,9 @@ void ManagePasswordsForPage(Browser* browser) {
       ->ShowManagePasswordsBubble(!controller->IsAutomaticallyOpeningBubble());
 }
 
-bool CanSendTabToSelf(const Browser* browser) {
+bool CanSendTabToSelf(BrowserWindowInterface* bwi) {
   return send_tab_to_self::ShouldDisplayEntryPoint(
-      browser->tab_strip_model()->GetActiveWebContents());
+      bwi->GetTabStripModel()->GetActiveWebContents());
 }
 
 void SendTabToSelf(Browser* browser) {
@@ -1942,9 +1943,9 @@ bool CanSavePage(const Browser* browser) {
          !(GetContentRestrictions(browser) & CONTENT_RESTRICTION_SAVE);
 }
 
-void Print(Browser* browser) {
+void Print(BrowserWindowInterface* bwi) {
 #if BUILDFLAG(ENABLE_PRINTING)
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+  auto* const web_contents = bwi->GetTabStripModel()->GetActiveWebContents();
 
   // Launch ChromeOS print preview only if in a ChromeOS build and
   // `kPrintPreviewCrosPrimary` enabled. Otherwise use browser print preview.
@@ -1953,8 +1954,7 @@ void Print(Browser* browser) {
     chromeos::printing::StartPrint(
         web_contents,
         /*print_renderer=*/mojo::NullAssociatedRemote(),
-        browser->profile()->GetPrefs()->GetBoolean(
-            prefs::kPrintPreviewDisabled),
+        bwi->GetProfile()->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled),
         /*has_selection=*/false);
     return;
   }
@@ -1965,12 +1965,12 @@ void Print(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
       /*print_renderer=*/mojo::NullAssociatedRemote(),
 #endif
-      browser->profile()->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled),
+      bwi->GetProfile()->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled),
       /*has_selection=*/false);
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
-bool CanPrint(Browser* browser) {
+bool CanPrint(BrowserWindowInterface* bwi) {
 #if BUILDFLAG(ENABLE_PRINTING)
   // Do not print when printing is disabled via pref or policy.
   // Do not print when a page has crashed.
@@ -1979,11 +1979,12 @@ bool CanPrint(Browser* browser) {
   // IsShowingWebContentsModalDialog after a popup management policy is
   // refined -- we will probably want to just queue the print request, not
   // block it.
-  WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
-  return browser->profile()->GetPrefs()->GetBoolean(prefs::kPrintingEnabled) &&
+  WebContents* const current_tab =
+      bwi->GetTabStripModel()->GetActiveWebContents();
+  return bwi->GetProfile()->GetPrefs()->GetBoolean(prefs::kPrintingEnabled) &&
          (current_tab && !current_tab->IsCrashed()) &&
-         !(IsShowingWebContentsModalDialog(browser) ||
-           GetContentRestrictions(browser) & CONTENT_RESTRICTION_PRINT);
+         !(IsShowingWebContentsModalDialog(bwi) ||
+           GetContentRestrictions(bwi) & CONTENT_RESTRICTION_PRINT);
 #else   // BUILDFLAG(ENABLE_PRINTING)
   return false;
 #endif  // BUILDFLAG(ENABLE_PRINTING)
@@ -2047,8 +2048,8 @@ void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
                                                       forward_direction);
 }
 
-void ShowTabSearch(Browser* browser) {
-  browser->window()->CreateTabSearchBubble(
+void ShowTabSearch(BrowserWindowInterface* bwi) {
+  bwi->GetBrowserForMigrationOnly()->window()->CreateTabSearchBubble(
       tab_search::mojom::TabSearchSection::kSearch,
       tab_search::mojom::TabOrganizationFeature::kNone);
 }
@@ -2130,7 +2131,7 @@ void FocusWebContentsPane(Browser* browser) {
   browser->window()->FocusWebContentsPane();
 }
 
-void ToggleDevToolsWindow(Browser* browser,
+void ToggleDevToolsWindow(BrowserWindowInterface* bwi,
                           DevToolsToggleAction action,
                           DevToolsOpenedByAction opened_by) {
   if (action.type() == DevToolsToggleAction::kShowConsolePanel) {
@@ -2138,7 +2139,8 @@ void ToggleDevToolsWindow(Browser* browser,
   } else {
     base::RecordAction(UserMetricsAction("DevTools_ToggleWindow"));
   }
-  DevToolsWindow::ToggleDevToolsWindow(browser, action, opened_by);
+  DevToolsWindow::ToggleDevToolsWindow(bwi->GetBrowserForMigrationOnly(),
+                                       action, opened_by);
 }
 
 bool CanOpenTaskManager() {
@@ -2149,10 +2151,12 @@ bool CanOpenTaskManager() {
 #endif
 }
 
-void OpenTaskManager(Browser* browser, task_manager::StartAction start_action) {
+void OpenTaskManager(BrowserWindowInterface* bwi,
+                     task_manager::StartAction start_action) {
 #if !BUILDFLAG(IS_ANDROID)
   base::RecordAction(UserMetricsAction("TaskManager"));
-  chrome::ShowTaskManager(browser, start_action);
+  chrome::ShowTaskManager(bwi ? bwi->GetBrowserForMigrationOnly() : nullptr,
+                          start_action);
 #else
   NOTREACHED();
 #endif

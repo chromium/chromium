@@ -417,17 +417,17 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* tab_features =
-                    browser->GetActiveTabInterface()->GetTabFeatures();
+                    bwi->GetActiveTabInterface()->GetTabFeatures();
                 CHECK(tab_features);
 
                 tab_features
                     ->commerce_product_specifications_page_action_view_controller()
                     ->ShowConfirmationToast();
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionCommerceProductSpecifications)
           .SetText(
               l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT))
@@ -453,124 +453,131 @@ void BrowserActions::InitializeBrowserActions() {
 
   //------- Chrome Menu Actions --------//
   root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             CHECK(IncognitoModePrefs::IsIncognitoAllowed(
-                                 browser->profile()));
-                             chrome::NewIncognitoWindow(browser->profile());
-                           },
-                           base::Unretained(browser)),
-                       kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
-                       IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](Profile* profile, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                CHECK(IncognitoModePrefs::IsIncognitoAllowed(profile));
+                chrome::NewIncognitoWindow(profile);
+              },
+              profile),
+          kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
+          IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
           .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
           .Build());
 
   if (features::HasTabSearchToolbarButton()) {
     root_action_item_->AddChild(
-        ChromeMenuAction(base::BindRepeating(
-                             [](Browser* browser, actions::ActionItem* item,
-                                actions::ActionInvocationContext context) {
-                               chrome::ShowTabSearch(browser);
-                             },
-                             base::Unretained(browser)),
-                         kActionTabSearch, IDS_TAB_SEARCH_MENU,
-                         IDS_TAB_SEARCH_MENU, vector_icons::kTabSearchIcon)
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::ShowTabSearch(bwi);
+                },
+                bwi),
+            kActionTabSearch, IDS_TAB_SEARCH_MENU, IDS_TAB_SEARCH_MENU,
+            vector_icons::kTabSearchIcon)
             .Build());
   }
 
   root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::Print(browser);
-                           },
-                           base::Unretained(browser)),
-                       kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
-          .SetEnabled(chrome::CanPrint(browser))
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::Print(bwi);
+              },
+              bwi),
+          kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
+          .SetEnabled(chrome::CanPrint(bwi))
           .Build());
 
+  const bool is_incognito = profile_->IsIncognitoProfile();
   root_action_item_->AddChild(
       ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
+                           [](BrowserWindowInterface* bwi, bool is_incognito,
+                              actions::ActionItem* item,
                               actions::ActionInvocationContext context) {
-                             if (browser->profile()->IsIncognitoProfile()) {
+                             Browser* const browser_for_opening_webui =
+                                 bwi->GetBrowserForMigrationOnly()
+                                     ->GetBrowserForOpeningWebUi();
+                             if (is_incognito) {
                                chrome::ShowIncognitoClearBrowsingDataDialog(
-                                   browser->GetBrowserForOpeningWebUi());
+                                   browser_for_opening_webui);
                              } else {
                                chrome::ShowClearBrowsingDataDialog(
-                                   browser->GetBrowserForOpeningWebUi());
+                                   browser_for_opening_webui);
                              }
                            },
-                           base::Unretained(browser)),
+                           bwi, is_incognito),
                        kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
                        IDS_CLEAR_BROWSING_DATA, kTrashCanRefreshIcon)
-          .SetEnabled(
-              profile->IsIncognitoProfile() ||
-              (!profile->IsGuestSession() && !profile->IsSystemProfile()))
+          .SetEnabled(is_incognito ||
+                      (!is_guest_session && !profile->IsSystemProfile()))
           .Build());
 
   if (chrome::CanOpenTaskManager()) {
     root_action_item_->AddChild(
-        ChromeMenuAction(base::BindRepeating(
-                             [](Browser* browser, actions::ActionItem* item,
-                                actions::ActionInvocationContext context) {
-                               chrome::OpenTaskManager(browser);
-                             },
-                             base::Unretained(browser)),
-                         kActionTaskManager, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
-                         kTaskManagerIcon)
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::OpenTaskManager(bwi);
+                },
+                bwi),
+            kActionTaskManager, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
+            kTaskManagerIcon)
             .Build());
   }
 
   root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::ToggleDevToolsWindow(
-                                 browser, DevToolsToggleAction::Show(),
-                                 DevToolsOpenedByAction::kPinnedToolbarButton);
-                           },
-                           base::Unretained(browser)),
-                       kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS,
-                       kDeveloperToolsIcon)
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ToggleDevToolsWindow(
+                    bwi, DevToolsToggleAction::Show(),
+                    DevToolsOpenedByAction::kPinnedToolbarButton);
+              },
+              bwi),
+          kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS, kDeveloperToolsIcon)
           .Build());
 
   if (send_tab_to_self::SendTabToSelfToolbarIconController::CanShowOnBrowser(
-          browser)) {
+          bwi)) {
     root_action_item_->AddChild(
         ChromeMenuAction(
             base::BindRepeating(
-                [](Browser* browser, actions::ActionItem* item,
+                [](send_tab_to_self::SendTabToSelfToolbarBubbleController*
+                       bubble_controller,
+                   TabStripModel* tab_strip_model, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  auto* bubble_controller =
-                      browser->browser_window_features()
-                          ->send_tab_to_self_toolbar_bubble_controller();
                   if (bubble_controller->IsBubbleShowing()) {
                     bubble_controller->HideBubble();
                   } else {
                     send_tab_to_self::ShowBubble(
-                        browser->tab_strip_model()->GetActiveWebContents());
+                        tab_strip_model->GetActiveWebContents());
                   }
                 },
-                base::Unretained(browser)),
+                bwi->GetFeatures().send_tab_to_self_toolbar_bubble_controller(),
+                bwi->GetTabStripModel()),
             kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
             kDevicesChromeRefreshIcon)
-            .SetEnabled(chrome::CanSendTabToSelf(browser))
-            .SetVisible(
-                !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
+            .SetEnabled(chrome::CanSendTabToSelf(bwi))
+            .SetVisible(!sharing_hub::SharingIsDisabledByPolicy(profile))
             .Build());
   }
 
   root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::ShowTranslateBubble(browser);
-                           },
-                           base::Unretained(browser)),
-                       kActionShowTranslate, IDS_SHOW_TRANSLATE,
-                       IDS_TOOLTIP_TRANSLATE, kTranslateIcon)
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowTranslateBubble(bwi);
+              },
+              bwi),
+          kActionShowTranslate, IDS_SHOW_TRANSLATE, IDS_TOOLTIP_TRANSLATE,
+          kTranslateIcon)
           .Build());
 
   root_action_item_->AddChild(

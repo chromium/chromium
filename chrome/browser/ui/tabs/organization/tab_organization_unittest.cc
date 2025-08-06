@@ -56,7 +56,7 @@ class TabOrganizationTest : public testing::Test {
   };
 
   TabOrganizationTest() {
-    ON_CALL(browser_window_interface_, GetTabStripModel)
+    ON_CALL(browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(&tab_strip_model_));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
@@ -229,7 +229,7 @@ TEST_F(TabOrganizationTest, TabDataOnTabStripModelDestroyed) {
   std::unique_ptr<TabStripModel> new_tab_strip_model =
       std::make_unique<TabStripModel>(delegate(), profile());
 
-  ON_CALL(*browser_window_interface(), GetTabStripModel)
+  ON_CALL(*browser_window_interface(), GetTabStripModel())
       .WillByDefault(::testing::Return(new_tab_strip_model.get()));
 
   // Create a tab data that should be listening to the tabstrip model.
