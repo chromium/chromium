@@ -174,6 +174,8 @@ constexpr char kAiv4LanguageDetectionStatusHistogram[] =
     "Permissions.AIv4.LanguageDetectionStatus";
 constexpr char kAiv4RenderedTextAcquireSuccess[] =
     "Permissions.AIv4.RenderedTextAcquireSuccess";
+constexpr char kAiv4TryCancelPreviousEmbeddingsModelExecution[] =
+    "Permissions.AIv4.TryCancelPreviousEmbeddingsModelExecution";
 
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
@@ -1043,6 +1045,8 @@ class Aiv4ModelPredictionServiceBrowserTestBase
     // Required to preprocess the inner_text string as input for AIv4.
     model_handler_provider()->set_passage_embedder_for_testing(
         &passage_embedder_);
+    passage_embedder_.set_status(
+        passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
   }
 
   RequestType request_type() const override {
@@ -1196,10 +1200,6 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelLanguageDetectionBrowserTest,
 
   set_dummy_screenshot_for_testing();
   set_dummy_inner_text_for_testing();
-  PassageEmbedderMock passage_embedder;
-  passage_embedder.set_status(
-      passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
-  model_handler_provider()->set_passage_embedder_for_testing(&passage_embedder);
 
   TriggerPromptAndVerifyUi(
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
@@ -1483,6 +1483,11 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
   histogram_tester().ExpectBucketCount(kAiv4RenderedTextAcquireSuccess,
                                        /*sample=*/1,
                                        /*expected_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      kAiv4TryCancelPreviousEmbeddingsModelExecution,
+      /*sample=*/0,
+      /*expected_count=*/1);
 
   histogram_tester().ExpectBucketCount(
       request_type() == RequestType::kNotifications

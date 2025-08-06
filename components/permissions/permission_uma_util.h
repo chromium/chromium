@@ -877,6 +877,12 @@ class PermissionUmaUtil {
       bool success,
       PredictionModelType model_type);
 
+  // Records whether we needed to cancel the previous passage embeddings model
+  // call before starting a new one.
+  static void RecordTryCancelPreviousEmbeddingsModelExecution(
+      bool cancel_previous_task,
+      PredictionModelType model_type);
+
   // Records the status of language detection during the Aiv4 workflow.
   static void RecordLanguageDetectionStatus(LanguageDetectionStatus status);
 
