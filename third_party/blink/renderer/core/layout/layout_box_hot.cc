@@ -156,7 +156,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     }
 
     // If we've shifted our children we can't rely on their position.
-    if (physical_fragment.HasMovedChildrenInBlockDirection()) {
+    if (physical_fragment.HasMovedChildren()) {
       return nullptr;
     }
 

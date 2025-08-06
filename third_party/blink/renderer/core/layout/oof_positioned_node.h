@@ -46,6 +46,9 @@ class OofContainingBlock {
   void IncreaseBlockOffset(LayoutUnit block_offset) {
     offset_.block_offset += block_offset;
   }
+  void IncreaseInlineOffset(LayoutUnit inline_offset) {
+    offset_.inline_offset += inline_offset;
+  }
   OffsetType RelativeOffset() const { return relative_offset_; }
   const PhysicalFragment* Fragment() const { return fragment_.Get(); }
   std::optional<LayoutUnit> ClippedContainerBlockOffset() const {

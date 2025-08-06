@@ -1620,18 +1620,20 @@ void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
       // OOF-positioned children don't align them to the alignment baseline.
       if (has_inflow_children) {
         if (auto alignment_baseline = space.TableCellAlignmentBaseline()) {
-          builder->MoveChildrenInBlockDirection(*alignment_baseline -
-                                                *builder->FirstBaseline());
+          builder->MoveChildrenInDirection(
+              *alignment_baseline - *builder->FirstBaseline(),
+              /*is_block_direction=*/true);
         }
       }
       break;
     case BlockContentAlignment::kSafeCenter:
     case BlockContentAlignment::kUnsafeCenter:
-      builder->MoveChildrenInBlockDirection(free_space / 2);
+      builder->MoveChildrenInDirection(free_space / 2,
+                                       /*is_block_direction=*/true);
       break;
     case BlockContentAlignment::kSafeEnd:
     case BlockContentAlignment::kUnsafeEnd:
-      builder->MoveChildrenInBlockDirection(free_space);
+      builder->MoveChildrenInDirection(free_space, /*is_block_direction=*/true);
       break;
   }
 }

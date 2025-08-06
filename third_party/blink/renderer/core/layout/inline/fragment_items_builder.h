@@ -125,8 +125,8 @@ class CORE_EXPORT FragmentItemsBuilder {
   // heuristic. Usually 10-40, some wikipedia pages have >64 items.
   using ItemWithOffsetList = HeapVector<ItemWithOffset, 128>;
 
-  // Moves all the |FragmentItem|s by |offset| in the block-direction.
-  void MoveChildrenInBlockDirection(LayoutUnit offset);
+  // Moves all the |FragmentItem|s by |offset| in the block or inline direction.
+  void MoveChildrenInDirection(LayoutUnit offset, bool is_block_direction);
 
   // Converts the |FragmentItem| vector to the physical coordinate space and
   // returns the result. This should only be used for determining the inline

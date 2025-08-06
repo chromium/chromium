@@ -387,44 +387,73 @@ EBreakBetween BoxFragmentBuilder::JoinedBreakBetweenValue(
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);
 }
 
-void BoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
+void BoxFragmentBuilder::MoveChildrenInDirection(LayoutUnit offset,
+                                                 bool is_block_direction) {
   DCHECK(is_new_fc_);
-  DCHECK_NE(FragmentBlockSize(), kIndefiniteSize);
+  DCHECK_NE(is_block_direction ? FragmentBlockSize() : FragmentInlineSize(),
+            kIndefiniteSize);
   DCHECK(oof_positioned_descendants_.empty());
 
-  has_moved_children_in_block_direction_ = true;
+  has_moved_children_ = true;
 
-  if (delta == LayoutUnit())
-    return;
-
-  if (first_baseline_)
-    *first_baseline_ += delta;
-  if (last_baseline_)
-    *last_baseline_ += delta;
-
-  if (inflow_bounds_)
-    inflow_bounds_->offset.block_offset += delta;
-
-  for (auto& child : children_)
-    child.offset.block_offset += delta;
-
-  for (auto& child : children_with_size_dependent_propagation_) {
-    child.offset.block_offset += delta;
+  // Baselines do not apply in the inline direction.
+  if (is_block_direction) {
+    if (first_baseline_) {
+      *first_baseline_ += offset;
+    }
+    if (last_baseline_) {
+      *last_baseline_ += offset;
+    }
   }
 
-  for (auto& candidate : oof_positioned_candidates_)
-    candidate.static_position.offset.block_offset += delta;
+  if (inflow_bounds_) {
+    if (is_block_direction) {
+      inflow_bounds_->offset.block_offset += offset;
+    } else {
+      inflow_bounds_->offset.inline_offset += offset;
+    }
+  }
+
+  for (auto& child : children_) {
+    if (is_block_direction) {
+      child.offset.block_offset += offset;
+    } else {
+      child.offset.inline_offset += offset;
+    }
+  }
+
+  for (auto& child : children_with_size_dependent_propagation_) {
+    if (is_block_direction) {
+      child.offset.block_offset += offset;
+    } else {
+      child.offset.inline_offset += offset;
+    }
+  }
+
+  for (auto& candidate : oof_positioned_candidates_) {
+    if (is_block_direction) {
+      candidate.static_position.offset.block_offset += offset;
+    } else {
+      candidate.static_position.offset.inline_offset += offset;
+    }
+  }
+
   for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
     // If we have already returned past (above) the containing block of the OOF
     // (but not all the way the outermost fragmentainer), the containing block
     // is affected by this shift that we just decided to make. This shift wasn't
     // known at the time of normal propagation. So shift accordingly now.
-    descendant.containing_block.IncreaseBlockOffset(delta);
-    descendant.fixedpos_containing_block.IncreaseBlockOffset(delta);
+    if (is_block_direction) {
+      descendant.containing_block.IncreaseBlockOffset(offset);
+      descendant.fixedpos_containing_block.IncreaseBlockOffset(offset);
+    } else {
+      descendant.containing_block.IncreaseInlineOffset(offset);
+      descendant.fixedpos_containing_block.IncreaseInlineOffset(offset);
+    }
   }
 
   if (FragmentItemsBuilder* items_builder = ItemsBuilder()) {
-    items_builder->MoveChildrenInBlockDirection(delta);
+    items_builder->MoveChildrenInDirection(offset, is_block_direction);
   }
 }
 
