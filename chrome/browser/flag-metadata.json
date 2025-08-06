@@ -5639,7 +5639,7 @@
   {
     "name": "hid-get-feature-report-fix",
     "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 152
   },
   {
     "name": "history-embeddings",
