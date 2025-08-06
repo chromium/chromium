@@ -70,11 +70,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) ResourceSizes {
                                 bool aligned);
 
   template <typename T>
-  static T SizeInBytesInternal(const gfx::Size& size,
-                               SharedImageFormat format,
-                               bool aligned);
-
-  template <typename T>
   static bool MaybeRound(base::CheckedNumeric<T>* value, T mul);
 
   // Not instantiable.
@@ -197,15 +192,6 @@ T ResourceSizes::WidthInBytesInternal(int width,
   bytes /= 8;
   if (aligned)
     bytes = cc::MathUtil::UncheckedRoundUp<T>(bytes, 4);
-  return bytes;
-}
-
-template <typename T>
-T ResourceSizes::SizeInBytesInternal(const gfx::Size& size,
-                                     SharedImageFormat format,
-                                     bool aligned) {
-  T bytes = WidthInBytesInternal<T>(size.width(), format, aligned);
-  bytes *= size.height();
   return bytes;
 }
 
