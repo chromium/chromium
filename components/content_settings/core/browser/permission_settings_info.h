@@ -39,10 +39,15 @@ class PermissionSettingsInfo {
     // Returns if at least some of the permission setting is allowed. Used e.g.
     // to decide whether the permission setting can be auto-revoked by
     // SafetyHub.
-    virtual bool IsAnyPermissionAllowed(PermissionSetting setting) const = 0;
+    virtual bool IsAnyPermissionAllowed(
+        const PermissionSetting& setting) const = 0;
 
     // Returns true when no permission has been allowed or blocked yet.
-    virtual bool IsUndecided(PermissionSetting setting) const = 0;
+    virtual bool IsUndecided(const PermissionSetting& setting) const = 0;
+
+    // Returns whether the permission is fully blocked. This is usually the case
+    // when nothing is allowed and the permission is not undecided.
+    virtual bool IsBlocked(const PermissionSetting& setting) const;
 
     // Returns whether the permission setting supports expiration tracking.
     virtual bool CanTrackLastVisit() const = 0;

@@ -248,4 +248,26 @@ TEST_F(ContentSettingsRegistryTest, SettingsHaveAHistogramMapping) {
   EXPECT_EQ(count, values.size());
 }
 
+TEST_F(ContentSettingsRegistryTest, DelegateStateChecks) {
+  auto* info = registry()
+                   ->Get(ContentSettingsType::MEDIASTREAM_MIC)
+                   ->permission_settings_info();
+
+  EXPECT_FALSE(info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_ASK));
+  EXPECT_TRUE(info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_ALLOW));
+  EXPECT_FALSE(info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_BLOCK));
+  EXPECT_TRUE(
+      info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_SESSION_ONLY));
+
+  EXPECT_TRUE(info->delegate().IsUndecided(CONTENT_SETTING_ASK));
+  EXPECT_FALSE(info->delegate().IsUndecided(CONTENT_SETTING_ALLOW));
+  EXPECT_FALSE(info->delegate().IsUndecided(CONTENT_SETTING_BLOCK));
+  EXPECT_FALSE(info->delegate().IsUndecided(CONTENT_SETTING_SESSION_ONLY));
+
+  EXPECT_FALSE(info->delegate().IsBlocked(CONTENT_SETTING_ASK));
+  EXPECT_FALSE(info->delegate().IsBlocked(CONTENT_SETTING_ALLOW));
+  EXPECT_TRUE(info->delegate().IsBlocked(CONTENT_SETTING_BLOCK));
+  EXPECT_FALSE(info->delegate().IsBlocked(CONTENT_SETTING_SESSION_ONLY));
+}
+
 }  // namespace content_settings

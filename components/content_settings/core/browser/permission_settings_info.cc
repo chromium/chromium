@@ -35,6 +35,11 @@ PermissionSetting PermissionSettingsInfo::GetInitialDefaultSetting() const {
   return *default_setting;
 }
 
+bool PermissionSettingsInfo::Delegate::IsBlocked(
+    const PermissionSetting& setting) const {
+  return !IsAnyPermissionAllowed(setting) && !IsUndecided(setting);
+}
+
 PermissionSetting PermissionSettingsInfo::Delegate::CoalesceEphemeralState(
     const PermissionSetting& persistent_permission_setting,
     const PermissionSetting& ephemeral_permission_setting) const {
