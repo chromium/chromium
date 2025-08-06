@@ -188,18 +188,7 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
   return nullptr;
 }
 
-inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
-  if (!obj.IsLayoutNGObject()) {
-    // Non-NG objects should be painted, hit-tested, etc. by legacy.
-    if (obj.IsBox())
-      return false;
-    // Non-LayoutBox objects (such as LayoutInline) don't necessarily create NG
-    // LayoutObjects. If they are laid out by an NG container, though, we may be
-    // allowed to traverse their fragments. We can't check that at this point
-    // (potentially before initial layout), though. Unless there are other
-    // reasons that prevent us from allowing fragment traversal, we'll
-    // optimistically return true now, and check later.
-  }
+inline bool CalculateCanTraversePhysicalFragments(const LayoutObject& obj) {
   // The NG paint system currently doesn't support replaced content.
   if (obj.IsLayoutReplaced())
     return false;
@@ -208,6 +197,13 @@ inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
   if (obj.IsTextControl()) {
     return false;
   }
+  // SVG objects do their own things. The exception here is SVG block containers
+  // (such as foreignObject or text), which are fully handled by the regular
+  // layout engine.
+  if (obj.IsSVG() && !obj.IsLayoutBlock()) {
+    return false;
+  }
+
   return true;
 }
 
@@ -3831,8 +3827,8 @@ void LayoutObject::InsertedIntoTree() {
   // FIXME: We should DCHECK(isRooted()) here but generated content makes some
   // out-of-order insertion.
 
-  bitfields_.SetMightTraversePhysicalFragments(
-      MightTraversePhysicalFragments(*this));
+  bitfields_.SetCanTraversePhysicalFragments(
+      CalculateCanTraversePhysicalFragments(*this));
 
   // Keep our layer hierarchy updated. Optimize for the common case where we
   // don't have any children and don't have a layer attached to ourselves.

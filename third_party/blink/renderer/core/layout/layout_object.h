@@ -1939,16 +1939,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // tree instead.
   bool CanTraversePhysicalFragments() const {
     NOT_DESTROYED();
-
-    if (!bitfields_.MightTraversePhysicalFragments())
-      return false;
-
-    // Non-LayoutBox objects (such as LayoutInline) don't necessarily create NG
-    // LayoutObjects. We'll allow traversing their fragments if they are laid
-    // out by an NG container.
-    if (!IsBox())
-      return IsInLayoutNGInlineFormattingContext();
-    return true;
+    return bitfields_.CanTraversePhysicalFragments();
   }
 
   // Return true if this is a LayoutBox without physical fragments.
@@ -3532,9 +3523,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetSVGDescendantMayHaveTransformRelatedOperations(false);
   }
 
-  void SetMightTraversePhysicalFragments(bool b) {
+  void SetCanTraversePhysicalFragments(bool b) {
     NOT_DESTROYED();
-    bitfields_.SetMightTraversePhysicalFragments(b);
+    bitfields_.SetCanTraversePhysicalFragments(b);
   }
 
   void SetHasValidCachedGeometry(bool b) {
@@ -3765,7 +3756,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           should_skip_next_layout_shift_tracking_(true),
           should_assume_paint_offset_translation_for_layout_shift_tracking_(
               false),
-          might_traverse_physical_fragments_(true),
+          can_traverse_physical_fragments_(true),
           whitespace_children_may_change_(false),
           needs_devtools_info_(false),
           may_have_anchor_query_(false),
@@ -4089,10 +4080,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         should_assume_paint_offset_translation_for_layout_shift_tracking_,
         ShouldAssumePaintOffsetTranslationForLayoutShiftTracking);
 
-    // True if there's a possibility that we can walk NG fragment children of
-    // this object. False if we definitely need to walk the LayoutObject tree.
-    ADD_BOOLEAN_BITFIELD(might_traverse_physical_fragments_,
-                         MightTraversePhysicalFragments);
+    // True if we can walk fragment children of this object (for painting,
+    // hit-testing, and so on). False if we need to walk the LayoutObject tree
+    // instead.
+    ADD_BOOLEAN_BITFIELD(can_traverse_physical_fragments_,
+                         CanTraversePhysicalFragments);
 
     // True if children that may affect whitespace have been removed. If true
     // during style recalc, mark ancestors for layout tree rebuild to cause a
