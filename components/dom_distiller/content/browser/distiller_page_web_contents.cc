@@ -14,6 +14,7 @@
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/dom_distiller_constants.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -125,6 +126,11 @@ DistillerPageWebContents::~DistillerPageWebContents() = default;
 
 bool DistillerPageWebContents::ShouldFetchOfflineData() {
   return false;
+}
+
+DistillerType DistillerPageWebContents::GetDistillerType() {
+  return ShouldUseReadabilityDistiller() ? DistillerType::kReadability
+                                         : DistillerType::kDOMDistiller;
 }
 
 void DistillerPageWebContents::DistillPageImpl(const GURL& url,

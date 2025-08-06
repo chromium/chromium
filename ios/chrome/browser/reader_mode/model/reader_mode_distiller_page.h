@@ -22,6 +22,7 @@ class ReaderModeDistillerPage : public dom_distiller::DistillerPage {
   // dom_distiller::DistillerPage implementation.
   void DistillPageImpl(const GURL& url, const std::string& script) override;
   bool ShouldFetchOfflineData() override;
+  dom_distiller::DistillerType GetDistillerType() override;
 
  private:
   void HandleJavaScriptResult(const GURL& url, const base::Value* result);

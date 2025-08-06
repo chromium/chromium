@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/dom_distiller/core/dom_distiller_constants.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
@@ -58,6 +59,11 @@ class TestDistillerPage : public DistillerPage {
   }
 
   bool ShouldFetchOfflineData() override { return false; }
+
+  DistillerType GetDistillerType() override {
+    return ShouldUseReadabilityDistiller() ? DistillerType::kReadability
+                                           : DistillerType::kDOMDistiller;
+  }
 
   // The overridden implementation now simulates one of three outcomes based on
   // the configuration set by SetNextResult().

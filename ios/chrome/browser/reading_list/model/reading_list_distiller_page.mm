@@ -84,6 +84,10 @@ bool ReadingListDistillerPage::ShouldFetchOfflineData() {
   return true;
 }
 
+dom_distiller::DistillerType ReadingListDistillerPage::GetDistillerType() {
+  return dom_distiller::DistillerType::kDOMDistiller;
+}
+
 void ReadingListDistillerPage::DistillPageImpl(const GURL& url,
                                                const std::string& script) {
   std::unique_ptr<web::WebState> old_web_state = DetachWebState();

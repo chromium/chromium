@@ -8,6 +8,7 @@
 
 #import "components/dom_distiller/core/article_distillation_update.h"
 #import "components/dom_distiller/core/distiller_page.h"
+#import "components/dom_distiller/core/dom_distiller_constants.h"
 #import "components/dom_distiller/core/proto/distilled_article.pb.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -23,6 +24,9 @@ class TestDistillerPage : public dom_distiller::DistillerPage {
     OnDistillationDone(url, &empty_result);
   }
   bool ShouldFetchOfflineData() override { return false; }
+  dom_distiller::DistillerType GetDistillerType() override {
+    return dom_distiller::DistillerType::kDOMDistiller;
+  }
 };
 
 }  //  namespace
