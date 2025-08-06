@@ -43,6 +43,12 @@ BASE_FEATURE(kUseAAudioInput,
 BASE_FEATURE(kAAudioPerStreamDeviceSelection,
              "AAudioPerStreamDeviceSelection",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the AudioDeviceListener, which listens for changes to the list of
+// audio devices exposed by the OS.
+BASE_FEATURE(kAndroidAudioDeviceListener,
+             "AndroidAudioDeviceListener",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // This feature flag controls whether the WebAudio destination resampler is

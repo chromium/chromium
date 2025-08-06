@@ -126,6 +126,8 @@ class AudioManagerAndroid {
     private @Nullable ContentObserver mSettingsObserver;
     private @Nullable HandlerThread mSettingsObserverThread;
 
+    private @Nullable AudioDeviceListener mDeviceListener;
+
     private final CommunicationDeviceSelector mCommunicationDeviceSelector;
 
     /** Construction */
@@ -177,6 +179,16 @@ class AudioManagerAndroid {
     }
 
     /**
+     * Initializes the device listener, which listens for changes to the list of audio devices
+     * exposed by the OS.
+     */
+    @CalledByNative
+    private void initDeviceListener() {
+        mDeviceListener =
+                new AudioDeviceListener(() -> AudioManagerAndroidJni.get().onDevicesChanged());
+    }
+
+    /**
      * Unregister all previously registered intent receivers and restore the stored state (stored in
      * {@link #init()}).
      */
@@ -187,6 +199,10 @@ class AudioManagerAndroid {
         if (!mIsInitialized) return;
 
         stopObservingVolumeChanges();
+
+        if (mDeviceListener != null) {
+            mDeviceListener.destroy();
+        }
 
         mCommunicationDeviceSelector.close();
 
@@ -736,6 +752,8 @@ class AudioManagerAndroid {
 
     @NativeMethods
     interface Natives {
+        void onDevicesChanged();
+
         void setMute(long nativeAudioManagerAndroid, boolean muted);
     }
 }

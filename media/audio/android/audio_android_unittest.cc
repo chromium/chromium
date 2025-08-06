@@ -172,6 +172,7 @@ class MockJniDelegate : public JniDelegate {
 
   ~MockJniDelegate() override = default;
 
+  MOCK_METHOD(void, InitDeviceListener, (), (override));
   MOCK_METHOD(std::vector<JniAudioDevice>, GetDevices, (bool), (override));
   MOCK_METHOD(std::optional<std::vector<JniAudioDevice>>,
               GetCommunicationDevices,

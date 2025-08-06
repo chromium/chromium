@@ -173,6 +173,7 @@ if (is_android) {
     ]
     resources_package = "org.chromium.media"
     sources = [
+      "java/src/org/chromium/media/AudioDeviceListener.java",
       "java/src/org/chromium/media/AudioManagerAndroid.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
       "java/src/org/chromium/media/BitrateAdjuster.java",

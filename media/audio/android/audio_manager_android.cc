@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
+#include "base/system/system_monitor.h"
 #include "media/audio/android/aaudio_bluetooth_output.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
@@ -78,6 +79,11 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
   ~JniDelegateImpl() override {
     Java_AudioManagerAndroid_close(AttachCurrentThread(), j_audio_manager_);
     j_audio_manager_.Reset();
+  }
+
+  void InitDeviceListener() override {
+    Java_AudioManagerAndroid_initDeviceListener(AttachCurrentThread(),
+                                                j_audio_manager_);
   }
 
   std::vector<JniAudioDevice> GetDevices(bool inputs) override {
@@ -317,6 +323,16 @@ bool UseAAudioPerStreamDeviceSelection() {
 }
 
 }  // namespace
+
+// Called by the Java AudioManagerAndroid on the main thread when the system
+// reports a change to the list of available audio devices.
+void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env) {
+  auto* system_monitor = base::SystemMonitor::Get();
+  if (system_monitor) {
+    // Asynchronous call
+    system_monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+  }
+}
 
 std::unique_ptr<AudioManager> CreateAudioManager(
     std::unique_ptr<AudioThread> audio_thread,
@@ -863,8 +879,7 @@ void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
   }
 }
 
-void AudioManagerAndroid::SetMute(JNIEnv* env,
-                                  jboolean muted) {
+void AudioManagerAndroid::SetMute(JNIEnv* env, jboolean muted) {
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AudioManagerAndroid::DoSetMuteOnAudioThread,
                                 base::Unretained(this), muted));
@@ -959,6 +974,12 @@ AudioManagerAndroid::JniDelegate& AudioManagerAndroid::GetJniDelegate() {
     // Create the JNI delegate on the audio thread; prepare the list of audio
     // devices and register receivers for device notifications.
     jni_delegate_ = std::make_unique<JniDelegateImpl>(this);
+
+    // This feature is checked for on the native side in order to avoid build
+    // dependency conflicts when using the Java ChromeFeatureList.
+    if (base::FeatureList::IsEnabled(features::kAndroidAudioDeviceListener)) {
+      jni_delegate_->InitDeviceListener();
+    }
   }
   return *jni_delegate_;
 }

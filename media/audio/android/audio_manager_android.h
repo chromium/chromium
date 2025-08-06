@@ -46,6 +46,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
    public:
     virtual ~JniDelegate() = default;
 
+    // Initializes the device listener, which listens for changes to the list of
+    // audio devices exposed by the OS.
+    virtual void InitDeviceListener() = 0;
+
     // Returns metadata about the available audio devices as reported by the
     // Android framework, filtered to input devices if `inputs` is true, and to
     // output devices otherwise.
@@ -138,8 +142,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const std::string& device_id,
       const LogCallback& log_callback) override;
 
-  void SetMute(JNIEnv* env,
-               jboolean muted);
+  void SetMute(JNIEnv* env, jboolean muted);
 
   // Sets a volume that applies to all this manager's output audio streams.
   // This overrides other SetVolume calls (e.g. through AudioHostMsg_SetVolume).
