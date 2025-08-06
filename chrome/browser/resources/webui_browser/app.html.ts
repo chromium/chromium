@@ -9,7 +9,11 @@ import type {WebuiBrowserAppElement} from './app.js';
 export function getHtml(this: WebuiBrowserAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<h1>WebUI Browser</h1>
+<h1>WebUI Browser
+ <cr-button type="button" @click="${this.onMinimizeClick_}">[-]</cr-button>
+ <cr-button type="button" @click="${this.onMaximizeClick_}">[+]</cr-button>
+ <cr-button type="button" @click="${this.onCloseClick_}">[X]</cr-button>
+</h1>
 <div id="example-div">${this.message_}</div>
 <!--_html_template_end_-->`;
   // clang-format on

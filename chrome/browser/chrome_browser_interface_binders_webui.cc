@@ -140,6 +140,8 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
@@ -1435,6 +1437,11 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   registry.ForWebUI<NtpMicrosoftAuthUntrustedUI>()
       .Add<new_tab_page::mojom::
                MicrosoftAuthUntrustedDocumentInterfacesFactory>();
+
+  if (webui_browser::IsWebUIBrowserEnabled()) {
+    registry.ForWebUI<WebUIBrowserUI>()
+        .Add<webui_browser::mojom::PageHandlerFactory>();
+  }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
