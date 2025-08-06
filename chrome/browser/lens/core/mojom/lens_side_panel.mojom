@@ -89,4 +89,9 @@ interface LensSidePanelPage {
   // Shows a toast with the `message` provided in the side panel. This is
   // anchored to the bottom of the page. This text is provided by the browser.
   ShowToast(string message);
+
+  // Sends a post message to the side panel. The given `message` should be a
+  // serialized ClientToAimMessage proto, as it will be passed
+  // directly to the remote UI in the side panel iframe.
+  SendClientMessageToAim(array<uint8> serialized_message);
 };

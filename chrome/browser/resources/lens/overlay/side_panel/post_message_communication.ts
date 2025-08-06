@@ -4,6 +4,7 @@
 
 import '/strings.m.js';
 
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
@@ -25,24 +26,42 @@ export enum ParamType {
 export class PostMessageReceiver {
   private eventTracker: EventTracker = new EventTracker();
   private sidePanelProxy: SidePanelBrowserProxy;
+  private resultsFrame: HTMLIFrameElement;
+  private listenerIds: number[] = [];
+  private resultsSearchUrl: URL =
+      new URL(loadTimeData.getString('resultsSearchURL'));
 
-  constructor(sidePanelProxy: SidePanelBrowserProxy) {
+  constructor(
+      sidePanelProxy: SidePanelBrowserProxy, resultsFrame: HTMLIFrameElement) {
     this.sidePanelProxy = sidePanelProxy;
-  }
+    this.resultsFrame = resultsFrame;
 
-  // Being listening to message events on the window.
-  listen() {
-    this.eventTracker.add(window, 'message', this.onMessage.bind(this));
+    // Listen to message events on the window.
+    this.eventTracker.add(window, 'message', this.onMessageReceived.bind(this));
+    this.listenerIds.push(
+        this.sidePanelProxy.callbackRouter.sendClientMessageToAim.addListener(
+            this.onSendClientMessageToAim.bind(this)));
   }
 
   // Stop listening to message events.
   detach() {
     this.eventTracker.removeAll();
+    this.listenerIds.forEach(
+        id => assert(this.sidePanelProxy.callbackRouter.removeListener(id)));
+    this.listenerIds = [];
   }
 
-  private onMessage(event: MessageEvent) {
-    const originUrl = new URL(loadTimeData.getString('resultsSearchURL'));
-    if (event.origin !== originUrl.origin) {
+  // Sends the message to the remote UI. Message should be a serialized proto,
+  // or some other format that the remote UI can handle.
+  private onSendClientMessageToAim(serializedMessage: Uint8Array) {
+    const contentWindow = this.resultsFrame.contentWindow;
+    assert(contentWindow);
+    contentWindow.postMessage(serializedMessage, this.resultsSearchUrl.origin);
+  }
+
+  private onMessageReceived(event: MessageEvent) {
+    // Only handle messages from the results frame.
+    if (event.origin !== this.resultsSearchUrl.origin) {
       return;
     }
 

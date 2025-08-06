@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 
+#include <vector>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
@@ -631,6 +633,13 @@ void LensOverlaySidePanelCoordinator::SetPageContentUploadProgress(
     double progress) {
   if (side_panel_page_) {
     side_panel_page_->SetPageContentUploadProgress(progress);
+  }
+}
+
+void LensOverlaySidePanelCoordinator::SendClientMessageToAim(
+    const std::vector<uint8_t>& serialized_message) {
+  if (side_panel_page_) {
+    side_panel_page_->SendClientMessageToAim(serialized_message);
   }
 }
 

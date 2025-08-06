@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_COORDINATOR_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -220,6 +222,7 @@ class LensOverlaySidePanelCoordinator
 
   friend class ::LensOverlayController;
   friend class lens::LensOverlaySidePanelNavigationThrottle;
+  friend class lens::LensComposeboxController;
 
  protected:
   // Returns whether the side panel is bound to the WebUI.
@@ -249,6 +252,11 @@ class LensOverlaySidePanelCoordinator
   // Sets the page content upload progress for the progress bar in the side
   // panel.
   void SetPageContentUploadProgress(double progress);
+
+  // Passes the `message` to the side panel WebUI to be passed to the remote
+  // UI in the side panel iframe. `message` should be a serialized
+  // ClientToAimMessage proto.
+  void SendClientMessageToAim(const std::vector<uint8_t>& serialized_message);
 
  private:
   // Data class for constructing the side panel and storing side panel state for

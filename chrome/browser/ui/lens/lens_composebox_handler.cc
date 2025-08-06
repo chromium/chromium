@@ -49,7 +49,7 @@ void LensComposeboxHandler::SubmitQuery(const std::string& query_text,
                                         bool ctrl_key,
                                         bool meta_key,
                                         bool shift_key) {
-  // TODO(mercerd): Implement this.
+  lens_composebox_controller_->IssueComposeboxQuery(query_text);
 }
 
 void LensComposeboxHandler::AddFile(

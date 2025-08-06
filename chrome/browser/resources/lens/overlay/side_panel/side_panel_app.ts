@@ -231,9 +231,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private progressBarAnimation: Animation|null = null;
   private progressBarHideAnimation: Animation|null = null;
   // A helper object responsible for handling post messages received by the
-  // window.
-  private postMessageReceiver: PostMessageReceiver =
-      new PostMessageReceiver(SidePanelBrowserProxyImpl.getInstance());
+  // window. Only alive while this component is connected to the DOM.
+  private postMessageReceiver?: PostMessageReceiver;
   // Whether the feedback toast has been explicitly dismissed by the user.
   private feedbackToastDismissed = false;
   // The timeout ID for reshowing the feedback toast.
@@ -305,7 +304,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         () => this.feedbackToastDismissed = true);
 
     // Start listening to postMessages on the window.
-    this.postMessageReceiver.listen();
+    this.postMessageReceiver = new PostMessageReceiver(
+        SidePanelBrowserProxyImpl.getInstance(), this.$.results);
   }
 
   override disconnectedCallback() {
@@ -315,7 +315,9 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
     this.eventTracker_.removeAll();
-    this.postMessageReceiver.detach();
+    // Let the postMessageReceiver cleanup before it is destroyed.
+    this.postMessageReceiver!.detach();
+    this.postMessageReceiver = undefined;
   }
 
   private onBackArrowClick() {
