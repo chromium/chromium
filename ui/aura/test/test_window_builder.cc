@@ -18,7 +18,7 @@ TestWindowBuilder::TestWindowBuilder(WindowBuilderParams params)
 
 TestWindowBuilder::TestWindowBuilder(TestWindowBuilder& others)
     : params_(std::move(others.params_)),
-      delegate_(std::move(others.delegate_)),
+      window_title_(std::move(others.window_title_)),
       init_properties_(std::move(others.init_properties_)) {
   DCHECK(!others.built_);
   others.built_ = true;
@@ -48,7 +48,7 @@ TestWindowBuilder& TestWindowBuilder::SetWindowId(int id) {
 TestWindowBuilder& TestWindowBuilder::SetWindowTitle(
     const std::u16string& title) {
   DCHECK(!built_);
-  params_.window_title = title;
+  window_title_ = title;
   return *this;
 }
 
@@ -60,22 +60,22 @@ TestWindowBuilder& TestWindowBuilder::SetBounds(const gfx::Rect& bounds) {
 
 TestWindowBuilder& TestWindowBuilder::SetDelegate(WindowDelegate* delegate) {
   DCHECK(!built_);
-  DCHECK(!delegate_);
-  delegate_ = delegate;
+  DCHECK(!params_.delegate);
+  params_.delegate = delegate;
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetColorWindowDelegate(SkColor color) {
   DCHECK(!built_);
-  DCHECK(!delegate_);
-  delegate_ = new ColorTestWindowDelegate(color);
+  DCHECK(!params_.delegate);
+  params_.delegate = new ColorTestWindowDelegate(color);
   return *this;
 }
 
 TestWindowBuilder& TestWindowBuilder::SetTestWindowDelegate() {
   DCHECK(!built_);
-  DCHECK(!delegate_);
-  delegate_ = TestWindowDelegate::CreateSelfDestroyingDelegate();
+  DCHECK(!params_.delegate);
+  params_.delegate = TestWindowDelegate::CreateSelfDestroyingDelegate();
   return *this;
 }
 
@@ -98,18 +98,11 @@ TestWindowBuilder& TestWindowBuilder::SetShow(bool show) {
 std::unique_ptr<Window> TestWindowBuilder::Build() {
   auto window = CreateWindowInternal();
   auto* parent = release_parent();
+  if (!params_.bounds.IsEmpty()) {
+    window->SetBounds(params_.bounds);
+  }
   if (parent) {
-    if (!params_.bounds.IsEmpty()) {
-      window->SetBounds(params_.bounds);
-    }
     parent->AddChild(window.get());
-  } else {
-    // Parent window is not specified. A parent window will be picked from
-    // the context.
-    aura::Window* context = window.get()->GetRootWindow();
-    CHECK(context);
-    client::ParentWindowWithContext(window.get(), context, params_.bounds,
-                                    display::kInvalidDisplayId);
   }
   if (params_.show) {
     window->Show();
@@ -121,15 +114,15 @@ std::unique_ptr<Window> TestWindowBuilder::CreateWindowInternal() {
   DCHECK(!built_);
   built_ = true;
   std::unique_ptr<Window> window =
-      std::make_unique<Window>(delegate_, params_.window_type);
-  delegate_ = nullptr;
-  window->Init(params_.layer_type);
-  window->AcquireAllPropertiesFrom(std::move(init_properties_));
+      std::make_unique<Window>(params_.delegate, params_.window_type);
+  params_.delegate = nullptr;
   if (params_.window_id != Window::kInitialId) {
     window->SetId(params_.window_id);
   }
-  if (!params_.window_title.empty()) {
-    window->SetTitle(params_.window_title);
+  window->Init(params_.layer_type);
+  window->AcquireAllPropertiesFrom(std::move(init_properties_));
+  if (!window_title_.empty()) {
+    window->SetTitle(window_title_);
   }
   return window;
 }

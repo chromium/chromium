@@ -17,12 +17,12 @@
 namespace aura::test {
 
 struct WindowBuilderParams {
+  raw_ptr<WindowDelegate> delegate = nullptr;
   raw_ptr<Window> parent = nullptr;
-  gfx::Rect bounds;
+  gfx::Rect bounds{100, 100};
   client::WindowType window_type = client::WINDOW_TYPE_NORMAL;
   ui::LayerType layer_type = ui::LAYER_TEXTURED;
   int window_id = Window::kInitialId;
-  std::u16string window_title = std::u16string();
   bool show = true;
 };
 
@@ -96,7 +96,7 @@ class TestWindowBuilder {
 
  private:
   WindowBuilderParams params_;
-  raw_ptr<WindowDelegate> delegate_;
+  std::u16string window_title_;
   ui::PropertyHandler init_properties_;
   bool built_ = false;
 };
