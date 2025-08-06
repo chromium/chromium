@@ -122,6 +122,9 @@ void CheckGeminiEligibility(AuthenticationService* auth_service,
 // Resets the Gemini instance by clearing its state.
 void ResetGemini();
 
+// Returns true if a URL is protected.
+bool IsProtectedUrl(std::string url);
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_
