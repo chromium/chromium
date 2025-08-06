@@ -586,6 +586,16 @@ enum TerminationStatus {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   TERMINATION_STATUS_TWELVE = 12,
 #endif
+
+  TERMINATION_STATUS_THIRTEEN = 13,
+
+#if BUILDFLAG(IS_POSIX)
+  TERMINATION_STATUS_FOURTEEN = 14,
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  TERMINATION_STATUS_LAST = 1000,
+#endif
 };
     """.split('\n')
     definitions = HeaderParser(test_data).ParseDefinitions()
@@ -606,6 +616,8 @@ enum TerminationStatus {
             # INTEGRITY_FAILURE value should not appear here.
             # TEN and ELEVEN should not appear here.
             ('TWELVE', '12'),
+            ('THIRTEEN', '13'),
+            ('FOURTEEN', '14'),
         ]),
         definition.entries)
     self.assertEqual(

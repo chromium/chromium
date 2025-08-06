@@ -269,7 +269,8 @@ class HeaderParser:
   def _ParseLine(self, line):
     if HeaderParser.if_buildflag_re.match(line):
       self._in_preprocessor_block += 1
-      self._in_buildflag_android.append('BUILDFLAG(IS_ANDROID)' in line)
+      self._in_buildflag_android.append('BUILDFLAG(IS_ANDROID)' in line
+                                        or 'BUILDFLAG(IS_POSIX)' in line)
       return
     if self._in_preprocessor_block and HeaderParser.if_buildflag_end_re.match(
         line):
@@ -336,7 +337,8 @@ class HeaderParser:
     self._current_enum_entry += ' ' + line.strip()
 
   def _FinalizeCurrentEnumDefinition(self):
-    if self._current_enum_entry:
+    # It has a space as a prefix so strip is needed.
+    if self._current_enum_entry.strip():
       self._ParseCurrentEnumEntry()
     self._ApplyGeneratorDirectives()
     self._current_definition.Finalize()
