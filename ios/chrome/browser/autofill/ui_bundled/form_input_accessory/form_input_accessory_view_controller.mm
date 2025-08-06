@@ -208,6 +208,12 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   _keyboardWasClosed = NO;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  [self.formInputAccessoryView layoutIfNeeded];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
 
