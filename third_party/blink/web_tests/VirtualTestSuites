@@ -121,25 +121,6 @@
     "expires": "Jul 2, 2026"
   },
   {
-    "prefix": "attribution-reporting-in-browser-migration",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/inspector-protocol/attribution-reporting"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=KeepAliveInBrowserMigration,AttributionReportingInBrowserMigration"
-    ],
-    "owners": [
-      "linnan@chromium.org"
-    ],
-    "expires": "Jul 2, 2025"
-  },
-  {
     "prefix": "autoplay-policy-no-user-gesture-required",
     "owners": [
       "leimy@google.com"
