@@ -466,6 +466,8 @@ public class StripLayoutTab extends StripLayoutView {
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
             case VisualState.SELECTED:
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
+            case VisualState.NON_DRAG_REORDERING:
+                return TabUiThemeUtil.getTabStripBackgroundColor(mContext, isIncognito());
             case VisualState.MULTISELECT_HOVERED:
                 return TabUiThemeUtil.getTabStripMultiSelectedHoveredTabColor(
                         mContext, isIncognito());
@@ -614,6 +616,11 @@ public class StripLayoutTab extends StripLayoutView {
     /** Called when this tab has finished loading resources. */
     public void loadingFinished() {
         mLoadTracker.loadingFinished();
+    }
+
+    /** Returns {@code true} if the tab should be visible. */
+    public boolean shouldBeVisible() {
+        return mIsSelected || mIsPlaceholder || mIsMultiSelected || getIsNonDragReordering();
     }
 
     /**

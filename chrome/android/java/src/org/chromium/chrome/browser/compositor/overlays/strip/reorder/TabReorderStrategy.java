@@ -212,17 +212,15 @@ public class TabReorderStrategy extends ReorderStrategyBase {
                 curIndex);
 
         // Animate the reordering view and ensure it's foregrounded.
-        // TODO(crbug.com/402775002): Replace the temporary multi-selected visuals once the reorder
-        //  specs are finalized.
-        tabDelegate.setIsTabMultiSelected(tab, /* isMultiSelected= */ true, /* animate= */ false);
+        tabDelegate.setIsTabNonDragReordering(tab, /* isNonDragReordering= */ true);
         reorderingView.setIsForegrounded(/* isForegrounded= */ true);
         animateViewSliding(
                 reorderingView,
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        tabDelegate.setIsTabMultiSelected(
-                                tab, /* isMultiSelected= */ false, /* animate= */ false);
+                        tabDelegate.setIsTabNonDragReordering(
+                                tab, /* isNonDragReordering= */ false);
                         reorderingView.setIsForegrounded(/* isForegrounded= */ false);
                     }
                 });

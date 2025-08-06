@@ -1901,14 +1901,6 @@ public class StripLayoutHelper
         }
     }
 
-    private void setTabContainerVisible(StripLayoutTab tab) {
-        // The container will be visible if the tab is selected,
-        // is a placeholder tab or is multi-selected.
-        boolean isVisible =
-                tab.getIsSelected() || tab.getIsPlaceholder() || tab.getIsMultiSelected();
-        StripLayoutTabDelegate.setTabVisibility(tab, isVisible);
-    }
-
     private void updateTabContainersAndDividers() {
         int hoveredId = mLastHoveredTab != null ? mLastHoveredTab.getTabId() : Tab.INVALID_TAB_ID;
 
@@ -1918,7 +1910,7 @@ public class StripLayoutHelper
 
             // 1. Set container visibility. Handled in a separate animation for hovered tabs.
             if (hoveredId != currTab.getTabId()) {
-                setTabContainerVisible(currTab);
+                StripLayoutTabDelegate.updateTabVisibility(currTab);
             }
             boolean currContainerHidden = StripLayoutTabDelegate.isTabHidden(currTab);
 

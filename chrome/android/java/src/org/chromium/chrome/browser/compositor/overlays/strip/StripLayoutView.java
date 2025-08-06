@@ -119,6 +119,7 @@ public abstract class StripLayoutView implements VirtualView {
     private boolean mIsIncognito;
     private boolean mIsForegrounded;
     private boolean mIsDraggedOffStrip;
+    private boolean mIsNonDragReordering;
     private boolean mWillClose;
 
     // A11y variables.
@@ -357,6 +358,16 @@ public abstract class StripLayoutView implements VirtualView {
     /** Returns whether or not the view is dragged off the strip and should be hidden. */
     public boolean isDraggedOffStrip() {
         return mIsDraggedOffStrip;
+    }
+
+    /** Sets if the view is reordering for a non-drag operation. */
+    public void setIsNonDragReordering(boolean isNonDragReordering) {
+        mIsNonDragReordering = isNonDragReordering;
+    }
+
+    /** Gets whether or not the view is reordering for a non-drag operation. */
+    public boolean getIsNonDragReordering() {
+        return mIsNonDragReordering;
     }
 
     /** Marks that the view will be closed due to an incoming TabModel update. */

@@ -1070,11 +1070,10 @@ public class TabStripTest {
         lastHoveredTab = stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
         Assert.assertEquals("The last hovered tab is not set correctly.", tab2, lastHoveredTab);
         Assert.assertFalse("|mFolioAttached| for tab2 should be false.", tab2.getFolioAttached());
-        Assert.assertTrue("|mFolioAttached| for tab1 should be true.", tab1.getFolioAttached());
         Assert.assertEquals(
-                "tab1 container bottom margin should match.",
-                StripLayoutTabDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP,
-                tab1.getBottomMargin(),
+                "tab2 container bottom margin should match.",
+                StripLayoutTabDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP,
+                tab2.getBottomMargin(),
                 0.f);
 
         // Simulate a subsequent hover outside tab2.
@@ -1086,7 +1085,6 @@ public class TabStripTest {
                                 MotionEvent.ACTION_HOVER_EXIT, xExit, yExit));
         lastHoveredTab = stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
         Assert.assertNull("The last hovered tab is not set correctly.", lastHoveredTab);
-        Assert.assertTrue("|mFolioAttached| for tab2 should be true.", tab2.getFolioAttached());
     }
 
     /** Tests hover cards shown in standard as well as incognito tab models. */

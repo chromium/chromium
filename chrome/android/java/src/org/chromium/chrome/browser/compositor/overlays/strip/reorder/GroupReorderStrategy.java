@@ -214,8 +214,10 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
 
         // Animate the reordering view. Ensure all the views are foregrounded.
         reorderingView.setIsForegrounded(/* isForegrounded= */ true);
+        reorderingView.setIsNonDragReordering(/* isNonDragReordering= */ true);
         for (StripLayoutTab tab : groupedTabs) {
             tab.setIsForegrounded(/* isForegrounded= */ true);
+            tabDelegate.setIsTabNonDragReordering(tab, /* isNonDragReordering= */ true);
             animateViewSliding(tab);
         }
         animateViewSliding(
@@ -224,8 +226,11 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         reorderingView.setIsForegrounded(/* isForegrounded= */ false);
+                        reorderingView.setIsNonDragReordering(/* isNonDragReordering= */ false);
                         for (StripLayoutTab tab : groupedTabs) {
                             tab.setIsForegrounded(/* isForegrounded= */ false);
+                            tabDelegate.setIsTabNonDragReordering(
+                                    tab, /* isNonDragReordering= */ false);
                         }
                     }
                 });
