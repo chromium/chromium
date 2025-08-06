@@ -9,11 +9,11 @@
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
-#include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
 
+class AudioBus;
 class AudioNode;
 class ExceptionState;
 class AudioNodeInput;
@@ -30,6 +30,10 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
       AudioNode&,
       uint32_t number_of_channels,
       WebAudioDestinationConsumer*);
+  MediaStreamAudioDestinationHandler(
+      const MediaStreamAudioDestinationHandler&) = delete;
+  MediaStreamAudioDestinationHandler& operator=(
+      const MediaStreamAudioDestinationHandler&) = delete;
   ~MediaStreamAudioDestinationHandler() override;
 
   // This handler must release its reference to the consumer when the

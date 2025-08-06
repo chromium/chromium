@@ -38,13 +38,13 @@ class ScriptProcessorHandler final : public AudioHandler {
       uint32_t number_of_output_channels,
       const HeapVector<Member<AudioBuffer>>& input_buffers,
       const HeapVector<Member<AudioBuffer>>& output_buffers);
+  ScriptProcessorHandler(const ScriptProcessorHandler&) = delete;
+  ScriptProcessorHandler& operator=(const ScriptProcessorHandler&) = delete;
   ~ScriptProcessorHandler() override;
 
   // AudioHandler
   void Process(uint32_t frames_to_process) override;
   void Initialize() override;
-
-  uint32_t BufferSize() const { return buffer_size_; }
 
   void SetChannelCount(uint32_t, ExceptionState&) override;
   void SetChannelCountMode(V8ChannelCountMode::Enum, ExceptionState&) override;
@@ -52,6 +52,8 @@ class ScriptProcessorHandler final : public AudioHandler {
   uint32_t NumberOfOutputChannels() const override {
     return number_of_output_channels_;
   }
+
+  uint32_t BufferSize() const { return buffer_size_; }
 
   base::Lock& GetBufferLock() LOCK_RETURNED(buffer_lock_) {
     return buffer_lock_;
@@ -68,7 +70,7 @@ class ScriptProcessorHandler final : public AudioHandler {
 
   double TailTime() const override;
   double LatencyTime() const override;
-  bool RequiresTailProcessing() const final;
+  bool RequiresTailProcessing() const override;
 
   void FireProcessEvent(uint32_t);
   void FireProcessEventForOfflineAudioContext(uint32_t, base::WaitableEvent*);

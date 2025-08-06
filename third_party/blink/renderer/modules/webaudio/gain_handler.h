@@ -20,6 +20,9 @@ class GainHandler final : public AudioHandler {
   static scoped_refptr<GainHandler> Create(AudioNode&,
                                            float sample_rate,
                                            AudioParamHandler& gain);
+  GainHandler(const GainHandler&) = delete;
+  GainHandler& operator=(const GainHandler&) = delete;
+  ~GainHandler() override = default;
 
   // AudioHandler
   void Process(uint32_t frames_to_process) override;

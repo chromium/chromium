@@ -337,8 +337,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       }
 
       // Final sanity check on buffer access.
-      // FIXME: as an optimization, try to get rid of this inner-loop check and
-      // put assertions and guards before the loop.
+      // TODO(crbug.com/436880897): as an optimization, try to get rid of this
+      // inner-loop check and put assertions and guards before the loop.
       if (read_index >= buffer_length || read_index2 >= buffer_length) {
         break;
       }
@@ -348,11 +348,11 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
         for (unsigned i = 0; i < number_of_channels; ++i) {
           float* destination = destination_channels[i];
           const float* source = source_channels[i];
-          double sample;
 
           // The source channel may have been transferred so don't try to read
           // from it if it was.  Just set the destination to 0.
           if (source) {
+            double sample;
             if (read_index == read_index2 && read_index >= 1) {
               // We're at the end of the buffer, so just linearly extrapolate
               // from the last two samples.
@@ -371,7 +371,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
           }
         }
       });
-      write_index++;
+      ++write_index;
 
       virtual_read_index += computed_playback_rate;
 
