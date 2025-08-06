@@ -391,7 +391,7 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_SCANNING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth scanning permission is in the ask state and the site can prompt the user to ask if they allow the site to discover nearby Bluetooth devices.">
       Can ask to discover nearby Bluetooth devices
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" translateable="false"  desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
+    <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
       Can ask to access cookies
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_APP_INSTALLATION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the web app installation permission is in the ask state and the site can prompt the user to ask if they allow the site to install web apps.">
