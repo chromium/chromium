@@ -46,7 +46,9 @@ class XSLTProcessor final : public ScriptWrappable {
     return MakeGarbageCollected<XSLTProcessor>(document);
   }
 
-  XSLTProcessor(Document& document) : document_(&document) {}
+  XSLTProcessor(Document& document) : document_(&document) {
+    CHECK(RuntimeEnabledFeatures::XSLTEnabled());
+  }
   ~XSLTProcessor() override;
 
   void SetXSLStyleSheet(XSLStyleSheet* style_sheet) {

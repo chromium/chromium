@@ -5835,6 +5835,12 @@
       status: "test",
     },
     {
+      // A feature flag that controls whether XSLT is supported by the browser.
+      // crbug.com/435623334.
+      name: "XSLT",
+      status: "stable",
+    },
+    {
       // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12
       // frames, which should trigger a zero-copy path in the tab capture code.
       name: "ZeroCopyTabCapture",

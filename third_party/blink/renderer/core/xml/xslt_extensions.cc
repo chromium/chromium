@@ -32,6 +32,7 @@
 #include <libxslt/xsltutils.h>
 
 #include "base/check.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -75,6 +76,7 @@ static void ExsltNodeSetFunction(xmlXPathParserContextPtr ctxt, int nargs) {
 }
 
 void RegisterXSLTExtensions(xsltTransformContextPtr ctxt) {
+  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
   xsltRegisterExtFunction(ctxt, (const xmlChar*)"node-set",
                           (const xmlChar*)"http://exslt.org/common",
                           ExsltNodeSetFunction);
