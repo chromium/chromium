@@ -508,6 +508,21 @@ _builtin_deps = {
     # dependency completely as we construct the modules differently.
     '//third_party/rust/cxxbridge_cmd/v1:cxxbridge':
     always_disable,
+    # rustc_print_cfg is used to print rustc compiler default assumption
+    # for a specific CPU architecture (e.g. target_feature="ssse3"). Those
+    # features only changes from one CPU architecture to another. It's used
+    # when generating the cxxbindings and build scripts (build scripts is a
+    # rust concept, it's an rust binary that generates flags used to compile
+    # other rust binaries).
+    # For CXXBindings, we use AOSP's binary which already have the configuration
+    # specified depending on which arch it's building for.
+    # For build scripts, we generate those on Chromium side in a JSON file and
+    # inject them in the pipeline.
+    #
+    # From the above reasoning, we can safely assume that we should not need
+    # to build this target at all.
+    '//build/rust/gni_impl:rustc_print_cfg':
+    always_disable,
     '//net/data/ssl/chrome_root_store:gen_root_store_inc':
     always_disable,
     '//third_party/zstd:headers':
