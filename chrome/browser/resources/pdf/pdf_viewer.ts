@@ -155,7 +155,9 @@ const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY: string = 'sidenavCollapsed';
  */
 // LINT.IfChange(PdfBackgroundColor)
 const BACKGROUND_COLOR: number = 0xff282828;
-// LINT.ThenChange(//components/pdf/common/pdf_util.cc:PdfBackgroundColor)
+// clang-format off
+// LINT.ThenChange(//chrome/browser/resources/pdf/pdf_embedder.css:PdfBackgroundColor, //components/pdf/common/pdf_util.cc:PdfBackgroundColor)
+// clang-format on
 
 export interface PdfViewerElement {
   $: {

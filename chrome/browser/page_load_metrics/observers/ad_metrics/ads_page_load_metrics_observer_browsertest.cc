@@ -2335,7 +2335,16 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback(),
       content::ISOLATED_WORLD_ID_GLOBAL);
-  waiter->AddMinimumAdResourceExpectation(8);
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/324635792): OOPIF PDF loads an additional CSS resource
+  // instead of inlining styles. This is considered an ad resource since it was
+  // created by ad_script.js. Remove when OOPIF PDF field trial testing is
+  // enabled for ChromeOS.
+  constexpr int kExpectedNumAdResources = 8;
+#else
+  constexpr int kExpectedNumAdResources = 9;
+#endif
+  waiter->AddMinimumAdResourceExpectation(kExpectedNumAdResources);
   waiter->Wait();
 
   // Close all tabs to report metrics.

@@ -19,7 +19,9 @@ namespace {
 
 // LINT.IfChange(PdfBackgroundColor)
 constexpr SkColor kPdfExtensionBackgroundColor = SkColorSetRGB(40, 40, 40);
-// LINT.ThenChange(//chrome/browser/resources/pdf/pdf_viewer.ts:PdfBackgroundColor)
+// clang-format off
+// LINT.ThenChange(//chrome/browser/resources/pdf/pdf_embedder.css:PdfBackgroundColor, //chrome/browser/resources/pdf/pdf_viewer.ts:PdfBackgroundColor)
+// clang-format on
 
 }  // namespace
 

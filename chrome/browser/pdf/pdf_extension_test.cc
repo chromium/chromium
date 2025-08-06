@@ -4447,8 +4447,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
           embedder_host,
           "window.getComputedStyle(document.body).getPropertyValue('margin')")
           .ExtractString();
-  // TODO(crbug.com/343754409): Margin should be 0px.
-  EXPECT_EQ("8px", embedder_margin);
+  EXPECT_EQ("0px", embedder_margin);
 }
 
 class PDFExtensionOopifBlockPdfFrameNavigationTest
