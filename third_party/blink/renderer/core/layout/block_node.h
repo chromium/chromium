@@ -201,9 +201,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       bool use_first_line_style,
       BaselineAlgorithmType baseline_algorithm_type);
 
-  // Write the number of columns in a multicol container to legacy.
-  void StoreColumnCount(int count);
-
   bool ShouldApplyLayoutContainment() const {
     return box_->ShouldApplyLayoutContainment();
   }
@@ -219,11 +216,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   }
   LayoutUnit EmptyLineBlockSize(
       const BlockBreakToken* incoming_break_token) const;
-
-  // If extra columns are added after a multicol has been written back to
-  // legacy, for example for an OOF positioned element, we need to update the
-  // legacy flow thread to encompass those extra columns.
-  void MakeRoomForExtraColumns(LayoutUnit block_size) const;
 
   // Page containers and page border boxes are laid out directly by special
   // algorithms, rather than going via BlockNode::Layout(), so whatever

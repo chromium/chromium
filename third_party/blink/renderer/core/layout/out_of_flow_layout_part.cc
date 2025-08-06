@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
@@ -1426,11 +1425,6 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
           converter.ToLogical(child.fragment->Size()).block_size;
     }
     fragment_mutator.UpdateOverflow();
-
-    // We've already written back to legacy for |multicol|, but if we added
-    // new columns to hold any OOF descendants, we need to extend the final
-    // size of the legacy flow thread to encompass those new columns.
-    multicol.MakeRoomForExtraColumns(additional_column_block_size);
   }
 
   // Any descendants should have been handled in
@@ -3025,8 +3019,7 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
 void OutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
     LayoutBox* layout_box,
     LogicalStaticPosition position) const {
-  const LayoutObject* parent =
-      GetLayoutObjectForParentNode<const LayoutObject*>(layout_box);
+  const LayoutObject* parent = layout_box->Parent();
   const LayoutObject* container = container_builder_->GetLayoutObject();
   if (parent == container ||
       (parent->IsLayoutInline() && parent->ContainingBlock() == container)) {

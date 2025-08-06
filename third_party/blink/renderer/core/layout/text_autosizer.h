@@ -361,8 +361,8 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   Member<const Document> document_;
   Member<const LayoutBlock> first_block_to_begin_layout_;
-  // WeakMember because we don't call UnregisterInlineSize() for
-  // LayoutMultiColumnFlowThread.
+  // TODO(layout-dev): Probably doesn't need to be WeakMember anymore, since the
+  // legacy multicol implementation is gone.
   HeapHashMap<WeakMember<const LayoutBlock>, LayoutUnit> inline_size_map_;
 
 #if DCHECK_IS_ON()

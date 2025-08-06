@@ -55,8 +55,7 @@ bool CanBeInlineContentsContainer(const LayoutObject& layout_object) {
     return true;
   }
   // Since we can't create |EphemeralRange|, we exclude a |LayoutBlockFlow| if
-  // its entire subtree is anonymous, e.g. |LayoutMultiColumnSet|,
-  // and with anonymous layout objects.
+  // its entire subtree is anonymous.
   return HasNonPsuedoNode(*block_flow);
 }
 

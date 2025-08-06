@@ -16,8 +16,10 @@ class LayoutTableCellWithAnonymousMrow : public LayoutTableCell {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  // The multicol flow thread expects to be a direct child of the multicol
-  // container, but the AddChild() override above prevents that.
+  // TODO(crbug.com/40060619): This override was added because of the legacy
+  // multicol implementation, which required its own special anonymous child
+  // wrapper, which came in conflict with what AddChild() does here. It should
+  // now be safe to allow multicol again (if that's useful at all).
   bool AllowsColumns() const override {
     NOT_DESTROYED();
     return false;

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 
@@ -118,7 +117,7 @@ const LayoutObject* LayoutListItem::FindSymbolMarkerLayoutText(
   }
 
   if (object->IsAnonymousBlockFlow()) {
-    return FindSymbolMarkerLayoutText(GetLayoutObjectForParentNode(object));
+    return FindSymbolMarkerLayoutText(object->Parent());
   }
 
   if (object->IsLayoutTextCombine()) {

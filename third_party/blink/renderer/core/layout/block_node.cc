@@ -41,15 +41,11 @@
 #include "third_party/blink/renderer/core/layout/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
@@ -99,9 +95,8 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-inline bool HasInlineChildren(LayoutBlockFlow* block_flow) {
-  auto* child = GetLayoutObjectForFirstChildNode(block_flow);
-  return child && AreNGBlockFlowChildrenInline(block_flow);
+inline bool HasInlineChildren(const LayoutBlockFlow* block_flow) {
+  return block_flow->FirstChild() && block_flow->ChildrenInline();
 }
 
 // The entire purpose of this function is to avoid allocating space on the stack
@@ -1151,11 +1146,12 @@ LayoutInputNode BlockNode::FirstChild() const {
   if (!block) [[unlikely]] {
     return BlockNode(box_->FirstChildBox());
   }
-  auto* child = GetLayoutObjectForFirstChildNode(block);
+  auto* child = block->FirstChild();
   if (!child)
     return nullptr;
-  if (!AreNGBlockFlowChildrenInline(block))
+  if (!block->ChildrenInline()) {
     return BlockNode(To<LayoutBox>(child));
+  }
 
   InlineNode inline_node(To<LayoutBlockFlow>(block));
   if (!inline_node.IsBlockLevel())
@@ -1236,19 +1232,6 @@ void BlockNode::CopyFragmentDataToLayoutBox(
   }
 }
 
-void BlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
-  if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-    return;
-  }
-  auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutBox());
-  DCHECK(block_flow && block_flow->MultiColumnFlowThread());
-  MultiColumnFragmentainerGroup& last_group =
-      block_flow->MultiColumnFlowThread()
-          ->LastMultiColumnSet()
-          ->LastFragmentainerGroup();
-  last_group.ExtendLogicalBottomInFlowThread(block_size);
-}
-
 void BlockNode::FinishPageContainerLayout(const LayoutResult* result) const {
   DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
   DCHECK(result->GetPhysicalFragment().GetBoxType() ==
@@ -1270,11 +1253,10 @@ bool BlockNode::UseParentPercentageResolutionBlockSizeForChildren() const {
   const bool in_quirks_mode = GetDocument().InQuirksMode();
   // Anonymous blocks should not impede percentage resolution on a child.
   // Examples of such anonymous blocks are blocks wrapped around inlines that
-  // have block siblings (from the CSS spec) and multicol flow threads (an
-  // implementation detail). Another implementation detail, ruby columns, create
-  // anonymous inline-blocks, so skip those too. All other types of anonymous
-  // objects, such as table-cells, will be treated just as if they were
-  // non-anonymous.
+  // have block siblings (from the CSS spec). An implementation detail, ruby
+  // columns, create anonymous inline-blocks, so skip those too. All other types
+  // of anonymous objects, such as table-cells, will be treated just as if they
+  // were non-anonymous.
   if (block->IsAnonymous()) {
     if (!in_quirks_mode && block->Parent() && block->Parent()->IsFieldset()) {
       return false;
@@ -1316,8 +1298,9 @@ bool BlockNode::UseParentPercentageResolutionBlockSizeForChildren() const {
 bool BlockNode::IsInlineFormattingContextRoot(
     InlineNode* first_child_out) const {
   if (const auto* block = DynamicTo<LayoutBlockFlow>(box_.Get())) {
-    if (!AreNGBlockFlowChildrenInline(block))
+    if (!block->ChildrenInline()) {
       return false;
+    }
     LayoutInputNode first_child = FirstChild();
     if (first_child.IsInline()) {
       if (first_child_out)
@@ -1575,15 +1558,6 @@ void BlockNode::UpdateShapeOutsideInfoIfNeeded(
       LogicalSize(margins.InlineSum(), margins.BlockSum()));
   shape_outside->SetPercentageResolutionInlineSize(
       constraint_space.PercentageResolutionInlineSize());
-}
-
-void BlockNode::StoreColumnCount(int count) {
-  if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-    return;
-  }
-  LayoutMultiColumnFlowThread* flow_thread =
-      To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();
-  flow_thread->SetColumnCountFromNG(count);
 }
 
 static bool g_devtools_layout = false;

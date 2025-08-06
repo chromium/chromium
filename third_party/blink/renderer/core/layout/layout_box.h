@@ -52,7 +52,6 @@ class ConstraintSpace;
 class CustomLayoutChild;
 class EarlyBreak;
 class Element;
-class LayoutMultiColumnSpannerPlaceholder;
 class LayoutResult;
 class MeasureCache;
 class PhysicalBoxFragment;
@@ -83,10 +82,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   LayoutBoxRareData& operator=(const LayoutBoxRareData&) = delete;
 
   void Trace(Visitor* visitor) const;
-
-  // For spanners, the spanner placeholder that lays us out within the multicol
-  // container.
-  Member<LayoutMultiColumnSpannerPlaceholder> spanner_placeholder_;
 
   bool has_override_containing_block_content_logical_width_ : 1;
   bool has_previous_content_box_rect_ : 1;
@@ -320,13 +315,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* NextSiblingBox() const;
   LayoutBox* ParentBox() const;
 
-  // Return the previous sibling column set or spanner placeholder. Only to be
-  // used on multicol container children.
-  LayoutBox* PreviousSiblingMultiColumnBox() const;
-  // Return the next sibling column set or spanner placeholder. Only to be used
-  // on multicol container children.
-  LayoutBox* NextSiblingMultiColumnBox() const;
-
   bool CanResize() const;
 
   DISABLE_CFI_PERF PhysicalRect NoOverflowRect() const {
@@ -335,7 +323,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect ScrollableOverflowRect() const {
     NOT_DESTROYED();
-    DCHECK(!IsLayoutMultiColumnSet());
     return ScrollableOverflowIsSet()
                ? overflow_->scrollable_overflow->ScrollableOverflowRect()
                : NoOverflowRect();
@@ -726,13 +713,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsFragmentLessBox() const final {
     NOT_DESTROYED();
     return !PhysicalFragmentCount();
-  }
-
-  void SetSpannerPlaceholder(LayoutMultiColumnSpannerPlaceholder&);
-  void ClearSpannerPlaceholder();
-  LayoutMultiColumnSpannerPlaceholder* SpannerPlaceholder() const final {
-    NOT_DESTROYED();
-    return rare_data_ ? rare_data_->spanner_placeholder_.Get() : nullptr;
   }
 
   bool IsValidColumnSpanner() const final {
@@ -1403,8 +1383,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   Member<BoxOverflowModel> overflow_;
   Member<LayoutBoxRareData> rare_data_;
-
-  FRIEND_TEST_ALL_PREFIXES(LayoutMultiColumnSetTest, ScrollAnchroingCrash);
 };
 
 template <>
@@ -1435,21 +1413,6 @@ inline LayoutBox* LayoutBox::FirstChildBox() const {
 inline LayoutBox* LayoutBox::LastChildBox() const {
   NOT_DESTROYED();
   return To<LayoutBox>(SlowLastChild());
-}
-
-inline LayoutBox* LayoutBox::PreviousSiblingMultiColumnBox() const {
-  NOT_DESTROYED();
-  DCHECK(IsLayoutMultiColumnSpannerPlaceholder() || IsLayoutMultiColumnSet());
-  LayoutBox* previous_box = PreviousSiblingBox();
-  if (previous_box->IsLayoutFlowThread())
-    return nullptr;
-  return previous_box;
-}
-
-inline LayoutBox* LayoutBox::NextSiblingMultiColumnBox() const {
-  NOT_DESTROYED();
-  DCHECK(IsLayoutMultiColumnSpannerPlaceholder() || IsLayoutMultiColumnSet());
-  return NextSiblingBox();
 }
 
 inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {

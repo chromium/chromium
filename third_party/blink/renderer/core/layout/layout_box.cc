@@ -84,14 +84,11 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/measure_cache.h"
@@ -464,13 +461,11 @@ void RecalcFragmentScrollableOverflow(RecalcScrollableOverflowResult& result,
 }  // namespace
 
 LayoutBoxRareData::LayoutBoxRareData()
-    : spanner_placeholder_(nullptr),
-      // TODO(rego): We should store these based on physical direction.
+    :  // TODO(rego): We should store these based on physical direction.
       has_override_containing_block_content_logical_width_(false),
       has_previous_content_box_rect_(false) {}
 
 void LayoutBoxRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(spanner_placeholder_);
   visitor->Trace(layout_child_);
 }
 
@@ -687,20 +682,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   UpdateGridPositionAfterStyleChange(old_style);
 
   if (old_style) {
-    // Regular column content (i.e. non-spanners) have a hook into the flow
-    // thread machinery before (StyleWillChange()) and after (here in
-    // StyleDidChange()) the style has changed. Column spanners, on the other
-    // hand, only have a hook here. The LayoutMultiColumnSpannerPlaceholder code
-    // will do all the necessary things, including removing it as a spanner, if
-    // it should no longer be one. Therefore, make sure that we skip
-    // FlowThreadDescendantStyleDidChange() in such cases, as that might trigger
-    // a duplicate flow thread insertion notification, if the spanner no longer
-    // is a spanner.
-    if (LayoutMultiColumnSpannerPlaceholder* placeholder =
-            SpannerPlaceholder()) {
-      placeholder->LayoutObjectInFlowThreadStyleDidChange(old_style);
-    }
-
     UpdateScrollSnapMappingAfterStyleChange(*old_style);
 
     if (ShouldClipOverflowAlongEitherAxis()) {
@@ -1228,20 +1209,6 @@ void LayoutBox::UpdateAfterLayout() {
     ClearNeedsLayoutWithFullPaintInvalidation();
   } else {
     ClearNeedsLayout();
-  }
-
-  if (auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
-    // TODO(crbug.com/371802475): Get rid of this. The special anonymous objects
-    // created (but not really used anymore) for multicol layout are not laid
-    // out, and need to be cleared manually, to avoid DCHECK failures.
-    if (LayoutMultiColumnFlowThread* flow_thread =
-            block_flow->MultiColumnFlowThread()) {
-      for (LayoutBox* column_box = flow_thread->FirstMultiColumnBox();
-           column_box; column_box = column_box->NextSiblingMultiColumnBox()) {
-        column_box->ClearNeedsLayout();
-      }
-      flow_thread->ClearNeedsLayout();
-    }
   }
 
   // We should notify the display lock that we've done layout on self, and if
@@ -2885,15 +2852,6 @@ void LayoutBox::CheckMayHaveFragmentItems() const {
 void LayoutBox::InvalidateCachedGeometry() {
   NOT_DESTROYED();
   SetHasValidCachedGeometry(false);
-  if (auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
-    if (auto* flow_thread = block_flow->MultiColumnFlowThread()) {
-      flow_thread->SetHasValidCachedGeometry(false);
-      for (auto* sibling = flow_thread->NextSiblingBox(); sibling;
-           sibling = sibling->NextSiblingBox()) {
-        sibling->SetHasValidCachedGeometry(false);
-      }
-    }
-  }
 }
 
 // static
@@ -2982,21 +2940,6 @@ const FragmentData* LayoutBox::FragmentDataFromPhysicalFragment(
   return &FragmentList().at(BoxFragmentIndex(physical_fragment));
 }
 
-void LayoutBox::SetSpannerPlaceholder(
-    LayoutMultiColumnSpannerPlaceholder& placeholder) {
-  NOT_DESTROYED();
-  // Not expected to change directly from one spanner to another.
-  CHECK(!rare_data_ || !rare_data_->spanner_placeholder_);
-  EnsureRareData().spanner_placeholder_ = &placeholder;
-}
-
-void LayoutBox::ClearSpannerPlaceholder() {
-  NOT_DESTROYED();
-  if (!rare_data_)
-    return;
-  rare_data_->spanner_placeholder_ = nullptr;
-}
-
 bool LayoutBox::IsValidColumnSpanner(const ComputedStyle& style) const {
   NOT_DESTROYED();
   // Note that this function may be called in many circumstances, such as before
@@ -3004,9 +2947,6 @@ bool LayoutBox::IsValidColumnSpanner(const ComputedStyle& style) const {
   // containing block. Be careful.
   if (style.GetColumnSpan() != EColumnSpan::kAll) {
     return false;
-  }
-  if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-    return SpannerPlaceholder();
   }
 
   if (!Parent() || !IsInsideMulticol()) {
@@ -3820,7 +3760,6 @@ PhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {
 
 PhysicalRect LayoutBox::VisualOverflowRect() const {
   NOT_DESTROYED();
-  DCHECK(!IsLayoutMultiColumnSet());
   if (!VisualOverflowIsSet())
     return PhysicalBorderBoxRect();
 

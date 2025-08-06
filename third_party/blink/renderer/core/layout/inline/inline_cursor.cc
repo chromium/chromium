@@ -237,7 +237,6 @@ const LayoutBlockFlow* InlineCursor::GetLayoutBlockFlow() const {
     const LayoutObject* layout_object =
         root_box_fragment_->GetSelfOrContainerLayoutObject();
     DCHECK(layout_object);
-    DCHECK(!layout_object->IsLayoutFlowThread());
     return To<LayoutBlockFlow>(layout_object);
   }
   NOTREACHED();

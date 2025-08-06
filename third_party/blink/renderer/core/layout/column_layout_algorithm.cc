@@ -300,12 +300,6 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   used_column_count_ =
       ResolveUsedColumnCount(Style(), ChildAvailableSize().inline_size);
 
-  // Write the column count back to the legacy flow thread if we're at the first
-  // fragment. The legacy fragmentainer group machinery needs the count.
-  if (!IsBreakInside(GetBreakToken())) {
-    node_.StoreColumnCount(used_column_count_);
-  }
-
   // If we know the block-size of the fragmentainers in an outer fragmentation
   // context (if any), our columns may be constrained by that, meaning that we
   // may have to fragment earlier than what we would have otherwise, and, if

@@ -194,12 +194,8 @@ class ScopedPaintTimingDetectorBlockPaintHook {
  private:
   friend class PaintTimingDetector;
   inline static void AggregateTextPaint(const gfx::Rect& visual_rect) {
-    // Ideally we'd assert that |top_| exists, but there may be text nodes that
-    // do not have an ancestor non-anonymous block layout objects in the layout
-    // tree. An example of this is a multicol div, since the
-    // LayoutMultiColumnFlowThread is in a different layer from the DIV. In
-    // these cases, |top_| will be null. This is a known bug, see the related
-    // crbug.com/933479.
+    // TODO(crbug.com/40614549): This check was allegedly needed for legacy
+    // multicol, but that implementation is now gone. Turn into DCHECK?
     if (top_ && top_->data_) {
       top_->data_->aggregated_visual_rect_.Union(visual_rect);
     }

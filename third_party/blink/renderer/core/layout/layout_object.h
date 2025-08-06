@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -84,8 +83,6 @@ class HitTestRequest;
 class HitTestResult;
 class LayoutBlock;
 class LayoutBlockFlow;
-class LayoutFlowThread;
-class LayoutMultiColumnSpannerPlaceholder;
 class LayoutView;
 class LocalFrameView;
 class PaintLayer;
@@ -459,17 +456,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Return the nearest fragmentation context root, if any.
   LayoutBlock* ContainingFragmentationContextRoot() const;
 
-  // Function to return our enclosing flow thread if we are contained inside
-  // one. This function follows the containing block chain.
-  LayoutFlowThread* FlowThreadContainingBlock() const {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
-    if (!IsInsideMulticol()) {
-      return nullptr;
-    }
-    return LocateFlowThreadContainingBlock();
-  }
-
 #if DCHECK_IS_ON()
   void SetHasAXObject(bool flag) {
     NOT_DESTROYED();
@@ -748,18 +734,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     parent_ = parent;
 
-    if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-      // Only update if our flow thread state is different from our new parent
-      // and if we're not a LayoutFlowThread.  A LayoutFlowThread is always
-      // considered to be inside itself, so it never has to change its state in
-      // response to parent changes.
-      bool inside_multicol = parent && parent->IsInsideMulticol();
-      if (inside_multicol != IsInsideMulticol() && !IsLayoutFlowThread()) {
-        SetIsInsideMulticolIncludingDescendants(inside_multicol);
-      }
-      return;
-    }
-
     bool inside_multicol =
         parent && (parent->IsInsideMulticol() || parent->IsMulticolContainer());
     if (inside_multicol != IsInsideMulticol()) {
@@ -946,14 +920,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
-  virtual bool IsLayoutMultiColumnSet() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  virtual bool IsLayoutMultiColumnSpannerPlaceholder() const {
-    NOT_DESTROYED();
-    return false;
-  }
   virtual bool IsLayoutReplaced() const {
     NOT_DESTROYED();
     return false;
@@ -1025,10 +991,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return false;
   }
   virtual bool IsLayoutBlockFlow() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  virtual bool IsLayoutFlowThread() const {
     NOT_DESTROYED();
     return false;
   }
@@ -1165,10 +1127,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     bitfields_.SetIsInsideMulticol(b);
   }
-
-  // Remove this object and all descendants from the containing
-  // LayoutFlowThread.
-  void RemoveFromLayoutFlowThread();
 
   // Return true if this object might be inside a fragmentation context, or
   // false if it's definitely *not* inside one.
@@ -1339,8 +1297,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsAnonymousBlockFlow() const {
     NOT_DESTROYED();
     return IsAnonymous() && IsLayoutBlockFlow() &&
-           StyleRef().Display() == EDisplay::kBlock && !IsLayoutFlowThread() &&
-           !IsLayoutMultiColumnSet();
+           StyleRef().Display() == EDisplay::kBlock;
   }
 
   bool IsFloating() const {
@@ -1725,11 +1682,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   LocalFrame* GetFrame() const {
     NOT_DESTROYED();
     return GetDocument().GetFrame();
-  }
-
-  virtual LayoutMultiColumnSpannerPlaceholder* SpannerPlaceholder() const {
-    NOT_DESTROYED();
-    return nullptr;
   }
 
   // Return true if this box is to be treated as a column spanner. In order to
@@ -3641,9 +3593,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Call |SetShouldDoFullPaintInvalidation| for LayoutNG or
   // |SetShouldInvalidateSelection| on all selected children.
   void InvalidateSelectedChildrenOnStyleChange();
-
-  LayoutFlowThread* LocateFlowThreadContainingBlock() const;
-  void RemoveFromLayoutFlowThreadRecursive(LayoutFlowThread*);
 
   // Returns `true` if the LayoutObject is for the specified pseudo-element
   // type.

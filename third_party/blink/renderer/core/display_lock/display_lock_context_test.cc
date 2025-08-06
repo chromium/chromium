@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -2229,37 +2228,6 @@ TEST_F(DisplayLockContextRenderingTest,
   EXPECT_FALSE(child_layer->NeedsVisualOverflowRecalc());
 
   UpdateAllLifecyclePhasesForTest();
-}
-TEST_F(DisplayLockContextRenderingTest,
-       SelectionOnAnonymousColumnSpannerDoesNotCrash) {
-  ScopedFlowThreadLessForTest scope(false);
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-      #columns {
-        column-count: 5;
-      }
-      #spanner {
-        column-span: all;
-      }
-    </style>
-    <div id="columns">
-      <div id="spanner"></div>
-    </div>
-  )HTML");
-
-  auto* columns_object =
-      GetDocument().getElementById(AtomicString("columns"))->GetLayoutObject();
-  LayoutObject* spanner_placeholder_object = nullptr;
-  for (auto* candidate = columns_object->SlowFirstChild(); candidate;
-       candidate = candidate->NextSibling()) {
-    if (candidate->IsLayoutMultiColumnSpannerPlaceholder()) {
-      spanner_placeholder_object = candidate;
-      break;
-    }
-  }
-
-  ASSERT_TRUE(spanner_placeholder_object);
-  EXPECT_FALSE(spanner_placeholder_object->CanBeSelectionLeaf());
 }
 
 TEST_F(DisplayLockContextRenderingTest, ObjectsNeedingLayoutConsidersLocks) {

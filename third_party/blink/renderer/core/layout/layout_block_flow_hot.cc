@@ -4,14 +4,12 @@
 
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 
 namespace blink {
 
 void LayoutBlockFlow::Trace(Visitor* visitor) const {
-  visitor->Trace(multi_column_flow_thread_);
   visitor->Trace(inline_node_data_);
   LayoutBlock::Trace(visitor);
 }
@@ -67,24 +65,9 @@ void LayoutBlockFlow::StyleDidChange(StyleDifference diff,
   LayoutBlock::StyleDidChange(diff, old_style);
 
   if (diff.NeedsFullLayout() || !old_style) {
-    UpdateForMulticol(old_style);
+    UpdateForMulticol();
   }
   if (old_style) {
-    // TODO(crbug.com/357648037): Remove this path once GapDecorations is
-    // enabled by default.
-    if (LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread()) {
-      // Don't go down this route when gap decorations is enabled. This is
-      // because this is intended solely for forceful invalidation of column
-      // rules. However, with the `invalidate: paint` setting in
-      // css_properties.json and the new approach of painting gap decorations
-      // using `GapGeometry`, this won't be needed.
-      if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-          !StyleRef().ColumnRuleEquivalent(*old_style)) {
-        // Column rules are painted by anonymous column set children of the
-        // multicol container. We need to notify them.
-        flow_thread->ColumnRuleStyleDidChange();
-      }
-    }
     // We either gained or lost ::column style, trigger relayout to determine,
     // if column pseudo-elements are needed.
     if (old_style->CanGeneratePseudoElement(kPseudoIdColumn) !=
