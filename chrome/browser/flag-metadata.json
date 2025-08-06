@@ -3007,6 +3007,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-clipboard-data-controls-ios",
+    "owners": [ "bling-enterprise@google.com" ],
+    "expiry_milestone": 147
+  },
+  {
     "name": "enable-clipboardchange-event",
     "owners": ["roraja@microsoft.com", "ragoulik@microsoft.com", "zgroza@chromium.org"],
     "expiry_milestone": 149

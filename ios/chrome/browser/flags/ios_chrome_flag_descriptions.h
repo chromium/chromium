@@ -287,6 +287,9 @@ extern const char kDownloadedPDFOpeningDescription[];
 extern const char kDownloadListName[];
 extern const char kDownloadListDescription[];
 
+extern const char kEnableClipboardDataControlsIOSName[];
+extern const char kEnableClipboardDataControlsIOSDescription[];
+
 extern const char kEnableCompromisedPasswordsMutingName[];
 extern const char kEnableCompromisedPasswordsMutingDescription[];
 

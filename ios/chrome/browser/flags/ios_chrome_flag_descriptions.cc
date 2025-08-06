@@ -543,6 +543,13 @@ const char kEnableASWebAuthenticationSessionName[] =
 const char kEnableASWebAuthenticationSessionDescription[] =
     "Enables using ASWebAuthenticationSession to add Google accounts to device";
 
+const char kEnableClipboardDataControlsIOSName[] =
+    "Enable Clipboard Data Controls";
+const char kEnableClipboardDataControlsIOSDescription[] =
+    "When this flag is enabled and the DataControlsRules Enterprise policy is "
+    "enabled, Enterprise admins can apply clipboard restrictions to Chrome "
+    "users on iOS.";
+
 const char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 const char kEnableCompromisedPasswordsMutingDescription[] =
