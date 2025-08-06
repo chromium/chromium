@@ -254,7 +254,7 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, RejectsUnsupportedConfig) {
 }
 
 TEST_F(D3D12VideoEncodeAcceleratorTest,
-       InputFramesQueueAndBitstreamBuffersAreEitherEmpty) {
+       InputFramesQueueAndBitstreamBuffersAreEitherEmptyForGMBEncoding) {
   auto* d3d12_video_encode_accelerator =
       static_cast<D3D12VideoEncodeAccelerator*>(
           video_encode_accelerator_.get());
@@ -297,6 +297,59 @@ TEST_F(D3D12VideoEncodeAcceleratorTest,
     WaitForEncoderTasksToComplete();
     CheckInputFramesQueueAndBitstreamBuffersAreEitherEmpty();
   }
+}
+
+TEST_F(D3D12VideoEncodeAcceleratorTest, FlushEncoder) {
+  auto* d3d12_video_encode_accelerator =
+      static_cast<D3D12VideoEncodeAccelerator*>(
+          video_encode_accelerator_.get());
+  auto supported_profiles =
+      d3d12_video_encode_accelerator->GetSupportedProfiles();
+  EXPECT_FALSE(supported_profiles.empty());
+  auto profile = supported_profiles.front();
+  auto supported_config = SupportedProfileToConfig(profile);
+
+  unsigned bitstream_buffer_count = 0;
+  size_t bitstream_buffer_size = 0;
+  EXPECT_CALL(*client_, RequireBitstreamBuffers(_, _, _))
+      .WillOnce(Invoke(
+          [&](unsigned int count, const gfx::Size& size, size_t size_in_bytes) {
+            bitstream_buffer_count = count;
+            bitstream_buffer_size = size_in_bytes;
+          }));
+  EXPECT_TRUE(
+      d3d12_video_encode_accelerator
+          ->Initialize(supported_config, client_.get(), media_log_->Clone())
+          .is_ok());
+  WaitForEncoderTasksToComplete();
+  Mock::VerifyAndClearExpectations(&client_);
+
+  // Add a few bitstream buffers
+  for (unsigned i = 0; i < 4; ++i) {
+    BitstreamBuffer bitstream_buffer(
+        i, base::UnsafeSharedMemoryRegion::Create(bitstream_buffer_size),
+        bitstream_buffer_size);
+    d3d12_video_encode_accelerator->UseOutputBitstreamBuffer(
+        std::move(bitstream_buffer));
+  }
+
+  // Add a few frames to encode
+  for (unsigned i = 0; i < 3; ++i) {
+    d3d12_video_encode_accelerator->Encode(CreateTestVideoFrame(), false);
+  }
+
+  EXPECT_TRUE(d3d12_video_encode_accelerator->IsFlushSupported());
+
+  bool flush_done = false;
+  d3d12_video_encode_accelerator->Flush(base::BindOnce(
+      [](bool* flush_done, bool success) {
+        *flush_done = true;
+        EXPECT_TRUE(success);
+      },
+      &flush_done));
+
+  WaitForEncoderTasksToComplete();
+  EXPECT_TRUE(flush_done);
 }
 
 }  // namespace media
