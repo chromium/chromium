@@ -420,7 +420,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1706625117072057435">Úrovně přiblížení</translation>
 <translation id="1706922226983368260">Přístupový klíč • „<ph name="PHONE_NAME" />“</translation>
 <translation id="1706954506755087368">{1,plural, =1{Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Uvedené datum vystavení jeho bezpečnostního certifikátu je zítra. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.}few{Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Uvedené datum vystavení jeho bezpečnostního certifikátu je až za # dny. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.}many{Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Uvedené datum vystavení jeho bezpečnostního certifikátu je až za # dne. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.}other{Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Uvedené datum vystavení jeho bezpečnostního certifikátu je až za # dní. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.}}</translation>
-<translation id="1709711942721576168">Tlačítko režimu AI, aktivací se zeptáte režimu AI</translation>
+<translation id="1709711942721576168">Tlačítko režimu AI, aktivací se zeptáte v režimu AI</translation>
 <translation id="1710259589646384581">Operační systém</translation>
 <translation id="1711234383449478798">Ignorováno, protože název zásady <ph name="POLICY_NAME" /> není nastaven na hodnotu <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">Stránka <ph name="URL" /> chce trvale ukládat data v místním počítači</translation>
@@ -1441,7 +1441,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="343474037147570563">Soubory, které nahrajete nebo připojíte, se odesílají k analýze do služby Google Cloud nebo třetím stranám. Může se u nich například kontrolovat přítomnost citlivých údajů nebo malwaru, mohou být uchovávány v souladu se zásadami společnosti a může k nim mít přístup váš administrátor.</translation>
 <translation id="3435557549311968410">Nepřetržité (spojené kratšími okraji)</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
-<translation id="3436118221454753036">Zeptat se režimu AI</translation>
+<translation id="3436118221454753036">Zeptat se v režimu AI</translation>
 <translation id="3440783957068352691">čtverec</translation>
 <translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3443504041532578451">Optický disk (saténový)</translation>
@@ -3025,7 +3025,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6108849843016142864">Plazi a obojživelníci</translation>
 <translation id="610911394827799129">Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="611018310643025551">Vaše vyhledávání, nejlepší shody a obsah stránek se odesílají do Googlu a mohou je vidět kontroloři, kteří tuto funkci pomáhají vylepšovat.</translation>
-<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter se můžete zeptat režimu AI</translation>
+<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter se můžete zeptat v režimu AI</translation>
 <translation id="6116338172782435947">Přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6117833587752089929">Fotografie (saténová)</translation>
 <translation id="6118782133429281336">Seznam zdrojů je prázdný.</translation>

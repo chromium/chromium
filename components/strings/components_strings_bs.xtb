@@ -420,7 +420,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1706625117072057435">Nivoi zumiranja</translation>
 <translation id="1706922226983368260">Pristupni ključ • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata sutra. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}one{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata # dan u budućnosti. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}few{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata # dana u budućnosti. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}other{Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />; njegova potvrda sigurnosti je navodno izdata # dana u budućnosti. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.}}</translation>
-<translation id="1709711942721576168">Dugme za AI način rada, postavljanje pitanja u AI načinu rada aktiviranjem</translation>
+<translation id="1709711942721576168">Dugme za AI način rada, postavljanje pitanja AI načinu rada aktiviranjem</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Zanemareno je jer pravilo <ph name="POLICY_NAME" /> nije postavljeno na <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">URL <ph name="URL" /> želi trajno pohraniti podatke na vaš lokalni računar</translation>
@@ -1444,7 +1444,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="343474037147570563">Fajlovi koje otpremite ili priložite se šalju na Google Cloud ili trećim stranama na analizu. Naprimjer, mogu se skenirati radi otkrivanja postojanja osjetljivih podataka ili zlonamjernog softvera i mogu se pohraniti na osnovu pravila kompanije i biti vidljivi vašem administratoru.</translation>
 <translation id="3435557549311968410">Neprekidno (kratko)</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
-<translation id="3436118221454753036">Način rada Pitajte AI</translation>
+<translation id="3436118221454753036">Pitajte AI način rada</translation>
 <translation id="3440783957068352691">kvadrat</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Optički disk (saten)</translation>
@@ -3029,7 +3029,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6108849843016142864">Gmizavci i vodozemci</translation>
 <translation id="610911394827799129">Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Vaša pretraživanja, najbolja podudaranja i sadržaji s tih stranica se šalju Googleu i mogu ih pregledati osobe koje vrše pregled radi poboljšanja ove funkcije.</translation>
-<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postavljanje pitanja u AI načinu rada pritiskom na Enter</translation>
+<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postavljanje pitanja AI načinu rada pritiskom na Enter</translation>
 <translation id="6116338172782435947">Pogledajte tekst i slike kopirane u međumemoriju</translation>
 <translation id="6117833587752089929">Fotografija (saten)</translation>
 <translation id="6118782133429281336">Historija polazišta je prazna.</translation>
