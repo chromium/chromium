@@ -1095,8 +1095,7 @@
       // info.
       name: "ControlledFrame",
       public: true,
-      status: "experimental",
-      base_feature_status: "disabled",
+      status: "stable",
     },
     {
       name: "CookieDeprecationFacilitatedTesting",

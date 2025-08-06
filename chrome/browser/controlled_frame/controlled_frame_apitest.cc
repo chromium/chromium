@@ -1080,30 +1080,7 @@ class ControlledFrameAvailabilityTest
   // via defaults but instead by overrides. As a result, any feature that's
   // enabled or disabled by ScopedFeatureList will appear as an override.
   bool DetermineExpectedState() {
-    if (feature_setting() == FeatureSetting::DISABLED) {
-      return false;
-    }
-
-    if (feature_setting() == FeatureSetting::NONE &&
-        flag_setting() == FlagSetting::NONE) {
-      return false;
-    }
-
-    if (feature_setting() == FeatureSetting::ENABLED &&
-        (flag_setting() == FlagSetting::EXPERIMENTAL ||
-         flag_setting() == FlagSetting::CONTROLLED_FRAME)) {
-      return true;
-    }
-
-    // In Blink's runtime flags, if the base::Feature is overridden and that
-    // feature is enabled via the override, then the corresponding Blink
-    // runtime flag is also enabled.
-    if (feature_setting() == FeatureSetting::ENABLED &&
-        flag_setting() == FlagSetting::NONE) {
-      return true;
-    }
-
-    return false;
+    return feature_setting() != FeatureSetting::DISABLED;
   }
 };
 
