@@ -267,7 +267,8 @@ int UtilityMain(MainFunctionParams parameters) {
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   // The main task executor of the utility process.
-  base::SingleThreadTaskExecutor main_thread_task_executor(message_pump_type);
+  base::SingleThreadTaskExecutor main_thread_task_executor(
+      message_pump_type, /*is_main_thread=*/true);
   const std::string utility_sub_type =
       parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType);
   SetUtilityThreadName(utility_sub_type);

@@ -63,6 +63,7 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
                   .SetCanRunTasksByBatches(true)
                   .SetPrioritySettings(
                       internal::CreateBrowserTaskPrioritySettings())
+                  .SetIsMainThread(true)
                   .SetShouldSampleCPUTime(true)
                   .Build())),
       task_queues_(BrowserThread::UI, owned_sequence_manager_.get()),

@@ -22,6 +22,11 @@ namespace {
 constinit thread_local SingleThreadTaskRunner::CurrentDefaultHandle*
     current_default_handle = nullptr;
 
+constinit SingleThreadTaskRunner::MainThreadDefaultHandle*
+    main_thread_default_handle = nullptr;
+
+bool can_override = false;
+
 // This function can be removed, and the calls below replaced with direct
 // variable accesses, once the MSAN workaround is not necessary.
 SingleThreadTaskRunner::CurrentDefaultHandle* GetCurrentDefaultHandle() {
@@ -63,6 +68,24 @@ bool SingleThreadTaskRunner::HasCurrentDefault() {
          !!GetCurrentDefaultHandle()->task_runner_;
 }
 
+// static
+const scoped_refptr<SingleThreadTaskRunner>&
+SingleThreadTaskRunner::GetMainThreadDefault() {
+  const auto* const handle = main_thread_default_handle;
+  CHECK(handle && handle->task_runner_)
+      << "Error: The main thread's handle is not initialized yet. This "
+         "probably means that you're calling this function too early in the "
+         "process's lifetime. If you're in a test, you can use "
+         "base::test::TaskEnvironement";
+  return handle->task_runner_;
+}
+
+// static
+bool SingleThreadTaskRunner::HasMainThreadDefault() {
+  return !!main_thread_default_handle &&
+         !!main_thread_default_handle->task_runner_;
+}
+
 SingleThreadTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
     scoped_refptr<SingleThreadTaskRunner> task_runner)
     : CurrentDefaultHandle(std::move(task_runner), MayAlreadyExist{}) {
@@ -98,5 +121,30 @@ SingleThreadTaskRunner::CurrentHandleOverrideForTesting::
 
 SingleThreadTaskRunner::CurrentHandleOverrideForTesting::
     ~CurrentHandleOverrideForTesting() = default;
+
+SingleThreadTaskRunner::MainThreadDefaultHandle::MainThreadDefaultHandle(
+    scoped_refptr<SingleThreadTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)),
+      previous_handle_(main_thread_default_handle) {
+  CHECK(!main_thread_default_handle || can_override);
+  main_thread_default_handle = this;
+}
+
+SingleThreadTaskRunner::MainThreadDefaultHandle::~MainThreadDefaultHandle() {
+  DCHECK_EQ(main_thread_default_handle, this);
+  main_thread_default_handle = previous_handle_;
+}
+
+SingleThreadTaskRunner::ScopedCanOverrideMainThreadDefaultHandle::
+    ScopedCanOverrideMainThreadDefaultHandle() {
+  CHECK(!can_override);
+  can_override = true;
+}
+
+SingleThreadTaskRunner::ScopedCanOverrideMainThreadDefaultHandle::
+    ~ScopedCanOverrideMainThreadDefaultHandle() {
+  CHECK(can_override);
+  can_override = false;
+}
 
 }  // namespace base

@@ -93,6 +93,7 @@ CreateSequenceManagerForMainThreadType(
       base::sequence_manager::SequenceManager::Settings::Builder()
           .SetMessagePumpType(type)
           .SetPrioritySettings(std::move(priority_settings))
+          .SetIsMainThread(true)
           .Build());
 }
 

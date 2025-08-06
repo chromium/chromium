@@ -154,6 +154,11 @@ class BASE_EXPORT SequenceManager {
 
     PrioritySettings priority_settings = PrioritySettings::CreateDefault();
 
+    // Whether this sequence manager represents the main thread of the process.
+    // This is only used to set
+    // base::SingleThreadTaskRunner::GetMainThreadDefault().
+    bool is_main_thread = false;
+
 #if DCHECK_IS_ON()
     // TODO(alexclarke): Consider adding command line flags to control these.
     enum class TaskLogging {
@@ -307,6 +312,8 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   Builder& SetCanRunTasksByBatches(bool can_run_tasks_by_batches);
 
   Builder& SetPrioritySettings(PrioritySettings settings);
+
+  Builder& SetIsMainThread(bool is_main_thread);
 
 #if DCHECK_IS_ON()
   // Controls task execution logging.

@@ -27,11 +27,13 @@ class BASE_EXPORT SingleThreadTaskExecutor {
  public:
   // For MessagePumpType::CUSTOM use the constructor that takes a pump.
   explicit SingleThreadTaskExecutor(
-      MessagePumpType type = MessagePumpType::DEFAULT);
+      MessagePumpType type = MessagePumpType::DEFAULT,
+      bool is_main_thread = false);
 
   // Creates a SingleThreadTaskExecutor pumping from a custom |pump|.
   // The above constructor using MessagePumpType is generally preferred.
-  explicit SingleThreadTaskExecutor(std::unique_ptr<MessagePump> pump);
+  explicit SingleThreadTaskExecutor(std::unique_ptr<MessagePump> pump,
+                                    bool is_main_thread = false);
 
   SingleThreadTaskExecutor(const SingleThreadTaskExecutor&) = delete;
   SingleThreadTaskExecutor& operator=(const SingleThreadTaskExecutor&) = delete;
@@ -53,7 +55,8 @@ class BASE_EXPORT SingleThreadTaskExecutor {
 
  private:
   SingleThreadTaskExecutor(MessagePumpType type,
-                           std::unique_ptr<MessagePump> pump);
+                           std::unique_ptr<MessagePump> pump,
+                           bool is_main_thread);
 
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;
   sequence_manager::TaskQueue::Handle default_task_queue_;

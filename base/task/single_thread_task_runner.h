@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/sequenced_task_runner.h"
 
@@ -56,18 +57,27 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
   // cases, e.g. DeleteSoon or RefCountedDeleteOnSequence should delete the
   // object on the same task queue it's used from (or on a lower priority).
   //
-  // DCHECKs if the current thread isn't servicing a SingleThreadTaskRunner.
+  // CHECKs if the current thread isn't servicing a SingleThreadTaskRunner.
   //
   // See
   // https://chromium.googlesource.com/chromium/src/+/main/docs/threading_and_tasks.md#Posting-to-the-Current-Virtual_Thread
   // for details
-
   [[nodiscard]] static const scoped_refptr<SingleThreadTaskRunner>&
   GetCurrentDefault();
 
   // Returns true if the SingleThreadTaskRunner is already created for
   // the current thread.
   [[nodiscard]] static bool HasCurrentDefault();
+
+  // Returns the default SingleThreadTaskRunner for the main thread.
+  //
+  // CHECKs if the main thread task runner hasn't yet been initialized.
+  [[nodiscard]] static const scoped_refptr<SingleThreadTaskRunner>&
+  GetMainThreadDefault();
+
+  // Returns true if the SingleThreadTaskRunner is already created for
+  // the main thread.
+  [[nodiscard]] static bool HasMainThreadDefault();
 
   class CurrentHandleOverrideForTesting;
 
@@ -137,6 +147,39 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
    private:
     CurrentDefaultHandle current_default_handle_;
     std::unique_ptr<ScopedDisallowRunningRunLoop> no_running_during_override_;
+  };
+
+  class BASE_EXPORT MainThreadDefaultHandle {
+   public:
+    // Sets the value returned by
+    // `SingleThreadTaskRunner::GetMainThreadDefault()` to `task_runner` within
+    // its scope. `task_runner` must belong to the current thread. There must
+    // not already be a current default `SingleThreadTaskRunner` on this thread.
+    // For tests where this is necessary, it's possible to use
+    // ScopedCanOverrideMainThreadDefaultHandle.
+    explicit MainThreadDefaultHandle(
+        scoped_refptr<SingleThreadTaskRunner> task_runner);
+
+    ~MainThreadDefaultHandle();
+
+   private:
+    friend class SingleThreadTaskRunner;
+
+    scoped_refptr<SingleThreadTaskRunner> task_runner_;
+
+    // Some tests requires the ability to override the `previous_handle_`.
+    // TODO(pmonette): Remove this when this is no longer the case.
+    raw_ptr<MainThreadDefaultHandle> previous_handle_ = nullptr;
+  };
+
+  // Allows overriding the main thread default handle in some test
+  // configuration. Callers must be friended to avoid spreading its usage.
+  class BASE_EXPORT ScopedCanOverrideMainThreadDefaultHandle {
+   private:
+    friend class ScopedMockTimeMessageLoopTaskRunner;
+
+    ScopedCanOverrideMainThreadDefaultHandle();
+    ~ScopedCanOverrideMainThreadDefaultHandle();
   };
 
  protected:

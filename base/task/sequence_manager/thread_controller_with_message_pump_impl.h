@@ -114,6 +114,9 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     raw_ptr<RunLoop::NestingObserver> nesting_observer = nullptr;  // Not owned.
     std::unique_ptr<SingleThreadTaskRunner::CurrentDefaultHandle>
         thread_task_runner_handle;
+    // Only used if this thread represents the main thread of the process.
+    std::unique_ptr<SingleThreadTaskRunner::MainThreadDefaultHandle>
+        main_thread_default_task_runner_handle;
 
     // Indicates that we should yield DoWork between each task to let a possibly
     // nested RunLoop exit.
@@ -210,6 +213,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // |pump_|. This means that it should be destroyed first. This member cannot
   // be moved up.
   std::unique_ptr<MessagePump> pump_;
+
+  const bool is_main_thread_;
 };
 
 }  // namespace internal

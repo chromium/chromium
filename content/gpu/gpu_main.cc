@@ -284,12 +284,12 @@ int GpuMain(MainFunctionParams parameters) {
     // CADisplayLink (Mac HW VSync) callback only works with NS_RUNLOOP.
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::NS_RUNLOOP);
+            base::MessagePumpType::NS_RUNLOOP, /*is_main_thread=*/true);
     main_thread_task_executor->SetWorkBatchSize(2);
 #else
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::DEFAULT);
+            base::MessagePumpType::DEFAULT, /*is_main_thread=*/true);
 #endif
   } else {
 #if BUILDFLAG(IS_WIN)
@@ -297,14 +297,14 @@ int GpuMain(MainFunctionParams parameters) {
     // is expected to run on this thread.
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::DEFAULT);
+            base::MessagePumpType::DEFAULT, /*is_main_thread=*/true);
 #elif BUILDFLAG(IS_OZONE)
     // The MessagePump type required depends on the Ozone platform selected at
     // runtime.
     if (!main_thread_task_executor) {
       main_thread_task_executor =
           std::make_unique<base::SingleThreadTaskExecutor>(
-              gpu_preferences.message_pump_type);
+              gpu_preferences.message_pump_type, /*is_main_thread=*/true);
     }
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #error "Unsupported Linux platform."
@@ -316,7 +316,7 @@ int GpuMain(MainFunctionParams parameters) {
     // type does not support NSObject.
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::NS_RUNLOOP);
+            base::MessagePumpType::NS_RUNLOOP, /*is_main_thread=*/true);
     // As part of the migration to DoWork(), this policy is required to keep
     // previous behavior and avoid regressions.
     // TODO(crbug.com/40668161): Consider updating the policy.
@@ -324,7 +324,7 @@ int GpuMain(MainFunctionParams parameters) {
 #else
     main_thread_task_executor =
         std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::DEFAULT);
+            base::MessagePumpType::DEFAULT, /*is_main_thread=*/true);
 #endif
   }
 

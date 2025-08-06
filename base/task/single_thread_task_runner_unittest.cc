@@ -295,4 +295,21 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest,
   EXPECT_DCHECK_DEATH({ RunLoop().RunUntilIdle(); });
 }
 
+TEST(SingleThreadTaskRunnerMainThreadDefaultHandleTest, Basic) {
+  EXPECT_CHECK_DEATH(std::ignore =
+                         SingleThreadTaskRunner::GetMainThreadDefault());
+
+  {
+    scoped_refptr<SingleThreadTaskRunner> task_runner(
+        MakeRefCounted<TestSimpleTaskRunner>());
+    SingleThreadTaskRunner::MainThreadDefaultHandle main_thread_default_handle(
+        task_runner);
+
+    EXPECT_TRUE(SingleThreadTaskRunner::GetMainThreadDefault());
+  }
+
+  EXPECT_CHECK_DEATH(std::ignore =
+                         SingleThreadTaskRunner::GetMainThreadDefault());
+}
+
 }  // namespace base

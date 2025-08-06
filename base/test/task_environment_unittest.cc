@@ -1789,4 +1789,17 @@ TEST_F(TaskEnvironmentTest, RunUntilQuit_MustCallQuitClosureFirst) {
       R"(QuitClosure\(\) not called before RunUntilQuit\(\))");
 }
 
+TEST_F(TaskEnvironmentTest, SingleThreadTaskRunnerGetMainThreadDefault) {
+  EXPECT_CHECK_DEATH(
+      { std::ignore = SingleThreadTaskRunner::GetMainThreadDefault(); });
+
+  {
+    TaskEnvironment task_environment;
+    ASSERT_TRUE(SingleThreadTaskRunner::GetMainThreadDefault());
+  }
+
+  EXPECT_CHECK_DEATH(
+      { std::ignore = SingleThreadTaskRunner::GetMainThreadDefault(); });
+}
+
 }  // namespace base::test
