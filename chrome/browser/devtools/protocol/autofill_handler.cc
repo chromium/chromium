@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -244,6 +245,9 @@ void AutofillHandler::OnFillOrPreviewForm(
     return ids;
   }();
 
+  // Devtools is already in English, so we can default the locale to en-US.
+  const std::string locale = "en-US";
+
   auto filled_fields_to_be_sent_to_devtools =
       std::make_unique<protocol::Array<protocol::Autofill::FilledField>>();
   filled_fields_to_be_sent_to_devtools->reserve(filled_field_ids.size());
@@ -268,14 +272,23 @@ void AutofillHandler::OnFillOrPreviewForm(
     std::vector<std::string_view> field_type_strings = base::ToVector(
         field_types, &autofill::FieldTypeToDeveloperRepresentationString);
     std::erase(field_type_strings, "");
-
+    // TODO(crbug.com/436489442): Reading the filled value from the profile is
+    // brittle because it could diverge from the values that are actually sent
+    // to the renderer. A more robust solution should be found.
+    std::u16string filled_value = u"";
+    if (filled_field_ids.contains(field->global_id())) {
+      std::string failure_to_fill;
+      filled_value =
+          autofill::GetFillingValueAndTypeForProfile(
+              *profile_used_to_fill_form, locale, field->Type(), *field,
+              manager.client().GetAddressNormalizer(), &failure_to_fill)
+              .first;
+    }
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()
             .SetId(base::UTF16ToUTF8(field->id_attribute()))
             .SetName(base::UTF16ToUTF8(field->name_attribute()))
-            .SetValue(base::UTF16ToUTF8(
-                filled_field_ids.contains(field->global_id()) ? field->value()
-                                                              : u""))
+            .SetValue(base::UTF16ToUTF8(filled_value))
             .SetHtmlType(std::string(
                 autofill::FormControlTypeToString(field->form_control_type())))
             .SetAutofillType(base::JoinString(field_type_strings, ", "))
@@ -295,8 +308,6 @@ void AutofillHandler::OnFillOrPreviewForm(
   // Send profile information to devtools so that it can build the UI.
   // We use the same format we see in the settings page.
   std::vector<std::vector<autofill::AutofillAddressUIComponent>> components;
-  // Devtools is already in english, so we can default the local to en-US.
-  const std::string locale = "en-US";
   autofill::GetAddressComponents(
       base::UTF16ToUTF8(profile_used_to_fill_form->GetInfo(
           autofill::FieldType::ADDRESS_HOME_COUNTRY, locale)),
