@@ -140,10 +140,12 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
+#include "components/guest_contents/common/guest_contents.mojom.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -1313,6 +1315,11 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   RegisterWebUIControllerInterfaceBinder<watermark::mojom::PageHandlerFactory,
                                          WatermarkUI>(map);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  RegisterWebUIControllerInterfaceBinder<
+      guest_contents::mojom::GuestContentsHost, WebUIBrowserUI>(map);
 #endif
 }
 

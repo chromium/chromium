@@ -108,6 +108,7 @@ browser_exposed_mojom_targets = [
   "//components/feed/mojom:mojo_bindings",
   "//components/fingerprinting_protection_filter/mojom:mojom",
   "//components/global_media_controls/public/mojom:device_service",
+  "//components/guest_contents/common:mojom",
   "//components/guest_view/common:mojom",
   "//components/heap_profiling/in_process:mojom",
   "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",

@@ -10,6 +10,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/webui_browser_resources.h"
 #include "chrome/grit/webui_browser_resources_map.h"
+#include "components/guest_contents/browser/guest_contents_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -51,6 +52,12 @@ void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<webui_browser::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver) {
+  guest_contents::GuestContentsHostImpl::Create(web_ui()->GetWebContents(),
+                                                std::move(receiver));
 }
 
 base::WeakPtr<WebUIBrowserUI> WebUIBrowserUI::GetWeakPtr() {

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/webui_browser/browser.mojom.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "components/guest_contents/common/guest_contents.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,6 +41,9 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
 
   void BindInterface(
       mojo::PendingReceiver<webui_browser::mojom::PageHandlerFactory> receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver);
 
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
   void CloseSidePanel();
