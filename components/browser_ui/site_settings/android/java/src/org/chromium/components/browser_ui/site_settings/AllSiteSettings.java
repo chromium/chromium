@@ -501,7 +501,6 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                                     getSiteSettingsDelegate(),
                                     entry,
                                     getActivity().getLayoutInflater(),
-                                    /* showRwsMembershipLabels= */ true,
                                     /* isClickable= */ true);
                     preference.setOnDeleteCallback(
                             () -> {

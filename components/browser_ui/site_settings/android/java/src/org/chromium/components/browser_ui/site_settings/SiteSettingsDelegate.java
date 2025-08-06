@@ -231,11 +231,6 @@ public interface SiteSettingsDelegate {
     void getBrowsingDataModel(Callback<BrowsingDataModel> callback);
 
     /**
-     * @return whether the Privacy Sandbox Rws UI should be shown in the Settings.
-     */
-    boolean shouldShowPrivacySandboxRwsUi();
-
-    /**
      * @return whether the Safety Hub is enabled.
      */
     boolean isSafetyHubEnabled();

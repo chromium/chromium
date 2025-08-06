@@ -271,16 +271,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ALLOW_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL},
       {"blockThirdPartyCookiesExpandA11yLabel",
        IDS_SETTINGS_BLOCK_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL},
-      // All sites RWS
-      {"allSitesRwsFilterViewTitle", IDS_ALL_SITES_RWS_FILTER_VIEW_TITLE},
-      {"allSitesRwsFilterViewStorageDescription",
-       IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION},
-      {"allSitesShowRwsButton", IDS_ALL_SITES_SHOW_RWS_BUTTON},
-      {"allSitesRwsMembershipLabel", IDS_ALL_SITES_RWS_LABEL},
-      {"allSitesRwsDeleteDataButtonLabel",
-       IDS_ALL_SITES_RWS_DELETE_DATA_BUTTON_LABEL},
-      {"allSitesRwsDeleteDataDialogTitle",
-       IDS_ALL_SITES_RWS_DELETE_DATA_DIALOG_TITLE},
       // Ad Topics Content Parity - Ad Topics Settings
       {"adTopicsPageToggleSubLabel",
        IDS_SETTINGS_AD_TOPICS_PAGE_TOGGLE_SUB_LABEL},
@@ -458,14 +448,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc, kPrivacyPolicyId));
-  // RWS description
-  const char* rws_learn_more_url = chrome::kRelatedWebsiteSetsLearnMoreURL;
-  html_source->AddString(
-      "allSitesRwsFilterViewDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_ALL_SITES_RWS_FILTER_VIEW_DESCRIPTION,
-          base::ASCIIToUTF16(rws_learn_more_url),
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   // Incognito tracking protections description
   const char* incognito_tracking_protections_learn_more_url =
       chrome::kIncognitoTrackingProtectionsLearnMoreUrl;

@@ -721,12 +721,7 @@ public class WebsitePermissionsFetcher {
                 Set<String> originToWebsite = new HashSet<>();
                 Map<String, List<Website>> rwsOwnerToMember = new HashMap<>();
                 for (Website site : mSites.values()) {
-                    // Use the origin when RWS UI feature is enabled to include
-                    // subdomain variations in the members
-                    String rwsMemberHostname =
-                            mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()
-                                    ? site.getAddress().getOrigin()
-                                    : site.getAddress().getDomainAndRegistry();
+                    String rwsMemberHostname = site.getAddress().getDomainAndRegistry();
                     String rwsOwnerHostname =
                             mSiteSettingsDelegate.getRelatedWebsiteSetOwner(
                                     site.getAddress().getOrigin());
