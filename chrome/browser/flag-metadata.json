@@ -325,7 +325,7 @@
   {
     "name": "android-surface-color-update",
     "owners": [ "jtanaristy@google.com", "wenyufu@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "android-tab-declutter-archive-all-but-active-tab",
@@ -5545,7 +5545,7 @@
   {
     "name": "grid-tab-switcher-surface-color-update",
     "owners": [ "jtanaristy@google.org", "wenyufu@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "grid-tab-switcher-update",
