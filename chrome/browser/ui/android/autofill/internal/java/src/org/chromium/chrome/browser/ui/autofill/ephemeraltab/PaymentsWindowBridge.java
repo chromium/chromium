@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /** Bridge for the Emphemeral Tab bottom sheet. */
 @JNINamespace("autofill")
@@ -22,8 +23,13 @@ class PaymentsWindowBridge {
     }
 
     @CalledByNative
-    public void openEphemeralTab() {
-        mPaymentsWindowCoordinator.openEphemeralTab();
+    public void openEphemeralTab(GURL url, String title) {
+        mPaymentsWindowCoordinator.openEphemeralTab(url, title);
+    }
+
+    @CalledByNative
+    public void closeEphemeralTab() {
+        mPaymentsWindowCoordinator.closeEphemeralTab();
     }
 
     PaymentsWindowCoordinator getPaymentsWindowCoordinatorForTesting() {

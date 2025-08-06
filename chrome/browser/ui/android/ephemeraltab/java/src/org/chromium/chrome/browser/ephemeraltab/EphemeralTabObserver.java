@@ -16,5 +16,9 @@ public interface EphemeralTabObserver {
 
     default void onNavigationStarted(GURL clickedUrl) {}
 
+    default void onNavigationFinished(GURL clickedUrl) {}
+
     default void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {}
+
+    default void onWebContentsDestroyed() {}
 }

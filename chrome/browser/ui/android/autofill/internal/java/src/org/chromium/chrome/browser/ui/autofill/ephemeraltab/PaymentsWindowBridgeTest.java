@@ -17,13 +17,18 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /** Tests for {@link PaymentsWindowBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaymentsWindowBridgeTest {
+    private static final String TAB_TITLE = "Issuer Name";
+    private static final GURL ISSUER_URL = new GURL("https://www.example.com/");
+
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private WebContents mWebContents;
     @Mock private PaymentsWindowCoordinator mPaymentsWindowCoordinator;
+
     private PaymentsWindowBridge mPaymentsWindowBridge;
 
     @Before
@@ -39,7 +44,18 @@ public class PaymentsWindowBridgeTest {
     @Test
     public void testOpenEphemeralTab() {
         mPaymentsWindowBridge.setPaymentsWindowCoordinatorForTesting(mPaymentsWindowCoordinator);
-        mPaymentsWindowBridge.openEphemeralTab();
-        verify(mPaymentsWindowCoordinator).openEphemeralTab();
+
+        mPaymentsWindowBridge.openEphemeralTab(ISSUER_URL, TAB_TITLE);
+
+        verify(mPaymentsWindowCoordinator).openEphemeralTab(ISSUER_URL, TAB_TITLE);
+    }
+
+    @Test
+    public void testCloseEphemeralTab() {
+        mPaymentsWindowBridge.setPaymentsWindowCoordinatorForTesting(mPaymentsWindowCoordinator);
+
+        mPaymentsWindowBridge.closeEphemeralTab();
+
+        verify(mPaymentsWindowCoordinator).closeEphemeralTab();
     }
 }
