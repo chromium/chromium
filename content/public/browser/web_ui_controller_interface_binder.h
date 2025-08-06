@@ -104,6 +104,8 @@ void RegisterWebUIControllerInterfaceBinder(
         // This is expected to be called only for the right WebUI pages matching
         // the same WebUI associated to the RenderFrameHost.
         if (!is_bound) {
+          LOG(ERROR) << "WebUIController binder missing for: "
+                     << Interface::Name_;
           internal::ReceivedInvalidWebUIControllerMessage(host);
           return;
         }
