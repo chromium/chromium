@@ -507,8 +507,14 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 }
 
 // Page Action chip should only show on discarded non-chrome pages
+// TODO(crbug.com/436684093) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChipShowsOnNonChromeSites DISABLED_ChipShowsOnNonChromeSites
+#else
+#define MAYBE_ChipShowsOnNonChromeSites ChipShowsOnNonChromeSites
+#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       ChipShowsOnNonChromeSites) {
+                       MAYBE_ChipShowsOnNonChromeSites) {
   // Any Chrome page that can be reliably discarded. This was
   // previously the NTP, but NTP is sometimes ineligible for proactive tab
   // discard.
