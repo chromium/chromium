@@ -100,9 +100,11 @@ source_set("unit_tests") {
     sources += [
       "android/android_base_window_unittest.cc",
       "android/android_browser_window_unittest.cc",
+      "android/browser_window_interface_iterator_android_unittest.cc",
     ]
     deps += [
       "//base",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_jni",
       "//components/sessions:session_id",
@@ -129,6 +131,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImpl.java",
@@ -147,6 +150,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
     ]
   }
 

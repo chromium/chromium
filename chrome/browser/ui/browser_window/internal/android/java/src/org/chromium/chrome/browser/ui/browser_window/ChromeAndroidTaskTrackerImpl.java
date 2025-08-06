@@ -74,6 +74,20 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
     }
 
+    /** Returns an array of the native {@code BrowserWindowInterface} addresses. */
+    long[] getAllNativeBrowserWindowPtrs() {
+        synchronized (mTasksLock) {
+            long[] nativeBrowserWindowPtrs = new long[mTasks.size()];
+
+            int index = 0;
+            for (var task : mTasks.values()) {
+                nativeBrowserWindowPtrs[index] = task.getOrCreateNativeBrowserWindowPtr();
+                index++;
+            }
+            return nativeBrowserWindowPtrs;
+        }
+    }
+
     /**
      * Removes all {@link ChromeAndroidTask}s.
      *
@@ -82,7 +96,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
      *
      * <p>This method must be called on the UI thread.
      */
-    public void removeAllForTesting() {
+    void removeAllForTesting() {
         synchronized (mTasksLock) {
             mTasks.forEach((taskId, task) -> task.destroy());
             mTasks.clear();

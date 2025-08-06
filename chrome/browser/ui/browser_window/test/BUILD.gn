@@ -28,13 +28,16 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindowNativeUnitTestSupport.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowNativeUnitTestSupport.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport.java",
     ]
     deps = [
+      ":junit_test_support",
       "//build/android:build_java",
       "//chrome/browser/ui/browser_window:java",
       "//chrome/browser/ui/browser_window/internal:java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
     ]
     srcjar_deps = [ ":native_unit_test_support_jni" ]
   }
@@ -45,6 +48,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindowNativeUnitTestSupport.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowNativeUnitTestSupport.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport.java",
     ]
   }
 }

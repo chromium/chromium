@@ -4,10 +4,26 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
+#include "base/android/jni_android.h"
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
+#include "chrome/browser/ui/browser_window/internal/jni/BrowserWindowInterfaceIteratorAndroid_jni.h"
+
+namespace {
+using base::android::AttachCurrentThread;
+}  // namespace
 
 std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
-  return AndroidBrowserWindow::GetAllAndroidBrowserWindowsByCreationTime();
+  std::vector<int64_t> browser_window_ptr_values =
+      Java_BrowserWindowInterfaceIteratorAndroid_getAllBrowserWindowInterfaces(
+          AttachCurrentThread());
+
+  std::vector<BrowserWindowInterface*> browser_windows;
+  for (int64_t ptr_value : browser_window_ptr_values) {
+    browser_windows.emplace_back(
+        reinterpret_cast<BrowserWindowInterface*>(ptr_value));
+  }
+
+  return browser_windows;
 }
 
 std::vector<BrowserWindowInterface*>
