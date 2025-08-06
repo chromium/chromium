@@ -8,9 +8,17 @@
     platformBuildVersionName="16"
     android:versionCode="OFFSET=33"
     android:versionName="#.#.#.#">
-  <dist:module dist:onDemand="true" dist:title="@string/dev_ui_module_title">  # DIFF-ANCHOR: 671a5c9f
+  <dist:module dist:title="@string/dev_ui_module_title">  # DIFF-ANCHOR: ce49604c
+    <dist:delivery>  # DIFF-ANCHOR: 2f6943d1
+      <dist:install-time>  # DIFF-ANCHOR: 945cd8fb
+        <dist:conditions>  # DIFF-ANCHOR: dab9d630
+          <dist:device-feature dist:name="android.hardware.type.pc"/>
+        </dist:conditions>  # DIFF-ANCHOR: dab9d630
+      </dist:install-time>  # DIFF-ANCHOR: 945cd8fb
+      <dist:on-demand/>
+    </dist:delivery>  # DIFF-ANCHOR: 2f6943d1
     <dist:fusing dist:include="true"/>
-  </dist:module>  # DIFF-ANCHOR: 671a5c9f
+  </dist:module>  # DIFF-ANCHOR: ce49604c
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <application/>
 </manifest>
