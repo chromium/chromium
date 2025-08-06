@@ -450,7 +450,6 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell
 
 # Flaky on Mac ASAN and AMD Radeon Pro 555X
 crbug.com/372055518 [ angle-metal asan intel-0x3e9b mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
-crbug.com/372055518 [ mac amd-0x67ef angle-opengl graphite-disabled ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ RetryOnFailure ]
 
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
