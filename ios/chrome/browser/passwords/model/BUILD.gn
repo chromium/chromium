@@ -190,6 +190,7 @@ source_set("infobar_delegates") {
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/shared/public/commands",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//ui/base",
   ]
 }

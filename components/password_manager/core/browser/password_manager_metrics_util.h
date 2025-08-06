@@ -309,6 +309,23 @@ enum class IsSyncPasswordHashSaved {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// Enum used to log metrics related to the password change recovery flow.
+//
+// LINT.IfChange(PasswordChangeRecoveryFlowState)
+enum class PasswordChangeRecoveryFlowState {
+  // User clicked the "Trouble signing in" suggestion and entered the flow.
+  kTroubleSigningInClicked = 0,
+  // We detected a failed login and opened a proactive popup.
+  kProactiveRecoveryPopupShown = 1,
+  // User finished the flow and promoted the backup password to primary.
+  kPrimaryPasswordUpdated = 2,
+  kMaxValue = kPrimaryPasswordUpdated
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeRecoveryFlowState)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // Metric: "PasswordManager.ReusedPasswordType".
 enum class PasswordType {
   // Passwords saved by password manager.
@@ -875,6 +892,9 @@ void LogCumulativeGetCredentialsMetrics(
 // Logs the failure to capture annotated page content during a specific
 // step of the password change flow.
 void LogPageContentCaptureFailure(PasswordChangeFlowStep step);
+
+// Logs the metrics for when a backup password is being promoted to primary.
+void LogPrimaryPasswordUpdatedWithBackup(ukm::SourceId ukm_source_id);
 
 }  // namespace password_manager::metrics_util
 

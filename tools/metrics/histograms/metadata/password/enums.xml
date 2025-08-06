@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="PrimaryPasswordUpdated"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/password_manager/core/browser/undo_password_change_controller.h:PasswordChangeRecoveryFlowState) -->
+<!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager_metrics_util.h:PasswordChangeRecoveryFlowState) -->
 
 <!-- LINT.IfChange(PasswordChangeToastEvent) -->
 

@@ -117,8 +117,15 @@ const password_manager::PasswordForm* FindFormByUsername(
 
 // Returns a form from |submitted_manager|'s best matches with
 // `kChangeSubmission` type that matches |submitted_manager|'s pending
-// credentials on username. Returns nullptr is such form is not found.
+// credentials on username. Returns nullptr if such form is not found.
 const password_manager::PasswordForm* FindLoginWithChangedPassword(
+    const password_manager::PasswordFormManagerForUI& submitted_manager);
+
+// Returns a form from |submitted_manager|'s best matches with
+// `kChangeSubmission` type that matches |submitted_manager|'s pending
+// credentials on username, and has a backup password. Returns nullptr if such
+// form is not found.
+const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
     const password_manager::PasswordFormManagerForUI& submitted_manager);
 
 // If the user submits a form, they may have used existing credentials, new

@@ -34,23 +34,6 @@ enum class PasswordRecoveryState {
   kIncludeBackup,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// As opposed `PasswordRecoveryState` above, this enum is only used for metrics.
-//
-// LINT.IfChange(PasswordChangeRecoveryFlowState)
-enum class PasswordChangeRecoveryFlowState {
-  // User clicked the "Trouble signing in" suggestion and entered the flow.
-  kTroubleSigningInClicked = 0,
-  // We detected a failed login and opened a proactive popup.
-  kProactiveRecoveryPopupShown = 1,
-  // User finished the flow and promoted the backup password to primary.
-  kPrimaryPasswordUpdated = 2,
-  kMaxValue = kPrimaryPasswordUpdated
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeRecoveryFlowState)
-
 // Controller class for the password recovery flow.
 // This class is attached to a tab and holds the recovery state of the last
 // filled suggestion. All credentials start with an implicit

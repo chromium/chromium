@@ -610,15 +610,16 @@ TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeRecoveryFlow",
-      password_manager::PasswordChangeRecoveryFlowState::
+      password_manager::metrics_util::PasswordChangeRecoveryFlowState::
           kPrimaryPasswordUpdated,
       1);
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, ukm_entries.size());
   ukm::TestUkmRecorder::ExpectEntryMetric(
       ukm_entries[0], UkmEntry::kPasswordChangeRecoveryFlowName,
-      static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
-                           kPrimaryPasswordUpdated));
+      static_cast<int>(
+          password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+              kPrimaryPasswordUpdated));
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PhishedPasswordUpdated) {

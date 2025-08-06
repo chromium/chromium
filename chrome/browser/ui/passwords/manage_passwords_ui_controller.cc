@@ -975,33 +975,23 @@ void ManagePasswordsUIController::HandlePasswordRecoveryFinished(
   }
 
   if (password_backup == password) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.PasswordChangeRecoveryFlow",
-        password_manager::PasswordChangeRecoveryFlowState::
-            kPrimaryPasswordUpdated);
-    ukm::builders::PasswordManager_ChangeRecovery(
-        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())
-        .SetPasswordChangeRecoveryFlow(
-            static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
-                                 kPrimaryPasswordUpdated))
-        .Record(ukm::UkmRecorder::Get());
+    password_manager::metrics_util::LogPrimaryPasswordUpdatedWithBackup(
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
     MaybeTriggerPasswordChangeDelayedSurvey(web_contents()->GetWeakPtr());
   }
 }
 
 void ManagePasswordsUIController::SavePassword(const std::u16string& username,
                                                const std::u16string& password) {
-  if (const password_manager::PasswordForm* changed_password_credentials =
-          password_manager_util::FindLoginWithChangedPassword(
-              *passwords_data_.form_manager());
-      changed_password_credentials &&
-      changed_password_credentials->GetPasswordBackup().has_value()) {
+  if (const password_manager::PasswordForm* changed_password_form_with_backup =
+          password_manager_util::FindChangedPasswordLoginWithBackup(
+              *passwords_data_.form_manager())) {
     // If the new password to be saved should override a backup password,
     // this function sets an empty backup to the submitted form.
     passwords_data_.form_manager()->OnRemovePasswordBackupNote();
     HandlePasswordRecoveryFinished(
         username, password,
-        changed_password_credentials->GetPasswordBackup().value());
+        changed_password_form_with_backup->GetPasswordBackup().value());
   }
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
