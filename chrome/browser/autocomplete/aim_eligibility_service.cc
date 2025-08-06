@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/autocomplete/aim_eligibility_service_observer.h"
 #include "chrome/browser/browser_process.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -40,6 +41,16 @@ AimEligibilityService::AimEligibilityService(
 
 AimEligibilityService::~AimEligibilityService() = default;
 
+void AimEligibilityService::AddObserver(
+    AimEligibilityServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AimEligibilityService::RemoveObserver(
+    AimEligibilityServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool AimEligibilityService::IsCountryAndLocale(const std::string& country,
                                                const std::string& locale) {
   return g_browser_process &&
@@ -51,4 +62,9 @@ bool AimEligibilityService::IsAimEligible() const {
   return search::DefaultSearchProviderIsGoogle(template_url_service_) &&
          IsCountryAndLocale("us", "en-US") &&
          omnibox::IsAimAllowedByPolicy(pref_service_);
+}
+
+void AimEligibilityService::NotifyObservers() const {
+  for (auto& observer : observers_)
+    observer.OnAimEligibilityServiceChanged();
 }
