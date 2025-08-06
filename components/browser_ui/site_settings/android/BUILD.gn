@@ -251,6 +251,7 @@ android_resources("java_resources") {
     "java/res/drawable/settings_v8.xml",
     "java/res/drawable/web_24.xml",
     "java/res/layout/add_site_dialog.xml",
+    "java/res/layout/approximate_geolocation_permission_dialog.xml",
     "java/res/layout/binary_state_permission_preference.xml",
     "java/res/layout/clear_data_dialog.xml",
     "java/res/layout/clear_reset_dialog.xml",

@@ -266,6 +266,12 @@
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK" desc="Summary text explaining that Chrome will block a website from accessing some permission, e.g. JavaScript: block.">
     Block
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_GEOLOCATION_APPROXIMATE" desc="Summary text explaining that Chrome will allow a website to access approximate geolocation.">
+    Approximate
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_GEOLOCATION_PRECISE" desc="Summary text explaining that Chrome will allow a website to access precise geolocation.">
+    Precise
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_DOMAIN_EXCEPTION_LABEL" desc="The label for site exceptions that apply to the entire domain.">
     All sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
   </message>
@@ -307,6 +313,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_EDIT_SITE_DIALOG_DESCRIPTION" desc="The description of the dialog to edit permissions for a website from a list.">
     Select an option for <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_EDIT_SITE_DIALOG_GEOLOCATION_ACCESS_DESCRIPTION" desc="The description of the dialog to edit geolocation access for a website from a list.">
+    Location access for this site
   </message>
 
   <!-- Site settings Delete Data Dialog and other ways of resetting permissions -->

@@ -77,6 +77,8 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -1762,7 +1764,17 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         // RadioButtonWithDescriptionLayout.
         var inflater =
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        var contentView = (LinearLayout) inflater.inflate(R.layout.edit_site_dialog_content, null);
+        boolean isLocationPermission =
+                PermissionsAndroidFeatureMap.isEnabled(
+                                PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+                        && contentSettingsType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
+        var contentView =
+                (LinearLayout)
+                        inflater.inflate(
+                                isLocationPermission
+                                        ? R.layout.approximate_geolocation_permission_dialog
+                                        : R.layout.edit_site_dialog_content,
+                                null);
 
         TextView messageView = contentView.findViewById(R.id.message);
         messageView.setText(
@@ -1806,6 +1818,15 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                     getInfoForOrigins();
                     alertDialog.dismiss();
                 });
+
+        if (isLocationPermission) {
+            RadioButtonWithDescriptionLayout location_access =
+                    contentView.findViewById(R.id.location_access_group);
+            // TODO(crbug.com/410752725): Fetch the geolocation permission from the backend and set
+            // whether the location access radio group should be enabled or disabled as well as the
+            // precise/approximate selection.
+            location_access.setEnabled(false);
+        }
         alertDialog.setView(contentView);
         return alertDialog;
     }
