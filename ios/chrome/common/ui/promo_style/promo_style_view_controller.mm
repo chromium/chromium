@@ -76,7 +76,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 @property(nonatomic, strong) UIImageView* headerImageView;
 @property(nonatomic, strong) UITextView* disclaimerView;
 // Primary action button for the view controller.
-@property(nonatomic, strong) UIButton* primaryActionButton;
+@property(nonatomic, strong) ChromeButton* primaryActionButton;
 // Activity indicator on top of `primaryActionButton`.
 @property(nonatomic, strong)
     UIActivityIndicatorView* primaryButtonActivityIndicatorView;
@@ -1558,13 +1558,13 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 }
 
 // Creates a button to be used for the button `primary` or not.
-- (UIButton*)createButtonForPrimary:(BOOL)primary
-                           withText:(NSString*)buttonText
-            accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+- (ChromeButton*)createButtonForPrimary:(BOOL)primary
+                               withText:(NSString*)buttonText
+                accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   BOOL equallyWeightedButton =
       (self.actionButtonsVisibility ==
        ActionButtonsVisibility::kEquallyWeightedButtonShown);
-  UIButton* button;
+  ChromeButton* button;
   if (equallyWeightedButton) {
     button = EqualWeightButton();
   } else {

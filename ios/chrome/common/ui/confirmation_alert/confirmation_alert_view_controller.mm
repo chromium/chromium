@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -80,14 +81,6 @@ void SetConfigurationImage(UIButton* button,
   button.imageView.accessibilityIdentifier = image.accessibilityIdentifier;
 }
 
-// Sets the color of the button's background in the button configuration's
-// background configuration.
-void SetButtonColor(UIButton* button, UIColor* color) {
-  UIButtonConfiguration* configuration = button.configuration;
-  configuration.background.backgroundColor = color;
-  button.configuration = configuration;
-}
-
 // Gets the default checkmark circle fill symbol with default configuration of
 // the given point size.
 //
@@ -125,7 +118,9 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     NSLayoutConstraint* scrollViewBottomAnchorConstraint;
 @end
 
-@implementation ConfirmationAlertViewController
+@implementation ConfirmationAlertViewController {
+  ChromeButton* _primaryButton;
+}
 
 #pragma mark - Public
 
@@ -142,9 +137,6 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
     _shouldFillInformationStack = NO;
     _actionStackBottomMargin = kDefaultActionsBottomMargin;
-    _activityIndicatorColor = [UIColor colorNamed:kSolidWhiteColor];
-    _confirmationButtonColor = [UIColor colorNamed:kBlue100Color];
-    _confirmationCheckmarkColor = [UIColor colorNamed:kBlue700Color];
     _imageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
     _mainBackgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   }
@@ -426,6 +418,10 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
 - (void)displayGradientView:(BOOL)shouldShow {
   self.gradientView.hidden = !shouldShow;
+}
+
+- (UIButton*)primaryActionButton {
+  return _primaryButton;
 }
 
 - (BOOL)isScrolledToBottom {
@@ -821,8 +817,8 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   if (self.primaryActionString) {
-    _primaryActionButton = [self createPrimaryActionButton];
-    [actionStackView addArrangedSubview:self.primaryActionButton];
+    _primaryButton = [self createPrimaryActionButton];
+    [actionStackView addArrangedSubview:_primaryButton];
   }
 
   if (self.secondaryActionString) {
@@ -838,8 +834,10 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 }
 
 // Helper to create the primary action button.
-- (UIButton*)createPrimaryActionButton {
-  UIButton* primaryActionButton = PrimaryActionButton();
+- (ChromeButton*)createPrimaryActionButton {
+  ChromeButton* primaryActionButton = self.destructiveAction
+                                          ? PrimaryDestructiveActionButton()
+                                          : PrimaryActionButton();
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
@@ -878,9 +876,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   [string addAttributes:attributes range:NSMakeRange(0, string.length)];
   buttonConfiguration.attributedTitle = string;
 
-  UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
-                                                ? self.secondaryActionTextColor
-                                                : kBlueColor];
+  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
   buttonConfiguration.baseForegroundColor = titleColor;
   buttonConfiguration.background.backgroundColor = [UIColor clearColor];
   secondaryActionButton.configuration = buttonConfiguration;
@@ -932,19 +928,20 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 // loading is true; otherwise, applies button labels and enables buttons.
 - (void)updateButtonState {
   const BOOL showingProgressState = _isLoading || _isConfirmed;
-  _primaryActionButton.enabled = !showingProgressState;
+  _primaryButton.enabled = !showingProgressState;
   if (_isConfirmed) {
-    SetButtonColor(_primaryActionButton, _confirmationButtonColor);
+    _primaryButton.tunedDownStyle = YES;
     SetConfigurationImage(
-        _primaryActionButton,
+        _primaryButton,
         DefaultCheckmarkCircleFillSymbol(kSymbolConfirmationCheckmarkPointSize),
-        _confirmationCheckmarkColor);
+        self.destructiveAction ? [UIColor colorNamed:kRed600Color]
+                               : [UIColor colorNamed:kBlue700Color]);
   } else {
-    SetConfigurationImage(_primaryActionButton, /*image=*/nil, /*color=*/nil);
+    SetConfigurationImage(_primaryButton, /*image=*/nil, /*color=*/nil);
   }
-  SetConfigurationActivityIndicator(_primaryActionButton, _isLoading,
-                                    _activityIndicatorColor);
-  SetConfigurationTitle(_primaryActionButton,
+  SetConfigurationActivityIndicator(_primaryButton, _isLoading,
+                                    UIColor.whiteColor);
+  SetConfigurationTitle(_primaryButton,
                         showingProgressState ? @"" : _primaryActionString);
 
   _secondaryActionButton.enabled = !showingProgressState;
@@ -983,7 +980,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   // Update fonts for specific content sizes.
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    SetConfigurationFont(self.primaryActionButton,
+    SetConfigurationFont(_primaryButton,
                          PreferredFontForTextStyleWithMaxCategory(
                              UIFontTextStyleHeadline,
                              self.traitCollection.preferredContentSizeCategory,

@@ -7,26 +7,38 @@
 
 #import <UIKit/UIKit.h>
 
+// This import is against the style guide, but it is here to facilitate the use
+// of the util as it is necessary each time the util is used.
+#import "ios/chrome/common/ui/util/chrome_button.h"
+
+extern const UIControlState UIControlStateTunedDown;
+
 extern const CGFloat kButtonVerticalInsets;
 extern const CGFloat kPrimaryButtonCornerRadius;
 
 // Updates `button` to match a primary action style.
-void UpdateButtonToMatchPrimaryAction(UIButton* button);
+void UpdateButtonToMatchPrimaryAction(ChromeButton* button);
+
+// Updates `button` to match a primary destruction action style.
+void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button);
 
 // Updates `button` to match a secondary action style.
-void UpdateButtonToMatchSecondaryAction(UIButton* button);
+void UpdateButtonToMatchSecondaryAction(ChromeButton* button);
 
 // Updates `button` to match a equal weight style.
-void UpdateButtonToMatchEqualWeightAction(UIButton* button);
+void UpdateButtonToMatchEqualWeightAction(ChromeButton* button);
 
 // Returns primary action button.
-UIButton* PrimaryActionButton();
+ChromeButton* PrimaryActionButton();
+
+// Returns primary destructive action button.
+ChromeButton* PrimaryDestructiveActionButton();
 
 // Returns secondary action button.
-UIButton* SecondaryActionButton();
+ChromeButton* SecondaryActionButton();
 
 // Returns equal weight button.
-UIButton* EqualWeightButton();
+ChromeButton* EqualWeightButton();
 
 // Sets the title of `button` through `button.configuration`.
 void SetConfigurationTitle(UIButton* button, NSString* newString);

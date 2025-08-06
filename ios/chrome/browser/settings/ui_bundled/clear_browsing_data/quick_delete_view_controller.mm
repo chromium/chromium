@@ -150,17 +150,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.topAlignedLayout = YES;
   self.customScrollViewBottomInsets = 0;
   self.actionHandler = self;
+  self.destructiveAction = YES;
 
   [super viewDidLoad];
 
   [self adjustPrimaryActionButtonHorizontalPadding];
   [self displayGradientView:NO];
 
-  // Configure the color of the primary button to red in several states, as the
-  // default colour is blue.
   [self updatePrimaryActionButtonEnabledStatus];
-  self.confirmationCheckmarkColor = [UIColor colorNamed:kRed600Color];
-  self.confirmationButtonColor = [UIColor colorNamed:kRed100Color];
 
   // Assign the table view's anchors now that it is in the same hierarchy as the
   // top view and that the content has been loaded.
@@ -486,13 +483,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.primaryActionButton.enabled = _historySelected || _tabsSelected ||
                                      _siteDataSelected || _cacheSelected ||
                                      _passwordsSelected || _autofillSelected;
-
-  UIButtonConfiguration* buttonConfiguration =
-      self.primaryActionButton.configuration;
-  buttonConfiguration.background.backgroundColor =
-      self.primaryActionButton.enabled ? [UIColor colorNamed:kRedColor]
-                                       : [UIColor colorNamed:kRed100Color];
-  self.primaryActionButton.configuration = buttonConfiguration;
 }
 
 // Action handler that executes when a voiceover announcement ends.
