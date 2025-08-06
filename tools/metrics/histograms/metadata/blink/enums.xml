@@ -8381,6 +8381,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="377" label="AtomicsPause"/>
   <int value="378" label="LogicalAssignments"/>
   <int value="379" label="NullishCoalescing"/>
+  <int value="380" label="CrashReportStorageAPIInitialize"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

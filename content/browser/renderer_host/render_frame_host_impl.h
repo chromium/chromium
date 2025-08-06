@@ -2621,6 +2621,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RecordWindowProxyUsageMetrics(
       const blink::FrameToken& target_frame_token,
       blink::mojom::WindowProxyAccessType access_type) override;
+  void InitializeCrashReportStorage(
+      uint64_t length,
+      InitializeCrashReportStorageCallback callback) override;
   void SetCrashReportStorageKey(
       const std::string& key,
       const std::string& value,
@@ -5531,6 +5534,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // supplied by the renderer, and read from during
   // `MaybeGenerateCrashReport()`, to supplement crash reports with this data.
   std::map<std::string, std::string> crash_storage_map_;
+  // For now, this member is *only* used to track whether initialization has
+  // already occurred via this method. It will be more useful soon when it is
+  // used by `SetCrashReportStorageKey()` to actually enforce a cap on the
+  // number of bytes written to the backing crash report storage memory (for
+  // now, this is `crash_storage_map_`, but in the future it could be a shared
+  // memory region; see https://crrev.com/c/6788146 which is exploring this).
+  std::optional<uint64_t> crash_storage_requested_length_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

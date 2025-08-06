@@ -257,6 +257,11 @@ struct LegacyTechEventCodeLocation {
   uint64 column;
 };
 
+// The maximum allowed size of a crash report storage shared memory buffer. This
+// is used when the renderer requests a shared memory buffer for crash report
+// data; see `CreateCrashReportStorage()`.
+const uint64 kMaxCrashReportStorageSize = 5242880; // 5 * 1024 * 1024.
+
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
 //
@@ -814,6 +819,19 @@ interface LocalFrameHost {
 
   // Sets the StorageAccessApiStatus for the given frame.
   SetStorageAccessApiStatus(network.mojom.StorageAccessApiStatus status);
+
+  // This IPC lets the browser initialize memory reserved for crash reporting
+  // API of size `length`. Note that the maximum allowed size is
+  // `kMaxCrashReportStorageSize`. In the future, if we decide that shared
+  // memory is to be the backing storage mechanism for this feature, then this
+  // method's async callback will contain an `UnsafeSharedMemoryRegion` that the
+  // renderer can use to write crash report data that the browser will read,
+  // instead of using the two synchronous IPCs below.
+  //
+  // Note that this API must be called, and its callback run in the renderer,
+  // before the below set and remove IPCs are called. A renderer process that
+  // does not obey this requirement will be terminated.
+  InitializeCrashReportStorage(uint64 length) => ();
 
   // Called by `blink::CrashReportStorage`.
   // TODO(https://crbug.com/400432195): Consider removing this IPC, and

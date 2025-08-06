@@ -355,6 +355,9 @@ enum BadMessageReason {
   RFH_SAME_DOC_INSECURE_REQUEST_POLICY_CHANGE = 327,
   RFH_SAME_DOC_INSECURE_NAV_SET_CHANGE = 328,
   RFH_ORIGIN_TO_COMMIT_MISMATCH = 329,
+  RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE = 330,
+  RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED = 331,
+
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
   // reason. After making changes, you MUST update enums.xml by running:
