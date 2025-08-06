@@ -2040,6 +2040,9 @@ extern const char kReplaceSyncPromosWithSignInPromosDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
 
+extern const char kRobustWindowManagementName[];
+extern const char kRobustWindowManagementDescription[];
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 extern const char kRootScrollbarFollowsTheme[];
 extern const char kRootScrollbarFollowsThemeDescription[];
