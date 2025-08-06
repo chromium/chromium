@@ -138,9 +138,11 @@
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(const std::string&)> handle_response_callback =
       base::BindOnce(^void(const std::string& response_string) {
-        [weakSelf.consumer
-            updateQueryResult:base::SysUTF8ToNSString(response_string)
-                   forFeature:AIPrototypingFeature::kFreeform];
+        if (weakSelf) {
+          [weakSelf.consumer
+              updateQueryResult:base::SysUTF8ToNSString(response_string)
+                     forFeature:AIPrototypingFeature::kFreeform];
+        }
       });
 
   // Execute the query immediately and early return if `includePageContext` is
