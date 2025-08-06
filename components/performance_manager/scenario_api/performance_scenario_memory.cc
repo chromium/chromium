@@ -7,9 +7,11 @@
 #include <optional>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
@@ -35,6 +37,30 @@ scoped_refptr<RefCountedScenarioMapping>& MappingPtrForScope(
   NOTREACHED();
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ChildScenarioMappingResult)
+enum class MappingResult {
+  kSuccess = 0,
+  kInvalidHandle = 1,
+  kSystemError = 2,
+  kMaxValue = kSystemError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/performance_manager/enums.xml:ChildScenarioMappingResult)
+
+void LogMappingResult(
+    MappingResult result,
+    std::optional<logging::SystemErrorCode> system_error = std::nullopt) {
+  base::UmaHistogramEnumeration("PerformanceManager.ChildScenarioMappingResult",
+                                result);
+  if (system_error.has_value()) {
+    base::UmaHistogramSparse(
+        "PerformanceManager.ChildScenarioMappingSystemError",
+        system_error.value());
+  }
+}
+
 }  // namespace
 
 // TODO(crbug.com/365586676): Currently these are only mapped into browser and
@@ -46,12 +72,17 @@ ScopedReadOnlyScenarioMemory::ScopedReadOnlyScenarioMemory(
     base::ReadOnlySharedMemoryRegion region)
     : scope_(scope) {
   using SharedScenarioState = base::StructuredSharedMemory<ScenarioState>;
-  std::optional<SharedScenarioState::ReadOnlyMapping> mapping =
-      SharedScenarioState::MapReadOnlyRegion(std::move(region));
-  if (mapping.has_value()) {
+  if (!region.IsValid()) {
+    LogMappingResult(MappingResult::kInvalidHandle);
+  } else if (std::optional<SharedScenarioState::ReadOnlyMapping> mapping =
+                 SharedScenarioState::MapReadOnlyRegion(std::move(region))) {
     MappingPtrForScope(scope_) =
         base::MakeRefCounted<RefCountedScenarioMapping>(
             std::move(mapping.value()));
+    LogMappingResult(MappingResult::kSuccess);
+  } else {
+    LogMappingResult(MappingResult::kSystemError,
+                     logging::GetLastSystemErrorCode());
   }
 
   // The ObserverList must be created after mapping the memory, because it reads

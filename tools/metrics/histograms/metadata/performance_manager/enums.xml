@@ -26,6 +26,25 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ChildScenarioMappingResult) -->
+
+<enum name="ChildScenarioMappingResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid Handle"/>
+  <int value="2" label="System Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/performance_manager/scenario_api/performance_scenario_memory.cc:ChildScenarioMappingResult) -->
+
+<!-- LINT.IfChange(CreateScenarioMemoryResult) -->
+
+<enum name="CreateScenarioMemoryResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="System Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/performance_manager/scenarios/performance_scenario_data.cc:CreateScenarioMemoryResult) -->
+
 <enum name="EfficiencyMode">
   <int value="0" label="Normal"/>
   <int value="1" label="High Efficiency"/>
