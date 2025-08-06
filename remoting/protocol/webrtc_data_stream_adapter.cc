@@ -17,7 +17,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/compound_buffer.h"
+#include "remoting/base/logging.h"
 #include "remoting/protocol/message_serialization.h"
+#include "third_party/webrtc/api/data_channel_interface.h"
 
 namespace remoting::protocol {
 
@@ -31,7 +33,12 @@ WebrtcDataStreamAdapter::WebrtcDataStreamAdapter(
     webrtc::scoped_refptr<webrtc::DataChannelInterface> channel)
     : channel_(channel.get()) {
   channel_->RegisterObserver(this);
-  DCHECK_EQ(channel_->state(), webrtc::DataChannelInterface::kConnecting);
+  if (channel_->state() != webrtc::DataChannelInterface::kConnecting) {
+    HOST_LOG << "Initial state for channel " << channel_->label() << " is "
+             << webrtc::DataChannelInterface::DataStateString(
+                    channel_->state());
+    OnStateChange();
+  }
 }
 
 WebrtcDataStreamAdapter::~WebrtcDataStreamAdapter() {
