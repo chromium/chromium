@@ -5,18 +5,27 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WATERMARK_WATERMARK_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WATERMARK_WATERMARK_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/watermark/watermark.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+namespace content {
+class WebContents;
+}
 
 class WatermarkPageHandler : public watermark::mojom::PageHandler {
  public:
-  explicit WatermarkPageHandler(
-      mojo::PendingReceiver<watermark::mojom::PageHandler> receiver);
+  WatermarkPageHandler(
+      mojo::PendingReceiver<watermark::mojom::PageHandler> receiver,
+      content::WebContents& host_contents);
+
   ~WatermarkPageHandler() override;
 
   void SetWatermarkStyle(watermark::mojom::WatermarkStylePtr style) override;
 
  private:
+  const raw_ref<content::WebContents> host_contents_;
   mojo::Receiver<watermark::mojom::PageHandler> receiver_;
 };
 

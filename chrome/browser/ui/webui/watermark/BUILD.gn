@@ -19,6 +19,9 @@ static_library("watermark") {
   deps = [
     "//chrome/browser/enterprise/watermark:watermark_view_lib",
     "//chrome/browser/resources/watermark:resources_grit",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/watermark:mojo_bindings",
     "//chrome/common",
     "//content/public/browser",

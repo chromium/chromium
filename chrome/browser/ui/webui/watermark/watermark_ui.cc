@@ -38,7 +38,8 @@ void WatermarkUI::BindInterface(
 
 void WatermarkUI::CreatePageHandler(
     mojo::PendingReceiver<watermark::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<WatermarkPageHandler>(std::move(receiver));
+  page_handler_ = std::make_unique<WatermarkPageHandler>(
+      std::move(receiver), *web_ui()->GetWebContents());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WatermarkUI)

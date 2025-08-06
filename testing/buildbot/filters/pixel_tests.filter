@@ -156,8 +156,8 @@ TabSearchBubbleUIBrowserTest.*
 TranslateBubbleVisualTest.InvokeUi_*
 UpdateRecommendedDialogTest.*
 *WatermarkBrowserTest.*
-*WatermarkDisabledBrowserTest.*
 *WatermarkTestPageBrowserTest.*
+*WatermarkTestPageDynamicBrowserTest.*
 WebAppConfirmViewBrowserTest.*
 WebAppMenuBrowserTest.*
 WebAppUpdateReviewDialog.*

@@ -27,6 +27,10 @@ class WatermarkUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<watermark::mojom::PageHandlerFactory> receiver);
 
+  WatermarkPageHandler* GetPageHandlerForTesting() {
+    return page_handler_.get();
+  }
+
  private:
   // watermark::mojom::PageHandlerFactory
   void CreatePageHandler(

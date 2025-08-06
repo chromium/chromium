@@ -60,6 +60,29 @@ export class WatermarkAppElement extends CrLitElement {
     for (let i = 0; i <= 100; i++) {
       this.opacityTicks_.push({label: String(i), value: i});
     }
+
+    document.addEventListener(
+        'visibilitychange', this.handleVisibilityChange_.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener(
+        'visibilitychange', this.handleVisibilityChange_.bind(this));
+  }
+
+  /**
+   * Called when the tab becomes visible. This ensures the watermark is
+   * correctly styled if another tab was affecting its state.
+   */
+  private handleVisibilityChange_() {
+    if (document.visibilityState === 'visible') {
+      this.sendStyleToBackend_();
+    }
+  }
+
+  override firstUpdated() {
+    this.sendStyleToBackend_();
   }
 
   protected sendStyleToBackend_() {
@@ -80,22 +103,24 @@ export class WatermarkAppElement extends CrLitElement {
           },
         },
         null, 2));
-    this.sendStyleToBackend_();
   }
 
   protected onFontSizeChanged_() {
     const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
-    if (!isNaN(parsedValue) && parsedValue >= 1) {
+    if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue < 1000) {
       this.fontSize_ = parsedValue;
+      this.sendStyleToBackend_();
     }
   }
 
   protected onFillOpacityChanged_() {
     this.fillOpacity_ = Math.round(this.$.fillOpacitySlider.value);
+    this.sendStyleToBackend_();
   }
 
   protected onOutlineOpacityChanged_() {
     this.outlineOpacity_ = Math.round(this.$.outlineOpacitySlider.value);
+    this.sendStyleToBackend_();
   }
 }
 

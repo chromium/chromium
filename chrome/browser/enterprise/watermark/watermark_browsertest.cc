@@ -4,13 +4,17 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/watermark/watermark_page_handler.h"
+#include "chrome/browser/ui/webui/watermark/watermark_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,14 +47,32 @@ It was not split
 This is another very long line that should be split up into multiple lines
 )";
 
+struct WatermarkTextParams {
+  const char* test_suffix;
+  const char* watermark_text;
+};
+
+struct WatermarkStyleParams {
+  const char* test_suffix;
+  int fill_opacity;
+  int outline_opacity;
+  int font_size;
+};
+
 constexpr SkColor kTestFillColor = SkColorSetARGB(0x2A, 0, 0, 0);
 constexpr SkColor kTestOutlineColor = SkColorSetARGB(0x3D, 0, 0, 0);
 constexpr int kTestFontSize =
     enterprise_connectors::kWatermarkStyleFontSizeDefault;
 
-class WatermarkBrowserTest : public UiBrowserTest,
-                             public testing::WithParamInterface<const char*> {
+class WatermarkBrowserTest
+    : public UiBrowserTest,
+      public testing::WithParamInterface<WatermarkTextParams> {
  public:
+  WatermarkBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        enterprise_data_protection::kEnableSinglePageAppDataProtection);
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -80,28 +102,33 @@ class WatermarkBrowserTest : public UiBrowserTest,
   bool VerifyUi() override {
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
+
+    // Use the test suffix to create a unique name for the golden image.
+    const std::string name =
+        std::string(test_info->name()) + "_" + GetParam().test_suffix;
+
     return VerifyPixelUi(BrowserView::GetBrowserViewForBrowser(browser())
                              ->contents_container(),
                          test_info->test_suite_name(),
-                         test_info->name()) != ui::test::ActionResult::kFailed;
+                         name) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {}
 
  protected:
-  base::test::ScopedFeatureList scoped_features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
   NavigateToTestPage();
-  ASSERT_TRUE(SetWatermark(GetParam()));
+  ASSERT_TRUE(SetWatermark(GetParam().watermark_text));
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkClearedAfterNavigation) {
-  ASSERT_TRUE(SetWatermark(GetParam()));
+  ASSERT_TRUE(SetWatermark(GetParam().watermark_text));
 
   // Navigating away from a watermarked page should clear the watermark if no
   // other verdict/policy is present to show a watermark.
@@ -109,11 +136,14 @@ IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkClearedAfterNavigation) {
   ShowAndVerifyUi();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WatermarkBrowserTest,
-                         testing::Values(kMultilingualWatermarkMessage,
-                                         kLongLinesWatermarkMessage));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WatermarkBrowserTest,
+    testing::Values(
+        WatermarkTextParams{"Multilingual", kMultilingualWatermarkMessage},
+        WatermarkTextParams{"LongLines", kLongLinesWatermarkMessage}));
 
+// Test fixture for the default chrome://watermark page.
 class WatermarkTestPageBrowserTest : public UiBrowserTest {
  public:
   WatermarkTestPageBrowserTest() {
@@ -139,11 +169,77 @@ class WatermarkTestPageBrowserTest : public UiBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Test fixture for the dynamic chrome://watermark page tests. This is
+// parameterized to test various style combinations.
+class WatermarkTestPageDynamicBrowserTest
+    : public UiBrowserTest,
+      public testing::WithParamInterface<WatermarkStyleParams> {
+ public:
+  WatermarkTestPageDynamicBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(kEnableWatermarkTestPage);
+  }
+
+  void ShowUi(const std::string& name) override {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool VerifyUi() override {
+    const auto* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+
+    const std::string name =
+        std::string(test_info->name()) + "_" + GetParam().test_suffix;
+
+    return VerifyPixelUi(BrowserView::GetBrowserViewForBrowser(browser())
+                             ->contents_container(),
+                         test_info->test_suite_name(),
+                         name) != ui::test::ActionResult::kFailed;
+  }
+
+  void WaitForUserDismissal() override {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(WatermarkTestPageBrowserTest, InvokeUi_default) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIWatermarkURL)));
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_P(WatermarkTestPageDynamicBrowserTest, DynamicStyle) {
+  const auto& params = GetParam();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIWatermarkURL)));
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* watermark_ui =
+      web_contents->GetWebUI()->GetController()->GetAs<WatermarkUI>();
+  ASSERT_TRUE(watermark_ui);
+  auto* page_handler = watermark_ui->GetPageHandlerForTesting();
+  ASSERT_TRUE(page_handler);
+
+  auto style = watermark::mojom::WatermarkStyle::New();
+  style->fill_opacity = params.fill_opacity;
+  style->outline_opacity = params.outline_opacity;
+  style->font_size = params.font_size;
+  page_handler->SetWatermarkStyle(std::move(style));
+
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WatermarkTestPageDynamicBrowserTest,
+    testing::Values(
+        WatermarkStyleParams{"HighOpacity", /*fill_opacity=*/80,
+                             /*outline_opacity=*/90, /*font_size=*/24},
+        WatermarkStyleParams{"LargeFont", /*fill_opacity=*/4,
+                             /*outline_opacity=*/6, /*font_size=*/72},
+        WatermarkStyleParams{"ZeroOpacity", /*fill_opacity=*/0,
+                             /*outline_opacity=*/0, /*font_size=*/24}));
 
 class WatermarkSettingsBrowserTest : public InProcessBrowserTest,
                                      public testing::WithParamInterface<bool> {

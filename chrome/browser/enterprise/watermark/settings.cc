@@ -16,10 +16,6 @@
 
 namespace {
 
-// Base RGB colors for the watermark text.
-constexpr SkColor kBaseFillRGB = SkColorSetRGB(0x00, 0x00, 0x00);     // Black
-constexpr SkColor kBaseOutlineRGB = SkColorSetRGB(0xff, 0xff, 0xff);  // White
-
 // Minimum font size as per WatermarkStyle.yaml schema.
 constexpr int kMinFontSize = 1;
 
@@ -28,11 +24,6 @@ constexpr int kMinFontSize = 1;
 constexpr char kWatermarkFillOpacityPercentFlag[] = "watermark-fill-opacity";
 constexpr char kWatermarkOutlineOpacityPercentFlag[] =
     "watermark-outline-opacity";
-
-// Helper function to convert a percentage (0-100) to SkAlpha (0-255).
-SkAlpha PercentageToSkAlpha(int percent_value) {
-  return std::clamp(percent_value, 0, 100) * 255 / 100;
-}
 
 // Helper function to get opacity as a Skia alpha value (0-255)
 // from a percentage value (0-100)
@@ -51,20 +42,25 @@ int GetOpacity(const PrefService* prefs,
     int percent_from_flag;
     if (base::StringToInt(cmd->GetSwitchValueASCII(cmd_opacity_percent_flag),
                           &percent_from_flag)) {
-      return PercentageToSkAlpha(percent_from_flag);
+      return enterprise_watermark::PercentageToSkAlpha(percent_from_flag);
     }
   }
 
   if (base::FeatureList::IsEnabled(
           enterprise_watermark::kEnableWatermarkCustomization)) {
-    return PercentageToSkAlpha(prefs->GetInteger(pref_name));
+    return enterprise_watermark::PercentageToSkAlpha(
+        prefs->GetInteger(pref_name));
   }
 
-  return PercentageToSkAlpha(default_percent_value);
+  return enterprise_watermark::PercentageToSkAlpha(default_percent_value);
 }
 }  // namespace
 
 namespace enterprise_watermark {
+
+SkAlpha PercentageToSkAlpha(int percent_value) {
+  return std::clamp(percent_value, 0, 100) * 255 / 100;
+}
 
 SkColor GetDefaultFillColor() {
   return SkColorSetA(
