@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 source_set("webui_browser") {
   sources = [
     "webui_browser.h",
@@ -10,8 +12,11 @@ source_set("webui_browser") {
     "webui_location_bar.h",
   ]
   public_deps = [
+    ":browser_mojo_bindings",
     "//base",
     "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/views/side_panel",
+    "//components/guest_contents/common:mojom",
     "//content/public/browser",
     "//ui/color",
     "//ui/color:color_provider_key",
@@ -25,6 +30,8 @@ source_set("impl") {
     "webui_browser.cc",
     "webui_browser_client_view.cc",
     "webui_browser_client_view.h",
+    "webui_browser_page_handler.cc",
+    "webui_browser_page_handler.h",
     "webui_browser_ui.cc",
     "webui_browser_web_contents_delegate.cc",
     "webui_browser_web_contents_delegate.h",
@@ -33,14 +40,19 @@ source_set("impl") {
   ]
 
   deps = [
+    ":browser_mojo_bindings",
     ":webui_browser",
     "//base",
+    "//chrome/browser/devtools",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/webui_browser:resources",
     "//chrome/browser/themes",
     "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/web_applications",
     "//chrome/common:chrome_features",
+    "//components/guest_contents/browser",
     "//components/input",
     "//components/sharing_message",
     "//content/public/browser",
@@ -48,4 +60,13 @@ source_set("impl") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
+}
+
+mojom("browser_mojo_bindings") {
+  sources = [ "browser.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "/"
 }

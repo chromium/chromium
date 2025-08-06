@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/webui_browser_resources.h"
 #include "chrome/grit/webui_browser_resources_map.h"
@@ -25,6 +27,10 @@ bool WebUIBrowserUIConfig::IsWebUIEnabled(
 
 WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
+  WebUIBrowserWindow* webui_browser_window =
+      WebUIBrowserWindow::FromWebShellWebContents(web_ui->GetWebContents());
+  browser_ = webui_browser_window->browser();
+
   // Set up the chrome://webui-browser source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -40,3 +46,32 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
 }
 
 WebUIBrowserUI::~WebUIBrowserUI() = default;
+
+void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<webui_browser::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+base::WeakPtr<WebUIBrowserUI> WebUIBrowserUI::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void WebUIBrowserUI::CreatePageHandler(
+    mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver) {
+  auto* render_frame_host = web_ui()->GetRenderFrameHost();
+  WebUIBrowserPageHandler::CreateForRenderFrameHost(*render_frame_host,
+                                                    std::move(receiver), this);
+}
+
+void WebUIBrowserUI::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
+  // TODO(webium): Create side panel and call page_->ShowSidePanel()
+  NOTIMPLEMENTED();
+}
+
+void WebUIBrowserUI::CloseSidePanel() {
+  // TODO(webium): Create side panel and call page_->CloseSidePanel()
+  NOTIMPLEMENTED();
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(WebUIBrowserUI)

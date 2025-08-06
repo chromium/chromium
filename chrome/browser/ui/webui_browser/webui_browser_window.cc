@@ -36,6 +36,17 @@ bool IsUsingLinuxSystemTheme(Profile* profile) {
 #endif
 }
 
+// WebShell is the WebContents that hosts the top-chrome WebUI. This UserData
+// establishes a link from WebShell to WebUIBrowserWindow.
+class WebShellWebContentsUserData : public base::SupportsUserData::Data {
+ public:
+  constexpr static char Key[] = "webshell-user-data";
+  explicit WebShellWebContentsUserData(WebUIBrowserWindow* browser_window)
+      : browser_window_(browser_window) {}
+
+  raw_ptr<WebUIBrowserWindow> browser_window_;
+};
+
 }  // namespace
 
 class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
@@ -67,6 +78,9 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   auto* ui_web_contents = web_view->GetWebContents();
   web_contents_delegate_->SetUIWebContents(ui_web_contents);
   ui_web_contents->SetDelegate(web_contents_delegate_.get());
+  ui_web_contents->SetUserData(
+      WebShellWebContentsUserData::Key,
+      std::make_unique<WebShellWebContentsUserData>(this));
 
   web_view->LoadInitialURL(GURL(chrome::kChromeUIWebuiBrowserURL));
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
@@ -75,6 +89,20 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
 }
 
 WebUIBrowserWindow::~WebUIBrowserWindow() = default;
+
+// static
+WebUIBrowserWindow* WebUIBrowserWindow::FromWebShellWebContents(
+    content::WebContents* web_contents) {
+  WebShellWebContentsUserData* user_data =
+      static_cast<WebShellWebContentsUserData*>(
+          web_contents->GetUserData(WebShellWebContentsUserData::Key));
+
+  if (!user_data) {
+    return nullptr;
+  }
+
+  return user_data->browser_window_;
+}
 
 void WebUIBrowserWindow::Show() {
   NOTIMPLEMENTED();

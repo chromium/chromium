@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
 
@@ -28,6 +29,11 @@ class WebUIBrowserWindow : public BrowserWindow,
  public:
   explicit WebUIBrowserWindow(std::unique_ptr<Browser> browser);
   ~WebUIBrowserWindow() override;
+
+  // Returns the containing browser window for a WebContents that hosts
+  // WebShell.
+  static WebUIBrowserWindow* FromWebShellWebContents(
+      content::WebContents* web_contents);
 
   // BrowserWindow:
   gfx::NativeWindow GetNativeWindow() const override;
@@ -219,6 +225,8 @@ class WebUIBrowserWindow : public BrowserWindow,
   ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override;
+
+  Browser* browser() { return browser_.get(); }
 
  protected:
   void DestroyBrowser() override;
