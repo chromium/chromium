@@ -25,6 +25,12 @@ Use `agents/extensions/install.py` to list and configure available servers.
 
 [`//agents/extensions/README.md`]: /agents/extensions/README.md
 
+### Custom Commands
+
+Add these to [`//.gemini/commands`].
+
+[`//.gemini/commands`]: /.gemini/commands/README.md
+
 ## Contributing
 
 Please freely add self-contained task prompts and prompt templates that match

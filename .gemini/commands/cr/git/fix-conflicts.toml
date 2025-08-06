@@ -1,0 +1,6 @@
+description="Resolves git conflicts. Files should show in \"git status\" and contain conflict markers (<<<<)."
+prompt = """
+Please fix my merge conflicts.
+
+Do not compile or validate your changes using any tools.
+"""

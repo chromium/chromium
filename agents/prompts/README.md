@@ -49,3 +49,9 @@ the format of the existing examples.
 
 Changes to `common.minimal.md` should be done carefully as it's meant to be used
 broadly.
+
+### Custom Commands
+
+Add these to [`//.gemini/commands`].
+
+[`//.gemini/commands`]: /.gemini/commands/README.md
