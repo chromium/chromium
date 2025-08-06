@@ -345,7 +345,7 @@ ci.builder(
 ci.thin_tester(
     name = "mac11-arm64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/mac-arm64-rel"],
+    parent = "ci/mac-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -393,7 +393,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac12-arm64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/mac-arm64-rel"],
+    parent = "ci/mac-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -453,7 +453,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac13-arm64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/mac-arm64-rel"],
+    parent = "ci/mac-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -509,7 +509,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac-skia-alt-arm64-rel-tests",
     description_html = "Runs web tests with Skia Graphite on Mac ARM machines",
-    triggered_by = ["ci/mac-arm64-rel"],
+    parent = "ci/mac-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -547,7 +547,7 @@ ci.thin_tester(
     name = "mac14-arm64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs MacOS 14 tests on ARM machines",
-    triggered_by = ["ci/mac-arm64-rel"],
+    parent = "ci/mac-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -607,7 +607,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac11 Tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/Mac Builder"],
+    parent = "ci/Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -681,7 +681,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac12 Tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/Mac Builder"],
+    parent = "ci/Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -768,7 +768,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac13 Tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/Mac Builder"],
+    parent = "ci/Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -857,7 +857,7 @@ ci.thin_tester(
     name = "mac14-tests-dbg",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs Mac 14 tests with debug config.",
-    triggered_by = ["ci/Mac Builder (dbg)"],
+    parent = "ci/Mac Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -953,7 +953,7 @@ ci.thin_tester(
     name = "mac14-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs default MacOS 14 tests on CI.",
-    triggered_by = ["ci/Mac Builder"],
+    parent = "ci/Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(

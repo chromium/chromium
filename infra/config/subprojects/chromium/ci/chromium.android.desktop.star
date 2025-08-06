@@ -226,7 +226,7 @@ ci.thin_tester(
     name = "android-desktop-x64-rel-14-tests",
     branch_selector = branches.selector.MAIN,
     description_html = "Android desktop x64 release tests on Android 14.",
-    triggered_by = ["ci/android-desktop-x64-compile-rel"],
+    parent = "ci/android-desktop-x64-compile-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(

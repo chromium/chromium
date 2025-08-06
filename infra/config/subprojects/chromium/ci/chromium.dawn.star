@@ -265,7 +265,7 @@ ci.gpu.linux_builder(
 
 ci.thin_tester(
     name = "Dawn Android arm DEPS Release (Nexus 5X)",
-    triggered_by = ["ci/Dawn Android arm DEPS Builder"],
+    parent = "ci/Dawn Android arm DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -305,7 +305,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Android arm DEPS Release (Pixel 4)",
-    triggered_by = ["ci/Dawn Android arm DEPS Builder"],
+    parent = "ci/Dawn Android arm DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -385,7 +385,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Android arm64 DEPS Release (Pixel 6)",
-    triggered_by = ["ci/Dawn Android arm64 DEPS Builder"],
+    parent = "ci/Dawn Android arm64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -460,7 +460,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Linux x64 DEPS Release (Intel UHD 630)",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
+    parent = "ci/Dawn Linux x64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -527,7 +527,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Linux x64 DEPS Release (NVIDIA)",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/Dawn Linux x64 DEPS Builder"],
+    parent = "ci/Dawn Linux x64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -699,7 +699,7 @@ ci.gpu.linux_builder(
 
 ci.thin_tester(
     name = "Dawn Android arm Release (Nexus 5X)",
-    triggered_by = ["ci/Dawn Android arm Builder"],
+    parent = "ci/Dawn Android arm Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -740,7 +740,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Android arm Release (Pixel 4)",
-    triggered_by = ["ci/Dawn Android arm Builder"],
+    parent = "ci/Dawn Android arm Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -821,7 +821,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Android arm64 Release (Pixel 6)",
-    triggered_by = ["ci/Dawn Android arm64 Builder"],
+    parent = "ci/Dawn Android arm64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -897,7 +897,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Android arm64 Experimental Release (Pixel 6)",
     description_html = "Runs ToT Dawn tests on experimental Pixel 6 configs",
-    triggered_by = ["ci/Dawn Android arm64 Builder"],
+    parent = "ci/Dawn Android arm64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -983,7 +983,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Android arm64 Release (Samsung S24)",
     description_html = "Runs ToT Dawn tests on Samsung S24 devices",
-    triggered_by = ["ci/Dawn Android arm64 Builder"],
+    parent = "ci/Dawn Android arm64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1085,7 +1085,7 @@ ci.gpu.linux_builder(
 ci.thin_tester(
     name = "Dawn Linux x64 Experimental Release (Intel UHD 630)",
     description_html = "Runs ToT Dawn tests on experimental Linux/UHD 630 configs",
-    triggered_by = ["Dawn Linux x64 Builder"],
+    parent = "Dawn Linux x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1161,7 +1161,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Linux x64 Experimental Release (NVIDIA GTX 1660)",
     description_html = "Runs ToT Dawn tests on experimental Linux/GTX 1660 configs",
-    triggered_by = ["Dawn Linux x64 Builder"],
+    parent = "Dawn Linux x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1204,7 +1204,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Linux x64 Release (Intel UHD 630)",
-    triggered_by = ["Dawn Linux x64 Builder"],
+    parent = "Dawn Linux x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1270,7 +1270,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Linux x64 Release (Intel UHD 770)",
     description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
-    triggered_by = ["Dawn Linux x64 Builder"],
+    parent = "Dawn Linux x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1317,7 +1317,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Linux x64 Release (NVIDIA)",
-    triggered_by = ["Dawn Linux x64 Builder"],
+    parent = "Dawn Linux x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1437,7 +1437,7 @@ ci.thin_tester(
     name = "Dawn Mac arm64 DEPS Release (Apple M2)",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Tests Dawn on M2 machines with DEPSed binaries",
-    triggered_by = ["Dawn Mac arm64 DEPS Builder"],
+    parent = "Dawn Mac arm64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1479,7 +1479,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Mac arm64 Experimental Release (Apple M2)",
     description_html = "Tests Dawn on experimental M2 machines with ToT binaries",
-    triggered_by = ["Dawn Mac arm64 Builder"],
+    parent = "Dawn Mac arm64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1528,7 +1528,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Mac arm64 Release (Apple M2)",
     description_html = "Tests Dawn on M2 machines with ToT binaries",
-    triggered_by = ["Dawn Mac arm64 Builder"],
+    parent = "Dawn Mac arm64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1654,7 +1654,7 @@ ci.gpu.mac_builder(
 ci.thin_tester(
     name = "Dawn Mac x64 DEPS Release (AMD)",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
+    parent = "ci/Dawn Mac x64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1708,7 +1708,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Mac x64 DEPS Release (Intel)",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
+    parent = "ci/Dawn Mac x64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1761,7 +1761,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Mac x64 Experimental Release (AMD)",
-    triggered_by = ["Dawn Mac x64 Builder"],
+    parent = "Dawn Mac x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1819,7 +1819,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Mac x64 Experimental Release (Intel)",
-    triggered_by = ["Dawn Mac x64 Builder"],
+    parent = "Dawn Mac x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1877,7 +1877,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Mac x64 Release (AMD)",
-    triggered_by = ["Dawn Mac x64 Builder"],
+    parent = "Dawn Mac x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1929,7 +1929,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Mac x64 Release (Intel)",
-    triggered_by = ["Dawn Mac x64 Builder"],
+    parent = "Dawn Mac x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2024,7 +2024,7 @@ ci.gpu.windows_builder(
 
 ci.thin_tester(
     name = "Dawn Win10 x64 ASAN Release (Intel)",
-    triggered_by = ["ci/Dawn Win10 x64 ASAN Builder"],
+    parent = "ci/Dawn Win10 x64 ASAN Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2118,7 +2118,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x64 ASAN Release (NVIDIA)",
-    triggered_by = ["ci/Dawn Win10 x64 ASAN Builder"],
+    parent = "ci/Dawn Win10 x64 ASAN Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2375,7 +2375,7 @@ ci.gpu.windows_builder(
 ci.thin_tester(
     name = "Dawn Win10 x64 DEPS Release (Intel)",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
+    parent = "ci/Dawn Win10 x64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2437,7 +2437,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Win10 x64 DEPS Release (NVIDIA)",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    triggered_by = ["ci/Dawn Win10 x64 DEPS Builder"],
+    parent = "ci/Dawn Win10 x64 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2478,7 +2478,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x64 Experimental Release (Intel)",
-    triggered_by = ["Dawn Win10 x64 Builder"],
+    parent = "Dawn Win10 x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2543,7 +2543,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x64 Release (Intel)",
-    triggered_by = ["Dawn Win10 x64 Builder"],
+    parent = "Dawn Win10 x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2604,7 +2604,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Win10 x64 Release (Intel UHD 770)",
     description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
-    triggered_by = ["Dawn Win10 x64 Builder"],
+    parent = "Dawn Win10 x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2652,7 +2652,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Win10 x64 Experimental Release (NVIDIA)",
     description_html = "Runs ToT Dawn tests on experimental NVIDIA configs",
-    triggered_by = ["Dawn Win10 x64 Builder"],
+    parent = "Dawn Win10 x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2700,7 +2700,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x64 Release (NVIDIA)",
-    triggered_by = ["Dawn Win10 x64 Builder"],
+    parent = "Dawn Win10 x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2826,7 +2826,7 @@ ci.gpu.windows_builder(
 ci.thin_tester(
     name = "Dawn Win10 x86 DEPS Release (Intel)",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
+    parent = "ci/Dawn Win10 x86 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2879,7 +2879,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Win10 x86 DEPS Release (NVIDIA)",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    triggered_by = ["ci/Dawn Win10 x86 DEPS Builder"],
+    parent = "ci/Dawn Win10 x86 DEPS Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2928,7 +2928,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x86 Experimental Release (Intel)",
-    triggered_by = ["Dawn Win10 x86 Builder"],
+    parent = "Dawn Win10 x86 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -2994,7 +2994,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Win10 x86 Experimental Release (NVIDIA)",
     description_html = "Runs ToT Dawn tests on experimental Win/NVIDIA/x86 configs",
-    triggered_by = ["Dawn Win10 x86 Builder"],
+    parent = "Dawn Win10 x86 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -3041,7 +3041,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x86 Release (Intel)",
-    triggered_by = ["Dawn Win10 x86 Builder"],
+    parent = "Dawn Win10 x86 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -3092,7 +3092,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Win10 x86 Release (NVIDIA)",
-    triggered_by = ["Dawn Win10 x86 Builder"],
+    parent = "Dawn Win10 x86 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(

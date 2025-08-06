@@ -411,7 +411,7 @@ ci.gpu.windows_builder(
 
 ci.thin_tester(
     name = "Linux Debug (NVIDIA)",
-    triggered_by = ["GPU Linux Builder (dbg)"],
+    parent = "GPU Linux Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -458,7 +458,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Linux Release (NVIDIA)",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/GPU Linux Builder"],
+    parent = "ci/GPU Linux Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -506,7 +506,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Debug (Intel)",
-    triggered_by = ["GPU Mac Builder (dbg)"],
+    parent = "GPU Mac Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -552,7 +552,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac Release (Intel)",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/GPU Mac Builder"],
+    parent = "ci/GPU Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -591,7 +591,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Retina Debug (AMD)",
-    triggered_by = ["GPU Mac Builder (dbg)"],
+    parent = "GPU Mac Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -636,7 +636,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac Retina Release (AMD)",
     branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/GPU Mac Builder"],
+    parent = "ci/GPU Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -675,7 +675,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win10 x64 Debug (NVIDIA)",
-    triggered_by = ["GPU Win x64 Builder (dbg)"],
+    parent = "GPU Win x64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -715,7 +715,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Win10 x64 Release (NVIDIA)",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    triggered_by = ["ci/GPU Win x64 Builder"],
+    parent = "ci/GPU Win x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(

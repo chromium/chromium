@@ -107,7 +107,7 @@ linux_memory_builder(
 linux_memory_builder(
     name = "Linux ASan LSan Tests (1)",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/Linux ASan LSan Builder"],
+    parent = "ci/Linux ASan LSan Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -389,7 +389,7 @@ linux_memory_builder(
 
 linux_memory_builder(
     name = "Linux Chromium OS ASan LSan Tests (1)",
-    triggered_by = ["Linux Chromium OS ASan LSan Builder"],
+    parent = "Linux Chromium OS ASan LSan Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -518,7 +518,7 @@ linux_memory_builder(
 
 linux_memory_builder(
     name = "Linux ChromiumOS MSan Tests",
-    triggered_by = ["Linux ChromiumOS MSan Builder"],
+    parent = "Linux ChromiumOS MSan Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -649,7 +649,7 @@ linux_memory_builder(
 
 linux_memory_builder(
     name = "Linux MSan Tests",
-    triggered_by = ["Linux MSan Builder"],
+    parent = "Linux MSan Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -759,7 +759,7 @@ ci.builder(
 linux_memory_builder(
     name = "Linux TSan Tests",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/Linux TSan Builder"],
+    parent = "ci/Linux TSan Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -913,7 +913,7 @@ linux_memory_builder(
 linux_memory_builder(
     name = "Linux UBSan Tests",
     description_html = "Runs tests against a linux ubsan build.",
-    triggered_by = ["ci/Linux UBSan Builder"],
+    parent = "ci/Linux UBSan Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -978,7 +978,7 @@ linux_memory_builder(
 
 ci.builder(
     name = "Mac ASan 64 Tests (1)",
-    triggered_by = ["Mac ASan 64 Builder"],
+    parent = "Mac ASan 64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(

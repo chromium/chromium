@@ -4,8 +4,7 @@
 
 """Library for defining chromium_tests_builder_config properties."""
 
-load("@stdlib//internal/graph.star", "graph")
-load("@stdlib//internal/luci/common.star", "keys", "kinds", "triggerer")
+load("@stdlib//internal/luci/common.star", "kinds")
 load("//project.star", "settings")
 load("./args.star", "args")
 load(
@@ -420,6 +419,12 @@ builder_config = struct(
 # Nodes containing the builder config details for a builder
 _BUILDER_CONFIG = nodes.create_node_type_with_builder_ref("builder_config")
 
+_BUILDER_CONFIG_PARENT = nodes.create_link_node_type(
+    "builder_config_parent",
+    _BUILDER_CONFIG,
+    _BUILDER_CONFIG,
+)
+
 # Nodes representing a link to a mirrored builder
 _BUILDER_CONFIG_MIRROR = nodes.create_link_node_type(
     "builder_config_mirror",
@@ -444,6 +449,7 @@ def register_builder_config(
         name,
         builder_group,
         builder_spec,
+        parent,
         mirrors,
         bc_settings,
         targets,
@@ -460,6 +466,7 @@ def register_builder_config(
         name: The name of the builder.
         builder_group: The name of the group the builder belongs to.
         builder_spec: The spec describing the configuration for the builder.
+        parent: Reference to the parent builder of the builder.
         mirrors: References to the builders that the builder should mirror.
         bc_settings: The object determining the additional settings applied to
             builder_config.
@@ -478,6 +485,9 @@ def register_builder_config(
         # TODO(gbeaty) Eventually make this a failure for the chromium
         # family of recipes
         return
+
+    if not builder_spec and parent:
+        fail("parent can't be specified without builder_spec")
 
     if not builder_group:
         fail("builder_group must be set to use chromium_tests_builder_config")
@@ -510,6 +520,9 @@ def register_builder_config(
     if _is_copy_from(builder_spec):
         _BUILDER_SPEC_COPY_FROM.link(builder_config_key, builder_spec.builder)
 
+    if parent:
+        _BUILDER_CONFIG_PARENT.link(builder_config_key, parent)
+
     if _is_copy_from(mirrors):
         _MIRRORS_COPY_FROM.link(builder_config_key, mirrors.builder)
     else:
@@ -531,8 +544,6 @@ def register_builder_config(
             builder_group = builder_group,
             builder_name = name,
         )
-
-    graph.add_edge(builder_config_key, keys.builder(bucket, name))
 
 def _builder_name(node):
     key = node.key
@@ -933,38 +944,7 @@ def _bc_state():
         if node.key.kind != _BUILDER_CONFIG.kind:
             fail("Expected {} node, got {}".format(_BUILDER_CONFIG.kind, node))
 
-        builder_nodes = graph.children(node.key, kinds.BUILDER)
-        if len(builder_nodes) != 1:
-            fail(
-                "internal error: builder_config node should have edge to exactly 1 builder node",
-                node.trace,
-            )
-
-        # To find the builder config of the parent builder, we need to find the
-        # builder that triggers the builder we're looking at, then the builder
-        # config node will be the parent node of that builder.
-        #
-        # To find the parent builder, we traverse parent nodes of the builder
-        # node. The builder node will have builder_ref nodes as parents, which
-        # abstract being able to refer to a builder by bucket-qualified name
-        # (ci/foo-builder) or simple name (foo-builder). The builder_ref nodes
-        # will have triggerer nodes as parents, which abstract things that can
-        # trigger builders (pollers or builders). Finally, the triggerer nodes
-        # for builders will have a builder node as a parent.
-        triggerers = set()
-        parents = set()
-        for ref in graph.parents(builder_nodes[0].key, kinds.BUILDER_REF):
-            for t in graph.parents(ref.key, kinds.TRIGGERER):
-                triggerers = triggerers.union([t])
-                for b in graph.parents(t.key, kinds.BUILDER):
-                    builder_configs = graph.parents(b.key, _BUILDER_CONFIG.kind)
-                    if len(builder_configs) > 1:
-                        fail(
-                            "internal error: multiple builder_config parents for {}: {}"
-                                .format(b, builder_configs),
-                            b.trace,
-                        )
-                    parents = parents.union(builder_configs)
+        parents = _BUILDER_CONFIG_PARENT.children(node.key)
 
         if len(parents) > 1:
             fail("{} has multiple parents: {}".format(
@@ -977,22 +957,10 @@ def _bc_state():
         execution_mode = bc_state.builder_spec(node).execution_mode
 
         if execution_mode == _execution_mode.TEST:
-            if len(triggerers) > 1:
+            if not parent:
                 fail(
-                    "builder {} has multiple triggerers: {}"
-                        .format(_builder_name(node), [t.key.id for t in triggerers]),
-                    node.trace,
-                )
-            elif not triggerers:
-                fail(
-                    "builder {} has execution_mode {} and has no parent"
-                        .format(_builder_name(node), execution_mode),
-                    node.trace,
-                )
-            elif not parent:
-                fail(
-                    "builder {} is triggered by {} which does not have a builder spec"
-                        .format(_builder_name(node), list(triggerers)[0]),
+                    "test-only builder {} does not have a parent"
+                        .format(_builder_name(node)),
                     node.trace,
                 )
         elif execution_mode == _execution_mode.COMPILE_AND_TEST:
@@ -1009,28 +977,7 @@ def _bc_state():
         if node.key.kind != _BUILDER_CONFIG.kind:
             fail("Expected {} node, got {}".format(_BUILDER_CONFIG.kind, node))
 
-        builder_nodes = graph.children(node.key, kinds.BUILDER)
-        if len(builder_nodes) != 1:
-            fail(
-                "internal error: builder_config node should have edge to exactly 1 builder node",
-                node.trace,
-            )
-
-        children = set()
-        for b in triggerer.targets(builder_nodes[0]):
-            b_children = graph.parents(b.key, _BUILDER_CONFIG.kind)
-            if not b_children:
-                fail(
-                    "{} is triggered by {}, but does not have a builder spec"
-                        .format(_builder_name(b), _builder_name(node)),
-                    b.trace,
-                )
-            if len(b_children) > 1:
-                fail(
-                    "internal error: builder node should be the target of exactly 1 edge from a builder_config node",
-                    b.trace,
-                )
-            children = children.union(b_children)
+        children = _BUILDER_CONFIG_PARENT.parents(node.key)
 
         execution_mode = bc_state.builder_spec(node).execution_mode
 
