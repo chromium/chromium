@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/fake_tab_strip_handler.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/fake_tab_strip_handler.h"
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

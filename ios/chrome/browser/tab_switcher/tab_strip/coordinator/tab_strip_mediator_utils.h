@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_UTILS_H_
-#define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_UTILS_H_
+#define IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_UTILS_H_
 
 class Browser;
 class TabGroup;
@@ -26,4 +26,4 @@ void MoveGroupBeforeTabStripItem(const TabGroup* group,
                                  TabStripItemIdentifier* next_item_identifier,
                                  Browser* destination_browser);
 
-#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_UTILS_H_

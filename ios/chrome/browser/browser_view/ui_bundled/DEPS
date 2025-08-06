@@ -111,6 +111,7 @@ include_rules = [
   "+ios/chrome/browser/supervised_user",
   "+ios/chrome/browser/sync/model/sync_error_browser_agent.h",
   "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
+  "+ios/chrome/browser/tab_switcher/tab_strip",
   "+ios/chrome/browser/tab_switcher/ui_bundled",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",

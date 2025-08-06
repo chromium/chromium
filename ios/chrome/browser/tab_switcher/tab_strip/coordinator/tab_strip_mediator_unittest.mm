@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_mediator.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -40,9 +40,9 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/fake_tab_strip_consumer.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/fake_tab_strip_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/fake_tab_strip_consumer.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/fake_tab_strip_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_tab_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_mediator_utils.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator_utils.h"
 
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"

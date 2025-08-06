@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -45,12 +45,12 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_mediator.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
