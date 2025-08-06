@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 import android.app.Activity;
 import android.content.res.Resources;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -36,6 +37,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
@@ -200,6 +202,12 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
             } else if (menuId == R.id.select_tabs) {
                 showTabListEditor.show(tab.getId());
                 recordUserActionWithPrefix("SelectTabs");
+            } else if (menuId == R.id.pin_tab) {
+                tabModel.pinTab(tab.getId());
+                recordUserActionWithPrefix("PinTab");
+            } else if (menuId == R.id.unpin_tab) {
+                tabModel.unpinTab(tab.getId());
+                recordUserActionWithPrefix("UnpinTab");
             } else if (menuId == R.id.close_tab) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 tabModel.getTabRemover()
@@ -276,15 +284,8 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                         .withIsIncognito(isIncognito)
                         .build());
 
-        // TODO(crbug.com/425953251): Add tests once callback is established.
         if (shouldBuildPinTabMenuItem()) {
-            itemList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.pin_tab)
-                            .withMenuId(R.id.pin_tab)
-                            .withStartIconRes(R.drawable.ic_keep_24dp)
-                            .withIsIncognito(isIncognito)
-                            .build());
+            itemList.add(buildTogglePinStateItem(tab));
         }
 
         itemList.add(
@@ -323,5 +324,18 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     private static boolean shouldBuildPinTabMenuItem() {
         return ChromeFeatureList.sAndroidPinnedTabs.isEnabled();
+    }
+
+    private ListItem buildTogglePinStateItem(Tab tab) {
+        boolean isTabPinned = tab.getIsPinned();
+        @StringRes int titleRes = isTabPinned ? R.string.unpin_tab : R.string.pin_tab;
+        @IdRes int menuId = isTabPinned ? R.id.unpin_tab : R.id.pin_tab;
+
+        return new ListItemBuilder()
+                .withTitleRes(titleRes)
+                .withMenuId(menuId)
+                .withStartIconRes(R.drawable.ic_keep_24dp)
+                .withIsIncognito(tab.isIncognitoBranded())
+                .build();
     }
 }

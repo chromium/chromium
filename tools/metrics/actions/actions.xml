@@ -51297,11 +51297,17 @@ should be able to be added at any place in this file.
   <suffix name="MoveToGroup"
       label="Recorded when the 'Move to group' option in the context menu is
              selected."/>
+  <suffix name="PinTab"
+      label="Recorded when the 'Pin Tab' option in the context menu is
+             selected."/>
   <suffix name="SelectTabs"
       label="Recorded when the 'Select tabs' option in the context menu is
              selected."/>
   <suffix name="ShareTab"
       label="Recorded when the 'Share' option in the context menu is
+             selected."/>
+  <suffix name="UnpinTab"
+      label="Recorded when the 'Unpin Tab' option in the context menu is
              selected."/>
   <affected-action name="TabSwitcher.ContextMenu"/>
 </action-suffix>

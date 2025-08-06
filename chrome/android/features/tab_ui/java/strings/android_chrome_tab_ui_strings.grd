@@ -1077,6 +1077,9 @@
       <message name="IDS_PIN_TAB" desc="Content description for an action which pins a singular tab.">
         Pin tab
       </message>
+      <message name="IDS_UNPIN_TAB" desc="Content description for an action which unpins a singular tab.">
+        Unpin tab
+      </message>
 
       <!-- Multi Selected Tabs Context Menu -->
       <message name="IDS_REMOVE_TABS_FROM_GROUP" desc="Content description for an action which removes a list of selected tabs from their group.">
