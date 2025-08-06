@@ -2424,7 +2424,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
   // factor to the new size to avoid this issue. This workaround is only
   // intended to be used for Skia bots, and is not intended to be a general
   // solution.
-  if (new_size > old_usable_size && new_size > 12 << 20) {
+  if (new_size > old_usable_size) {
     // 1.5x growth factor.
     // Note that in case of integer overflow, the std::max ensures that the
     // new_size is at least as large as the old_usable_size.
