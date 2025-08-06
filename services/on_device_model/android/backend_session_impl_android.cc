@@ -22,7 +22,7 @@
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "services/on_device_model/android/jni_headers/AiCoreSession_jni.h"
+#include "services/on_device_model/android/jni_headers/AiCoreSessionWrapper_jni.h"
 #include "services/on_device_model/android/jni_headers/GenerateOptionsHelper_jni.h"
 #include "services/on_device_model/android/jni_headers/InputPieceHelper_jni.h"
 
@@ -36,7 +36,7 @@ BackendSessionImplAndroid::BackendSessionImplAndroid(
 
 BackendSessionImplAndroid::~BackendSessionImplAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AiCoreSession_onNativeDestroyed(env, java_session_);
+  Java_AiCoreSessionWrapper_onNativeDestroyed(env, java_session_);
 }
 
 void BackendSessionImplAndroid::Append(
@@ -79,8 +79,9 @@ void BackendSessionImplAndroid::Generate(
     }
   }
 
-  Java_AiCoreSession_generate(
-      env, java_session_, reinterpret_cast<intptr_t>(this), java_generate_options,
+  Java_AiCoreSessionWrapper_generate(
+      env, java_session_, reinterpret_cast<intptr_t>(this),
+      java_generate_options,
       base::android::ToJavaArrayOfObjects(env, java_inputs));
   std::move(on_complete).Run();
 }
@@ -135,15 +136,15 @@ void BackendSessionImplAndroid::OnComplete(GenerateResult generate_result) {
   responder_.reset();
 }
 
-void JNI_AiCoreSession_OnComplete(JNIEnv* env,
-                                  jlong backend_session,
-                                  jint j_generate_result) {
+void JNI_AiCoreSessionWrapper_OnComplete(JNIEnv* env,
+                                         jlong backend_session,
+                                         jint j_generate_result) {
   reinterpret_cast<BackendSessionImplAndroid*>(backend_session)
       ->OnComplete(static_cast<BackendSessionImplAndroid::GenerateResult>(
           j_generate_result));
 }
 
-void JNI_AiCoreSession_OnResponse(
+void JNI_AiCoreSessionWrapper_OnResponse(
     JNIEnv* env,
     jlong backend_session,
     const jni_zero::JavaParamRef<jstring>& j_response) {

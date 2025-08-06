@@ -23,20 +23,20 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
      * A mock implementation of AiCoreSession. Parses the input to a string and echoes the input
      * back as the response.
      */
-    public static class MockAiCoreSession implements AiCoreSession {
+    public static class MockAiCoreSessionBackend implements AiCoreSessionBackend {
         // If true, the onComplete callback will be called asynchronously through
         // resumeOnCompleteCallback. This field should be set before generate() is called.
         private boolean mCompleteAsync;
         private @GenerateResult int mGenerateResult;
         private boolean mNativeDestroyed;
         // Below are the params received in the generate() call.
-        private long mNativeBackendSession;
+        private SessionResponder mResponder;
         private GenerateOptions mGenerateOptions;
         // Below are the params received in the constructor.
         private final ModelExecutionFeature mFeature;
         private final SessionParams mParams;
 
-        public MockAiCoreSession(ModelExecutionFeature feature, SessionParams params) {
+        public MockAiCoreSessionBackend(ModelExecutionFeature feature, SessionParams params) {
             mFeature = feature;
             mParams = params;
             mGenerateResult = GenerateResult.SUCCESS;
@@ -44,14 +44,12 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
         @Override
         public void generate(
-                long nativeBackendSession, Object generateOptions, Object[] inputPieces) {
-            assert generateOptions instanceof GenerateOptions;
-            mGenerateOptions = (GenerateOptions) generateOptions;
-
+                GenerateOptions generateOptions,
+                InputPiece[] inputPieces,
+                SessionResponder responder) {
+            mGenerateOptions = generateOptions;
             StringBuilder sb = new StringBuilder();
-            for (Object piece : inputPieces) {
-                assert piece instanceof InputPiece;
-                InputPiece inputPiece = (InputPiece) piece;
+            for (InputPiece inputPiece : inputPieces) {
                 switch (inputPiece.which()) {
                     case InputPiece.Tag.Token:
                         switch (inputPiece.getToken()) {
@@ -74,12 +72,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
                         break;
                 }
             }
-            AiCoreSessionJni.get().onResponse(nativeBackendSession, sb.toString());
+            responder.onResponse(sb.toString());
             if (mCompleteAsync) {
-                // Safe the native backend session pointer for later.
-                mNativeBackendSession = nativeBackendSession;
+                mResponder = responder;
             } else {
-                AiCoreSessionJni.get().onComplete(nativeBackendSession, mGenerateResult);
+                responder.onComplete(mGenerateResult);
             }
         }
 
@@ -93,7 +90,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
             if (mNativeDestroyed) {
                 return;
             }
-            AiCoreSessionJni.get().onComplete(mNativeBackendSession, mGenerateResult);
+            mResponder.onComplete(mGenerateResult);
         }
     }
 
@@ -129,15 +126,16 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
     /** A mock implementation of AiCoreFactory. */
     public static class MockAiCoreFactory implements AiCoreFactory {
-        MockAiCoreSession mSession;
+        MockAiCoreSessionBackend mSessionBackend;
         MockAiCoreModelDownloader mDownloader;
 
         public MockAiCoreFactory() {}
 
         @Override
-        public AiCoreSession createSession(ModelExecutionFeature feature, SessionParams params) {
-            mSession = new MockAiCoreSession(feature, params);
-            return mSession;
+        public AiCoreSessionBackend createSessionBackend(
+                ModelExecutionFeature feature, SessionParams params) {
+            mSessionBackend = new MockAiCoreSessionBackend(feature, params);
+            return mSessionBackend;
         }
 
         @Override
@@ -157,15 +155,15 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     @CalledByNative
     public void verifySessionParams(int feature, int topK, float temperature) {
         ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
-        assertEquals(modelExecutionFeatureId, mMockAiCoreFactory.mSession.mFeature);
-        SessionParams params = mMockAiCoreFactory.mSession.mParams;
+        assertEquals(modelExecutionFeatureId, mMockAiCoreFactory.mSessionBackend.mFeature);
+        SessionParams params = mMockAiCoreFactory.mSessionBackend.mParams;
         assertEquals(topK, params.topK);
         assertEquals(temperature, params.temperature, 0.01f);
     }
 
     @CalledByNative
     public void verifyGenerateOptions(int maxOutputTokens) {
-        GenerateOptions generateOptions = mMockAiCoreFactory.mSession.mGenerateOptions;
+        GenerateOptions generateOptions = mMockAiCoreFactory.mSessionBackend.mGenerateOptions;
         assertEquals(maxOutputTokens, generateOptions.maxOutputTokens);
     }
 
@@ -177,17 +175,17 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
     @CalledByNative
     public void setCompleteAsync() {
-        mMockAiCoreFactory.mSession.mCompleteAsync = true;
+        mMockAiCoreFactory.mSessionBackend.mCompleteAsync = true;
     }
 
     @CalledByNative
     public void resumeOnCompleteCallback() {
-        mMockAiCoreFactory.mSession.resumeOnCompleteCallback();
+        mMockAiCoreFactory.mSessionBackend.resumeOnCompleteCallback();
     }
 
     @CalledByNative
     public void setGenerateResult(int generateResult) {
-        mMockAiCoreFactory.mSession.mGenerateResult = generateResult;
+        mMockAiCoreFactory.mSessionBackend.mGenerateResult = generateResult;
     }
 
     @CalledByNative

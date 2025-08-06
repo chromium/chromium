@@ -27,19 +27,22 @@ class OnDeviceModelBridge {
      *     ModelExecutionFeature.
      * @param topK The top K value for sampling.
      * @param temperature The temperature value for sampling.
-     * @return The AiCoreSession instance.
+     * @return The AiCoreSessionWrapper instance.
      */
     @CalledByNative
-    private static AiCoreSession createSession(int feature, int topK, float temperature) {
+    private static AiCoreSessionWrapper createSession(int feature, int topK, float temperature) {
         ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
         SessionParams params = new SessionParams();
         params.topK = topK;
         params.temperature = temperature;
         AiCoreFactory factory = ServiceLoaderUtil.maybeCreate(AiCoreFactory.class);
+        AiCoreSessionBackend backend;
         if (factory == null) {
-            return new AiCoreSessionUpstreamImpl();
+            backend = new AiCoreSessionBackendUpstreamImpl();
+        } else {
+            backend = factory.createSessionBackend(modelExecutionFeatureId, params);
         }
-        return factory.createSession(modelExecutionFeatureId, params);
+        return new AiCoreSessionWrapper(backend);
     }
 
     /**
