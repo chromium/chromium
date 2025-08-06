@@ -7,11 +7,11 @@
 #include "base/base64.h"
 #include "base/test/bind.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -32,12 +32,11 @@ class TestObserver : public DeviceOAuth2TokenStore::Observer {
 
 class DeviceOAuth2TokenStoreDesktopTest : public testing::Test {
  public:
-  DeviceOAuth2TokenStoreDesktopTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DeviceOAuth2TokenStoreDesktopTest() = default;
   ~DeviceOAuth2TokenStoreDesktopTest() override = default;
 
-  ScopedTestingLocalState* scoped_testing_local_state() {
-    return &scoped_testing_local_state_;
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
   }
 
   void SetUp() override {
@@ -49,13 +48,10 @@ class DeviceOAuth2TokenStoreDesktopTest : public testing::Test {
     OSCryptMocker::TearDown();
     testing::Test::TearDown();
   }
-
- private:
-  ScopedTestingLocalState scoped_testing_local_state_;
 };
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithoutSavedToken) {
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state());
 
   EXPECT_TRUE(store.GetAccountId().empty());
   EXPECT_TRUE(store.GetRefreshToken().empty());
@@ -73,8 +69,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithoutSavedToken) {
 }
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
-  scoped_testing_local_state()->Get()->SetString(kCBCMServiceAccountEmail,
-                                                 kTestRobotEmail);
+  local_state()->SetString(kCBCMServiceAccountEmail, kTestRobotEmail);
 
   std::string token = "test_token";
   std::string encrypted_token;
@@ -82,10 +77,9 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
 
   std::string encoded = base::Base64Encode(encrypted_token);
 
-  scoped_testing_local_state()->Get()->SetString(
-      kCBCMServiceAccountRefreshToken, encoded);
+  local_state()->SetString(kCBCMServiceAccountRefreshToken, encoded);
 
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state());
 
   EXPECT_TRUE(store.GetRefreshToken().empty());
 
@@ -101,8 +95,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
 }
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
-  scoped_testing_local_state()->Get()->SetString(kCBCMServiceAccountEmail,
-                                                 kTestRobotEmail);
+  local_state()->SetString(kCBCMServiceAccountEmail, kTestRobotEmail);
 
   std::string token = "test_token";
   std::string encrypted_token;
@@ -110,10 +103,9 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
 
   std::string encoded = base::Base64Encode(encrypted_token);
 
-  scoped_testing_local_state()->Get()->SetString(
-      kCBCMServiceAccountRefreshToken, encoded);
+  local_state()->SetString(kCBCMServiceAccountRefreshToken, encoded);
 
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state());
 
   TestObserver test_observer;
   store.SetObserver(&test_observer);
@@ -136,7 +128,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
   std::string token = "test_token";
 
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state());
   store.Init(base::BindOnce([](bool, bool) {}));
 
   EXPECT_TRUE(store.GetRefreshToken().empty());
@@ -149,8 +141,8 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
 
   EXPECT_TRUE(callback_success);
 
-  std::string persisted_token = scoped_testing_local_state()->Get()->GetString(
-      kCBCMServiceAccountRefreshToken);
+  std::string persisted_token =
+      local_state()->GetString(kCBCMServiceAccountRefreshToken);
 
   std::string decoded;
   base::Base64Decode(persisted_token, &decoded);

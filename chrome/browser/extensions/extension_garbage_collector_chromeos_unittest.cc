@@ -93,7 +93,7 @@ class ExtensionGarbageCollectorChromeOSUnitTest
                                   const std::string& users_string,
                                   const base::FilePath& path) {
     ScopedDictPrefUpdate shared_extensions(
-        testing_local_state_.Get(),
+        TestingBrowserProcess::GetGlobal()->local_state(),
         ExtensionAssetsManagerChromeOS::kSharedExtensions);
 
     base::Value::Dict* extension_info_weak = shared_extensions->EnsureDict(id);
@@ -177,7 +177,7 @@ TEST_F(ExtensionGarbageCollectorChromeOSUnitTest, SharedExtensions) {
   EXPECT_TRUE(base::PathExists(path_id2_1));
 
   const base::Value::Dict& shared_extensions =
-      testing_local_state_.Get()->GetDict(
+      TestingBrowserProcess::GetGlobal()->local_state()->GetDict(
           ExtensionAssetsManagerChromeOS::kSharedExtensions);
 
   EXPECT_FALSE(shared_extensions.Find(kExtensionId1));

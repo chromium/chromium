@@ -45,6 +45,7 @@
 #include "components/crx_file/crx_verifier.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
@@ -248,12 +249,11 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
     std::unique_ptr<content::BrowserTaskEnvironment> task_environment)
     : task_environment_(std::move(task_environment)),
       service_(nullptr),
-      testing_local_state_(TestingBrowserProcess::GetGlobal()),
       registry_(nullptr),
 #if BUILDFLAG(IS_CHROMEOS)
       user_manager_(std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          testing_local_state_.Get())),
+          TestingBrowserProcess::GetGlobal()->local_state())),
 #endif
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   base::FilePath test_data_dir;

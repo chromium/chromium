@@ -18,7 +18,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service.h"
@@ -236,7 +235,6 @@ class ExtensionServiceTestBase : public testing::Test {
   // The ExtensionService, whose lifetime is managed by `profile`'s
   // ExtensionSystem.
   raw_ptr<ExtensionService, DanglingUntriaged> service_;
-  ScopedTestingLocalState testing_local_state_;
 
  private:
   void CreateExtensionService(bool is_first_run,

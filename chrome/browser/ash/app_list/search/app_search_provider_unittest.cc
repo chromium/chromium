@@ -350,7 +350,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
 
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+        TestingBrowserProcess::GetGlobal()->local_state()));
 
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));

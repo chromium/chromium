@@ -50,10 +50,10 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/google/google_brand.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/update_client/update_query_params.h"
@@ -482,8 +482,7 @@ static void VerifyQueryAndExtractParameters(
 class ExtensionUpdaterTest : public testing::Test {
  public:
   ExtensionUpdaterTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
     prefs_ = std::make_unique<TestExtensionPrefs>(
@@ -2351,14 +2350,12 @@ class ExtensionUpdaterTest : public testing::Test {
  private:
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
-  ScopedTestingLocalState testing_local_state_;
-
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<ash::UserManagerDelegateImpl>(),
-          testing_local_state_.Get(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           ash::CrosSettings::Get())};
 #endif
 

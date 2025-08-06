@@ -13,10 +13,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,8 +49,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
       : device_authenticator_params_(
             kAuthValidityPeriod,
             device_reauth::DeviceAuthSource::kPasswordManager,
-            kHistogramName),
-        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+            kHistogramName) {}
   void SetUp() override {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
@@ -65,7 +64,9 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
     return *system_authenticator_;
   }
 
-  ScopedTestingLocalState& local_state() { return testing_local_state_; }
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
@@ -86,7 +87,6 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<DeviceAuthenticatorChromeOS> authenticator_;
-  ScopedTestingLocalState testing_local_state_;
   base::HistogramTester histogram_tester_;
 
   // This is owned by the authenticator.
@@ -214,7 +214,7 @@ TEST_P(DeviceAuthenticatorChromeOSTestAvailability, AvailabilityCheck) {
   EXPECT_EQ(test_case.expected_result,
             authenticator()->CanAuthenticateWithBiometrics());
   EXPECT_EQ(test_case.expected_result,
-            local_state().Get()->GetBoolean(
+            local_state()->GetBoolean(
                 password_manager::prefs::kHadBiometricsAvailable));
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.BiometricAvailabilityChromeOS",

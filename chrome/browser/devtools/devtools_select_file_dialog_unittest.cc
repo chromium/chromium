@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
@@ -31,10 +30,6 @@ class DevToolsSelectFileDialogTest : public content::RenderViewHostTestHarness {
     ui::SelectFileDialog::SetFactory(nullptr);
     content::RenderViewHostTestHarness::TearDown();
   }
-
- private:
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(DevToolsSelectFileDialogTest, SelectFileCanceledCallback) {
