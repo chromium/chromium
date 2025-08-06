@@ -16,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 
@@ -35,8 +34,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Locale;
 
 /**
@@ -186,51 +183,9 @@ public class ProxyChangeListener {
             if (extras == null) {
                 return null;
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                return ProxyConfig.fromProxyInfo(
-                        (ProxyInfo) extras.get("android.intent.extra.PROXY_INFO"));
-            }
 
-            try {
-                final String getHostName = "getHost";
-                final String getPortName = "getPort";
-                final String getPacFileUrl = "getPacFileUrl";
-                final String getExclusionList = "getExclusionList";
-                final String className = "android.net.ProxyProperties";
-
-                Object props = extras.get("proxy");
-                if (props == null) {
-                    return null;
-                }
-
-                Class<?> cls = Class.forName(className);
-                Method getHostMethod = cls.getDeclaredMethod(getHostName);
-                Method getPortMethod = cls.getDeclaredMethod(getPortName);
-                Method getExclusionListMethod = cls.getDeclaredMethod(getExclusionList);
-
-                String host = (String) getHostMethod.invoke(props);
-                int port = (Integer) getPortMethod.invoke(props);
-
-                String[] exclusionList;
-                String s = (String) getExclusionListMethod.invoke(props);
-                exclusionList = s.split(",");
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    Method getPacFileUrlMethod = cls.getDeclaredMethod(getPacFileUrl);
-                    String pacFileUrl = (String) getPacFileUrlMethod.invoke(props);
-                    if (!TextUtils.isEmpty(pacFileUrl)) {
-                        return new ProxyConfig(host, port, pacFileUrl, exclusionList);
-                    }
-                }
-                return new ProxyConfig(host, port, null, exclusionList);
-            } catch (ClassNotFoundException
-                    | NoSuchMethodException
-                    | IllegalAccessException
-                    | InvocationTargetException
-                    | NullPointerException ex) {
-                Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
-                return null;
-            }
+            return ProxyConfig.fromProxyInfo(
+                    (ProxyInfo) extras.get("android.intent.extra.PROXY_INFO"));
         }
     }
 
