@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -32,7 +33,9 @@ class WebView;
 
 // ContentsContainerView is owned by MultiContentsView and holds the
 // ContentsWebView and the outlines and minitoolbar when in split view.
-class ContentsContainerView : public views::View, public views::LayoutDelegate {
+class ContentsContainerView : public views::View,
+                              public views::LayoutDelegate,
+                              public views::ViewObserver {
   METADATA_HEADER(ContentsContainerView, views::View)
  public:
   // Enumerates where the devtools are docked relative to the main web contents.
@@ -80,17 +83,20 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
     return strategy_;
   }
 
-  // Return the DevTools docked placement. It infers the docked placement from
+ private:
+  // Updates the DevTools docked placement. It infers the docked placement from
   // the bounds of contents_webview relative to the local bounds of the
   // container that holds both contents_webview and devtools_webview.
   void UpdateDevToolsDockedPlacement();
 
- private:
   void UpdateBorderRoundedCorners();
   void ClearBorderRoundedCorners();
 
   // View:
   void ChildVisibilityChanged(View* child) override;
+
+  // ViewObserver:
+  void OnViewBoundsChanged(View* observed_view) override;
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
@@ -132,6 +138,7 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_ = nullptr;
 
   DevToolsContentsResizingStrategy strategy_;
+  base::ScopedObservation<View, ViewObserver> view_bounds_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_CONTAINER_VIEW_H_

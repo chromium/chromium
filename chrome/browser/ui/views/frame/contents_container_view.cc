@@ -114,6 +114,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
         browser_view, contents_view_));
+    view_bounds_observer_.Observe(contents_view_);
   }
 }
 
@@ -196,13 +197,13 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
                            0, 0};
   const gfx::RoundedCornersF content_lower_rounded_corners =
       gfx::RoundedCornersF{0, 0,
-                           devtools_in_lower_left ? 0 : kContentCornerRadius,
-                           devtools_in_lower_right ? 0 : kContentCornerRadius};
+                           devtools_in_lower_right ? 0 : kContentCornerRadius,
+                           devtools_in_lower_left ? 0 : kContentCornerRadius};
   const gfx::RoundedCornersF content_rounded_corners =
       gfx::RoundedCornersF{devtools_in_upper_left ? 0 : kContentCornerRadius,
                            devtools_in_upper_right ? 0 : kContentCornerRadius,
-                           devtools_in_lower_left ? 0 : kContentCornerRadius,
-                           devtools_in_lower_right ? 0 : kContentCornerRadius};
+                           devtools_in_lower_right ? 0 : kContentCornerRadius,
+                           devtools_in_lower_left ? 0 : kContentCornerRadius};
 
   auto radii = new_tab_footer_view_ && new_tab_footer_view_->GetVisible()
                    ? content_upper_rounded_corners
@@ -243,6 +244,15 @@ void ContentsContainerView::ChildVisibilityChanged(View* child) {
   }
 }
 
+void ContentsContainerView::OnViewBoundsChanged(View* observed_view) {
+  if (observed_view == contents_view_) {
+    UpdateDevToolsDockedPlacement();
+    if (is_in_split_) {
+      UpdateBorderRoundedCorners();
+    }
+  }
+}
+
 void ContentsContainerView::SetContentsResizingStrategy(
     const DevToolsContentsResizingStrategy& strategy) {
   if (strategy_.Equals(strategy)) {
@@ -264,22 +274,21 @@ void ContentsContainerView::UpdateDevToolsDockedPlacement() {
                                     new_tab_footer_view_->height() +
                                     new_tab_footer_view_separator_->height());
   }
-  const gfx::Rect& container_bounds = GetLocalBounds();
+  const gfx::Rect& container_bounds = GetContentsBounds();
   // If contents_webview has the same bounds as webview_container, it either
   // means that devtools are not open or devtools are open in a separate
   // window (not docked).
   if (contents_view_bounds == container_bounds) {
     placement = DevToolsDockedPlacement::kNone;
-  }
-
-  if (contents_view_bounds.x() > 0 && contents_view_bounds.y() == 0 &&
-      contents_view_bounds.x() + contents_view_bounds.width() ==
-          container_bounds.width()) {
+  } else if (contents_view_bounds.x() > container_bounds.x() &&
+             contents_view_bounds.y() == container_bounds.y() &&
+             contents_view_bounds.height() == container_bounds.height()) {
     placement = DevToolsDockedPlacement::kLeft;
-  } else if (contents_view_bounds.origin().IsOrigin() &&
+  } else if (contents_view_bounds.origin() == container_bounds.origin() &&
              contents_view_bounds.height() == container_bounds.height()) {
     placement = DevToolsDockedPlacement::kRight;
-  } else if (contents_view_bounds.width() == container_bounds.width()) {
+  } else if (contents_view_bounds.origin() == container_bounds.origin() &&
+             contents_view_bounds.width() == container_bounds.width()) {
     placement = DevToolsDockedPlacement::kBottom;
   }
 

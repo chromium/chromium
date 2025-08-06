@@ -130,7 +130,6 @@ bool DevtoolsUIController::DevtoolsWebViewController::UpdateDevtools(
     }
   }
 
-  contents_container_view_->UpdateDevToolsDockedPlacement();
   return devtools_layout_updated;
 }
 
