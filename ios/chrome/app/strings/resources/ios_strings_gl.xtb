@@ -141,7 +141,7 @@
 <translation id="1520027731907768768">Recibe alertas se os produtos que segues baixan de prezo.</translation>
 <translation id="1521366073263497277">Vai á túa grade de pestanas</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
-<translation id="1523567067736644845">Desbloquea para mostrar o contrasinal</translation>
+<translation id="1523567067736644845">Desbloquea o dispositivo para mostrar o contrasinal</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1528290585275339320">Activa o uso compartido de contido da páxina</translation>
 <translation id="1531038290222364269">Mostrar as pestanas</translation>
@@ -1002,7 +1002,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="496392417432935267">Opción aberta noutro lugar</translation>
 <translation id="4970724460420203313">Usar Chrome coa túa conta xestionada axudarache a separar a navegación relacionada coa túa organización, como as pestanas, o historial e os contrasinais, da outra navegación que fagas</translation>
 <translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} elemento do historial dos perfís privado e de traballo de Safari}other{{count} elementos do historial dos perfís privado e de traballo de Safari}}</translation>
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="4985921635659180565">Unha vez programada, a eliminación dun ficheiro non se pode cancelar.</translation>
 <translation id="498624032394115435">Calquera persoa que teña a ligazón poderá editar todas as pestanas.</translation>
@@ -1565,6 +1564,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7035825883570480307">Queres activar as notificacións?</translation>
 <translation id="7039345315346323556">Recentes</translation>
+<translation id="704692552158601232">Aplicación de navegador predeterminada</translation>
 <translation id="7055240621761583113">Autocompletar o contrasinal</translation>
 <translation id="7058455400288852416">Ir ao selector de pestanas</translation>
 <translation id="7063811929043357292">A túa conta está xestionada polo teu pai ou pola túa nai.
@@ -1612,6 +1612,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7266578100016339897">Axudarache a ter todo organizado. Podes cambialo cando queiras en Configuración.</translation>
 <translation id="7272437679830969316">Non se pode verificar a túa identidade, polo que non se copiou o contrasinal.</translation>
 <translation id="728025568708172005">Iniciar introdución</translation>
+<translation id="7280980607183752256">Este ficheiro non se pode importar</translation>
 <translation id="7281202269687163394">A túa privacidade e Gemini.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>

@@ -284,6 +284,7 @@
 <translation id="4598116752460667024">सूचीमधील कोणतीही प्रक्रिया शोधा.</translation>
 <translation id="4613863813562375431">ChromiumOS ची आवृत्ती</translation>
 <translation id="4621240073146040695">अद्ययावत करणे जवळजवळ पूर्ण झाले! अपडेट करणे समाप्त करण्यासाठी Chromium रीलाँच करा.</translation>
+<translation id="4625064703209785397">Chromium चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता किंचित कमी होते</translation>
 <translation id="4654936675281451226">Chromium हे फॉर्म आणखी चांगल्या पद्धतीने समजू शकते आणि ते तुमच्यासाठी अधिक जलद ऑटोफिल करू शकते. हे सेटिंग सुरू आहे.</translation>
 <translation id="4665829708273112819">चेतावणी: Chromium हे एक्स्टेंशनना तुमचा ब्राउझिंग इतिहास रेकॉर्ड करण्यापासून रोखू शकत नाही. हे एक्स्टेंशन गुप्त मोडमध्ये बंद करण्यासाठी या पर्यायाची निवड रद्द करा.</translation>
 <translation id="4673151026126227699">तुम्ही Chromium वापर अहवालदेखील शेअर केल्यास, त्या अहवालांमध्ये तुम्ही भेट दिलेल्या URLs चा समावेश होतो</translation>
@@ -329,6 +330,7 @@
 <translation id="5386450000063123300">Chromium अपडेट करीत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
 <translation id="5405650547142096840">Chromium मधून काढा</translation>
+<translation id="5424544524441439284">परफॉर्मन्स कमी करते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता वाढते</translation>
 <translation id="5427571867875391349">तुमचा डीफॉल्ट ब्राउझर म्हणून Chromium सेट करा</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium बीटा</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium तुमच्या ब्राउझर चा वेग कमी करणारा टॅब थांबवण्याची शिफारस करते}other{Chromium तुमच्या ब्राउझर चा वेग कमी करणारे टॅब थांबवण्याची शिफारस करते}}</translation>

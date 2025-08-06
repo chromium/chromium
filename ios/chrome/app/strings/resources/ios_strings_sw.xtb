@@ -1002,7 +1002,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="496392417432935267">Imefunguliwa kwingine</translation>
 <translation id="4970724460420203313">Kutumia Chrome kwenye akaunti yako inayosimamiwa hukusaidia kutenganisha shughuli za kuvinjari zinazohusiana na shirika lako (ikiwa ni pamoja na vichupo, historia na manenosiri) na shughuli zako nyingine za kuvinjari</translation>
 <translation id="4971735654804503942">Ulinzi wa haraka na wa mapema dhidi ya tovuti, vipakuliwa na viendelezi hatari. Hukuonya kuhusu matukio ya ufichuzi haramu wa manenosiri yako. Inahitaji data ya kuvinjari itumwe kwa Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{Kipengee {count} cha historia katika wasifu wa faragha na wa kazini kwenye Safari}other{Vipengee {count} vya historia katika wasifu wa faragha na wa kazini kwenye Safari}}</translation>
 <translation id="4979397965658815378">Ingia katika akaunti kwa kutumia Akaunti yako ya Google ili upate alamisho, manenosiri, historia na mipangilio mingine kwenye vifaa vyako vyote.</translation>
 <translation id="4985921635659180565">Faili ikisharatibiwa kufutwa, haiwezi kuachishwa.</translation>
 <translation id="498624032394115435">Yeyote aliye na kiungo anaweza kubadilisha vichupo vyote.</translation>
@@ -1565,6 +1564,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7029809446516969842">Manenosiri</translation>
 <translation id="7035825883570480307">Ungependa kuwasha arifa?</translation>
 <translation id="7039345315346323556">Majuzi</translation>
+<translation id="704692552158601232">Programu Chaguomsingi ya Kivinjari</translation>
 <translation id="7055240621761583113">Jaza nenosiri kiotomatiki</translation>
 <translation id="7058455400288852416">Nenda kwenye kibadilishaji cha vichupo</translation>
 <translation id="7063811929043357292">Akaunti yako inadhibitiwa na mzazi wako.
@@ -1612,6 +1612,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7266578100016339897">Hali hii hukusaidia kupanga vipengee vyako. Unaweza kuibadilisha katika mipangilio wakati wowote.</translation>
 <translation id="7272437679830969316">Utambulisho wako haujathibitishwa. Nenosiri halijanakiliwa.</translation>
 <translation id="728025568708172005">Nisaidie kufahamu</translation>
+<translation id="7280980607183752256">Huwezi kupakia faili hii</translation>
 <translation id="7281202269687163394">Faragha yako na Gemini.</translation>
 <translation id="7293429513719260019">Chagua lugha</translation>
 <translation id="7300448350764260141">Weka safu ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni.</translation>

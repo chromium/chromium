@@ -1002,7 +1002,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="496392417432935267">Opened elsewhere</translation>
 <translation id="4970724460420203313">Using Chrome with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} history item from Safari private and work profiles}other{{count} history items from Safari private and work profiles}}</translation>
 <translation id="4979397965658815378">Sign in with your Google Account to get your bookmarks, passwords, history and other settings on all your devices</translation>
 <translation id="4985921635659180565">Once a file is scheduled to be deleted, it can't be cancelled.</translation>
 <translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
@@ -1565,6 +1564,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7035825883570480307">Turn on notifications?</translation>
 <translation id="7039345315346323556">Recent</translation>
+<translation id="704692552158601232">Default browser app</translation>
 <translation id="7055240621761583113">Autofill the password</translation>
 <translation id="7058455400288852416">Go to Tab Switcher</translation>
 <translation id="7063811929043357292">Your account is managed by your parent.
@@ -1612,6 +1612,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="728025568708172005">Show me around</translation>
+<translation id="7280980607183752256">This file can't be imported</translation>
 <translation id="7281202269687163394">Your privacy and Gemini.</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>

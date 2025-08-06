@@ -1002,7 +1002,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="496392417432935267">Wedi'i agor rhywle arall</translation>
 <translation id="4970724460420203313">Mae defnyddio Chrome gyda'ch cyfrif a reolir yn eich helpu i gadw pori sy'n gysylltiedig â'ch sefydliad (gan gynnwys tabiau, hanes a chyfrineiriau) ar wahân i'ch pori arall</translation>
 <translation id="4971735654804503942">Amddiffyniad cynt a rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus. Mae'n eich rhybuddio am achosion o dor diogelwch mewn perthynas â chyfrineiriau. Mae angen anfon data pori at Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} eitem hanes o broffiliau preifat a gwaith Safari}zero{{count} eitemau hanes o broffiliau preifat a gwaith Safari}two{{count} eitem hanes o broffiliau preifat a gwaith Safari}few{{count} eitem hanes o broffiliau preifat a gwaith Safari}many{{count} eitem hanes o broffiliau preifat a gwaith Safari}other{{count} eitem hanes o broffiliau preifat a gwaith Safari}}</translation>
 <translation id="4979397965658815378">Mewngofnodwch gyda'ch Cyfrif Google i gael eich nodau tudalen, eich cyfrineiriau, eich hanes a'ch gosodiadau eraill ar eich holl ddyfeisiau</translation>
 <translation id="4985921635659180565">Unwaith y bydd ffeil wedi'i threfnu i gael ei dileu, ni ellir ei chanslo.</translation>
 <translation id="498624032394115435">Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau.</translation>
@@ -1565,6 +1564,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7029809446516969842">Cyfrineiriau</translation>
 <translation id="7035825883570480307">Troi hysbysiadau ymlaen?</translation>
 <translation id="7039345315346323556">Diweddar</translation>
+<translation id="704692552158601232">Ap Porwr Diofyn</translation>
 <translation id="7055240621761583113">Awto-lenwi'r cyfrinair</translation>
 <translation id="7058455400288852416">Mynd i newidiwr tabiau</translation>
 <translation id="7063811929043357292">Mae dy borwr yn cael ei reoli gan dy riant.
@@ -1612,6 +1612,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7266578100016339897">Mae hyn yn eich helpu i aros yn drefnus. Gallwch chi newid hyn yn y gosodiadau unrhyw bryd.</translation>
 <translation id="7272437679830969316">Methu â chadarnhau'ch hunaniaeth. Ni chopïwyd y cyfrinair.</translation>
 <translation id="728025568708172005">Dangoswch fi o gwmpas</translation>
+<translation id="7280980607183752256">Ni ellir mewnforio'r ffeil hon</translation>
 <translation id="7281202269687163394">Eich preifatrwydd a Gemini.</translation>
 <translation id="7293429513719260019">Dewis iaith</translation>
 <translation id="7300448350764260141">Ychwanegu haen ychwanegol o amddiffyniad rhag bygythiadau ar-lein.</translation>

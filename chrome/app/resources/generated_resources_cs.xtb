@@ -253,7 +253,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1166583374608765787">Zkontrolujte změnu názvu</translation>
 <translation id="1166596238782048887">Karta <ph name="TAB_TITLE" /> patří k ploše <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Izolované webové aplikace se automaticky řídí tímto nastavením</translation>
-<translation id="116712635768212829">Pokud Chrome některé z vašich hesel najde v seznamu dat prozrazených při porušení zabezpečení údajů a budete přihlášení, může vám nabídnout, že dané heslo změní.</translation>
 <translation id="1168020859489941584">Složka se otevře za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Nedávný motiv vygenerovaný umělou inteligencí <ph name="INDEX" /> na téma <ph name="SUBJECT" /> ve stylu <ph name="STYLE" /> s náladou <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Automaticky změnit jazyk, aby odpovídal vybranému obsahu</translation>
@@ -404,6 +403,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1260810365552581339">Linux možná nemá dostatek místa na disku. Systému Linux můžete zvětšit místo na disku a potom znovu spustit obnovení v <ph name="LINK_START" />Nastavení<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Mírné</translation>
 <translation id="126156426083987769">Došlo k problému s licencemi pro zařízení v ukázkovém režimu.</translation>
+<translation id="1262395978737369974">Vždy mohou používat optimalizaci JavaScriptu</translation>
 <translation id="1262564987698748643">Weby mohou žádat o přepsání vstupu z klávesnice</translation>
 <translation id="1263231323834454256">Seznam četby</translation>
 <translation id="1263733306853729545">K vyvolání seznamu návrhů použít klávesy <ph name="MINUS" /> a <ph name="EQUAL" /></translation>
@@ -1975,6 +1975,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2343160676229467122">Rozšíření nejsou na webu <ph name="SITE_NAME" /> povolena</translation>
 <translation id="2343390523044483367">Národní park Rocky Mountains</translation>
 <translation id="2343747224442182863">Vybrat tuto kartu</translation>
+<translation id="2343971313330854480">Soubor najdete ve složce <ph name="FEATURE_NAME" /></translation>
 <translation id="2344032937402519675">K serveru se nelze připojit. Zkontrolujte připojení k síti a zkuste to znovu. Pokud potíže přetrvávají, zkuste Chromebook restartovat.</translation>
 <translation id="234559068082989648">Staré verze aplikací pro Chrome se po prosinci 2022 neotevřou. Požádejte administrátora o aktualizaci na novou verzi, nebo tuto aplikaci odstraňte.</translation>
 <translation id="2348176352564285430">Aplikace: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -2222,6 +2223,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> z <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Uspořádání displejů</translation>
 <translation id="2507253002925770350">Lístek byl odstraněn</translation>
+<translation id="2507339521369019923">Uložte do svého účtu</translation>
 <translation id="2507491234071975894">Reproduktor</translation>
 <translation id="2508747373511408451">Aplikace <ph name="APPLICATION_NAME" /> vyžaduje, aby byl k dispozici Disk Google.</translation>
 <translation id="2509495747794740764">Hodnota měřítka musí být v intervalu 10 až 200.</translation>
@@ -7973,6 +7975,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="661266467055912436">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu.</translation>
 <translation id="6613267708691765962">Vyhledávání malwaru…</translation>
 <translation id="6615455863669487791">Ukázat</translation>
+<translation id="6618013221808317456">Nepovolovat webům používat optimalizaci JavaScriptu</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Web může sledovat vaši polohu</translation>
 <translation id="6619243162837544323">Stav sítě</translation>
@@ -9833,6 +9836,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7920482456679570420">Přidat slova, která má kontrola pravopisu přeskakovat</translation>
 <translation id="7920715534283810633">Soubory <ph name="FILE_NAMES" /> nelze otevřít</translation>
 <translation id="7921347341284348270">V tomto spravovaném účtu oznámení svého telefonu zobrazit nemůžete. Zkuste to znovu s jiným účtem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="7921395044508886182">Weby mohou používat optimalizaci JavaScriptu</translation>
 <translation id="7921901223958867679">Toto rozšíření může číst web <ph name="HOST" /> a provádět na něm změny</translation>
 <translation id="7922606348470480702">1 rozšíření</translation>
 <translation id="7923564237306226146">Upgrade systému Linux byl dokončen.</translation>
@@ -10379,6 +10383,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8276560076771292512">Vymazání mezipaměti a úplné opětovné načtení</translation>
 <translation id="8276850948802942358">Další informace o dočasném povolení používání souborů cookie třetích stran webu</translation>
 <translation id="8277907305629781277">Tento přístupový klíč jste vytvořili <ph name="DATE" /></translation>
+<translation id="8278702675516957539">Nemohou používat optimalizaci JavaScriptu</translation>
 <translation id="827966378414194229">Ovládat Chromebook pohyby hlavy a výrazy obličeje. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Weby ve vašich jazycích</translation>
 <translation id="8280848878018088610">Burácející mořské vlny s fantastickým městem a hradem v pozadí, v temné náladě.</translation>
@@ -10598,6 +10603,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8431190899827883166">Zobrazovat klepnutí</translation>
 <translation id="843173223122814223">Vytvářejte pozadí pomocí AI</translation>
 <translation id="8431977087510901105">Nastavení kurzoru byla resetována</translation>
+<translation id="843210078733508372">Přihlaste se a změna hesla bude pokračovat</translation>
 <translation id="8433186206711564395">Nastavení sítě</translation>
 <translation id="8434109185104929038">Čtecí koutek</translation>
 <translation id="8434837876193928924">Podrobnosti o skupině karet</translation>
@@ -11352,6 +11358,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="895347679606913382">Spouštění...</translation>
 <translation id="8954796993367253220">Pokud chcete vymazat historii režimu hosta, zavřete všechna okna hosta.</translation>
 <translation id="8955174612586215829">Najít motivy</translation>
+<translation id="8957656266859671822">Vyberte svůj účet</translation>
 <translation id="8957757410289731985">Upravit profil</translation>
 <translation id="8959144235813727886">Weby a aplikace</translation>
 <translation id="895944840846194039">Paměť JavaScriptu</translation>
@@ -11664,6 +11671,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9153367754133725216">Zobrazovat ve Spouštěči a ve výsledcích vyhledávání návrhy nových aplikací a webového obsahu. Statistiky se za účelem vylepšení návrhů odesílají pouze v případě, že jste se rozhodli odesílat do systému ChromeOS zprávy o selhání, diagnostická data a údaje o využití.</translation>
 <translation id="9154194610265714752">Aktualizováno</translation>
 <translation id="915485121129452731">Tablet s perem</translation>
+<translation id="9155100833189043833">Bezpečně používejte ID ze svého mobilního zařízení</translation>
 <translation id="9155344700756733162">Zrušit výběr barvy</translation>
 <translation id="9157096865782046368">0,8 sekundy</translation>
 <translation id="9157697743260533322">Nastavení automatických aktualizací pro všechny uživatele se nezdařilo (chyba předběžného spuštění: <ph name="ERROR_NUMBER" />)</translation>

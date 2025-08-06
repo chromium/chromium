@@ -283,6 +283,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4598116752460667024">Пошукайте потрібний процес у списку.</translation>
 <translation id="4613863813562375431">Версія Chromium OS</translation>
 <translation id="4621240073146040695">Майже оновлено. Перезапустіть Chromium, щоб завершити оновлення.</translation>
+<translation id="4625064703209785397">Прискорює роботу сайтів за допомогою системи V8 для Chromium, проте робить вебпереглядач трохи менш стійким до атак</translation>
 <translation id="4654936675281451226">Chromium краще визначає форми й швидше заповнює їх. Це налаштування ввімкнено.</translation>
 <translation id="4665829708273112819">Попередження. Chromium не може заборонити розширенням записувати вашу історію веб-перегляду. Щоб розширення не працювало в режимі анонімного перегляду, зніміть прапорець біля цієї опції.</translation>
 <translation id="4673151026126227699">Якщо ви також будете надсилати звіти про використання Chromium, у них буде включено дані про відвідані URL-адреси</translation>
@@ -328,6 +329,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5386450000063123300">Chromium оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволити вхід у Chromium</translation>
 <translation id="5405650547142096840">Видалити з Chromium</translation>
+<translation id="5424544524441439284">Знижує продуктивність, але робить вебпереглядач Chromium стійкішим до атак</translation>
 <translation id="5427571867875391349">Зробити Chromium веб-переглядачем за умовчанням</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Бета-версія Chromium</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Рекомендуємо призупинити вкладку, яка вповільнює роботу Chromium}one{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chromium}few{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chromium}many{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chromium}other{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chromium}}</translation>

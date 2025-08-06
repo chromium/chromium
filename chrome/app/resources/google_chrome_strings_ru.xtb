@@ -310,6 +310,7 @@
 <translation id="4747730611090640388">Chrome может предполагать, какие темы вам интересны.  Сайты, которые вы посетите в дальнейшем, могут обращаться к Chrome, чтобы получать сведения о ваших интересах и показывать вам подходящую рекламу.</translation>
 <translation id="475321580758063259">Обновите Chrome, чтобы продолжать использовать данные Chrome в аккаунте Google <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Ускоряет работу сайтов с помощью движка Chrome V8, но делает Chrome менее устойчивым к атакам</translation>
 <translation id="479167709087336770">Используется та же технология проверки правописания, что и в Google Поиске. Текст, который вы введете в браузере, будет отправлен в Google. Этот параметр можно изменить в настройках.</translation>
 <translation id="4793679854893018356">Как Chrome обеспечивает безопасность</translation>
 <translation id="4828579605166583682">Google Chrome пытается заменить текущие пароли. Чтобы разрешить это, введите свой пароль Windows.</translation>
@@ -592,6 +593,7 @@
 <translation id="8342675569599923794">Chrome заблокировал этот файл как опасный.</translation>
 <translation id="8349094670477064572">Вы сможете сохранять пароли и другие данные в аккаунте Google и использовать их, когда вошли в Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Перевести на</translation>
+<translation id="8366770919198174997">Производительность снизится, но Chrome станет более устойчив к атакам</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
 <translation id="8387459386171870978">Продолжить работу в Chrome</translation>
 <translation id="8394720698884623075">Сверяет URL со списком небезопасных сайтов в Chrome.</translation>

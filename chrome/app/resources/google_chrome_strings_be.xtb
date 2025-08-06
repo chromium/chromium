@@ -314,6 +314,7 @@
 <translation id="4747730611090640388">Chrome можа ацэньваць, якія вы маеце інтарэсы.  Пасля гэтага сайты, якія вы наведваеце, могуць запытваць у браўзера Chrome інфармацыю пра вашы інтарэсы, каб персаналізаваць для вас рэкламу.</translation>
 <translation id="475321580758063259">Каб працягнуць выкарыстанне даных Chrome ва Уліковым запісе Google <ph name="ACCOUNT_EMAIL" />, абнавіце Chrome</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Функцыя паскарае працу з сайтамі дзякуючы апрацоўшчыку Chrome V8, але робіць Chrome крыху менш устойлівым да атак</translation>
 <translation id="479167709087336770">Гэта функцыя выкарыстоўвае тую ж праверку правапісу, што ў Google Пошуку. Уведзены ў браўзер тэкст адпраўляецца ў Google. Гэта можна змяніць у наладах.</translation>
 <translation id="4793679854893018356">Даведайцеся, як Chrome абараняе вас</translation>
 <translation id="4828579605166583682">Google Chrome спрабуе замяніць існуючыя паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
@@ -600,6 +601,7 @@
 <translation id="8342675569599923794">Файл небяспечны, таму Chrome заблакіраваў яго.</translation>
 <translation id="8349094670477064572">Вы зможаце захоўваць і выкарыстоўваць паролі і іншыя даныя ў сваім Уліковым запісе Google пасля ўваходу ў Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Мова перакладу:</translation>
+<translation id="8366770919198174997">Зніжае прадукцыйнасць, але павышае ўстойлівасць Chrome супраць атак</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="8387459386171870978">Працягнуць работу ў Chrome</translation>
 <translation id="8394720698884623075">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome</translation>

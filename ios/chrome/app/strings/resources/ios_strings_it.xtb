@@ -1002,7 +1002,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="496392417432935267">Aperta altrove</translation>
 <translation id="4970724460420203313">L'utilizzo di Chrome con l'account gestito ti aiuta a mantenere separata la navigazione relativa alla tua organizzazione (tra cui schede, cronologia e password) dall'altra navigazione</translation>
 <translation id="4971735654804503942">Sistemi di protezione proattivi e più rapidi da estensioni, siti web e download pericolosi. Ricevi un avviso in caso di violazioni della password. Richiede l'invio dei dati di navigazione a Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} elemento della cronologia dai profili di lavoro e privati di Safari}other{{count} elementi della cronologia dai profili di lavoro e privati di Safari}}</translation>
 <translation id="4979397965658815378">Accedi con il tuo Account Google per avere preferiti, password, cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="4985921635659180565">Una volta programmata l'eliminazione di un file, non è possibile annullarla.</translation>
 <translation id="498624032394115435">Chiunque abbia il link può modificare tutte le schede.</translation>
@@ -1565,6 +1564,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7029809446516969842">Password</translation>
 <translation id="7035825883570480307">Attivare le notifiche?</translation>
 <translation id="7039345315346323556">Recenti</translation>
+<translation id="704692552158601232">App browser predefinita</translation>
 <translation id="7055240621761583113">Compila automaticamente la password</translation>
 <translation id="7058455400288852416">Vai al Selettore di schede</translation>
 <translation id="7063811929043357292">Il tuo account è gestito da un genitore.
@@ -1612,6 +1612,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7266578100016339897">In questo modo, è più semplice organizzarsi. Puoi modificare questa opzione nelle impostazioni in qualsiasi momento.</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>
 <translation id="728025568708172005">Avvia il tour</translation>
+<translation id="7280980607183752256">Impossibile importare questo file</translation>
 <translation id="7281202269687163394">La tua privacy e Gemini.</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="7300448350764260141">Aggiungi un ulteriore livello di protezione dalle minacce online.</translation>

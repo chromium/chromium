@@ -4,9 +4,11 @@
 <translation id="1045545926731898784">Ta witryna należy do grupy witryn zdefiniowanej przez witrynę <ph name="SET_OWNER" />, która może udostępniać dane o Twojej aktywności w ramach tej grupy, aby witryny działały zgodnie z oczekiwaniami.</translation>
 <translation id="1055273091707420432">Chromium automatycznie usuwa tematy reklam, które mają ponad 4 tygodnie</translation>
 <translation id="1184166532603925201">W trybie incognito Chrome blokuje witrynom możliwość używania plików cookie innych firm</translation>
+<translation id="1205053266843535401">Ogranicz dostęp do danych dotyczących urządzeń i przeglądarek</translation>
 <translation id="1297285729613779935">Reklamy sugerowane przez witryny pomagają chronić Twoją historię przeglądania i tożsamość, umożliwiając jednocześnie witrynom wyświetlanie trafnych reklam. Na podstawie Twojej aktywności (np. czasu spędzonego w witrynach) inne witryny mogą sugerować powiązane reklamy podczas dalszego przeglądania przez Ciebie stron. W ustawieniach możesz wyświetlić listę tych witryn i zablokować te, które uznasz za niepotrzebne.</translation>
 <translation id="132963621759063786">Po 30 dniach Chromium usuwa wszystkie dane o aktywności udostępnione witrynom. Jeśli odwiedzisz witrynę ponownie, może ona znów pojawić się na liście. Dowiedz się więcej o <ph name="BEGIN_LINK1" />zarządzaniu prywatnością w reklamach w Chromium<ph name="LINK_END1" />.</translation>
 <translation id="1355088139103479645">Usunąć wszystkie dane?</translation>
+<translation id="1432306053064625042">Otwiera się w zwykłym oknie Chrome</translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> przeglądarka Chrome określa tematy reklam na podstawie Twojej najnowszej historii przeglądania, czyli listy witryn, które w niej odwiedzasz na tym urządzeniu.</translation>
 <translation id="1529201733207295376">Pliki cookie innych firm są blokowane. Tryb incognito ma też funkcje, które mogą ograniczać informacje udostępniane firmom, których treści są osadzone na odwiedzanej stronie. Ochroną przed śledzeniem w trybie incognito możesz zarządzać w <ph name="START_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też łączyć je z innymi informacjami, które już o Tobie posiadają. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej <ph name="BEGIN_LINK" />Polityce prywatności<ph name="END_LINK" />.</translation>
@@ -17,11 +19,13 @@
 <translation id="1818866261309406359">Zarządzaj danymi powiązanych witryn w nowej karcie</translation>
 <translation id="1824257235526922152">Chromium w trybie incognito blokuje pliki cookie innych firm, ale jakieś rozszerzenie zezwoliło na nie w tej witrynie. Tryb incognito ma też funkcje, które mogą ograniczać informacje udostępniane firmom, których treści są osadzone na odwiedzanej stronie.</translation>
 <translation id="1887631853265748225">Funkcje ochrony prywatności w reklamach pomagają ograniczać informacje na Twój temat, które witryny i ich partnerzy reklamowi mogą poznać, gdy wyświetlają reklamy spersonalizowane.</translation>
+<translation id="1953252525523274058">Odwiedzane przez Ciebie witryny mogą umieszczać treści z innych witryn (np. obrazy, reklamy i tekst), które mogą być wykorzystywane do zbierania informacji o Tobie. Więcej informacji o zarządzaniu <ph name="START_LINK" />ochroną przed śledzeniem w trybie incognito<ph name="END_LINK" /></translation>
 <translation id="1954777269544683286">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. <ph name="BEGIN_LINK" />Więcej informacji znajdziesz w naszej Polityce prywatności<ph name="END_LINK" /></translation>
 <translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
 <translation id="2089118378428549994">Wylogujemy Cię z tych stron</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Jak możesz zarządzać tymi danymi?<ph name="END_BOLD" /> Chrome automatycznie usuwa witryny odwiedzone ponad 30 dni wcześniej. Witryna, którą odwiedzisz ponownie, może pojawić się znów na liście. W ustawieniach Chrome możesz też w każdej chwili zablokować witrynie możliwość sugerowania reklam i wyłączyć reklamy sugerowane przez witryny.</translation>
 <translation id="2096716221239095980">Usuń wszystkie dane</translation>
+<translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2213012319160025454">Zarządzaj ochroną przed śledzeniem w trybie incognito</translation>
 <translation id="2235344399760031203">Blokowane są pliki cookie innych firm</translation>
 <translation id="2313907619050827224">Chromium w trybie incognito blokuje pliki cookie innych firm, ale administrator zezwolił na nie w tej witrynie. Tryb incognito ma też funkcje, które mogą ograniczać informacje udostępniane firmom, których treści są osadzone na odwiedzanej stronie. Ochroną przed śledzeniem w trybie incognito możesz zarządzać w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
@@ -29,6 +33,7 @@
 <translation id="235832722106476745">Chrome automatycznie usuwa też tematy reklam, które mają ponad 4 tygodnie</translation>
 <translation id="2496115946829713659">Witryny mogą używać plików cookie innych firm do personalizowania treści i reklam oraz do śledzenia Twoich działań w innych witrynach</translation>
 <translation id="2506926923133667307">Dowiedz się więcej o zarządzaniu prywatnością w reklamach</translation>
+<translation id="2578376035831129583">Dotyczy witryn umieszczonych, a nie witryny, którą odwiedzasz bezpośrednio</translation>
 <translation id="259163387153470272">Witryny i ich partnerzy reklamowi mogą wykorzystywać informacje o Twojej aktywności (np. czasie spędzonym w witrynach), aby personalizować dla Ciebie reklamy</translation>
 <translation id="2669351694216016687">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też łączyć je z innymi informacjami, które już o Tobie posiadają. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. <ph name="BEGIN_LINK1" />Więcej informacji znajdziesz w naszej Polityce prywatności<ph name="LINK_END1" /></translation>
 <translation id="2842751064192268730">Tematy reklam pomagają ograniczyć informacje o Tobie, które witryny i ich partnerzy reklamowi mogą poznać w celu wyświetlania Ci reklam spersonalizowanych. Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania. Witryna, którą później odwiedzisz, może zapytać Chrome o odpowiednie tematy, żeby spersonalizować wyświetlane Ci reklamy.</translation>
@@ -42,6 +47,7 @@
 <translation id="3463673813673164886">Pliki cookie innych firm są blokowane. Tryb incognito ma też funkcje, które mogą ograniczać informacje udostępniane firmom, których treści są osadzone na odwiedzanej stronie. Ochroną przed śledzeniem w trybie incognito możesz zarządzać w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="3467081767799433066">Na potrzeby pomiaru skuteczności reklam między witrynami są udostępniane niektóre dane, np. informacje o tym, czy po wizycie na stronie dokonałeś(-aś) zakupu.</translation>
 <translation id="3624583033347146597">Wybierz preferencje dotyczące plików cookie innych firm</translation>
+<translation id="364348650177270461">Chromium będzie starać się ograniczać dostęp do danych urządzenia i przeglądarki, takich jak zainstalowane czcionki czy strefa czasowa, w przypadku witryn, które mogą próbować uzyskać informacje o Tobie</translation>
 <translation id="3645682729607284687">Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania. Na przykład sport, odzież i inne</translation>
 <translation id="3696118321107706175">Jak witryny używają Twoich danych</translation>
 <translation id="3749724428455457489">Dowiedz się więcej o reklamach sugerowanych przez witrynę</translation>
@@ -49,6 +55,7 @@
 <translation id="3763433740586298940">Możesz blokować witryny, które Ci nie odpowiadają. Chrome automatycznie usuwa też z listy witryny odwiedzone ponad 30 dni temu.</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3873208162463987752">Powiązane witryny mogą udostępniać sobie nawzajem pliki cookie innych firm, aby działać zgodnie z oczekiwaniami – np. nie wylogowywać Cię lub zapamiętać Twoje ustawienia. Witryny powinny wyjaśnić, dlaczego potrzebują dostępu do tych danych. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="388873797593534859">Ogranicz dostęp do danych dotyczących urządzeń i przeglądarek. To ustawienie jest włączone.</translation>
 <translation id="390681677935721732">Po 30 dniach Chrome usuwa wszystkie dane o aktywności udostępnione witrynom. Jeśli odwiedzisz witrynę ponownie, może ona znów pojawić się na liście. Dowiedz się więcej o <ph name="BEGIN_LINK" />zarządzaniu prywatnością w reklamach w Chrome<ph name="END_LINK" />.</translation>
 <translation id="3918378745482005425">Niektóre funkcje mogą nie działać prawidłowo. Powiązane witryny mogą nadal używać plików cookie innych firm.</translation>
 <translation id="3918927280411834522">reklamach sugerowanych przez witrynę</translation>
@@ -60,8 +67,10 @@
 <translation id="4159125650195886935">Chromium w trybie incognito blokuje pliki cookie innych firm, ale administrator zezwolił na nie w tej witrynie. Tryb incognito ma też funkcje, które mogą ograniczać informacje udostępniane firmom, których treści są osadzone na odwiedzanej stronie.</translation>
 <translation id="417625634260506724">Całkowita ilość miejsca używanego przez witryny na liście: <ph name="TOTAL_USAGE" /></translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
+<translation id="4200539465901914137">Chrome będzie starać się ograniczać dostęp do danych urządzenia i przeglądarki, takich jak zainstalowane czcionki czy strefa czasowa, w przypadku witryn, które mogą próbować uzyskać informacje o Tobie</translation>
 <translation id="4278390842282768270">Dozwolone</translation>
 <translation id="4301151630239508244">Tematy reklam to tylko 1 z wielu czynników, na podstawie których witryna może personalizować reklamy. Nawet jeśli nie wybierzesz tematów reklam, witryny nadal będą mogły wyświetlać reklamy, ale mogą być one mniej spersonalizowane. Dowiedz się więcej o <ph name="BEGIN_LINK_1" />zarządzaniu prywatnością w reklamach<ph name="END_LINK_1" />.</translation>
+<translation id="435360899831421654">Ogranicz dostęp do danych dotyczących urządzeń i przeglądarek. To ustawienie jest wyłączone.</translation>
 <translation id="4370439921477851706">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też przechowywać tematy reklam dłużej niż 4 tygodnie i łączyć je z innymi informacjami o Tobie, którymi już dysponują. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. Więcej informacji znajdziesz w naszej <ph name="BEGIN_LINK1" />Polityce prywatności<ph name="LINK_END1" />.</translation>
 <translation id="4412992751769744546">Jak zezwolić na używanie plików cookie innych firm</translation>
 <translation id="4456330419644848501">To, czy wyświetlana reklama jest spersonalizowana, może zależeć od wielu czynników – m.in. od tego ustawienia, od <ph name="BEGIN_LINK_1" />reklam sugerowanych przez witrynę<ph name="END_LINK_1" />, od <ph name="BEGIN_LINK_2" />ustawień plików cookie<ph name="END_LINK_2" /> oraz od tego, czy witryna, którą odwiedzasz, personalizuje reklamy.</translation>
@@ -73,6 +82,9 @@
 <translation id="4687718960473379118">Reklamy sugerowane przez witrynę</translation>
 <translation id="4692439979815346597">W ustawieniach Chrome możesz wyświetlić tematy reklam i zablokować te, których nie chcesz udostępniać witrynom</translation>
 <translation id="4711259472133554310">W Ustawieniach możesz utworzyć wyjątki, aby wybrane witryny zawsze mogły używać plików cookie innych firm</translation>
+<translation id="4773759246613295463">Gdy przeglądasz sieć w trybie incognito, Chromium nie zapisuje historii przeglądania, plików cookie, danych witryn ani informacji wpisywanych w formularzach. Tryb incognito udostępnia też funkcje, które mogą ograniczać informacje dostępne dla umieszczonych witryn.</translation>
+<translation id="4835013575597383365">Ochrona przed śledzeniem</translation>
+<translation id="4864452159627050077">Zarządzaj informacjami, których witryny mogą używać, aby uzyskiwać informacje o Tobie w trybie incognito</translation>
 <translation id="4894490899128180322">Jeśli witryna działa niezgodnie z oczekiwaniami, możesz tymczasowo zezwolić jej na używanie plików cookie innych firm</translation>
 <translation id="4995684599009077956">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też przechowywać tematy reklam dłużej niż 4 tygodnie i łączyć je z innymi informacjami o Tobie, którymi już dysponują. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. Więcej informacji znajdziesz w naszej <ph name="BEGIN_LINK" />Polityce prywatności<ph name="END_LINK" />.</translation>
 <translation id="4998299775934183130">Ma powiązane witryny</translation>
@@ -93,16 +105,22 @@
 <translation id="6053735090575989697">Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej Polityce prywatności.</translation>
 <translation id="6195163219142236913">Pliki cookie innych firm są ograniczone</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
+<translation id="6205593033237791753">Ogranicz dostęp do swojego adresu IP. To ustawienie jest włączone.</translation>
 <translation id="6272892028045906139">Ustawienia ochrony przed śledzeniem w trybie incognito</translation>
 <translation id="6282129116202535093">Reklamy sugerowane przez witryny pomagają chronić Twoją historię przeglądania i tożsamość, umożliwiając jednocześnie witrynom wyświetlanie trafnych reklam. Na podstawie Twojej aktywności inne witryny mogą sugerować powiązane reklamy podczas dalszego przeglądania przez Ciebie stron. W ustawieniach możesz wyświetlić listę tych witryn i zablokować te, które uznasz za niepotrzebne.</translation>
 <translation id="6308169245546905162">Witryny mogą używać plików cookie innych firm, aby śledzić Twoje działania w innych witrynach</translation>
+<translation id="6388287739339671750">Blokuj skrypty śledzące</translation>
 <translation id="6398358690696005758">Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej <ph name="BEGIN_LINK1" />Polityce prywatności<ph name="LINK_END1" />.</translation>
+<translation id="663422728063721997">Chrome będzie starać się chronić Twój adres IP przed umieszczonymi witrynami, które mogą próbować uzyskać informacje o Tobie</translation>
 <translation id="6702015235374976491">Tematy reklam pomagają witrynom wyświetlać trafne reklamy, chroniąc przy tym Twoją historię przeglądania i tożsamość. Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania. Witryna, którą później odwiedzisz, może zapytać Chrome o odpowiednie tematy, żeby spersonalizować wyświetlane Ci reklamy.</translation>
 <translation id="6710025070089118043">Witryny nie mogą używać plików cookie innych firm do personalizowania treści i reklam ani do śledzenia Twoich działań w innych witrynach, chyba że zezwolisz na to powiązanym witrynom</translation>
 <translation id="6774168155917940386">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też łączyć je z innymi informacjami, które już o Tobie posiadają. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. Więcej informacji znajdziesz w naszej <ph name="BEGIN_LINK" />Polityce prywatności<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">To, czy wyświetlana reklama jest spersonalizowana, zależy od wielu czynników – m.in. od tego ustawienia, od <ph name="BEGIN_LINK1" />tematów reklam<ph name="LINK_END1" />, od <ph name="BEGIN_LINK2" />ustawień plików cookie<ph name="LINK_END2" /> oraz od tego, czy witryna, którą odwiedzasz, personalizuje reklamy.</translation>
+<translation id="6968337645683500044">Dostępne tylko wtedy, gdy tryb incognito jest otwarty z zalogowanej karty Chromium</translation>
+<translation id="6984151429741932257">Ogranicz dostęp do swojego adresu IP</translation>
 <translation id="7011445931908871535">Usunąć dane?</translation>
 <translation id="7084100010522077571">Więcej informacji o pomiarze skuteczności reklam</translation>
+<translation id="721207178659484186">Chroniąc Twój adres IP, serwery prywatności Google mogą go zobaczyć, ale nie widzą miejsca docelowego przeglądania</translation>
 <translation id="7315780377187123731">Więcej informacji o opcji Blokuj pliki cookie innych firm</translation>
 <translation id="737025278945207416">Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też przechowywać tematy reklam dłużej niż 4 tygodnie i łączyć je z innymi informacjami o Tobie, którymi już dysponują</translation>
 <translation id="7374493521304367420">Witryny mogą nadal używać plików cookie, aby śledzić aktywność związaną z przeglądaniem swoich stron</translation>
@@ -114,17 +132,28 @@
 <translation id="7538480403395139206">Więcej informacji o opcji Zezwalaj na używanie plików cookie innych firm</translation>
 <translation id="7646143920832411335">Pokaż powiązane witryny</translation>
 <translation id="7686086654630106285">Więcej informacji o reklamach sugerowanych przez witrynę</translation>
+<translation id="7747003797915893222">Gdy przeglądasz sieć w trybie incognito, Chrome nie zapisuje historii przeglądania, plików cookie, danych witryn ani informacji wpisywanych w formularzach. Tryb incognito udostępnia też funkcje, które mogą ograniczać informacje dostępne dla umieszczonych witryn.</translation>
+<translation id="7778504454105164347">Chromium będzie starać się chronić Twój adres IP przed umieszczonymi witrynami, które mogą próbować uzyskać informacje o Tobie</translation>
+<translation id="7789658094395162849">Ogranicz dostęp do swojego adresu IP. To ustawienie jest wyłączone.</translation>
+<translation id="795219618398555200">Chromium blokuje witrynom możliwość używania plików cookie innych firm w trybie incognito</translation>
+<translation id="8080808348468200193">W trybie incognito Chrome blokuje witrynom możliwość używania plików cookie innych firm</translation>
+<translation id="8096996737013848963">Chroń swój adres IP</translation>
 <translation id="8200078544056087897">Funkcje witryny, które wymagają plików cookie innych firm, powinny działać poprawnie</translation>
 <translation id="8365690958942020052">Odwiedzana przez Ciebie witryna może prosić o te informacje – tematy lub reklamy sugerowane przez odwiedzane witryny.</translation>
 <translation id="839994149685752920">Witryny mogą używać plików cookie innych firm do personalizowania treści i reklam</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
+<translation id="8430082659493731737">Funkcja dostępna tylko wtedy, gdy tryb incognito został otwarty z karty Chrome, na której jesteś zalogowany(-a)</translation>
+<translation id="8442977418416307640">Otwiera się w zwykłym oknie Chromium</translation>
 <translation id="8477178913400731244">Usuń dane</translation>
 <translation id="8486457244881562857">Ochrona jest wstrzymana do momentu zamknięcia wszystkich okien incognito. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otwiera Politykę prywatności w nowej karcie</translation>
+<translation id="8614239088739825290">Odwiedzane przez Ciebie witryny mogą umieszczać treści z innych witryn (np. obrazy, reklamy i tekst), które mogą być wykorzystywane do zbierania informacji o Tobie. Więcej informacji o zarządzaniu <ph name="BEGIN_LINK" />ochroną przed śledzeniem w trybie incognito<ph name="END_LINK" /></translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Jak możesz zarządzać tymi danymi?<ph name="END_BOLD" /> Chrome automatycznie usuwa tematy starsze niż 4 tygodnie. Podczas dalszego przeglądania temat może się pojawić ponownie na liście. W ustawieniach Chrome możesz też w dowolnym momencie zablokować tematy reklam, których Chrome ma nie udostępniać witrynom, lub w ogóle je wyłączyć.</translation>
+<translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
 <translation id="8825639607990802302">Opcje prywatności i danych witryn</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />Jak witryny używają tych danych?<ph name="END_BOLD" /> Witryny i ich partnerzy reklamowi mogą wykorzystywać informacje o Twojej aktywności, aby personalizować reklamy w innych witrynach. Na przykład jeśli odwiedzasz stronę z przepisami kulinarnymi, witryna może uznać, że interesuje Cię gotowanie. Inna witryna może później wyświetlić powiązaną reklamę usługi dostawy artykułów spożywczych zaproponowaną przez pierwszą witrynę.</translation>
 <translation id="8944485226638699751">Z ograniczeniami</translation>
+<translation id="8948536553485650118">Ochrona przed śledzeniem w trybie incognito</translation>
 <translation id="8984005569201994395">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Niektóre witryny mogą wykorzystywać Twoją aktywność do personalizowania nie tylko reklam. Mogą też łączyć je z innymi informacjami, które już o Tobie posiadają. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. <ph name="BEGIN_LINK" />Więcej informacji znajdziesz w naszej Polityce prywatności<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">W trybie incognito Chromium blokuje witrynom możliwość używania plików cookie innych firm</translation>
 <translation id="9043239285457057403">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="SITE_NAME" /> i powiązane z nią witryny</translation>

@@ -1002,7 +1002,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="496392417432935267">Odprto drugje</translation>
 <translation id="4970724460420203313">Če Chrome uporabljate z upravljanim računom, lahko ločite brskanje, povezano z organizacijo (vključno z zavihki, zgodovino in gesli), od drugega brskanja</translation>
 <translation id="4971735654804503942">Hitrejša, še boljša zaščita proti nevarnim spletnim mestom, prenosom in razširitvam. Opozori vas glede kršitev gesel. Zahteva pošiljanje podatkov brskanja Googlu.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} element zgodovine iz zasebnega profila in delovnega profila v Safariju}one{{count} element zgodovine iz zasebnega profila in delovnega profila v Safariju}two{{count} elementa zgodovine iz zasebnega profila in delovnega profila v Safariju}few{{count} elementi zgodovine iz zasebnega profila in delovnega profila v Safariju}other{{count} elementov zgodovine iz zasebnega profila in delovnega profila v Safariju}}</translation>
 <translation id="4979397965658815378">Prijavite se z Google Računom, da boste zaznamke, gesla, zgodovino in druge nastavitve imeli na voljo v vseh napravah.</translation>
 <translation id="4985921635659180565">Ko je datoteka načrtovana za izbris, tega ni mogoče preklicati.</translation>
 <translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
@@ -1565,6 +1564,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7035825883570480307">Želite vklopiti obvestila?</translation>
 <translation id="7039345315346323556">Nedavno</translation>
+<translation id="704692552158601232">Privzeti brskalnik</translation>
 <translation id="7055240621761583113">Samodejno izpolnjevanje gesla</translation>
 <translation id="7058455400288852416">Na preklop med zavihki</translation>
 <translation id="7063811929043357292">Tvoj račun upravlja starš.

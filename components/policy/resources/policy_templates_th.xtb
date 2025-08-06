@@ -3212,6 +3212,11 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
           ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns ใช้ไวลด์การ์ด (<ph name="WILDCARD_VALUE" />) ได้</translation>
 <translation id="3273221114520206906">การตั้งค่า JavaScript เริ่มต้น</translation>
 <translation id="3278042410658310805">ปิดใช้ฟีเจอร์อธิบายและอ่านออกเสียงในหน้าจอการเข้าสู่ระบบและอนุญาตให้ผู้ใช้เปิดใช้ชั่วคราว</translation>
+<translation id="3279532732818711062">การตั้งค่านโยบายจะทำให้ต้นทางในรายการรับแอตทริบิวต์ของอุปกรณ์ (เช่น หมายเลขซีเรียล ชื่อโฮสต์) ได้โดยใช้ Device Attributes API
+
+ต้นทางต้องสอดคล้องกับเว็บแอปพลิเคชันที่เป็น Isolated Web App ซึ่งบังคับติดตั้งแล้ว (โดยใช้นโยบาย <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (ตั้งแต่เวอร์ชัน 125) ตั้งค่าเป็นแอปคีออสก์ หรือเว็บแอปพลิเคชันที่บังคับติดตั้งแล้ว (โดยใช้ <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (ก่อนเวอร์ชัน 140) โปรดดูข้อกำหนดของ Device Attributes API ที่ https://wicg.github.io/WebApiDevice/device_attributes
+
+ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้อง (ตั้งแต่เวอร์ชัน 127) ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้</translation>
 <translation id="328347261792478720">โดยค่าเริ่มต้น เบราว์เซอร์จะแสดงคำแนะนำสื่อที่มีการปรับเปลี่ยนในแบบของผู้ใช้ การตั้งค่านโยบายนี้เป็น "ปิดใช้" จะทำให้ระบบซ่อนคำแนะนำเหล่านี้ไม่ให้ผู้ใช้เห็น การตั้งค่านโยบายนี้เป็น "เปิดใช้" หรือไม่ได้ตั้งค่าจะทำให้ระบบแสดงคำแนะนำสื่อต่อผู้ใช้</translation>
 <translation id="3284094172359247914">ควบคุมการใช้ WebUSB API</translation>
 <translation id="3285231260918855067">ความทึบแสงของเส้นขอบของข้อความลายน้ำ ตั้งแต่ 0 (โปร่งใส) ถึง 100 (ทึบแสง)</translation>
@@ -4259,6 +4264,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="4051723201852944592">เปิดใช้การตรวจหาการบังหน้าต่าง</translation>
 <translation id="4052529125939620019">โหลดส่วนขยายคอมโพเนนต์ CryptoToken เมื่อเริ่มต้นระบบ</translation>
 <translation id="4053157306171963473">ปิดใช้การรายงานเวลาของกิจกรรมในอุปกรณ์</translation>
+<translation id="4053168888967633418">การตั้งค่าแอตทริบิวต์อุปกรณ์</translation>
 <translation id="4056842786707010434">เลือกว่าจะล้าง window.name สําหรับการนําทางระดับบนสุดข้ามเว็บไซต์ซึ่งส่งผลให้เกิดกลุ่มบริบทการท่องเว็บใหม่หรือไม่</translation>
 <translation id="4056910949759281379">ปิดใช้งานโปรโตคอล SPDY</translation>
 <translation id="4057442294431066708">นโยบายนี้ควบคุมแป้นพิมพ์ลัดที่เลือกไว้สำหรับการรีแมปเหตุการณ์กับ F11/F12 ในหน้าย่อยของคีย์ที่รีแมป การตั้งค่าเหล่านี้มีผลเฉพาะกับแป้นพิมพ์ ChromeOS และจะปิดใช้โดยค่าเริ่มต้นหากไม่ได้ตั้งค่านโยบาย</translation>

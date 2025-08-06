@@ -283,6 +283,7 @@
 <translation id="4598116752460667024">Жагсаалтаас ямар нэг явцыг хайна уу.</translation>
 <translation id="4613863813562375431">ChromiumOS-н хувилбар</translation>
 <translation id="4621240073146040695">Удахгүй шинэчилж дууслаа! Chromium-н шинэчлэлийг дуусгахын тулд дахин ачаалж эхлүүлнэ үү.</translation>
+<translation id="4625064703209785397">Chromium-н V8 системээр сайтыг хурдасгах ч Chromium-г халдлагад арай тэсвэр багатай болгоно</translation>
 <translation id="4654936675281451226">Chromium маягтыг илүү сайн ойлгодог ба танд илүү хурдан автоматаар бөглөж өгөх боломжтой. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="4665829708273112819">Анхааруулга: Chromium өргөтгөлүүдийг таны хөтчийн түүхийг бичихээс хамгаалж чадахгүй. Энэ өргөтгөлийг Нууцлалтай горимд идэвхгүй болгохын тулд энэ сонголтыг болиулна уу.</translation>
 <translation id="4673151026126227699">Хэрэв та мөн Chromium-н ашиглалтын тайланг хуваалцвал тэдгээр тайланд таны зочилсон URL багтана</translation>
@@ -328,6 +329,7 @@
 <translation id="5386450000063123300">Chromium-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="5405650547142096840">Chromium-аас устга</translation>
+<translation id="5424544524441439284">Гүйцэтгэлийг багасгах ч Chromium-г халдлагад илүү тэсвэртэй болгоно</translation>
 <translation id="5427571867875391349">Chromium-ыг өөрийн анхдагч веб хөтөч болгон тохируулах</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Бета</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium таны хөтчийг удаашруулж буй табыг түр зогсоохыг зөвлөж байна}other{Chromium таны хөтчийг удаашруулж буй табуудыг түр зогсоохыг зөвлөж байна}}</translation>

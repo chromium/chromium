@@ -1002,7 +1002,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="496392417432935267">Nakabukas sa ibang lugar</translation>
 <translation id="4970724460420203313">Nakakatulong ang paggamit ng Chrome sa iyong pinapamahalaang account na maihiwalay ang pag-browse na nauugnay sa organisasyon mo (kabilang ang mga tab, history, at password) sa iba mo pang pag-browse</translation>
 <translation id="4971735654804503942">Mas mabilis at proactive na proteksyon laban sa mga mapanganib na website, download, at extension. Binibigyan ka ng babala tungkol sa mga paglabag sa password. Kinakailangang magpadala ng data mula sa pag-browse sa Google.</translation>
-<translation id="4975364841282576329">{count,plural, =1{{count} item ng history mula sa pribadong profile at profile sa trabaho sa Safari}one{{count} item ng history mula sa pribadong profile at profile sa trabaho sa Safari}other{{count} na item ng history mula sa pribadong profile at profile sa trabaho sa Safari}}</translation>
 <translation id="4979397965658815378">Mag-sign in gamit ang Google Account mo para makuha ang iyong mga bookmark, password, history at iba pang mga setting sa lahat ng device mo</translation>
 <translation id="4985921635659180565">Kapag naiskedyul nang i-delete ang isang file, hindi na ito makakansela.</translation>
 <translation id="498624032394115435">Mae-edit ng sinumang may link ang lahat ng tab.</translation>
@@ -1565,6 +1564,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7035825883570480307">I-on ang mga notification?</translation>
 <translation id="7039345315346323556">Kamakailan</translation>
+<translation id="704692552158601232">Default na Browser App</translation>
 <translation id="7055240621761583113">I-autofill ang password</translation>
 <translation id="7058455400288852416">Pumunta sa tab switcher</translation>
 <translation id="7063811929043357292">Pinapamahalaan ng iyong magulang ang account mo.
@@ -1612,6 +1612,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7266578100016339897">Makakatulong ito sa iyong manatiling organisado. Puwede mo itong baguhin sa mga setting anumang oras.</translation>
 <translation id="7272437679830969316">Hindi ma-verify ang iyong pagkakakilanlan. Hindi nakopya ang password.</translation>
 <translation id="728025568708172005">Simulan ang tour</translation>
+<translation id="7280980607183752256">Hindi mai-import ang file na ito</translation>
 <translation id="7281202269687163394">Ang iyong privacy at Gemini.</translation>
 <translation id="7293429513719260019">Pumili ng wika</translation>
 <translation id="7300448350764260141">Magdagdag pa ng proteksyon laban sa mga banta online.</translation>
