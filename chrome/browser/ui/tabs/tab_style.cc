@@ -113,9 +113,8 @@ int TabStyle::GetBottomCornerRadius() const {
 
 int TabStyle::GetTabOverlap() const {
   // The overlap removes the width and the margins of the separator.
-  const float total_separator_width = GetSeparatorMargins().left() +
-                                      GetSeparatorSize().width() +
-                                      GetSeparatorMargins().right();
+  const float total_separator_width =
+      GetSeparatorMargins().width() + GetSeparatorSize().width();
   return 2 * GetBottomCornerRadius() - total_separator_width;
 }
 
