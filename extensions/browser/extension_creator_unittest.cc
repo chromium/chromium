@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/values.h"
-#include "crypto/rsa_private_key.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/strings/grit/extensions_strings.h"
