@@ -276,7 +276,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     std::string debug_label,
     std::optional<gfx::BufferUsage> buffer_usage) {
   // TOOD(hitawala): Move this size check to IsSupported.
-  if (!gpu::IsSharedImageSizeValid(size, format)) {
+  if (!IsSizeForBufferHandleValid(size, format)) {
     LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
                << format.ToString();
     return nullptr;

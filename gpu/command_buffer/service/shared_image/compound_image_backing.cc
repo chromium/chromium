@@ -14,7 +14,6 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -373,7 +372,7 @@ bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
     return false;
   }
 
-  if (!gpu::IsSharedImageSizeValid(size, format)) {
+  if (!IsSizeForBufferHandleValid(size, format)) {
     DVLOG(1) << "Invalid image size: " << size.ToString()
              << " for format: " << format.ToString();
     return false;

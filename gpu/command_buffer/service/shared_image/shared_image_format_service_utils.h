@@ -49,6 +49,11 @@ struct GLFormatDesc {
 // Metal) type/format information for a given SharedImageFormat. These functions
 // should ideally only be called from the GPU service and viz.
 
+// Returns true if the buffer handle `size` is valid for `format`, checking for
+// odd size support.
+GPU_GLES2_EXPORT bool IsSizeForBufferHandleValid(const gfx::Size& size,
+                                                 viz::SharedImageFormat format);
+
 // BufferFormat is being transitioned out of SharedImage code (to use
 // SharedImageFormat instead). Refrain from using this function or preferably
 // use with single planar SharedImageFormats. Returns BufferFormat for given

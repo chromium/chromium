@@ -6,11 +6,9 @@
 #define GPU_COMMAND_BUFFER_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_
 
 #include "base/containers/enum_set.h"
-#include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace gpu {
 
@@ -27,11 +25,6 @@ struct Capabilities;
 GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsFormatSupportedForSIWithNativeBuffer(
     viz::SharedImageFormat format,
     const Capabilities& capabilities);
-
-// Returns true if |size| is valid for plane |plane| of |format|.
-GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsSharedImageSizeValid(
-    const gfx::Size& size,
-    viz::SharedImageFormat format);
 
 }  // namespace gpu
 
