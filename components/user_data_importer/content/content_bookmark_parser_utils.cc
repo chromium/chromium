@@ -41,16 +41,15 @@ static std::string stripDt(const std::string& lineDt) {
   return line;
 }
 
-// Fetches the given |attribute| value from the |attribute_list|. Returns true
-// if successful, and |value| will contain the value.
-bool GetAttribute(const std::string& attribute_list,
-                  const std::string& attribute,
-                  std::string* value) {
+// Fetches the given `attribute` value from the `attribute_list`. Returns the
+// value if successful.
+std::optional<std::string> GetAttribute(const std::string& attribute_list,
+                                        const std::string& attribute) {
   const char kQuote[] = "\"";
 
   size_t begin = attribute_list.find(attribute + "=" + kQuote);
   if (begin == std::string::npos) {
-    return false;  // Can't find the attribute.
+    return std::nullopt;  // Can't find the attribute.
   }
 
   begin += attribute.size() + 2;
@@ -64,11 +63,10 @@ bool GetAttribute(const std::string& attribute_list,
   }
 
   if (end == attribute_list.size()) {
-    return false;  // The value is not quoted.
+    return std::nullopt;  // The value is not quoted.
   }
 
-  *value = attribute_list.substr(begin, end - begin);
-  return true;
+  return attribute_list.substr(begin, end - begin);
 }
 
 // Fetches a time attribute from the `attribute_list` and returns it as a
@@ -76,12 +74,11 @@ bool GetAttribute(const std::string& attribute_list,
 std::optional<base::Time> GetTimeAttribute(const std::string& attribute_list,
                                            const std::string& attribute) {
   std::string value;
-  if (GetAttribute(attribute_list, attribute, &value)) {
+  std::optional<std::string> value_str =
+      GetAttribute(attribute_list, attribute);
+  if (value_str) {
     int64_t time;
-    if (!base::StringToInt64(value, &time)) {
-      return std::nullopt;
-    }
-    if (time > 0) {
+    if (base::StringToInt64(*value_str, &time) && time > 0) {
       return base::Time::UnixEpoch() + base::Seconds(time);
     }
   }
@@ -92,9 +89,9 @@ std::optional<base::Time> GetTimeAttribute(const std::string& attribute_list,
 // base::Uuid.
 std::optional<base::Uuid> GetUuidAttribute(const std::string& attribute_list,
                                            const std::string& attribute) {
-  std::string value;
-  if (GetAttribute(attribute_list, attribute, &value)) {
-    base::Uuid uuid = base::Uuid::ParseCaseInsensitive(value);
+  std::optional<std::string> value = GetAttribute(attribute_list, attribute);
+  if (value) {
+    base::Uuid uuid = base::Uuid::ParseCaseInsensitive(*value);
     if (uuid.is_valid()) { return uuid; }
   }
   return std::nullopt;
@@ -104,11 +101,12 @@ std::optional<base::Uuid> GetUuidAttribute(const std::string& attribute_list,
 // bool.
 std::optional<bool> GetBoolAttribute(const std::string& attribute_list,
                                      const std::string& attribute) {
-  std::string value;
-  if (GetAttribute(attribute_list, attribute, &value)) {
-    if (value == "1") {
+  std::optional<std::string> bool_value =
+      GetAttribute(attribute_list, attribute);
+  if (bool_value.has_value()) {
+    if (bool_value.value() == "1") {
       return true;
-    } else if (value == "0") {
+    } else if (bool_value.value() == "0") {
       return false;
     }
   }
@@ -151,22 +149,24 @@ void DataURLToFaviconUsage(const GURL& link_url,
   favicons->push_back(std::move(usage));
 }
 
-bool ParseCharsetFromLine(const std::string& line, std::string* charset) {
+std::optional<std::string> ParseCharsetFromLine(const std::string& line) {
   if (!base::StartsWith(line, "<META", base::CompareCase::INSENSITIVE_ASCII) ||
       (line.find("CONTENT=\"") == std::string::npos &&
        line.find("content=\"") == std::string::npos)) {
-    return false;
+    return std::nullopt;
   }
 
   const char kCharset[] = "charset=";
   size_t begin = line.find(kCharset);
   if (begin == std::string::npos) {
-    return false;
+    return std::nullopt;
   }
   begin += sizeof(kCharset) - 1;
   size_t end = line.find_first_of('\"', begin);
-  *charset = line.substr(begin, end - begin);
-  return true;
+  if (end == std::string::npos) {
+    return std::nullopt;
+  }
+  return line.substr(begin, end - begin);
 }
 
 bool ParseFolderNameFromLine(const std::string& lineDt,
@@ -214,8 +214,10 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   // SYNCED.
   *synced = GetBoolAttribute(attribute_list, kSyncedAttribute);
 
-  if (GetAttribute(attribute_list, kToolbarFolderAttribute, &value) &&
-      base::EqualsCaseInsensitiveASCII(value, "true")) {
+  std::optional<std::string> toolbar_attribute_value =
+      GetAttribute(attribute_list, kToolbarFolderAttribute);
+  if (toolbar_attribute_value &&
+      base::EqualsCaseInsensitiveASCII(*toolbar_attribute_value, "true")) {
     *is_toolbar_folder = true;
   } else {
     *is_toolbar_folder = false;
@@ -274,8 +276,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   // We don't import Live Bookmark folders, which is Firefox's RSS reading
   // feature, since the user never necessarily bookmarked them and we don't
   // have this feature to update their contents.
-  std::string value;
-  if (GetAttribute(attribute_list, kFeedURLAttribute, &value)) {
+  if (GetAttribute(attribute_list, kFeedURLAttribute).has_value()) {
     return false;
   }
 
@@ -283,26 +284,29 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   base::CodepageToUTF16(line.substr(tag_end, end - tag_end), charset.c_str(),
                         base::OnStringConversionError::SKIP, title);
   *title = base::UnescapeForHTML(*title);
-
   // URL is mandatory.
-  if (!GetAttribute(attribute_list, kHrefAttribute, &value)) {
+  std::optional<std::string> url_value =
+      GetAttribute(attribute_list, kHrefAttribute);
+  if (!url_value) {
     return false;
   }
 
   std::u16string url16;
-  base::CodepageToUTF16(value, charset.c_str(),
+  base::CodepageToUTF16(*url_value, charset.c_str(),
                         base::OnStringConversionError::SKIP, &url16);
   url16 = base::UnescapeForHTML(url16);
   *url = GURL(url16);
 
   // Favicon
-  if (GetAttribute(attribute_list, kIconAttribute, &value)) {
-    *favicon = GURL(value);
+  if (std::optional<std::string> icon =
+          GetAttribute(attribute_list, kIconAttribute)) {
+    *favicon = GURL(*icon);
   }
 
   // Keyword
-  if (GetAttribute(attribute_list, kShortcutURLAttribute, &value)) {
-    base::CodepageToUTF16(value, charset.c_str(),
+  if (std::optional<std::string> shortcut_url =
+          GetAttribute(attribute_list, kShortcutURLAttribute)) {
+    base::CodepageToUTF16(*shortcut_url, charset.c_str(),
                           base::OnStringConversionError::SKIP, shortcut);
     *shortcut = base::UnescapeForHTML(*shortcut);
   }
@@ -315,8 +319,9 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   *last_visit_date = GetTimeAttribute(attribute_list, kLastVisitAttribute);
 
   // Post data.
-  if (GetAttribute(attribute_list, kPostDataAttribute, &value)) {
-    base::CodepageToUTF16(value, charset.c_str(),
+  if (std::optional<std::string> post_data_str =
+          GetAttribute(attribute_list, kPostDataAttribute)) {
+    base::CodepageToUTF16(*post_data_str, charset.c_str(),
                           base::OnStringConversionError::SKIP, post_data);
     *post_data = base::UnescapeForHTML(*post_data);
   }
@@ -365,22 +370,20 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
   *title = base::UnescapeForHTML(*title);
 
   // URL is mandatory.
-  std::string value;
-  if (!GetAttribute(attribute_list, kHrefAttributeUpper, &value) &&
-      !GetAttribute(attribute_list, kHrefAttributeLower, &value)) {
+  std::optional<std::string> value =
+      GetAttribute(attribute_list, kHrefAttributeUpper);
+  if (!value) {
+    value = GetAttribute(attribute_list, kHrefAttributeLower);
+  }
+  if (!value) {
     return false;
   }
 
-  if (charset.length() != 0) {
-    std::u16string url16;
-    base::CodepageToUTF16(value, charset.c_str(),
-                          base::OnStringConversionError::SKIP, &url16);
-    url16 = base::UnescapeForHTML(url16);
-
-    *url = GURL(url16);
-  } else {
-    *url = GURL(value);
-  }
+  std::u16string url16;
+  base::CodepageToUTF16(*value, charset.c_str(),
+                        base::OnStringConversionError::SKIP, &url16);
+  url16 = base::UnescapeForHTML(url16);
+  *url = GURL(url16);
 
   return true;
 }
@@ -420,7 +423,8 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
     }
 
     // Get the encoding of the bookmark file.
-    if (ParseCharsetFromLine(line, &charset)) {
+    if (std::optional<std::string> new_charset = ParseCharsetFromLine(line)) {
+      charset = *new_charset;
       continue;
     }
 
