@@ -1,0 +1,104 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/memory/memory_pressure_listener_registry.h"
+
+#include <atomic>
+
+#include "base/memory/memory_pressure_level.h"
+#include "base/trace_event/interned_args_helper.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_pressure_level_proto.h"
+#include "base/trace_event/trace_event.h"
+#include "base/tracing_buildflags.h"
+
+namespace base {
+
+namespace {
+
+std::atomic<bool> g_notifications_suppressed = false;
+
+}  // namespace
+
+MemoryPressureListenerRegistry::MemoryPressureListenerRegistry() = default;
+
+// static
+MemoryPressureListenerRegistry& MemoryPressureListenerRegistry::Get() {
+  static auto* const registry = new MemoryPressureListenerRegistry();
+  return *registry;
+}
+
+// static
+void MemoryPressureListenerRegistry::NotifyMemoryPressure(
+    MemoryPressureLevel memory_pressure_level) {
+  DCHECK_NE(memory_pressure_level, MEMORY_PRESSURE_LEVEL_NONE);
+  TRACE_EVENT_INSTANT(
+      trace_event::MemoryDumpManager::kTraceCategory,
+      "MemoryPressureListener::NotifyMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(
+            trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
+      });
+  if (AreNotificationsSuppressed()) {
+    return;
+  }
+  Get().DoNotifyMemoryPressure(memory_pressure_level);
+}
+
+void MemoryPressureListenerRegistry::AddObserver(
+    MemoryPressureListener* listener,
+    bool sync) {
+  // TODO(crbug.com/40123466): DCHECK instead of silently failing when a
+  // MemoryPressureListener is created in a non-sequenced context. Tests will
+  // need to be adjusted for that to work.
+  if (SequencedTaskRunner::HasCurrentDefault()) {
+    async_observers_->AddObserver(listener);
+  }
+
+  if (sync) {
+    AutoLock lock(sync_observers_lock_);
+    sync_observers_.AddObserver(listener);
+  }
+}
+
+void MemoryPressureListenerRegistry::RemoveObserver(
+    MemoryPressureListener* listener) {
+  async_observers_->RemoveObserver(listener);
+  if (listener->has_sync_callback()) {
+    sync_observers_lock_.AssertNotHeld();
+    AutoLock lock(sync_observers_lock_);
+    sync_observers_.RemoveObserver(listener);
+  }
+}
+
+void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
+    MemoryPressureLevel memory_pressure_level) {
+  async_observers_->Notify(FROM_HERE, &MemoryPressureListener::Notify,
+                           memory_pressure_level);
+  AutoLock lock(sync_observers_lock_);
+  for (auto& observer : sync_observers_) {
+    observer.SyncNotify(memory_pressure_level);
+  }
+}
+
+// static
+bool MemoryPressureListenerRegistry::AreNotificationsSuppressed() {
+  return g_notifications_suppressed.load(std::memory_order_acquire);
+}
+
+// static
+void MemoryPressureListenerRegistry::SetNotificationsSuppressed(bool suppress) {
+  g_notifications_suppressed.store(suppress, std::memory_order_release);
+}
+
+// static
+void MemoryPressureListenerRegistry::SimulatePressureNotification(
+    MemoryPressureLevel memory_pressure_level) {
+  // Notify all listeners even if regular pressure notifications are suppressed.
+  Get().DoNotifyMemoryPressure(memory_pressure_level);
+}
+
+}  // namespace base

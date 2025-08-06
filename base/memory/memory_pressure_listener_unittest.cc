@@ -5,6 +5,7 @@
 #include "base/memory/memory_pressure_listener.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -52,27 +53,30 @@ class MemoryPressureListenerTest : public testing::Test {
 
 TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
   // Memory pressure notifications are not suppressed by default.
-  EXPECT_FALSE(MemoryPressureListener::AreNotificationsSuppressed());
-  ExpectNotification(&MemoryPressureListener::NotifyMemoryPressure,
+  EXPECT_FALSE(MemoryPressureListenerRegistry::AreNotificationsSuppressed());
+  ExpectNotification(&MemoryPressureListenerRegistry::NotifyMemoryPressure,
                      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ExpectNotification(&MemoryPressureListener::SimulatePressureNotification,
-                     MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+  ExpectNotification(
+      &MemoryPressureListenerRegistry::SimulatePressureNotification,
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Enable suppressing memory pressure notifications.
-  MemoryPressureListener::SetNotificationsSuppressed(true);
-  EXPECT_TRUE(MemoryPressureListener::AreNotificationsSuppressed());
-  ExpectNoNotification(&MemoryPressureListener::NotifyMemoryPressure,
+  MemoryPressureListenerRegistry::SetNotificationsSuppressed(true);
+  EXPECT_TRUE(MemoryPressureListenerRegistry::AreNotificationsSuppressed());
+  ExpectNoNotification(&MemoryPressureListenerRegistry::NotifyMemoryPressure,
                        MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ExpectNotification(&MemoryPressureListener::SimulatePressureNotification,
-                     MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+  ExpectNotification(
+      &MemoryPressureListenerRegistry::SimulatePressureNotification,
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Disable suppressing memory pressure notifications.
-  MemoryPressureListener::SetNotificationsSuppressed(false);
-  EXPECT_FALSE(MemoryPressureListener::AreNotificationsSuppressed());
-  ExpectNotification(&MemoryPressureListener::NotifyMemoryPressure,
+  MemoryPressureListenerRegistry::SetNotificationsSuppressed(false);
+  EXPECT_FALSE(MemoryPressureListenerRegistry::AreNotificationsSuppressed());
+  ExpectNotification(&MemoryPressureListenerRegistry::NotifyMemoryPressure,
                      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  ExpectNotification(&MemoryPressureListener::SimulatePressureNotification,
-                     MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  ExpectNotification(
+      &MemoryPressureListenerRegistry::SimulatePressureNotification,
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
