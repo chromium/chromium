@@ -129,6 +129,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
 
+  // Enables the Bookmark Bar and related toggle in settings.
+  // TODO(crbug.com/411262183): Remove after Bookmarks Bar rollout is complete.
+  feature_overrides.EnableFeature(chrome::android::kAndroidAppearanceSettings);
+  feature_overrides.EnableFeature(chrome::android::kAndroidBookmarkBar);
+
   // If enabled, then use desktop page webprefs for Android devices that have
   // large displays, specifically tablets and desktops.
   feature_overrides.EnableFeature(
