@@ -1921,7 +1921,7 @@
   {
     "name": "cros-labs-tiling-window-resize",
     "owners": [ "aluh@chromium.org", "homi@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
     "name": "cros-labs-window-cycle-shortcut",
@@ -1931,7 +1931,7 @@
   {
     "name": "cros-labs-window-splitting",
     "owners": [ "aluh@chromium.org", "homi@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
     "name": "cros-locked-mode",
