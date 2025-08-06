@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
+#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "skia/ext/skia_utils_ios.h"
 
@@ -64,7 +67,11 @@
 // Applies the user-uploaded photo background to the NTP.
 - (void)applyUserUploadedBackground:
     (BackgroundCustomizationConfigurationItem*)configurationItem {
-  // TODO(crbug.com/427973907): Add applyUserUploadedBackground Implementation.
+  FramingCoordinates coordinates =
+      [configurationItem.userUploadedFramingCoordinates toFramingCoordinates];
+  _homeBackgroundCustomizationService->SetCurrentUserUploadedBackground(
+      base::SysNSStringToUTF8(configurationItem.userUploadedImagePath),
+      coordinates);
 }
 
 // Applies the preset gallery background for the given collection image.

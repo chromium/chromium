@@ -173,3 +173,7 @@ void HomeBackgroundCustomizationService::SetCurrentUserUploadedBackground(
 
   NotifyObserversOfBackgroundChange();
 }
+
+void HomeBackgroundCustomizationService::ClearCurrentUserUploadedBackground() {
+  pref_service_->ClearPref(prefs::kIosUserUploadedBackground);
+}

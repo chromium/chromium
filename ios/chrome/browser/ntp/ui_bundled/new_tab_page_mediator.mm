@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
@@ -391,6 +393,14 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 }
 
 - (void)updateBackground {
+  std::optional<std::pair<std::string, FramingCoordinates>> userUploaded =
+      _backgroundCustomizationService->GetCurrentUserUploadedBackground();
+  if (userUploaded) {
+    [self handleUserUploadedBackground:userUploaded->first
+                    framingCoordinates:userUploaded->second];
+    return;
+  }
+
   std::optional<sync_pb::NtpCustomBackground> background =
       _backgroundCustomizationService->GetCurrentCustomBackground();
 
@@ -620,6 +630,74 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 // image for the new tab page.
 - (void)handleBackgroundImageFetch:(const gfx::Image&)image {
   [self.consumer setBackgroundImage:image.ToUIImage()];
+}
+
+// Helper method to handle displaying a user-uploaded background image
+// with the specified framing coordinates.
+- (void)handleUserUploadedBackground:(const std::string&)imagePath
+                  framingCoordinates:(const FramingCoordinates&)coordinates {
+  // Convert file path to NSURL.
+  NSString* imagePathString = base::SysUTF8ToNSString(imagePath);
+  NSURL* imageURL = [NSURL fileURLWithPath:imagePathString];
+
+  // Load the image from disk.
+  NSData* imageData = [NSData dataWithContentsOfURL:imageURL];
+  if (!imageData) {
+    // Clear the corrupted data.
+    _backgroundCustomizationService->ClearCurrentUserUploadedBackground();
+    [self.consumer setBackgroundImage:nil];
+    return;
+  }
+
+  UIImage* originalImage = [UIImage imageWithData:imageData];
+  if (!originalImage) {
+    _backgroundCustomizationService->ClearCurrentUserUploadedBackground();
+    [self.consumer setBackgroundImage:nil];
+    return;
+  }
+
+  // Apply framing coordinates to frame the image.
+  UIImage* framedImage = [self applyFramingCoordinates:coordinates
+                                               toImage:originalImage];
+
+  [self.consumer setBackgroundImage:framedImage];
+}
+
+// Helper method to apply framing coordinates to position
+// the user-uploaded background image.
+- (UIImage*)applyFramingCoordinates:(const FramingCoordinates&)coordinates
+                            toImage:(UIImage*)originalImage {
+  // Create a canvas the size of the view.
+  CGSize canvasSize = [UIScreen mainScreen].bounds.size;
+
+  // Calculate scale to fill the view.
+  CGFloat widthScale = canvasSize.width / originalImage.size.width;
+  CGFloat heightScale = canvasSize.height / originalImage.size.height;
+  CGFloat scale = MAX(widthScale, heightScale);
+
+  CGFloat scaledWidth = originalImage.size.width * scale;
+  CGFloat scaledHeight = originalImage.size.height * scale;
+
+  // Use negative offset to position the image so the framed area is visible.
+  CGFloat offsetX = -(coordinates.x * scale);
+  CGFloat offsetY = -(coordinates.y * scale);
+
+  UIGraphicsImageRendererFormat* format =
+      [[UIGraphicsImageRendererFormat alloc] init];
+  format.opaque = NO;
+  format.scale = 0.0;
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:canvasSize format:format];
+
+  UIImage* framedImage =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        // Draw the positioned image.
+        [originalImage
+            drawInRect:CGRectMake(offsetX, offsetY, scaledWidth, scaledHeight)];
+      }];
+
+  return framedImage;
 }
 
 @end

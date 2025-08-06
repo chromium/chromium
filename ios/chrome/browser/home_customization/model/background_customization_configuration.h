@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 class GURL;
+@class HomeCustomizationFramingCoordinates;
 
 /**
  * A protocol representing a background customization information.
@@ -31,6 +32,13 @@ class GURL;
 
 // A pointer to a UIColor representing the background's base color.
 @property(readonly, nonatomic, strong) UIColor* backgroundColor;
+
+// The file path to the user-uploaded background image.
+@property(readonly, nonatomic) NSString* userUploadedImagePath;
+
+// The framing coordinates for how the user-uploaded image should be displayed.
+@property(readonly, nonatomic)
+    HomeCustomizationFramingCoordinates* userUploadedFramingCoordinates;
 
 @end
 

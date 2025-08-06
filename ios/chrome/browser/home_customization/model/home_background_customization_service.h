@@ -83,6 +83,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Registers the profile prefs associated with this service.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Clears the current user-uploaded background.
+  void ClearCurrentUserUploadedBackground();
+
  private:
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
