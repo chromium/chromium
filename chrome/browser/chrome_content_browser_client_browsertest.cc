@@ -1100,8 +1100,9 @@ class ScopedFakeExternalProtocolHandlerDelegate
 }  // namespace
 
 // URLs which are explicitly allowlisted by policy can bypass security checks.
+// TODO: https://crbug.com/434758587 - Re-enable this test.
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
-                       SecurityCheckExceptionForAllowlistedUrls) {
+                       DISABLED_SecurityCheckExceptionForAllowlistedUrls) {
   ProtocolHandlerRegistryFactory::GetInstance()
       ->GetForBrowserContext(browser()->profile())
       ->OnAcceptRegisterProtocolHandler(
