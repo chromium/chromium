@@ -124,7 +124,7 @@ const base::FeatureParam<bool> kAllowContextualSuggestionsForSearchResultsPages(
 const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions(
     &glic::mojom::features::kZeroStateSuggestionsV2,
     "ZSSMaxPinnedPagesForTriggeringSuggestions",
-    3);
+    10);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace contextual_cueing
