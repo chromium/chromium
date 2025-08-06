@@ -2721,7 +2721,7 @@
     },
     {
       name: "IndexedDbGetAllRecords",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "InertElementNonEditable",

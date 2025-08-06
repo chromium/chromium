@@ -1005,6 +1005,7 @@ interface IDBIndex
     method get
     method getAll
     method getAllKeys
+    method getAllRecords
     method getKey
     method openCursor
     method openKeyCursor
@@ -1038,6 +1039,7 @@ interface IDBObjectStore
     method get
     method getAll
     method getAllKeys
+    method getAllRecords
     method getKey
     method index
     method openCursor
@@ -1051,6 +1053,12 @@ interface IDBOpenDBRequest : IDBRequest
     method constructor
     setter onblocked
     setter onupgradeneeded
+interface IDBRecord
+    attribute @@toStringTag
+    getter key
+    getter primaryKey
+    getter value
+    method constructor
 interface IDBRequest : EventTarget
     attribute @@toStringTag
     getter error

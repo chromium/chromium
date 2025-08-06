@@ -1056,6 +1056,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method get
 [Worker]     method getAll
 [Worker]     method getAllKeys
+[Worker]     method getAllRecords
 [Worker]     method getKey
 [Worker]     method openCursor
 [Worker]     method openKeyCursor
@@ -1089,6 +1090,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method get
 [Worker]     method getAll
 [Worker]     method getAllKeys
+[Worker]     method getAllRecords
 [Worker]     method getKey
 [Worker]     method index
 [Worker]     method openCursor
@@ -1102,6 +1104,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     setter onblocked
 [Worker]     setter onupgradeneeded
+[Worker] interface IDBRecord
+[Worker]     attribute @@toStringTag
+[Worker]     getter key
+[Worker]     getter primaryKey
+[Worker]     getter value
+[Worker]     method constructor
 [Worker] interface IDBRequest : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter error
