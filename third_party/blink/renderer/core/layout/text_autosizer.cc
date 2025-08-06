@@ -1591,8 +1591,6 @@ void TextAutosizer::CheckSuperclusterConsistency() {
 }
 
 float TextAutosizer::ContentInlineSize(const LayoutBlock* block) const {
-  if (!block->IsLayoutNGObject())
-    return block->ContentLogicalWidth().ToFloat();
   auto iter = inline_size_map_.find(block);
   if (iter == inline_size_map_.end())
     return block->ContentLogicalWidth().ToFloat();

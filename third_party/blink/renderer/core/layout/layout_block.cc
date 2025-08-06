@@ -90,11 +90,6 @@ void LayoutBlock::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
-bool LayoutBlock::IsLayoutNGObject() const {
-  NOT_DESTROYED();
-  return true;
-}
-
 void LayoutBlock::RemoveFromGlobalMaps() {
   NOT_DESTROYED();
   if (HasSVGTextDescendants()) {
@@ -549,8 +544,9 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
         scrolled_offset + child->PhysicalLocation();
     bool did_hit;
     if (child->IsFloating()) {
-      if (phase != HitTestPhase::kFloat || !IsLayoutNGObject())
+      if (phase != HitTestPhase::kFloat) {
         continue;
+      }
       // Hit-test the floats in regular tree order if this is LayoutNG. Only
       // legacy layout uses the FloatingObjects list.
       did_hit = child->HitTestAllPhases(result, hit_test_location,
@@ -593,8 +589,8 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
   NOT_DESTROYED();
   // NG codepath requires |kPrePaintClean|.
   // |SelectionModifier| calls this only in legacy codepath.
-  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
-                                    DocumentLifecycle::kPrePaintClean);
+  DCHECK(GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kPrePaintClean);
 
   if (IsAtomicInlineLevel()) {
     PositionWithAffinity position =

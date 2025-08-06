@@ -81,11 +81,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     return "LayoutText";
   }
 
-  bool IsLayoutNGObject() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-
   bool IsTextFragment() const {
     NOT_DESTROYED();
     return is_text_fragment_;

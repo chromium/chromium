@@ -32,9 +32,8 @@ namespace blink {
 
 namespace {
 
-bool IsNGBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
-  return block_flow && block_flow->IsFragmentationContextRoot() &&
-         block_flow->IsLayoutNGObject();
+bool IsBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
+  return block_flow && block_flow->IsFragmentationContextRoot();
 }
 
 gfx::Vector2d ToRoundedVector2d(const LogicalOffset& o) {
@@ -484,7 +483,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
     return status;
 
   bool is_block_fragmentation_context_root =
-      IsNGBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(candidate));
+      IsBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(candidate));
 
   for (LayoutObject* child = candidate->SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -531,7 +530,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   // the LayoutObject associated with the fragment will be set to nullptr, so we
   // need to check for that.
   bool is_block_fragmentation_context_root =
-      IsNGBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(layout_block));
+      IsBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(layout_block));
   for (const PhysicalBoxFragment& fragment :
        layout_block->PhysicalFragments()) {
     if (!fragment.HasOutOfFlowFragmentChild() &&

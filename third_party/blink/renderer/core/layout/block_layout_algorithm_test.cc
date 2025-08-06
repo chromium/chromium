@@ -2387,7 +2387,6 @@ TEST_F(BlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
   UpdateAllLifecyclePhasesForTest();
   const LayoutObject* innerNGRoot = GetLayoutObjectByElementId("innerNGRoot");
 
-  ASSERT_TRUE(innerNGRoot->IsLayoutNGObject());
   const PhysicalBoxFragment* fragment =
       CurrentFragmentFor(To<LayoutBlockFlow>(innerNGRoot));
 

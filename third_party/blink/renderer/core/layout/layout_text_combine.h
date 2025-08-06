@@ -138,11 +138,7 @@ inline bool LayoutTextCombine::ShouldBeParentOf(
       layout_object.IsSVGInlineText()) [[likely]] {
     return false;
   }
-  if (layout_object.StyleRef().HasTextCombine() &&
-      layout_object.IsLayoutNGObject()) [[unlikely]] {
-    return true;
-  }
-  return false;
+  return layout_object.StyleRef().HasTextCombine();
 }
 
 template <>

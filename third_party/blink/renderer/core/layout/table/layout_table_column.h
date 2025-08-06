@@ -58,11 +58,6 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
       return "LayoutTableColGroup";
   }
 
-  bool IsLayoutNGObject() const final {
-    NOT_DESTROYED();
-    return true;
-  }
-
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) final;
 

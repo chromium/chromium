@@ -111,7 +111,7 @@ class AccompaniedFragmentIterator : public FragmentDataIterator {
 
  private:
   std::optional<InlineCursor> cursor_;
-  const LayoutBox* ng_layout_box_ = nullptr;
+  const LayoutBox* layout_box_ = nullptr;
 };
 
 }  // namespace blink

@@ -67,11 +67,7 @@ std::pair<const Node&, unsigned> ToNodeOffsetPair(const Position& position) {
 }  // namespace
 
 LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
-  LayoutBlockFlow* block_flow =
-      OffsetMapping::GetInlineFormattingContextOf(position);
-  if (!block_flow || !block_flow->IsLayoutNGObject())
-    return nullptr;
-  return block_flow;
+  return OffsetMapping::GetInlineFormattingContextOf(position);
 }
 
 // static

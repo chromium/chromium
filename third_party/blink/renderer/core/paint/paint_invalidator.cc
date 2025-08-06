@@ -148,9 +148,9 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   // TODO(crbug.com/1178618): We may want to do better than this. For now, just
   // don't report anything inside multicol containers.
   const auto* block_flow = DynamicTo<LayoutBlockFlow>(&box);
-  if (block_flow && block_flow->IsFragmentationContextRoot() &&
-      block_flow->IsLayoutNGObject())
+  if (block_flow && block_flow->IsFragmentationContextRoot()) {
     context.inside_opaque_layout_shift_root = true;
+  }
 
   bool should_create_containing_block_scope =
       // TODO(crbug.com/1178618): Support multiple-fragments.

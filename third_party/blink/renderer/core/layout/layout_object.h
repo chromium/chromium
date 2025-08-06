@@ -1002,10 +1002,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
-  virtual bool IsLayoutNGObject() const {
-    NOT_DESTROYED();
-    return false;
-  }
 
   bool IsTextControl() const {
     NOT_DESTROYED();

@@ -259,17 +259,9 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
   const ComputedStyle& containing_block_style = containing_block.StyleRef();
 
   WritingMode writing_mode = containing_block_style.GetWritingMode();
-  // Make sure contentWidth is not negative. This can happen when containing
-  // block has a vertical scrollbar and its content is smaller than the
-  // scrollbar width.
-  LayoutUnit percentage_resolution_inline_size =
-      containing_block.IsLayoutNGObject()
-          ? percentage_resolution_inline_size_
-          : std::max(LayoutUnit(), containing_block.ContentWidth());
-
   float margin =
       FloatValueForLength(layout_box_->StyleRef().ShapeMargin(),
-                          percentage_resolution_inline_size.ToFloat());
+                          percentage_resolution_inline_size_.ToFloat());
 
   float shape_image_threshold = style.ShapeImageThreshold();
   DCHECK(style.ShapeOutside());

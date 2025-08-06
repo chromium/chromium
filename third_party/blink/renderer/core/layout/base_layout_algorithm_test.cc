@@ -67,7 +67,7 @@ const PhysicalBoxFragment* BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
 const PhysicalBoxFragment* BaseLayoutAlgorithmTest::GetBoxFragmentByElementId(
     const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
-  CHECK(layout_object && layout_object->IsLayoutNGObject());
+  CHECK(layout_object);
   const PhysicalBoxFragment* fragment =
       To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);

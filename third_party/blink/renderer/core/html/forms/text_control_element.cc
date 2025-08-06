@@ -1186,23 +1186,21 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     return has_valid_ifcs ? result.ReleaseString() : Value();
   }
 
-  if (layout_object->IsLayoutNGObject()) {
-    InlineCursor cursor(*layout_object);
-    if (!cursor)
-      return Value();
-    const auto* mapping = InlineNode::GetOffsetMapping(layout_object);
-    if (!mapping)
-      return Value();
-    Position break_position = GetNextSoftBreak(*mapping, cursor);
-    StringBuilder result;
-    for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
-      AppendWrappedNode(*inner_text, node, *mapping, cursor, break_position,
-                        result);
-    }
-    return result.ToString();
+  InlineCursor cursor(*layout_object);
+  if (!cursor) {
+    return Value();
   }
-
-  return Value();
+  const auto* mapping = InlineNode::GetOffsetMapping(layout_object);
+  if (!mapping) {
+    return Value();
+  }
+  Position break_position = GetNextSoftBreak(*mapping, cursor);
+  StringBuilder result;
+  for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
+    AppendWrappedNode(*inner_text, node, *mapping, cursor, break_position,
+                      result);
+  }
+  return result.ToString();
 }
 
 TextControlElement* EnclosingTextControl(const Position& position) {

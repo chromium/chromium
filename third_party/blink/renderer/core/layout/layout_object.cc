@@ -1249,8 +1249,9 @@ LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
   NOT_DESTROYED();
   DCHECK(!IsOutOfFlowPositioned());
   auto* block_flow = DynamicTo<LayoutBlockFlow>(ContainingNGBox());
-  if (!block_flow || !block_flow->IsLayoutNGObject())
+  if (!block_flow) {
     return nullptr;
+  }
 #if EXPENSIVE_DCHECKS_ARE_ON()
   // Make sure that we don't skip blocks in the ancestry chain (which might
   // happen if there are out-of-flow positioned objects, for instance). In this
@@ -1275,12 +1276,7 @@ LayoutBox* LayoutObject::ContainingNGBox() const {
       return To<LayoutBox>(parent);
     }
   }
-  LayoutBlock* containing_block = ContainingBlock();
-  if (!containing_block)
-    return nullptr;
-  if (!containing_block->IsLayoutNGObject())
-    return nullptr;
-  return containing_block;
+  return ContainingBlock();
 }
 
 LayoutBlock* LayoutObject::ContainingFragmentationContextRoot() const {
@@ -2034,26 +2030,15 @@ void LayoutObject::RecalcNormalFlowChildVisualOverflowIfNeeded() {
 
 void LayoutObject::InvalidateVisualOverflow() {
   NOT_DESTROYED();
-  if (!IsInLayoutNGInlineFormattingContext() && !IsLayoutNGObject() &&
-      !IsLayoutBlock() && !NeedsLayout()) {
-    // TODO(crbug.com/1128199): This is still needed because
-    // RecalcVisualOverflow() does not actually compute the visual overflow
-    // for inline elements (legacy layout). However in LayoutNG
-    // RecalcInlineChildrenInkOverflow() is called and visual overflow is
-    // recomputed properly so we don't need this (see crbug.com/1043927).
-    SetNeedsLayoutAndIntrinsicWidthsRecalc(
-        layout_invalidation_reason::kStyleChange);
-  } else {
-    if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout()) {
-      if (auto* text = DynamicTo<LayoutText>(this)) {
-        text->InvalidateVisualOverflow();
-      }
+  if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout()) {
+    if (auto* text = DynamicTo<LayoutText>(this)) {
+      text->InvalidateVisualOverflow();
     }
-    PaintingLayer()->SetNeedsVisualOverflowRecalc();
-    // TODO(crbug.com/1385848): This looks like an over-invalidation.
-    // visual overflow change should not require checking for layout change.
-    SetShouldCheckForPaintInvalidation();
   }
+  PaintingLayer()->SetNeedsVisualOverflowRecalc();
+  // TODO(crbug.com/40246969): This looks like an over-invalidation.
+  // visual overflow change should not require checking for layout change.
+  SetShouldCheckForPaintInvalidation();
 }
 
 #if DCHECK_IS_ON()
@@ -2895,11 +2880,6 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
       diff.ClipPathChanged()) {
     SetNeedsPaintPropertyUpdate();
     PaintingLayer()->SetNeedsCompositingInputsUpdate();
-  }
-
-  if (!IsLayoutNGObject() && old_style &&
-      old_style->Visibility() != style_->Visibility()) {
-    SetShouldDoFullPaintInvalidation();
   }
 
   // Text nodes share style with their parents but the paint properties don't
@@ -4036,8 +4016,8 @@ PositionWithAffinity LayoutObject::PositionForPoint(
   NOT_DESTROYED();
   // NG codepath requires |kPrePaintClean|.
   // |SelectionModifier| calls this only in legacy codepath.
-  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
-                                    DocumentLifecycle::kPrePaintClean);
+  DCHECK(GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kPrePaintClean);
   return CreatePositionWithAffinity(0);
 }
 

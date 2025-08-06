@@ -558,7 +558,6 @@ void TruncateOrPadText(String* text, unsigned length) {
 InlineNode::InlineNode(LayoutBlockFlow* block)
     : LayoutInputNode(block, kInline) {
   DCHECK(block);
-  DCHECK(block->IsLayoutNGObject());
   if (!block->GetInlineNodeData()) {
     block->ResetInlineNodeData();
   }
@@ -1027,15 +1026,7 @@ void InlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
       EstimateOffsetMappingItemsCount(*layout_block_flow));
   CollectInlinesInternal(&builder, nullptr);
 
-  // For non-NG object, we need the text, and also the inline items to resolve
-  // bidi levels. Otherwise |data| already has the text from the pre-layout
-  // phase, check they match.
-  if (data->text_content.IsNull()) {
-    DCHECK(!layout_block_flow->IsLayoutNGObject());
-    data->text_content = builder.ToString();
-  } else {
-    DCHECK(layout_block_flow->IsLayoutNGObject());
-  }
+  DCHECK(!data->text_content.IsNull());
 
   // TODO(xiaochengh): This doesn't compute offset mapping correctly when
   // text-transform CSS property changes text length.

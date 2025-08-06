@@ -169,11 +169,6 @@ class FragmentTreeDumper {
         }
       }
       if (flags_ & PhysicalFragment::DumpSubtree) {
-        if (flags_ & PhysicalFragment::DumpLegacyDescendants && layout_object &&
-            !layout_object->IsLayoutNGObject() && box->Children().empty()) {
-          AppendLegacySubtree(*layout_object, indent);
-          return;
-        }
         for (auto& child : box->Children()) {
           if (has_fragment_items && child->IsLineBox())
             continue;
@@ -217,44 +212,6 @@ class FragmentTreeDumper {
       }
       builder_->Append(")");
     }
-  }
-
-  void AppendLegacySubtree(const LayoutObject& layout_object, unsigned indent) {
-    for (const LayoutObject* descendant = &layout_object; descendant;) {
-      if (!IsNGRootWithFragments(*descendant)) {
-        if (descendant->IsOutOfFlowPositioned() && descendant != &layout_object)
-          descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
-        else
-          descendant = descendant->NextInPreOrder(&layout_object);
-        continue;
-      }
-      AppendNGRootInLegacySubtree(*descendant, indent);
-      descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
-    }
-  }
-
-  void AppendLegacySubtree(const LayoutObject& layout_object) {
-    AppendLegacySubtree(layout_object, 0);
-    if (target_fragment_ && !target_fragment_found_) {
-      if (flags_ & PhysicalFragment::DumpHeaderText) {
-        builder_->Append("(Fragment not found when searching the subtree)\n");
-        builder_->Append("(Dumping detached fragment tree now:)\n");
-      }
-      Append(target_fragment_, std::nullopt);
-    }
-  }
-
-  void AppendNGRootInLegacySubtree(const LayoutObject& layout_object,
-                                   unsigned indent) {
-    DCHECK(IsNGRootWithFragments(layout_object));
-    if (flags_ & PhysicalFragment::DumpHeaderText) {
-      AppendIndentation(indent + 2);
-      builder_->Append(
-          "(NG fragment root inside fragment-less or legacy subtree:)\n");
-    }
-    const LayoutBox& box_descendant = To<LayoutBox>(layout_object);
-    DCHECK_EQ(box_descendant.PhysicalFragmentCount(), 1u);
-    Append(box_descendant.GetPhysicalFragment(0), std::nullopt, indent + 4);
   }
 
  private:
@@ -337,21 +294,6 @@ class FragmentTreeDumper {
       for (unsigned i = start_idx; i < indent; i++)
         builder_->Append(" ");
     }
-  }
-
-  // Check if the object is an NG root ready to be traversed. If layout of the
-  // object hasn't finished yet, there'll be no fragment, and false will be
-  // returned.
-  bool IsNGRootWithFragments(const LayoutObject& object) const {
-    if (!object.IsLayoutNGObject())
-      return false;
-    const LayoutBox* box = DynamicTo<LayoutBox>(&object);
-    if (!box)
-      return false;
-    // A root should only have at most one fragment, or zero if it hasn't been
-    // laid out yet.
-    DCHECK_LE(box->PhysicalFragmentCount(), 1u);
-    return box->PhysicalFragmentCount();
   }
 
   StringBuilder* builder_;
@@ -771,20 +713,9 @@ String PhysicalFragment::DumpFragmentTree(
 String PhysicalFragment::DumpFragmentTree(const LayoutObject& root,
                                           DumpFlags flags,
                                           const PhysicalFragment* target) {
-  if (root.IsLayoutNGObject()) {
-    const LayoutBox& root_box = To<LayoutBox>(root);
-    DCHECK_EQ(root_box.PhysicalFragmentCount(), 1u);
-    return root_box.GetPhysicalFragment(0)->DumpFragmentTree(flags, target);
-  }
-  StringBuilder string_builder;
-  if (flags & DumpHeaderText) {
-    string_builder.Append(
-        ".:: LayoutNG Physical Fragment Tree at legacy root ");
-    string_builder.Append(root.DebugName());
-    string_builder.Append(" ::.\n");
-  }
-  FragmentTreeDumper(&string_builder, flags, target).AppendLegacySubtree(root);
-  return string_builder.ToString();
+  const LayoutBox& root_box = To<LayoutBox>(root);
+  DCHECK_EQ(root_box.PhysicalFragmentCount(), 1u);
+  return root_box.GetPhysicalFragment(0)->DumpFragmentTree(flags, target);
 }
 
 void PhysicalFragment::Trace(Visitor* visitor) const {

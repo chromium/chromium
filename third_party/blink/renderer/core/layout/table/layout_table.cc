@@ -227,11 +227,6 @@ bool LayoutTable::HasBackgroundForPaint() const {
 void LayoutTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
-  // Only TablesNG table parts are allowed.
-  // TODO(1229581): Change this DCHECK to caption || column || section.
-  DCHECK(child->IsLayoutNGObject() ||
-         (!child->IsTableCaption() && !child->IsLayoutTableCol() &&
-          !child->IsTableSection()));
 
   const bool can_be_direct_child = child->IsTableCaption() ||
                                    child->IsLayoutTableCol() ||
