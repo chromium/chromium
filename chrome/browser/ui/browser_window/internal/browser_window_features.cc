@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_border_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
@@ -453,6 +454,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
+
+  if (BrowserView* browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser)) {
+    contents_border_controller_ =
+        std::make_unique<ContentsBorderController>(browser_view);
+  }
 }
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
@@ -561,6 +568,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
+  contents_border_controller_.reset();
   live_tab_context_.reset();
   upgrade_notification_controller_.reset();
   memory_saver_opt_in_iph_controller_.reset();

@@ -577,9 +577,12 @@ void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
     return;
   }
 
-  TabCaptureContentsBorderHelper::CreateForWebContents(contents);
   auto* const helper =
       TabCaptureContentsBorderHelper::FromWebContents(contents);
+
+  if (!helper) {
+    return;
+  }
 
   switch (update) {
     case TabCaptureUpdate::kCaptureAdded:

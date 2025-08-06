@@ -95,6 +95,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -571,6 +572,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   tpcd::metadata::TpcdMetadataDevtoolsObserver::CreateForWebContents(
       web_contents);
   tpcd::trial::ValidityService::MaybeCreateForWebContents(web_contents);
+#if !BUILDFLAG(IS_ANDROID)
+  TabCaptureContentsBorderHelper::CreateForWebContents(web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kSafetyHub)) {

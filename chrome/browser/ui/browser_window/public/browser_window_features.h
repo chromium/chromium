@@ -39,6 +39,7 @@ class BrowserWindowInterface;
 class ChromeLabsCoordinator;
 class ColorProviderBrowserHelper;
 class CommentsSidePanelCoordinator;
+class ContentsBorderController;
 class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
@@ -372,6 +373,10 @@ class BrowserWindowFeatures {
     return split_tab_scrim_controller_.get();
   }
 
+  ContentsBorderController* contents_border_controller() {
+    return contents_border_controller_.get();
+  }
+
   ProfileMenuCoordinator* profile_menu_coordinator() {
     return profile_menu_coordinator_.get();
   }
@@ -624,6 +629,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<RecentActivityBubbleCoordinator>
       recent_activity_bubble_coordinator_;
+
+  std::unique_ptr<ContentsBorderController> contents_border_controller_;
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<WindowsTaskbarIconUpdater> windows_taskbar_icon_updater_;
