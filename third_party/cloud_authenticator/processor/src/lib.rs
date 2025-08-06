@@ -170,6 +170,7 @@ pub struct MetricsUpdate {
     pub keys_wrap: u32,
     pub recovery_key_store_wrap: u32,
     pub recovery_key_store_wrap_as_member: u32,
+    pub recovery_key_store_wrap_pin_and_secret: u32,
     pub recovery_key_store_rewrap: u32,
 }
 
@@ -861,6 +862,13 @@ fn do_request(
             recovery_key_store::do_wrap(ext_ctx.current_time_epoch_millis, metrics, request)
         }
         "recovery_key_store/wrap_as_member" => recovery_key_store::do_wrap_as_member(
+            metrics,
+            auth,
+            state,
+            ext_ctx.current_time_epoch_millis,
+            request,
+        ),
+        "recovery_key_store/wrap_pin_and_secret" => recovery_key_store::do_wrap_pin_and_secret(
             metrics,
             auth,
             state,
@@ -2781,6 +2789,156 @@ mod tests {
             REGISTERED_STATE.clone(),
             RequestAuthentication::Required,
             &configs,
+        );
+    }
+
+    #[test]
+    fn test_wrap_pin_and_secret_resets_pin_counter() {
+        // First try the wrong PIN to increment the PIN retry counter.
+        let pin_data = pin::Data {
+            pin_hash: TEST_PIN_HASH.clone(),
+            claim_key: TEST_CLAIM_KEY.clone(),
+            counter_id: TEST_COUNTER_ID.clone(),
+            vault_handle_without_type: TEST_VAULT_HANDLE_WITHOUT_TYPE.clone(),
+            vault_cohort_details: None,
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+        let state = REGISTERED_STATE.clone();
+        let wrong_pin_hash = [20u8; 32];
+        let wrong_pin_claim = seal_aes_256_gcm(
+            &pin_data.claim_key,
+            &wrong_pin_hash,
+            passkeys::PIN_CLAIM_AAD,
+        );
+        let (error, pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
+        assert_eq!(error, Some(Value::Int(3)));
+        assert_eq!(pin_state.attempts, 1);
+
+        // Then, change the PIN. The PIN retry counter should be reset.
+        let mut metrics = MetricsUpdate::default();
+        let pin_hash = [1u8; 32];
+        let pin_claim_key = [2u8; 32];
+        let request = cbor!({
+            CMD: "recovery_key_store/wrap_pin_and_secret",
+            PIN_HASH: (&pin_hash),
+            PIN_CLAIM_KEY: (&pin_claim_key),
+            CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+            SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+        });
+        let mut context = EXTERNAL_CONTEXT.clone();
+        context.is_reauthenticated = true;
+        let (output, state_update) = process_client_msg(
+            state,
+            &mut metrics,
+            context,
+            TEST_HANDSHAKE_HASH.as_slice(),
+            sign_request(request),
+        )
+        .unwrap();
+        ok_value(&output).unwrap();
+
+        // Verify that the PIN retry counter has been reset.
+        let state_data = match state_update {
+            StateUpdate::Major(state_data) => state_data,
+            _ => panic!("Expected major state change"),
+        };
+        let state = ClientState::Explicit(state_data).parse().unwrap();
+        assert_eq!(state.get_pin_state(&TEST_DEVICE_ID).unwrap().attempts, 0);
+    }
+
+    #[test]
+    fn test_wrap_pin_and_secret_parameters_match() {
+        let mut metrics = MetricsUpdate::default();
+        let pin_hash = [1u8; 32];
+        let pin_claim_key = [2u8; 32];
+        let request = cbor!({
+            CMD: "recovery_key_store/wrap_pin_and_secret",
+            PIN_HASH: (&pin_hash),
+            PIN_CLAIM_KEY: (&pin_claim_key),
+            CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+            SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+        });
+        let mut context = EXTERNAL_CONTEXT.clone();
+        context.is_reauthenticated = true;
+        let (output, _) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            context,
+            TEST_HANDSHAKE_HASH.as_slice(),
+            sign_request(request),
+        )
+        .unwrap();
+        let Value::Map(result) = ok_value(&output).unwrap() else {
+            panic!("{:?}", output);
+        };
+
+        // Extract the wrapped PIN.
+        let Value::Bytestring(wrapped_pin) = result
+            .get(&MapKeyRef::Str("wrapped_pin") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("{:?}", result);
+        };
+        let pin_data = pin::Data::from_wrapped(wrapped_pin, SAMPLE_SECURITY_DOMAIN_SECRET).unwrap();
+
+        // Extract the vault parameters.
+        let Value::Map(vault_params) = result
+            .get(&MapKeyRef::Str("wrapped") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("{:?}", result);
+        };
+
+        let Value::Bytestring(vault_counter_id) = vault_params
+            .get(&MapKeyRef::Str("counter_id") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find vault counter ID");
+        };
+        let Value::Bytestring(vault_handle) = vault_params
+            .get(&MapKeyRef::Str("vault_handle") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find vault handle");
+        };
+        let Value::Int(cert_xml_serial) = vault_params
+            .get(&MapKeyRef::Str("serial") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find serial number");
+        };
+        let Value::Bytestring(cohort_public_key) = vault_params
+            .get(&MapKeyRef::Str("cohort_public_key") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find cohort public key");
+        };
+
+        // Verify the wrapped PIN matches the passed PIN parameters & generated vault parameters.
+        assert_eq!(pin_data.pin_hash, pin_hash);
+        assert_eq!(pin_data.claim_key, pin_claim_key);
+        assert_eq!(pin_data.counter_id.to_vec(), vault_counter_id.to_vec());
+        assert_eq!(
+            pin_data.vault_handle_without_type.to_vec(),
+            vault_handle[1..].to_vec()
+        );
+        assert_eq!(
+            pin_data
+                .vault_cohort_details
+                .as_ref()
+                .unwrap()
+                .cert_xml_serial_number,
+            *cert_xml_serial
+        );
+        assert_eq!(
+            pin_data
+                .vault_cohort_details
+                .unwrap()
+                .cohort_public_key
+                .to_vec(),
+            cohort_public_key.to_vec()
         );
     }
 

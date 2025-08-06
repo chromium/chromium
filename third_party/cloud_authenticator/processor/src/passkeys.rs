@@ -482,6 +482,8 @@ fn validate_pin(
     Ok(())
 }
 
+/// This is intended to be removed in favour of recovery_key_store.rs'
+/// do_wrap_pin_and_secret.
 pub(crate) fn do_wrap_pin(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,

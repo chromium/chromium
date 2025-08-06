@@ -17,6 +17,7 @@
 
 use crate::{
     debug, get_secret_from_request,
+    passkeys::PIN_CLAIM_KEY_KEY,
     pin::{self, VaultCohortDetails},
     Authentication, DirtyFlag, MetricsUpdate, ParsedState, Reauth, RequestError, COUNTER_ID_KEY,
     VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
@@ -1653,6 +1654,8 @@ pub(crate) fn do_wrap(
 /// domain member for that PIN hash. This is a sensitive operation because it
 /// allows a new PIN to be a member of the domain, thus the client must have
 /// done user verification or else reauthenticated very recently.
+///
+/// This is intended to be removed in favour of do_wrap_pin_and_secret.
 pub(crate) fn do_wrap_as_member(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,
@@ -1661,9 +1664,10 @@ pub(crate) fn do_wrap_as_member(
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
     // Reauth is required to perform this command. UV is not enough.
-    let device_id = match auth {
-        Authentication::Device(device_id, _, _, Reauth::Done) => device_id,
-        _ => return debug("PIN change needs reauth via RAPT token"),
+    let device_id = if let Authentication::Device(device_id, _, _, Reauth::Done) = auth {
+        device_id
+    } else {
+        return debug("PIN change needs reauth via RAPT token");
     };
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
         return debug("PIN hash required");
@@ -1696,6 +1700,97 @@ pub(crate) fn do_wrap_as_member(
     include_security_domain_member_fields(wrapped, &security_domain_secret)
 }
 
+/// Combines recovery_key_store/wrap_as_member and passkeys/wrap_pin to allow
+/// changing the PIN by calling a single endpoint.
+///
+/// This is a sensitive operation, so it requires a reauth token.
+///
+/// First, the PIN hash is encrypted to a Vault public key and a security domain
+/// member is constructed for that PIN hash. Then, the PIN is encrypted to the
+/// security domain secret domain member for that PIN hash.
+///
+/// Parameters:
+/// * PIN hash.
+/// * PIN claim key.
+/// * cert.xml file.
+/// * cert.sig.xml file.
+/// * Wrapped secret.
+pub(crate) fn do_wrap_pin_and_secret(
+    metrics: &mut MetricsUpdate,
+    auth: &Authentication,
+    state: &mut DirtyFlag<ParsedState>,
+    current_time_epoch_millis: i64,
+    request: BTreeMap<MapKey, Value>,
+) -> Result<cbor::Value, RequestError> {
+    // Reauth is required to perform this command. UV is not enough.
+    let device_id = if let Authentication::Device(device_id, _, _, Reauth::Done) = auth {
+        device_id
+    } else {
+        return debug("PIN change needs reauth via RAPT token");
+    };
+    let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
+        return debug("PIN hash required");
+    };
+    let Some(Value::Bytestring(claim_key)) = request.get(PIN_CLAIM_KEY_KEY) else {
+        return debug("PIN claim key required");
+    };
+    let Some(Value::Bytestring(cert_xml)) = request.get(CERT_XML_KEY) else {
+        return debug("cert.xml required");
+    };
+    let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
+        return debug("cert.sig.xml required");
+    };
+    let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
+
+    // Select a new set of vault parameters and wrap the security domain secret
+    // using the PIN.
+    let wrapped = wrap(
+        pin_hash,
+        cert_xml,
+        sig_xml,
+        Parameters::random(),
+        current_time_epoch_millis,
+    )
+    .map_err(RequestError::Debug)?;
+    enforce_cert_highwater(state, device_id, wrapped.serial)?;
+
+    // Wrap the PIN using the security domain secret.
+    let pin_data = pin::Data {
+        pin_hash: pin_hash
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length PIN hash"))?,
+        claim_key: claim_key
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length claim key"))?,
+        counter_id: wrapped
+            .counter_id
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length counter id"))?,
+        vault_handle_without_type: wrapped.vault_handle[1..]
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length vault handle"))?,
+        vault_cohort_details: Some(VaultCohortDetails {
+            cohort_public_key: wrapped.cohort_public_key.to_vec(),
+            cert_xml_serial_number: wrapped.serial,
+        }),
+    };
+
+    // Reset the PIN count. This operation allows the client to change the PIN thus
+    // they could request the security domain secret from Folsom. Getting another
+    // batch of PIN attempts is less powerful than that and it allows the device to
+    // use the new PIN immediately, without reregistering with the enclave.
+    state
+        .get_mut()
+        .set_pin_state(device_id, super::PINState { attempts: 0 })?;
+
+    metrics.recovery_key_store_wrap_pin_and_secret += 1;
+    include_security_domain_member_fields_with_pin(wrapped, pin_data, &security_domain_secret)
+}
+
 /// Re-encrypts a wrapped PIN to a Vault public key and then constructs a
 /// security domain member for that PIN. This will generate a new set of keys
 /// but the PIN will be unchanged. The Vault parameters (vault handle and
@@ -1718,9 +1813,10 @@ pub(crate) fn do_rewrap(
     current_time_epoch_millis: i64,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    let device_id = match auth {
-        Authentication::Device(device_id, _, _, _) => device_id,
-        _ => return debug("not authenticated"),
+    let device_id = if let Authentication::Device(device_id, _, _, _) = auth {
+        device_id
+    } else {
+        return debug("Not authenticated");
     };
     let Some(Value::Bytestring(cert_xml)) = request.get(CERT_XML_KEY) else {
         return debug("cert.xml required");
