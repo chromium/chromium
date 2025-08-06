@@ -54,6 +54,8 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
       case Shortcut.FOCUS_TOGGLE:
         this.setGlicFocusToggleShortcutResponse(response);
         break;
+      default:
+        break;
     }
   }
 
