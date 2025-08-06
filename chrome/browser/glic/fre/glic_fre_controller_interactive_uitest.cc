@@ -228,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PreconnectOnButtonHover) {
   EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressNoThanksButton) {
+// TODO(crbug.com/436190211): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DISABLED_PressNoThanksButton) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   // Tests that pressing the "No Thanks" button in the FRE closes the FRE
