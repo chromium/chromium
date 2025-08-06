@@ -4141,7 +4141,7 @@
   {
     "name": "enable-printing-margins-and-scale",
     "owners": [ "msisov@igalia.com", "nmuggli@google.com", "poromov@chromium.org" ],
-    "expiry_milestone": 141
+    "expiry_milestone": 145
   },
   {
     "name": "enable-process-per-site-up-to-main-frame-threshold",
