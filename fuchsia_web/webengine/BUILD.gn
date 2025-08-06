@@ -643,6 +643,7 @@ test("web_engine_unittests") {
     "browser/navigation_policy_throttle_unittest.cc",
     "browser/url_request_rewrite_type_converters_unittest.cc",
     "browser/web_engine_config_unittest.cc",
+    "browser/web_engine_content_browser_client_unittest.cc",
     "context_provider_impl_unittest.cc",
     "renderer/web_engine_audio_output_device_test.cc",
     "renderer/web_engine_audio_renderer_test.cc",
