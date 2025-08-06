@@ -365,8 +365,12 @@ robolectric_binary("password_manager_junit_tests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/password_check_header_red.xml",
+    "java/res/drawable-night/password_checkup_warning.xml",
     "java/res/drawable/ic_key_error.xml",
     "java/res/drawable/ic_vpn_key_blue.xml",
+    "java/res/drawable/password_check_header_red.xml",
+    "java/res/drawable/password_checkup_warning.xml",
     "java/res/layout/confirmation_dialog_view.xml",
     "java/res/layout/passwords_error_dialog.xml",
     "java/res/layout/passwords_preference_error_widget.xml",

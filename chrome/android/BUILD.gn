@@ -211,7 +211,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/magic_stack/android:java_resources",
       "//chrome/browser/mandatory_reauth/android/internal:java_resources",
       "//chrome/browser/ntp_customization:java_resources",
-      "//chrome/browser/password_check/android:java_resources",
       "//chrome/browser/password_manager/android:java_resources",
       "//chrome/browser/quick_delete:java_resources",
       "//chrome/browser/search_resumption:java_resources",
