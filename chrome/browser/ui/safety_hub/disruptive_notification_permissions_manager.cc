@@ -40,6 +40,8 @@ using RevocationState =
 constexpr char kRevokedStatusDictKeyStr[] = "revoked_status";
 constexpr char kAcknowledgedStr[] = "acknowledged";
 constexpr char kIgnoreStr[] = "ignore";
+constexpr char kIgnoreInsideSafetyHubStr[] = "ignore_inside_sh";
+constexpr char kIgnoreOutsideSafetyHubStr[] = "ignore_outside_sh";
 constexpr char kRevokeStr[] = "revoke";
 constexpr char kProposedStr[] = "proposed";
 constexpr char kSiteEngagementStr[] = "site_engagement";
@@ -53,6 +55,9 @@ constexpr char kNotificationClickCountStr[] = "notification_click_count";
 
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
+
+const base::TimeDelta kIgnoreExpirationOutsideSafetyHub = base::Days(90);
+const base::TimeDelta kIgnoreExpirationInsideSafetyHub = base::Days(365);
 
 base::TimeDelta GetRevocationsLifetime() {
   return content_settings::features::
@@ -71,8 +76,11 @@ std::optional<RevocationState> GetRevocationState(
     return RevocationState::kAcknowledged;
   } else if (*revocation_state == kRevokeStr) {
     return RevocationState::kRevoked;
-  } else if (*revocation_state == kIgnoreStr) {
-    return RevocationState::kIgnore;
+  } else if (*revocation_state == kIgnoreInsideSafetyHubStr ||
+             *revocation_state == kIgnoreStr) {
+    return RevocationState::kIgnoreInsideSH;
+  } else if (*revocation_state == kIgnoreOutsideSafetyHubStr) {
+    return RevocationState::kIgnoreOutsideSH;
   } else {
     return std::nullopt;
   }
@@ -103,7 +111,8 @@ std::string_view GetRevocationStateString(RevocationState revocation_state) {
       return "Revoked";
     case RevocationState::kAcknowledged:
       return "Acknowledged";
-    case RevocationState::kIgnore:
+    case RevocationState::kIgnoreInsideSH:
+    case RevocationState::kIgnoreOutsideSH:
       return "Regranted";
     case RevocationState::kProposed:
       return "Proposed";
@@ -203,6 +212,7 @@ DisruptiveNotificationPermissionsManager::ContentSettingHelper::
   entry.page_visit_count = dict.FindInt(kPageVisitCountStr).value_or(0);
   entry.notification_click_count =
       dict.FindInt(kNotificationClickCountStr).value_or(0);
+  entry.lifetime = metadata.lifetime();
 
   return entry;
 }
@@ -221,13 +231,19 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
           kVersionStr,
           features::kSafetyHubDisruptiveNotificationRevocationExperimentVersion
               .Get());
+      lifetime = GetRevocationsLifetime();
       break;
     case RevocationState::kRevoked:
       revocation_state_string = kRevokeStr;
       lifetime = GetRevocationsLifetime();
       break;
-    case RevocationState::kIgnore:
-      revocation_state_string = kIgnoreStr;
+    case RevocationState::kIgnoreInsideSH:
+      revocation_state_string = kIgnoreInsideSafetyHubStr;
+      lifetime = kIgnoreExpirationInsideSafetyHub;
+      break;
+    case RevocationState::kIgnoreOutsideSH:
+      revocation_state_string = kIgnoreOutsideSafetyHubStr;
+      lifetime = kIgnoreExpirationOutsideSafetyHub;
       break;
     case RevocationState::kAcknowledged:
       revocation_state_string = kAcknowledgedStr;
@@ -278,6 +294,25 @@ DisruptiveNotificationPermissionsManager::
 #endif
 {
   content_settings_observation_.Observe(hcsm_.get());
+
+  // TODO(crbug.com/435407894): Remove the migration logic after most of the
+  // exceptions were migrated.
+  for (auto& [url, revocation_entry] :
+       ContentSettingHelper(*hcsm_).GetAllEntries()) {
+    if (revocation_entry.revocation_state != RevocationState::kIgnoreInsideSH &&
+        revocation_entry.revocation_state !=
+            RevocationState::kIgnoreOutsideSH) {
+      continue;
+    }
+
+    if (revocation_entry.lifetime != base::TimeDelta()) {
+      continue;
+    }
+
+    // Migrate ignore entries that don't have expiration set. Resaving the entry
+    // will update the lifetime.
+    ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, revocation_entry);
+  }
 }
 
 DisruptiveNotificationPermissionsManager::
@@ -361,7 +396,8 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
           // We are in an inconsistent state, so let's clean this up.
           ContentSettingHelper(*hcsm_).DeleteRevocationEntry(url);
           break;
-        case RevocationState::kIgnore:
+        case RevocationState::kIgnoreInsideSH:
+        case RevocationState::kIgnoreOutsideSH:
           base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                         RevocationResult::kIgnore);
           // Ignore this entry, we should not revoke permissions for this url
@@ -627,7 +663,9 @@ void DisruptiveNotificationPermissionsManager::OnPermissionRegranted(
     const GURL& url,
     RevocationEntry revocation_entry,
     bool regranted_in_safety_hub) {
-  revocation_entry.revocation_state = RevocationState::kIgnore;
+  revocation_entry.revocation_state = regranted_in_safety_hub
+                                          ? RevocationState::kIgnoreInsideSH
+                                          : RevocationState::kIgnoreOutsideSH;
   ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, revocation_entry);
 
   std::string uma_metric_prefix = base::StrCat(
@@ -659,7 +697,9 @@ void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
   std::optional<RevocationEntry> revocation_entry =
       ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
   if (!revocation_entry ||
-      revocation_entry->revocation_state != RevocationState::kIgnore) {
+      (revocation_entry->revocation_state != RevocationState::kIgnoreInsideSH &&
+       revocation_entry->revocation_state !=
+           RevocationState::kIgnoreOutsideSH)) {
     return;
   }
 
