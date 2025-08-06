@@ -173,6 +173,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_WithIncognitoTabs_NoGroups_MigrationOn() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mIncognitoTabModel.getCount()).thenReturn(1);
@@ -190,6 +191,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_IncognitoMode_WithIncognitoTabs_NoGroups_MigrationOn() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(1);

@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -66,6 +67,7 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenNewIncognitoTab() {
         WebPageStation page = mCtaTestRule.startOnBlankPage();
 
@@ -94,6 +96,7 @@ public class TabSwitcherActionMenuPTTest {
     /** Regression test for crbug.com/1448791 */
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
 
@@ -121,6 +124,7 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     @LargeTest
     public void testSwitchIntoAndOutOfIncognito() {
         // Open 1 regular and 1 incognito tab.

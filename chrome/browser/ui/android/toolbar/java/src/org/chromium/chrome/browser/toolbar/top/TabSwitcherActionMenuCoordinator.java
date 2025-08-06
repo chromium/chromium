@@ -207,6 +207,7 @@ public class TabSwitcherActionMenuCoordinator {
                         && mTabModelSelectorSupplier.get().getModel(true).getCount() > 0;
         boolean incognitoMigrationFFEnabled =
                 ChromeFeatureList.sTabStripIncognitoMigration.isEnabled();
+        boolean supportedMixedWindows = !IncognitoUtils.shouldOpenIncognitoAsWindow();
         ModelList itemList = new ModelList();
         itemList.add(buildListItemByMenuItemType(MenuItemType.CLOSE_TAB));
         if (incognitoMigrationFFEnabled && isCurrentModelIncognito && hasIncognitoTabs) {
@@ -216,7 +217,7 @@ public class TabSwitcherActionMenuCoordinator {
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_TAB));
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB));
         maybeBuildAddToGroup(itemList);
-        if (incognitoMigrationFFEnabled) {
+        if (incognitoMigrationFFEnabled && supportedMixedWindows) {
             if (isCurrentModelIncognito) {
                 itemList.add(buildListItemByMenuItemType(MenuItemType.SWITCH_OUT_OF_INCOGNITO));
             } else if (hasIncognitoTabs) {
