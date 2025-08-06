@@ -2794,7 +2794,31 @@ enum class ToolbarKind {
   }
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(activeWebState);
-  readerModeTabHelper->DeactivateReader();
+  auto deactivateReader = base::BindOnce(
+      &ReaderModeTabHelper::DeactivateReader, readerModeTabHelper->GetWeakPtr(),
+      ReaderModeDeactivationReason::kUserDeactivated);
+
+  BOOL lensOverlayAvailable = IsLensOverlayAvailable(self.profile->GetPrefs());
+
+  if (lensOverlayAvailable) {
+    LensOverlayTabHelper* lensOverlayTabHelper =
+        LensOverlayTabHelper::FromWebState(activeWebState);
+    BOOL lensOverlayVisible =
+        lensOverlayTabHelper &&
+        lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+    if (lensOverlayVisible) {
+      id<LensOverlayCommands> lensOverlayHandler =
+          HandlerForProtocol(_dispatcher, LensOverlayCommands);
+      // TODO(crbug.com/436453178): Rename lens dismissal reason to be
+      // `kReaderModeInvoked`.
+      [lensOverlayHandler
+          destroyLensUI:YES
+                 reason:lens::LensOverlayDismissalSource::kReaderModeActivated
+             completion:base::CallbackToBlock(std::move(deactivateReader))];
+      return;
+    }
+  }
+  std::move(deactivateReader).Run();
 }
 
 #pragma mark - FindInPageCommands
