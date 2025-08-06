@@ -485,6 +485,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.AIv4.FinishedPassageEmbeddingsTaskOutdated"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether a returning passage embeddings task was outdated, i.e. a new
+    passage embeddings task was started in the meantime. This should not happen
+    as we try-cancel the task, but we want to be sure.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.AIv4.LanguageDetectionStatus"
     enum="LanguageDetectionStatus" expires_after="2025-12-02">
   <owner>elklm@chromium.org</owner>

@@ -2110,6 +2110,19 @@ void PermissionUmaUtil::RecordTryCancelPreviousEmbeddingsModelExecution(
 }
 
 // static
+void PermissionUmaUtil::RecordFinishedPassageEmbeddingsTaskOutdated(
+    bool outdated,
+    PredictionModelType model_type) {
+  // Only the AIv4 model requires the passage embedding model.
+  DCHECK(model_type == PredictionModelType::kOnDeviceAiV4Model);
+
+  std::string success_histogram_name =
+      base::StrCat({"Permissions.", GetPredictionModelString(model_type),
+                    ".FinishedPassageEmbeddingsTaskOutdated"});
+  base::UmaHistogramBoolean(success_histogram_name, outdated);
+}
+
+// static
 void PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
     bool success,
     base::TimeTicks snapshot_inquire_start_time,

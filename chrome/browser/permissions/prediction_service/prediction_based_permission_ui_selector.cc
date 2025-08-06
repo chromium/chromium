@@ -940,9 +940,11 @@ void PredictionBasedPermissionUiSelector::OnPassageEmbeddingsComputed(
                               std::move(model_data.request_metadata));
   }
   DCHECK(passages.size() == 1);
+  bool is_outdated_task = passage_embeddings_task_id_ != task_id;
+  PermissionUmaUtil::RecordFinishedPassageEmbeddingsTaskOutdated(
+      is_outdated_task, model_data.model_type);
 
-  if (passage_embeddings_task_id_ != task_id) {
-    // TODO(chrbug.com/382447738) Add histogram to track this
+  if (is_outdated_task) {
     // If the task id is different, a new permission request has started
     // in the meantime and the request that started this call is stale.
     return;
