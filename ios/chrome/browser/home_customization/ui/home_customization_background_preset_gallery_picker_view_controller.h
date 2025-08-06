@@ -21,7 +21,7 @@
                         HomeCustomizationBackgroundPresetGalleryPickerConsumer>
 
 // A provider responsible for supplying a logo vendor object.
-// TODO(crbug.com/423883582): Need to remove this property.
+// TODO(crbug.com/436228514): Need to remove this property.
 @property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>
     searchEngineLogoMediatorProvider;
 

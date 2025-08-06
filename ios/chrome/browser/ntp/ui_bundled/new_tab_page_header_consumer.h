@@ -18,7 +18,7 @@ enum class SearchEngineLogoState;
 - (void)setSearchEngineLogoState:(SearchEngineLogoState)logoState;
 
 // Exposes view and methods to drive the doodle.
-// TODO(crbug.com/423883582): The mediator should not be passed to the
+// TODO(crbug.com/436228514): The mediator should not be passed to the
 // consumer.
 - (void)setSearchEngineLogoMediator:
     (SearchEngineLogoMediator*)searchEngineLogoMediator;

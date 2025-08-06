@@ -27,7 +27,7 @@
 - (void)setupContentView:(UIView*)contentView;
 
 // Configures the cell using the given background customization configuration.
-// TODO(crbug.com/423883582): This class should not know
+// TODO(crbug.com/436228514): This class should not know
 // `SearchEngineLogoMediator`.
 - (void)configureWithBackgroundOption:
             (id<BackgroundCustomizationConfiguration>)backgroundConfiguration
