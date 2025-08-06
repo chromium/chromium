@@ -1730,6 +1730,16 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           131, "wolfi@chromium.org, kimanh@chromium.org",
           "Shown in the Elements panel in the AI menu item "
           "when opening the context menu of a DOM element.")));
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kDevToolsAiSubmenuPrompts,
+      user_education::Metadata(
+          142, "kprokopenko@chromium.org, kimanh@chromium.org",
+          "Shows AI submenu prompts in the AI menu item.")));
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kDevToolsAiDebugWithAi,
+      user_education::Metadata(
+          142, "kprokopenko@chromium.org, kimanh@chromium.org",
+          "Shows Debug with AI menu item for AI assistance.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       compose::features::kEnableCompose,

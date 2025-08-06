@@ -232,6 +232,8 @@ static_library("devtools") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/user_education",
       "//chrome/browser/web_applications",
       "//chrome/common",
       "//components/guest_view/browser",
