@@ -91,7 +91,7 @@ constexpr base::cstring_view kOpTypePad = "Pad";
 constexpr base::cstring_view kOpTypePRelu = "PRelu";
 constexpr base::cstring_view kOpTypeQuantizeLinear = "QuantizeLinear";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
-constexpr base::cstring_view kOpTypeResample2d = "Resize";
+constexpr base::cstring_view kOpTypeResize = "Resize";
 constexpr base::cstring_view kOpTypeReshape = "Reshape";
 constexpr base::cstring_view kOpTypeScatterElements = "ScatterElements";
 constexpr base::cstring_view kOpTypeScatterND = "ScatterND";
@@ -157,11 +157,6 @@ constexpr base::cstring_view kAttrUpper = "upper";
 constexpr base::cstring_view kInserted = "Inserted";
 constexpr base::cstring_view kToEmulate = "ToEmulate";
 constexpr base::cstring_view kUnderscore = "_";
-
-base::unexpected<mojom::ErrorPtr> NewNotSupportedError(std::string message) {
-  return base::unexpected(mojom::Error::New(
-      mojom::Error::Code::kNotSupportedError, std::move(message)));
-}
 
 std::string GetOperandName(std::string_view name, OperandId id) {
   return base::JoinString({name, base::NumberToString(id.value())},
@@ -354,9 +349,7 @@ const base::cstring_view GetRecurrentNetworkDirection(
 }  // namespace
 
 // static
-[[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
-                             mojom::ErrorPtr>
-GraphBuilderOrt::CreateAndBuild(
+std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -652,6 +645,38 @@ std::string GraphBuilderOrt::CreateExpandNode(
   const std::string output = GenerateOperandName();
 
   AddExpandNode(node_name, input, output, shape);
+  return output;
+}
+
+void GraphBuilderOrt::AddResizeNode(base::cstring_view node_name,
+                                    base::cstring_view input,
+                                    base::cstring_view scales,
+                                    base::cstring_view sizes,
+                                    base::cstring_view mode,
+                                    base::cstring_view output) {
+  // Skip the input roi, which only takes effect when the coordinate
+  // transformation mode is set to "tf_crop_and_resize". Currently WebNN only
+  // supports "half_pixel", which is the default mode.
+  const std::string roi;
+  std::array<const char*, 4> inputs = {input.c_str(), roi.c_str(),
+                                       scales.c_str(), sizes.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAttrMode, mode)};
+
+  model_editor_.AddNode(kOpTypeResize, node_name, inputs, outputs, attributes);
+}
+
+std::string GraphBuilderOrt::BlockwiseExpand(base::cstring_view input,
+                                             base::span<const uint32_t> shape) {
+  const std::string sizes = CreateInt64InitializerForUint32Array(shape);
+  const std::string node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeResize}, kUnderscore));
+  const std::string output = GenerateOperandName();
+  AddResizeNode(node_name, input, /*scales=*/"", sizes,
+                /*mode=*/"nearest", output);
+
   return output;
 }
 
@@ -1070,13 +1095,10 @@ void GraphBuilderOrt::AddCumulativeSumOperation(
                         attributes);
 }
 
-// TODO(crbug.com/433055137): Remove the returned error once the emulation path
-// is implemented.
 template <typename T>
   requires(std::is_same_v<T, mojom::DequantizeLinear> ||
            std::is_same_v<T, mojom::QuantizeLinear>)
-[[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
+void GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
     const T& operation,
     base::cstring_view op_type) {
   const std::string node_name = GenerateNodeName(operation.label);
@@ -1103,9 +1125,6 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
     }
   }
 
-  // TODO(crbug.com/433096244): Emulate multiple axes case, e.g. input shape is
-  // [2, 3, 4, 5] and scale shape is [1, 3, 4, 1]. The multiple axes per-axis
-  // case will be handled by multi-dimensions blockwise emulation below.
   bool is_per_axis =
       axis.has_value() && scale_not_size_one_dimension_count == 1;
 
@@ -1141,15 +1160,37 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
         axis = i;
         blockwise_axis_count++;
       }
+    }
 
-      // TODO(crbug.com/433096244): Emulate multi-dimensions blockwise
-      // quantization and dequantization.
-      if (blockwise_axis_count > 1) {
-        return NewNotSupportedError(
-            "For blockwise quantization and dequantization, scale should has "
-            "the same shape as the input or except for one dimension in which "
-            "blocking is performed");
+    if (blockwise_axis_count > 1) {
+      // The data type of zero point can be int4/uint4, which is not
+      // supported by `resize` operator. So cast it to int8/uint8 before
+      // `resize` and cast back to int4/uint4 after `resize`.
+      const OperandDataType zero_point_data_type =
+          GetOperand(operation.zero_point_operand_id).descriptor.data_type();
+      if (zero_point_data_type == OperandDataType::kInt4) {
+        zero_point =
+            CreateCastNode(zero_point, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8);
+      } else if (zero_point_data_type == OperandDataType::kUint4) {
+        zero_point =
+            CreateCastNode(zero_point, ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8);
       }
+
+      scale = BlockwiseExpand(scale, input_shape);
+      zero_point = BlockwiseExpand(zero_point, input_shape);
+
+      if (zero_point_data_type == OperandDataType::kInt4) {
+        zero_point =
+            CreateCastNode(zero_point, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT4);
+      } else if (zero_point_data_type == OperandDataType::kUint4) {
+        zero_point =
+            CreateCastNode(zero_point, ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT4);
+      }
+
+      // Reset the axis and block_size back to default values, because scale and
+      // zeroPoint now have the same shape as input.
+      axis = 0;
+      block_size = 1;
     }
   }
 
@@ -1169,7 +1210,6 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
   }
 
   model_editor_.AddNode(op_type, node_name, inputs, outputs, attributes);
-  return base::ok();
 }
 
 void GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
@@ -2614,10 +2654,6 @@ void GraphBuilderOrt::AddResample2dOperation(
   CHECK(context_properties_.data_type_limits.resample2d_input.Supports(
       input_descriptor));
 
-  // Skip the input roi, which only takes effect when the coordinate
-  // transformation mode is set to "tf_crop_and_resize". Currently WebNN only
-  // supports "half_pixel", which is the default mode.
-  const std::string roi;
   std::string scales;
   std::string sizes;
   if (resample2d.scales) {
@@ -2633,9 +2669,6 @@ void GraphBuilderOrt::AddResample2dOperation(
     sizes = CreateInt64InitializerForUint32Array(
         GetOperand(resample2d.output_operand_id).descriptor.shape());
   }
-  std::array<const char*, 4> inputs = {input.c_str(), roi.c_str(),
-                                       scales.c_str(), sizes.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::string mode;
   switch (resample2d.mode) {
@@ -2646,11 +2679,8 @@ void GraphBuilderOrt::AddResample2dOperation(
       mode = "nearest";
       break;
   }
-  std::array<ScopedOrtOpAttr, 1> attributes = {
-      model_editor_.CreateAttribute(kAttrMode, mode)};
 
-  model_editor_.AddNode(kOpTypeResample2d, node_name, inputs, outputs,
-                        attributes);
+  AddResizeNode(node_name, input, scales, sizes, mode, output);
 }
 
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
@@ -3019,9 +3049,7 @@ void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
   model_editor_.AddNode(kOpTypeWhere, node_name, inputs, outputs);
 }
 
-[[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
-                             mojom::ErrorPtr>
-GraphBuilderOrt::BuildModel() {
+std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::BuildModel() {
   for (OperandId input_id : graph_info_->input_operands) {
     model_editor_.AddInput(GetOperandNameById(input_id), GetOperand(input_id));
   }
@@ -3070,8 +3098,8 @@ GraphBuilderOrt::BuildModel() {
         CHECK(data_type_limits.dequantize_linear_scale.Supports(
             GetOperand(operation->get_dequantize_linear()->scale_operand_id)
                 .descriptor));
-        RETURN_IF_ERROR(AddDequantizeOrQuantizeLinearOperation(
-            *operation->get_dequantize_linear(), kOpTypeDequantizeLinear));
+        AddDequantizeOrQuantizeLinearOperation(
+            *operation->get_dequantize_linear(), kOpTypeDequantizeLinear);
         break;
       }
       case mojom::Operation::Tag::kElu: {
@@ -3193,8 +3221,8 @@ GraphBuilderOrt::BuildModel() {
         CHECK(data_type_limits.quantize_linear_zero_point.Supports(
             GetOperand(operation->get_quantize_linear()->zero_point_operand_id)
                 .descriptor));
-        RETURN_IF_ERROR(AddDequantizeOrQuantizeLinearOperation(
-            *operation->get_quantize_linear(), kOpTypeQuantizeLinear));
+        AddDequantizeOrQuantizeLinearOperation(
+            *operation->get_quantize_linear(), kOpTypeQuantizeLinear);
         break;
       }
       case mojom::Operation::Tag::kRelu: {

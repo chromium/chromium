@@ -160,11 +160,10 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     bool is_external_data_supported,
     ScopedTrace scoped_trace) {
   scoped_trace.AddStep("Create model info");
-  ASSIGN_OR_RETURN(
-      std::unique_ptr<ModelEditor::ModelInfo> model_info,
+  std::unique_ptr<ModelEditor::ModelInfo> model_info =
       GraphBuilderOrt::CreateAndBuild(
           *graph_info, std::move(context_properties),
-          std::move(constant_operands), is_external_data_supported));
+          std::move(constant_operands), is_external_data_supported);
 
   scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;
