@@ -558,7 +558,7 @@ public class CredManHelperRobolectricTest {
         verify(mBarrier).onCredManSuccessful(credManCallSuccessfulRunback.capture());
         credManCallSuccessfulRunback.getValue().run();
 
-        mCredManHelper.cancelConditionalGetAssertion();
+        mCredManHelper.cancelGetAssertion();
 
         verify(mBarrier, times(1)).onCredManCancelled();
         verify(mBrowserBridge, times(1)).cleanupCredManRequest(any());

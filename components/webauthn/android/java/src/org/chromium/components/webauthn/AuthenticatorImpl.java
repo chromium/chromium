@@ -402,15 +402,14 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     public void cancel() {
         log(TAG, "cancel");
         // This is not implemented for anything other than getAssertion requests, since there is
-        // no way to cancel a request that has already triggered gmscore UI. Get requests can be
-        // cancelled if they are pending conditional UI requests, or if they are discoverable
-        // credential requests with the account selector being shown to the user.
+        // no way to cancel a request that has already triggered GMSCore or CredMan UI. Get
+        // requests can be cancelled in situations such as while pending credential enumeration.
         if (!mIsOperationPending || mGetCredentialCallback == null) {
             return;
         }
 
         assumeNonNull(mPendingFido2CredentialRequest);
-        mPendingFido2CredentialRequest.cancelConditionalGetAssertion();
+        mPendingFido2CredentialRequest.cancelGetAssertion();
     }
 
     /** Callbacks for receiving responses from the internal handlers. */

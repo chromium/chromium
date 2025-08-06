@@ -2178,7 +2178,7 @@ public class Fido2CredentialRequestTest {
                 mCallback::onSignResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
-        mRequest.cancelConditionalGetAssertion();
+        mRequest.cancelGetAssertion();
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
 
@@ -2213,7 +2213,7 @@ public class Fido2CredentialRequestTest {
                 mCallback::onSignResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
-        mRequest.cancelConditionalGetAssertion();
+        mRequest.cancelGetAssertion();
 
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
@@ -2245,7 +2245,7 @@ public class Fido2CredentialRequestTest {
                 mCallback::onError,
                 mCallback::onRequestOutcome);
         mIntentSender.blockUntilShowIntentCalled();
-        mRequest.cancelConditionalGetAssertion();
+        mRequest.cancelGetAssertion();
         mIntentSender.invokeCallback();
         Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
@@ -2280,7 +2280,7 @@ public class Fido2CredentialRequestTest {
                 mCallback::onError,
                 mCallback::onRequestOutcome);
         mIntentSender.blockUntilShowIntentCalled();
-        mRequest.cancelConditionalGetAssertion();
+        mRequest.cancelGetAssertion();
         mIntentSender.invokeCallback();
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
