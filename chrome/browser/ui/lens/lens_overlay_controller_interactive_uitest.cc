@@ -87,7 +87,9 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                                {{"use-pdfs-as-context", "true"},
                                 {"auto-focus-searchbox", "false"}}}},
         /*disabled_features=*/{
-            lens::features::kLensOverlaySimplifiedSelection});
+            lens::features::kLensOverlaySimplifiedSelection,
+            lens::features::
+                kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions});
   }
 
   void WaitForTemplateURLServiceToLoad() {

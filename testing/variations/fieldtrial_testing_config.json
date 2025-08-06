@@ -8155,54 +8155,31 @@
             ],
             "experiments": [
                 {
-                    "name": "_enabled_OnFocusZPS_NoPrefetch_LensAction",
+                    "name": "_enabled_OnFocusZPS_NoPrefetch_ContextualSearch_LensAction",
                     "params": {
-                        "Limit": "0",
-                        "OmniboxZpsMaxSearchSuggestions": "3",
+                        "OmniboxZpsMaxSearchSuggestions": "6",
                         "OmniboxZpsMaxSuggestions": "6",
-                        "OmniboxZpsMaxUrlSuggestions": "3",
-                        "OnFocusMaxSearchSuggestions": "3",
-                        "OnFocusMaxUrlSuggestions": "3",
-                        "OnFocusMostVisitedMaxSuggestions": "6"
+                        "OmniboxZpsMaxUrlSuggestions": "0"
                     },
                     "enable_features": [
-                        "OmniboxContextualSearchOnFocusSuggestions",
-                        "OmniboxFocusTriggersWebAndSRPZeroSuggest",
-                        "OmniboxHideSuggestionGroupHeaders",
-                        "OmniboxUrlSuggestionsOnFocus",
-                        "OmniboxZeroSuggestSynchronousMatchesOnly",
-                        "OmniboxZpsSuggestionLimit"
-                    ],
-                    "disable_features": [
-                        "LensOverlayOmniboxEntryPoint"
-                    ]
-                },
-                {
-                    "name": "_enabled_OnFocusZPS_ContextualSearchAndUrlSuggestions_LensAction",
-                    "params": {
-                        "OmniboxZpsMaxSearchSuggestions": "3",
-                        "OmniboxZpsMaxSuggestions": "6",
-                        "OmniboxZpsMaxUrlSuggestions": "3",
-                        "OnFocusMaxSearchSuggestions": "3",
-                        "OnFocusMaxUrlSuggestions": "3",
-                        "OnFocusMostVisitedMaxSuggestions": "6"
-                    },
-                    "enable_features": [
+                        "ContextualSuggestionsAblateOthersWhenPresent",
                         "ContextualZeroSuggestLensFulfillment",
+                        "HappinessTrackingSurveyForOmniboxOnFocusZps",
+                        "LensOverlayContextualSearchboxForOmniboxSuggestions",
+                        "LensOverlayVisualSelectionUpdatesForOmniboxSuggestions",
                         "OmniboxContextualSearchOnFocusSuggestions",
                         "OmniboxFocusTriggersWebAndSRPZeroSuggest",
                         "OmniboxHideSuggestionGroupHeaders",
-                        "OmniboxUrlSuggestionsOnFocus",
-                        "OmniboxZeroSuggestSynchronousMatchesOnly",
+                        "OmniboxShowPopupOnMouseReleased",
                         "OmniboxZpsSuggestionLimit",
                         "SendContextualUrlSuggestParam",
                         "SendPageTitleSuggestParam",
                         "ShowSuggestionsOnNoApc",
-                        "UseApcPaywallSignal",
-                        "ZeroSuggestPrefetchingOnWeb"
+                        "UseApcPaywallSignal"
                     ],
                     "disable_features": [
-                        "LensOverlayOmniboxEntryPoint"
+                        "LensOverlayOmniboxEntryPoint",
+                        "OmniboxUrlSuggestionsOnFocus"
                     ]
                 }
             ]

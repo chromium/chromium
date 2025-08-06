@@ -88,6 +88,7 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
   HashMap<uint32_t, bool> has_sent_metatags_;
 
   Member<DomContentLoadedListener> dom_content_loaded_observer_;
+
   Member<MetaTagsMutationObserver> meta_tags_mutation_observer_;
 };
 

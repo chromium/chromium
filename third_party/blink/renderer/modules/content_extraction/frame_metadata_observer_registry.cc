@@ -129,8 +129,12 @@ FrameMetadataObserverRegistry::FrameMetadataObserverRegistry(
       receiver_set_(this, frame.DomWindow()),
       paid_content_metadata_observers_(frame.DomWindow()),
       metatags_observers_(frame.DomWindow()) {
-  metatags_observers_.set_disconnect_handler(blink::BindRepeating(
-      &FrameMetadataObserverRegistry::DisconnectHandler, WrapPersistent(this)));
+  // TODO(gklassen): Update with comment to document why this disconnect
+  //                 handler is necessary. We might need to update the
+  //                 .mojom file as well to add more documentation.
+  metatags_observers_.set_disconnect_handler(
+      blink::BindRepeating(&FrameMetadataObserverRegistry::DisconnectHandler,
+                           WrapWeakPersistent(this)));
 }
 
 FrameMetadataObserverRegistry::~FrameMetadataObserverRegistry() = default;
