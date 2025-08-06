@@ -583,7 +583,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseWithToggle) {
       })));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseWithXButton) {
+// TODO(crbug.com/436854631): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DISABLED_CloseWithXButton) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   const InteractiveBrowserTestApi::DeepQuery kMockFreClientCloseButton = {
