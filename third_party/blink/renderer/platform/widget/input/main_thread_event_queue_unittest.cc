@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
@@ -1560,7 +1561,7 @@ TEST_F(MainThreadEventQueueTest,
     }
 
     MainThreadEventQueueTest& test;
-    const SyntheticWebTouchEvent* touch_moves;
+    base::span<const SyntheticWebTouchEvent> touch_moves;
     bool consume_touch_start = false;
     bool consume_first_touch_move = false;
   };

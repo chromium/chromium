@@ -217,9 +217,9 @@ void BiquadFilterNode::getFrequencyResponse(
 
   // If the length is 0, there's nothing to do.
   if (frequency_hz_length_as_int > 0) {
-    GetBiquadFilterHandler().GetFrequencyResponse(
-        frequency_hz_length_as_int, frequency_hz->Data(), mag_response->Data(),
-        phase_response->Data());
+    GetBiquadFilterHandler().GetFrequencyResponse(frequency_hz->AsSpan(),
+                                                  mag_response->AsSpan(),
+                                                  phase_response->AsSpan());
   }
 }
 

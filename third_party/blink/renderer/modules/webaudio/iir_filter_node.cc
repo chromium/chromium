@@ -224,9 +224,9 @@ void IIRFilterNode::getFrequencyResponse(
 
   // Nothing to do if the length is 0.
   if (frequency_hz_length_as_int > 0) {
-    GetIIRFilterHandler().GetFrequencyResponse(
-        frequency_hz_length_as_int, frequency_hz->Data(), mag_response->Data(),
-        phase_response->Data());
+    GetIIRFilterHandler().GetFrequencyResponse(frequency_hz->AsSpan(),
+                                               mag_response->AsSpan(),
+                                               phase_response->AsSpan());
   }
 }
 

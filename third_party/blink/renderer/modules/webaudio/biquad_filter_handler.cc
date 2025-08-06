@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -39,8 +40,15 @@ constexpr unsigned kRenderQuantumFramesExpected = 128;
 constexpr uint32_t kNumberOfChannels = 1;
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 
-bool HasConstantValues(float* values, int frames_to_process) {
-  if (frames_to_process <= 1) {
+bool HasConstantValues(
+    base::span<float> values,
+    int spanification_suspected_redundant_frames_to_process) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_frames_to_process ==
+            static_cast<int>(values.size()),
+        base::NotFatalUntil::M143);
+  if (spanification_suspected_redundant_frames_to_process <= 1) {
     return true;
   }
 
@@ -57,7 +65,9 @@ bool HasConstantValues(float* values, int frames_to_process) {
   // Process 4 floats at a time using SIMD
   __m128 value_vec = _mm_set1_ps(value);
   // Start at 0 for byte alignment
-  for (processed_frames = 0; processed_frames < frames_to_process - 3;
+  for (processed_frames = 0;
+       processed_frames <
+       spanification_suspected_redundant_frames_to_process - 3;
        processed_frames += 4) {
     // Load 4 floats from memory
     __m128 input_vec = _mm_loadu_ps(&values[processed_frames]);
@@ -72,7 +82,9 @@ bool HasConstantValues(float* values, int frames_to_process) {
   // Process 4 floats at a time using SIMD
   float32x4_t value_vec = vdupq_n_f32(value);
   // Start at 0 for byte alignment
-  for (processed_frames = 0; processed_frames < frames_to_process - 3;
+  for (processed_frames = 0;
+       processed_frames <
+       spanification_suspected_redundant_frames_to_process - 3;
        processed_frames += 4) {
     // Load 4 floats from memory
     float32x4_t input_vec = vld1q_f32(&values[processed_frames]);
@@ -88,7 +100,8 @@ bool HasConstantValues(float* values, int frames_to_process) {
   }
 #endif
   // Fallback implementation without SIMD optimization
-  while (processed_frames < frames_to_process) {
+  while (processed_frames <
+         spanification_suspected_redundant_frames_to_process) {
     if (values[processed_frames] != value) {
       return false;
     }
@@ -137,10 +150,9 @@ class BiquadProcessor final {
 
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
-  void GetFrequencyResponse(int n_frequencies,
-                            const float* frequency_hz,
-                            float* mag_response,
-                            float* phase_response);
+  void GetFrequencyResponse(base::span<const float> frequency_hz,
+                            base::span<float> mag_response,
+                            base::span<float> phase_response);
 
   void CheckForDirtyCoefficients();
 
@@ -220,20 +232,20 @@ class BiquadDSPKernel final {
   // given set of frequencies (in Hz). The phase response is in radians.  This
   // must be called from the main thread.
   static void GetFrequencyResponse(BiquadDSPKernel& kernel,
-                                   int n_frequencies,
-                                   const float* frequency_hz,
-                                   float* mag_response,
-                                   float* phase_response);
+                                   base::span<const float> frequency_hz,
+                                   base::span<float> mag_response,
+                                   base::span<float> phase_response);
 
   bool RequiresTailProcessing() const;
   double TailTime() const;
   double LatencyTime() const;
   // Update the biquad coefficients with the given parameters
-  void UpdateCoefficients(int number_of_frames,
-                          const float* frequency,
-                          const float* q,
-                          const float* gain,
-                          const float* detune);
+  void UpdateCoefficients(
+      int spanification_suspected_redundant_number_of_frames,
+      base::span<const float> frequency,
+      base::span<const float> q,
+      base::span<const float> gain,
+      base::span<const float> detune);
 
  private:
   BiquadProcessor* GetBiquadProcessor() {
@@ -297,30 +309,42 @@ void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
           HasConstantValues(q, frames_to_process) &&
           HasConstantValues(gain, frames_to_process) &&
           HasConstantValues(detune, frames_to_process);
-
-      UpdateCoefficients(is_constant ? 1 : frames_to_process, cutoff_frequency,
-                         q, gain, detune);
+      size_t needed_frames = is_constant ? 1 : frames_to_process;
+      UpdateCoefficients(needed_frames,
+                         base::span(cutoff_frequency).first(needed_frames),
+                         base::span(q).first(needed_frames),
+                         base::span(gain).first(needed_frames),
+                         base::span(detune).first(needed_frames));
     } else {
       cutoff_frequency[0] = GetBiquadProcessor()->Parameter1().FinalValue();
       q[0] = GetBiquadProcessor()->Parameter2().FinalValue();
       gain[0] = GetBiquadProcessor()->Parameter3().FinalValue();
       detune[0] = GetBiquadProcessor()->Parameter4().FinalValue();
-      UpdateCoefficients(1, cutoff_frequency, q, gain, detune);
+      UpdateCoefficients(1, base::span(cutoff_frequency).first(1u),
+                         base::span(q).first(1u), base::span(gain).first(1u),
+                         base::span(detune).first(1u));
     }
   }
 }
 
-void BiquadDSPKernel::UpdateCoefficients(int number_of_frames,
-                                         const float* cutoff_frequency,
-                                         const float* q,
-                                         const float* gain,
-                                         const float* detune) {
+void BiquadDSPKernel::UpdateCoefficients(
+    int spanification_suspected_redundant_number_of_frames,
+    base::span<const float> cutoff_frequency,
+    base::span<const float> q,
+    base::span<const float> gain,
+    base::span<const float> detune) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_number_of_frames ==
+            static_cast<int>(cutoff_frequency.size()),
+        base::NotFatalUntil::M143);
   // Convert from Hertz to normalized frequency 0 -> 1.
   double nyquist = Nyquist();
 
-  biquad_.SetHasSampleAccurateValues(number_of_frames > 1);
+  biquad_.SetHasSampleAccurateValues(
+      spanification_suspected_redundant_number_of_frames > 1);
 
-  for (int k = 0; k < number_of_frames; ++k) {
+  for (int k = 0; k < spanification_suspected_redundant_number_of_frames; ++k) {
     double normalized_frequency = cutoff_frequency[k] / nyquist;
 
     // Offset frequency by detune.
@@ -366,7 +390,7 @@ void BiquadDSPKernel::UpdateCoefficients(int number_of_frames,
     }
   }
 
-  UpdateTailTime(number_of_frames - 1);
+  UpdateTailTime(spanification_suspected_redundant_number_of_frames - 1);
 }
 
 void BiquadDSPKernel::UpdateTailTime(int coef_index) {
@@ -409,30 +433,27 @@ void BiquadDSPKernel::Process(const float* source,
 }
 
 void BiquadDSPKernel::GetFrequencyResponse(BiquadDSPKernel& kernel,
-                                           int n_frequencies,
-                                           const float* frequency_hz,
-                                           float* mag_response,
-                                           float* phase_response) {
+                                           base::span<const float> frequency_hz,
+                                           base::span<float> mag_response,
+                                           base::span<float> phase_response) {
   // Only allow on the main thread because we don't want the audio thread to be
   // updating `kernel` while we're computing the response.
   DCHECK(IsMainThread());
 
-  DCHECK_GE(n_frequencies, 0);
-  DCHECK(frequency_hz);
-  DCHECK(mag_response);
-  DCHECK(phase_response);
+  DCHECK(!frequency_hz.empty());
+  DCHECK(!mag_response.empty());
+  DCHECK(!phase_response.empty());
 
-  Vector<float> frequency(n_frequencies);
+  Vector<float> frequency(frequency_hz.size());
   double nyquist = kernel.Nyquist();
 
   // Convert from frequency in Hz to normalized frequency (0 -> 1),
   // with 1 equal to the Nyquist frequency.
-  for (int k = 0; k < n_frequencies; ++k) {
+  for (size_t k = 0; k < frequency_hz.size(); ++k) {
     frequency[k] = frequency_hz[k] / nyquist;
   }
 
-  kernel.biquad_.GetFrequencyResponse(n_frequencies, frequency.data(),
-                                      mag_response, phase_response);
+  kernel.biquad_.GetFrequencyResponse(frequency, mag_response, phase_response);
 }
 
 bool BiquadDSPKernel::RequiresTailProcessing() const {
@@ -660,10 +681,9 @@ void BiquadProcessor::SetType(V8BiquadFilterType::Enum type) {
   }
 }
 
-void BiquadProcessor::GetFrequencyResponse(int n_frequencies,
-                                           const float* frequency_hz,
-                                           float* mag_response,
-                                           float* phase_response) {
+void BiquadProcessor::GetFrequencyResponse(base::span<const float> frequency_hz,
+                                           base::span<float> mag_response,
+                                           base::span<float> phase_response) {
   DCHECK(IsMainThread());
 
   // Compute the frequency response on a separate temporary kernel
@@ -693,10 +713,11 @@ void BiquadProcessor::GetFrequencyResponse(int n_frequencies,
     detune = Parameter4().Value();
   }
 
-  response_kernel->UpdateCoefficients(1, &cutoff_frequency, &q, &gain, &detune);
-  BiquadDSPKernel::GetFrequencyResponse(*response_kernel, n_frequencies,
-                                        frequency_hz, mag_response,
-                                        phase_response);
+  response_kernel->UpdateCoefficients(
+      1, base::span_from_ref(cutoff_frequency), base::span_from_ref(q),
+      base::span_from_ref(gain), base::span_from_ref(detune));
+  BiquadDSPKernel::GetFrequencyResponse(*response_kernel, frequency_hz,
+                                        mag_response, phase_response);
 }
 
 BiquadFilterHandler::BiquadFilterHandler(AudioNode& node,
@@ -846,12 +867,11 @@ unsigned BiquadFilterHandler::NumberOfChannels() {
   return Output(0).NumberOfChannels();
 }
 
-void BiquadFilterHandler::GetFrequencyResponse(int n_frequencies,
-                                               const float* frequency_hz,
-                                               float* mag_response,
-                                               float* phase_response) {
-  processor_->GetFrequencyResponse(n_frequencies, frequency_hz, mag_response,
-                                   phase_response);
+void BiquadFilterHandler::GetFrequencyResponse(
+    base::span<const float> frequency_hz,
+    base::span<float> mag_response,
+    base::span<float> phase_response) {
+  processor_->GetFrequencyResponse(frequency_hz, mag_response, phase_response);
 }
 
 V8BiquadFilterType::Enum BiquadFilterHandler::Type() const {
@@ -902,9 +922,16 @@ void BiquadFilterHandler::NotifyBadState() const {
                   "fast parameter automation."})));
 }
 
-bool BiquadFilterHandler::HasConstantValuesForTesting(float* values,
-                                                      int frames_to_process) {
-  return HasConstantValues(values, frames_to_process);
+bool BiquadFilterHandler::HasConstantValuesForTesting(
+    base::span<float> values,
+    int spanification_suspected_redundant_frames_to_process) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_frames_to_process ==
+            static_cast<int>(values.size()),
+        base::NotFatalUntil::M143);
+  return HasConstantValues(values,
+                           spanification_suspected_redundant_frames_to_process);
 }
 
 }  // namespace blink

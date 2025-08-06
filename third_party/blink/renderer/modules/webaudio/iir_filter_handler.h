@@ -28,10 +28,9 @@ class IIRFilterHandler final : public AudioHandler {
 
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
-  void GetFrequencyResponse(int n_frequencies,
-                            const float* frequency_hz,
-                            float* mag_response,
-                            float* phase_response) const;
+  void GetFrequencyResponse(base::span<const float> frequency_hz,
+                            base::span<float> mag_response,
+                            base::span<float> phase_response) const;
 
  private:
   IIRFilterHandler(AudioNode&,

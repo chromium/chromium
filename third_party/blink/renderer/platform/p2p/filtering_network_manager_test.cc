@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -202,8 +203,8 @@ class FilteringNetworkManagerTest : public testing::Test,
         this, &FilteringNetworkManagerTest::OnNetworksChanged);
   }
 
-  void RunTests(TestEntry* tests, size_t size) {
-    for (size_t i = 0; i < size; ++i) {
+  void RunTests(base::span<TestEntry> tests) {
+    for (size_t i = 0; i < tests.size(); ++i) {
       EXPECT_EQ(tests[i].expected_result, ProcessEvent(tests[i].event))
           << " in step: " << i;
     }
@@ -306,7 +307,7 @@ TEST_F(FilteringNetworkManagerTest, MultipleRoutesNotRequested) {
       {kMockNetworksChangedWithSameNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is blocked and signaled right after
@@ -333,7 +334,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByStartUpdating) {
       {kStopUpdating, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is blocked and signaled right after
@@ -358,7 +359,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByPermissionsDenied) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that after permissions have been denied, a network change signal from
@@ -378,7 +379,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByNetworksChanged) {
       {kStopUpdating, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -405,7 +406,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByPermissionsGranted) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -431,7 +432,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByStartUpdating) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -455,7 +456,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByNetworksChanged) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that the networks provided by the GetNetworks() and
@@ -474,7 +475,7 @@ TEST_F(FilteringNetworkManagerTest, NullMdnsResponderAfterPermissionGranted) {
       // ENUMERATION_ALLOWED.
       {kStartUpdating, kSignalEnumerationAllowed},
   };
-  RunTests(setup_steps, std::size(setup_steps));
+  RunTests(setup_steps);
 
   std::vector<const webrtc::Network*> networks =
       network_manager_->GetNetworks();

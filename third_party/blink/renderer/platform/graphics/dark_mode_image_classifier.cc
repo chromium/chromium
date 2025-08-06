@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "base/containers/span.h"
 #include "base/memory/singleton.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
@@ -259,7 +260,8 @@ DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
         features.is_colorful ? 1.0f : 0.0f, features.color_buckets_ratio,
         features.transparency_ratio, features.background_ratio};
 
-    darkmode_tfnative_model::Inference(feature_list, &nn_out, &nn_temp);
+    darkmode_tfnative_model::Inference(feature_list,
+                                       base::span_from_ref(nn_out), &nn_temp);
     result = nn_out > 0 ? DarkModeResult::kApplyFilter
                         : DarkModeResult::kDoNotApplyFilter;
   }

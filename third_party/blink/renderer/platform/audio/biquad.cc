@@ -33,15 +33,17 @@
 
 #include "third_party/blink/renderer/platform/audio/biquad.h"
 
+#include <stdio.h>
+
+#include <algorithm>
+#include <complex>
+
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
-
-#include <stdio.h>
-#include <algorithm>
-#include <complex>
 #if BUILDFLAG(IS_MAC)
 #include <Accelerate/Accelerate.h>
 #endif
@@ -559,10 +561,13 @@ void Biquad::SetBandpassParams(int index, double frequency, double q) {
   }
 }
 
-void Biquad::GetFrequencyResponse(int n_frequencies,
-                                  const float* frequency,
-                                  float* mag_response,
-                                  float* phase_response) const {
+void Biquad::GetFrequencyResponse(base::span<const float> frequency,
+                                  base::span<float> mag_response,
+                                  base::span<float> phase_response) const {
+  DCHECK(!frequency.empty());
+  DCHECK(!mag_response.empty());
+  DCHECK(!phase_response.empty());
+
   // Evaluate the Z-transform of the filter at given normalized
   // frequency from 0 to 1.  (1 corresponds to the Nyquist
   // frequency.)
@@ -586,7 +591,7 @@ void Biquad::GetFrequencyResponse(int n_frequencies,
   double a1 = a1_[0];
   double a2 = a2_[0];
 
-  for (int k = 0; k < n_frequencies; ++k) {
+  for (size_t k = 0; k < frequency.size(); ++k) {
     if (frequency[k] < 0 || frequency[k] > 1) {
       // Out-of-bounds frequencies should return NaN.
       mag_response[k] = std::nanf("");

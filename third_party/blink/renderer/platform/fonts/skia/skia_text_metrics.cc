@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -152,14 +153,14 @@ void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
 
 void SkFontGetBoundsForGlyphs(const SkFont& font,
                               const Vector<Glyph, 256>& glyphs,
-                              SkRect* bounds) {
+                              base::span<SkRect> bounds) {
 #if BUILDFLAG(IS_APPLE)
   for (unsigned i = 0; i < glyphs.size(); i++) {
     SkFontGetBoundsForGlyph(font, glyphs[i], &bounds[i]);
   }
 #else
   static_assert(sizeof(Glyph) == 2, "Skia expects 2 bytes glyph id.");
-  font.getBounds(glyphs, {bounds, glyphs.size()}, nullptr);
+  font.getBounds(glyphs, {bounds.data(), glyphs.size()}, nullptr);
 
   if (!font.isSubpixel()) {
     for (unsigned i = 0; i < glyphs.size(); i++) {

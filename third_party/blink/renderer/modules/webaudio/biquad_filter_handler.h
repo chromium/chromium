@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_HANDLER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -47,16 +48,16 @@ class BiquadFilterHandler final : public AudioHandler {
 
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
-  void GetFrequencyResponse(int n_frequencies,
-                            const float* frequency_hz,
-                            float* mag_response,
-                            float* phase_response);
+  void GetFrequencyResponse(base::span<const float> frequency_hz,
+                            base::span<float> mag_response,
+                            base::span<float> phase_response);
   V8BiquadFilterType::Enum Type() const;
   void SetType(V8BiquadFilterType::Enum type);
 
   // Expose HasConstantValues for unit testing
-  MODULES_EXPORT static bool HasConstantValuesForTesting(float* values,
-                                                         int frames_to_process);
+  MODULES_EXPORT static bool HasConstantValuesForTesting(
+      base::span<float> values,
+      int spanification_suspected_redundant_frames_to_process);
 
  private:
   BiquadFilterHandler(AudioNode&,

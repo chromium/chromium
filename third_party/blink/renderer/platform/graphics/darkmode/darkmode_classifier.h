@@ -23,8 +23,8 @@ extern int32_t input0Shape[2];
 extern int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0Shape[2];
 
 void Inference(
-    const float* __restrict input0 /* shape: 1,4 */,
-    float* __restrict logits_MatMul_merged_with_dnn_logits_BiasAdd0 /* shape:
+    base::span<const float> input0 /* shape: 1,4 */,
+    base::span<float> logits_MatMul_merged_with_dnn_logits_BiasAdd0 /* shape:
                                                                        1,1 */
     ,
     FixedAllocations* __restrict fixed);
