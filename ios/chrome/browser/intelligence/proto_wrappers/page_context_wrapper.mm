@@ -151,16 +151,17 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 
 // The JavaScript to be executed in each WebFrame which gets all of a frame's
 // anchor tags and adds them to an array with their corresponding URL and
-// innerText. Injected into the main script.
+// textContent (which includes all text, including text that is not visually
+// rendered). Injected into the main script.
 constexpr const char16_t* kAnchorTagsJavaScript = uR"DELIM(
 // Add all the frame's anchor tags to a links array with their HREF/URL and
-// innerText.
+// textContent.
 const linksArray = [];
 const anchorElements = node.querySelectorAll('a[href]');
 anchorElements.forEach((anchor) => {
     linksArray.push({
         href: anchor.href,
-        linkText: anchor.innerText
+        linkText: anchor.textContent
     });
 });
 
