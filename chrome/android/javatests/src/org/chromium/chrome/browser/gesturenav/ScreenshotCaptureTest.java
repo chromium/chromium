@@ -65,7 +65,10 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
 @DoNotBatch(reason = "Affect nav settings")
 @EnableFeatures({
-    "BackForwardTransitions:transition_from_native_pages/true/transition_to_native_pages/true"
+    "BackForwardTransitions"
+            + ":transition_from_native_pages/true"
+            + "/transition_to_native_pages/true"
+            + "/min-required-physical-ram-mb/0"
 })
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
 @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")

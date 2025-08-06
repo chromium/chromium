@@ -391,9 +391,10 @@ class NavigationEntryScreenshotBrowserTest
   ~NavigationEntryScreenshotBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::FieldTrialParams bf_transition_params;
+    base::FieldTrialParams bf_transition_params{
+        {"min-required-physical-ram-mb", "0"}};
     if (Use1MinuteEvictionDelay()) {
-      bf_transition_params = {{"invisible-cache-cleanup-delay", "1m"}};
+      bf_transition_params["invisible-cache-cleanup-delay"] = "1m";
     }
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {blink::features::kBackForwardTransitions, bf_transition_params}};
@@ -1806,7 +1807,8 @@ class SameDocNavigationEntryScreenshotBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {viz::mojom::EnableVizTestApis, {}},
-        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kBackForwardTransitions,
+         {{"min-required-physical-ram-mb", "0"}}},
         {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
          {}}};
 
@@ -2464,8 +2466,9 @@ class NavigationEntryScreenshotCompressionBrowserTest
   ~NavigationEntryScreenshotCompressionBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kBackForwardTransitions);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kBackForwardTransitions,
+        {{"min-required-physical-ram-mb", "0"}});
     NavigationEntryScreenshotBrowserTestBase::SetUpCommandLine(command_line);
   }
 

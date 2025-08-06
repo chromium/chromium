@@ -44,8 +44,10 @@ void AssertEntryHasNoScreenshot(WebContents* tab, int nav_entry_id) {
 class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
  public:
   NavigationEntryScreenshotCacheTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kBackForwardTransitions}, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kBackForwardTransitions,
+          {{"min-required-physical-ram-mb", "0"}}}},
+        {});
   }
   ~NavigationEntryScreenshotCacheTest() override = default;
 

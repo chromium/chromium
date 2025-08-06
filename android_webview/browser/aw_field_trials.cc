@@ -203,11 +203,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // enabling site isolation. See crbug.com/356170748.
   aw_feature_overrides.DisableFeature(blink::features::kPaintHoldingForIframes);
 
-  // Since Default Nav Transition does not support WebView yet, disable the
-  // LocalSurfaceId increment flag. TODO(crbug.com/361600214): Re-enable for
-  // WebView when we start introducing this feature.
+  // Default Nav Transition does not support WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation);
+  // TODO(crbug.com/434928245): cleanup this feature gate in M141.
+  aw_feature_overrides.DisableFeature(blink::features::kBackForwardTransitions);
 
   // Disabling this feature for WebView, since it can switch focus when scrolled
   // in cases with multiple views which can trigger HTML focus changes that

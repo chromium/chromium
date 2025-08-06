@@ -25,7 +25,7 @@ bool BackForwardTransitionAnimationManager::ShouldAnimateNavigationTransition(
     NavigationDirection navigation_direction,
     ui::BackGestureEventSwipeEdge edge) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
+  if (!AreBackForwardTransitionsEnabled()) {
     return false;
   }
 

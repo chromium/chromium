@@ -88,7 +88,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=BackForwardTransitions",
+    "enable-features=BackForwardTransitions"
+            + ":min-required-physical-ram-mb/0/screenshot-send-result-delay-ms/0",
     "force-prefers-no-reduced-motion",
     // Resampling can make scroll offsets non-deterministic so turn it off.
     "disable-features=ResamplingScrollEvents",
@@ -644,7 +645,6 @@ public class NavigationTransitionsTest {
     @Test
     @MediumTest
     @EnableFeatures({UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL})
-    @DisabledTest(message = "crbug.com/434971032")
     public void testBackNavInRTL() throws Throwable {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
@@ -655,13 +655,24 @@ public class NavigationTransitionsTest {
         String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
         String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
-        mActivityTestRule.loadUrl(url1);
-        mActivityTestRule.loadUrl(url2);
-        mActivityTestRule.loadUrl(url3);
 
+        var helper = mScreenshotCallback.expectRequested(true);
+        mActivityTestRule.loadUrl(url1);
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+        helper.waitForNext();
+
+        mActivityTestRule.loadUrl(url2);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+        helper.waitForNext();
+
+        mActivityTestRule.loadUrl(url3);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+        helper.waitForNext();
+
         // No screenshot on gesture mode when navigating back.
-        mScreenshotCallback.expectRequested(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
+        helper =
+                mScreenshotCallback.expectRequested(
+                        mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
 
         performNavigationTransition(url2, BackEventCompat.EDGE_RIGHT);
         waitForTransitionFinished();
@@ -679,6 +690,8 @@ public class NavigationTransitionsTest {
             waitForTransitionFinished();
             Assert.assertEquals(url1, getCurrentUrl());
         }
+
+        helper.waitForNext();
     }
 
     /**
@@ -873,7 +886,6 @@ public class NavigationTransitionsTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @DisabledTest(message = "crbug.com/434971032")
     public void testNoCrashWhenGestureIsNotInProgress() throws TimeoutException {
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
             return;
@@ -881,14 +893,25 @@ public class NavigationTransitionsTest {
         String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
         String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
+
+        var helper = mScreenshotCallback.expectRequested(true);
         mActivityTestRule.loadUrl(url1);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+        helper.waitForNext();
+
         mActivityTestRule.loadUrl(url2);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+        helper.waitForNext();
+
         mActivityTestRule.loadUrl(url3);
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+        helper.waitForNext();
 
         // Perform a back gesture transition from the left edge.
         // No screenshot on gesture mode when navigating back.
-        mScreenshotCallback.expectRequested(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
+        helper =
+                mScreenshotCallback.expectRequested(
+                        mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
         performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
         waitForTransitionFinished();
 
@@ -906,6 +929,8 @@ public class NavigationTransitionsTest {
                 });
 
         ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), url1);
+
+        helper.waitForNext();
     }
 
     /** Test that it doesn't crash when the edge is somehow changed in the mid of swipe gesture. */

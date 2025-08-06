@@ -376,7 +376,8 @@ class BackForwardTransitionAnimationManagerBrowserTest
  public:
   BackForwardTransitionAnimationManagerBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kBackForwardTransitions,
+         {{"min-required-physical-ram-mb", "0"}}},
         {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
          {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -654,7 +655,8 @@ class BackForwardTransitionAnimationManagerBothEdgeBrowserTest
   BackForwardTransitionAnimationManagerBothEdgeBrowserTest() {
     scoped_feature_list_.Reset();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kBackForwardTransitions,
+         {{"min-required-physical-ram-mb", "0"}}},
         {ui::kMirrorBackForwardGesturesInRTL, {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
@@ -4510,7 +4512,8 @@ class BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding
   BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding() {
     scoped_feature_list_.Reset();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kBackForwardTransitions,
+         {{"min-required-physical-ram-mb", "0"}}},
         {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
          {}},
         {features::kRenderDocument,

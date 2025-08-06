@@ -259,7 +259,7 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     @CommandLineFlags.Add({
-        "enable-features=BackForwardTransitions",
+        "enable-features=BackForwardTransitions:min-required-physical-ram-mb/0",
         "force-prefers-no-reduced-motion",
         // Resampling can make scroll offsets non-deterministic so turn it off.
         "disable-features=ResamplingScrollEvents",
