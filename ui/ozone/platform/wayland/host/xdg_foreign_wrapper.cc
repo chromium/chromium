@@ -106,6 +106,11 @@ class XdgForeignWrapperImpl
   void ExportSurfaceInternal(wl_surface* surface, OnHandleExported cb);
 
   void OnWindowRemoved(WaylandWindow* window) override {
+    // The root surface may have been destroyed by another observer during DnD.
+    if (!window->root_surface()) {
+      return;
+    }
+
     auto it =
         std::ranges::find(exported_surfaces_, window->root_surface()->surface(),
                           &ExportedSurface<ExportedType>::surface_for_export);
