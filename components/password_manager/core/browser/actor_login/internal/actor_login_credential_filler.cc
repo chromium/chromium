@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace actor_login {
 
@@ -31,6 +32,8 @@ ActorLoginCredentialFiller::~ActorLoginCredentialFiller() = default;
 void ActorLoginCredentialFiller::AttemptLogin(
     password_manager::PasswordManagerInterface* password_manager) {
   CHECK(password_manager);
+
+  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 
   password_manager::PasswordFormCache* form_cache =
       password_manager->GetPasswordFormCache();

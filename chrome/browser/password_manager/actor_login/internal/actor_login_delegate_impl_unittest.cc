@@ -38,6 +38,8 @@ using testing::Return;
 
 namespace {
 
+constexpr char kTestUrl[] = "https://example.com/login";
+
 class FakePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
@@ -92,6 +94,9 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
     profile_ = std::make_unique<TestingProfile>();
 
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+
+    content::WebContentsTester::For(web_contents_)
+        ->NavigateAndCommit(GURL(kTestUrl));
 
     delegate_ = static_cast<ActorLoginDelegateImpl*>(
         ActorLoginDelegateImpl::GetOrCreateForTesting(
@@ -178,8 +183,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       password_manager::features::kActorLogin);
-  Credential credential =
-      CreateTestCredential(u"username", GURL("https://example.com/login"));
+  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
 
   base::test::TestFuture<LoginStatusResultOrError> future;
   delegate_->AttemptLogin(credential, future.GetCallback());
@@ -194,8 +198,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
   tabs::MockTabInterface mock_tab;
-  Credential credential =
-      CreateTestCredential(u"username", GURL("https://example.com/login"));
+  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
 
   MockPasswordManager mock_password_manager;
   MockPasswordFormCache mock_form_cache;
@@ -217,7 +220,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
 TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
-  Credential credential;
+  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
 
   SetUpActorCredentialFillerDeps();
 
@@ -256,7 +259,7 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
   delegate_->GetCredentials(future2.GetCallback());
   ASSERT_TRUE(future2.Get().has_value());
 
-  Credential credential;
+  Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
 
   SetUpActorCredentialFillerDeps();
 
