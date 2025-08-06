@@ -1930,12 +1930,16 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   ai_submenu_prompts_dict.Set(
       "enabled", base::FeatureList::IsEnabled(
                      ::features::kDevToolsAiSubmenuPrompts));
+  ai_submenu_prompts_dict.Set("featureName",
+                              ::features::kDevToolsAiSubmenuPrompts.name);
   response_dict.Set("devToolsAiSubmenuPrompts",
                     std::move(ai_submenu_prompts_dict));
 
   base::Value::Dict ai_debug_with_ai_dict;
   ai_debug_with_ai_dict.Set("enabled", base::FeatureList::IsEnabled(
                                            ::features::kDevToolsAiDebugWithAi));
+  ai_debug_with_ai_dict.Set("featureName",
+                            ::features::kDevToolsAiDebugWithAi.name);
   response_dict.Set("devToolsAiDebugWithAi", std::move(ai_debug_with_ai_dict));
 
   base::Value response = base::Value(std::move(response_dict));
