@@ -24,12 +24,12 @@
 #include "third_party/pdfium/public/fpdf_transformpage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/codec/jpeg_codec.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 using printing::ConvertUnit;
 using printing::ConvertUnitFloat;
@@ -138,7 +138,7 @@ void TransformPDFPageForPrinting(
   ScalePdfRectangle(scale_factor, &source_clip_box);
 
   // Calculate the translation offset values.
-  gfx::PointF offset =
+  gfx::Vector2dF offset =
       fitted_scaling
           ? CalculateScaledClipBoxOffset(gfx_printed_rect, source_clip_box)
           : CalculateNonScaledClipBoxOffset(
@@ -154,11 +154,13 @@ void TransformPDFPageForPrinting(
   FPDFPage_SetMediaBox(page, 0, 0, page_size.width(), page_size.height());
   FPDFPage_SetCropBox(page, 0, 0, page_size.width(), page_size.height());
 
-  // Transformation is not required, return. Do this check only after updating
-  // the media box and crop box. For more detailed information, please refer to
-  // the comment block right before FPDF_SetMediaBox and FPDF_GetMediaBox calls.
-  if (scale_factor == 1.0f && offset.IsOrigin())
+  // Transformation is not required, so return early. Do this check only after
+  // updating the media box and crop box. For more detailed information, please
+  // refer to the comment block right before the FPDF_SetMediaBox() and
+  // FPDF_GetMediaBox() calls.
+  if (scale_factor == 1.0f && offset.IsZero()) {
     return;
+  }
 
   // All the positions have been calculated, now manipulate the PDF.
   const FS_MATRIX matrix = {scale_factor, 0.0f,       0.0f,

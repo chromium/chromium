@@ -5,8 +5,9 @@
 #ifndef PDF_PDF_TRANSFORM_H_
 #define PDF_PDF_TRANSFORM_H_
 
+#include "ui/gfx/geometry/vector2d_f.h"
+
 namespace gfx {
-class PointF;
 class Rect;
 class SizeF;
 }  // namespace gfx
@@ -63,8 +64,9 @@ void ScalePdfRectangle(float scale_factor, PdfRectangle* rect);
 // origin.
 // Returns the final translation offsets for the source clip box, relative to
 // the origin.
-gfx::PointF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
-                                         const PdfRectangle& source_clip_box);
+gfx::Vector2dF CalculateScaledClipBoxOffset(
+    const gfx::Rect& content_rect,
+    const PdfRectangle& source_clip_box);
 
 // Calculate the clip box offset for a page that does not need to be scaled.
 //
@@ -76,7 +78,7 @@ gfx::PointF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
 // origin.
 // Returns the final translation offsets for the source clip box, relative to
 // the origin.
-gfx::PointF CalculateNonScaledClipBoxOffset(
+gfx::Vector2dF CalculateNonScaledClipBoxOffset(
     int rotation,
     int page_width,
     int page_height,

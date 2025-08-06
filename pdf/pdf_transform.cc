@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
 
@@ -94,19 +94,20 @@ void ScalePdfRectangle(float scale_factor, PdfRectangle* rect) {
   rect->top *= scale_factor;
 }
 
-gfx::PointF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
-                                         const PdfRectangle& source_clip_box) {
+gfx::Vector2dF CalculateScaledClipBoxOffset(
+    const gfx::Rect& content_rect,
+    const PdfRectangle& source_clip_box) {
   const float clip_box_width = source_clip_box.right - source_clip_box.left;
   const float clip_box_height = source_clip_box.top - source_clip_box.bottom;
 
   // Center the intended clip region to real clip region.
-  return gfx::PointF((content_rect.width() - clip_box_width) / 2 +
-                         content_rect.x() - source_clip_box.left,
-                     (content_rect.height() - clip_box_height) / 2 +
-                         content_rect.y() - source_clip_box.bottom);
+  return gfx::Vector2dF((content_rect.width() - clip_box_width) / 2 +
+                            content_rect.x() - source_clip_box.left,
+                        (content_rect.height() - clip_box_height) / 2 +
+                            content_rect.y() - source_clip_box.bottom);
 }
 
-gfx::PointF CalculateNonScaledClipBoxOffset(
+gfx::Vector2dF CalculateNonScaledClipBoxOffset(
     int rotation,
     int page_width,
     int page_height,
@@ -114,15 +115,15 @@ gfx::PointF CalculateNonScaledClipBoxOffset(
   // Align the intended clip region to left-top corner of real clip region.
   switch (rotation) {
     case 0:
-      return gfx::PointF(-1 * source_clip_box.left,
-                         page_height - source_clip_box.top);
+      return gfx::Vector2dF(-1 * source_clip_box.left,
+                            page_height - source_clip_box.top);
     case 1:
-      return gfx::PointF(0, -1 * source_clip_box.bottom);
+      return gfx::Vector2dF(0, -1 * source_clip_box.bottom);
     case 2:
-      return gfx::PointF(page_width - source_clip_box.right, 0);
+      return gfx::Vector2dF(page_width - source_clip_box.right, 0);
     case 3:
-      return gfx::PointF(page_height - source_clip_box.right,
-                         page_width - source_clip_box.top);
+      return gfx::Vector2dF(page_height - source_clip_box.right,
+                            page_width - source_clip_box.top);
     default:
       NOTREACHED();
   }

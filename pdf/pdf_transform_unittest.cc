@@ -6,9 +6,9 @@
 
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
 
@@ -182,12 +182,11 @@ TEST(PdfTransformTest, CalculateClipBoxBoundary) {
 
 TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
   constexpr gfx::Rect rect(kDefaultWidth, kDefaultHeight);
-  PdfRectangle clip_box;
-  gfx::PointF offset;
 
   // `rect` and `clip_box` are the same size.
+  PdfRectangle clip_box;
   InitializeBoxToDefaultPortraitValues(&clip_box);
-  offset = CalculateScaledClipBoxOffset(rect, clip_box);
+  gfx::Vector2dF offset = CalculateScaledClipBoxOffset(rect, clip_box);
   EXPECT_FLOAT_EQ(0, offset.x());
   EXPECT_FLOAT_EQ(0, offset.y());
 
@@ -202,12 +201,11 @@ TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
 TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   int page_width = kDefaultWidth;
   int page_height = kDefaultHeight;
-  PdfRectangle clip_box;
-  gfx::PointF offset;
 
   // `rect`, page size and `clip_box` are the same.
+  PdfRectangle clip_box;
   InitializeBoxToDefaultPortraitValues(&clip_box);
-  offset =
+  gfx::Vector2dF offset =
       CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box);
   EXPECT_FLOAT_EQ(0, offset.x());
   EXPECT_FLOAT_EQ(0, offset.y());
@@ -271,17 +269,16 @@ TEST(PdfTransformTest, ReversedMediaBox) {
   int page_width = kDefaultWidth;
   int page_height = kDefaultHeight;
   constexpr gfx::Rect rect(kDefaultWidth, kDefaultHeight);
-  PdfRectangle clip_box;
-  gfx::PointF offset;
 
   constexpr PdfRectangle expected_media_box_b491160 = {0, -792, 612, 0};
   PdfRectangle media_box_b491160 = {0, 0, 612, -792};
+  PdfRectangle clip_box;
   CalculateMediaBoxAndCropBox(false, true, false, &media_box_b491160,
                               &clip_box);
   ExpectBoxesAreEqual(expected_media_box_b491160, media_box_b491160);
   ExpectBoxesAreEqual(expected_media_box_b491160, clip_box);
 
-  offset = CalculateScaledClipBoxOffset(rect, media_box_b491160);
+  gfx::Vector2dF offset = CalculateScaledClipBoxOffset(rect, media_box_b491160);
   EXPECT_FLOAT_EQ(0, offset.x());
   EXPECT_FLOAT_EQ(792, offset.y());
 
