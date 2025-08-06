@@ -41,7 +41,10 @@ mojom::ActionResultCode LoginResultToActorResult(
   switch (login_result) {
     case actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled:
       return mojom::ActionResultCode::kOk;
+    // TODO(crbug.com/427817201):Define ActionResultCode errors specific to
+    // actor login errors.
     case actor_login::LoginStatusResult::kErrorNoSigninForm:
+    case actor_login::LoginStatusResult::kErrorInvalidCredential:
       return mojom::ActionResultCode::kError;
   }
 }

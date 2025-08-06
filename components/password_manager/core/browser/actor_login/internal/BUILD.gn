@@ -13,6 +13,8 @@ source_set("delegate") {
     "actor_login_delegate.h",
     "actor_login_get_credentials_helper.cc",
     "actor_login_get_credentials_helper.h",
+    "actor_login_util.cc",
+    "actor_login_util.h",
   ]
 
   visibility = [

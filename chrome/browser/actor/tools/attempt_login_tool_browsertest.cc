@@ -198,6 +198,21 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       InvalidCredentialForGivenUrl) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kErrorInvalidCredential);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+}
+
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");

@@ -54,6 +54,19 @@ class MockStubPasswordManagerDriver
               (const, override));
 };
 
+password_manager::PasswordForm CreateSavedPasswordForm(
+    const GURL& url,
+    const std::u16string& username,
+    const std::u16string& password = u"") {
+  password_manager::PasswordForm form;
+  form.url = url;
+  form.signon_realm = password_manager::GetSignonRealm(url);
+  form.username_value = username;
+  form.password_value = password;
+  form.match_type = PasswordForm::MatchType::kExact;
+  return form;
+}
+
 }  // namespace
 
 class ActorLoginCredentialFillerTest : public ::testing::Test {
@@ -81,6 +94,7 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
         std::make_unique<PasswordSaveManagerImpl>(&stub_client_),
         /*metrics_recorder=*/nullptr);
     // Force form parsing, otherwise there will be no parsed observed form.
+    form_manager->DisableFillingServerPredictionsForTesting();
     form_fetcher_.NotifyFetchCompleted();
     return form_manager;
   }
@@ -175,6 +189,80 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
   filler.AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
+}
+
+TEST_F(ActorLoginCredentialFillerTest,
+       CredentialNotSavedForOrigin_MultipleCredentials) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  const std::u16string username_to_find = u"targetuser";
+  const Credential credential =
+      CreateTestCredential(username_to_find, origin.GetURL());
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+  std::vector<password_manager::PasswordForm> saved_forms;
+  saved_forms.push_back(CreateSavedPasswordForm(origin.GetURL(), u"user1"));
+  saved_forms.push_back(CreateSavedPasswordForm(origin.GetURL(), u"user2"));
+  form_fetcher_.SetBestMatches(saved_forms);  // No matching username
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+      .WillOnce(Return(base::span(form_managers)));
+  filler.AttemptLogin(&mock_password_manager_);
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
+}
+
+TEST_F(ActorLoginCredentialFillerTest,
+       CredentialNotSavedForOrigin_NoSavedCredentialsForOrigin) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  const std::u16string username = u"testuser";
+  const Credential credential = CreateTestCredential(username, origin.GetURL());
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+  // No saved forms for this origin (empty vector)
+  std::vector<password_manager::PasswordForm> saved_forms;
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+      .WillOnce(Return(base::span(form_managers)));
+  filler.AttemptLogin(&mock_password_manager_);
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
+}
+
+TEST_F(ActorLoginCredentialFillerTest,
+       CredentialNotSavedForOrigin_SuppliedAndStoredCredentialOriginDiffers) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  const std::u16string username = u"testuser";
+  const Credential credential =
+      CreateTestCredential(username, GURL("https://otherexample.com"));
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+  // Prepare a saved credential that does match the requested username, but not
+  // the origin
+  std::vector<password_manager::PasswordForm> saved_forms;
+  saved_forms.push_back(CreateSavedPasswordForm(origin.GetURL(), username));
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+      .WillOnce(Return(base::span(form_managers)));
+  filler.AttemptLogin(&mock_password_manager_);
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
 }
 
 }  // namespace actor_login

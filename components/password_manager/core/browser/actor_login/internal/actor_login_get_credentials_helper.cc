@@ -7,6 +7,7 @@
 #include <ranges>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_util.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -24,8 +25,7 @@ Credential PasswordFormToCredential(
   Credential credential;
   credential.username = form.username_value;
   // TODO(crbug.com/427171031): Clarify the format.
-  credential.source_site_or_app =
-      base::UTF8ToUTF16(form.url.GetWithEmptyPath().spec());
+  credential.source_site_or_app = GetSourceSiteOrAppFromUrl(form.url);
   // TODO(crbug.com/427171031): Use PasswordManager to set the real value here.
   credential.immediatelyAvailableToLogin = true;
   return credential;

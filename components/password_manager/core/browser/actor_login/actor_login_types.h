@@ -67,6 +67,7 @@ using CredentialsOrErrorReply = base::OnceCallback<void(CredentialsOrError)>;
 enum class LoginStatusResult {
   kSuccessUsernameAndPasswordFilled,
   kErrorNoSigninForm,
+  kErrorInvalidCredential,
 };
 
 using LoginStatusResultOrError =
