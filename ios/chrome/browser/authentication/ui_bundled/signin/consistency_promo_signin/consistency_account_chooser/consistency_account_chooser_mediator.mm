@@ -53,8 +53,8 @@
 }
 
 - (void)dealloc {
-  DCHECK(!_identityManager);
-  DCHECK(!_accountManagerService);
+  CHECK(!_identityManager, base::NotFatalUntil::M145);
+  CHECK(!_accountManagerService, base::NotFatalUntil::M145);
 }
 
 - (void)disconnect {

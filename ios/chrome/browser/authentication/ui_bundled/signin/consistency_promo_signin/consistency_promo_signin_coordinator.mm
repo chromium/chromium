@@ -451,6 +451,10 @@
 
 - (void)consistencyDefaultAccountCoordinatorOpenIdentityChooser:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
+  if (self.accountChooserCoordinator) {
+    // This can occur if the user double tap on the button.
+    return;
+  }
   self.accountChooserCoordinator = [[ConsistencyAccountChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
