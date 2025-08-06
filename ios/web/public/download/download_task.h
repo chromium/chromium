@@ -25,6 +25,8 @@ namespace web {
 class DownloadTaskObserver;
 class WebState;
 
+// test code
+
 // Provides API for a single browser download task. This is the model class that
 // stores all the state for a download. Sequence-affine.
 class DownloadTask {
