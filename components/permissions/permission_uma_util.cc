@@ -2102,4 +2102,11 @@ void PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
       base::TimeTicks::Now() - snapshot_inquire_start_time);
 }
 
+// static
+void PermissionUmaUtil::RecordLanguageDetectionStatus(
+    LanguageDetectionStatus status) {
+  base::UmaHistogramEnumeration("Permissions.AIv4.LanguageDetectionStatus",
+                                status);
+}
+
 }  // namespace permissions

@@ -5,20 +5,32 @@
 #include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
 
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/translate/core/browser/language_state.h"
 
+using ::permissions::LanguageDetectionStatus;
+constexpr auto& RecordLanguageDetectionStatus =
+    ::permissions::PermissionUmaUtil::RecordLanguageDetectionStatus;
+
 namespace permissions {
-LanguageDetectionObserver::LanguageDetectionObserver(
+
+LanguageDetectionObserver::LanguageDetectionObserver() = default;
+
+LanguageDetectionObserver::~LanguageDetectionObserver() = default;
+
+void LanguageDetectionObserver::Init(
     content::WebContents* web_contents,
     base::OnceCallback<void()> on_english_detected,
-    base::OnceCallback<void()> on_fallback)
-    : web_contents_(web_contents),
-      on_english_detected_callback_(std::move(on_english_detected)),
-      fallback_callback_(std::move(on_fallback)) {
+    base::OnceCallback<void()> on_fallback) {
+  web_contents_ = web_contents;
+  on_english_detected_callback_ = std::move(on_english_detected);
+  fallback_callback_ = std::move(on_fallback);
   std::string_view source_language =
       chrome_translate_client()->GetLanguageState().source_language();
 
   if (source_language.starts_with("en")) {
+    RecordLanguageDetectionStatus(
+        LanguageDetectionStatus::kImmediatelyAvailableEnglish);
     std::move(on_english_detected_callback_).Run();
   } else if (source_language.empty()) {
     chrome_translate_client()
@@ -31,37 +43,51 @@ LanguageDetectionObserver::LanguageDetectionObserver(
                          base::BindOnce(&LanguageDetectionObserver::OnTimeout,
                                         weak_ptr_factory_.GetWeakPtr()));
   } else {
+    RecordLanguageDetectionStatus(
+        LanguageDetectionStatus::kImmediatelyAvailableNotEnglish);
     std::move(fallback_callback_).Run();
   }
 }
 
-LanguageDetectionObserver::~LanguageDetectionObserver() {
+void LanguageDetectionObserver::Reset() {
   RemoveAsObserver();
+  timeout_timer_.Stop();
+  web_contents_ = nullptr;
 }
-
 ChromeTranslateClient* LanguageDetectionObserver::chrome_translate_client() {
   return ChromeTranslateClient::FromWebContents(web_contents_);
 }
 
 void LanguageDetectionObserver::RemoveAsObserver() {
-  chrome_translate_client()
-      ->GetTranslateDriver()
-      ->RemoveLanguageDetectionObserver(this);
+  if (web_contents_) {
+    chrome_translate_client()
+        ->GetTranslateDriver()
+        ->RemoveLanguageDetectionObserver(this);
+  }
 }
 
 void LanguageDetectionObserver::OnTimeout() {
+  RecordLanguageDetectionStatus(LanguageDetectionStatus::kNoResultDueToTimeout);
   if (on_english_detected_callback_) {
     std::move(fallback_callback_).Run();
   }
   RemoveAsObserver();
 }
 
+bool LanguageDetectionObserver::WaitingForLanguageDetection() {
+  return timeout_timer_.IsRunning();
+}
+
 void LanguageDetectionObserver::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (details.adopted_language.starts_with("en") &&
       on_english_detected_callback_) {
+    RecordLanguageDetectionStatus(
+        LanguageDetectionStatus::kDelayedDetectedEnglish);
     std::move(on_english_detected_callback_).Run();
   } else if (on_english_detected_callback_) {
+    RecordLanguageDetectionStatus(
+        LanguageDetectionStatus::kDelayedDetectedNotEnglish);
     std::move(fallback_callback_).Run();
   }
   timeout_timer_.Stop();

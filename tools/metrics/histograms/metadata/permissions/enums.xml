@@ -100,6 +100,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Checked dont launch"/>
 </enum>
 
+<!-- LINT.IfChange(LanguageDetectionStatus) -->
+
+<enum name="LanguageDetectionStatus">
+  <int value="0" label="NoResultDueToTimeout"/>
+  <int value="1" label="ImmediatelyAvailableEnglish"/>
+  <int value="2" label="ImmediatelyAvailableNotEnglish"/>
+  <int value="3" label="DelayedDetectedEnglish"/>
+  <int value="4" label="DelayedDetectedNotEnglish"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:LanguageDetectionStatus) -->
+
 <enum name="OneTimePermissionEvent">
   <summary>One-time permission events.</summary>
   <int value="0" label="Granted one time"/>

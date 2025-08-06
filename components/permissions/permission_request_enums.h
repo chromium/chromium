@@ -50,6 +50,36 @@ enum class PermissionPredictionSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionPredictionSource)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Used for UMA histograms to record the status of the language detection
+// required for permissions AIv4 model execution workflow.
+// LINT.IfChange(LanguageDetectionStatus)
+enum LanguageDetectionStatus {
+  kNoResultDueToTimeout = 0,
+  kImmediatelyAvailableEnglish = 1,
+  kImmediatelyAvailableNotEnglish = 2,
+  kDelayedDetectedEnglish = 3,
+  kDelayedDetectedNotEnglish = 4,
+
+  kMaxValue = kDelayedDetectedNotEnglish,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:LanguageDetectionStatus)
+
+// Used for UMA histograms to record model execution stats for the different
+// models we use for a permission prediction.
+// LINT.IfChange(PredictionModelType)
+enum class PredictionModelType {
+  kUnknown = 0,
+  kServerSideCpssV3Model = 1,
+  kOnDeviceCpssV1Model = 2,
+  kOnDeviceAiV1Model = 3,
+  kOnDeviceAiV3Model = 4,
+  kOnDeviceAiV4Model = 5,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PredictionModels)
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_ENUMS_H_

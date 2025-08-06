@@ -114,6 +114,10 @@ class PredictionBasedPermissionUiSelector
   void set_inner_text_for_testing(
       content_extraction::InnerTextResult inner_text);
 
+  void set_language_detection_observer_for_testing(
+      std::unique_ptr<permissions::LanguageDetectionObserver>
+          language_detection_observer);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       PredictionBasedPermissionUiExpectedPredictionSourceTest,
@@ -286,7 +290,7 @@ class PredictionBasedPermissionUiSelector
   // For the Aiv4 execution flow we use a text embeddings model that only works
   // for the English language. Therefore we use an observer to wait for language
   // detection to finish (in case its not already done when we need this).
-  std::optional<permissions::LanguageDetectionObserver>
+  std::unique_ptr<permissions::LanguageDetectionObserver>
       language_detection_observer_;
 #endif
 

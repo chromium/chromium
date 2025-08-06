@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PredictionService"/>
 </variants>
 
-<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PredictionModelType) -->
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PredictionModelType) -->
 
 <variants name="PromptDisposition">
   <variant name="AnchoredBubble"/>
@@ -477,6 +477,17 @@ chromium-metrics-reviews@google.com.
     Records whether a session was created successfully for the on-device AIv1
     model each time we inquire the model. We also log failures when the model is
     not available.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv4.LanguageDetectionStatus"
+    enum="LanguageDetectionStatus" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the status of asynchronous language detection required during the
+    AIv4 model execution flow.
   </summary>
 </histogram>
 
