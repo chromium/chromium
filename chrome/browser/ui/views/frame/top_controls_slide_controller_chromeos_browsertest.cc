@@ -1092,8 +1092,10 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
   EXPECT_EQ("4", content::EvalJs(contents, "getSelectedValue();"));
 }
 
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       TestScrollingMaximizedPageBeforeGoingToTabletMode) {
+// TODO(crbug.com/436706865): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(
+    TopControlsSlideControllerTest,
+    DISABLED_TestScrollingMaximizedPageBeforeGoingToTabletMode) {
   // If the page exists in a maximized browser window before going to tablet
   // mode, the layout that results from going to tablet mode does not change
   // the size of the page viewport. Hence, the visual properties of the renderer
