@@ -306,6 +306,9 @@ export class SettingsSwitchAccessSetupGuideDialogElement extends
         break;
       case SetupPageId.ASSIGN_PREVIOUS:
         action = SwitchAccessCommand.PREVIOUS;
+        break;
+      default:
+        break;
     }
 
     if (action) {

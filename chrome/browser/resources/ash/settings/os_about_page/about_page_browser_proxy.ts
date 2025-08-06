@@ -7,6 +7,7 @@
  * the browser.
  */
 
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface RegulatoryInfo {
@@ -110,6 +111,8 @@ export function browserChannelToI18nId(
       return 'aboutChannelLongTermSupportCandidate';
     case BrowserChannel.LTS:
       return 'aboutChannelLongTermSupport';
+    default:
+      assertNotReached();
   }
 }
 

@@ -349,6 +349,8 @@ export class FaceGazeAddActionDialogElement extends
           case 'meta':
             newKeyCombination.modifiers!.search = true;
             break;
+          default:
+            break;
         }
       });
     }

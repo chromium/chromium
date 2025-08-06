@@ -104,6 +104,8 @@ export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
         this.showError_ = true;
         console.error('Internal error while setting local password');
         return;
+      default:
+        break;
     }
   }
 

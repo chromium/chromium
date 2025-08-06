@@ -160,6 +160,8 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
         case ConfigureResult.kFatalError:
           console.error('Error removing Password');
           break;
+        default:
+          break;
       }
     }
 

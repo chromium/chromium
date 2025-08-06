@@ -238,6 +238,8 @@ export class SettingsSwitchAccessActionAssignmentPaneElement extends
       case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
         this.fireExitPane_();
         break;
+      default:
+        break;
     }
   }
 

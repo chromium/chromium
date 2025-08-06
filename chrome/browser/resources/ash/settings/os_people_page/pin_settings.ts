@@ -247,6 +247,8 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
       case ConfigureResult.kFatalError:
         console.error('Error removing PIN');
         break;
+      default:
+        break;
     }
 
     // We always close the "more" menu, even when removePin call didn't work:

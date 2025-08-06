@@ -160,6 +160,8 @@ export class SettingsPrivacyHubAppPermissionRow extends
       case TriState.kAsk:
         this.permissionText_ = this.i18n('privacyHubPermissionAskText');
         break;
+      default:
+        break;
     }
   }
 

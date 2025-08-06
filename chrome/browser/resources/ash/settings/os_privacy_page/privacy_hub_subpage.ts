@@ -17,6 +17,7 @@ import './metrics_consent_toggle_button.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -296,6 +297,8 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         return this.i18n('geolocationAreaOnlyAllowedForSystemSubtext');
       case GeolocationAccessLevel.DISALLOWED:
         return this.i18n('geolocationAreaDisallowedSubtext');
+      default:
+        assertNotReached();
     }
   }
 
