@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -18,7 +16,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.KEY_CCT_MINIMIZATION_SYSTEM_TIME;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.KEY_IS_CCT_MINIMIZED;
 import static org.chromium.chrome.browser.tab.TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
@@ -170,23 +167,12 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Now, simulate Activity exiting PiP.
-        var minimizationEventsWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.MinimizedEvents",
-                        CustomTabMinimizationManager.MinimizationEvents.MAXIMIZE);
-        var timeElapsedWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.TimeElapsedSinceMinimized.Maximized");
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
         verify(mWebContents).setAudioMuted(false);
         verify(mConnection).onUnminimized(any());
         verify(mMinimizationObserver).onMinimizationChanged(false);
-        minimizationEventsWatcher.assertExpected(
-                "CustomTabs.MinimizedEvents.MAXIMIZE should be recorded once");
-        timeElapsedWatcher.assertExpected(
-                "CustomTabs.TimeElapsedSinceMinimized.Maximized should be recorded once");
     }
 
     @Test
@@ -195,23 +181,11 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Now, simulate PiP being dismissed by the user.
-        var minimizationEventsWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.MinimizedEvents",
-                        CustomTabMinimizationManager.MinimizationEvents.DESTROY);
-        var timeElapsedWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.TimeElapsedSinceMinimized.Destroyed");
         mActivityScenarioRule.getScenario().moveToState(State.CREATED);
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab, never()).show(anyInt(), anyInt());
         verify(mCloseTabRunnable).run();
-
-        minimizationEventsWatcher.assertExpected(
-                "CustomTabs.MinimizedEvents.DESTROY should be recorded once");
-        timeElapsedWatcher.assertExpected(
-                "CustomTabs.TimeElapsedSinceMinimized.Destroyed should be recorded once");
     }
 
     @Test
@@ -329,7 +303,6 @@ public class CustomTabMinimizationManagerUnitTest {
         mManager.onSaveInstanceState(outBundle);
 
         assertTrue(outBundle.getBoolean(KEY_IS_CCT_MINIMIZED));
-        assertThat(outBundle.getLong(KEY_CCT_MINIMIZATION_SYSTEM_TIME), greaterThan(0L));
         assertEquals(TITLE, outBundle.getString(MinimizedCardProperties.TITLE.toString()));
         assertEquals(HOST, outBundle.getString(MinimizedCardProperties.URL.toString()));
     }
@@ -338,7 +311,6 @@ public class CustomTabMinimizationManagerUnitTest {
     public void testInitWithInstanceState() {
         var bundle = new Bundle();
         bundle.putBoolean(KEY_IS_CCT_MINIMIZED, true);
-        bundle.putLong(KEY_CCT_MINIMIZATION_SYSTEM_TIME, 999999L);
         bundle.putString(MinimizedCardProperties.TITLE.toString(), TITLE);
         bundle.putString(MinimizedCardProperties.URL.toString(), HOST);
 

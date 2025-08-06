@@ -921,29 +921,6 @@ chromium-metrics-reviews@google.com.
   <token key="suffix" variants="StartupSuffix"/>
 </histogram>
 
-<histogram name="CustomTabs.TimeElapsedSinceMinimized.Destroyed" units="s"
-    expires_after="2025-12-28">
-  <owner>katzz@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Android only. Starts tracking system time when minimization begins and
-    records the difference if the PiP window is removed through any event EXCEPT
-    maximizing (un-PiP). This means the Custom Tab activity would also be
-    destroyed. Emitted when CCT PiP windows are destroyed.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.TimeElapsedSinceMinimized.Maximized" units="s"
-    expires_after="2025-06-22">
-  <owner>katzz@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Android only. Starts tracking system time when minimization begins and
-    records the difference if the PiP window is maximized (the tab goes back to
-    its original state). Emitted when tab is maximized.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.TimeSpentInEngagementEventIpc" units="ms"
     expires_after="2026-02-01">
   <owner>nafisabedin@google.com</owner>
