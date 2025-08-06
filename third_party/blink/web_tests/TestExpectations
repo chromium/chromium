@@ -1529,6 +1529,7 @@ crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 
 # Interestfor related tests
 crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
+crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-pseudo-element-appearance.tentative.html [ Pass Failure ]
 
 crbug.com/421119389 external/wpt/pointerevents/crashtests/longpress-crash.html [ Crash ]
 
