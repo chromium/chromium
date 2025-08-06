@@ -71,6 +71,27 @@ chromium-metrics-reviews@google.com.
       summary="Promotion for Close Unused Tabs in the app menu."/>
 </variants>
 
+<!-- LINT.IfChange(NtpPromoActions) -->
+
+<variants name="NtpPromoAction">
+  <variant name="Clicked" summary="Promo was clicked"/>
+  <variant name="Completed" summary="Promo was completed"/>
+  <variant name="Shown" summary="Promo was shown"/>
+  <variant name="ShownTopSpot" summary="Promo was shown in the top spot"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/user_education/common/ntp_promo/ntp_promo_controller.cc:NtpPromoActions) -->
+
+<!-- LINT.IfChange(NtpPromoIdentifiers) -->
+
+<variants name="NtpPromoIdentifier">
+  <variant name="Customization" summary="Customize Chrome promo"/>
+  <variant name="Extensions" summary="Extensions promo"/>
+  <variant name="SignIn" summary="Sign-In promo"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/user_education/ntp_promo_identifiers.h:NtpPromoIdentifiers) -->
+
 <variants name="TutorialID">
   <variant name="" summary="any tutorial"/>
   <variant name="CustomizeChromeSidePanel"
@@ -316,6 +337,19 @@ chromium-metrics-reviews@google.com.
     Completed&quot;.
   </summary>
   <token key="NewBadgeFeature" variants="NewBadgeFeature"/>
+</histogram>
+
+<histogram
+    name="UserEducation.NtpPromos.Promos.{NtpPromoIdentifier}.{NtpPromoAction}"
+    units="int" expires_after="2026-09-01">
+  <owner>cjgrant@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the NTP {NtpPromoIdentifier} promo sees a {NtpPromoAction}
+    event. Logged on desktop platforms.
+  </summary>
+  <token key="NtpPromoIdentifier" variants="NtpPromoIdentifier"/>
+  <token key="NtpPromoAction" variants="NtpPromoAction"/>
 </histogram>
 
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under1Hour"

@@ -5,6 +5,7 @@
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -23,8 +24,8 @@ namespace {
 using ::testing::_;
 using ::testing::Return;
 
-constexpr char kPromoId[] = "promo";
-constexpr char kPromo2Id[] = "promo2";
+constexpr char kPromoId[] = "TestPromo";
+constexpr char kPromo2Id[] = "TestPromo2";
 
 constexpr int kSessionNumber = 10;
 
@@ -101,19 +102,32 @@ TEST_F(NtpPromoControllerTest, UnclickedCompletedPromoHidden) {
 
 TEST_F(NtpPromoControllerTest, ClickedCompletedPromoShows) {
   RegisterPromo(kPromoId, kCompleted);
+  base::HistogramTester histogram_tester;
 
   // Simulate that the user clicked on the promo.
   user_education::KeyedNtpPromoData keyed_data;
   keyed_data.last_clicked = base::Time::Now();
   storage_service_.SaveNtpPromoData(kPromoId, keyed_data);
 
+  // Generating promos is currently where "completed promo" detection lives.
   const auto showable_promos = controller_.GenerateShowablePromos(nullptr);
   EXPECT_TRUE(showable_promos.pending.empty());
   EXPECT_EQ(showable_promos.completed.size(), 1u);
+  auto completion_time = base::Time::Now();
 
-  // Ensure the completion time pref is recorded.
-  const auto prefs = storage_service_.ReadNtpPromoData(kPromoId);
-  EXPECT_EQ(prefs.value().completed, base::Time::Now());
+  // Ensure the completion is recorded.
+  auto prefs = storage_service_.ReadNtpPromoData(kPromoId);
+  EXPECT_EQ(prefs.value().completed, completion_time);
+  histogram_tester.ExpectTotalCount(
+      "UserEducation.NtpPromos.Promos.TestPromo.Completed", 1);
+
+  // Generate promos again. Completion data shouldn't change.
+  task_environment_.AdvanceClock(base::Days(1));
+  controller_.GenerateShowablePromos(nullptr);
+  prefs = storage_service_.ReadNtpPromoData(kPromoId);
+  EXPECT_EQ(prefs.value().completed, completion_time);
+  histogram_tester.ExpectTotalCount(
+      "UserEducation.NtpPromos.Promos.TestPromo.Completed", 1);
 }
 
 // Once a promo has been declared completed, it should continue to show as
@@ -160,10 +174,14 @@ TEST_F(NtpPromoControllerTest, PromoClicked) {
   RegisterPromo(kPromoId, NtpPromoSpecification::EligibilityCallback(),
                 base::DoNothing(), action_callback.Get());
   EXPECT_CALL(action_callback, Run(_));
+  base::HistogramTester histogram_tester;
+
   controller_.OnPromoClicked(kPromoId, nullptr);
 
   const auto prefs = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(prefs.value().last_clicked, base::Time::Now());
+  histogram_tester.ExpectUniqueSample(
+      "UserEducation.NtpPromos.Promos.TestPromo.Clicked", true, 1);
 }
 
 TEST_F(NtpPromoControllerTest, ClickedPromoHiddenTemporarily) {
@@ -246,16 +264,28 @@ TEST_F(NtpPromoControllerTest, TopSpotPromoShownReclaimsTopSpot) {
   EXPECT_EQ(1, new_value->top_spot_session_count);
 }
 
-TEST_F(NtpPromoControllerTest, OnMultiplePromosShown) {
+TEST_F(NtpPromoControllerTest, ShownPromos) {
   RegisterPromo(kPromoId, kEligible);
   RegisterPromo(kPromo2Id, kEligible);
+  base::HistogramTester histogram_tester;
   const auto old_value2 = storage_service_.ReadNtpPromoData(kPromo2Id);
+
   controller_.OnPromosShown({kPromoId, kPromo2Id}, {});
+
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
   const auto new_value2 = storage_service_.ReadNtpPromoData(kPromo2Id);
   EXPECT_EQ(10, new_value->last_top_spot_session);
   EXPECT_EQ(1, new_value->top_spot_session_count);
   EXPECT_EQ(old_value2, new_value2);
+
+  histogram_tester.ExpectUniqueSample(
+      "UserEducation.NtpPromos.Promos.TestPromo.Shown", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "UserEducation.NtpPromos.Promos.TestPromo.ShownTopSpot", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "UserEducation.NtpPromos.Promos.TestPromo2.Shown", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "UserEducation.NtpPromos.Promos.TestPromo2.ShownTopSpot", 0);
 }
 
 TEST_F(NtpPromoControllerTest, ShownCallbackInvoked) {

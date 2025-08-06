@@ -4,6 +4,8 @@
 
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_order.h"
@@ -21,6 +23,14 @@ using Eligibility = NtpPromoSpecification::Eligibility;
 constexpr int kNumSessionsBetweenTopPromoRotation = 3;
 constexpr base::TimeDelta kCompletedPromoShowDuration = base::Days(7);
 constexpr base::TimeDelta kClickedPromoHideDuration = base::Days(90);
+
+constexpr char kPromoMetricPrefix[] = "UserEducation.NtpPromos.Promos.";
+// LINT.IfChange(NtpPromoActions)
+constexpr char kPromoMetricShownSuffix[] = ".Shown";
+constexpr char kPromoMetricShownTopSpotSuffix[] = ".ShownTopSpot";
+constexpr char kPromoMetricClickedSuffix[] = ".Clicked";
+constexpr char kPromoMetricCompletedSuffix[] = ".Completed";
+// LINT.ThenChange(//tools/metrics/histograms/metadata/user_education/histograms.xml:NtpPromoActions)
 
 // Decides whether a promo should be shown or not, based on the supplied
 // data. If this logic becomes more complex, consider pulling it out to a
@@ -50,6 +60,27 @@ bool ShouldShowPromo(const KeyedNtpPromoData& prefs,
   }
 
   return true;
+}
+
+void LogPromoMetric(const NtpPromoIdentifier& id, const std::string& suffix) {
+  base::UmaHistogramBoolean(base::StrCat({kPromoMetricPrefix, id, suffix}),
+                            true);
+}
+
+void LogPromoShown(const NtpPromoIdentifier& id) {
+  LogPromoMetric(id, kPromoMetricShownSuffix);
+}
+
+void LogPromoShownTopSpot(const NtpPromoIdentifier& id) {
+  LogPromoMetric(id, kPromoMetricShownTopSpotSuffix);
+}
+
+void LogPromoClicked(const NtpPromoIdentifier& id) {
+  LogPromoMetric(id, kPromoMetricClickedSuffix);
+}
+
+void LogPromoCompleted(const NtpPromoIdentifier& id) {
+  LogPromoMetric(id, kPromoMetricCompletedSuffix);
 }
 
 }  // namespace
@@ -124,6 +155,7 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
         !prefs.last_clicked.is_null() && prefs.completed.is_null()) {
       prefs.completed = now;
       storage_service_->SaveNtpPromoData(id, prefs);
+      LogPromoCompleted(id);
     }
 
     if (!ShouldShowPromo(prefs, eligibility, now)) {
@@ -153,12 +185,14 @@ void NtpPromoController::OnPromosShown(
   // updated. However, metrics should be output for every promo shown in this
   // way.
   if (!eligible_shown.empty()) {
-    OnPromoShownInTopSpot(eligible_shown[0]);
-
     for (const auto& id : eligible_shown) {
+      LogPromoShown(id);
+
       const auto* spec = registry_->GetNtpPromoSpecification(id);
       spec->show_callback().Run();
     }
+
+    OnPromoShownInTopSpot(eligible_shown[0]);
   }
 }
 
@@ -170,6 +204,7 @@ void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id,
       storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
   prefs.last_clicked = base::Time::Now();
   storage_service_->SaveNtpPromoData(id, prefs);
+  LogPromoClicked(id);
 }
 
 // static
@@ -196,6 +231,7 @@ void NtpPromoController::OnPromoShownInTopSpot(NtpPromoIdentifier id) {
     data.top_spot_session_count++;
     storage_service_->SaveNtpPromoData(id, data);
   }
+  LogPromoShownTopSpot(id);
 }
 
 std::vector<NtpShowablePromo> NtpPromoController::MakeShowablePromos(
