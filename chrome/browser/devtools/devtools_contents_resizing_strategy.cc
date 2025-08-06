@@ -49,11 +49,10 @@ void ApplyDevToolsContentsResizingStrategy(
     return;
   }
 
-  int left =
-      std::min(bounds.x() + container_bounds.x(), container_bounds.width());
-  int top =
-      std::min(bounds.y() + container_bounds.y(), container_bounds.height());
-  int width = std::min(bounds.width(), container_bounds.width() - left);
-  int height = std::min(bounds.height(), container_bounds.height() - top);
-  new_contents_bounds->SetRect(left, top, width, height);
+  int left = std::min(bounds.x(), container_bounds.width());
+  int top = std::min(bounds.y(), container_bounds.height());
+  int width = std::min(bounds.width(), container_bounds.width());
+  int height = std::min(bounds.height(), container_bounds.height());
+  new_contents_bounds->SetRect(left + container_bounds.x(),
+                               top + container_bounds.y(), width, height);
 }
