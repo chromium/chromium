@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
@@ -839,12 +840,14 @@ void TabGroupEditorBubbleView::RecentActivityPressed() {
       BrowserView::GetBrowserViewForBrowser(browser_)->tabstrip()->group_header(
           group_);
 
-  RecentActivityBubbleCoordinator bubble_coordinator;
-  bubble_coordinator.Show(tab_group_header,
-                          browser_->tab_strip_model()->GetActiveWebContents(),
-                          tab_groups::SavedTabGroupUtils::GetRecentActivity(
-                              browser_->profile(), group_),
-                          browser_->profile());
+  auto* bubble_coordinator = RecentActivityBubbleCoordinator::From(browser_);
+  CHECK(bubble_coordinator);
+
+  bubble_coordinator->Show(tab_group_header,
+                           browser_->tab_strip_model()->GetActiveWebContents(),
+                           tab_groups::SavedTabGroupUtils::GetRecentActivity(
+                               browser_->profile(), group_),
+                           browser_->profile());
 }
 
 // static

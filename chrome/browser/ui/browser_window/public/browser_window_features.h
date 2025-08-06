@@ -54,6 +54,7 @@ class MemorySaverOptInIPHController;
 class PinnedToolbarActionsController;
 class ProfileMenuCoordinator;
 class ReadingListSidePanelCoordinator;
+class RecentActivityBubbleCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
 class SigninViewController;
@@ -620,6 +621,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<split_tabs::SplitTabScrimController>
       split_tab_scrim_controller_;
+
+  std::unique_ptr<RecentActivityBubbleCoordinator>
+      recent_activity_bubble_coordinator_;
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<WindowsTaskbarIconUpdater> windows_taskbar_icon_updater_;

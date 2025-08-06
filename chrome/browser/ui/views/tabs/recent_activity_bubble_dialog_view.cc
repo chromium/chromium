@@ -909,8 +909,18 @@ void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
 BEGIN_METADATA(RecentActivityRowImageView)
 END_METADATA
 
+DEFINE_USER_DATA(RecentActivityBubbleCoordinator);
+
+// static
+RecentActivityBubbleCoordinator* RecentActivityBubbleCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
+}
+
 // RecentActivityBubbleCoordinator
-RecentActivityBubbleCoordinator::RecentActivityBubbleCoordinator() = default;
+RecentActivityBubbleCoordinator::RecentActivityBubbleCoordinator(
+    BrowserWindowInterface* browser)
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
 RecentActivityBubbleCoordinator::~RecentActivityBubbleCoordinator() = default;
 
 void RecentActivityBubbleCoordinator::OnWidgetDestroying(
