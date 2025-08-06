@@ -481,7 +481,13 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Tests that tapping on a managed account button causes the primary account
 // to be changed and the account menu view to be closed after showing managed
 // account sign-in dialog.
-- (void)testSwitchToManagedAccount {
+// TODO(crbug.com/436843668): Renable this test. It is flaky on iphone-device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSwitchToManagedAccount testSwitchToManagedAccount
+#else
+#define MAYBE_testSwitchToManagedAccount FLAKY_testSwitchToManagedAccount
+#endif
+- (void)MAYBE_testSwitchToManagedAccount {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kManagedIdentity1];
   [self selectIdentityDisc];
