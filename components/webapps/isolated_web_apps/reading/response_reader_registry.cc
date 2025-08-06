@@ -323,7 +323,6 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
 // corresponding to bundles that might be affected by key rotation. These
 // requests will be fulfilled once the app closes.
 void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
-    const base::Version& version,
     bool is_preloaded) {
   if (is_preloaded) {
     return;

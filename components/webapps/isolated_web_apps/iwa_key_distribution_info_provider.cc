@@ -228,8 +228,7 @@ void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
     const base::FilePath& file_path,
     bool is_preloaded) {
   if (data_ && data_->version > component_version) {
-    DispatchComponentUpdateError(component_version,
-                                 IwaComponentUpdateError::kStaleVersion);
+    DispatchComponentUpdateError(IwaComponentUpdateError::kStaleVersion);
     return;
   }
 
@@ -269,6 +268,14 @@ IwaKeyDistributionInfoProvider::GetSkipMultiCaptureNotificationBundleIds()
   return skip_multi_capture_notification_bundle_ids;
 }
 
+std::optional<base::Version> IwaKeyDistributionInfoProvider::GetVersion()
+    const {
+  if (!data_) {
+    return std::nullopt;
+  }
+  return data_->version;
+}
+
 IwaKeyDistributionInfoProvider::IwaKeyDistributionInfoProvider() = default;
 IwaKeyDistributionInfoProvider::~IwaKeyDistributionInfoProvider() = default;
 
@@ -279,23 +286,27 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
   if (data_ && data_->version > component_version) {
     // This might happen if two tasks with different versions have been posted
     // to the task runner in `LoadKeyDistributionData()`.
-    DispatchComponentUpdateError(component_version,
-                                 IwaComponentUpdateError::kStaleVersion);
+    DispatchComponentUpdateError(IwaComponentUpdateError::kStaleVersion);
     return;
   }
 
   ASSIGN_OR_RETURN(
       (auto [key_rotations, special_app_permissions, managed_allowlist]),
       std::move(result), [&](IwaComponentUpdateError error) {
-        DispatchComponentUpdateError(component_version, error);
+        DispatchComponentUpdateError(error);
       });
 
   // TODO(crbug.com/410532804): Add allowlist to the proto file.
   data_ = ComponentData(component_version, std::move(key_rotations),
                         std::move(special_app_permissions),
                         std::move(managed_allowlist), is_preloaded);
+
+  base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateSource,
+                                data_->is_preloaded
+                                    ? IwaComponentUpdateSource::kPreloaded
+                                    : IwaComponentUpdateSource::kDownloaded);
   SignalOnDataReady(is_preloaded);
-  DispatchComponentUpdateSuccess(component_version, is_preloaded);
+  DispatchComponentUpdateSuccess(is_preloaded);
 }
 
 void IwaKeyDistributionInfoProvider::AddObserver(Observer* observer) {
@@ -312,7 +323,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
     const std::optional<std::vector<uint8_t>>& rotated_key) {
   GetDevModeKeyRotationData().insert_or_assign(web_bundle_id,
                                                KeyRotationInfo(rotated_key));
-  DispatchComponentUpdateSuccess(base::Version(), /*is_preloaded=*/false);
+  DispatchComponentUpdateSuccess(/*is_preloaded=*/false);
 }
 
 base::OneShotEvent&
@@ -389,26 +400,14 @@ void IwaKeyDistributionInfoProvider::WriteComponentMetadata(
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
-    const base::Version& version,
     bool is_preloaded) {
-  if (data_ && version.IsValid()) {
-    // Custom key rotations via chrome://web-app-internals (indicated by an
-    // invalid version) should not be logged.
-    base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateSource,
-                                  data_->is_preloaded
-                                      ? IwaComponentUpdateSource::kPreloaded
-                                      : IwaComponentUpdateSource::kDownloaded);
-  }
-
-  observers_.Notify(&Observer::OnComponentUpdateSuccess, version, is_preloaded);
+  observers_.Notify(&Observer::OnComponentUpdateSuccess, is_preloaded);
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(
-    const base::Version& version,
     IwaComponentUpdateError error) {
   base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateError, error);
-
-  observers_.Notify(&Observer::OnComponentUpdateError, version, error);
+  observers_.Notify(&Observer::OnComponentUpdateError, error);
 }
 
 void IwaKeyDistributionInfoProvider::

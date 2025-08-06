@@ -43,34 +43,34 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
       UpdateCallback on_update,
       std::optional<base::Version> wait_until_version = std::nullopt)
       : on_update_(std::move(on_update)),
-        version_(std::move(wait_until_version)) {
+        wait_until_version_(std::move(wait_until_version)) {
     obs_.Observe(&IwaKeyDistributionInfoProvider::GetInstance());
   }
 
-  // IwaKeyRotationInfoProvider::Observer:
-  void OnComponentUpdateSuccess(const base::Version& version,
-                                bool is_preloaded) override {
-    if (version_ && version_ != version) {
+  // IwaKeyDistributionInfoProvider::Observer:
+  void OnComponentUpdateSuccess(bool is_preloaded) override {
+    const std::optional<base::Version> loaded_version =
+        IwaKeyDistributionInfoProvider::GetInstance().GetVersion();
+    CHECK(loaded_version.has_value());
+
+    if (wait_until_version_.has_value() &&
+        *wait_until_version_ != *loaded_version) {
       return;
     }
     std::move(on_update_)
-        .Run(IwaComponentMetadata{.version = version,
+        .Run(IwaComponentMetadata{.version = *loaded_version,
                                   .is_preloaded = is_preloaded});
     obs_.Reset();
   }
 
-  void OnComponentUpdateError(const base::Version& version,
-                              IwaComponentUpdateError error) override {
-    if (version_ && version_ != version) {
-      return;
-    }
+  void OnComponentUpdateError(IwaComponentUpdateError error) override {
     std::move(on_update_).Run(base::unexpected(error));
     obs_.Reset();
   }
 
  private:
   UpdateCallback on_update_;
-  std::optional<base::Version> version_;
+  std::optional<base::Version> wait_until_version_;
   base::ScopedObservation<IwaKeyDistributionInfoProvider,
                           IwaKeyDistributionInfoProvider::Observer>
       obs_{this};

@@ -292,8 +292,7 @@ class IsolatedWebAppUpdateManager
   };
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(const base::Version& version,
-                                bool is_preloaded) override;
+  void OnComponentUpdateSuccess(bool is_preloaded) override;
 
   void QueueUpdatesForIwasAffectedByKeyRotation();
 

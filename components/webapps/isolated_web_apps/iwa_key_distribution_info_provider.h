@@ -66,10 +66,8 @@ class IwaKeyDistributionInfoProvider {
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnComponentUpdateSuccess(const base::Version& version,
-                                          bool is_preloaded) {}
-    virtual void OnComponentUpdateError(const base::Version& version,
-                                        IwaComponentUpdateError error) {}
+    virtual void OnComponentUpdateSuccess(bool is_preloaded) {}
+    virtual void OnComponentUpdateError(IwaComponentUpdateError error) {}
   };
 
   struct ComponentData {
@@ -104,6 +102,7 @@ class IwaKeyDistributionInfoProvider {
   const SpecialAppPermissionsInfo* GetSpecialAppPermissionsInfo(
       const std::string& web_bundle_id) const;
   std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds() const;
+  std::optional<base::Version> GetVersion() const;
 
   // Only bundles present in the managed allowlist can be installed and updated.
   bool IsManagedInstallPermitted(std::string_view web_bundle_id) const;
@@ -173,11 +172,9 @@ class IwaKeyDistributionInfoProvider {
       bool is_preloaded,
       base::expected<KeyDistributionData, IwaComponentUpdateError>);
 
-  void DispatchComponentUpdateSuccess(const base::Version& version,
-                                      bool is_preloaded);
+  void DispatchComponentUpdateSuccess(bool is_preloaded);
 
-  void DispatchComponentUpdateError(const base::Version& version,
-                                    IwaComponentUpdateError error);
+  void DispatchComponentUpdateError(IwaComponentUpdateError error);
 
   void SignalOnDataReady(bool is_preloaded);
 

@@ -653,7 +653,6 @@ void IsolatedWebAppPolicyManager::OnPolicyChanged() {
 }
 
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
-    const base::Version& version,
     bool is_preloaded) {
   ProcessPolicy();
 }

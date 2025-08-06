@@ -89,8 +89,7 @@ class IsolatedWebAppPolicyManager
   void OnPolicyChanged();
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(const base::Version& version,
-                                bool is_preloaded) override;
+  void OnComponentUpdateSuccess(bool is_preloaded) override;
 
   // Keeps track of the last few processing logs for debugging purposes.
   // Automatically discards older logs to keep at most `kMaxEntries`.
