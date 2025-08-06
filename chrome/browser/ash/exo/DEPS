@@ -25,3 +25,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*test\\.cc": [
+    "+chrome/browser/ash/login/users/scoped_account_id_annotator.h",
+  ]
+}

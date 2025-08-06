@@ -12,11 +12,19 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +43,19 @@ class CrostiniAppsTest : public testing::Test {
 
   void SetUp() override {
     ash::CiceroneClient::InitializeFake();
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+
     app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
     test_helper_ =
@@ -46,6 +66,7 @@ class CrostiniAppsTest : public testing::Test {
   void TearDown() override {
     test_helper_.reset();
     profile_.reset();
+    user_manager_.Reset();
     ash::CiceroneClient::Shutdown();
   }
 
@@ -66,6 +87,7 @@ class CrostiniAppsTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
   raw_ptr<AppServiceProxy, DanglingUntriaged> app_service_proxy_ = nullptr;

@@ -103,6 +103,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/seneschal",

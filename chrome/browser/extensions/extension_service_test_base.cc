@@ -59,9 +59,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/install_limiter.h"
-#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/user_manager_impl.h"
 #endif
 
@@ -252,9 +252,8 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
       registry_(nullptr),
 #if BUILDFLAG(IS_CHROMEOS)
       user_manager_(std::make_unique<user_manager::UserManagerImpl>(
-          std::make_unique<ash::UserManagerDelegateImpl>(),
-          testing_local_state_.Get(),
-          ash::CrosSettings::Get())),
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          testing_local_state_.Get())),
 #endif
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   base::FilePath test_data_dir;
