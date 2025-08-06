@@ -570,6 +570,20 @@ export class SettingsCupsEditPrinterDialogElement extends
     return !this.isOnline_ ||
         (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
   }
+
+  /**
+   * @return Returns true if the printer is managed and both manufacturer and
+   * model fields are empty.
+   */
+  private shouldHideMakeAndModel_(): boolean {
+    // If the printer is not managed, we should not hide the fields.
+    if (!this.pendingPrinter_ || !this.pendingPrinter_.isManaged) {
+      return false;
+    }
+    // Hide the fields if both are empty.
+    return !this.pendingPrinter_.ppdManufacturer &&
+        !this.pendingPrinter_.ppdModel;
+  }
 }
 
 declare global {

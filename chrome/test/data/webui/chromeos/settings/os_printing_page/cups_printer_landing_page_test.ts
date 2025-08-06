@@ -1104,6 +1104,63 @@ suite('CupsSavedPrintersTests', () => {
             'Printing.CUPS.SettingsUserAction',
             PrinterSettingsUserAction.EDIT_PRINTER));
   });
+
+  // Verify that make (manufacturer) and model are always visible for
+  // non-managed printers.
+  test('MakeAndModelNonManagedVisibility', async () => {
+    createCupsPrinterPage([
+      createCupsPrinterInfo('test1', '1', 'id1'),
+    ]);
+    await cupsPrintersBrowserProxy.whenCalled('getCupsSavedPrintersList');
+    // Wait for saved printers to populate.
+    flush();
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-saved-printers');
+    assertTrue(!!element);
+    savedPrintersElement = element;
+    const savedPrinterEntries = getPrinterEntries(savedPrintersElement);
+    // Edit the first entry.
+    const button =
+        savedPrinterEntries[0]!.shadowRoot!.querySelector<HTMLButtonElement>(
+            '.icon-more-vert');
+    assertTrue(!!button);
+    clickButton(button);
+    const editButton =
+        savedPrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#editButton');
+    assertTrue(!!editButton);
+    clickButton(editButton);
+    flush();
+    const editDialog = initializeEditDialog(page);
+
+    // Grab the manufacturer and model fields, and their parent fields as well.
+    const manufacturer =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDManufacturer');
+    const model =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDModel');
+    assertTrue(!!manufacturer);
+    assertTrue(!!model);
+    const manufacturerParent = manufacturer.parentElement;
+    const modelParent = model.parentElement;
+    assertTrue(!!manufacturerParent);
+    assertTrue(!!modelParent);
+
+    // NB: The hiding is done on the parent fields.
+
+    // Manufacturer and model values are non-empty, the fields should be
+    // visible.
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+
+    // Set both manufacturer and model values to the empty string, both fields
+    // should still be visible.
+    editDialog.set('pendingPrinter_.ppdManufacturer', '');
+    editDialog.set('pendingPrinter_.ppdModel', '');
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+  });
 });
 
 suite('CupsNearbyPrintersTests', () => {
@@ -1599,8 +1656,7 @@ suite('CupsEnterprisePrintersTests', () => {
     enterprisePrintersElement.remove();
   });
 
-
-  function createCupsPrinterPage(printers: CupsPrinterInfo[]) {
+  async function createCupsPrinterPage(printers: CupsPrinterInfo[]) {
     printerList = printers;
     // |cupsPrinterBrowserProxy| needs to have a list of printers before
     // initializing the landing page.
@@ -1613,22 +1669,53 @@ suite('CupsEnterprisePrintersTests', () => {
     assertTrue(!!page);
 
     flush();
+
+    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
+    // Wait for enterprise printers to populate.
+    flush();
+
+    // Cache the enterprise printers element.
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
+    assertTrue(!!element);
+    enterprisePrintersElement = element;
+  }
+
+  function openDialogForPrinter(index: number):
+      SettingsCupsEditPrinterDialogElement {
+    // Get the printer entries.
+    const enterprisePrinterEntries:
+        NodeListOf<SettingsCupsPrintersEntryElement> =
+            getPrinterEntries(enterprisePrintersElement);
+
+    // Get the printer at position index and click on the more button.
+    assertTrue(index >= 0 && index < enterprisePrinterEntries.length);
+    const button = enterprisePrinterEntries[index]!.shadowRoot!
+                       .querySelector<HTMLButtonElement>('.icon-more-vert');
+    assertTrue(!!button);
+    clickButton(button);
+    // Click on the view button.
+    const viewButton =
+        enterprisePrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#viewButton');
+    assertTrue(!!viewButton);
+    clickButton(viewButton);
+    flush();
+
+    // Fetch the edit dialog (and customize a couple of things).
+    const editDialog: SettingsCupsEditPrinterDialogElement =
+        initializeEditDialog(page);
+    return editDialog;
   }
 
   // Verifies that enterprise printers are correctly shown on the OS settings
   // page.
   test('EnterprisePrinters', async () => {
-    createCupsPrinterPage([
+    await createCupsPrinterPage([
       createCupsPrinterInfo('test1', '1', 'id1', /*isManaged=*/ true),
       createCupsPrinterInfo('test2', '2', 'id2', /*isManaged=*/ true),
     ]);
-    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
-    // Wait for saved printers to populate.
-    flush();
-    const element =
-        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
-    assertTrue(!!element);
-    enterprisePrintersElement = element;
+
     const listElement =
         enterprisePrintersElement.shadowRoot!.querySelector<HTMLElement>(
             '#printerEntryList');
@@ -1643,19 +1730,9 @@ suite('CupsEnterprisePrintersTests', () => {
   // Verifies that enterprise printers are not editable.
   test('EnterprisePrinterDialog', async () => {
     const ppdUrl = 'https://foo.bar.baz/ppd';
-    createCupsPrinterPage([
+    await createCupsPrinterPage([
       createCupsPrinterInfo('test1', '1', 'id1', true, ppdUrl),
     ]);
-    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
-    // Wait for enterprise printers to populate.
-    flush();
-    const element =
-        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
-    assertTrue(!!element);
-    enterprisePrintersElement = element;
-    const enterprisePrinterEntries:
-        NodeListOf<SettingsCupsPrintersEntryElement> =
-            getPrinterEntries(enterprisePrintersElement);
 
     // Users are not allowed to remove enterprise printers.
     const removeButton =
@@ -1664,18 +1741,7 @@ suite('CupsEnterprisePrintersTests', () => {
     assertTrue(!!removeButton);
     assertTrue(removeButton.disabled);
 
-    const button = enterprisePrinterEntries[0]!.shadowRoot!
-                       .querySelector<HTMLButtonElement>('.icon-more-vert');
-    assertTrue(!!button);
-    clickButton(button);
-    const viewButton =
-        enterprisePrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#viewButton');
-    assertTrue(!!viewButton);
-    clickButton(viewButton);
-    flush();
-    const editDialog: SettingsCupsEditPrinterDialogElement =
-        initializeEditDialog(page);
+    const editDialog = openDialogForPrinter(0);
     const nameField = editDialog.shadowRoot!.querySelector<CrInputElement>(
         '.printer-name-input');
     assertTrue(!!nameField);
@@ -1750,19 +1816,13 @@ suite('CupsEnterprisePrintersTests', () => {
   });
 
   test('PressShowMoreButton', async () => {
-    createCupsPrinterPage([
+    await createCupsPrinterPage([
       createCupsPrinterInfo('test1', '1', 'id1', true),
       createCupsPrinterInfo('test2', '2', 'id2', true),
       createCupsPrinterInfo('test3', '3', 'id3', true),
       createCupsPrinterInfo('test4', '4', 'id4', true),
     ]);
-    await cupsPrintersBrowserProxy.whenCalled('getCupsEnterprisePrintersList');
-    // Wait for enterprise printers to populate.
-    flush();
-    const element =
-        page.shadowRoot!.querySelector('settings-cups-enterprise-printers');
-    assertTrue(!!element);
-    enterprisePrintersElement = element;
+
     const printerEntryListTestElement =
         enterprisePrintersElement.shadowRoot!.querySelector(
             '#printerEntryList');
@@ -1794,5 +1854,49 @@ suite('CupsEnterprisePrintersTests', () => {
       createPrinterListEntry('test3', '3', 'id3', PrinterType.ENTERPRISE),
       createPrinterListEntry('test4', '4', 'id4', PrinterType.ENTERPRISE),
     ]);
+  });
+
+  // Verify that make (manufacturer) and model are hidden for managed printers
+  // if they are both empty, and they are shown if either one is non-empty.
+  test('MakeAndModelManagedVisibility', async () => {
+    // Create the page and populate with one managed printer.
+    await createCupsPrinterPage([
+      createCupsPrinterInfo('test1', '1', 'id1', true, '/foo/bar/bazppd'),
+    ]);
+
+    // Open the edit dialog for the first printer.
+    const editDialog = openDialogForPrinter(0);
+
+    // Grab the manufacturer and model fields, and their parent fields as well.
+    const manufacturer =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDManufacturer');
+    const model =
+        editDialog.shadowRoot!.querySelector<CrSearchableDropDownElement>(
+            '#printerPPDModel');
+    assertTrue(!!manufacturer);
+    assertTrue(!!model);
+    const manufacturerParent = manufacturer.parentElement;
+    const modelParent = model.parentElement;
+    assertTrue(!!manufacturerParent);
+    assertTrue(!!modelParent);
+
+    // NB: The hiding is done on the parent fields.
+
+    // Manufacturer and model values are non-empty, the fields should be
+    // visible.
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+
+    // Set just model to the empty string, both fields should still be visible.
+    editDialog.set('pendingPrinter_.ppdModel', '');
+    assertFalse(manufacturerParent.hidden);
+    assertFalse(modelParent.hidden);
+
+    // Set also manufacturer to the empty string, both fields should be hidden
+    // now.
+    editDialog.set('pendingPrinter_.ppdManufacturer', '');
+    assertTrue(manufacturerParent.hidden);
+    assertTrue(modelParent.hidden);
   });
 });

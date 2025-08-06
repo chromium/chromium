@@ -105,7 +105,10 @@
     </div>
     <template id="makeAndModelSection" is="dom-if"
         if="[[!isAutoconfPrinter_(pendingPrinter_.*)]]">
-      <div class="settings-box two-line">
+      <div class="settings-box two-line"
+          hidden="[[shouldHideMakeAndModel_(pendingPrinter_,
+                pendingPrinter_.isManaged, pendingPrinter_.ppdManufacturer,
+                pendingPrinter_.ppdModel)]]">
         <cr-searchable-drop-down items="[[manufacturerList]]"
             id="printerPPDManufacturer"
             label="$i18n{printerManufacturer}"
@@ -116,7 +119,10 @@
             invalid="{{isManufacturerInvalid_}}">
         </cr-searchable-drop-down>
       </div>
-      <div class="settings-box two-line">
+      <div class="settings-box two-line"
+          hidden="[[shouldHideMakeAndModel_(pendingPrinter_,
+                pendingPrinter_.isManaged, pendingPrinter_.ppdManufacturer,
+                pendingPrinter_.ppdModel)]]">
         <cr-searchable-drop-down items="[[modelList]]"
             id="printerPPDModel"
             label="$i18n{printerModel}"
