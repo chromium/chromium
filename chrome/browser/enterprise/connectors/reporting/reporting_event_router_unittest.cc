@@ -14,6 +14,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -37,6 +38,7 @@ using ReferrerChain =
 using UrlInfo = ::chrome::cros::reporting::proto::UrlInfo;
 
 constexpr char kFakeProfileUsername[] = "Fakeuser";
+constexpr char kFakeActiveUserEmail[] = "active_user@example.com";
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 const std::set<std::string>* ZipMimeType() {
@@ -46,6 +48,25 @@ const std::set<std::string>* ZipMimeType() {
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace
+
+// A RealtimeReportingClient that always returns a specific account as the
+// active account in the content area. This is used to test the active user
+// detection feature.
+class RealtimeReportingClientFakeActiveGaia : public RealtimeReportingClient {
+ public:
+  explicit RealtimeReportingClientFakeActiveGaia(
+      content::BrowserContext* context)
+      : RealtimeReportingClient(context) {}
+  ~RealtimeReportingClientFakeActiveGaia() override = default;
+  RealtimeReportingClientFakeActiveGaia(
+      const RealtimeReportingClientFakeActiveGaia&) = delete;
+  RealtimeReportingClientFakeActiveGaia& operator=(
+      const RealtimeReportingClientFakeActiveGaia&) = delete;
+
+  std::string GetContentAreaAccountEmail(const GURL& url) override {
+    return kFakeActiveUserEmail;
+  }
+};
 
 class ReportingEventRouterTest : public testing::TestWithParam<bool> {
  public:
@@ -71,7 +92,7 @@ class ReportingEventRouterTest : public testing::TestWithParam<bool> {
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating([](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(
-              new RealtimeReportingClient(context));
+              new RealtimeReportingClientFakeActiveGaia(context));
         }));
     RealtimeReportingClientFactory::GetForProfile(profile_)
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
@@ -108,6 +129,24 @@ class ReportingEventRouterTest : public testing::TestWithParam<bool> {
     } else {
       scoped_feature_list_.InitAndEnableFeature(
           safe_browsing::kEnhancedFieldsForSecOps);
+    }
+  }
+
+  void EnableEnhancedFieldsForSecOpsAndActiveUserDetection() {
+    scoped_feature_list_.Reset();
+    if (use_proto_format()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {policy::kUploadRealtimeReportingEventsUsingProto,
+           safe_browsing::kEnhancedFieldsForSecOps,
+           enterprise_connectors::kEnterpriseActiveUserDetection},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {safe_browsing::kEnhancedFieldsForSecOps,
+           enterprise_connectors::kEnterpriseActiveUserDetection},
+          /*disabled_features=*/{});
     }
   }
 
@@ -356,7 +395,7 @@ TEST_P(ReportingEventRouterTest,
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
-  EnableEnhancedFieldsForSecOps();
+  EnableEnhancedFieldsForSecOpsAndActiveUserDetection();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -378,6 +417,7 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::BLOCK, /*has_watermark=*/false);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
@@ -404,7 +444,7 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
-  EnableEnhancedFieldsForSecOps();
+  EnableEnhancedFieldsForSecOpsAndActiveUserDetection();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -426,6 +466,7 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
@@ -454,7 +495,7 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
-  EnableEnhancedFieldsForSecOps();
+  EnableEnhancedFieldsForSecOpsAndActiveUserDetection();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -477,6 +518,7 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
@@ -506,7 +548,7 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
 
 TEST_P(ReportingEventRouterTest,
        TestOnUrlFilteringInterstitial_WatermarkAudit) {
-  EnableEnhancedFieldsForSecOps();
+  EnableEnhancedFieldsForSecOpsAndActiveUserDetection();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -528,6 +570,7 @@ TEST_P(ReportingEventRouterTest,
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::ACTION_UNKNOWN, /*has_watermark=*/true);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
