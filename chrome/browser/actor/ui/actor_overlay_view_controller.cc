@@ -51,11 +51,16 @@ void ActorOverlayViewController::UpdateState(const ActorOverlayState& state,
   }
 }
 
+// TODO(crbug.com/436662421): Clean up the null checks for
+// actor_overlay_window_controller_. These were added to prevent crashes in test
+// scenarios where a controller is null. Once those tests are cleaned up, all
+// the null checks on if the window controller in this file can be removed and
+// we can assume the window controller should be available with a CHECK again.
 void ActorOverlayViewController::AttachManagedWebViewToWindowController() {
-  if (!managed_overlay_web_view_) {
-    return;  // No WebView to attach.
+  // No webview to attach or window controller to use.
+  if (!managed_overlay_web_view_ || !actor_overlay_window_controller_) {
+    return;
   }
-  CHECK(actor_overlay_window_controller_);
   // Transfer ownership from `managed_overlay_web_view_` to the window
   // controller's container.
   overlay_web_view_ = actor_overlay_window_controller_->AddChildWebView(
@@ -68,7 +73,6 @@ void ActorOverlayViewController::AttachManagedWebViewToWindowController() {
 
 void ActorOverlayViewController::SetWindowController(
     ActorOverlayWindowController* controller) {
-  CHECK(controller);
   actor_overlay_window_controller_ = controller;
   // If a WebView was previously detached, re-attach it to the new window
   // controller.
@@ -76,7 +80,8 @@ void ActorOverlayViewController::SetWindowController(
 }
 
 void ActorOverlayViewController::NullifyWebView() {
-  if (!overlay_web_view_) {
+  // No webview to remove or window controller to use.
+  if (!overlay_web_view_ || !actor_overlay_window_controller_) {
     return;
   }
   // Reclaim ownership of the WebView from the window controller's container.
@@ -120,7 +125,9 @@ void ActorOverlayViewController::ShowWebView() {
   // Ensure the overlay WebView exists before showing it.
   CHECK(overlay_web_view_);
   overlay_web_view_->SetVisible(true);
-  actor_overlay_window_controller_->MaybeUpdateContainerVisibility();
+  if (actor_overlay_window_controller_) {
+    actor_overlay_window_controller_->MaybeUpdateContainerVisibility();
+  }
 }
 
 // TODO(crbug.com/422540636): Look into if HideWebView is called when the Actor
@@ -131,7 +138,9 @@ void ActorOverlayViewController::HideWebView() {
     return;
   }
   overlay_web_view_->SetVisible(false);
-  actor_overlay_window_controller_->MaybeUpdateContainerVisibility();
+  if (actor_overlay_window_controller_) {
+    actor_overlay_window_controller_->MaybeUpdateContainerVisibility();
+  }
   // Re-enable mouse and keyboard events to the underlying web contents by
   // resetting the ScopedIgnoreInputEvents object.
   scoped_ignore_input_events_.reset();
