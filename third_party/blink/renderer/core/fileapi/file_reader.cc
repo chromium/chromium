@@ -423,7 +423,9 @@ void FileReader::DidFinishLoading(FileReaderData contents) {
   // if we're still loading (therefore we need abort process) or not.
   loading_state_ = kLoadingStateNone;
 
-  FireEvent(event_type_names::kProgress);
+  if (loader_->BytesLoaded() > 0) {
+    FireEvent(event_type_names::kProgress);
+  }
 
   DCHECK_NE(kDone, state_);
   state_ = kDone;
