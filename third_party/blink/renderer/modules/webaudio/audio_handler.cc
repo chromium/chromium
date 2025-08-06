@@ -565,9 +565,8 @@ unsigned AudioHandler::NumberOfOutputChannels() const {
   // nodes where you can have an output with 0 channels.  All other nodes have
   // at least one output channel, so there's no reason other nodes should
   // ever call this function.
-  DCHECK(0) << "numberOfOutputChannels() not valid for node type "
-            << NodeTypeName();
-  return 1;
+  NOTREACHED() << "numberOfOutputChannels() not valid for node type "
+               << NodeTypeName();
 }
 
 void AudioHandler::SendLogMessage(const char* const function_name,

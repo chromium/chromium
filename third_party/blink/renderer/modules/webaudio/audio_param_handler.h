@@ -96,13 +96,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     kVariable
   };
 
-  AudioParamType GetParamType() const { return param_type_; }
-  void SetParamType(AudioParamType);
-  // Set the parameter name for an AudioWorklet.
-  void SetCustomParamName(const String name);
-  // Return a nice name for the AudioParam.
-  String GetParamName() const;
-
   static scoped_refptr<AudioParamHandler> Create(BaseAudioContext& context,
                                                  AudioParamType param_type,
                                                  double default_value,
@@ -159,6 +152,17 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     automation_rate_ = automation_rate;
   }
 
+  float DefaultValue() const { return default_value_; }
+  float MinValue() const { return min_value_; }
+  float MaxValue() const { return max_value_; }
+
+  AudioParamType GetParamType() const { return param_type_; }
+  void SetParamType(AudioParamType);
+  // Set the parameter name for an AudioWorklet.
+  void SetCustomParamName(const String name);
+  // Return a nice name for the AudioParam.
+  String GetParamName() const;
+
   bool IsAutomationRateFixed() const {
     return rate_mode_ == AutomationRateMode::kFixed;
   }
@@ -167,10 +171,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // calculateSampleAccurateValues() for a-rate.
   // Must be called in the audio thread.
   float FinalValue();
-
-  float DefaultValue() const { return default_value_; }
-  float MinValue() const { return min_value_; }
-  float MaxValue() const { return max_value_; }
 
   // An AudioParam needs sample accurate processing if there are
   // automations scheduled or if there are connections.
@@ -387,6 +387,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     raw_ptr<const ParamEvent> event;
     const int event_index;
   };
+
+  friend class AudioNodeWiring;
 
   AudioParamHandler(BaseAudioContext&,
                     AudioParamType,
@@ -619,8 +621,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // Audio bus to sum in any connections to the AudioParam.
   scoped_refptr<AudioBus> summing_bus_;
-
-  friend class AudioNodeWiring;
 };
 
 }  // namespace blink
