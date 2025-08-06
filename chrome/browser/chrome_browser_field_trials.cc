@@ -37,6 +37,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/common/chrome_features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/common/content_features.h"
 #endif
 
@@ -171,6 +172,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(b/432367402): Use a new Android API to replace this hack with a proper
   // solution.
   feature_overrides.EnableFeature(features::kAndroidCaptureKeyEvents);
+  // TODO(crbug.com/430304112): Remove when rollout is complete to all form
+  // factors.
+  feature_overrides.EnableFeature(
+      autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
