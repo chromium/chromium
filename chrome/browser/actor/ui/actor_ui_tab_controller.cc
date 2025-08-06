@@ -75,7 +75,15 @@ void ActorUiTabController::RegisterTabSubscriptions() {
 
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
                                               UiResultCallback callback) {
-  MaybeUpdateState(ui_tab_state, std::move(callback));
+  if (current_ui_tab_state_ == ui_tab_state) {
+    return;
+  }
+  VLOG(4) << "Tab scoped UI components updated FROM -> TO:\n"
+          << "ui_tab_state: " << current_ui_tab_state_ << " -> " << ui_tab_state
+          << "\n";
+
+  current_ui_tab_state_ = ui_tab_state;
+  MaybeUpdateState(std::move(callback));
 }
 
 void ActorUiTabController::OnTabActiveStatusChanged(bool tab_active_status,
@@ -88,10 +96,7 @@ void ActorUiTabController::OnTabActiveStatusChanged(bool tab_active_status,
           << tab_active_status << "\n";
 
   current_tab_active_status_ = tab_active_status;
-  // TODO(crbug.com/425952887): decouple the ui tab state changes + tab
-  // active/visibility changes.
   MaybeUpdateState(
-      current_ui_tab_state_,
       base::BindOnce(&LogAndIgnoreCallbackError, "OnTabActiveStatusChanged"));
 }
 
@@ -132,31 +137,19 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
   return;
 }
 
-void ActorUiTabController::MaybeUpdateState(const UiTabState& ui_tab_state,
-                                            UiResultCallback callback) {
+void ActorUiTabController::MaybeUpdateState(UiResultCallback callback) {
   if (!update_state_debounce_timer_.IsRunning()) {
     in_progress_updates_int_++;
-  }
-  VLOG(4) << "Tab scoped UI components updated FROM -> TO:\n"
-          << "ui_tab_state: " << current_ui_tab_state_ << " -> " << ui_tab_state
-          << "\n";
-
-  // Update tab state and active status before debouncing to prevent stale data
-  // from being used in UpdateState calls.
-  if (current_ui_tab_state_ != ui_tab_state) {
-    current_ui_tab_state_ = ui_tab_state;
   }
 
   update_state_debounce_timer_.Start(
       FROM_HERE, kUpdateStateDebounceDelay,
       base::BindOnce(&ActorUiTabController::UpdateState,
-                     weak_factory_.GetWeakPtr(), ui_tab_state,
-                     current_tab_active_status_, std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
-                                       bool tab_active_status,
-                                       UiResultCallback callback) {
+void ActorUiTabController::UpdateState(UiResultCallback callback) {
+  // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (features::kGlicActorUiOverlay.Get()) {
     actor_overlay_view_controller_->UpdateState(
         current_ui_tab_state_.actor_overlay, ComputeActorOverlayVisibility());
@@ -167,7 +160,7 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
   }
 
   if (features::kGlicActorUiTabIndicator.Get()) {
-    SetActorTabIndicatorVisibility(ui_tab_state.tab_indicator_visible);
+    SetActorTabIndicatorVisibility(current_ui_tab_state_.tab_indicator_visible);
   }
 
   // TODO(crbug.com/425952887): Change this once ui components are implemented,
@@ -233,7 +226,6 @@ void ActorUiTabController::SetOverlayHoverStatus(bool is_hovering) {
   }
   is_hovering_overlay_ = is_hovering;
   MaybeUpdateState(
-      current_ui_tab_state_,
       base::BindOnce(&LogAndIgnoreCallbackError, "SetOverlayHoverStatus"));
 }
 
@@ -242,8 +234,7 @@ void ActorUiTabController::SetHandoffButtonHoverStatus(bool is_hovering) {
     return;
   }
   is_hovering_button_ = is_hovering;
-  MaybeUpdateState(current_ui_tab_state_,
-                   base::BindOnce(&LogAndIgnoreCallbackError,
+  MaybeUpdateState(base::BindOnce(&LogAndIgnoreCallbackError,
                                   "SetHandoffButtonHoverStatus"));
 }
 

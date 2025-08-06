@@ -63,11 +63,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   // Called to propagate a UiTabState and tab status change to UI controllers.
   // This is passed through a debounce timer to stabilize updates.
-  void MaybeUpdateState(const UiTabState& ui_tab_state,
-                        UiResultCallback callback);
-  void UpdateState(const UiTabState& ui_tab_state,
-                   bool tab_active_status,
-                   UiResultCallback callback);
+  void MaybeUpdateState(UiResultCallback callback);
+  void UpdateState(UiResultCallback callback);
 
   // Computes whether the Actor Overlay is visible based on the current state.
   bool ComputeActorOverlayVisibility();
