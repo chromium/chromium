@@ -1573,4 +1573,79 @@ TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
             non_lgc_result.spoof_check_result);
 }
 
+namespace {
+#include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
+
+// These tests do not use the production top domain list. This is to avoid
+// having to adjust the tests when the top domain list is updated. Instead,
+// these tests use the data in `test_domains.list` files.
+class TopDomainIDNSpoofCheckerTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    IDNSpoofChecker::HuffmanTrieParams trie_params{
+        kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
+        kTopDomainsTrieBits, kTopDomainsRootPosition};
+    IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
+  }
+
+  void TearDown() override { IDNSpoofChecker::RestoreTrieParamsForTesting(); }
+};
+
+// This is test must be updated when the test_domains.list is updated.
+TEST_F(TopDomainIDNSpoofCheckerTest, IsTopDomain) {
+  struct TestCase {
+    const std::string url;
+    const bool is_top_domain;
+  } kTestCases[] = {{"http://www.apple.com", true},
+                    {"http://blogspot.com", true},
+                    {"http://example.blogspot.com/extrastuff", true},
+                    {"http://google.co.uk", true},
+                    {"http://www.google.corn", false},
+                    {"http://google.tést.com", false},
+                    {"http://academiaedu", false},
+                    {"http://a-pple.com", false},
+                    {"", false},
+                    {"http://127.0.0.1/", false},
+                    {"http://0.0.0.0/", false},
+                    {"http://example.test", false},
+                    {"http://a/", false},
+                    {"http://localhost/", false},
+                    {"com", false},
+                    {".com", false}};
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "URL: " << test_case.url);
+    EXPECT_EQ(IDNSpoofChecker().IsTopDomain(GURL(test_case.url)),
+              test_case.is_top_domain);
+  }
+}
+
+// Same test as IsTopDomain but using the real top domain list.
+// This is data dependent, must be updated when the domains.list is updated.
+TEST(TopDomainIDNSpoofCheckerNoFixtureTest, IsTopDomain) {
+  struct TestCase {
+    const std::string url;
+    const bool is_top_domain;
+  } kTestCases[] = {{"http://www.apple.com", true},
+                    {"http://example.apple.com/extrastuff", true},
+                    {"http://google.ca", true},
+                    {"http://www.google.corn", false},
+                    {"http://google.tést.com", false},
+                    {"http://academiaedu", false},
+                    {"http://a-pple.com", false},
+                    {"", false},
+                    {"http://127.0.0.1/", false},
+                    {"http://0.0.0.0/", false},
+                    {"http://example.test", false},
+                    {"http://a/", false},
+                    {"http://localhost/", false},
+                    {"com", false},
+                    {".com", false}};
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "URL: " << test_case.url);
+    EXPECT_EQ(IDNSpoofChecker().IsTopDomain(GURL(test_case.url)),
+              test_case.is_top_domain);
+  }
+}
+}  // namespace
+
 }  // namespace url_formatter

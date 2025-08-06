@@ -214,9 +214,6 @@ bool IsLikelyEditDistanceFalsePositive(const DomainInfo& navigated_domain,
 bool IsLikelyCharacterSwapFalsePositive(const DomainInfo& navigated_domain,
                                         const DomainInfo& matched_domain);
 
-// Returns true if the domain given by |domain_info| is a top domain.
-bool IsTopDomain(const DomainInfo& domain_info);
-
 // Returns eTLD+1 of |hostname|. This excludes private registries, and returns
 // "blogspot.com" for "test.blogspot.com" (blogspot.com is listed as a private
 // registry). We do this to be consistent with url_formatter's top domain list

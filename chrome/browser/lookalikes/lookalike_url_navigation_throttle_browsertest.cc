@@ -960,16 +960,16 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
                        EditDistance_TopDomain_NoMatch) {
   // Matches google.com.tr but only differs in registry.
-  ASSERT_TRUE(IsTopDomain(GetDomainInfo("google.com.tr")));
+  ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("google.com.tr")));
   TestInterstitialNotShown(browser(), GetURL("google.com.tw"));
 
   // Matches academia.edu but is a top domain itself.
-  ASSERT_TRUE(IsTopDomain(GetDomainInfo("academia.edu")));
-  ASSERT_TRUE(IsTopDomain(GetDomainInfo("academic.ru")));
+  ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("academia.edu")));
+  ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("academic.ru")));
   TestInterstitialNotShown(browser(), GetURL("academic.ru"));
 
   // Matches ask.com but is too short.
-  ASSERT_TRUE(IsTopDomain(GetDomainInfo("ask.com")));
+  ASSERT_TRUE(url_formatter::IsTopDomain(GetURL("ask.com")));
   TestInterstitialNotShown(browser(), GetURL("bsk.com"));
 
   test_helper()->CheckNoLookalikeUkm();

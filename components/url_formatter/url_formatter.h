@@ -206,12 +206,22 @@ void StripWWWFromHostComponent(const std::string& url, url::Component* host);
 // Returns skeleton strings computed from |host| for spoof checking.
 Skeletons GetSkeletons(const std::u16string& host);
 
-// Returns a domain from the top 10K list matching the given skeleton. Used for
-// spoof checking. Different types of skeletons are saved in the skeleton trie.
-// Providing |type| makes sure the right type of skeletons are looked up. For
-// example if |skeleton|="googlecorn", |type|="kFull", no match would be found
-// even though the skeleton is saved in the trie, because the type of this
-// skeleton in the trie is "kSeparatorsRemoved".
+// Returns true if the domain given by |url|is one of the top domains listed in
+// the hardcoded top domains list or a subdomain.
+bool IsTopDomain(const GURL& url);
+
+// Checks if the given |domain_and_registry| is one of the top domains listed
+// in hardcoded top domains list or is a subdomain of one of the top domains.
+// This functions calculates the skeleton of |domain_and_registry| and looks it
+// up in the pre-calculated skeleton list of top domains.
+bool IsDomainAndRegistryATopDomain(const std::string& domain_and_registry);
+
+// Returns a domain from the hardcoded top domains list matching the given
+// skeleton. Used for spoof checking. Different types of skeletons are saved in
+// the skeleton trie. Providing |type| makes sure the right type of skeletons
+// are looked up. For example if |skeleton|="googlecorn", |type|="kFull", no
+// match would be found even though the skeleton is saved in the trie, because
+// the type of this skeleton in the trie is "kSeparatorsRemoved".
 TopDomainEntry LookupSkeletonInTopDomains(
     const std::string& skeleton,
     const SkeletonType type = SkeletonType::kFull);

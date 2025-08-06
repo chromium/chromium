@@ -77,6 +77,11 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     return;
   }
 
+  if (url_formatter::IsTopDomain(response_url)) {
+    std::move(callback).Run(CreateAllowDecision());
+    return;
+  }
+
   // TODO(crbug.com/40705072): If this is a reload and if the current
   // URL is the last URL of the stored redirect chain, the interstitial
   // was probably reloaded. Stop the reload and navigate back to the
@@ -85,9 +90,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   const lookalikes::DomainInfo navigated_domain =
       lookalikes::GetDomainInfo(response_url);
   // Empty domain_and_registry happens on private domains.
-  if (navigated_domain.domain_and_registry.empty() ||
-      IsTopDomain(navigated_domain)) {
-    std::move(callback).Run(CreateAllowDecision());
+  if (navigated_domain.domain_and_registry.empty()) {
     return;
   }
 
