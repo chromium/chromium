@@ -1,5 +1,6 @@
 {
     "*": [
+        "blink_python_tests",
         "chromedriver_py_tests",
         "chromedriver_py_tests_headless_shell",
         "chromedriver_replay_unittests",
