@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.INDIVIDUAL_BUTTON_KEYS;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SIDE_SHEET_MAXIMIZE_BUTTON;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TYPE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.VISIBLE;
 
 import android.app.Activity;
@@ -201,6 +202,7 @@ public class CustomTabToolbarButtonsCoordinator
                     new PropertyModel.Builder(INDIVIDUAL_BUTTON_KEYS)
                             .with(VISIBLE, true)
                             .with(ICON, customButton.getIcon(context))
+                            .with(TYPE, customButton.getType())
                             .with(
                                     CLICK_LISTENER,
                                     v -> customButtonClickCallback.onResult(customButton))

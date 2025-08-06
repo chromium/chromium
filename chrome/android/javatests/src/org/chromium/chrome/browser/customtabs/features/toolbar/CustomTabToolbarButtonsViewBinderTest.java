@@ -13,6 +13,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TITLE_VISIBLE;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TOOLBAR_WIDTH;
+
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -41,6 +45,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CloseButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
@@ -319,6 +324,145 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertEquals(View.GONE, mToolbar.getMinimizeButton().getVisibility());
         assertNotNull(mToolbar.getSideSheetMaximizeButton());
         assertEquals(View.GONE, mToolbar.getSideSheetMaximizeButton().getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"CustomTabs"})
+    public void testButtonFlipVisibility_minimizeOverShare() {
+        setToolbarWidthForMaxButtons(3); // close, menu, 1 more (minimize or custom action)
+        addCustomActionButton(ButtonType.CCT_SHARE_BUTTON, 0xFF0000, "description");
+        mModel.set(
+                CustomTabToolbarButtonsProperties.CLOSE_BUTTON,
+                new CloseButtonData(
+                        true,
+                        new ColorDrawable(),
+                        CustomTabsIntent.CLOSE_BUTTON_POSITION_START,
+                        mOnClickListener));
+        mModel.set(
+                CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON,
+                new MinimizeButtonData(true, mOnClickListener));
+
+        assertNotNull(mToolbar.getCloseButton());
+        assertEquals(View.VISIBLE, mToolbar.getCloseButton().getVisibility());
+        assertNotNull(mToolbar.getMenuButton());
+        assertEquals(View.VISIBLE, mToolbar.getMenuButton().getVisibility());
+        assertNotNull(mToolbar.getMinimizeButton());
+        assertEquals(View.VISIBLE, mToolbar.getMinimizeButton().getVisibility());
+        assertEquals(0, mToolbar.getCustomActionButtonsParent().getChildCount());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"CustomTabs"})
+    public void testButtonFlipVisibility_minimizeOverCustomOpenInBrowser() {
+        setToolbarWidthForMaxButtons(3); // close, menu, and 1 more (minimize or chrome action)
+        addCustomActionButton(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, 0xFF0000, "description");
+        mModel.set(
+                CustomTabToolbarButtonsProperties.CLOSE_BUTTON,
+                new CloseButtonData(
+                        true,
+                        new ColorDrawable(),
+                        CustomTabsIntent.CLOSE_BUTTON_POSITION_START,
+                        mOnClickListener));
+        mModel.set(
+                CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON,
+                new MinimizeButtonData(true, mOnClickListener));
+
+        assertNotNull(mToolbar.getCloseButton());
+        assertEquals(View.VISIBLE, mToolbar.getCloseButton().getVisibility());
+        assertNotNull(mToolbar.getMenuButton());
+        assertEquals(View.VISIBLE, mToolbar.getMenuButton().getVisibility());
+        assertNotNull(mToolbar.getMinimizeButton());
+        assertEquals(View.VISIBLE, mToolbar.getMinimizeButton().getVisibility());
+        assertEquals(0, mToolbar.getCustomActionButtonsParent().getChildCount());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"CustomTabs"})
+    public void testButtonFlipVisibility_minimizeOver2CustomActions() {
+        setToolbarWidthForMaxButtons(3); // close, menu, and 1 more (minimize or chrome action)
+        addCustomActionButton(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, 0xFF0000, "descriptionOib");
+        addCustomActionButton(ButtonType.CCT_SHARE_BUTTON, 0x00FF00, "descriptionShare");
+        mModel.set(
+                CustomTabToolbarButtonsProperties.CLOSE_BUTTON,
+                new CloseButtonData(
+                        true,
+                        new ColorDrawable(),
+                        CustomTabsIntent.CLOSE_BUTTON_POSITION_START,
+                        mOnClickListener));
+        mModel.set(
+                CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON,
+                new MinimizeButtonData(true, mOnClickListener));
+
+        assertNotNull(mToolbar.getCloseButton());
+        assertEquals(View.VISIBLE, mToolbar.getCloseButton().getVisibility());
+        assertNotNull(mToolbar.getMenuButton());
+        assertEquals(View.VISIBLE, mToolbar.getMenuButton().getVisibility());
+        assertNotNull(mToolbar.getMinimizeButton());
+        assertEquals(View.VISIBLE, mToolbar.getMinimizeButton().getVisibility());
+        assertEquals(1, mToolbar.getCustomActionButtonsParent().getChildCount());
+        // Share is shown, OpenInBrowser is hidden.
+        View custom = mToolbar.getCustomActionButtonsParent().getChildAt(0);
+        assertEquals(View.VISIBLE, custom.getVisibility());
+        assertEquals("descriptionShare", custom.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"CustomTabs"})
+    public void testButtonFlipVisibility_customOverMinimize() {
+        setToolbarWidthForMaxButtons(3); // close, menu, and 1 more (minimize or custom action)
+        addCustomActionButton(ButtonType.OTHER, 0xFF0000, "description");
+        mModel.set(
+                CustomTabToolbarButtonsProperties.CLOSE_BUTTON,
+                new CloseButtonData(
+                        true,
+                        new ColorDrawable(),
+                        CustomTabsIntent.CLOSE_BUTTON_POSITION_START,
+                        mOnClickListener));
+        mModel.set(
+                CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON,
+                new MinimizeButtonData(true, mOnClickListener));
+
+        assertNotNull(mToolbar.getCloseButton());
+        assertEquals(View.VISIBLE, mToolbar.getCloseButton().getVisibility());
+        assertNotNull(mToolbar.getMenuButton());
+        assertEquals(View.VISIBLE, mToolbar.getMenuButton().getVisibility());
+        assertNull(mToolbar.getMinimizeButton()); // Minimize is invisible (left uninflated)
+        assertEquals(1, mToolbar.getCustomActionButtonsParent().getChildCount());
+        View customAction = mToolbar.getCustomActionButtonsParent().getChildAt(0);
+        assertEquals(View.VISIBLE, customAction.getVisibility());
+    }
+
+    private void setToolbarWidthForMaxButtons(int maxButtons) {
+        int locationBarMinWidth =
+                CustomTabToolbarButtonsViewBinder.getLocationBarMinWidth(
+                        mActivity.getResources(),
+                        mModel.get(OMNIBOX_ENABLED),
+                        mModel.get(TITLE_VISIBLE));
+        mActivity.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
+        int buttonWidth =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        int startWidth = locationBarMinWidth + buttonWidth * maxButtons;
+        mModel.set(TOOLBAR_WIDTH, startWidth);
+    }
+
+    private void addCustomActionButton(@ButtonType int type, int iconColor, String description) {
+        Drawable icon = new ColorDrawable(iconColor);
+        PropertyModel buttonModel =
+                new PropertyModel.Builder(CustomTabToolbarButtonsProperties.INDIVIDUAL_BUTTON_KEYS)
+                        .with(CustomTabToolbarButtonsProperties.ICON, icon)
+                        .with(CustomTabToolbarButtonsProperties.TYPE, type)
+                        .with(CustomTabToolbarButtonsProperties.DESCRIPTION, description)
+                        .with(CustomTabToolbarButtonsProperties.CLICK_LISTENER, mOnClickListener)
+                        .build();
+        mCustomActionButtons.add(buttonModel);
     }
 
     @Test

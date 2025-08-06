@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -30,6 +31,9 @@ public class CustomTabToolbarButtonsProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
 
+    /** The type of the individual button. Can have {@link ButtonType}. */
+    public static final WritableIntPropertyKey TYPE = new WritableIntPropertyKey();
+
     /** OnClickListener for the individual button. */
     public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -39,7 +43,7 @@ public class CustomTabToolbarButtonsProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] INDIVIDUAL_BUTTON_KEYS = {
-        VISIBLE, ICON, CLICK_LISTENER, DESCRIPTION
+        VISIBLE, ICON, TYPE, CLICK_LISTENER, DESCRIPTION
     };
 
     public static final WritableBooleanPropertyKey CUSTOM_ACTION_BUTTONS_VISIBLE =
