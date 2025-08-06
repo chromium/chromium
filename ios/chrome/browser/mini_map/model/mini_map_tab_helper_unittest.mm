@@ -129,7 +129,6 @@ class MiniMapTabHelperTest : public PlatformTest {
       bool feature_enabled,
       bool dse_is_google,
       bool google_maps_installed,
-      bool user_initiated,
       ui::PageTransition transition_type) {
     NSURL* web_state_url = [NSURL URLWithString:web_state_url_string];
     NSURL* url = [NSURL URLWithString:url_string];
@@ -155,7 +154,7 @@ class MiniMapTabHelperTest : public PlatformTest {
     const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type, /*target_frame_is_main*/ true,
         /*target_frame_is_cross_origin*/ false,
-        /*target_window_is_cross_origin*/ false, user_initiated,
+        /*target_window_is_cross_origin*/ false, /*user_initiated*/ true,
         /*user_tapped_recently*/ true);
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
@@ -195,11 +194,10 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
   const int feature_enabled_index = 1 << 2;
   const int is_dse_google_index = 1 << 3;
   const int google_maps_not_installed_index = 1 << 4;
-  const int user_initiated_index = 1 << 5;
-  const int transition_type_index = 1 << 6;
-  const int handled_url_index = 1 << 7;
-  const int signed_in = 1 << 8;
-  const int total = 1 << 9;
+  const int transition_type_index = 1 << 5;
+  const int handled_url_index = 1 << 6;
+  const int signed_in = 1 << 7;
+  const int total = 1 << 8;
   bool was_signed_in = false;
 
   for (int scenario = 0; scenario < total; scenario++) {
@@ -210,7 +208,6 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
     bool feature_enabled = scenario & feature_enabled_index;
     bool dse_is_google = scenario & is_dse_google_index;
     bool google_maps_not_installed = scenario & google_maps_not_installed_index;
-    bool user_initiated = scenario & user_initiated_index;
     if (scenario & handled_url_index) {
       url = [url stringByAppendingFormat:@"?%@", kValidQuery];
     }
@@ -235,7 +232,7 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
     }
     bool res = TestShouldAllowRequest(web_state_url, url, feature_enabled,
                                       dse_is_google, !google_maps_not_installed,
-                                      user_initiated, transition_type);
+                                      transition_type);
     EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
     // Navigation should be blocked only if all conditions are true.
     EXPECT_EQ(scenario != total - 1, res);
