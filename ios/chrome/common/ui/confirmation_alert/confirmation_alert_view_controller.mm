@@ -271,20 +271,22 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     scrollViewBottomAnchor = actionStackView.topAnchor;
     self.actionStackView = actionStackView;
 
-    self.gradientView = [self createGradientView];
-    [self.view addSubview:self.gradientView];
+    if (self.customGradientViewHeight > 0) {
+      self.gradientView = [self createGradientView];
+      [self.view addSubview:self.gradientView];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [self.gradientView.bottomAnchor
-          constraintEqualToAnchor:actionStackView.topAnchor],
-      [self.gradientView.leadingAnchor
-          constraintEqualToAnchor:self.scrollView.leadingAnchor],
-      [self.gradientView.trailingAnchor
-          constraintEqualToAnchor:self.scrollView.trailingAnchor],
-    ]];
-    self.gradientViewHeightConstraint = [self.gradientView.heightAnchor
-        constraintEqualToConstant:self.customGradientViewHeight];
-    self.gradientViewHeightConstraint.active = YES;
+      [NSLayoutConstraint activateConstraints:@[
+        [self.gradientView.bottomAnchor
+            constraintEqualToAnchor:actionStackView.topAnchor],
+        [self.gradientView.leadingAnchor
+            constraintEqualToAnchor:self.scrollView.leadingAnchor],
+        [self.gradientView.trailingAnchor
+            constraintEqualToAnchor:self.scrollView.trailingAnchor],
+      ]];
+      self.gradientViewHeightConstraint = [self.gradientView.heightAnchor
+          constraintEqualToConstant:self.customGradientViewHeight];
+      self.gradientViewHeightConstraint.active = YES;
+    }
   }
 
   self.scrollViewBottomAnchorConstraint = [self.scrollView.bottomAnchor
@@ -550,7 +552,8 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 // Helper to create the navigation bar.
 - (UINavigationBar*)createNavigationBar {
   UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
-  navigationBar.translucent = NO;
+  navigationBar.translucent =
+      CGColorGetAlpha(self.mainBackgroundColor.CGColor) < 1.0;
   [navigationBar setShadowImage:[[UIImage alloc] init]];
   [navigationBar setBarTintColor:self.mainBackgroundColor];
 
@@ -707,7 +710,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   view.editable = NO;
   view.selectable = NO;
   view.scrollEnabled = NO;
-  view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  view.backgroundColor = self.mainBackgroundColor;
   return view;
 }
 
@@ -786,9 +789,8 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 // Helper to create the gradient view.
 - (GradientView*)createGradientView {
   GradientView* gradientView = [[GradientView alloc]
-      initWithTopColor:[[UIColor colorNamed:kPrimaryBackgroundColor]
-                           colorWithAlphaComponent:0]
-           bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+      initWithTopColor:[self.mainBackgroundColor colorWithAlphaComponent:0]
+           bottomColor:self.mainBackgroundColor];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   return gradientView;
 }

@@ -343,7 +343,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 - (UIView*)setUpTitleView {
   NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE);
   UIView* titleView = password_manager::CreatePasswordManagerTitleView(title);
-  titleView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  titleView.backgroundColor = self.mainBackgroundColor;
   titleView.accessibilityLabel = [NSString
       stringWithFormat:@"%@. %@", title,
                        l10n_util::GetNSString(
