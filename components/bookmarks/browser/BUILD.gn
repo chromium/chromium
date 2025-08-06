@@ -16,6 +16,7 @@ static_library("browser") {
     "bookmark_client.h",
     "bookmark_codec.h",
     "bookmark_model.h",
+    "bookmark_model_load_waiter.h",
     "bookmark_model_observer.h",
     "bookmark_node.h",
     "bookmark_node_data.h",
@@ -40,6 +41,7 @@ static_library("browser") {
     "bookmark_load_details.cc",
     "bookmark_load_details.h",
     "bookmark_model.cc",
+    "bookmark_model_load_waiter.cc",
     "bookmark_node.cc",
     "bookmark_node_data.cc",
     "bookmark_storage.cc",
@@ -138,6 +140,7 @@ source_set("unit_tests") {
   sources = [
     "bookmark_codec_unittest.cc",
     "bookmark_load_details_unittest.cc",
+    "bookmark_model_load_waiter_unittest.cc",
     "bookmark_model_unittest.cc",
     "bookmark_storage_unittest.cc",
     "bookmark_utils_unittest.cc",

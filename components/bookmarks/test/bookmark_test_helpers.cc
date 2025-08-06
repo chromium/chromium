@@ -7,40 +7,16 @@
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model_load_waiter.h"
 #include "url/gurl.h"
 
 namespace bookmarks {
 namespace test {
 
 namespace {
-
-// BookmarkLoadObserver is used when blocking until the BookmarkModel finishes
-// loading. As soon as the BookmarkModel finishes loading the message loop is
-// quit.
-class BookmarkLoadObserver : public BaseBookmarkModelObserver {
- public:
-  explicit BookmarkLoadObserver(base::OnceClosure quit_task)
-      : quit_task_(std::move(quit_task)) {}
-
-  BookmarkLoadObserver(const BookmarkLoadObserver&) = delete;
-  BookmarkLoadObserver& operator=(const BookmarkLoadObserver&) = delete;
-
-  ~BookmarkLoadObserver() override = default;
-
- private:
-  // BaseBookmarkModelObserver:
-  void BookmarkModelChanged() override {}
-  void BookmarkModelLoaded(bool ids_reassigned) override {
-    std::move(quit_task_).Run();
-  }
-
-  base::OnceClosure quit_task_;
-};
 
 // Helper function which does the actual work of creating the nodes for
 // a particular level in the hierarchy.
@@ -93,10 +69,9 @@ void WaitForBookmarkModelToLoad(BookmarkModel* model) {
     return;
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
-  BookmarkLoadObserver observer(run_loop.QuitClosure());
-  model->AddObserver(&observer);
+  ScheduleCallbackOnBookmarkModelLoad(*model, run_loop.QuitClosure());
+
   run_loop.Run();
-  model->RemoveObserver(&observer);
   DCHECK(model->loaded());
 }
 
