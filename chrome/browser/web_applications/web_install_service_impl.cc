@@ -114,19 +114,6 @@ void WebInstallServiceImpl::CreateIfAllowed(
     return;
   }
 
-  // TODO(crbug.com/402547563): Installing web apps is not supported from
-  // off-the-record profiles.
-  // This check stops the ServiceImpl from being
-  // created in Incognito mode. (To exclude Guest mode too, switch to
-  // AreWebAppsUserInstallable). It may need to be removed depending where the
-  // auto rejection is implemented.
-  if (!AreWebAppsEnabled(Profile::FromBrowserContext(
-          content::WebContents::FromRenderFrameHost(render_frame_host)
-              ->GetBrowserContext()))) {
-    receiver.reset();
-    return;
-  }
-
   if (!render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
     receiver.reset();
     return;
@@ -137,8 +124,15 @@ void WebInstallServiceImpl::CreateIfAllowed(
 
 void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
                                     InstallCallback callback) {
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh) {
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+                            GURL());
+    return;
+  }
+
   GURL install_target;
-  const GURL current_url = render_frame_host().GetLastCommittedURL();
+  const GURL current_url = rfh->GetLastCommittedURL();
 
   // `options` is null if the 0-parameter signature was called.
   if (!options) {
@@ -156,8 +150,17 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     return;
   }
 
-  // TODO(crbug.com/402547563): Installing web apps is not supported from
-  // off-the-record profiles.
+  // Installing web apps is not supported from off-the-record profiles. Show
+  // the install not supported dialog.
+  auto* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  if (!AreWebAppsUserInstallable(profile)) {
+    WebAppUiManager::TriggerInstallNotSupportedDialog(
+        content::WebContents::FromRenderFrameHost(rfh), profile,
+        base::BindOnce(
+            &WebInstallServiceImpl::OnInstallNotSupportedDialogClosed,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
 
   // Initiate installation of the current document.
   // TODO(crbug.com/407473727): Treat install(self) and install(self, self) as
@@ -167,13 +170,6 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     TryInstallCurrentDocument(std::move(callback));
 
     // Current document installs don't require the permissions checking code.
-    return;
-  }
-
-  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh) {
-    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                            GURL());
     return;
   }
 
@@ -191,17 +187,17 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
                      install_options_->manifest_id, std::move(callback)));
 }
 
+void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(
+    InstallCallback callback) {
+  std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+                          GURL());
+}
+
 void WebInstallServiceImpl::TryInstallCurrentDocument(
     InstallCallback callback) {
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
-  // TODO(crbug.com/402547563): Installing web apps is not supported from
-  // off-the-record profiles.
-  // As of now, WebInstallServiceImpl is only created if `AreWebAppsEnabled` for
-  // the current browsing context (see `CreateIfAllowed`), so the provider
-  // should always be available. If this changes, this check can be
-  // reevaluated.
   CHECK(provider);
 
   // Check if the current document is already installed.

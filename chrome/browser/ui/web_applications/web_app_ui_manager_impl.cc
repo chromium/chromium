@@ -167,6 +167,14 @@ std::unique_ptr<WebAppUiManager> WebAppUiManager::Create(Profile* profile) {
   return std::make_unique<WebAppUiManagerImpl>(profile);
 }
 
+// static
+void WebAppUiManager::TriggerInstallNotSupportedDialog(
+    content::WebContents* web_contents,
+    Profile* profile,
+    base::OnceClosure callback) {
+  ShowInstallNotSupportedDialog(web_contents, profile, std::move(callback));
+}
+
 WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
     : profile_(profile) {}
 

@@ -127,6 +127,13 @@ class WebAppUiManager {
       const std::optional<GURL>& file_launch_url,
       const std::vector<base::FilePath>& launch_files);
 
+  // Triggers the install not supported dialog when a user attempts to install
+  // a web app from off-the-record profiles. Used for the Web Install API.
+  static void TriggerInstallNotSupportedDialog(
+      content::WebContents* web_contents,
+      Profile* profile,
+      base::OnceClosure callback);
+
   WebAppUiManager();
   virtual ~WebAppUiManager();
 

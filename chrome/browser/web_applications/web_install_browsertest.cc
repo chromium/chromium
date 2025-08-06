@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -33,7 +35,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/user_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 constexpr webapps::WebappInstallSource kInstallSource =
@@ -388,6 +398,151 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
+}
+
+// Tests for WebAppInstallNotSupportedDialog appearing in Incognito and Guest
+// modes since web app installs are not supported in these modes. The dialog
+// appears for all current and background document installs.
+
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+                       NotSupportedDialogInIncognito) {
+  // Open incognito window and navigate to a valid URL.
+  GURL test_url = https_server()->GetURL("/simple.html");
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), test_url);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Trigger the Install Not Supported dialog by initiating an install request.
+  ExecuteScriptAsync(incognito_web_contents,
+                     "navigator.install()"
+                     ".then(result => {"
+                     "  webInstallResult = result;"
+                     "}).catch(error => {"
+                     "  webInstallError = error;"
+                     "});");
+
+  // Wait for the dialog to show.
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+
+  // Verify dialog title for Incognito mode.
+  EXPECT_EQ(
+      widget->widget_delegate()->AsBubbleDialogDelegate()->GetWindowTitle(),
+      u"Web app installs aren't supported in Incognito mode");
+
+  // Simulate the user accepting the dialog.
+  views::test::AcceptDialog(widget);
+  destroyed.Wait();
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists(incognito_web_contents));
+  EXPECT_TRUE(ErrorExists(incognito_web_contents));
+  EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+                       NotSupportedDialogAfterTabSwitching) {
+  // Open incognito window and navigate to a valid URL.
+  GURL test_url = https_server()->GetURL("/simple.html");
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), test_url);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Trigger the Install Not Supported dialog by initiating an install request.
+  ExecuteScriptAsync(incognito_web_contents,
+                     "navigator.install()"
+                     ".then(result => {"
+                     "  webInstallResult = result;"
+                     "}).catch(error => {"
+                     "  webInstallError = error;"
+                     "});");
+
+  // Wait for the dialog to show.
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  // Change focus to a new tab.
+  chrome::NewTab(incognito_browser);
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists(incognito_web_contents));
+  EXPECT_TRUE(ErrorExists(incognito_web_contents));
+  EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
+}
+
+class WebInstallGuestModeTest : public WebInstallCurrentDocumentBrowserTest {
+ public:
+  WebInstallGuestModeTest() = default;
+  WebInstallGuestModeTest(const WebInstallGuestModeTest&) = delete;
+  WebInstallGuestModeTest& operator=(const WebInstallGuestModeTest&) = delete;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // To create a guest session in ChromeOS, CreateGuestBrowser() cannot be used
+  // and proper switches to commandline need to be set.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    TestingProfile::kTestUserProfileDir);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest, NotSupportedDialogInGuestMode) {
+  // Open a new guest mode window.
+#if BUILDFLAG(IS_CHROMEOS)
+  Browser* guest_browser = browser();
+#else
+  Browser* guest_browser = CreateGuestBrowser();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+
+  // Navigate to a valid URL in the guest browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      guest_browser, https_server()->GetURL("/simple.html")));
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
+  content::WebContents* guest_web_contents =
+      guest_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Trigger the Install Not Supported dialog by initiating an install request.
+  ExecuteScriptAsync(guest_web_contents,
+                     "navigator.install()"
+                     ".then(result => {"
+                     "  webInstallResult = result;"
+                     "}).catch(error => {"
+                     "  webInstallError = error;"
+                     "});");
+
+  // Confirm Install Not Supported Dialog shows.
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+
+  // Verify dialog title for Guest mode.
+  EXPECT_EQ(
+      widget->widget_delegate()->AsBubbleDialogDelegate()->GetWindowTitle(),
+      u"Web app installs aren't supported in Guest mode");
+
+  // Simulate the user accepting the dialog.
+  views::test::AcceptDialog(widget);
+  destroyed.Wait();
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists(guest_web_contents));
+  EXPECT_TRUE(ErrorExists(guest_web_contents));
+  EXPECT_EQ(GetErrorName(guest_web_contents), kAbortError);
 }
 
 // Manifest validation for current document installs.

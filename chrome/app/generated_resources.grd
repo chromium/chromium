@@ -3547,6 +3547,14 @@ are declared in tools/grit/grit_args.gni.
         Open as tabbed window
       </message>
 
+      <!-- Web app install not supported dialog -->
+      <message name="IDS_WEB_APP_INSTALL_NOT_SUPPORTED_DIALOG_TITLE_INCOGNITO_MODE" desc="Title for the dialog shown when a web app cannot be installed in Incognito Mode.">
+        Web app installs aren't supported in Incognito mode
+      </message>
+      <message name="IDS_WEB_APP_INSTALL_NOT_SUPPORTED_DIALOG_TITLE_GUEST_MODE" desc="Title for the dialog shown when a web app cannot be installed in Guest Mode.">
+        Web app installs aren't supported in Guest mode
+      </message>
+
       <!-- WebApp name/icon update dialog -->
       <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME" desc="The title at the top of the web app update dialog when only the name changed." formatter_data="android_java">
         Review name update

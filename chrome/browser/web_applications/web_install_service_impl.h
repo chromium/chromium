@@ -54,6 +54,8 @@ class WebInstallServiceImpl
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
   ~WebInstallServiceImpl() override;
 
+  void OnInstallNotSupportedDialogClosed(InstallCallback callback);
+
   void TryInstallCurrentDocument(InstallCallback callback);
 
   void CheckForInstalledAppMaybeLaunch(content::WebContents* web_contents,
