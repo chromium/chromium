@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:activateFirstItem()
+@EXECUTE-AND-WAIT-FOR:activateThirdItem()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -24,7 +26,7 @@
             const statusDiv = document.getElementById("status");
             const list = document.createElement("md-list");
             const items = [
-                { headline: "Single line item" },
+                { headline: "Single line item", id: "test-item-1" },
                 {
                     headline: "Item with icon",
                     supportingText: "Supporting text",
@@ -33,7 +35,8 @@
                 {
                     headline: "Item with end icon",
                     supportingText: "More supporting text",
-                    endIcon: "arrow_forward"
+                    endIcon: "arrow_forward",
+                    id: "test-item-3"
                 },
                 {
                     headline: "Multi-line item",
@@ -51,6 +54,9 @@
             items.forEach(itemInfo => {
                 const item = document.createElement("md-list-item");
                 item.headline = itemInfo.headline;
+                if (itemInfo.id) {
+                    item.id = itemInfo.id;
+                }
                 if (itemInfo.supportingText) {
                     item.setAttribute("supporting-text", itemInfo.supportingText);
                 }
@@ -80,4 +86,33 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
+<script>
+    async function activateFirstItem() {
+        const item = document.getElementById("test-item-1");
+        if (item) {
+            item.dispatchEvent(new Event("request-activation", { bubbles: true }));
+            await item.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "List Item 1 Activated";
+            statusDiv.appendChild(statusText);
+            return "List Item 1 Activated";
+        }
+        return "Failed to activate List Item 1";
+    }
+
+    async function activateThirdItem() {
+        const item = document.getElementById("test-item-3");
+        if (item) {
+            item.dispatchEvent(new Event("request-activation", { bubbles: true }));
+            await item.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "List Item 3 Activated";
+            statusDiv.appendChild(statusText);
+            return "List Item 3 Activated";
+        }
+        return "Failed to activate List Item 3";
+    }
+</script>
 </html>

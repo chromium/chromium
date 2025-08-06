@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:selectChip()
+@EXECUTE-AND-WAIT-FOR:removeChip()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -24,13 +26,16 @@
             const statusDiv = document.getElementById("status");
             const chipSet = document.createElement("md-chip-set");
             const chips = [
-                { label: "Input chip" },
+                { label: "Input chip", id: "test-chip-1" },
                 { label: "With avatar", icon: "person" },
-                { label: "Removable", removeOnly: true, removeIcon: "close" }
+                { label: "Removable", removeOnly: true, removeIcon: "close", id: "test-chip-2" }
             ];
             chips.forEach(chipInfo => {
                 const chip = document.createElement("md-input-chip");
                 chip.label = chipInfo.label;
+                if (chipInfo.id) {
+                    chip.id = chipInfo.id;
+                }
                 if (chipInfo.icon) {
                     const icon = document.createElement("md-icon");
                     icon.slot = "icon";
@@ -55,4 +60,32 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
+<script>
+    async function selectChip() {
+        const chip = document.getElementById("test-chip-1");
+        if (chip) {
+            chip.selected = true;
+            await chip.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Input Chip Selected";
+            statusDiv.appendChild(statusText);
+            return "Input Chip Selected";
+        }
+        return "Failed to select Input Chip";
+    }
+
+    async function removeChip() {
+        const chip = document.getElementById("test-chip-2");
+        if (chip) {
+            chip.remove();
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Input Chip Removed";
+            statusDiv.appendChild(statusText);
+            return "Input Chip Removed";
+        }
+        return "Failed to remove Input Chip";
+    }
+</script>
 </html>

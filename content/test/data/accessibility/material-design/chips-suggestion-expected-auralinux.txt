@@ -7,3 +7,15 @@
 ++++++[section]
 ++++++++[section]
 ++++++++++[push button] name='With icon'
+=== Start Continuation ===
+[document web] name='Material Web Suggestion Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[push button] name='Suggestion chip'
+++++++[section]
+++++++++[section]
+++++++++++[push button] name='With icon'
+++++[section]
+++++++[static] name='Suggestion Chip Clicked'

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:checkFirstCheckbox()
+@EXECUTE-AND-WAIT-FOR:uncheckFirstCheckbox()
+@EXECUTE-AND-WAIT-FOR:setCheckboxIndeterminate()
+@AURALINUX-ALLOW:indeterminate*
+@AURALINUX-ALLOW:required*
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -46,6 +51,46 @@
             });
             statusDiv.setAttribute("aria-label", "Ready");
         });
+    </script>
+    <script>
+        async function checkFirstCheckbox() {
+            const checkbox = document.querySelector("md-checkbox");
+            if (checkbox) {
+                checkbox.checked = true;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Checkbox 1 Checked";
+                statusDiv.appendChild(statusText);
+                return "Checkbox 1 Checked";
+            }
+            return "Failed to check Checkbox 1";
+        }
+
+        async function uncheckFirstCheckbox() {
+            const checkbox = document.querySelector("md-checkbox");
+            if (checkbox) {
+                checkbox.checked = false;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Checkbox 1 Unchecked";
+                statusDiv.appendChild(statusText);
+                return "Checkbox 1 Unchecked";
+            }
+            return "Failed to uncheck Checkbox 1";
+        }
+
+        async function setCheckboxIndeterminate() {
+            const checkbox = document.querySelector("md-checkbox");
+            if (checkbox) {
+                checkbox.indeterminate = true;
+                const statusDiv = document.getElementById("status");
+                const statusText = document.createElement("div");
+                statusText.textContent = "Checkbox 1 Indeterminate";
+                statusDiv.appendChild(statusText);
+                return "Checkbox 1 Indeterminate";
+            }
+            return "Failed to set Checkbox 1 indeterminate";
+        }
     </script>
 </head>
 <body>

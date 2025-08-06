@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:openMenu()
+@EXECUTE-AND-WAIT-FOR:closeMenu()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -29,12 +31,12 @@
             menuContainer.style.display = "inline-block";
 
             const button = document.createElement("md-filled-button");
-            button.id = "menu-button";
+            button.id = "test-menu-button";
             button.textContent = "Open Menu";
 
             const menu = document.createElement("md-menu");
-            menu.id = "menu1";
-            menu.anchor = "menu-button";
+            menu.id = "test-menu";
+            menu.anchor = "test-menu-button";
 
             const items = [
                 { headline: "Menu Item 1" },
@@ -92,4 +94,37 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
+<script>
+    async function openMenu() {
+        const menu = document.getElementById("test-menu");
+        if (menu) {
+            menu.open = true;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Menu Opened";
+            statusDiv.appendChild(statusText);
+            return "Menu Opened";
+        }
+        return "Failed to open Menu";
+    }
+
+    async function closeMenu() {
+        const menu = document.getElementById("test-menu");
+        if (menu) {
+            menu.anchorElement.focus({ preventScroll: true });
+            menu.open = false;
+
+            await menu.updateComplete;
+            menu.offsetHeight;
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Menu Closed";
+            statusDiv.appendChild(statusText);
+            return "Menu Closed";
+        }
+        return "Failed to close Menu";
+    }
+</script>
 </html>

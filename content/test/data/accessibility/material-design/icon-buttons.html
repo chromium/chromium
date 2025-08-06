@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:selectToggleButton()
+@EXECUTE-AND-WAIT-FOR:deselectToggleButton()
+@EXECUTE-AND-WAIT-FOR:selectToggleButton()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -25,7 +28,7 @@
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
             const buttons = [
-                { tag: "md-icon-button", icon: "favorite" },
+                { tag: "md-icon-button", icon: "favorite", id: "test-toggle-button", toggle: true },
                 { tag: "md-filled-icon-button", icon: "settings" },
                 { tag: "md-filled-tonal-icon-button", icon: "home" },
                 { tag: "md-outlined-icon-button", icon: "search" },
@@ -33,6 +36,12 @@
             ];
             buttons.forEach(buttonInfo => {
                 const button = document.createElement(buttonInfo.tag);
+                if (buttonInfo.id) {
+                    button.id = buttonInfo.id;
+                }
+                if (buttonInfo.toggle) {
+                    button.toggle = true;
+                }
                 const icon = document.createElement("md-icon");
                 icon.textContent = buttonInfo.icon;
                 button.appendChild(icon);
@@ -49,4 +58,33 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
+<script>
+    async function selectToggleButton() {
+        const button = document.getElementById("test-toggle-button");
+        if (button) {
+            button.selected = true;
+            await button.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Toggle Icon Button Selected";
+            statusDiv.appendChild(statusText);
+            return "Toggle Icon Button Selected";
+        }
+        return "Failed to select Toggle Icon Button";
+    }
+
+    async function deselectToggleButton() {
+        const button = document.getElementById("test-toggle-button");
+        if (button) {
+            button.selected = false;
+            await button.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Toggle Icon Button Deselected";
+            statusDiv.appendChild(statusText);
+            return "Toggle Icon Button Deselected";
+        }
+        return "Failed to deselect Toggle Icon Button";
+    }
+</script>
 </html>
