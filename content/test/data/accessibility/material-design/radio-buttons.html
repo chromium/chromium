@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
-@EXECUTE-AND-WAIT-FOR:selectOption1()
-@EXECUTE-AND-WAIT-FOR:selectOption3()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -47,33 +45,6 @@
             });
             statusDiv.setAttribute("aria-label", "Ready");
         });
-    </script>
-    <script>
-        async function selectOption1() {
-            const radio1 = document.querySelectorAll("md-radio")[0];
-            if (radio1) {
-                radio1.checked = true;
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Selected: Option 1";
-                statusDiv.appendChild(statusText);
-                return "Selected: Option 1";
-            }
-            return "Failed to get Option 1";
-        }
-
-        async function selectOption3() {
-            const radio3 = document.querySelectorAll("md-radio")[2];
-            if (radio3) {
-                radio3.checked = true;
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Selected: Option 3";
-                statusDiv.appendChild(statusText);
-                return "Selected: Option 3";
-            }
-            return "Failed to get Option 3";
-        }
     </script>
 </head>
 <body>

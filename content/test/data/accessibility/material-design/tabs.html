@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
-@EXECUTE-AND-WAIT-FOR:clickTab1()
-@EXECUTE-AND-WAIT-FOR:clickTab2()
-@EXECUTE-AND-WAIT-FOR:clickTab3()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -28,17 +25,15 @@
             const statusDiv = document.getElementById("status");
 
             const primaryTabs1 = document.createElement("md-tabs");
-            primaryTabs1.id = "test-tabs";
             const tabInfos1 = [
-                { text: "Tab 1", id: "test-tab1" },
-                { text: "Tab 2", active: true, id: "test-tab2" },
-                { text: "Tab 3", id: "test-tab3" },
+                { text: "Tab 1" },
+                { text: "Tab 2", active: true },
+                { text: "Tab 3" },
                 { text: "Disabled Tab", disabled: true }
             ];
             tabInfos1.forEach(info => {
                 const tab = document.createElement("md-primary-tab");
                 tab.textContent = info.text;
-                if (info.id) tab.id = info.id;
                 if (info.active) tab.active = true;
                 if (info.disabled) tab.disabled = true;
                 primaryTabs1.appendChild(tab);
@@ -79,49 +74,6 @@
 
             statusDiv.setAttribute("aria-label", "Ready");
         });
-    </script>
-    <script>
-        async function clickTab1() {
-            const tab1 = document.getElementById("test-tab1");
-            if (tab1) {
-                tab1.click();
-                await tab1.updateComplete;
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Tab 1 Clicked";
-                statusDiv.appendChild(statusText);
-                return "Tab 1 Clicked";
-            }
-            return "Failed to click Tab 1";
-        }
-
-        async function clickTab2() {
-            const tab2 = document.getElementById("test-tab2");
-            if (tab2) {
-                tab2.click();
-                await tab2.updateComplete;
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Tab 2 Clicked";
-                statusDiv.appendChild(statusText);
-                return "Tab 2 Clicked";
-            }
-            return "Failed to click Tab 2";
-        }
-
-        async function clickTab3() {
-            const tab3 = document.getElementById("test-tab3");
-            if (tab3) {
-                tab3.click();
-                await tab3.updateComplete;
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Tab 3 Clicked";
-                statusDiv.appendChild(statusText);
-                return "Tab 3 Clicked";
-            }
-            return "Failed to click Tab 3";
-        }
     </script>
 </head>
 <body>

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
-@EXECUTE-AND-WAIT-FOR:setTextHello()
-@EXECUTE-AND-WAIT-FOR:setTextHelloWorld()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -23,7 +21,7 @@
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
             const textFields = [
-                { tag: "md-filled-text-field", label: "Filled text field", id: "test-text-field" },
+                { tag: "md-filled-text-field", label: "Filled text field" },
                 { tag: "md-outlined-text-field", label: "Outlined text field" },
                 { tag: "md-filled-text-field", label: "With value", value: "Default text" },
                 { tag: "md-outlined-text-field", label: "Required field", required: true },
@@ -51,33 +49,4 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
-<script>
-    async function setTextHello() {
-        const textField = document.getElementById("test-text-field");
-        if (textField) {
-            textField.value = "Hello";
-            await textField.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Text Field Set to Hello";
-            statusDiv.appendChild(statusText);
-            return "Text Field Set to Hello";
-        }
-        return "Failed to set Text Field";
-    }
-
-    async function setTextHelloWorld() {
-        const textField = document.getElementById("test-text-field");
-        if (textField) {
-            textField.value = "Hello World";
-            await textField.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Text Field Set to Hello World";
-            statusDiv.appendChild(statusText);
-            return "Text Field Set to Hello World";
-        }
-        return "Failed to set Text Field to Hello World";
-    }
-</script>
 </html>

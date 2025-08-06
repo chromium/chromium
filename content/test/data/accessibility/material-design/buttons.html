@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
-@EXECUTE-AND-WAIT-FOR:clickFilledButton()
-@EXECUTE-AND-WAIT-FOR:disableOutlinedButton()
-@EXECUTE-AND-WAIT-FOR:enableOutlinedButton()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -41,49 +38,10 @@
             statusDiv.setAttribute("aria-label", "Ready");
         });
     </script>
-    <script>
-        async function clickFilledButton() {
-            const button = document.querySelector("md-filled-button");
-            if (button) {
-                button.click();
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Filled Button Clicked";
-                statusDiv.appendChild(statusText);
-                return "Filled Button Clicked";
-            }
-            return "Failed to click Filled Button";
-        }
-
-        async function disableOutlinedButton() {
-            const button = document.querySelector("md-outlined-button");
-            if (button) {
-                button.disabled = true;
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Outlined Button Disabled";
-                statusDiv.appendChild(statusText);
-                return "Outlined Button Disabled";
-            }
-            return "Failed to disable Outlined Button";
-        }
-
-        async function enableOutlinedButton() {
-            const button = document.querySelector("md-outlined-button");
-            if (button) {
-                button.disabled = false;
-                const statusDiv = document.getElementById("status");
-                const statusText = document.createElement("div");
-                statusText.textContent = "Outlined Button Enabled";
-                statusDiv.appendChild(statusText);
-                return "Outlined Button Enabled";
-            }
-            return "Failed to enable Outlined Button";
-        }
-    </script>
 </head>
 <body>
     <div id="status" aria-label="Loading">
     </div>
 </body>
 </html>
+

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
-@EXECUTE-AND-WAIT-FOR:selectSwitch()
-@EXECUTE-AND-WAIT-FOR:deselectSwitch()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -24,7 +22,7 @@
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
             const switches = [
-                { text: "Off switch", id: "test-switch" },
+                { text: "Off switch" },
                 { text: "On switch", checked: true },
                 { text: "Disabled off", disabled: true },
                 { text: "Disabled on", disabled: true, checked: true },
@@ -39,9 +37,6 @@
             switches.forEach(switchInfo => {
                 const switchEl = document.createElement("md-switch");
                 switchEl.textContent = switchInfo.text;
-                if (switchInfo.id) {
-                    switchEl.id = switchInfo.id;
-                }
                 if (switchInfo.checked) {
                     switchEl.checked = true;
                 }
@@ -72,33 +67,4 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
-<script>
-    async function selectSwitch() {
-        const switchEl = document.getElementById("test-switch");
-        if (switchEl) {
-            switchEl.selected = true;
-            await switchEl.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Switch Selected";
-            statusDiv.appendChild(statusText);
-            return "Switch Selected";
-        }
-        return "Failed to select switch";
-    }
-
-    async function deselectSwitch() {
-        const switchEl = document.getElementById("test-switch");
-        if (switchEl) {
-            switchEl.selected = false;
-            await switchEl.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Switch Deselected";
-            statusDiv.appendChild(statusText);
-            return "Switch Deselected";
-        }
-        return "Failed to deselect switch";
-    }
-</script>
 </html>

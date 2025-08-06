@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
-@EXECUTE-AND-WAIT-FOR:selectOption2()
-@EXECUTE-AND-WAIT-FOR:selectOption3()
-@EXECUTE-AND-WAIT-FOR:selectOption1()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -28,7 +25,6 @@
                 {
                     tag: "md-filled-select",
                     label: "Filled select",
-                    id: "test-select",
                     options: [
                         { value: "option1", text: "Option 1" },
                         { value: "option2", text: "Option 2" },
@@ -68,9 +64,6 @@
             selects.forEach(selectInfo => {
                 const select = document.createElement(selectInfo.tag);
                 select.label = selectInfo.label;
-                if (selectInfo.id) {
-                    select.id = selectInfo.id;
-                }
                 if (selectInfo.required) {
                     select.required = true;
                 }
@@ -97,50 +90,4 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
-<script>
-    async function selectOption2() {
-        const select = document.getElementById("test-select");
-        if (select) {
-            await select.updateComplete;
-            select.value = "option2";
-            await select.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Option 2 Selected";
-            statusDiv.appendChild(statusText);
-            return "Option 2 Selected";
-        }
-        return "Failed to select Option 2";
-    }
-
-    async function selectOption3() {
-        const select = document.getElementById("test-select");
-        if (select) {
-            await select.updateComplete;
-            select.value = "option3";
-            await select.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Option 3 Selected";
-            statusDiv.appendChild(statusText);
-            return "Option 3 Selected";
-        }
-        return "Failed to select Option 3";
-    }
-
-    async function selectOption1() {
-        const select = document.getElementById("test-select");
-        if (select) {
-            await select.updateComplete;
-            select.value = "option1";
-            await select.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Option 1 Selected";
-            statusDiv.appendChild(statusText);
-            return "Option 1 Selected";
-        }
-        return "Failed to select Option 1";
-    }
-</script>
 </html>

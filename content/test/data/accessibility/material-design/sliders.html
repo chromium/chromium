@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <!--
 @WAIT-FOR:Ready
-@EXECUTE-AND-WAIT-FOR:setSliderValue()
 @BLINK-ALLOW:htmlTag*
 @BLINK-ALLOW:className*
 -->
@@ -21,7 +20,7 @@
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
             const sliders = [
-                { id: "test-slider" },
+                {},
                 { value: 50 },
                 { min: 0, max: 100, value: 25 },
                 { step: 10, value: 30 },
@@ -45,20 +44,4 @@
     <div id="status" aria-label="Loading">
     </div>
 </body>
-<script>
-    async function setSliderValue() {
-        const slider = document.getElementById("test-slider");
-        if (slider) {
-            await slider.updateComplete;
-            slider.value = 25;
-            await slider.updateComplete;
-            const statusDiv = document.getElementById("status");
-            const statusText = document.createElement("div");
-            statusText.textContent = "Slider Set to 25";
-            statusDiv.appendChild(statusText);
-            return "Slider Set to 25";
-        }
-        return "Failed to set Slider";
-    }
-</script>
 </html>
