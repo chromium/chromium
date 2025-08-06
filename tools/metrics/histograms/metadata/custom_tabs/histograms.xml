@@ -582,16 +582,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Minimized.ReceivedIntentReusingSession"
-    enum="Boolean" expires_after="2025-06-22">
-  <owner>sinansahin@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Emitted when the Custom Tab receives an intent that reuses a session id
-    while the Custom Tab is minimized. Always emits true. Android only.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.MinimizedEvents" enum="CustomTabsMinimizedEvents"
     expires_after="2025-04-20">
   <owner>katzz@google.com</owner>

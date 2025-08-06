@@ -10,7 +10,6 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
@@ -118,8 +117,6 @@ public class CustomTabIntentHandler {
                 // that we don't send an onSessionEnded signal while the session is still alive.
                 handler.notifyTabWillCloseAndReopenWithSessionReuse();
             }
-            RecordHistogram.recordBooleanHistogram(
-                    "CustomTabs.Minimized.ReceivedIntentReusingSession", true);
             minimizeDelegate.dismiss();
             return false;
         }
