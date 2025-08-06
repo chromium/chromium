@@ -584,7 +584,9 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, RemoveTouchIconViaJavascript) {
 // have been processed in the HTML, because this is an example where Content
 // reports an incomplete favicon list (or, like in this test, falls back to the
 // default favicon.ico).
-IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, DoNotRemoveMappingIfStopped) {
+// TODO: https://crbug.com/434752631 - Re-enable this test.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+                       DISABLED_DoNotRemoveMappingIfStopped) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
       embedded_test_server()->GetURL("/favicon/slow_page_with_favicon.html");
