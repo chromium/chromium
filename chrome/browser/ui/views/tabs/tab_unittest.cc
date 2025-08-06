@@ -915,7 +915,6 @@ TEST_F(TabContentsTest, AccessibleNameChanged) {
   EXPECT_FALSE(
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 
-  new_data.incognito = !new_data.incognito;
   EXPECT_FALSE(
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 

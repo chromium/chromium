@@ -59,7 +59,6 @@ struct TabRendererData {
   bool should_display_url = true;
   base::TerminationStatus crashed_status =
       base::TERMINATION_STATUS_STILL_RUNNING;
-  bool incognito = false;
   bool show_icon = true;
   bool pinned = false;
   bool blocked = false;

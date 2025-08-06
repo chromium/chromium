@@ -93,7 +93,6 @@ TEST_F(TabRendererDataTest, FromTabInModel) {
   EXPECT_EQ(data.last_committed_url, GURL());
   EXPECT_EQ(data.title,
             data.tab_interface->GetTabFeatures()->tab_ui_helper()->GetTitle());
-  EXPECT_FALSE(data.incognito);
   EXPECT_FALSE(data.blocked);
   EXPECT_FALSE(data.should_hide_throbber);
   EXPECT_FALSE(data.is_tab_discarded);
