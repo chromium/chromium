@@ -225,11 +225,11 @@ const CGFloat kLeadingPadding = 61;
     configuration.background = backgroundConfig;
   }
 
+  configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+
   button.configuration = configuration;
 
   [button sizeToFit];
-  button.layer.cornerRadius = button.frame.size.height / 2;
-  button.layer.masksToBounds = YES;
 
   return button;
 }
