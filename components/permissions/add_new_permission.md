@@ -205,8 +205,7 @@ To extend [PermissionContextBase](https://source.chromium.org/chromium/chromium/
 [permissions::PermissionContextBase](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_context_base.h).
 2. Put it in `components/permissions/contexts/` or in a feature folder.
 3. In [permission_manager_factory.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/permissions/permission_manager_factory.cc) update [CreatePermissionContexts()](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/permissions/permission_manager_factory.cc;l=50;drc=c970b8647281cc3fc7ffe1288ce7c5f2e5f7acf6)
-4. In [permission_manager_factory.cc](https://source.chromium.org/chromium/chromium/src/+/main:weblayer/browser/permissions/permission_manager_factory.cc) update [CreatePermissionContexts()](https://source.chromium.org/chromium/chromium/src/+/main:weblayer/browser/permissions/permission_manager_factory.cc;l=61;drc=0e1f7e00e6ee851f977f5f37d711ee5d4e9b28eb)
-5. In [permission_test_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/test/permission_test_util.cc) update [CreatePermissionContexts()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/test/permission_test_util.cc;l=46;drc=0e1f7e00e6ee851f977f5f37d711ee5d4e9b28eb)
+4. In [permission_test_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/test/permission_test_util.cc) update [CreatePermissionContexts()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/test/permission_test_util.cc;l=46;drc=0e1f7e00e6ee851f977f5f37d711ee5d4e9b28eb)
 
 ### DevTools
 Add new permissions for browser automation (e2e testing).

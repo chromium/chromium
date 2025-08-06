@@ -239,7 +239,7 @@ public class PermissionDialogCoordinator {
         Context context = mDialogDelegate.getWindow().getContext().get();
         assert context != null;
         // Use the context to access resources instead of the activity because the activity may not
-        // have the correct resources in some cases (e.g. WebLayer).
+        // have the correct resources in some cases.
         return context;
     }
 
