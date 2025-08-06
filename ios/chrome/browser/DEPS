@@ -84,6 +84,7 @@ include_rules = [
   "+components/startup_metric_utils/browser",
   "+components/startup_metric_utils/common",
   "+components/prefs",
+  "+components/privacy_sandbox",
   "+components/profile_metrics",
   "+components/proxy_config",
   "+components/query_parser",
@@ -178,9 +179,11 @@ include_rules = [
 
   # Features should add explicit dependencies.
   "-ios/chrome/browser",
+  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/profile/model",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/policy/model",
+  "+ios/chrome/browser/privacy_sandbox",
   "+ios/chrome/browser/push_notification",
   "+ios/chrome/browser/google/model",
   "+ios/chrome/browser/metrics/model",

@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("privacy_sandbox") {
+  sources = [
+    "tracking_protection_settings_factory.h",
+    "tracking_protection_settings_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/common",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//url",
+  ]
+}
