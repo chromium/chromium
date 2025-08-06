@@ -57,6 +57,7 @@ static_library("webui_examples_lib") {
     "//content/public/app",
     "//content/public/browser",
     "//content/public/renderer",
+    "//gin",
     "//ipc",
     "//mojo/public/cpp/bindings",
     "//net",

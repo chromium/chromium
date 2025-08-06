@@ -14,6 +14,9 @@ include_rules = [
   # The WebUI examples is a simple embedder, so it only uses content's public API.
   "+content/public",
 
+  # The WebUI examples uses gin to create a "webshell" objects in v8 context.
+  "+gin",
+
   # Devtools relies on IPC definitions.
   "+ipc/ipc_channel.h",
 
