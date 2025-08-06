@@ -83,6 +83,9 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 @implementation PageActionMenuViewController {
   // Stack view containing the menu's main content.
   UIStackView* _contentStackView;
+
+  // The entry point for the Lens overlay.
+  UIButton* _lensButton;
 }
 
 - (void)viewDidLoad {
@@ -155,6 +158,16 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
     [buttonsStackView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
+
+  __weak PageActionMenuViewController* weakSelf = self;
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                  UITraitCollection* previousCollection) {
+                      [weakSelf updateLensAvailability:traitEnvironment
+                                                           .traitCollection];
+                    }];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -405,16 +418,17 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Create the small buttons and add them to the stack view.
-  UIButton* lensButton = [self
+  _lensButton = [self
       createSmallButtonWithIcon:CustomSymbolWithPointSize(kCameraLensSymbol,
                                                           kSmallButtonIconSize)
                           title:l10n_util::GetNSString(
                                     IDS_IOS_AI_HUB_LENS_LABEL)
-                        enabled:[self.mutator isLensAvailable]];
-  [lensButton addTarget:self
-                 action:@selector(handleLensEntryPointTapped:)
-       forControlEvents:UIControlEventTouchUpInside];
-  [stackView addArrangedSubview:lensButton];
+                        enabled:[self.mutator isLensAvailableForTraitCollection:
+                                                  self.traitCollection]];
+  [_lensButton addTarget:self
+                  action:@selector(handleLensEntryPointTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
+  [stackView addArrangedSubview:_lensButton];
 
   if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
     UIImage* readerModeImage = DefaultSymbolWithPointSize(
@@ -517,12 +531,6 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
       setObject:PreferredFontForTextStyle(UIFontTextStyleSubheadline,
                                           UIFontWeightRegular)
          forKey:NSFontAttributeName];
-  // If the button is enabled, override the text color. Otherwise, inherit the
-  // disabled font color.
-  if (enabled) {
-    [titleAttributes setObject:[UIColor colorNamed:kTextPrimaryColor]
-                        forKey:NSForegroundColorAttributeName];
-  }
   NSMutableAttributedString* string =
       [[NSMutableAttributedString alloc] initWithString:title];
   [string addAttributes:titleAttributes range:NSMakeRange(0, string.length)];
@@ -532,7 +540,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [button setEnabled:enabled];
+  [self updateSmallButton:button enabled:enabled];
 
   return button;
 }
@@ -596,6 +604,38 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
     [self.readerModeHandler
         showReaderModeFromAccessPoint:ReaderModeAccessPoint::kAIHub];
   }
+}
+
+// Updates the availability of the Lens entry point.
+- (void)updateLensAvailability:(UITraitCollection*)traitCollection {
+  [self
+      updateSmallButton:_lensButton
+                enabled:[self.mutator
+                            isLensAvailableForTraitCollection:traitCollection]];
+}
+
+// Updates a `button` for whether it's `enabled`, modifying the tint and enabled
+// property.
+- (void)updateSmallButton:(UIButton*)button enabled:(BOOL)enabled {
+  [button setEnabled:enabled];
+
+  NSMutableAttributedString* attributedTitle =
+      [button.configuration.attributedTitle mutableCopy];
+  NSRange titleRange = NSMakeRange(0, attributedTitle.length);
+
+  if (enabled) {
+    // If enabled, add the custom color attribute to override the tint.
+    [attributedTitle addAttribute:NSForegroundColorAttributeName
+                            value:[UIColor colorNamed:kTextPrimaryColor]
+                            range:titleRange];
+  } else {
+    // If disabled, remove the custom color attribute so it returns to its
+    // default tint.
+    [attributedTitle removeAttribute:NSForegroundColorAttributeName
+                               range:titleRange];
+  }
+
+  [button setAttributedTitle:attributedTitle forState:UIControlStateNormal];
 }
 
 @end

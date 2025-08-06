@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // The mutator for the page action menu.
 @protocol PageActionMenuMutator
 
 // Returns whether the Lens overlay is currently available.
-- (BOOL)isLensAvailable;
+- (BOOL)isLensAvailableForTraitCollection:(UITraitCollection*)traitCollection;
 
 // Returns whether the Gemini floaty is currently available.
 - (BOOL)isGeminiAvailable;
