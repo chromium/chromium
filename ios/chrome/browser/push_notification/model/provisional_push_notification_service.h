@@ -11,10 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #include "ios/chrome/browser/push_notification/model/push_notification_service.h"
-#include "ios/chrome/browser/signin/model/authentication_service.h"
 
 // A KeyedService to managed the provisional push notification.
 class ProvisionalPushNotificationService : public KeyedService {
@@ -26,7 +26,7 @@ class ProvisionalPushNotificationService : public KeyedService {
   };
 
   ProvisionalPushNotificationService(
-      AuthenticationService* authentication_service,
+      signin::IdentityManager* identity_manager,
       syncer::DeviceInfoSyncService* device_info_sync_service,
       PushNotificationService* push_notification_service);
   ~ProvisionalPushNotificationService() override;
@@ -46,7 +46,7 @@ class ProvisionalPushNotificationService : public KeyedService {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
   raw_ptr<PushNotificationService> push_notification_service_;
 
