@@ -307,7 +307,6 @@ public class TabSwitcherPaneUnitTest {
 
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(true);
-        when(mTabGroupSyncService.getVersioningMessageController()).thenReturn(mock());
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
     }
 

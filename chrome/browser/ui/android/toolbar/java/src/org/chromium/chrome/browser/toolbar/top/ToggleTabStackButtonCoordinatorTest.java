@@ -43,8 +43,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -74,8 +72,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private OnClickListener mOnClickListener;
     @Mock private OnLongClickListener mOnLongClickListener;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mStandardTabModel;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TopUiThemeColorProvider mTopUIThemeProvider;
@@ -130,11 +126,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         mTabModelSelectorSupplier.set(mTabModelSelector);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mStandardTabModel);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
-                .thenReturn(mTabGroupModelFilter);
         when(mStandardTabModel.isIncognitoBranded()).thenReturn(false);
         when(mIncognitoTabModel.isIncognitoBranded()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
@@ -161,7 +152,8 @@ public class ToggleTabStackButtonCoordinatorTest {
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
                         mTopUIThemeProvider,
-                        mIncognitoStateProvider);
+                        mIncognitoStateProvider,
+                        () -> mProfile);
 
         coordinator.initializeWithNative(
                 mOnClickListener,

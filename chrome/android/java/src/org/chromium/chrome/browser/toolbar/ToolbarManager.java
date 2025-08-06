@@ -1005,7 +1005,8 @@ public class ToolbarManager
                             mActivityTabProvider,
                             mTabModelSelectorSupplier,
                             browsingModeThemeColorProvider,
-                            mIncognitoStateProvider);
+                            mIncognitoStateProvider,
+                            profileSupplier);
         }
 
         NavigationPopup.HistoryDelegate historyDelegate =
