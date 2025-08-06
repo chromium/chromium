@@ -26,6 +26,7 @@
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
@@ -276,6 +277,8 @@
 @end
 
 @implementation NewTabPageCoordinator {
+  // IdentityManager for the primary account info.
+  raw_ptr<signin::IdentityManager> _identityManager;
   // Coordinator for the AIM prototype.
   AIMPrototypeCoordinator* _aimPrototypeCoordinator;
   // Coordinator in charge of handling sharing use cases.
@@ -363,11 +366,9 @@
   }
 
   // Update the feed if the account is subject to parental controls.
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.profile);
   signin::Tribool capability =
       supervised_user::IsPrimaryAccountSubjectToParentalControls(
-          identityManager);
+          _identityManager);
   [self updateFeedWithIsSupervisedUser:(capability == signin::Tribool::kTrue)];
 
   [self configureNTPMediator];
@@ -467,6 +468,8 @@
   _customizationCoordinator = nil;
 
   [_fakeboxLensIconBubblePresenter dismissAnimated:NO];
+
+  _identityManager = nullptr;
 
   self.started = NO;
 }
@@ -625,6 +628,7 @@
 // Gets all NTP services from the profile.
 - (void)initializeServices {
   ProfileIOS* profile = self.profile;
+  _identityManager = IdentityManagerFactory::GetForProfile(profile);
   self.authService = AuthenticationServiceFactory::GetForProfile(profile);
   self.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
@@ -638,16 +642,14 @@
   DCHECK(self.headerViewController);
 
   // Start observing IdentityManager.
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.profile);
   _identityObserverBridge =
-      std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+      std::make_unique<signin::IdentityManagerObserverBridge>(_identityManager,
                                                               self);
 
   // Start observing Family Link user capabilities.
   _familyLinkUserCapabilitiesObserverBridge = std::make_unique<
       supervised_user::FamilyLinkUserCapabilitiesObserverBridge>(
-      identityManager, self);
+      _identityManager, self);
 
   // Start observing DiscoverFeedService.
   _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
@@ -917,7 +919,7 @@
   [self dismissCustomizationMenu];
   [self.NTPMetricsRecorder recordIdentityDiscTapped];
   BOOL isSignedIn =
-      self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   if (![self isSignInAllowed]) {
     id<SettingsCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), SettingsCommands);
@@ -1083,8 +1085,8 @@
 }
 
 - (BOOL)isFollowingFeedAvailable {
-  return IsWebChannelsEnabled() && self.authService &&
-         self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return IsWebChannelsEnabled() && _identityManager &&
+         _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 - (NSUInteger)lastVisibleFeedCardIndex {
@@ -1144,8 +1146,8 @@
 
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source {
   // If the user is already signed in, do nothing.
-  if (self.authService &&
-      self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (_identityManager &&
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
   // This flow shouldn't be offered if sign-in is disallowed.
@@ -1642,9 +1644,7 @@
 }
 
 - (bool)hasIdentitiesOnDevice {
-  return !IdentityManagerFactory::GetForProfile(self.profile)
-              ->GetAccountsOnDevice()
-              .empty();
+  return !_identityManager->GetAccountsOnDevice().empty();
 }
 
 // Update the state, to take into account that the signin coordinator
