@@ -1040,12 +1040,6 @@ BASE_DECLARE_FEATURE(kContainedTabGroup);
 // Whether the feature associated with contained tab group is enabled.
 bool IsContainedTabGroupEnabled();
 
-// Feature flag to have more color for the tab groups.
-BASE_DECLARE_FEATURE(kColorfulTabGroup);
-
-// Whether the feature associated with colorful tab group is enabled.
-bool IsColorfulTabGroupEnabled();
-
 // Feature flag to highlight the app's features during the FRE.
 BASE_DECLARE_FEATURE(kBestOfAppFRE);
 

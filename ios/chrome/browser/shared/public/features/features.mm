@@ -1241,14 +1241,6 @@ bool IsContainedTabGroupEnabled() {
   return base::FeatureList::IsEnabled(kContainedTabGroup);
 }
 
-BASE_FEATURE(kColorfulTabGroup,
-             "ColorfulTabGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsColorfulTabGroupEnabled() {
-  return base::FeatureList::IsEnabled(kColorfulTabGroup);
-}
-
 BASE_FEATURE(kBestOfAppFRE, "BestOfAppFRE", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBestOfAppFREEnabled() {

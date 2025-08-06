@@ -1736,11 +1736,6 @@
     "expiry_milestone": 145
   },
   {
-      "name": "colorful-tab-group",
-      "owners": ["gambard@google.com", "bling-flags@google.com"],
-      "expiry_milestone": 140
-  },
-  {
     "name": "compare-confirmation-toast",
     "owners": ["mdjones@chromium.org", "meiliang@chromium.org", "chrome-shopping-eng@google.com"],
     "expiry_milestone": 135
