@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/base32/base32.h"
@@ -8786,4 +8787,161 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   // capturing should have been started.
   EXPECT_TRUE(controller->GetLensOverlayBlurLayerDelegateForTesting()
                   ->IsCapturingBackgroundImageForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
+                       SidePanelRoundedCornerRegularTab) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Open a side panel.
+  controller->IssueTextSelectionRequestForTesting(/*text_query=*/"Apples",
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect the side panel rounded corner to exist.
+  EXPECT_FALSE(controller->GetOverlayViewForTesting()->layer() &&
+               controller->GetOverlayViewForTesting()
+                       ->layer()
+                       ->GetTargetRoundedCornerRadius()
+                       .upper_right() > 0);
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                  ->GetSidePanelRoundedCornerForTesting()
+                  ->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
+                       SidePanelRoundedCornerSplitTab) {
+  // Create a new split, after which the second tab should be activated.
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller_1 = GetLensOverlayController();
+  ASSERT_EQ(controller_1->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller_1->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller_1->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Open a side panel.
+  controller_1->IssueTextSelectionRequestForTesting(/*text_query=*/"Apples",
+                                                    /*selection_start_index=*/0,
+                                                    /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller_1->state() == State::kOverlayAndResults; }));
+
+  // Expect overlay view's corners to be rounded.
+  EXPECT_TRUE(controller_1->GetOverlayViewForTesting()->layer() &&
+              controller_1->GetOverlayViewForTesting()
+                      ->layer()
+                      ->GetTargetRoundedCornerRadius()
+                      .upper_right() > 0);
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                   ->GetSidePanelRoundedCornerForTesting()
+                   ->GetVisible());
+
+  // Switch to the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller_0 = GetLensOverlayController();
+  ASSERT_EQ(controller_0->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller_0->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller_0->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Expect the corners to not be rounded.
+  EXPECT_FALSE(controller_0->GetOverlayViewForTesting()->layer() &&
+               controller_0->GetOverlayViewForTesting()
+                       ->layer()
+                       ->GetTargetRoundedCornerRadius()
+                       .upper_right() > 0);
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                   ->GetSidePanelRoundedCornerForTesting()
+                   ->GetVisible());
+
+  // Switch back to the second tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // Wait for backgrounded state to be restored.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller_1->state() == State::kOverlayAndResults; }));
+
+  // Expect overlay view's corners to be rounded.
+  EXPECT_TRUE(controller_1->GetOverlayViewForTesting()->layer() &&
+              controller_1->GetOverlayViewForTesting()
+                      ->layer()
+                      ->GetTargetRoundedCornerRadius()
+                      .upper_right() > 0);
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                   ->GetSidePanelRoundedCornerForTesting()
+                   ->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
+                       SidePanelAlignmentChanged) {
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Open a side panel.
+  controller->IssueTextSelectionRequestForTesting(/*text_query=*/"Apples",
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect overlay view's top right corner to be rounded.
+  gfx::RoundedCornersF rounded_corners = controller->GetOverlayViewForTesting()
+                                             ->layer()
+                                             ->GetTargetRoundedCornerRadius();
+  EXPECT_TRUE(rounded_corners.upper_right() > 0);
+  EXPECT_TRUE(rounded_corners.upper_left() == 0);
+
+  // Change side panel to be left aligned.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, false);
+
+  // Expect overlay view's top left corner to be rounded.
+  rounded_corners = controller->GetOverlayViewForTesting()
+                        ->layer()
+                        ->GetTargetRoundedCornerRadius();
+  EXPECT_TRUE(rounded_corners.upper_right() == 0);
+  EXPECT_TRUE(rounded_corners.upper_left() > 0);
 }

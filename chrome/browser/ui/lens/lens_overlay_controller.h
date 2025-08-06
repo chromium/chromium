@@ -315,6 +315,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Handles a new region thumbnail being created.
   void HandleRegionBitmapCreated(const SkBitmap& region_bitmap);
 
+  // Called when the side panel alignment changes.
+  void OnSidePanelAlignmentChanged();
+
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
                                         bool is_click);
@@ -824,6 +827,11 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // another side panel opens.
   void OnSidePanelDidOpen();
 
+  // Sets the top right or top left corner of the overlay to be rounded if the
+  // side panel is open and the tab is in a split, since SidePanelRoundedCorner
+  // will be hidden in that case.
+  void SetOverlayRoundedCorner();
+
   // Called to continue the screenshot process while opening lens overlay.
   void FinishedWaitingForReflow();
 
@@ -1172,11 +1180,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // order.
   raw_ptr<views::View> preselection_widget_anchor_;
 
-#if BUILDFLAG(IS_MAC)
   // Register for adding observers to prefs the current profiles pref service.
-  // Currently only used to observe the immersive mode pref on Mac.
+  // Used to observe the immersive mode pref on Mac, and the side panel
+  // horizontal alignment pref.
   PrefChangeRegistrar pref_change_registrar_;
-#endif  // BUILDFLAG(IS_MAC)
 
   // --------------------Browser window scoped state: END---------------------
 

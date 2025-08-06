@@ -328,9 +328,7 @@ void LensOverlayController::CloseUI(
   fullscreen_observation_.Reset();
   immersive_mode_observer_.Reset();
   lens_overlay_blur_layer_delegate_.reset();
-#if BUILDFLAG(IS_MAC)
   pref_change_registrar_.Reset();
-#endif  // BUILDFLAG(IS_MAC)
 
   // Notify the searchbox controller to reset its handlers before the overlay
   // is cleaned up. This is needed to prevent a dangling ptr.
@@ -855,16 +853,20 @@ void LensOverlayController::ShowUI(
   immersive_mode_observer_.Observe(
       tab_->GetBrowserWindowInterface()->GetImmersiveModeController());
 
+  pref_change_registrar_.Init(pref_service_);
 #if BUILDFLAG(IS_MAC)
   // Add observer to listen for changes in the always show toolbar state,
   // since that requires the preselection bubble to rerender to show properly.
-  pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       prefs::kShowFullscreenToolbar,
       base::BindRepeating(
           &LensOverlayController::CloseAndReshowPreselectionBubble,
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_MAC)
+  pref_change_registrar_.Add(
+      prefs::kSidePanelHorizontalAlignment,
+      base::BindRepeating(&LensOverlayController::OnSidePanelAlignmentChanged,
+                          base::Unretained(this)));
 
   NotifyUserEducationAboutOverlayUsed();
 
@@ -1593,6 +1595,7 @@ void LensOverlayController::ShowOverlay() {
     overlay_view_->SetVisible(true);
     preselection_widget_anchor_->SetVisible(true);
     overlay_web_view_->SetVisible(true);
+    SetOverlayRoundedCorner();
 
     // Restart the live blur since the view is visible again.
     SetLiveBlur(true);
@@ -1612,6 +1615,7 @@ void LensOverlayController::ShowOverlay() {
   // Create the views that will house our UI.
   overlay_view_ = CreateViewForOverlay();
   overlay_view_->SetVisible(true);
+  SetOverlayRoundedCorner();
 
   // Sanity check that the overlay view is above the contents web view.
   auto* parent_view = overlay_view_->parent();
@@ -2059,12 +2063,36 @@ float LensOverlayController::GetUiScaleFactor() {
 }
 
 void LensOverlayController::OnSidePanelDidOpen() {
-  // If a side panel opens that is not ours, we must close the overlay.
-  if (side_panel_coordinator_->GetCurrentEntryId() !=
+  if (side_panel_coordinator_->GetCurrentEntryId() ==
       SidePanelEntry::Id::kLensOverlayResults) {
+    SetOverlayRoundedCorner();
+  } else {
+    // If a side panel opens that is not ours, we must close the overlay.
     lens_search_controller_->CloseLensSync(
         lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
   }
+}
+
+void LensOverlayController::SetOverlayRoundedCorner() {
+  CHECK(overlay_view_ && overlay_web_view_);
+
+  const bool should_round_corner =
+      results_side_panel_coordinator_->IsEntryShowing() && tab_->IsSplit();
+  const float radius =
+      should_round_corner
+          ? overlay_web_view_->GetLayoutProvider()->GetCornerRadiusMetric(
+                views::ShapeContextTokens::kSidePanelPageContentRadius)
+          : 0;
+  const bool right_aligned =
+      pref_service_->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  const gfx::RoundedCornersF radii = gfx::RoundedCornersF{
+      right_aligned ? 0 : radius, right_aligned ? radius : 0, 0, 0};
+
+  overlay_web_view_->holder()->SetCornerRadii(radii);
+
+  overlay_view_->SetPaintToLayer();
+  overlay_view_->layer()->SetIsFastRoundedCorner(true);
+  overlay_view_->layer()->SetRoundedCornerRadius(radii);
 }
 
 void LensOverlayController::FinishedWaitingForReflow() {
@@ -2742,6 +2770,12 @@ void LensOverlayController::HandleRegionBitmapCreated(
   }
 
   initialization_data_->selected_region_bitmap_ = region_bitmap;
+}
+
+void LensOverlayController::OnSidePanelAlignmentChanged() {
+  if (IsOverlayShowing()) {
+    SetOverlayRoundedCorner();
+  }
 }
 
 bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {
