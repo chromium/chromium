@@ -4480,7 +4480,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui/whats_new:impl",
-      "//chrome/browser/ui/webui_browser",
       "//chrome/browser/upgrade_detector",
       "//chrome/browser/upgrade_detector:build_state_observer",
       "//chrome/browser/user_education",

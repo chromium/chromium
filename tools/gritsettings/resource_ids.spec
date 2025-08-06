@@ -744,7 +744,7 @@
     "includes": [5240],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_browser/resources.grd": {
-    "META": {"sizes": {"includes": [6]}},
+    "META": {"sizes": {"includes": [5]}},
     "includes": [5250],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_browser/internal/resources.grd": {
