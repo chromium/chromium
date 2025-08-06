@@ -5487,6 +5487,95 @@ TEST_F(StyleEngineTest, NestingUseCountNotStartingWithAmpersand) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
 }
 
+TEST_F(StyleEngineTest, UseCounter_CSSPseudoParentInScope) {
+  // & in @scope should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        & { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & in @scope with a selector should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope (.foo) {
+        & { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & not in @scope should not trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      div {
+        & { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // No & in @scope should not trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        div { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & in a nested rule inside @scope should not trigger the counter,
+  // as it's not a direct child of the @scope rule.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        div {
+          & { color: green; }
+        }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // Complex selector with & in @scope should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        .foo, &:hover { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+
+  // & in :is() should trigger the counter.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope {
+        .foo, :is(&) { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoParentInScope));
+  ClearUseCounter(WebFeature::kCSSPseudoParentInScope);
+}
+
 TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
   // <input> get assigned "font: -webkit-small-control" in the UA sheet.
   Element* body = GetDocument().body();

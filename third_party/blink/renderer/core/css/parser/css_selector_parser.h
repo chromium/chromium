@@ -235,6 +235,7 @@ class CORE_EXPORT CSSSelectorParser {
   void SplitCompoundAtImplicitShadowCrossingCombinator(
       base::span<CSSSelector> compound_selector);
   void RecordUsageAndDeprecations(base::span<CSSSelector>,
+                                  CSSNestingType,
                                   bool* has_visited_style = nullptr);
   static bool ContainsUnknownWebkitPseudoElements(
       base::span<CSSSelector> selectors);

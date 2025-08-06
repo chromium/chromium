@@ -4937,6 +4937,7 @@ enum WebFeature {
   kSharedWorkerStartOnAndroid = 5626,
   kLocalNetworkAccessWithinSharedWorker = 5627,
   kLocalNetworkAccessWithinDedicatedWorker = 5628,
+  kCSSPseudoParentInScope = 5629,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

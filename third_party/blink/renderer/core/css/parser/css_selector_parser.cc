@@ -37,6 +37,7 @@ namespace blink {
 static void RecordUsageAndDeprecationsOneSelector(
     const CSSSelector* selector,
     const CSSParserContext* context,
+    CSSNestingType nesting_type,
     bool* has_visited_pseudo);
 
 namespace {
@@ -135,7 +136,7 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
     return {};
   }
 
-  parser.RecordUsageAndDeprecations(result);
+  parser.RecordUsageAndDeprecations(result, nesting_type);
   return result;
 }
 
@@ -157,7 +158,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
   ResultFlags result_flags = 0;
   base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(
       stream, observer, nesting_type, result_flags);
-  parser.RecordUsageAndDeprecations(result, has_visited_style);
+  parser.RecordUsageAndDeprecations(result, nesting_type, has_visited_style);
   return result;
 }
 
@@ -181,7 +182,7 @@ base::span<CSSSelector> CSSSelectorParser::ParseScopeBoundary(
   if (result.empty() || !stream.AtEnd()) {
     return {};
   }
-  parser.RecordUsageAndDeprecations(result);
+  parser.RecordUsageAndDeprecations(result, nesting_type);
   return result;
 }
 
@@ -2401,6 +2402,7 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
 static void RecordUsageAndDeprecationsOneSelector(
     const CSSSelector* selector,
     const CSSParserContext* context,
+    CSSNestingType nesting_type,
     bool* has_visited_pseudo) {
   // Both the classic WebFeature and the newer WebDXFeature use counters can be
   // recorded. Some WebFeature counters are mapped to WebDXFeature counters in
@@ -2516,6 +2518,11 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoFutureCue:
       webdx_feature = WebDXFeature::kTimeRelativeSelectors;
       break;
+    case CSSSelector::kPseudoParent:
+      if (nesting_type == CSSNestingType::kScope) {
+        feature = WebFeature::kCSSPseudoParentInScope;
+      }
+      break;
     default:
       break;
   }
@@ -2535,7 +2542,7 @@ static void RecordUsageAndDeprecationsOneSelector(
   if (selector->SelectorList()) {
     for (const CSSSelector* current = selector->SelectorList()->First();
          current; current = current->NextSimpleSelector()) {
-      RecordUsageAndDeprecationsOneSelector(current, context,
+      RecordUsageAndDeprecationsOneSelector(current, context, nesting_type,
                                             has_visited_pseudo);
     }
   }
@@ -2543,6 +2550,7 @@ static void RecordUsageAndDeprecationsOneSelector(
 
 void CSSSelectorParser::RecordUsageAndDeprecations(
     const base::span<CSSSelector> selector_vector,
+    CSSNestingType nesting_type,
     bool* has_visited_pseudo) {
   if (!context_->IsUseCounterRecordingEnabled()) {
     return;
@@ -2552,7 +2560,7 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
   }
 
   for (const CSSSelector& current : selector_vector) {
-    RecordUsageAndDeprecationsOneSelector(&current, context_,
+    RecordUsageAndDeprecationsOneSelector(&current, context_, nesting_type,
                                           has_visited_pseudo);
   }
 }
