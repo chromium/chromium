@@ -2123,8 +2123,13 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Creates a gradient gemini logo.
 - (UIImage*)createGeminiLogo {
+  UITraitCollection* lightTraitCollection = [UITraitCollection
+      traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight];
   NSArray<UIColor*>* colors = @[
-    [UIColor colorNamed:kBlue700Color], [UIColor colorNamed:kBlue300Color]
+    [[UIColor colorNamed:kBlue700Color]
+        resolvedColorWithTraitCollection:lightTraitCollection],
+    [[UIColor colorNamed:kBlue300Color]
+        resolvedColorWithTraitCollection:lightTraitCollection]
   ];
 
   NSMutableArray<id>* gradientColorArray = [[NSMutableArray alloc] init];
