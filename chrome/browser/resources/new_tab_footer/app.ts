@@ -288,6 +288,8 @@ export class NewTabFooterAppElement extends CrLitElement {
       case CustomizeDialogPage.MODULES:
         section = CustomizeChromeSection.kModules;
         break;
+      default:
+        break;
     }
     this.customizeHandler_.setCustomizeChromeSidePanelVisible(
         visible, section, SidePanelOpenTrigger.kNewTabFooter);
