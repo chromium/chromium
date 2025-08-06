@@ -235,9 +235,6 @@ extern const char kContainerTypeNoLayoutContainmentDescription[];
 extern const char kContentSettingsPartitioningName[];
 extern const char kContentSettingsPartitioningDescription[];
 
-extern const char kCopyImageFilenameToClipboardName[];
-extern const char kCopyImageFilenameToClipboardDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kCredentialManagementThirdPartyWebApiRequestForwardingName[];
 extern const char

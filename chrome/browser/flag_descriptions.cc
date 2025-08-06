@@ -334,11 +334,6 @@ const char kContentSettingsPartitioningName[] = "Content Settings Partitioning";
 const char kContentSettingsPartitioningDescription[] =
     "Partition content settings by StoragePartitions";
 
-const char kCopyImageFilenameToClipboardName[] =
-    "Copy image filename to clipboard.";
-const char kCopyImageFilenameToClipboardDescription[] =
-    "Whether to write filename to the clipboard when copying image downloads.";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kCredentialManagementThirdPartyWebApiRequestForwardingName[] =
     "Credential Management Third Party Web API Request Forwarding";

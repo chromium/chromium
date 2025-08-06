@@ -12159,11 +12159,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kSecurePaymentConfirmationAvailabilityAPI)},
 
-    {"copy-image-filename-to-clipboard",
-     flag_descriptions::kCopyImageFilenameToClipboardName,
-     flag_descriptions::kCopyImageFilenameToClipboardDescription, kOsAll,
-     FEATURE_VALUE_TYPE(download::features::kCopyImageFilenameToClipboard)},
-
     {"autofill-enable-allowlist-for-bmo-card-category-benefits",
      flag_descriptions::kAutofillEnableAllowlistForBmoCardCategoryBenefitsName,
      flag_descriptions::

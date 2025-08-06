@@ -1842,11 +1842,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "copy-image-filename-to-clipboard",
-    "owners": [ "dmblack@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "cpa-spec-update",
     "owners": [ "eleanorlee@google.com", "wenyufu@chromium.org" ],
     "expiry_milestone": 145
