@@ -84,7 +84,10 @@ copy("test_glic_deps") {
 }
 
 build_webui_tests("build") {
-  files = [ "unit_tests/webview_test.ts" ]
+  files = [
+    "unit_tests/webview_test.ts",
+    "unit_tests/observable_test.ts",
+     ]
 
   ts_path_mappings = [ "chrome://glic/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/glic/tsc/*",
