@@ -242,7 +242,6 @@ class OpenXrApiWrapper {
   std::unordered_map<XrViewConfigurationType, OpenXrViewConfiguration>
       secondary_view_configs_;
 
-  std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
   std::unique_ptr<OpenXrDepthSensor> depth_sensor_;
   std::unique_ptr<OpenXrLightEstimator> light_estimator_;
   std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;

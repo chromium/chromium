@@ -145,7 +145,6 @@ OpenXrApiWrapper::~OpenXrApiWrapper() {
 
 void OpenXrApiWrapper::Reset() {
   SetXrSessionState(XR_SESSION_STATE_UNKNOWN);
-  anchor_manager_.reset();
   depth_sensor_.reset();
   light_estimator_.reset();
   scene_understanding_manager_.reset();
@@ -426,7 +425,9 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
 }
 
 OpenXrAnchorManager* OpenXrApiWrapper::GetAnchorManager() {
-  return anchor_manager_.get();
+  return scene_understanding_manager_
+             ? scene_understanding_manager_->GetAnchorManager()
+             : nullptr;
 }
 
 OpenXrHitTestManager* OpenXrApiWrapper::GetHitTestManager() {
@@ -522,9 +523,12 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         break;
 
       case mojom::XRSessionFeature::HIT_TEST:
-        scene_understanding_manager_ =
-            extension_helper.CreateSceneUnderstandingManager(session_,
-                                                             local_space_);
+        if (scene_understanding_manager_ == nullptr) {
+          scene_understanding_manager_ =
+              extension_helper.CreateSceneUnderstandingManager(
+                  session_, local_space_, session_options_->required_features,
+                  session_options_->optional_features);
+        }
         is_enabled =
             scene_understanding_manager_ != nullptr &&
             scene_understanding_manager_->GetHitTestManager() != nullptr;
@@ -537,9 +541,16 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         break;
 
       case mojom::XRSessionFeature::ANCHORS:
-        anchor_manager_ =
-            extension_helper.CreateAnchorManager(session_, local_space_);
-        is_enabled = anchor_manager_ != nullptr;
+        // Anchors are managed by the scene understanding manager.
+        if (scene_understanding_manager_ == nullptr) {
+          scene_understanding_manager_ =
+              extension_helper.CreateSceneUnderstandingManager(
+                  session_, local_space_, session_options_->required_features,
+                  session_options_->optional_features);
+        }
+        is_enabled =
+            scene_understanding_manager_ != nullptr &&
+            scene_understanding_manager_->GetAnchorManager() != nullptr;
         break;
 
       case mojom::XRSessionFeature::DEPTH:

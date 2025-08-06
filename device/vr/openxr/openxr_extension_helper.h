@@ -146,7 +146,11 @@ class OpenXrExtensionHelper {
       XrSpace base_space) const;
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
-  CreateSceneUnderstandingManager(XrSession session, XrSpace base_space) const;
+  CreateSceneUnderstandingManager(
+      XrSession session,
+      XrSpace base_space,
+      const std::vector<mojom::XRSessionFeature>& required_features,
+      const std::vector<mojom::XRSessionFeature>& optional_features) const;
 
   std::unique_ptr<OpenXrStageBoundsProvider> CreateStageBoundsProvider(
       XrSession session) const;

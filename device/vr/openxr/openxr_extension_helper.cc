@@ -56,6 +56,12 @@ std::unique_ptr<T> CreateExtensionHandler(
 
   return nullptr;
 }
+
+bool IsSceneUnderstandingFeature(mojom::XRSessionFeature feature) {
+  return feature == device::mojom::XRSessionFeature::ANCHORS ||
+         feature == device::mojom::XRSessionFeature::HIT_TEST ||
+         feature == device::mojom::XRSessionFeature::PLANE_DETECTION;
+}
 }  // namespace
 
 OpenXrExtensionMethods::OpenXrExtensionMethods() = default;
@@ -235,14 +241,76 @@ OpenXrExtensionHelper::CreateLightEstimator(XrSession session,
 std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     XrSession session,
-    XrSpace base_space) const {
-  return CreateExtensionHandler<OpenXRSceneUnderstandingManager>(
-      ExtensionEnumeration(),
-      [this, session,
-       base_space](const OpenXrExtensionHandlerFactory& factory) {
-        return factory.CreateSceneUnderstandingManager(*this, session,
-                                                       base_space);
-      });
+    XrSpace base_space,
+    const std::vector<mojom::XRSessionFeature>& required_features,
+    const std::vector<mojom::XRSessionFeature>& optional_features) const {
+  DVLOG(1) << __func__;
+  const OpenXrExtensionHandlerFactory* best_factory = nullptr;
+  size_t best_supported_optional_features_count = 0;
+
+  for (const auto* factory : GetExtensionHandlerFactories()) {
+    CHECK(factory);
+    if (!factory->IsEnabled(ExtensionEnumeration())) {
+      continue;
+    }
+
+    const auto supported_features =
+        factory->GetSupportedFeatures(ExtensionEnumeration());
+
+    auto supported_function =
+        [&supported_features](mojom::XRSessionFeature feature) {
+          return IsSceneUnderstandingFeature(feature) &&
+                 base::Contains(supported_features, feature);
+        };
+
+    // Get the count of how many required and optional features are scene
+    // understanding features.
+    size_t required_features_requested_count =
+        std::ranges::count_if(required_features, &IsSceneUnderstandingFeature);
+    size_t optional_features_requested_count =
+        std::ranges::count_if(optional_features, &IsSceneUnderstandingFeature);
+    CHECK(required_features_requested_count > 0 ||
+          optional_features_requested_count > 0)
+        << "Requested a SceneUnderstandingManager, but no "
+           "SceneUnderstandingManager features are requested";
+
+    // Now, see how many of our supported features are scene understanding
+    // features.
+    size_t supported_required_features_count =
+        std::ranges::count_if(required_features, supported_function);
+    size_t supported_optional_features_count =
+        std::ranges::count_if(optional_features, supported_function);
+
+    // If all required features are not supported, we can't use this factory.
+    if (supported_required_features_count !=
+        required_features_requested_count) {
+      continue;
+    }
+
+    // If this SceneUnderstandingManager supports all of the optional features,
+    // then use it.
+    if (supported_optional_features_count ==
+        optional_features_requested_count) {
+      return factory->CreateSceneUnderstandingManager(*this, session,
+                                                      base_space);
+    }
+
+    // Otherwise, if this factory supports more optional features than our
+    // current best choice, update the best count/factory and keep going.
+    if (supported_optional_features_count >
+        best_supported_optional_features_count) {
+      best_supported_optional_features_count =
+          supported_required_features_count;
+      best_factory = factory;
+    }
+  }
+
+  if (best_factory) {
+    return best_factory->CreateSceneUnderstandingManager(*this, session,
+                                                         base_space);
+  }
+
+  return nullptr;
 }
 
 std::unique_ptr<OpenXrStageBoundsProvider>

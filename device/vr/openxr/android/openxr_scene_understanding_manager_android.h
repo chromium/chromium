@@ -4,6 +4,7 @@
 #ifndef DEVICE_VR_OPENXR_ANDROID_OPENXR_SCENE_UNDERSTANDING_MANAGER_ANDROID_H_
 #define DEVICE_VR_OPENXR_ANDROID_OPENXR_SCENE_UNDERSTANDING_MANAGER_ANDROID_H_
 
+#include "device/vr/openxr/android/openxr_anchor_manager_android.h"
 #include "device/vr/openxr/android/openxr_hit_test_manager_android.h"
 #include "device/vr/openxr/android/openxr_plane_manager_android.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
@@ -27,17 +28,18 @@ class OpenXRSceneUnderstandingManagerAndroid
 
   // OpenXRSceneUnderstandingManager
   OpenXrPlaneManager* GetPlaneManager() override;
+  OpenXrAnchorManager* GetAnchorManager() override;
   OpenXrHitTestManager* GetHitTestManager() override;
  private:
-  const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   XrSpace mojo_space_;
 
   std::unique_ptr<OpenXrPlaneManagerAndroid> plane_manager_;
+  std::unique_ptr<OpenXrAnchorManagerAndroid> anchor_manager_;
   std::unique_ptr<OpenXrHitTestManagerAndroid> hit_test_manager_;
 };
 
 class OpenXrSceneUnderstandingManagerAndroidFactory
-    : public OpenXrExtensionHandlerFactory {
+    : public OpenXrSceneUnderstandingManagerFactory {
  public:
   OpenXrSceneUnderstandingManagerAndroidFactory();
   ~OpenXrSceneUnderstandingManagerAndroidFactory() override;

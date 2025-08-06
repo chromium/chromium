@@ -4,6 +4,8 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_SCENE_UNDERSTANDING_MANAGER_H_
 #define DEVICE_VR_OPENXR_OPENXR_SCENE_UNDERSTANDING_MANAGER_H_
 
+#include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/openxr/openxr_hit_test_manager.h"
 #include "device/vr/openxr/openxr_plane_manager.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -24,7 +26,15 @@ class OpenXRSceneUnderstandingManager {
   virtual ~OpenXRSceneUnderstandingManager();
 
   virtual OpenXrPlaneManager* GetPlaneManager() = 0;
+  virtual OpenXrAnchorManager* GetAnchorManager() = 0;
   virtual OpenXrHitTestManager* GetHitTestManager() = 0;
+};
+
+class OpenXrSceneUnderstandingManagerFactory
+    : public OpenXrExtensionHandlerFactory {
+ public:
+  bool IsEnabled(
+      const OpenXrExtensionEnumeration* extension_enum) const override;
 };
 
 }  // namespace device
