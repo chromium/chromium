@@ -1107,6 +1107,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "SubframePriorityContribution",
                 "Stops priority contributions from subframes in back-forward cache."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_USE_RENDERING_HEURISTIC,
+                "Apply smoothing Skia options when WebView detects it's running on a TV device."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
