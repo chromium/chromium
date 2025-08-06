@@ -1119,4 +1119,66 @@ void WebGPUTextureScopedAccess::SetNeedsPresent(bool needs_present) {
   needs_present_ = needs_present;
 }
 
+std::unique_ptr<WebGPUBufferScopedAccess>
+ClientSharedImage::BeginWebGPUBufferAccess(
+    webgpu::WebGPUInterface* webgpu,
+    const SyncToken& sync_token,
+    const wgpu::dawn::wire::client::Device& device,
+    const wgpu::dawn::wire::client::BufferDescriptor& desc,
+    uint64_t usage,
+    webgpu::MailboxFlags mailbox_flags) {
+  return base::WrapUnique(new WebGPUBufferScopedAccess(
+      webgpu, this, sync_token, device, desc, usage, mailbox_flags));
+}
+
+WebGPUBufferScopedAccess::WebGPUBufferScopedAccess(
+    webgpu::WebGPUInterface* webgpu,
+    ClientSharedImage* shared_image,
+    const SyncToken& sync_token,
+    const wgpu::dawn::wire::client::Device& device,
+    const wgpu::dawn::wire::client::BufferDescriptor& desc,
+    uint64_t usage,
+    webgpu::MailboxFlags mailbox_flags)
+    : webgpu_(webgpu), shared_image_(shared_image) {
+  // Wait on any work using the buffer.
+  webgpu_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+
+  webgpu::ReservedBuffer reservation = webgpu_->ReserveBuffer(
+      device.Get(), &static_cast<const WGPUBufferDescriptor&>(desc));
+  DCHECK(reservation.buffer);
+
+  wire_buffer_id_ = reservation.id;
+  wire_buffer_generation_ = reservation.id;
+
+  // We currently only use storage buffers. Which are always read-write.
+  shared_image_->BeginAccess(false);
+
+  buffer_ = base::WrapUnique(
+      new wgpu::Buffer(wgpu::Buffer::Acquire(reservation.buffer)));
+
+  webgpu_->AssociateMailboxForBuffer(
+      reservation.deviceId, reservation.deviceGeneration, wire_buffer_id_,
+      wire_buffer_generation_, static_cast<uint64_t>(desc.usage),
+      shared_image_->mailbox());
+}
+
+WebGPUBufferScopedAccess::~WebGPUBufferScopedAccess() = default;
+
+SyncToken WebGPUBufferScopedAccess::EndAccess(
+    std::unique_ptr<WebGPUBufferScopedAccess> scoped_access) {
+  webgpu::WebGPUInterface* webgpu = scoped_access->webgpu_;
+  SyncToken finished_access_token;
+  webgpu->DissociateMailboxForBuffer(scoped_access->wire_buffer_id_,
+                                     scoped_access->wire_buffer_generation_);
+  scoped_access->shared_image_->EndAccess(false);
+
+  // SyncToken must be verified to allow use from another pipe.
+  webgpu->GenSyncTokenCHROMIUM(finished_access_token.GetData());
+  return finished_access_token;
+}
+
+const wgpu::Buffer& WebGPUBufferScopedAccess::buffer() {
+  return *buffer_.get();
+}
+
 }  // namespace gpu
