@@ -52,7 +52,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -60,6 +59,7 @@
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/common/webplugininfo.h"
@@ -272,9 +272,7 @@ class KioskBrowserSessionBaseTest
     : public ::testing::TestWithParam<KioskBrowserSessionParamType> {
  public:
   KioskBrowserSessionBaseTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   KioskBrowserSessionBaseTest(const KioskBrowserSessionBaseTest&) = delete;
   KioskBrowserSessionBaseTest& operator=(const KioskBrowserSessionBaseTest&) =
@@ -293,7 +291,9 @@ class KioskBrowserSessionBaseTest
 
   static void TearDownTestSuite() { chromeos::PowerManagerClient::Shutdown(); }
 
-  TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   TestingProfile* profile() { return profile_; }
 
@@ -415,7 +415,6 @@ class KioskBrowserSessionBaseTest
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   ash::AshTestHelper ash_test_helper_;
 
   // `RenderViewHostTestEnabled` is required to make the navigation work that

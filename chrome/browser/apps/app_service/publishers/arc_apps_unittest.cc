@@ -37,7 +37,6 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
@@ -163,9 +162,7 @@ std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
 
 class ArcAppsPublisherTest : public testing::Test {
  public:
-  ArcAppsPublisherTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {}
+  ArcAppsPublisherTest() = default;
   void SetUp() override {
     testing::Test::SetUp();
 
@@ -271,9 +268,6 @@ class ArcAppsPublisherTest : public testing::Test {
 
     return result;
   }
-
- protected:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -416,7 +410,8 @@ TEST_F(ArcAppsPublisherTest, DisableOSSettingArcSettings) {
   // Change SystemFeaturesDisableList policy to disable OS Setting.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
 
@@ -430,7 +425,8 @@ TEST_F(ArcAppsPublisherTest, DisableOSSettingArcSettings) {
   // Clear SystemFeaturesDisableList policy.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->clear();
   }
 
@@ -451,7 +447,8 @@ TEST_F(ArcAppsPublisherTest, DisableAndBlockOSSettingArcSettings) {
   // Change SystemFeaturesDisableList policy to disable OS Setting.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
 
@@ -473,7 +470,8 @@ TEST_F(ArcAppsPublisherTest, DisableAndBlockOSSettingArcSettings) {
   // Clear SystemFeaturesDisableList policy.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->clear();
   }
 

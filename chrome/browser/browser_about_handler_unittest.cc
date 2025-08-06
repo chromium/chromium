@@ -16,7 +16,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/content/policy_blocklist_service.h"
@@ -81,7 +80,9 @@ class BrowserAboutHandlerTest : public testing::Test {
     return &task_environment_;
   }
 
-  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   // Reverts the effects of a browser quit or restart attempt,
   // specifically for testing environments to prevent test failures.
@@ -100,7 +101,6 @@ class BrowserAboutHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<TestingProfile> profile_;
 };
 

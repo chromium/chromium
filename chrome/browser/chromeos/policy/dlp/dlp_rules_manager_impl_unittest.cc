@@ -20,13 +20,13 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_rules_manager_test_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,15 +79,14 @@ class MockDlpRulesManager : public DlpRulesManagerImpl {
 
 class DlpRulesManagerImplTest : public testing::Test {
  protected:
-  DlpRulesManagerImplTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DlpRulesManagerImplTest() = default;
 
   void SetUp() override {
     TestingProfile::Builder builder;
     profile_ = builder.Build();
 
     dlp_rules_manager_ = std::make_unique<MockDlpRulesManager>(
-        testing_local_state_.Get(), profile_.get());
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
 
     // THe histogram tester should be created after the rules manager, since the
     // rules manager constructor call OnPolicyUpdate, and we would then record
@@ -100,8 +99,8 @@ class DlpRulesManagerImplTest : public testing::Test {
     for (const auto& rule : rules) {
       policy_rules.Append(rule.Create());
     }
-    testing_local_state_.Get()->SetList(policy_prefs::kDlpRulesList,
-                                        std::move(policy_rules));
+    TestingBrowserProcess::GetGlobal()->local_state()->SetList(
+        policy_prefs::kDlpRulesList, std::move(policy_rules));
   }
 
   void CheckIsRestrictedComponent(
@@ -176,7 +175,6 @@ class DlpRulesManagerImplTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MockDlpRulesManager> dlp_rules_manager_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
