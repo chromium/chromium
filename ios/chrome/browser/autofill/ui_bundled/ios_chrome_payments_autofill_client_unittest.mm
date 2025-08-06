@@ -349,7 +349,7 @@ TEST_F(
   EXPECT_FALSE(error_context.has_value());
 }
 
-// Test that the correct InfobarType is used when saving only a CVC for upload
+// Test that a save CVC InfobarType is used when saving only a CVC for upload
 // save.
 TEST_F(IOSChromePaymentsAutofillClientTest,
        UsesSaveCvcInfobarTypeForUploadSaveCvc) {
@@ -368,7 +368,32 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state_.get());
 
-  // Verify that an infobar was created with the correct type.
+  // Verify that a save CVC InfobarType was created.
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  InfoBarIOS* infobar =
+      static_cast<InfoBarIOS*>(infobar_manager->infobars()[0]);
+  EXPECT_EQ(InfobarType::kInfobarTypeSaveCvc, infobar->infobar_type());
+}
+
+// Test that a save CVC InfobarType is used when saving only a CVC for local
+// save.
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       UsesSaveCvcInfobarTypeForLocalSaveCvc) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  // Set up the save options for a CVC-only save.
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type =
+      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
+  options.show_prompt = true;
+
+  payments_client()->ShowSaveCreditCardLocally(autofill::test::GetCreditCard(),
+                                               options, base::DoNothing());
+
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state_.get());
+
+  // Verify that a save CVC InfobarType was created.
   ASSERT_EQ(1u, infobar_manager->infobars().size());
   InfoBarIOS* infobar =
       static_cast<InfoBarIOS*>(infobar_manager->infobars()[0]);

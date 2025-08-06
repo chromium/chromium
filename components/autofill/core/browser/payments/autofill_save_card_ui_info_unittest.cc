@@ -238,7 +238,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyUiForCvcSaveOnly) {
                                     IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL));
   EXPECT_EQ(ui_info.description_text,
             l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL));
+                IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL_SAVE_IOS));
 }
 #endif  // #BUILDFLAG(IS_IOS)
 

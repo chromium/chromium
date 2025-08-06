@@ -213,7 +213,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL;
       description_text = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL);
+          IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL_SAVE_IOS);
       break;
     }
   }
