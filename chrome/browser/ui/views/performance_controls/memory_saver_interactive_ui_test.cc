@@ -442,8 +442,16 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, PageActionChipShows) {
 }
 
 // Page Action chip should collapses after navigating to a tab without a chip
+// TODO(crbug.com/436684093) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PageActionChipCollapseOnTabSwitch \
+  DISABLED_PageActionChipCollapseOnTabSwitch
+#else
+#define MAYBE_PageActionChipCollapseOnTabSwitch \
+  PageActionChipCollapseOnTabSwitch
+#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       PageActionChipCollapseOnTabSwitch) {
+                       MAYBE_PageActionChipCollapseOnTabSwitch) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
