@@ -1380,8 +1380,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             EXPECT_EQ(
-                "NotAllowedError: Only one navigator.credentials.get request "
-                "may be outstanding at one time.",
+                "NotAllowedError: Only one navigator.credentials.get/create "
+                "request may be outstanding at one time.",
                 ExtractJsError(RunDigitalIdentityValidRequest(shell())));
             std::move(callback).Run(
                 DigitalCredential("openid4vp", kResponse.Clone()));

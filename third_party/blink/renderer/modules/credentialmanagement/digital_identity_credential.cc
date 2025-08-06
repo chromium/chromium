@@ -42,6 +42,11 @@ namespace {
 
 using mojom::blink::RequestDigitalIdentityStatus;
 
+enum class DigitalIdentityRequestType {
+  kGet,
+  kCreate,
+};
+
 // Abort an ongoing WebIdentityDigitalCredential request. This will only be
 // called before the request finishes due to `scoped_abort_state`.
 void AbortRequest(ScriptState* script_state) {
@@ -73,6 +78,7 @@ ScriptObject ValueToScriptObject(ScriptState* script_state,
 
 void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                        std::unique_ptr<ScopedAbortState> scoped_abort_state,
+                       DigitalIdentityRequestType request_type,
                        RequestDigitalIdentityStatus status,
                        const WTF::String& protocol,
                        std::optional<base::Value> token) {
@@ -80,8 +86,8 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
-          "Only one navigator.credentials.get request may be outstanding at "
-          "one time."));
+          "Only one navigator.credentials.get/create request may be "
+          "outstanding at one time."));
       return;
     }
     case RequestDigitalIdentityStatus::kErrorCanceled: {
@@ -109,8 +115,11 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     case RequestDigitalIdentityStatus::kErrorNoTransientUserActivation:
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
-          "The 'digital-credentials-get' feature requires transient "
-          "activation."));
+          WTF::String::Format(
+              "The '%s' feature requires transient activation.",
+              request_type == DigitalIdentityRequestType::kCreate
+                  ? "digital-credentials-create"
+                  : "digital-credentials-get")));
       return;
 
     case RequestDigitalIdentityStatus::kError: {
@@ -216,7 +225,8 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
   request->Get(std::move(requests),
                WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
-                             std::move(scoped_abort_state)));
+                             std::move(scoped_abort_state),
+                             DigitalIdentityRequestType::kGet));
 }
 
 void CreateDigitalIdentityCredentialInExternalSource(
@@ -279,7 +289,8 @@ void CreateDigitalIdentityCredentialInExternalSource(
       ->DigitalIdentityRequest()
       ->Create(std::move(requests),
                WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
-                             std::move(scoped_abort_state)));
+                             std::move(scoped_abort_state),
+                             DigitalIdentityRequestType::kCreate));
 }
 
 }  // namespace blink
