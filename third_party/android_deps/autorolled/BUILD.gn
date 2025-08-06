@@ -559,7 +559,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (!defined(android_proto_runtime)) {
       java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.32.0-RC1.jar"
+        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.32.0-RC2.jar"
         output_name = "com_google_protobuf_protobuf_javalite"
         supports_android = true
         requires_android = true
