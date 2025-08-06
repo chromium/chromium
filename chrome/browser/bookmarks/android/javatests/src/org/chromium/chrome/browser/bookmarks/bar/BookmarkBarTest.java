@@ -9,8 +9,11 @@ import static android.view.KeyEvent.META_ALT_ON;
 import static android.view.KeyEvent.META_CTRL_ON;
 import static android.view.KeyEvent.META_SHIFT_ON;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -161,7 +164,13 @@ public class BookmarkBarTest {
         final String title = "Folder";
         mItemIds = List.of(addFolder(title));
         onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
-        onViewWaiting(bookmarkManagerToolbarWithText(title)).check(matches(isDisplayed()));
+
+        // Check that the Bookmark Manager toolbar does not appear anymore when the folder is
+        // clicked.
+        onView(withClassName(endsWith("BookmarkToolbar"))).check(doesNotExist());
+
+        // Check that the new popup window is displayed.
+        onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
     }
 
     @Test
