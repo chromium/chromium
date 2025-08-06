@@ -9046,7 +9046,8 @@ crbug.com/359319433 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/aut
 crbug.com/359319433 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
 crbug.com/359319433 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
 crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
+# Gardener 2025-08-06 this test is also flaky on the other bots
+crbug.com/359319433 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
 
 # Gardener 2024-08-13
 crbug.com/358437652 [ Linux ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
