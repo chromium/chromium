@@ -18,9 +18,15 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 
 #include <memory>
+
+#include <android/log.h>
+#include <sys/system_properties.h>
+
+#define LOG_E(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "linker-jni", __VA_ARGS__))
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/android/linker/linker_jni.h"
@@ -326,6 +332,63 @@ bool FindWebViewReservation(uintptr_t* out_address, size_t* out_size) {
   return result;
 }
 
+/* Callback used with __system_property_read_callback. */
+static void prop_read_int(void* cookie,
+                          const char* name,
+                          const char* value,
+                          uint32_t serial) {
+  *static_cast<int *>(cookie) = atoi(value);
+  (void)name;
+  (void)serial;
+}
+
+static int system_property_get_int(const char* name) {
+  int result = 0;
+  if (__builtin_available(android 26, *)) {
+    const prop_info* info = __system_property_find(name);
+    if (info)
+      __system_property_read_callback(info, &prop_read_int, &result);
+  } else {
+    char value[PROP_VALUE_MAX] = {};
+    if (__system_property_get(name, value) >= 1)
+      result = atoi(value);
+  }
+  return result;
+}
+
+static int vendor_api_level() {
+  static int v_api_level = -1;
+  if (v_api_level < 0)
+    v_api_level = system_property_get_int("ro.vendor.api_level");
+  return v_api_level;
+}
+
+static int memfd_create_region(const char *name, size_t size) {
+  int fd = syscall(__NR_memfd_create, name, MFD_CLOEXEC | MFD_ALLOW_SEALING);
+  if (fd < 0) {
+    LOG_E("memfd_create(%s, %zd) failed: %m", name, size);
+    return fd;
+  }
+
+  int ret = ftruncate(fd, size);
+  if (ret < 0) {
+    LOG_E("ftruncate(%s, %zd) failed: %m", name, size);
+    goto error;
+  }
+
+  ret = fcntl(fd, F_ADD_SEALS, F_SEAL_GROW | F_SEAL_SHRINK);
+  if (ret < 0) {
+    LOG_E("memfd_create(%s, %zd) fcntl(F_ADD_SEALS) failed: %m", name, size);
+    goto error;
+  }
+
+  return fd;
+
+error:
+  close(fd);
+  return ret;
+}
+
 // Starting with API level 26 (Android O) the following functions from
 // libandroid.so should be used to create shared memory regions to ensure
 // compatibility with the future versions:
@@ -339,8 +402,25 @@ bool FindWebViewReservation(uintptr_t* out_address, size_t* out_size) {
 struct SharedMemoryFunctions {
   SharedMemoryFunctions() {
     library_handle = dlopen("libandroid.so", RTLD_NOW);
-    create = reinterpret_cast<CreateFunction>(
-        dlsym(library_handle, "ASharedMemory_create"));
+    /*
+     * When a device conforms to the VSR for API level 202604 (Android 17),
+     * ASharedMemory will allocate memfds and attempt to relabel them by using
+     * fsetxattr() to workaround how SELinux handles memfds.
+     *
+     * fsetxattr() is not allowlisted in our seccomp filter, and allowlisting
+     * it may be unsafe. Since memfds from Chromium should be accessible with
+     * the existing sepolicy for appdomain_tmpfs files, just allocate memfds
+     * directly if the device conforms to the VSR for API level 202604.
+     *
+     * The rest of the functions work fine with ASharedMemory, as it can recognize
+     * memfds and act accordingly.
+     */
+    if (vendor_api_level() >= 202604)
+      create = &memfd_create_region;
+    else
+      create = reinterpret_cast<CreateFunction>(
+          dlsym(library_handle, "ASharedMemory_create"));
+
     set_protection = reinterpret_cast<SetProtectionFunction>(
         dlsym(library_handle, "ASharedMemory_setProt"));
   }
