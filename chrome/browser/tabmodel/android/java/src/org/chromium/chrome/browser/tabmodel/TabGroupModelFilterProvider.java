@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -133,8 +134,11 @@ public class TabGroupModelFilterProvider {
             mCallbackController.destroy();
             mCallbackController = null;
         }
-        for (TabGroupModelFilterInternal filter : mTabGroupModelFilterInternalList) {
-            filter.destroy();
+        // Avoid double destruction of TabCollectionTabModelImpl.
+        if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
+            for (TabGroupModelFilterInternal filter : mTabGroupModelFilterInternalList) {
+                filter.destroy();
+            }
         }
         mPendingTabModelObserver.clear();
         cleanupTabModelSelectorObservers();

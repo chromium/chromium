@@ -215,7 +215,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void destroy() {
         assertOnUiThread();
-        for (Tab tab : mTabIdToTabs.values()) {
+        for (Tab tab : this) {
             if (mModelDelegate.isReparentingInProgress()
                     && mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) {
                 continue;
@@ -226,15 +226,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             if (tab.isInitialized()) tab.destroy();
         }
 
-        mTabCountSupplier.set(0);
-        mTabIdToTabs.clear();
-        mTabModelObservers.clear();
-        mTabGroupObservers.clear();
-
         if (mNativeTabCollectionTabModelImplPtr != 0) {
             TabCollectionTabModelImplJni.get().destroy(mNativeTabCollectionTabModelImplPtr);
             mNativeTabCollectionTabModelImplPtr = 0;
         }
+
+        mTabIdToTabs.clear();
+        mTabCountSupplier.set(0);
+        mTabModelObservers.clear();
+        mTabGroupObservers.clear();
 
         super.destroy();
     }
