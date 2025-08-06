@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 enum class RunLoopTimeoutBehavior {
@@ -136,6 +137,8 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   std::vector<std::string> libfuzzer_command_line_;
   bool exit_after_fuzz_case_ = false;
   InProcessFuzzerOptions options_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 class InProcessFuzzerFactoryBase {
