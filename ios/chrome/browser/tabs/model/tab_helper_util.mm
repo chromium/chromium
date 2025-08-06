@@ -330,10 +330,10 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       HttpsUpgradeServiceFactory::GetForProfile(profile));
   HttpsOnlyModeContainer::CreateForWebState(web_state);
 
-  if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
+  if (!for_prerender &&
+      base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
     TypedNavigationUpgradeTabHelper::CreateForWebState(
-        web_state, PrerenderServiceFactory::GetForProfile(profile),
-        HttpsUpgradeServiceFactory::GetForProfile(profile));
+        web_state, HttpsUpgradeServiceFactory::GetForProfile(profile));
   }
 
   if (!is_off_the_record) {
