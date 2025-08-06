@@ -6,9 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
-#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -72,19 +70,6 @@ size_t BrowserDelegateImpl::GetWebContentsCount() const {
 content::WebContents* BrowserDelegateImpl::GetWebContentsAt(
     size_t index) const {
   return browser_->tab_strip_model()->GetWebContentsAt(index);
-}
-
-content::WebContents* BrowserDelegateImpl::GetInspectedWebContents() const {
-  if (GetType() != BrowserType::kDevTools) {
-    return nullptr;
-  }
-
-  content::WebContents* target_tab = nullptr;
-  if (auto* dev_tools_window = DevToolsWindow::AsDevToolsWindow(&*browser_)) {
-    target_tab = dev_tools_window->GetInspectedWebContents();
-  }
-
-  return target_tab;
 }
 
 aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
