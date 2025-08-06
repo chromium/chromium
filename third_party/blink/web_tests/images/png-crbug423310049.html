@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<!--
+In https://crbug.com/423310049 the color space transformation wasn't quite
+right - with the test image below the symptom was that yellow and cyan
+bands were swapped (magenta and black bands were preserved).
+<p>
+The test image below was created by
+<ul>
+  <li>Taking IHDR, IDAT, and IEND chunks from basn2c08 from the PNG test suite
+  <li>Taking iCCP chunk from the repro image from https://crbug.com/423310049
+</ul>
+<hr>
+-->
+<script>
+promise_test(async () => {
+  const canvas = new OffscreenCanvas(32, 32);
+  const img = new Image;
+  img.src = 'resources/crbug423310049.png';
+  await new Promise(resolve => img.onload = resolve);
+
+  const ctx = canvas.getContext(
+      '2d', {colorSpace:'rec2100-pq', colorType:'float16'});
+
+  // Disable all tone mapping, so we can inspect the raw PQ values.
+  ctx.globalHDRHeadroom = Infinity;
+  ctx.drawImage(img, 0, 0);
+
+  // Read back using float16 to ensure maximum precision.
+  const data = ctx.getImageData(
+      0, 0, 32, 32, {colorSpace:'rec2100-pq', pixelFormat:'rgba-float16'});
+
+  // The image has bands of of magenta, yellow, cyan, and then grey. Vertically,
+  // the bands are divided into gradients of 16 pixels. We will read from the
+  // "lowest" value at the bottom-most line of each gradient, which is
+  // approximately equal to 1/17 in PQ space.
+  const lo = 1 / 17;
+  const testData = function(data, x, y, r, g, b, a) {
+    // Allow an error of 5% of 1/17 because the grey versus colored gradients
+    // are slightly different.
+    const eps = 0.05 / 17;
+    const offset = 4 * (32 * y + x);
+    assert_approx_equals(data.data[offset + 0], r, eps);
+    assert_approx_equals(data.data[offset + 1], g, eps);
+    assert_approx_equals(data.data[offset + 2], b, eps);
+    assert_approx_equals(data.data[offset + 3], a, eps);
+  }
+  testData(data, 16,  7,  1,  1, lo, 1);
+  testData(data, 16, 15,  1, lo,  1, 1);
+  testData(data, 16, 23, lo,  1,  1, 1);
+  testData(data, 16, 31, lo, lo, lo, 1);
+});
+</script>

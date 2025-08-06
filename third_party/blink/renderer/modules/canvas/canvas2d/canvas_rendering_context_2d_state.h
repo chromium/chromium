@@ -407,6 +407,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   mutable sk_sp<PaintFilter> shadow_and_foreground_image_filter_;
 
   double global_alpha_ = 1.f;
+  // The default behavior of a 2D canvas is to tone map to SDR (HDR headroom
+  // zero).
   double global_hdr_headroom_ = 0.f;
   AffineTransform transform_;
   Vector<double> line_dash_;

@@ -351,6 +351,7 @@ void PaintOpReader::Read(PaintFlags* flags) {
   Read(&flags->miter_limit_);
 
   ReadSimple(&flags->bitfields_uint_);
+  ReadSimple(&flags->targeted_hdr_headroom_);
 
   Read(&flags->path_effect_);
   Read(&flags->color_filter_);

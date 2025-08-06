@@ -179,14 +179,17 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       image_smoothing_quality_(cc::PaintFlags::FilterQuality::kLow) {
   fill_flags_.setStyle(cc::PaintFlags::kFill_Style);
   fill_flags_.setAntiAlias(true);
+  fill_flags_.setTargetedHdrHeadroom(global_hdr_headroom_);
   image_flags_.setStyle(cc::PaintFlags::kFill_Style);
   image_flags_.setAntiAlias(true);
+  image_flags_.setTargetedHdrHeadroom(global_hdr_headroom_);
   stroke_flags_.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags_.setStrokeWidth(1);
   stroke_flags_.setStrokeCap(cc::PaintFlags::kButt_Cap);
   stroke_flags_.setStrokeMiter(10);
   stroke_flags_.setStrokeJoin(cc::PaintFlags::kMiter_Join);
   stroke_flags_.setAntiAlias(true);
+  stroke_flags_.setTargetedHdrHeadroom(global_hdr_headroom_);
   SetImageSmoothingEnabled(true);
 }
 
@@ -345,8 +348,15 @@ void CanvasRenderingContext2DState::SetGlobalAlpha(double alpha) {
 }
 
 void CanvasRenderingContext2DState::SetGlobalHDRHeadroom(double h) {
-  CHECK_GE(h, 0.f);
+  // Invalid values (negatives and NaNs) are expected to be avoided by the
+  // caller.
   global_hdr_headroom_ = h;
+
+  // This will cast `global_hdr_headroom_` from a double to a float. This will
+  // not remove any needed precision, and rounding up to infinity is acceptable.
+  stroke_flags_.setTargetedHdrHeadroom(global_hdr_headroom_);
+  fill_flags_.setTargetedHdrHeadroom(global_hdr_headroom_);
+  image_flags_.setTargetedHdrHeadroom(global_hdr_headroom_);
 }
 
 void CanvasRenderingContext2DState::ClipPath(

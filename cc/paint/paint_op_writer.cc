@@ -338,6 +338,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
     // NOTE: size_t is written as two 32-bit zeros (see WriteSize()).
     WriteSimpleMultiple(
         flags.color_, flags.width_, flags.miter_limit_, flags.bitfields_uint_,
+        flags.targeted_hdr_headroom_,
         // flags.path_effect_.
         base::checked_cast<uint8_t>(PathEffect::Type::kNull),
         // flags.color_filter_.
@@ -355,6 +356,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
   Write(flags.width_);
   Write(flags.miter_limit_);
   WriteSimple(flags.bitfields_uint_);
+  WriteSimple(flags.targeted_hdr_headroom_);
 
   Write(flags.path_effect_.get());
   Write(flags.color_filter_.get());

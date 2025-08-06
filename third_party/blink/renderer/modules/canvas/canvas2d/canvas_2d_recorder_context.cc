@@ -1389,7 +1389,7 @@ double Canvas2DRecorderContext::globalHDRHeadroom() const {
 }
 
 void Canvas2DRecorderContext::setGlobalHDRHeadroom(double h) {
-  if (h < 0.f) {
+  if (h < 0.f || std::isnan(h)) {
     return;
   }
   GetState().SetGlobalHDRHeadroom(h);

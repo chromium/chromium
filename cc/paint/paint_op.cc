@@ -1273,8 +1273,13 @@ static float ComputeEffectiveHdrHeadroom(const PaintFlags* flags,
   if (!flags) {
     return params.destination_hdr_headroom;
   }
+  const float targeted_hdr_headroom =
+      flags->getTargetedHdrHeadroom() ==
+              PaintFlags::kTargetedHdrHeadroomFromPlaybackParams
+          ? params.destination_hdr_headroom
+          : flags->getTargetedHdrHeadroom();
   return flags->getDynamicRangeLimit().ComputeEffectiveHdrHeadroom(
-      params.destination_hdr_headroom);
+      targeted_hdr_headroom);
 }
 
 void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
