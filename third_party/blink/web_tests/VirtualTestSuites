@@ -4285,19 +4285,14 @@
     "expires": "Jul 1, 2026"
   },
   {
-    "prefix": "soft-navigation-heuristics-pre-paint-attribution",
+    "prefix": "soft-navs-pre-paint-attribution-disabled",
     "owners": ["shaseley@google.com", "mmocny@google.com"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/soft-navigation-heuristics/"
     ],
-    "exclusive_tests": [
-      "external/wpt/soft-navigation-heuristics/smoke/tentative/late-url-change.html",
-      "external/wpt/soft-navigation-heuristics/detection/tentative/overwriting-text.html",
-      "external/wpt/soft-navigation-heuristics/detection/tentative/overwriting-text-once-per-interaction.html"
-    ],
     "args": [
-      "--enable-features=SoftNavigationDetectionPrePaintBasedAttribution"
+      "--disable-features=SoftNavigationDetectionPrePaintBasedAttribution"
     ],
     "expires": "Dec 1, 2025"
   },

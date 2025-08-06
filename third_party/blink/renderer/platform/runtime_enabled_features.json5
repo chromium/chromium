@@ -4619,6 +4619,7 @@
     },
     {
       name: "SoftNavigationDetectionPrePaintBasedAttribution",
+      status: "experimental",
       depends_on: ["SoftNavigationDetection"],
     },
     {

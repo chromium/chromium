@@ -9669,7 +9669,7 @@ crbug.com/1455262 virtual/view-transition-mpa-serialization/external/wpt/soft-na
 crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Failure Pass Timeout ]
 crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentative/contracted-image.html [ Failure Pass ]
 # Flaky soft-navigation-heuristics WPT test which was ported from LCP (under investigation)
-crbug.com/426391960 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
+crbug.com/426391960 virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
 crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
 
 # Gardener 2025-07-11
