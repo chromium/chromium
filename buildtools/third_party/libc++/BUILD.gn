@@ -63,10 +63,9 @@ config("builtin_modulemap") {
 }
 
 config("libcxx_modulemap") {
-  cflags =
-      [ "-fmodule-map-file=" + rebase_path(
-            "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
-            root_build_dir) ]
+  cflags = [ "-fmodule-map-file=" + rebase_path(
+                 "${root_build_dir}/gen/third_party/libc++/src/include/module.modulemap",
+                 root_build_dir) ]
 }
 
 if (use_clang_modules) {
@@ -86,6 +85,30 @@ if (use_clang_modules && current_toolchain == default_toolchain && is_ios) {
   action("copy_sysroot_modulemaps") {
     script = "//build/noop.py"
     outputs = sysroot_modulemaps
+  }
+}
+
+if (current_toolchain == default_toolchain) {
+  # The Clang modules build requires libc++ headers, __assertion_handler, and
+  # __config_site to be in the same directory.
+  #
+  # To avoid redundant work, the copy targets are declared only in the default
+  # toolchain. This prevents unnecessary copies in multi-toolchain builds and
+  # allows Siso to use its precomputed tree for the default toolchain's `gen`
+  # directory.
+  copy("copy_libcxx_headers") {
+    sources = libcxx_headers
+    outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+  }
+
+  copy("copy_custom_headers") {
+    sources = [
+      "__assertion_handler",
+      "__config_site",
+    ]
+    outputs = [
+      "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
+    ]
   }
 }
 
@@ -661,23 +684,6 @@ if (use_clang_modules) {
     ]
   }
 
-  # We need to have libc++ headers, __assertion_handler and __config_site in the
-  # same directory for clang modules build.
-  copy("copy_libcxx_headers") {
-    sources = libcxx_headers
-    outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
-  }
-
-  copy("copy_custom_headers") {
-    sources = [
-      "__assertion_handler",
-      "__config_site",
-    ]
-    outputs = [
-      "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
-    ]
-  }
-
   libcxx_module("std") {
     public_deps = [
       ":_Builtin_limits",
@@ -983,8 +989,8 @@ target(libcxx_target_type, "libc++") {
     use_libcxx_modules = false
 
     deps += [
-      ":copy_custom_headers",
-      ":copy_libcxx_headers",
+      ":copy_custom_headers($default_toolchain)",
+      ":copy_libcxx_headers($default_toolchain)",
     ]
   }
   if ((is_android || is_apple) && libcxx_is_shared) {

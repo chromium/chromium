@@ -99,7 +99,7 @@ if (is_android && export_libcxxabi_from_executables) {
 }
 
 if (use_clang_modules) {
-  libcxx_prefix = "${root_gen_dir}/third_party/libc++/src"
+  libcxx_prefix = "${root_build_dir}/gen/third_party/libc++/src"
   libcxx_modulemap_in =
       read_file("//third_party/libc++/src/include/module.modulemap.in",
                 "string")
