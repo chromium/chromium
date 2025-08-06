@@ -128,7 +128,7 @@ ci.builder(
 ci.thin_tester(
     name = "linux-updater-tester-dbg",
     description_html = _UPDATER_LINK + " Linux x64 debug builder.",
-    triggered_by = ["linux-updater-builder-dbg"],
+    parent = "linux-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -163,7 +163,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "linux-updater-tester-rel",
     description_html = _UPDATER_LINK + " Linux x64 release tester.",
-    triggered_by = ["linux-updater-builder-rel"],
+    parent = "linux-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -409,7 +409,7 @@ ci.builder(
 ci.thin_tester(
     name = "mac11-arm64-updater-tester-dbg",
     description_html = _UPDATER_LINK + " macOS 11 arm64 debug tester.",
-    triggered_by = ["mac-updater-builder-arm64-dbg"],
+    parent = "mac-updater-builder-arm64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -443,7 +443,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac11-arm64-updater-tester-rel",
     description_html = _UPDATER_LINK + " macOS 11 arm64 release tester.",
-    triggered_by = ["mac-updater-builder-arm64-rel"],
+    parent = "mac-updater-builder-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -477,7 +477,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac11-x64-updater-tester-dbg",
     description_html = _UPDATER_LINK + " macOS 11 x64 debug tester.",
-    triggered_by = ["mac-updater-builder-dbg"],
+    parent = "mac-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -511,7 +511,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac11-x64-updater-tester-rel",
     description_html = _UPDATER_LINK + " macOS 11 x64 release tester.",
-    triggered_by = ["mac-updater-builder-rel"],
+    parent = "mac-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -545,7 +545,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac12-arm64-updater-tester-rel",
     description_html = _UPDATER_LINK + " macOS 12 arm64 release tester.",
-    triggered_by = ["mac-updater-builder-arm64-rel"],
+    parent = "mac-updater-builder-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -579,7 +579,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac12-x64-updater-tester-asan-dbg",
     description_html = _UPDATER_LINK + " macOS 12 x64 ASAN debug tester.",
-    triggered_by = ["mac-updater-builder-asan-dbg"],
+    parent = "mac-updater-builder-asan-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -613,7 +613,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac13-arm64-updater-tester-dbg",
     description_html = _UPDATER_LINK + " macOS 13 arm64 debug tester.",
-    triggered_by = ["mac-updater-builder-arm64-dbg"],
+    parent = "mac-updater-builder-arm64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -647,7 +647,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac13-x64-updater-tester-rel",
     description_html = _UPDATER_LINK + " macOS 13 x64 release tester.",
-    triggered_by = ["mac-updater-builder-rel"],
+    parent = "mac-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -681,7 +681,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac14-arm64-updater-tester-dbg",
     description_html = _UPDATER_LINK + " macOS 14 arm64 debug tester.",
-    triggered_by = ["mac-updater-builder-arm64-dbg"],
+    parent = "mac-updater-builder-arm64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -715,7 +715,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac14-x64-updater-tester-rel",
     description_html = _UPDATER_LINK + " macOS 14 x64 release tester.",
-    triggered_by = ["mac-updater-builder-rel"],
+    parent = "mac-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -749,7 +749,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac15-arm64-updater-tester-dbg",
     description_html = _UPDATER_LINK + " macOS 15 arm64 debug tester.",
-    triggered_by = ["mac-updater-builder-arm64-dbg"],
+    parent = "mac-updater-builder-arm64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -783,7 +783,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "mac15-arm64-updater-tester-rel",
     description_html = _UPDATER_LINK + " macOS 15 arm64 release tester.",
-    triggered_by = ["mac-updater-builder-arm64-rel"],
+    parent = "mac-updater-builder-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1068,7 +1068,7 @@ ci.builder(
 ci.thin_tester(
     name = "win10-updater-tester-dbg",
     description_html = _UPDATER_LINK + " Windows 10 x64 debug tester.",
-    triggered_by = ["win-updater-builder-dbg"],
+    parent = "win-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1103,7 +1103,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "win10-32-on-64-updater-tester-dbg",
     description_html = _UPDATER_LINK + " Windows 10 32-on-64 debug tester.",
-    triggered_by = ["win32-updater-builder-dbg"],
+    parent = "win32-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1138,7 +1138,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "win10-32-on-64-updater-tester-rel",
     description_html = _UPDATER_LINK + " Windows 10 32-on-64 release tester.",
-    triggered_by = ["win32-updater-builder-rel"],
+    parent = "win32-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1173,7 +1173,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "win10-updater-tester-dbg-uac",
     description_html = _UPDATER_LINK + " Windows 10 x64 debug tester with UAC on.",
-    triggered_by = ["win-updater-builder-dbg"],
+    parent = "win-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1208,7 +1208,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "win10-updater-tester-rel",
     description_html = _UPDATER_LINK + " Windows 10 x64 release tester.",
-    triggered_by = ["win-updater-builder-rel"],
+    parent = "win-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1243,7 +1243,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "win10-updater-tester-rel-uac",
     description_html = _UPDATER_LINK + " Windows 10 x64 release tester with UAC on.",
-    triggered_by = ["win-updater-builder-rel"],
+    parent = "win-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1278,7 +1278,7 @@ ci.thin_tester(
 ci.builder(
     name = "win11-arm64-updater-tester-dbg",
     description_html = _UPDATER_LINK + " Windows 11 arm64 debug binary tester.",
-    triggered_by = ["win-arm64-updater-builder-dbg"],
+    parent = "win-arm64-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1313,7 +1313,7 @@ ci.builder(
 ci.thin_tester(
     name = "win11-arm64-updater-tester-rel",
     description_html = _UPDATER_LINK + " Windows 11 arm64 release tester.",
-    triggered_by = ["win-arm64-updater-builder-rel"],
+    parent = "win-arm64-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1348,7 +1348,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "win11-updater-tester-dbg-uac",
     description_html = _UPDATER_LINK + " Windows 11 x64 debug tester with UAC on.",
-    triggered_by = ["win-updater-builder-dbg"],
+    parent = "win-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1383,7 +1383,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "win11-updater-tester-rel",
     description_html = _UPDATER_LINK + " Windows 11 x64 release tester with UAC on.",
-    triggered_by = ["win-updater-builder-rel"],
+    parent = "win-updater-builder-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(

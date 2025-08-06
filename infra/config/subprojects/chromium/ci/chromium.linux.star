@@ -464,7 +464,7 @@ ci.builder(
 ci.thin_tester(
     name = "Linux Tests",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/Linux Builder"],
+    parent = "ci/Linux Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -567,7 +567,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Linux Tests (dbg)(1)",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/Linux Builder (dbg)"],
+    parent = "ci/Linux Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -665,7 +665,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Linux Tests (Wayland)",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    triggered_by = ["ci/Linux Builder (Wayland)"],
+    parent = "ci/Linux Builder (Wayland)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -767,7 +767,7 @@ ci.thin_tester(
                 "ozone wayland doc",
             ),
         ),
-    triggered_by = ["ci/Linux Builder (Wayland)"],
+    parent = "ci/Linux Builder (Wayland)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -909,7 +909,7 @@ ci.builder(
 ci.builder(
     name = "linux-oi-rel",
     description_html = "This builder runs key test suites with OriginKeyedProcessesByDefault (OriginIsolation) enabled, to provide test coverage with the feature enabled.",
-    triggered_by = ["ci/Linux Builder"],
+    parent = "ci/Linux Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
