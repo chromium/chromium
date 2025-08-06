@@ -287,25 +287,24 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     if (expand_into_previous_separator || expand_into_next_separator) {
       // Take the entire size of the separator. in odd separator size cases, the
       // right side will take the remaining space.
-      const int left_separator_overlap =
-          tab_style()->GetSeparatorSize().width() / 2;
+      const float separator_overlap =
+          (tab_style()->GetSeparatorMargins().width() +
+           tab_style()->GetSeparatorSize().width()) *
+          scale;
+      const int left_separator_overlap = std::round(separator_overlap / 2);
       const int right_separator_overlap =
-          tab_style()->GetSeparatorSize().width() - left_separator_overlap;
+          std::round(separator_overlap - left_separator_overlap);
 
       // If there is a tab before this one, then expand into its overlap.
       const Tab* const previous_tab = GetLeftTab(tab());
       if (expand_into_previous_separator && previous_tab) {
-        left -= std::round((tab_style()->GetSeparatorMargins().right() +
-                            left_separator_overlap) *
-                           scale);
+        left -= left_separator_overlap;
       }
 
       // If there is a tab after this one, then expand into its overlap.
       const Tab* const next_tab = GetRightTab(tab());
       if (expand_into_next_separator && next_tab) {
-        right += std::round((tab_style()->GetSeparatorMargins().left() +
-                             right_separator_overlap) *
-                            scale);
+        right += right_separator_overlap;
       }
     }
 
