@@ -5403,7 +5403,7 @@ void AXObjectCacheImpl::MarkDocumentDirty() {
 
   mark_all_dirty_ = true;
 
-  ScheduleAXUpdate();
+  ResetSerializer();
 }
 
 void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
