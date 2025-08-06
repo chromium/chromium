@@ -976,6 +976,15 @@ void RelaunchApp() {
 
 // Tests that opening the context menu for a link in Reading mode
 // displays all options.
+// TODO(crbug.com/436842225): Renable this test. It is flaky on iphone-device
+// and ipad-device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenContextMenuFromReadingMode \
+  testOpenContextMenuFromReadingMode
+#else
+#define MAYBE_testOpenContextMenuFromReadingMode \
+  FLAKY_testOpenContextMenuFromReadingMode
+#endif
 - (void)testOpenContextMenuFromReadingMode {
   const GURL initialURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:initialURL];
@@ -1019,6 +1028,15 @@ void RelaunchApp() {
 }
 
 // Tests that the context menu is displayed for an image url in Reading mode.
+// TODO(crbug.com/436842225): Renable this test. It is flaky on iphone-device
+// and ipad-device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenuDisplayedOnImageForReadingMode \
+  testContextMenuDisplayedOnImageForReadingMode
+#else
+#define MAYBE_testContextMenuDisplayedOnImageForReadingMode \
+  FLAKY_testContextMenuDisplayedOnImageForReadingMode
+#endif
 - (void)testContextMenuDisplayedOnImageForReadingMode {
   const GURL pageURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:pageURL];
