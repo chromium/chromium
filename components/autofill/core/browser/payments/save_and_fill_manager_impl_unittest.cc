@@ -12,6 +12,8 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
+#include "components/autofill/core/browser/strike_databases/payments/save_and_fill_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,6 +104,11 @@ class SaveAndFillManagerImplTest : public testing::Test {
     payments_autofill_client_->set_multiple_request_payments_network_interface(
         std::move(mock_network_interface));
 
+    std::unique_ptr<TestStrikeDatabase> test_strike_database =
+        std::make_unique<TestStrikeDatabase>();
+    strike_database_ = test_strike_database.get();
+    autofill_client_->set_test_strike_database(std::move(test_strike_database));
+
     save_and_fill_manager_impl_ =
         std::make_unique<SaveAndFillManagerImpl>(autofill_client_.get());
   }
@@ -139,6 +146,7 @@ class SaveAndFillManagerImplTest : public testing::Test {
   raw_ptr<MockMultipleRequestPaymentsNetworkInterface> mock_network_interface_;
   base::MockCallback<SaveAndFillManagerImpl::FillCardCallback>
       fill_card_callback_;
+  raw_ptr<TestStrikeDatabase> strike_database_;
 };
 
 UserProvidedCardSaveAndFillDetails CreateUserProvidedCardDetails(
@@ -506,6 +514,40 @@ TEST_F(SaveAndFillManagerImplTest, LoadRiskData) {
   std::move(risk_data_loaded_callback).Run("some risk data");
 
   EXPECT_EQ(details.risk_data, "some risk data");
+}
+
+TEST_F(SaveAndFillManagerImplTest,
+       OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+
+  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+      CardSaveAndFillDialogUserDecision::kDeclined,
+      UserProvidedCardSaveAndFillDetails());
+
+  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+}
+
+TEST_F(SaveAndFillManagerImplTest,
+       OnUserDidDecideOnUploadSave_Declined_AddsStrike) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+
+  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce([](const LegalMessageLines&,
+                   TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
+                       callback) {
+        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kDeclined,
+                                UserProvidedCardSaveAndFillDetails());
+      });
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+
+  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 }
 
 }  // namespace autofill::payments

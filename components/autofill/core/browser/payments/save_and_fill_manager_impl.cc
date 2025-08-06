@@ -88,6 +88,7 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       break;
     }
     case CardSaveAndFillDialogUserDecision::kDeclined:
+      GetSaveAndFillStrikeDatabase()->AddStrike();
       break;
   }
   fill_card_callback_.Reset();
@@ -229,6 +230,7 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       upload_save_and_fill_dialog_accepted_ = true;
       break;
     case CardSaveAndFillDialogUserDecision::kDeclined:
+      GetSaveAndFillStrikeDatabase()->AddStrike();
       break;
   }
 }
