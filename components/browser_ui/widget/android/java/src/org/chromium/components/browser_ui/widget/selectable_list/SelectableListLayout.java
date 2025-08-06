@@ -568,7 +568,7 @@ public class SelectableListLayout<E> extends FrameLayout
             return true;
         }
 
-        if (mToolbar.isSearching()) {
+        if (mToolbar.isSearching() && !mToolbar.isLargeScreenWithKeyboard()) {
             mToolbar.hideSearchView();
             return true;
         }

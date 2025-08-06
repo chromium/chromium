@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.history;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -31,6 +32,10 @@ import org.chromium.chrome.test.transit.hub.HistoryPaneStation.HistorySearchFaci
 import org.chromium.chrome.test.transit.hub.HistoryPaneStation.HistoryWithEntriesFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Public transit tests for the Hub's history pane. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -43,20 +48,30 @@ public class HistoryPaneTest {
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private WebPageStation mStartingPage;
+    private boolean mIsLLFDevice;
 
     @Before
     public void setUp() {
         mStartingPage = mCtaTestRule.startOnBlankPage();
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
+        final AtomicBoolean supportsKeyboard = new AtomicBoolean();
+        final AtomicBoolean isTablet = new AtomicBoolean();
         runOnUiThreadBlocking(
-                () -> clearHistory(cta.getProfileProviderSupplier().get().getOriginalProfile()));
+                () -> {
+                    clearHistory(cta.getProfileProviderSupplier().get().getOriginalProfile());
+                    supportsKeyboard.set(DeviceInput.supportsKeyboard());
+                    isTablet.set(
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                    ApplicationProvider.getApplicationContext()));
+                });
+        mIsLLFDevice = supportsKeyboard.get() && isTablet.get();
     }
 
     @Test
     @MediumTest
     public void testEmptyView() {
         RegularTabSwitcherStation tabSwitcher = mStartingPage.openRegularTabSwitcher();
-        tabSwitcher.selectHistoryPane().expectEmptyState();
+        tabSwitcher.selectHistoryPane().expectEmptyState(mIsLLFDevice);
     }
 
     @Test
@@ -71,7 +86,8 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlOne)
                         .loadWebPageProgrammatically(urlTwo)
                         .openRegularTabSwitcher();
-        HistoryWithEntriesFacility history = tabSwitcher.selectHistoryPane().expectEntries();
+        HistoryWithEntriesFacility history =
+                tabSwitcher.selectHistoryPane().expectEntries(mIsLLFDevice);
         history.expectEntry("One");
         history.expectEntry("Two");
     }
@@ -89,12 +105,12 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlTwo)
                         .openRegularTabSwitcher();
         HistoryPaneStation historyPaneStation = tabSwitcher.selectHistoryPane();
-        HistoryWithEntriesFacility history = historyPaneStation.expectEntries();
+        HistoryWithEntriesFacility history = historyPaneStation.expectEntries(mIsLLFDevice);
         history.expectEntry("One");
         history.expectEntry("Two");
 
         // Search for "One" in the history search box.
-        HistorySearchFacility search = history.openSearch();
+        HistorySearchFacility search = history.openSearch(mIsLLFDevice);
         search.typeSearchTerm("One");
 
         // Verify that "One" is displayed as a match.
@@ -114,7 +130,7 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlOne)
                         .loadWebPageProgrammatically(urlTwo);
         HistoryWithEntriesFacility history =
-                page.openRegularTabSwitcher().selectHistoryPane().expectEntries();
+                page.openRegularTabSwitcher().selectHistoryPane().expectEntries(mIsLLFDevice);
         history.expectEntry("One").selectToOpenWebPage(page, urlOne);
     }
 

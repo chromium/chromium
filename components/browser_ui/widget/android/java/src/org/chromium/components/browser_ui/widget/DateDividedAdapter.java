@@ -784,6 +784,17 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     }
 
     /**
+     * @return Is any normal content is available in the adapter
+     */
+    public boolean isNormalContentAvailable() {
+        for (ItemGroup group : mGroups) {
+            if (group.priority() != GroupPriority.NORMAL_CONTENT) continue;
+            if (group.size() > 0) return true;
+        }
+        return false;
+    }
+
+    /**
      * Utility method to traverse all groups and find the {@link ItemGroup} for the given position.
      */
     protected Pair<ItemGroup, Integer> getGroupAt(int position) {
