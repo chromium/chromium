@@ -92,9 +92,9 @@ enum Precedence {
 // that the `loc` is at a macro argument of the exceptional macros (EXPECT_ and
 // ASSERT_ family).
 // Tests are in: gtest-macro-original.cc
-static bool IsInExcludedMacro(clang::SourceLocation loc,
-                              const clang::ASTContext& ast_context,
-                              const clang::SourceManager& source_manager) {
+bool IsInExcludedMacro(clang::SourceLocation loc,
+                       const clang::ASTContext& ast_context,
+                       const clang::SourceManager& source_manager) {
   if (!loc.isMacroID()) [[likely]] {
     return false;
   }
@@ -505,11 +505,10 @@ void EmitFrontier(const std::string& lhs_key,
   Emit(llvm::formatv("f {0} {1} {2}\n", lhs_key, rhs_key, replacement));
 }
 
-static std::string GetReplacementDirective(
-    const clang::SourceRange& replacement_range,
-    std::string replacement_text,
-    const clang::SourceManager& source_manager,
-    int precedence = kNeutralPrecedence) {
+std::string GetReplacementDirective(const clang::SourceRange& replacement_range,
+                                    std::string replacement_text,
+                                    const clang::SourceManager& source_manager,
+                                    int precedence = kNeutralPrecedence) {
   clang::tooling::Replacement replacement(
       source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
@@ -662,8 +661,7 @@ std::string GetTypeAsString(const clang::QualType& qual_type,
 // type* ptr = reinterpret_cast<type*>(buf);  where buf needs to be rewritten
 // to span and ptr doesn't. The `.data()` call is added right after buffer as
 // follows: type* ptr = reinterpret_cast<type*>(buf.data());
-static clang::SourceRange getSourceRange(
-    const MatchFinder::MatchResult& result) {
+clang::SourceRange getSourceRange(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::LangOptions& lang_opts = result.Context->getLangOpts();
 
@@ -727,9 +725,8 @@ static clang::SourceRange getSourceRange(
   assert(false && "Unexpected match in getSourceRange()");
 }
 
-static std::string getNodeFromPointerTypeLoc(
-    const clang::PointerTypeLoc* type_loc,
-    const MatchFinder::MatchResult& result) {
+std::string getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
+                                      const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -802,7 +799,7 @@ static std::string getNodeFromPointerTypeLoc(
   return key;
 }
 
-static std::string getNodeFromRawPtrTypeLoc(
+std::string getNodeFromRawPtrTypeLoc(
     const clang::TemplateSpecializationTypeLoc* raw_ptr_type_loc,
     const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -825,7 +822,7 @@ static std::string getNodeFromRawPtrTypeLoc(
 // Example:
 //    void fct(int arr[])  => void fct(base::span<int> arr)
 //    void fct(int arr[3]) => void fct(base::span<int, 3> arr)
-static std::string getNodeFromFunctionArrayParameter(
+std::string getNodeFromFunctionArrayParameter(
     const clang::TypeLoc* type_loc,
     const clang::ParmVarDecl* param_decl,
     const MatchFinder::MatchResult& result) {
@@ -872,8 +869,8 @@ static std::string getNodeFromFunctionArrayParameter(
   return key;
 }
 
-static std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
-                                   const MatchFinder::MatchResult& result) {
+std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
+                            const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
@@ -912,7 +909,7 @@ static std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
   return key;
 }
 
-static void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
+void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
   const clang::Expr* deref_expr =
       result.Nodes.getNodeAs<clang::Expr>("deref_expr");
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -940,7 +937,7 @@ static void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
                               kDecaySpanToPointerPrecedence));
 }
 
-static clang::SourceLocation GetBinaryOperationOperatorLoc(
+clang::SourceLocation GetBinaryOperationOperatorLoc(
     const clang::Expr* expr,
     const MatchFinder::MatchResult& result) {
   if (auto* binary_op = clang::dyn_cast_or_null<clang::BinaryOperator>(expr)) {
@@ -986,7 +983,7 @@ struct CheckedCastReplacement {
 using SubspanExprReplacement =
     std::variant<std::monostate, RangedReplacement, CheckedCastReplacement>;
 
-static SubspanExprReplacement GetSubspanExprReplacement(
+SubspanExprReplacement GetSubspanExprReplacement(
     const clang::Expr* expr,
     const MatchFinder::MatchResult& result,
     std::string_view key) {
@@ -1033,8 +1030,8 @@ static SubspanExprReplacement GetSubspanExprReplacement(
 //     #define MACRO() (will_be_span + offset)
 //
 // See test: 'span-frontier-macro-original.cc'
-static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
-                                 const std::string& key) {
+void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
+                          const std::string& key) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -1070,7 +1067,7 @@ static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 // Closes an open `base::span(` if present.
 // Returns a `.subspan(` opener.
 // Opens a `base::checked_cast(` if necessary.
-static std::string CreateSubspanOpener(
+std::string CreateSubspanOpener(
     std::string_view prefix,
     const SubspanExprReplacement* subspan_expr_replacement) {
   std::string_view maybe_checked_cast_opener = "";
@@ -1084,7 +1081,7 @@ static std::string CreateSubspanOpener(
 // Returns a `.subspan(` closer.
 // Closes an open `base::checked_cast(` if necessary,
 // or appends a `u` to the integer literal expression.
-static std::string CreateSubspanCloser(
+std::string CreateSubspanCloser(
     const SubspanExprReplacement* subspan_expr_replacement) {
   std::string_view maybe_closer = "";
   if (const auto* replacement =
@@ -1097,7 +1094,7 @@ static std::string CreateSubspanCloser(
   return llvm::formatv("{0})", maybe_closer);
 }
 
-static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
+void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   const clang::ASTContext& ast_context = *result.Context;
   const clang::SourceManager& source_manager = *result.SourceManager;
   const auto* binary_operation =
@@ -1185,7 +1182,7 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
                                            source_manager));
 }
 
-static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
+void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -1236,7 +1233,7 @@ static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
 //   if(expr) => if(!expr.empty())
 //   if(!expr) => if(expr.empty())
 // Tests are in: operator-bool-original.cc
-static void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
+void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string& key = GetRHS(result);
 
@@ -1435,8 +1432,8 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
 // Handles code that passes address to a local variable as a single element
 // buffer. Wrap it with a span of size=1. Tests are in
 // single-element-buffer-original.cc.
-static void EmitSingleVariableSpan(const std::string& key,
-                                   const MatchFinder::MatchResult& result) {
+void EmitSingleVariableSpan(const std::string& key,
+                            const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const auto& lang_opts = result.Context->getLangOpts();
 
@@ -1483,10 +1480,9 @@ static void EmitSingleVariableSpan(const std::string& key,
 //
 // Tests are in: unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
-static void EmitUnsafeCxxMethodCall(
-    const std::string& key,
-    const clang::CXXMemberCallExpr* member_call_expr,
-    const MatchFinder::MatchResult& result) {
+void EmitUnsafeCxxMethodCall(const std::string& key,
+                             const clang::CXXMemberCallExpr* member_call_expr,
+                             const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* method_decl = GetNodeOrCrash<clang::CXXMethodDecl>(
@@ -1559,9 +1555,9 @@ static void EmitUnsafeCxxMethodCall(
 //
 // Tests are in: unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
-static void EmitUnsafeFreeFuncCall(const std::string& key,
-                                   const clang::CallExpr* call_expr,
-                                   const MatchFinder::MatchResult& result) {
+void EmitUnsafeFreeFuncCall(const std::string& key,
+                            const clang::CallExpr* call_expr,
+                            const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* function_decl = GetNodeOrCrash<clang::FunctionDecl>(
@@ -1586,9 +1582,9 @@ static void EmitUnsafeFreeFuncCall(const std::string& key,
                                kBaseAutoSpanificationHelperIncludePath));
 }
 
-static void EmitUnsafeFunctionCall(const std::string& key,
-                                   const clang::CallExpr* call_expr,
-                                   const MatchFinder::MatchResult& result) {
+void EmitUnsafeFunctionCall(const std::string& key,
+                            const clang::CallExpr* call_expr,
+                            const MatchFinder::MatchResult& result) {
   if (const clang::CXXMemberCallExpr* member_call_expr =
           clang::dyn_cast<clang::CXXMemberCallExpr>(call_expr)) {
     EmitUnsafeCxxMethodCall(key, member_call_expr, result);
@@ -1608,9 +1604,9 @@ static void EmitUnsafeFunctionCall(const std::string& key,
 // separately.
 //
 // Tests are in: array-tests-original.cc
-static void EmitCArrayIterCallExpr(const std::string& key,
-                                   const clang::CallExpr* call_expr,
-                                   const MatchFinder::MatchResult& result) {
+void EmitCArrayIterCallExpr(const std::string& key,
+                            const clang::CallExpr* call_expr,
+                            const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::LangOptions& lang_opts = result.Context->getLangOpts();
 
@@ -1650,8 +1646,8 @@ static void EmitCArrayIterCallExpr(const std::string& key,
                                       kBaseAutoSpanificationHelperIncludePath));
 }
 
-static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
-                                       const MatchFinder::MatchResult& result) {
+std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
+                                const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string key = NodeKey(size_expr, source_manager);
 
@@ -2045,7 +2041,7 @@ std::string RewriteCArrayToStdArray(const clang::QualType& type,
   return result.str();
 }
 
-static const clang::Expr* GetInitExpr(const clang::DeclaratorDecl* decl) {
+const clang::Expr* GetInitExpr(const clang::DeclaratorDecl* decl) {
   const clang::Expr* init_expr = nullptr;
   if (auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     init_expr = var_decl->getInit();
@@ -2257,7 +2253,7 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
       closing_brackets_replacement_directive);
 }
 
-static bool IsMutable(const clang::DeclaratorDecl* decl) {
+bool IsMutable(const clang::DeclaratorDecl* decl) {
   if (const auto* field_decl =
           clang::dyn_cast_or_null<clang::FieldDecl>(decl)) {
     return field_decl->isMutable();
@@ -2265,22 +2261,21 @@ static bool IsMutable(const clang::DeclaratorDecl* decl) {
   return false;
 }
 
-static bool IsConstexpr(const clang::DeclaratorDecl* decl) {
+bool IsConstexpr(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isConstexpr();
   }
   return false;
 }
 
-static bool IsInlineVarDecl(const clang::DeclaratorDecl* decl) {
+bool IsInlineVarDecl(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isInlineSpecified();
   }
   return false;
 }
 
-static bool IsStaticLocalOrStaticStorageClass(
-    const clang::DeclaratorDecl* decl) {
+bool IsStaticLocalOrStaticStorageClass(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isStaticLocal() ||
            var_decl->getStorageClass() == clang::SC_Static;
@@ -2549,8 +2544,7 @@ std::string getArrayNode(bool is_lhs, const MatchFinder::MatchResult& result) {
 //   it == std::begin(c_array)
 //   it != std::end(c_array)
 // Tests are in: array-tests-original.cc
-static void RewriteComparisonWithCArrayIter(
-    const MatchFinder::MatchResult& result) {
+void RewriteComparisonWithCArrayIter(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::CallExpr* call_expr = GetNodeOrCrash<clang::CallExpr>(
       result, "c_array_iter_call_expr",
