@@ -2267,7 +2267,7 @@ IN_PROC_BROWSER_TEST_F(
   // Another URL where resizability is not set resets the web API overridden
   // resizability.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
-                                           GURL("http://www.google.com/")));
+                                           GURL("https://www.google.com/")));
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
