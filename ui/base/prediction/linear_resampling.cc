@@ -37,6 +37,13 @@ inline gfx::PointF lerp(const InputPredictor::InputData& a,
   return a.pos + gfx::ScaleVector2d(a.pos - b.pos, alpha);
 }
 
+// This value is related to kResamplingScrollEventsExperimentalPrediction and
+// may be adjusted based on experimentation results. Currently, CalculateLatency
+// relies on reading values off of the field trial (which won't exist when we
+// ship). As such, we introduce the following constant which can be used for the
+// latency calculation.
+constexpr double kPredictFrameAheadBy = 0.375;
+
 }  // namespace
 
 LinearResampling::LinearResampling() = default;
@@ -122,9 +129,18 @@ base::TimeDelta LinearResampling::LatencyCalculator::CalculateLatency() {
       ::features::kResamplingScrollEventsExperimentalPrediction, "mode");
 
   if (prediction_type != ::features::kPredictionTypeFramesBased) {
-    TRACE_EVENT1("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
-                 "default");
-    return kResampleLatency;
+    const bool feature_enabled = base::FeatureList::IsEnabled(
+        ::features::kResamplingScrollEventsExperimentalPrediction);
+    TRACE_EVENT2("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
+                 (feature_enabled ? "frames based" : "default"),
+                 "predicting ahead by",
+                 (feature_enabled ? kPredictFrameAheadBy : 0));
+    // If the feature is enabled and no field trial is active, default to using
+    // kPredictFrameAheadBy. Tests that set up field trials need not hit this
+    // path since they are testing specific latency values.
+    return kResampleLatency + (feature_enabled
+                                   ? (kPredictFrameAheadBy * frame_interval_)
+                                   : base::Milliseconds(0));
   }
 
   double latency = 0;

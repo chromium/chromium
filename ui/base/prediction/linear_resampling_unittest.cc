@@ -129,6 +129,9 @@ TEST_F(LinearResamplingTest, ResamplingValue) {
 }
 
 TEST_F(LinearResamplingTest, ResamplingMaxPrediction) {
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(
+      features::kResamplingScrollEventsExperimentalPrediction);
   std::vector<double> x = {10, 20};
   std::vector<double> y = {5, 10};
   std::vector<double> t = {10, 30};
