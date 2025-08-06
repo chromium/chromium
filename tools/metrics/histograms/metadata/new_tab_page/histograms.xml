@@ -303,10 +303,10 @@ chromium-metrics-reviews@google.com.
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Recorded when the user clicks on the compose entrypoint on desktop. This
-    only gets recorded if the compose button leads to a compose session starting
-    (i.e. the composebox opening). This records the amount of time it takes from
-    when the new tab page is loaded to when a compose session starts.
+    Histogram of the time, in milliseconds since navigation start, it took a
+    Compose Plate session to start. Recorded when the user clicks on the compose
+    entrypoint on desktop. This only gets recorded if the compose button leads
+    to a compose session starting (i.e. the composebox opening).
   </summary>
 </histogram>
 
