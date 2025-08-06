@@ -69,6 +69,7 @@
       break;
     case SafariDataImportStage::kImporting:
       self.primaryButtonEnabled = NO;
+      [self.itemTableView notifyImportStart];
       break;
     case SafariDataImportStage::kImported:
       [_disclaimer removeFromSuperview];
