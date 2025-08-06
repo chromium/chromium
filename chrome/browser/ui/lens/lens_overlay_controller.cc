@@ -200,21 +200,6 @@ LensOverlayController* GetLensOverlayControllerFromTabInterface(
              : nullptr;
 }
 
-bool IsPageContextEligible(
-    const GURL& main_frame_url,
-    std::vector<optimization_guide::FrameMetadata> frame_metadata,
-    optimization_guide::PageContextEligibility* page_context_eligibility) {
-  if (!page_context_eligibility ||
-      !lens::features::IsLensSearchProtectedPageEnabled() ||
-      !lens::IsLensOverlayContextualSearchboxEnabled() ||
-      !lens::features::UseApcAsContext()) {
-    return true;
-  }
-  return optimization_guide::IsPageContextEligible(
-      main_frame_url.host(), main_frame_url.path(), std::move(frame_metadata),
-      page_context_eligibility);
-}
-
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -363,7 +348,6 @@ void LensOverlayController::CloseUI(
   }
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
-  is_page_context_eligible_ = true;
   should_send_screenshot_on_init_ = false;
 
   state_ = State::kOff;
@@ -1089,7 +1073,7 @@ void LensOverlayController::IssueLensRequest(
     initialization_data_->selected_region_bitmap_.reset();
   }
 
-  if (is_page_context_eligible_) {
+  if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
     lens_overlay_query_controller_->SendRegionSearch(
         query_start_time, region.Clone(), selection_type,
         initialization_data_->additional_search_query_params_, region_bytes);
@@ -1116,7 +1100,7 @@ void LensOverlayController::IssueMultimodalRequest(
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bitmap) {
-  if (is_page_context_eligible_) {
+  if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
     lens_overlay_query_controller_->SendMultimodalRequest(
         query_start_time, std::move(region), text_query, selection_type,
         initialization_data_->additional_search_query_params_, region_bitmap);
@@ -1162,7 +1146,7 @@ void LensOverlayController::IssueContextualTextRequest(
     base::Time query_start_time,
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type) {
-  if (is_page_context_eligible_) {
+  if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
     lens_selection_type_ = selection_type;
     lens_overlay_query_controller_->SendContextualTextQuery(
         query_start_time, text_query, selection_type,
@@ -1387,23 +1371,43 @@ void LensOverlayController::DidCaptureScreenshot(
     // with other async startup processes.
     const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
 
-    auto bitmap_to_send = bitmap;
-    auto page_url = lens_search_controller_->GetPageURL();
-    auto page_title = lens_search_controller_->GetPageTitle();
-    if (!IsPageContextEligible(
-            tab_url, {}, lens_search_controller_->page_context_eligibility())) {
-      is_page_context_eligible_ = false;
-      bitmap_to_send = SkBitmap();
-      page_url = GURL();
-      page_title = "";
-    }
-
-    lens_overlay_query_controller_->StartQueryFlow(
-        bitmap_to_send, page_url, page_title,
-        ConvertSignificantRegionBoxes(all_bounds),
-        std::vector<lens::PageContent>(), lens::MimeType::kUnknown,
-        pdf_current_page, GetUiScaleFactor(), invocation_time_);
+    // Check if the page is context eligible. This should start the query flow
+    // after the eligibility is fetched.
+    GetContextualizationController()->IsPageContextEligible(
+        tab_url, /*frame_metadata=*/{},
+        base::BindOnce(&LensOverlayController::OnPageContextEligibilityFetched,
+                       weak_factory_.GetWeakPtr(), bitmap, all_bounds,
+                       pdf_current_page));
+    return;
   }
+
+  // The following two methods happen async to parallelize the two bottlenecks
+  // in our invocation flow.
+  CreateInitializationData(bitmap, all_bounds, pdf_current_page);
+  ShowOverlay();
+
+  state_ = State::kStartingWebUI;
+}
+
+void LensOverlayController::OnPageContextEligibilityFetched(
+    const SkBitmap& bitmap,
+    const std::vector<gfx::Rect>& all_bounds,
+    std::optional<uint32_t> pdf_current_page,
+    bool is_page_context_eligible) {
+  auto bitmap_to_send = bitmap;
+  auto page_url = lens_search_controller_->GetPageURL();
+  auto page_title = lens_search_controller_->GetPageTitle();
+  if (!is_page_context_eligible) {
+    bitmap_to_send = SkBitmap();
+    page_url = GURL();
+    page_title = "";
+  }
+
+  lens_overlay_query_controller_->StartQueryFlow(
+      bitmap_to_send, page_url, page_title,
+      ConvertSignificantRegionBoxes(all_bounds),
+      std::vector<lens::PageContent>(), lens::MimeType::kUnknown,
+      pdf_current_page, GetUiScaleFactor(), invocation_time_);
 
   // The following two methods happen async to parallelize the two bottlenecks
   // in our invocation flow.
@@ -1673,7 +1677,7 @@ void LensOverlayController::InitializeOverlay(
   // be sent with the initial image request, so we need to send it here.
   if (lens::IsLensOverlayContextualSearchboxEnabled() &&
       lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() &&
-      is_page_context_eligible_) {
+      GetContextualizationController()->GetCurrentPageContextEligibility()) {
     // TODO(crbug.com/418856988): Replace this with a call that starts
     // contextualization without the unneeded callback.
     GetContextualizationController()->TryUpdatePageContextualization(
@@ -1709,7 +1713,7 @@ void LensOverlayController::InitializeOverlay(
   // response, unless the early start query flow optimization is enabled.
   if (!initialization_data_->has_full_image_response() &&
       !lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
-    if (!is_page_context_eligible_) {
+    if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
       initialization_data_->initial_screenshot_ = SkBitmap();
       initialization_data_->page_url_ = GURL();
       initialization_data_->page_title_ = "";
@@ -2422,7 +2426,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     lens_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
   }
 
-  if (!is_page_context_eligible_) {
+  if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
     // Do not send any requests if the page is not context eligible.
   } else if (initialization_data_->selected_region_.is_null() &&
              IsContextualSearchbox()) {
@@ -2469,8 +2473,12 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   MaybeOpenSidePanel();
   // Only set the side panel to loading if the page is context eligible because
   // otherwise there will be no results to load.
+  bool is_context_eligible =
+      GetContextualizationController()->GetCurrentPageContextEligibility();
   results_side_panel_coordinator_->SetSidePanelIsLoadingResults(
-      is_page_context_eligible_);
+      is_context_eligible);
+  results_side_panel_coordinator_->SetShowProtectedErrorPage(
+      !is_context_eligible);
 
   MaybeLaunchSurvey();
 }
@@ -2490,10 +2498,11 @@ void LensOverlayController::HandleStartQueryResponse(
   // If the side panel is open, then the error page state can change depending
   // on whether the query succeeded or not. If the side panel is not open, the
   // error page state can only change if the query failed since the first side
-  // panel navigation will take care of recording whether the result was shown
+  // panel navigation will take care of recording whether the result was shown.
   const bool is_side_panel_open =
       results_side_panel_coordinator_->IsSidePanelBound();
-  if (is_side_panel_open) {
+  if (is_side_panel_open &&
+      !results_side_panel_coordinator_->IsShowingProtectedErrorPage()) {
     results_side_panel_coordinator_->MaybeSetSidePanelShowErrorPage(
         is_error,
         is_error

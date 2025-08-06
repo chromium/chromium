@@ -206,6 +206,8 @@ source_set("test_support") {
     "test_lens_overlay_query_controller.h",
     "test_lens_overlay_side_panel_coordinator.cc",
     "test_lens_overlay_side_panel_coordinator.h",
+    "test_lens_search_contextualization_controller.cc",
+    "test_lens_search_contextualization_controller.h",
     "test_lens_search_controller.cc",
     "test_lens_search_controller.h",
   ]

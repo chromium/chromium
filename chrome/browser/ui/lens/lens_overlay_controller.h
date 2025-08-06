@@ -691,6 +691,12 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       const std::vector<gfx::Rect>& bounds,
       std::optional<uint32_t> pdf_current_page);
 
+  // Called when the page context eligibility is fetched.
+  void OnPageContextEligibilityFetched(const SkBitmap& bitmap,
+                                       const std::vector<gfx::Rect>& all_bounds,
+                                       std::optional<uint32_t> pdf_current_page,
+                                       bool is_page_context_eligible);
+
   // Process the bitmap and creates all necessary data to initialize the
   // overlay. Happens on a separate thread to prevent main thread from hanging.
   void CreateInitializationData(const SkBitmap& screenshot,

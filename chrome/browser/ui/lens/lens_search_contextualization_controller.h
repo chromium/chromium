@@ -11,6 +11,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/buildflags.h"
@@ -37,6 +38,9 @@ struct AIPageContentResult;
 
 using GetIsContextualSearchboxCallback =
     lens::mojom::LensSidePanelPageHandler::GetIsContextualSearchboxCallback;
+
+// Callback type alias for the when the page context eligibility is fetched.
+using LensSearchPageContextEligibilityCallback = base::OnceCallback<void(bool)>;
 
 namespace lens {
 
@@ -145,9 +149,59 @@ class LensSearchContextualizationController {
   void SetPageContent(std::vector<lens::PageContent> page_contents,
                       lens::MimeType primary_content_type);
 
+  // Returns whether the page is context eligible based on the URL and frame
+  // metadata provided. Calls the provided callback with the result. This
+  // function makes a call to the page context eligibility API on whether the
+  // latest contextualized data is eligible to be sent. This is in contrast to
+  // `GetCurrentPageContextEligibility` which returns the latest cached state.
+  void IsPageContextEligible(
+      const GURL& main_frame_url,
+      std::vector<optimization_guide::FrameMetadata> frame_metadata,
+      LensSearchPageContextEligibilityCallback callback);
+
+  // Override these methods to be able to track calls made to the page context
+  // eligibility API.
+  virtual void CreatePageContextEligibilityAPI();
+
+  // Returns whether the page is context eligible based on the latest cached
+  // state. If the page context eligibility API has not been loaded, this will
+  // return false.
+  virtual bool GetCurrentPageContextEligibility();
+
   bool IsActive() const { return state_ == State::kActive; }
 
+ protected:
+  // The page context eligibility API if it has been fetched. Can be nullptr.
+  // This is marked protected so that it can be accessed by the test
+  // implementation of this class.
+  raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
+
  private:
+  struct PageContextEligibilityParams {
+   public:
+    PageContextEligibilityParams(
+        const GURL& main_frame_url,
+        std::vector<optimization_guide::FrameMetadata> frame_metadata);
+    ~PageContextEligibilityParams();
+
+    GURL main_frame_url;
+    std::vector<optimization_guide::FrameMetadata> frame_metadata;
+  };
+
+  // Called when the page context eligibility API is loaded.
+  void OnPageContextEligibilityAPILoaded(
+      optimization_guide::PageContextEligibility* page_context_eligibility);
+
+  // Called when the initial page context eligibility is fetched. This should be
+  // used for the initial check as the APC may not have been received yet. For
+  // subsequent checks, use `OnPageContextEligibilityFetched`.
+  void OnInitialPageContextEligibilityFetched(
+      const SkBitmap& bitmap,
+      const std::vector<gfx::Rect>& all_bounds,
+      std::optional<uint32_t> pdf_current_page,
+      OnPageContextUpdatedCallback callback,
+      bool is_page_context_eligible);
+
   // Begin updating page contextualization by potentially taking a new
   // screenshot.
   void UpdatePageContextualization(std::vector<lens::PageContent> page_contents,
@@ -212,6 +266,15 @@ class LensSearchContextualizationController {
       std::vector<lens::PageContent> page_contents,
       PageContentRetrievedCallback callback,
       std::optional<optimization_guide::AIPageContentResult> apc);
+
+  // Callback for when the page context eligibility is fetched. This should only
+  // be used after the APC has been received. For the initial check before the
+  // APC is received, use `OnInitialPageContextEligibilityFetched`.
+  void OnPageContextEligibilityFetched(
+      std::vector<lens::PageContent> page_contents,
+      PageContentRetrievedCallback callback,
+      std::optional<optimization_guide::AIPageContentResult> result,
+      bool is_page_context_eligible);
 
 #if BUILDFLAG(ENABLE_PDF)
   // Gets the PDF bytes from the IPC call to the PDF renderer if the PDF
@@ -337,6 +400,21 @@ class LensSearchContextualizationController {
 
   // Whether the OCR DOM similarity has been recorded in the current session.
   bool ocr_dom_similarity_recorded_in_session_ = false;
+
+  // Whether the page context eligibility API has been loaded in the current tab
+  // session.
+  bool has_page_context_eligibility_api_loaded_ = false;
+
+  // Stored page context eligibility parameters to be used once the API is
+  // loaded. This is only used if the API is not yet loaded when
+  // IsPageContextEligible() is called and `page_context_eligibility_callback_`
+  // is set.
+  std::optional<PageContextEligibilityParams>
+      pending_context_eligibility_params_;
+
+  // A stored context eligibility callback to be called once the page context
+  // eligibility API is loaded.
+  LensSearchPageContextEligibilityCallback page_context_eligibility_callback_;
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;

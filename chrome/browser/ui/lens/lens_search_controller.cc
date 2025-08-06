@@ -95,14 +95,15 @@ void LensSearchController::Initialize(
 
   lens_contextualization_controller_ =
       CreateLensSearchContextualizationController();
+  // Create the page context eligibility API as soon as possible as it is needed
+  // for every contextualization request.
+  lens_contextualization_controller_->CreatePageContextEligibilityAPI();
 
   lens_overlay_event_handler_ =
       std::make_unique<lens::LensOverlayEventHandler>(this);
 
   lens_session_metrics_logger_ =
       std::make_unique<lens::LensSessionMetricsLogger>();
-
-  CreatePageContextEligibilityAPI();
 }
 
 // static.
@@ -396,16 +397,6 @@ LensSearchController::lens_overlay_event_handler() {
   return lens_overlay_event_handler_.get();
 }
 
-optimization_guide::PageContextEligibility*
-LensSearchController::page_context_eligibility() {
-  CheckInitialized(initialized_);
-  if (page_context_eligibility_) {
-    return page_context_eligibility_;
-  }
-
-  return nullptr;
-}
-
 lens::LensSearchContextualizationController*
 LensSearchController::lens_search_contextualization_controller() {
   CheckInitialized(initialized_);
@@ -467,20 +458,6 @@ LensSearchController::CreateLensSearchboxController() {
 std::unique_ptr<lens::LensSearchContextualizationController>
 LensSearchController::CreateLensSearchContextualizationController() {
   return std::make_unique<lens::LensSearchContextualizationController>(this);
-}
-
-void LensSearchController::CreatePageContextEligibilityAPI() {
-  // Post to a background thread to avoid blocking the set up of the overlay.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&optimization_guide::PageContextEligibility::Get),
-      base::BindOnce(&LensSearchController::OnPageContextEligibilityAPILoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void LensSearchController::OnPageContextEligibilityAPILoaded(
-    optimization_guide::PageContextEligibility* page_context_eligibility) {
-  page_context_eligibility_ = page_context_eligibility;
 }
 
 std::unique_ptr<lens::LensOverlayQueryController>

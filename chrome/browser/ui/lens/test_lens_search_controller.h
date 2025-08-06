@@ -40,6 +40,9 @@ class TestLensSearchController : public LensSearchController {
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller) override;
+
+  std::unique_ptr<lens::LensSearchContextualizationController>
+  CreateLensSearchContextualizationController() override;
 };
 
 }  // namespace lens

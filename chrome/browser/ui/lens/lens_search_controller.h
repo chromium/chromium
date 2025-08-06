@@ -15,7 +15,6 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
@@ -180,21 +179,12 @@ class LensSearchController {
   // Returns the event handler for this instance of the Lens Overlay.
   lens::LensOverlayEventHandler* lens_overlay_event_handler();
 
-  optimization_guide::PageContextEligibility* page_context_eligibility();
-
   // Returns the LensSearchContextualizationController.
   lens::LensSearchContextualizationController*
   lens_search_contextualization_controller();
 
   // Returns the LensSessionMetricsLogger.
   lens::LensSessionMetricsLogger* lens_session_metrics_logger();
-
-  // Testing function for setting the page context eligibility API for this
-  // controller.
-  void set_page_context_eligibility_for_testing(
-      optimization_guide::PageContextEligibility* page_context_eligibility) {
-    page_context_eligibility_ = page_context_eligibility;
-  }
 
   lens::LensPermissionBubbleController*
   get_lens_permission_bubble_controller_for_testing() {
@@ -269,10 +259,6 @@ class LensSearchController {
   // Called when the lens side panel has been hidden.
   void OnSidePanelHidden();
 
-  // Override these methods to be able to track calls made to the page context
-  // eligibility API.
-  virtual void CreatePageContextEligibilityAPI();
-
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
     // This is the default state. No feature is currently active or soon to be
@@ -303,8 +289,6 @@ class LensSearchController {
   State state() { return state_; }
 
  private:
-  void OnPageContextEligibilityAPILoaded(
-      optimization_guide::PageContextEligibility* page_context_eligibility);
 
   // Passes the correct callbacks and dependencies to the protected
   // CreateLensQueryController method.
@@ -426,9 +410,6 @@ class LensSearchController {
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
-
-  // The page context eligibility API if it has been fetched. Can be nullptr.
-  raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;
