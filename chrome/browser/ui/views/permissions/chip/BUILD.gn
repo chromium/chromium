@@ -17,6 +17,8 @@ source_set("chip") {
     "//ui/gfx",
     "//ui/views",
   ]
+
+  deps = [ "//chrome/browser/ui:layout_constants" ]
 }
 
 source_set("impl") {

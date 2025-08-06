@@ -32,6 +32,7 @@ component("views") {
     "//build:branding_buildflags",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ui:layout_constants",
     "//components/keep_alive_registry",
     "//components/lens",
     "//components/lens:buildflags",

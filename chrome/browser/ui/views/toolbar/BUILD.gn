@@ -125,6 +125,7 @@ source_set("toolbar") {
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/bookmarks",

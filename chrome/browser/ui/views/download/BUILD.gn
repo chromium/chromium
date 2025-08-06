@@ -27,6 +27,7 @@ source_set("download") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/hats",
     "//components/constrained_window",
     "//components/safe_browsing/core/common:features",

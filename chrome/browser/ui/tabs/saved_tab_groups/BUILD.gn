@@ -99,6 +99,7 @@ source_set("impl") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",

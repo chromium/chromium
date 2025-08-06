@@ -1021,8 +1021,6 @@ static_library("ui") {
       "focus_tab_after_navigation_helper.h",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
-      "layout_constants.cc",
-      "layout_constants.h",
       "passwords/bubble_controllers/add_username_bubble_controller.cc",
       "passwords/bubble_controllers/add_username_bubble_controller.h",
       "passwords/bubble_controllers/auto_sign_in_bubble_controller.cc",
@@ -1385,6 +1383,7 @@ static_library("ui") {
     # Non-android deps for "ui" target.
     deps += [
       ":browser_tab_strip",
+      ":layout_constants",
       "//base",
       "//chrome/app/vector_icons",
       "//chrome/browser:shell_integration",
@@ -5484,6 +5483,32 @@ static_library("ui_public_dependencies") {
   }
   if (chrome_root_store_cert_management_ui) {
     public_deps += [ "//chrome/browser/resources/certificate_manager:mojom" ]
+  }
+}
+
+source_set("layout_constants") {
+  sources = [
+    "layout_constants.cc",
+    "layout_constants.h",
+  ]
+
+  public_deps = [ "//ui/gfx/geometry" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:chrome_features",
+    "//components/omnibox/common",
+    "//ui/base",
+    "//ui/base:features",
+  ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:features" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
   }
 }
 

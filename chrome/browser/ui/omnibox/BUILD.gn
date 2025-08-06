@@ -87,6 +87,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/extensions/",
       "//chrome/browser/ui/hats",

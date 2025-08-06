@@ -13,4 +13,6 @@ source_set("location_bar") {
     "//ui/base:types",
     "//url",
   ]
+
+  deps = [ "//chrome/browser/ui:layout_constants" ]
 }
