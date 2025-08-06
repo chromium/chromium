@@ -313,6 +313,8 @@ void SafariDataImporter::CompleteImport(
         selected_password_ids,
         base::BindOnce(&SafariDataImporter::OnPasswordImportCompleted,
                        weak_factory_.GetWeakPtr()));
+  } else {
+    client_->OnPasswordsImported(password_manager::ImportResults());
   }
 
   metrics_recorder_.bookmark_metrics().OnImportStarted();
