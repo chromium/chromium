@@ -1013,6 +1013,8 @@ TEST_F(DisplayTest, CompositorFrameWithPresentationToken) {
 }
 
 TEST_F(DisplayTest, BeginFrameThrottling) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(features::kNoCompositorFrameAcks);
   id_allocator_.GenerateId();
   SetUpGpuDisplay(RendererSettings());
   display_->Initialize(client_.get(), manager_.surface_manager());
@@ -1088,6 +1090,8 @@ TEST_F(DisplayTest, BeginFrameThrottling) {
 }
 
 TEST_F(DisplayTest, BeginFrameThrottlingMultipleSurfaces) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(features::kNoCompositorFrameAcks);
   id_allocator_.GenerateId();
   SetUpGpuDisplay(RendererSettings());
   display_->Initialize(client_.get(), manager_.surface_manager());

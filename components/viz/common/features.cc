@@ -442,6 +442,12 @@ BASE_FEATURE(kCrosContentAdjustedRefreshRate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+BASE_FEATURE(kNoCompositorFrameAcks,
+             "NoCompositorFrameAcks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kNumberPendingFramesUntilThrottle{
+    &kNoCompositorFrameAcks, "pending_frames", 1};
+
 int DrawQuadSplitLimit() {
   constexpr int kDefaultDrawQuadSplitLimit = 5;
   constexpr int kMinDrawQuadSplitLimit = 1;

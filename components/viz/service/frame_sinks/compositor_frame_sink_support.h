@@ -364,7 +364,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // Keeps track of CompositorFrames that have been submitted and have not
   // yet received an ACK from their Surface.
-  uint32_t pending_frames_ = 0u;
+  int pending_frames_ = 0;
 
   std::vector<ReturnedResource> surface_returned_resources_;
 

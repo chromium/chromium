@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -964,7 +965,7 @@ SurfaceReference CompositorFrameSinkSupport::MakeTopLevelRootReference(
 }
 
 void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
-  DCHECK_GT(pending_frames_, 0u);
+  DCHECK_GT(pending_frames_, 0);
   pending_frames_--;
 
   if (!client_)
@@ -1379,6 +1380,13 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
     BeginFrameId frame_id,
     base::TimeTicks frame_time,
     base::TimeDelta vsync_interval) {
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    const int pending_frames_limit =
+        features::kNumberPendingFramesUntilThrottle.Get();
+    if (pending_frames_ >= pending_frames_limit) {
+      return RecordShouldSendBeginFrame("PendingAck", false);
+    }
+  }
   // Don't send the same BeginFrameId to a client twice. This could otherwise
   // happen if the client removes and then immediately re-adds a
   // BeginFrameObserver before the next BeginFrame arrives. See

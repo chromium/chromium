@@ -145,6 +145,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAckOnSurfaceActivationWhenInteractive);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kShutdownForFailedChannelCreation);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBatchResourceRelease);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoLateBeginFrames);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoCompositorFrameAcks);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
+    kNumberPendingFramesUntilThrottle;
 
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
 VIZ_COMMON_EXPORT bool IsBackdropFiltersCullingOptimizationEnabled();

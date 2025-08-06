@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -97,11 +98,6 @@ gpu::SyncToken GenTestSyncToken(int id) {
 bool BeginFrameArgsAreEquivalent(const BeginFrameArgs& first,
                                  const BeginFrameArgs& second) {
   return first.frame_id == second.frame_id;
-}
-
-std::string PostTestCaseNameBool(const ::testing::TestParamInfo<bool>& info) {
-  return info.param ? "AckOnSurfaceActivationWhenInteractive"
-                    : "DoNotAckOnSurfaceActivationWhenInteractive";
 }
 
 }  // namespace
@@ -323,15 +319,17 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
 };
 
 class CompositorFrameSinkSupportTest
-    : public testing::WithParamInterface<bool>,
+    : public testing::WithParamInterface<std::tuple<bool, bool>>,
       public CompositorFrameSinkSupportTestBase {
  public:
   CompositorFrameSinkSupportTest();
   ~CompositorFrameSinkSupportTest() override = default;
 
   bool ShouldAckOnSurfaceActivationWhenInteractive() const {
-    return GetParam();
+    return std::get<0>(GetParam());
   }
+
+  bool NoCompositorFrameAcks() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -347,6 +345,11 @@ CompositorFrameSinkSupportTest::CompositorFrameSinkSupportTest() {
     disabled_features.push_back(
         features::kAckOnSurfaceActivationWhenInteractive);
   }
+  if (NoCompositorFrameAcks()) {
+    enabled_features.push_back(features::kNoCompositorFrameAcks);
+  } else {
+    disabled_features.push_back(features::kNoCompositorFrameAcks);
+  }
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
@@ -356,14 +359,16 @@ CompositorFrameSinkSupportTest::CompositorFrameSinkSupportTest() {
 // DidReceiveCompositorFrameAck.
 class AckOnSurfaceActivationWhenInteractiveTest
     : public CompositorFrameSinkSupportTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   AckOnSurfaceActivationWhenInteractiveTest();
   ~AckOnSurfaceActivationWhenInteractiveTest() override = default;
 
   bool ShouldAckOnSurfaceActivationWhenInteractive() const {
-    return GetParam();
+    return std::get<0>(GetParam());
   }
+
+  bool NoCompositorFrameAcks() const { return std::get<1>(GetParam()); }
 
   int num_pending_frames(const CompositorFrameSinkSupport* support) const {
     return support->pending_frames_;
@@ -388,6 +393,11 @@ AckOnSurfaceActivationWhenInteractiveTest::
   } else {
     disabled_features.push_back(
         features::kAckOnSurfaceActivationWhenInteractive);
+  }
+  if (NoCompositorFrameAcks()) {
+    enabled_features.push_back(features::kNoCompositorFrameAcks);
+  } else {
+    disabled_features.push_back(features::kNoCompositorFrameAcks);
   }
 
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1275,6 +1285,9 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
   // BeginFrame is not sent synchronously while processing unsolicited frame.
   EXPECT_EQ(fake_support_client_.begin_frame_count(), 0);
 
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    support_->SendCompositorFrameAck();
+  }
   args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 2);
   begin_frame_source_.TestOnBeginFrame(args);
 
@@ -1857,7 +1870,9 @@ TEST_P(CompositorFrameSinkSupportTest, BeginFrameInterval) {
           // Subsequent frames are not sharing any resources, so the unref
           // process will Ack the frame before activation. If we're always
           // sending ack on activation, this is redundant.
-          if (!sent_frames && !ShouldAckOnSurfaceActivationWhenInteractive()) {
+          if (!sent_frames && (!ShouldAckOnSurfaceActivationWhenInteractive() ||
+                               base::FeatureList::IsEnabled(
+                                   features::kNoCompositorFrameAcks))) {
             support->SendCompositorFrameAck();
           }
           ++sent_frames;
@@ -1912,7 +1927,8 @@ TEST_P(CompositorFrameSinkSupportTest, HandlesSmallErrorInBeginFrameTimes) {
   begin_frame_source.TestOnBeginFrame(CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, 0, sequence_number++, frame_time));
   testing::Mock::VerifyAndClearExpectations(&mock_client);
-  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
+  if (!ShouldAckOnSurfaceActivationWhenInteractive() ||
+      base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     support->SendCompositorFrameAck();
   }
 
@@ -1974,7 +1990,8 @@ TEST_P(CompositorFrameSinkSupportTest,
                               .Build();
   auto token = frame.metadata.frame_token;
   support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
-  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
+  if (!ShouldAckOnSurfaceActivationWhenInteractive() ||
+      base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     support_->SendCompositorFrameAck();
   }
 
@@ -2330,7 +2347,8 @@ TEST_P(CompositorFrameSinkSupportTest,
                               .Build();
   auto token = frame.metadata.frame_token;
   support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
-  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
+  if (!ShouldAckOnSurfaceActivationWhenInteractive() ||
+      base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     support_->SendCompositorFrameAck();
   }
 
@@ -2385,7 +2403,8 @@ TEST_P(CompositorFrameSinkSupportTest,
                               .Build();
   auto token = frame.metadata.frame_token;
   support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
-  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
+  if (!ShouldAckOnSurfaceActivationWhenInteractive() ||
+      base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     support_->SendCompositorFrameAck();
   }
 
@@ -2414,13 +2433,31 @@ TEST_P(CompositorFrameSinkSupportTest,
               Eq(frame_time + base::Milliseconds(2)));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         CompositorFrameSinkSupportTest,
-                         testing::Bool(),
-                         &PostTestCaseNameBool);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CompositorFrameSinkSupportTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](auto& info) {
+      return base::StringPrintf(
+          "%s_%s",
+          std::get<0>(info.param)
+              ? "AckOnSurfaceActivationWhenInteractive"
+              : "DoNotAckOnSurfaceActivationWhenInteractive",
+          std::get<1>(info.param) ? "NoCompositorFrameAck"
+                                  : "CompositorFrameAck");
+    });
 
-INSTANTIATE_TEST_SUITE_P(,
-                         AckOnSurfaceActivationWhenInteractiveTest,
-                         testing::Bool(),
-                         &PostTestCaseNameBool);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AckOnSurfaceActivationWhenInteractiveTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](auto& info) {
+      return base::StringPrintf(
+          "%s_%s",
+          std::get<0>(info.param)
+              ? "AckOnSurfaceActivationWhenInteractive"
+              : "DoNotAckOnSurfaceActivationWhenInteractive",
+          std::get<1>(info.param) ? "NoCompositorFrameAck"
+                                  : "CompositorFrameAck");
+    });
 }  // namespace viz
