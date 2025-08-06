@@ -123,4 +123,7 @@
 // Supports -[CWVWebView allowsLinkPreview].
 #define IOS_WEB_VIEW_SUPPORTS_ALLOWS_LINK_PREVIEW 1
 
+// Support affiliation of passwords.
+#define IOS_WEB_VIEW_SUPPORTS_AFFILIATED_PASSWORDS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
