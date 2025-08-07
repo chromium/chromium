@@ -208,7 +208,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       StackType stack_type,
       std::optional<AdScriptIdentifier>* out_ad_script);
 
-  void DidExecuteScript();
   bool IsKnownAdScript(ExecutionContext*, const String& url);
 
   // Adds the given `url` and its associated `ad_provenance` to the set of known
@@ -228,17 +227,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       const String& script_name,
       int script_id);
 
-  // `script_name` will be empty in the case of a dynamically added script with
-  // no src attribute set. `script_id` won't be set for module scripts in an
-  // errored state or for non-source text modules. `top_level_execution` should
-  // be true if the top-level script is being run, as opposed to a function
-  // being called.
-  void WillExecuteScript(ExecutionContext*,
-                         const v8::Local<v8::Context>& v8_context,
-                         const String& script_name,
-                         int script_id,
-                         bool top_level_execution);
-
   // Retrieves the ancestry chain of a given ad script (inclusive) and and the
   // triggering filterlist rule. See `AdScriptAncestry` for more details on the
   // populated fields.
@@ -246,15 +234,8 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   Member<LocalFrame> local_root_;
 
-  // Each time v8 is started to run a script or function, this records if it was
-  // an ad script. Each time the script or function finishes, it pops the stack.
-  Vector<bool> stack_frame_is_ad_;
-
-  int num_ads_in_stack_ = 0;
-
-  // Indicates the bottom-most ad script on the stack or `std::nullopt` if
-  // there isn't one. A non-null value implies `num_ads_in_stack > 0`.
-  std::optional<AdScriptIdentifier> bottom_most_ad_script_;
+  // The list of ad script ids currently in the stack.
+  Vector<int> ad_scripts_in_stack_;
 
   // Indicates the bottom-most ad script on the async stack or `std::nullopt`
   // if there isn't one.
@@ -281,7 +262,11 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   int running_ad_async_tasks_ = 0;
 
   // The known ad-related script ids.
-  HashSet<int> ad_script_ids_;
+  // TODO(jkarlin): We don't use the debugger id in the
+  // AdScriptIdentifier for the AdTracker itself, it's just for dev-tools. See
+  // if we can remove it completely and just use script ids within the
+  // AdTracker.
+  HashMap<int, AdScriptIdentifier> ad_script_ids_;
 };
 
 template <>

@@ -136,108 +136,79 @@ ExecutionContext* AdTracker::GetCurrentExecutionContext() {
   return context.IsEmpty() ? nullptr : ToExecutionContext(context);
 }
 
-void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
-                                  const v8::Local<v8::Context>& v8_context,
-                                  const String& script_url,
-                                  int script_id,
-                                  bool top_level_execution) {
-  bool is_inline_script =
-      script_url.empty() && script_id != v8::Message::kNoScriptIdInfo;
-
-  String url =
-      is_inline_script ? GenerateFakeUrlFromScriptId(script_id) : script_url;
-
-  bool is_ad = IsKnownAdScript(execution_context, url);
-
-  // On first run of a script we do some additional checks and bookkeeping.
-  if (top_level_execution) {
-    // For inline scripts, this is our opportunity to check the stack to see if
-    // an ad created it since inline scripts are run immediately.
-    std::optional<AdScriptIdentifier> ancestor_ad_script;
-    if (!is_ad && is_inline_script &&
-        IsAdScriptInStackHelper(StackType::kBottomAndTop,
-                                &ancestor_ad_script)) {
-      std::unique_ptr<AdProvenance> ad_provenance;
-      if (ancestor_ad_script.has_value()) {
-        ad_provenance =
-            std::make_unique<AdAncestorProvenance>(*ancestor_ad_script);
-      } else {
-        // This can happen if the script originates from an ad context without
-        // further traceable script (crbug.com/421202278).
-        ad_provenance = std::make_unique<NoAdProvenance>();
-      }
-
-      AppendToKnownAdScripts(*execution_context, url, std::move(ad_provenance));
-      is_ad = true;
-    }
-
-    // Since this is our first time running the script, this is the first we've
-    // seen of its script id. Record the id so that we can refer to the script
-    // by id rather than string.
-    if (is_ad && !url.empty() &&
-        !IsKnownAdExecutionContext(execution_context)) {
-      OnScriptIdAvailableForKnownAdScript(execution_context, v8_context, url,
-                                          script_id);
-    }
-  }
-
-  stack_frame_is_ad_.push_back(is_ad);
-  if (is_ad) {
-    if (num_ads_in_stack_ == 0) {
-      // Stash the first ad script on the stack.
-      bottom_most_ad_script_ = AdScriptIdentifier(
-          GetDebuggerIdForContext(v8_context), script_id, url);
-    }
-    num_ads_in_stack_ += 1;
-  }
-}
-
-void AdTracker::DidExecuteScript() {
-  if (stack_frame_is_ad_.back()) {
-    DCHECK_LT(0, num_ads_in_stack_);
-    num_ads_in_stack_ -= 1;
-    if (num_ads_in_stack_ == 0)
-      bottom_most_ad_script_.reset();
-  }
-  stack_frame_is_ad_.pop_back();
-}
-
 void AdTracker::Will(const probe::ExecuteScript& probe) {
-  WillExecuteScript(probe.context, probe.v8_context, probe.script_url,
-                    probe.script_id, /*top_level_execution=*/true);
+  if (probe.script_id <= 0) {
+    return;
+  }
+
+  // We're executing a script's top-level. This is our first time seeing the
+  // script id for the given url.
+  bool is_inline_script = probe.script_url.empty();
+
+  String url = is_inline_script ? GenerateFakeUrlFromScriptId(probe.script_id)
+                                : probe.script_url;
+
+  bool is_ad = IsKnownAdScript(probe.context, url);
+
+  // For inline scripts, this is our opportunity to check the stack to see if
+  // an ad created it since inline scripts are run immediately.
+  std::optional<AdScriptIdentifier> ancestor_ad_script;
+  if (!is_ad && is_inline_script &&
+      IsAdScriptInStackHelper(StackType::kBottomAndTop, &ancestor_ad_script)) {
+    std::unique_ptr<AdProvenance> ad_provenance;
+    if (ancestor_ad_script.has_value()) {
+      ad_provenance =
+          std::make_unique<AdAncestorProvenance>(*ancestor_ad_script);
+    } else {
+      // This can happen if the script originates from an ad context without
+      // further traceable script (crbug.com/421202278).
+      ad_provenance = std::make_unique<NoAdProvenance>();
+    }
+    AppendToKnownAdScripts(*probe.context, url, std::move(ad_provenance));
+    is_ad = true;
+  }
+
+  // Since this is our first time running the script, this is the first we've
+  // seen of its script id. Record the id so that we can refer to the script
+  // by id rather than string.
+  if (is_ad && !IsKnownAdExecutionContext(probe.context)) {
+    OnScriptIdAvailableForKnownAdScript(probe.context, probe.v8_context, url,
+                                        probe.script_id);
+  }
+
+  if (is_ad) {
+    ad_scripts_in_stack_.push_back(probe.script_id);
+  }
 }
 
 void AdTracker::Did(const probe::ExecuteScript& probe) {
-  DidExecuteScript();
+  if (!ad_scripts_in_stack_.empty() &&
+      ad_scripts_in_stack_.back() == probe.script_id) {
+    ad_scripts_in_stack_.pop_back();
+  }
 }
 
 void AdTracker::Will(const probe::CallFunction& probe) {
   // Do not process nested microtasks as that might potentially lead to a
   // slowdown of custom element callbacks.
-  if (probe.depth)
+  if (probe.depth || probe.function->ScriptId() <= 0) {
     return;
-
-  v8::Local<v8::Value> resource_name =
-      probe.function->GetScriptOrigin().ResourceName();
-  String script_url;
-  if (!resource_name.IsEmpty()) {
-    v8::Isolate* isolate = ToIsolate(local_root_);
-    v8::MaybeLocal<v8::String> resource_name_string =
-        resource_name->ToString(isolate->GetCurrentContext());
-    // Rarely, ToString() can return an empty result, even if |resource_name|
-    // isn't empty (crbug.com/1086832).
-    if (!resource_name_string.IsEmpty())
-      script_url = ToCoreString(isolate, resource_name_string.ToLocalChecked());
   }
-  WillExecuteScript(probe.context, probe.v8_context, script_url,
-                    probe.function->ScriptId(), /*top_level_execution=*/false);
+
+  auto it = ad_script_ids_.find(probe.function->ScriptId());
+  if (it != ad_script_ids_.end()) {
+    ad_scripts_in_stack_.push_back(probe.function->ScriptId());
+  }
 }
 
 void AdTracker::Did(const probe::CallFunction& probe) {
-  if (probe.depth)
+  if (probe.depth) {
     return;
-
-  DidExecuteScript();
+  }
+  if (!ad_scripts_in_stack_.empty() &&
+      ad_scripts_in_stack_.back() == probe.function->ScriptId()) {
+    ad_scripts_in_stack_.pop_back();
+  }
 }
 
 bool AdTracker::CalculateIfAdSubresource(
@@ -286,7 +257,6 @@ bool AdTracker::CalculateIfAdSubresource(
       DCHECK(rule.IsValid());
       ad_provenance = std::make_unique<AdRulesetProvenance>(rule);
     }
-
     AppendToKnownAdScripts(*execution_context, request_url.GetString(),
                            std::move(ad_provenance));
   }
@@ -348,16 +318,10 @@ bool AdTracker::IsAdScriptInStackHelper(
     std::optional<AdScriptIdentifier>* out_ad_script) {
   // First check if async tasks are running, as `bottom_most_async_ad_script_`
   // is more likely to be what the caller is looking for than
-  // `bottom_most_ad_script_`.
+  // the bottom `ad_script_in_stack_`.
   if (running_ad_async_tasks_ > 0) {
     if (out_ad_script)
       *out_ad_script = bottom_most_async_ad_script_;
-    return true;
-  }
-
-  if (num_ads_in_stack_ > 0) {
-    if (out_ad_script)
-      *out_ad_script = bottom_most_ad_script_;
     return true;
   }
 
@@ -376,6 +340,18 @@ bool AdTracker::IsAdScriptInStackHelper(
         if (LocalFrame* frame = window->GetFrame()) {
           *out_ad_script = frame->CreationAdScript();
         }
+      }
+    }
+    return true;
+  }
+
+  // We check this after checking for an ad context because we don't keep track
+  // of script ids for ad frames.
+  if (!ad_scripts_in_stack_.empty()) {
+    if (out_ad_script) {
+      auto it = ad_script_ids_.find(ad_scripts_in_stack_[0]);
+      if (it != ad_script_ids_.end()) {
+        *out_ad_script = it->value;
       }
     }
     return true;
@@ -403,19 +379,12 @@ bool AdTracker::IsAdScriptInStackHelper(
     return false;
   }
 
-  bool is_ad_script = ad_script_ids_.Contains(top_script_id);
-  if (is_ad_script && out_ad_script) {
-    v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-
-    // We don't know the script name/url here, but that's okay. `GetAncestry()`
-    // will look up the ancestry node by script_id and use the
-    // AdScriptIdentifier from that.
-    *out_ad_script = AdScriptIdentifier(
-        GetDebuggerIdForContext(isolate->GetCurrentContext()), top_script_id,
-        "");
+  auto script_it = ad_script_ids_.find(top_script_id);
+  if (script_it != ad_script_ids_.end() && out_ad_script) {
+    *out_ad_script = script_it->value;
   }
 
-  return is_ad_script;
+  return script_it != ad_script_ids_.end();
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
@@ -463,16 +432,14 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
     const String& script_name,
     int script_id) {
   DCHECK(!script_name.empty());
+  DCHECK_NE(v8::Message::kNoScriptIdInfo, script_id);
   auto it = context_known_ad_scripts_.find(execution_context);
   DCHECK(it != context_known_ad_scripts_.end());
 
-  // Skip linking if the current script has no script ID. This avoids
-  // introducing cycles within the `ancestor_ad_scripts_` graph.
-  if (script_id == v8::Message::kNoScriptIdInfo) {
-    return;
-  }
+  AdScriptIdentifier current_ad_script = AdScriptIdentifier(
+      GetDebuggerIdForContext(v8_context), script_id, script_name);
 
-  ad_script_ids_.insert(script_id);
+  ad_script_ids_.insert(script_id, current_ad_script);
 
   const HashMap<String, std::unique_ptr<AdProvenance>>&
       known_ad_scripts_and_provenance = it->value;
@@ -489,9 +456,6 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
   // URL, and are intended to share the same provenance. While this approach
   // might not perfectly mirror the script loading ancestry in all complex
   // scenarios, it's considered sufficient for our tracking purposes.
-  AdScriptIdentifier current_ad_script = AdScriptIdentifier(
-      GetDebuggerIdForContext(v8_context), script_id, script_name);
-
   ad_script_provenances_.insert(current_ad_script, ad_provenance->Clone());
 }
 
