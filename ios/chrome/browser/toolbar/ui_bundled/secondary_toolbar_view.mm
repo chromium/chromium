@@ -341,18 +341,12 @@ UIView* SecondaryToolbarLocationBarContainerView(
       _diamondToolbarTopConstraints = @[
         [_progressBar.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
         [self.separator.topAnchor constraintEqualToAnchor:self.bottomAnchor],
-        [self.locationBarContainer.bottomAnchor
-            constraintEqualToAnchor:self.bottomAnchor
-                           constant:-kBottomAdaptiveLocationBarBottomMargin],
         [self.buttonStackView.centerYAnchor
             constraintEqualToAnchor:self.locationBarContainer.centerYAnchor],
       ];
       _diamondToolbarBottomConstraints = @[
         [_progressBar.topAnchor constraintEqualToAnchor:self.topAnchor],
         [self.separator.bottomAnchor constraintEqualToAnchor:self.topAnchor],
-        [self.locationBarContainer.topAnchor
-            constraintEqualToAnchor:self.topAnchor
-                           constant:kBottomAdaptiveLocationBarBottomMargin],
         [self.buttonStackView.centerYAnchor
             constraintEqualToAnchor:self.locationBarContainer.centerYAnchor],
       ];
@@ -450,15 +444,22 @@ UIView* SecondaryToolbarLocationBarContainerView(
 - (void)setUsedAsPrimaryToolbar:(BOOL)usedAsPrimaryToolbar {
   CHECK(IsDiamondPrototypeEnabled());
   _usedAsPrimaryToolbar = usedAsPrimaryToolbar;
+  CGFloat constraintConstant = self.locationBarTopConstraint.constant;
+  self.locationBarTopConstraint.active = NO;
   if (usedAsPrimaryToolbar) {
-    self.locationBarTopConstraint.active = NO;
+    self.locationBarTopConstraint = [self.bottomAnchor
+        constraintEqualToAnchor:self.locationBarContainer.bottomAnchor
+                       constant:constraintConstant];
     [NSLayoutConstraint deactivateConstraints:_diamondToolbarBottomConstraints];
     [NSLayoutConstraint activateConstraints:_diamondToolbarTopConstraints];
   } else {
-    self.locationBarTopConstraint.active = YES;
+    self.locationBarTopConstraint = [self.locationBarContainer.topAnchor
+        constraintEqualToAnchor:self.topAnchor
+                       constant:constraintConstant];
     [NSLayoutConstraint deactivateConstraints:_diamondToolbarTopConstraints];
     [NSLayoutConstraint activateConstraints:_diamondToolbarBottomConstraints];
   }
+  self.locationBarTopConstraint.active = YES;
 }
 
 #pragma mark - AdaptiveToolbarView
@@ -520,6 +521,10 @@ UIView* SecondaryToolbarLocationBarContainerView(
   // Reset `buttonStackView` top constraints.
   _locationBarBottomConstraint.active = NO;
   _buttonStackViewNoOmniboxConstraint.active = NO;
+
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
 
   // Set the correct constraint for `buttonStackView.topAnchor`.
   if (self.locationBarView) {
