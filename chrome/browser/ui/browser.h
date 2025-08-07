@@ -265,9 +265,6 @@ class Browser : public TabStripModelObserver,
     // platform supports it.
     bool initial_visible_on_all_workspaces_state = false;
 
-    // Whether to enable the tab group feature in the tab strip.
-    bool are_tab_groups_enabled = true;
-
     ui::mojom::WindowShowState initial_show_state =
         ui::mojom::WindowShowState::kDefault;
 

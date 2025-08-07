@@ -512,7 +512,6 @@ Browser::CreateParams Browser::CreateParams::CreateForAppBase(
   params.app_name = app_name;
   params.trusted_source = trusted_source;
   params.initial_bounds = window_bounds;
-  params.are_tab_groups_enabled = false;
 
   return params;
 }
@@ -614,8 +613,10 @@ Browser::Browser(const CreateParams& params)
       tab_strip_model_(std::make_unique<TabStripModel>(
           tab_strip_model_delegate_.get(),
           params.profile,
-          params.are_tab_groups_enabled ? TabGroupModelFactory::GetInstance()
-                                        : nullptr)),
+          // Tab groups are disabled for app browsers.
+          (type_ == TYPE_APP || type_ == TYPE_APP_POPUP)
+              ? nullptr
+              : TabGroupModelFactory::GetInstance())),
       app_name_(params.app_name),
       is_trusted_source_(params.trusted_source),
       session_id_(SessionID::NewUnique()),

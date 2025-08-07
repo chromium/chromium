@@ -185,10 +185,11 @@ TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
   // Create a new window that doesnt support groups and add a few tabs.
   auto window2 = std::make_unique<TestBrowserWindow>();
 
-  Browser::CreateParams params(profile(), /* user_gesture */ true);
-  params.type = Browser::TYPE_NORMAL;
+  // App windows don't allow tab groups.
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      "some app", /*trusted_source=*/false, gfx::Rect(), profile(),
+      /*user_gesture=*/true);
   params.window = window2.get();
-  params.are_tab_groups_enabled = false;
 
   // TestBrowserWindowOwner handles its own lifetime, and also cleans up
   // |window2|.
