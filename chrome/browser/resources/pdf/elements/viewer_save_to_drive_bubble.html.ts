@@ -12,12 +12,35 @@ export function getHtml(this: ViewerSaveToDriveBubbleElement) {
   <dialog id="dialog" @close="${this.onDialogClose_}"
       @focusout="${this.onFocusout_}">
     <div id="header">
-      <h2>Save to drive dialog ${this.fileName}</h2>
+      <h2>${this.dialogTitle_}</h2>
       <cr-icon-button id="close" iron-icon="cr:close"
           aria-label="$i18n{propertiesDialogClose}"
           title="$i18n{propertiesDialogClose}"
           @click="${this.onCloseClick_}">
       </cr-icon-button>
+    </div>
+    <div id="description" .innerHTML="${this.description_}"></div>
+    <div id="file-content">
+      <cr-icon icon="pdf:pdf-icon" id="pdf-icon"></cr-icon>
+      <div id="filename-content">
+        <div id="filename">${this.fileName}</div>
+        <div id="file-metadata">${this.fileMetadata_}</div>
+      </div>
+      ${this.isUploading_() ? html`
+        <cr-icon-button id="cancel-upload-button"
+            iron-icon="pdf:cancel-unfill"
+            aria-label="$i18n{saveToDriveDialogCancelUploadButtonLabel}"
+            title="$i18n{saveToDriveDialogCancelUploadButtonLabel}">
+        </cr-icon-button>
+      ` : ''}
+    </div>
+    <div id="footer">
+      ${this.isUploading_() ? html`
+        <cr-progress
+            .max="${this.bytesToTransfer}"
+            .value="${this.bytesTransferred}">
+        </cr-progress>
+      ` : ''}
     </div>
   </dialog>
 <!--_html_template_end_-->`;

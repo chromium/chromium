@@ -43,6 +43,9 @@ import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './cons
 import {AnnotationMode} from './constants.js';
 // </if>
 import {FittingType, FormFieldFocusType} from './constants.js';
+// <if expr="enable_pdf_save_to_drive">
+import {SaveToDriveState} from './constants.js';
+// </if> enable_pdf_save_to_drive
 import type {MessageData} from './controller.js';
 import {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
@@ -1391,6 +1394,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.shadowRoot.querySelector<ViewerSaveToDriveBubbleElement>(
             'viewer-save-to-drive-bubble');
     assert(bubble);
+    bubble.state = SaveToDriveState.UPLOADING;
     bubble.showAt(this.$.toolbar.getSaveToDriveBubbleAnchor());
   }
   // </if> enable_pdf_save_to_drive

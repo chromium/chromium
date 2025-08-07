@@ -161,3 +161,15 @@ export type ExtendedKeyEvent = KeyboardEvent&{
   fromScriptingAPI?: boolean,
   fromPlugin?: boolean,
 };
+
+// <if expr="enable_pdf_save_to_drive">
+export enum SaveToDriveState {
+  UNINITIALIZED = 'uninitialized',
+  UPLOADING = 'uploading',
+  SUCCESS = 'success',
+  CONNECTION_ERROR = 'connection-error',
+  STORAGE_FULL_ERROR = 'storage-full-error',
+  SESSION_TIMEOUT_ERROR = 'session-timeout-error',
+  UNKNOWN_ERROR = 'unknown-error',
+}
+// </if>

@@ -5,6 +5,7 @@
 import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 import type {ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {SaveToDriveState} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createBubbleElement(): ViewerSaveToDriveBubbleElement {
@@ -121,6 +122,24 @@ const tests = [
     chrome.test.assertEq(
         `${window.innerWidth - anchorLeftRtl - dialogWidth}px`,
         element.$.dialog.style.right);
+
+    chrome.test.succeed();
+  },
+
+  async function testUploadingState() {
+    const element = createBubbleElement();
+
+    element.state = SaveToDriveState.UPLOADING;
+    element.bytesTransferred = 100;
+    element.bytesToTransfer = 200;
+    await microtasksFinished();
+
+    const progressBar = element.shadowRoot.querySelector('cr-progress');
+    chrome.test.assertTrue(!!progressBar);
+    chrome.test.assertEq(100, progressBar.value);
+    chrome.test.assertEq(200, progressBar.max);
+    chrome.test.assertTrue(
+        !!element.shadowRoot.querySelector('#cancel-upload-button'));
 
     chrome.test.succeed();
   },

@@ -27,6 +27,10 @@ dialog {
   z-index: 999;
 }
 
+a {
+  color: var(--cr-fallback-color-primary);
+}
+
 @media (forced-colors: active) {
   dialog {
     border: solid 1px Highlight;
@@ -37,10 +41,75 @@ dialog {
   display: flex;
   min-height: 24px;
   gap: 8px;
+  padding-bottom: 8px;
 }
 
 h2 {
   flex: 1;
   font-size: 16px;
   font-weight: 500;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+#description {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 13px;
+}
+
+cr-icon-button {
+  color: var(--cr-fallback-color-on-surface-subtle);
+}
+
+#file-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#filename-content {
+  display: flex;
+  flex-direction: column;
+  margin-inline-end: auto;
+  line-height: 1.5;
+  overflow: hidden;
+  white-space: nowrap;
+  justify-content: center;
+}
+
+#pdf-icon {
+  width: 20px;
+  height: 20px;
+  fill: var(--google-red-500);
+
+  @media (prefers-color-scheme: dark) {
+    fill: var(--google-red-300);
+  }
+}
+
+#filename {
+  font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+#file-metadata {
+  color: var(--cr-fallback-color-on-surface-subtle);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+cr-progress {
+  width: 100%;
+  --cr-progress-active-color: var(--cr-fallback-color-primary);
+  --cr-progress-container-color: var(--cr-fallback-color-neutral-outline);
+}
+
+#footer:empty {
+  padding-top: 12px;
 }
