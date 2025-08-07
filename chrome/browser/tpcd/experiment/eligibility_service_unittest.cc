@@ -24,7 +24,6 @@
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "chrome/browser/tpcd/experiment/mock_experiment_manager.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -54,8 +53,7 @@ constexpr char kReasonForEligibilityStoredInPrefsHistogram[] =
 
 class EligibilityServiceTestBase : public testing::Test {
  public:
-  EligibilityServiceTestBase()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  EligibilityServiceTestBase() = default;
 
   void SetUp() override {
     experiment_manager_ = std::make_unique<MockExperimentManager>();
@@ -79,7 +77,6 @@ class EligibilityServiceTestBase : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment browser_task_environment_;
-  ScopedTestingLocalState local_state_;
   TestingProfile profile_;
   std::unique_ptr<MockExperimentManager> experiment_manager_;
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;

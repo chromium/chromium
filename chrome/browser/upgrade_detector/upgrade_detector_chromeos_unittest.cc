@@ -20,11 +20,11 @@
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "chrome/browser/upgrade_detector/version_history_client.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/network_time/network_time_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -93,16 +93,16 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
  protected:
   UpgradeDetectorChromeosTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_local_state_(TestingBrowserProcess::GetGlobal()),
         env_(base::Environment::Create()) {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         url_loader_factory_.GetSafeWeakWrapper());
     // Disable the detector's check to see if autoupdates are inabled.
     // Without this, tests put the detector into an invalid state by detecting
     // upgrades before the detection task completes.
-    scoped_local_state_.Get()->SetUserPref(prefs::kAttemptedToEnableAutoupdate,
-                                           std::make_unique<base::Value>(true));
-    scoped_local_state_.Get()->SetUserPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+        prefs::kAttemptedToEnableAutoupdate,
+        std::make_unique<base::Value>(true));
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
         network_time::prefs::kNetworkTimeQueriesEnabled, base::Value(false));
 
     fake_update_engine_client_ =
@@ -174,7 +174,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     constexpr int kChromeMenuOnly = 0;     // Disabled.
     constexpr int kRecommendedBubble = 1;  // Enabled.
 
-    scoped_local_state_.Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         prefs::kRelaunchNotification,
         std::make_unique<base::Value>(enabled ? kRecommendedBubble
                                               : kChromeMenuOnly));
@@ -184,13 +184,16 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   // |value|.
   void SetNotificationPeriodPref(base::TimeDelta value) {
     if (value.is_zero()) {
-      scoped_local_state_.Get()->RemoveManagedPref(
-          prefs::kRelaunchNotificationPeriod);
+      TestingBrowserProcess::GetGlobal()
+          ->GetTestingLocalState()
+          ->RemoveManagedPref(prefs::kRelaunchNotificationPeriod);
     } else {
-      scoped_local_state_.Get()->SetManagedPref(
-          prefs::kRelaunchNotificationPeriod,
-          std::make_unique<base::Value>(
-              base::saturated_cast<int>(value.InMilliseconds())));
+      TestingBrowserProcess::GetGlobal()
+          ->GetTestingLocalState()
+          ->SetManagedPref(
+              prefs::kRelaunchNotificationPeriod,
+              std::make_unique<base::Value>(
+                  base::saturated_cast<int>(value.InMilliseconds())));
     }
   }
 
@@ -198,13 +201,16 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   // |value|.
   void SetHeadsUpPeriodPref(base::TimeDelta value) {
     if (value.is_zero()) {
-      scoped_local_state_.Get()->RemoveManagedPref(
-          prefs::kRelaunchHeadsUpPeriod);
+      TestingBrowserProcess::GetGlobal()
+          ->GetTestingLocalState()
+          ->RemoveManagedPref(prefs::kRelaunchHeadsUpPeriod);
     } else {
-      scoped_local_state_.Get()->SetManagedPref(
-          prefs::kRelaunchHeadsUpPeriod,
-          std::make_unique<base::Value>(
-              base::saturated_cast<int>(value.InMilliseconds())));
+      TestingBrowserProcess::GetGlobal()
+          ->GetTestingLocalState()
+          ->SetManagedPref(
+              prefs::kRelaunchHeadsUpPeriod,
+              std::make_unique<base::Value>(
+                  base::saturated_cast<int>(value.InMilliseconds())));
     }
   }
 
@@ -222,13 +228,13 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     base::Value::Dict value;
     value.Set("entries", std::move(entries));
 
-    scoped_local_state_.Get()->SetManagedPref(prefs::kRelaunchWindow,
-                                              base::Value(std::move(value)));
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+        prefs::kRelaunchWindow, base::Value(std::move(value)));
   }
 
   // Sets the browser.relaunch_fast_if_outdated preference in Local State.
   void SetRelaunchFastIfOutdated(int days) {
-    scoped_local_state_.Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         prefs::kRelaunchFastIfOutdated, base::Value(days));
   }
 
@@ -239,7 +245,6 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_local_state_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<base::Environment> env_;
   std::optional<std::string> original_tz_;

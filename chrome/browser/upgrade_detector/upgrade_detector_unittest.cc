@@ -17,8 +17,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -48,8 +49,7 @@ class TestUpgradeDetector : public UpgradeDetector {
 class UpgradeDetectorTest : public ::testing::Test {
  protected:
   UpgradeDetectorTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   const base::Clock* GetMockClock() { return task_environment_.GetMockClock(); }
 
@@ -102,8 +102,8 @@ class UpgradeDetectorTest : public ::testing::Test {
     base::Value::Dict value;
     value.Set("entries", std::move(entries));
 
-    scoped_local_state_.Get()->SetManagedPref(prefs::kRelaunchWindow,
-                                              base::Value(std::move(value)));
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+        prefs::kRelaunchWindow, base::Value(std::move(value)));
   }
 
   UpgradeDetector::RelaunchWindow CreateRelaunchWindow(int hour,
@@ -115,7 +115,6 @@ class UpgradeDetectorTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_local_state_;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<base::Environment> env_;
   std::optional<std::string> original_tz_;

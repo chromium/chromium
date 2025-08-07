@@ -22,9 +22,9 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
@@ -49,8 +49,8 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
   ~IwaCacheClientTest() override = default;
 
   void SetUp() override {
-    user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
+    user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
+        TestingBrowserProcess::GetGlobal()->local_state()));
 
     switch (GetSessionType()) {
       case SessionType::kIwaKiosk:
@@ -75,7 +75,6 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
   SessionType GetSessionType() { return GetParam(); }
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   user_manager::ScopedUserManager user_manager_;
 
   // This is set only for MGS session.

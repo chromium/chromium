@@ -52,9 +52,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -216,8 +216,7 @@ void SetWebAppInstallForceListPref(Profile* profile, std::string_view pref) {
 
 class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
  public:
-  WebAppPolicyManagerTestBase()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  WebAppPolicyManagerTestBase() = default;
   WebAppPolicyManagerTestBase(const WebAppPolicyManagerTestBase&) = delete;
   WebAppPolicyManagerTestBase& operator=(const WebAppPolicyManagerTestBase&) =
       delete;
@@ -359,7 +358,6 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
         provider_->web_contents_manager());
   }
 
-  ScopedTestingLocalState testing_local_state_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 
  private:
@@ -1104,7 +1102,7 @@ TEST_F(WebAppPolicyManagerDisableListTest, DisableSystemWebApps) {
   EXPECT_TRUE(disabled_apps.empty());
 
   // Add supported system web apps to system features disable list policy.
-  testing_local_state_.Get()->SetUserPref(
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
       base::Value::List()
           .Append(static_cast<int>(policy::SystemFeature::kCamera))
@@ -1181,7 +1179,7 @@ TEST_F(WebAppPolicyManagerWithGraduationTest,
   auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_TRUE(disabled_apps.empty());
 
-  testing_local_state_.Get()->SetUserPref(
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
       base::Value::List()
           .Append(static_cast<int>(policy::SystemFeature::kCamera))
@@ -1201,7 +1199,7 @@ TEST_F(WebAppPolicyManagerWithGraduationTest, GraduationDisabledWhenBlocked) {
   EXPECT_TRUE(disabled_apps.empty());
 
   // Add supported system web apps to system features disable list policy.
-  testing_local_state_.Get()->SetUserPref(
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
       base::Value::List()
           .Append(static_cast<int>(policy::SystemFeature::kCamera))
