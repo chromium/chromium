@@ -12,6 +12,11 @@ if (enable_js_protobuf) {
   import("//third_party/closure_compiler/compile_js.gni")
 }
 
+proto_library("any_proto") {
+  sources = [ "src/google/protobuf/any.proto" ]
+  cc_generator_options = "lite"
+}
+
 config("protobuf_config") {
   include_dirs = [ "src" ]
   defines = [ "GOOGLE_PROTOBUF_NO_RTTI" ]
