@@ -589,22 +589,21 @@ class GraphBuilderTflite final {
       std::optional<OperandId> state_operand_id,
       base::span<const int32_t> state_dimensions);
 
-  // Reshape hidden and cell state, concat the reshaped tensor if the input
-  // tensor of concat is provided.
-  TensorIndex ReshapeHiddenAndCellState(
+  // Serialize a sub graph (reshape appending concat operation) for gru /lstm.
+  TensorIndex SerializeSubGraphReshapeConcat(
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
       base::span<const int32_t> new_shape,
       std::optional<TensorIndex> concat_input_tensor_index,
-      base::span<const int32_t> concat_output_shape);
+      base::span<const int32_t> concat_output_shape,
+      bool backward = false);
 
   // Serialize a sub graph (slice appending squeeze operation) for gru.
   base::expected<TensorIndex, std::string> SerializeSubGraphSliceSqueeze(
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
       base::span<const int32_t> slice_starts,
-      base::span<const int32_t> slice_sizes,
-      int32_t squeeze_axis);
+      base::span<const int32_t> slice_sizes);
 
   // Serialize functions for members of the mojom::Operation union. Keep these
   // functions in the same order as in webnn_graph.mojom.
