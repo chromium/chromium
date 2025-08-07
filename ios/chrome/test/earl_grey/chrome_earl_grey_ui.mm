@@ -71,6 +71,12 @@ id<GREYAction> PageSheetScrollDown() {
   // expand.
   CGFloat menu_scroll_displacement = 500;
 
+  // On iPad we do not need the page sheet to expand to full screen and the
+  // current large size may miss items in the middle of the page menu.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    menu_scroll_displacement = 250;
+  }
+
   // But for very small devices (like the SE), this is too big.
   UIWindow* currentWindow = [ChromeEarlGreyAppInterface keyWindow];
   if (currentWindow.rootViewController.view.frame.size.height < 600) {

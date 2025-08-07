@@ -145,11 +145,6 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 // Tests that the user can show / hide Reader Mode from the tools menu
 // entrypoint on an eligible web page.
 - (void)testToggleReaderModeInToolsMenuForDistillablePage {
-  // TODO(crbug.com/435671883): Support Reading mode interface on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Reading mode interface fails on iPad");
-  }
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
