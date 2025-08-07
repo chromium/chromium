@@ -229,6 +229,9 @@ extern const base::FeatureParam<int>
 // that are associated with local tabs.
 extern const base::FeatureParam<bool>
     kNtpMostRelevantTabResumptionModuleFilterLocalTabsParam;
+// Parameter determining the time range of events.
+extern const base::FeatureParam<base::TimeDelta>
+    kNtpTabGroupsModuleWindowEndDeltaParam;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

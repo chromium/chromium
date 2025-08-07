@@ -14,7 +14,7 @@ import './icon_container.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit} from '../../../i18n_setup.js';
-import type {TabGroup} from '../../../tab_groups.mojom-webui.js';
+import type {PageHandlerRemote, TabGroup} from '../../../tab_groups.mojom-webui.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem} from '../module_header.js';
 
@@ -53,14 +53,22 @@ export class ModuleElement extends ModuleElementBase {
   accessor tabGroups: TabGroup[] = [];
   accessor showInfoDialog: boolean = false;
 
+  private handler_: PageHandlerRemote;
+
+  constructor() {
+    super();
+    this.handler_ = TabGroupsProxyImpl.getInstance().handler;
+  }
+
   protected getMenuItemGroups_(): MenuItem[][] {
     return [
       [
         {
           action: 'dismiss',
-          icon: 'modules:thumb_down',
+          icon: 'modules:visibility_off',
           text: this.i18nRecursive(
-              '', 'modulesDismissButtonText', 'modulesTabGroupsTitle'),
+              '', 'modulesDismissForHoursButtonText',
+              'tabGroupsModuleDismissHours'),
         },
         {
           action: 'disable',
@@ -96,6 +104,20 @@ export class ModuleElement extends ModuleElementBase {
     return objects.map(obj => obj.url);
   }
 
+  protected onDisableButtonClick_() {
+    this.fire('disable-module', {
+      message: this.i18n('modulesTabGroupsDisableToastMessage'),
+    });
+  }
+
+  protected onDismissButtonClick_() {
+    this.handler_.dismissModule();
+    this.fire('dismiss-module-instance', {
+      message: this.i18n('modulesTabGroupsDismissToastMessage'),
+      restoreCallback: () => this.handler_.restoreModule(),
+    });
+  }
+
   protected onInfoButtonClick_() {
     this.showInfoDialog = true;
   }
@@ -113,10 +135,13 @@ async function createElement(): Promise<ModuleElement|null> {
 
   const element = new ModuleElement();
 
-  if (tabGroups && tabGroups.length > 0) {
-    element.tabGroups = tabGroups;
+  if (!tabGroups) {
+    // Still within the dismissal time window--skip showing either tab groups or
+    // zero-state cards.
+    return null;
   }
 
+  element.tabGroups = tabGroups;
   return element;
 }
 

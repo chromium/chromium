@@ -288,6 +288,7 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
+#include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups_page_handler.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/promos/promos_utils.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/screen_ai/pref_names.h"
@@ -2106,6 +2107,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   signin::RegisterProfilePrefs(registry);
   StartupBrowserCreator::RegisterProfilePrefs(registry);
   MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(registry);
+  TabGroupsPageHandler::RegisterProfilePrefs(registry);
   tab_groups::saved_tab_groups::prefs::RegisterProfilePrefs(registry);
   tab_organization_prefs::RegisterProfilePrefs(registry);
   tab_search_prefs::RegisterProfilePrefs(registry);

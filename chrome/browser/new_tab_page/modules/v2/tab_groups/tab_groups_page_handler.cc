@@ -7,10 +7,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace {
+
+const char kTabGroupsLastDismissedTimePrefName[] =
+    "NewTabPage.TabGroups.LastDimissedTime";
 
 ntp::tab_groups::mojom::TabGroupPtr MakeTabGroup(
     const char* title,
@@ -28,20 +34,36 @@ ntp::tab_groups::mojom::TabGroupPtr MakeTabGroup(
 
 }  // namespace
 
+// static
+void TabGroupsPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kTabGroupsLastDismissedTimePrefName, base::Time());
+}
+
 TabGroupsPageHandler::TabGroupsPageHandler(
     mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>
         pending_page_handler,
     content::WebContents* web_contents)
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      web_contents_(web_contents),
+      pref_service_(profile_->GetPrefs()),
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
-  DCHECK(web_contents_);
 }
 
 TabGroupsPageHandler::~TabGroupsPageHandler() = default;
 
 void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         std::nullopt);
+
+  base::Time dismiss_time =
+      pref_service_->GetTime(kTabGroupsLastDismissedTimePrefName);
+  if (dismiss_time != base::Time() &&
+      base::Time::Now() - dismiss_time <
+          ntp_features::kNtpTabGroupsModuleWindowEndDeltaParam.Get()) {
+    // Callback wrapper will be invoked with std::nullopt on destruction.
+    return;
+  }
+
   const std::string data_type_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpTabGroupsModule,
       ntp_features::kNtpTabGroupsModuleDataParam);
@@ -73,8 +95,18 @@ void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
                       "https://www.wikipedia.org", "https://maps.google.com"},
                      199));
   } else if (data_type_param.find("Fake Zero State") != std::string::npos) {
-    // No-op: the zero state card only appears when there's no data.
+    // No-op: return empty vector to invoke the zero state card.
   }
 
   std::move(callback).Run(std::move(tab_groups_mojom));
+}
+
+void TabGroupsPageHandler::DismissModule() {
+  pref_service_->SetTime(kTabGroupsLastDismissedTimePrefName,
+                         base::Time::Now());
+}
+
+void TabGroupsPageHandler::RestoreModule() {
+  // Clear the module's last dimissed time.
+  pref_service_->SetTime(kTabGroupsLastDismissedTimePrefName, base::Time());
 }

@@ -456,6 +456,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MICROSOFT_AUTHENTICATION_SUBHEADING},
       {"modulesMicrosoftAuthSignIn",
        IDS_NTP_MICROSOFT_AUTHENTICATION_SIGN_IN_BUTTON_TEXT},
+      {"modulesTabGroupsDismissToastMessage",
+       IDS_NTP_MODULES_TAB_GROUPS_DISMISS_TOAST_MESSAGE},
+      {"modulesTabGroupsDisableToastMessage",
+       IDS_NTP_MODULES_TAB_GROUPS_DISABLE_TOAST_MESSAGE},
       {"modulesTabGroupsInfo", IDS_NTP_MODULES_TAB_GROUPS_INFO},
       {"modulesTabGroupsCreateNewTabGroup", IDS_CREATE_NEW_TAB_GROUP},
       {"modulesTabGroupsTitle", IDS_NTP_MODULES_TAB_GROUPS_TITLE},
@@ -510,6 +514,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddString(
       "fileSuggestionDismissHours",
       base::NumberToString(DriveService::kDismissDuration.InHours()));
+  source->AddString(
+      "tabGroupsModuleDismissHours",
+      base::NumberToString(
+          ntp_features::kNtpTabGroupsModuleWindowEndDeltaParam.Get()
+              .InHours()));
 
   bool microsoft_module_enabled = IsMicrosoftModuleEnabledForProfile(profile);
   source->AddBoolean("microsoftModuleEnabled", microsoft_module_enabled);

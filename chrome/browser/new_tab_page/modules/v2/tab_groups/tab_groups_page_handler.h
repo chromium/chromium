@@ -9,6 +9,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 namespace content {
@@ -26,12 +28,16 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
   TabGroupsPageHandler(const TabGroupsPageHandler&) = delete;
   TabGroupsPageHandler& operator=(const TabGroupsPageHandler&) = delete;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // ntp::tab_groups::mojom::PageHandler:
   void GetTabGroups(GetTabGroupsCallback callback) override;
+  void DismissModule() override;
+  void RestoreModule() override;
 
  private:
   raw_ptr<Profile> profile_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<PrefService> pref_service_;
 
   mojo::Receiver<ntp::tab_groups::mojom::PageHandler> page_handler_;
 

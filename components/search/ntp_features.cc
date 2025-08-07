@@ -462,6 +462,12 @@ const base::FeatureParam<int>
         "NtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam",
         4);
 
+const base::FeatureParam<base::TimeDelta>
+    kNtpTabGroupsModuleWindowEndDeltaParam(
+        &ntp_features::kNtpTabGroupsModule,
+        "NtpTabGroupsModuleWindowEndDeltaParam",
+        base::Hours(12));
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,

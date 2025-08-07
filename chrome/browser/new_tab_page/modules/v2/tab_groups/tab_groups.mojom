@@ -19,5 +19,11 @@ struct TabGroup {
 // Browser-side handler for requests from NTP Module UI.
 interface PageHandler {
   // Returns a list of most recently used tab groups.
-  GetTabGroups() => (array<TabGroup> tab_groups);
+  // Returns null if the current time is still within the module's dismissal
+  // time window.
+  GetTabGroups() => (array<TabGroup>? tab_groups);
+  // Dismisses the module for a fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
 };

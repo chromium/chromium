@@ -8857,6 +8857,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME" desc="Name of the Microsoft Authentication module as shown in various UIs.">
         Microsoft Authentication
       </message>
+      <message name="IDS_NTP_MODULES_TAB_GROUPS_DISMISS_TOAST_MESSAGE" desc="Text shown on the toast on the NTP indicating that the Tab Groups card has been dismissed.">
+        Tab Groups hidden
+      </message>
+      <message name="IDS_NTP_MODULES_TAB_GROUPS_DISABLE_TOAST_MESSAGE" desc="Text shown on the toast on the NTP indicating that the Tab Groups card has been disabled.">
+        You won't see Tab Groups on this page again
+      </message>
       <message name="IDS_NTP_MODULES_TAB_GROUPS_INFO" desc="Text shown in the body of the info dialog of the Tab Groups module.">
         You’re seeing your recently used tab groups to help you easily pick up where you left off.
         <ph name="BREAK">&lt;br&gt;</ph>
