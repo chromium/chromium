@@ -106,16 +106,22 @@ const char kDebugBsa[] = "debug-bsa";
 // background thread. Otherwise runs startup synchronously.
 // - caches any chromium startup exception and rethrows it if startup is retried
 // without a restart.
+// Note: WebViewUseStartupTasksLogicP2 and kWebViewStartupTasksYieldToNative
+// also enable the same behaviour as this flag.
 const char kWebViewUseStartupTasksLogic[] = "webview-use-startup-tasks-logic";
 
 // Enables phase 2 of using startup tasks logic for webview chromium
-// initialization which also starts browser processes asynchronously, when
+// initialization which also starts browser process asynchronously, when
 // starting webview asynchronously.
+// Note: This also enables the same behaviour as WebViewUseStartupTasksLogic and
+// WebViewStartupTasksYieldToNative with minor differences.
 const char kWebViewUseStartupTasksLogicP2[] =
     "webview-use-startup-tasks-logic-p2";
 
 // Enables running native startup tasks asynchronously if WebView startup is
 // asynchronous.
+// Note: This also enables the same behaviour as WebViewUseStartupTasksLogic and
+// WebViewUseStartupTasksLogicP2, with minor additions.
 const char kWebViewStartupTasksYieldToNative[] =
     "webview-startup-tasks-yield-to-native";
 }  // namespace switches

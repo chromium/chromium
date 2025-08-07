@@ -989,11 +989,13 @@ public final class ProductionSupportedFlagList {
         Flag.commandLine(
                 AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
                 "When enabled, webview chromium initialization uses the startup tasks logic where"
-                        + " it:\n"
-                        + " - runs the startup tasks asynchronously if startup is triggered from a"
-                        + " background thread. Otherwise runs startup synchronously.\n"
-                        + " - caches any chromium startup exception and rethrows it if startup is"
-                        + " retried without a restart."),
+                    + " it:\n"
+                    + " - runs the startup tasks asynchronously if startup is triggered from a"
+                    + " background thread. Otherwise runs startup synchronously.\n"
+                    + " - caches any chromium startup exception and rethrows it if startup is"
+                    + " retried without a restart.\n"
+                    + " Note: WebViewUseStartupTasksLogicP2 and kWebViewStartupTasksYieldToNative"
+                    + " also enable the same behaviour as this flag."),
         Flag.baseFeature(
                 BlinkFeatures.ASYNC_SET_COOKIE,
                 "When enabled, the communication between renderer and network service is "
@@ -1049,13 +1051,17 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
                 "Enables phase 2 of using startup tasks logic for webview chromium initialization"
                     + " which also starts browser processes asynchronously, when starting webview"
-                    + " asynchronously."),
+                    + " asynchronously.\n"
+                    + " Note: This also enables the same behaviour as WebViewUseStartupTasksLogic"
+                    + " and WebViewStartupTasksYieldToNative with minor differences."),
         Flag.baseFeature("ServiceWorkerAutoPreload"),
         Flag.baseFeature(GpuFeatures.WEB_GPU_USE_SPIRV14, "Use WebGPU's SPIR-V 1.4"),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
                 "Enables running native startup tasks asynchronously if WebView startup is"
-                        + " asynchronous"),
+                    + " asynchronous.\n"
+                    + " Note: This also enables the same behaviour as WebViewUseStartupTasksLogic"
+                    + " and WebViewUseStartupTasksLogicP2, with minor additions."),
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING,
                 "Enables text formatting information to be surfaced as Spans on"
