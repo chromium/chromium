@@ -62,6 +62,7 @@ class TestSelectionDeviceManager : public GlobalObject {
   TestSelectionSource* source() { return source_; }
 
   void set_source(TestSelectionSource* source) { source_ = source; }
+  void set_device(TestSelectionDevice* device) { device_ = device; }
 
   // Protocol object requests:
   static void CreateSource(wl_client* client,
@@ -74,7 +75,7 @@ class TestSelectionDeviceManager : public GlobalObject {
 
  private:
   const std::unique_ptr<Delegate> delegate_;
-  raw_ptr<TestSelectionDevice, DanglingUntriaged> device_ = nullptr;
+  raw_ptr<TestSelectionDevice> device_ = nullptr;
   raw_ptr<TestSelectionSource, DanglingUntriaged> source_ = nullptr;
 };
 

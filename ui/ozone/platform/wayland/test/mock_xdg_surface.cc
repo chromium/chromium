@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
+
+#include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_positioner.h"
 #include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
 
@@ -136,7 +137,10 @@ void GetXdgPopup(struct wl_client* client,
   wl_resource* xdg_popup_resource =
       CreateResourceWithImpl<::testing::NiceMock<TestXdgPopup>>(
           client, &xdg_popup_interface, wl_resource_get_version(resource),
-          &kXdgPopupImpl, id, resource);
+          &kXdgPopupImpl, id,
+          base::BindOnce(&MockXdgSurface::set_xdg_popup,
+                         mock_xdg_surface->GetWeakPtr(), nullptr),
+          resource);
 
   if (!xdg_popup_resource) {
     wl_client_post_no_memory(client);

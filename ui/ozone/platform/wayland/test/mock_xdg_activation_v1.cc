@@ -56,7 +56,10 @@ void GetActivationToken(struct wl_client* client,
   auto* global = GetUserDataAs<MockXdgActivationV1>(resource);
   wl_resource* token = CreateResourceWithImpl<MockXdgActivationTokenV1>(
       client, &xdg_activation_token_v1_interface, 1,
-      &kMockXdgActivationTokenV1Impl, id, global);
+      &kMockXdgActivationTokenV1Impl, id,
+      base::BindOnce(&MockXdgActivationV1::set_token, global->GetWeakPtr(),
+                     nullptr),
+      global);
   global->set_token(GetUserDataAs<MockXdgActivationTokenV1>(token));
 }
 

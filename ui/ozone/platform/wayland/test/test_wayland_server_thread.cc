@@ -73,8 +73,12 @@ TestWaylandServerThread::~TestWaylandServerThread() {
 
   Stop();
 
-  if (protocol_logger_)
-    wl_protocol_logger_destroy(protocol_logger_);
+  if (protocol_logger_) {
+    auto* temp = protocol_logger_.get();
+    protocol_logger_ = nullptr;
+    wl_protocol_logger_destroy(temp);
+    temp = nullptr;
+  }
   protocol_logger_ = nullptr;
 
   // Check if the client has been destroyed after the thread is stopped. This

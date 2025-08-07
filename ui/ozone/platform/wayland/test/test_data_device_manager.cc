@@ -32,6 +32,8 @@ void GetDataDevice(wl_client* client,
   wl_resource* resource = CreateResourceWithImpl<TestDataDevice>(
       client, &wl_data_device_interface,
       wl_resource_get_version(manager_resource), &kTestDataDeviceImpl, id,
+      base::BindOnce(&TestDataDeviceManager::set_data_device,
+                     manager->GetWeakPtr(), nullptr),
       manager);
 
   CHECK(GetUserDataAs<TestDataDevice>(resource));

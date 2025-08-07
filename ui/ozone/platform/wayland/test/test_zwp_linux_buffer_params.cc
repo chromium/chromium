@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 
+#include "base/functional/callback_helpers.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/test_buffer.h"
 
@@ -32,10 +33,12 @@ void CreateCommon(TestZwpLinuxBufferParamsV1* buffer_params,
                   int32_t height,
                   uint32_t format,
                   uint32_t flags) {
+  // base::DoNothing() is used because the ~TestBuffer() takes cares of the
+  // cleanup.
   wl_resource* buffer_resource =
       CreateResourceWithImpl<::testing::NiceMock<TestBuffer>>(
           client, &wl_buffer_interface, 1, &kTestWlBufferImpl, 0,
-          std::move(buffer_params->fds_));
+          base::DoNothing(), std::move(buffer_params->fds_));
 
   buffer_params->SetBufferResource(buffer_resource);
 }

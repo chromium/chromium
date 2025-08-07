@@ -48,14 +48,19 @@ class MockXdgSurface : public ServerObject {
   void set_xdg_popup(TestXdgPopup* xdg_popup) { xdg_popup_ = xdg_popup; }
   TestXdgPopup* xdg_popup() const { return xdg_popup_; }
 
+  base::WeakPtr<MockXdgSurface> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Has either toplevel role..
   std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
   // Or popup role.
-  raw_ptr<TestXdgPopup, DanglingUntriaged> xdg_popup_ = nullptr;
+  raw_ptr<TestXdgPopup> xdg_popup_ = nullptr;
 
   // MockSurface that is the ground for this xdg_surface.
   raw_ptr<wl_resource> surface_ = nullptr;
+  base::WeakPtrFactory<MockXdgSurface> weak_ptr_factory_{this};
 };
 
 // Manage zxdg_toplevel for providing desktop UI.

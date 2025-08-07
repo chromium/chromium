@@ -42,6 +42,13 @@ class TestWpPointerGestures : public GlobalObject {
 
   TestHoldGesture* hold() const { return hold_; }
 
+  void set_pinch(TestPinchGesture* pinch) { pinch_ = pinch; }
+  void set_hold(TestHoldGesture* hold) { hold_ = hold; }
+
+  base::WeakPtr<TestWpPointerGestures> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   static void GetSwipeGesture(struct wl_client* client,
                               struct wl_resource* resource,
                               uint32_t id,
@@ -58,8 +65,9 @@ class TestWpPointerGestures : public GlobalObject {
                              struct wl_resource* pointer);
 
  private:
-  raw_ptr<TestPinchGesture, DanglingUntriaged> pinch_;
-  raw_ptr<TestHoldGesture, DanglingUntriaged> hold_;
+  raw_ptr<TestPinchGesture> pinch_;
+  raw_ptr<TestHoldGesture> hold_;
+  base::WeakPtrFactory<TestWpPointerGestures> weak_ptr_factory_{this};
 };
 
 }  // namespace wl

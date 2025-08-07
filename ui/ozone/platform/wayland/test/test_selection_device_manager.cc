@@ -140,7 +140,11 @@ TestSelectionDevice::TestSelectionDevice(wl_resource* resource,
                                          std::unique_ptr<Delegate> delegate)
     : ServerObject(resource), delegate_(std::move(delegate)) {}
 
-TestSelectionDevice::~TestSelectionDevice() = default;
+TestSelectionDevice::~TestSelectionDevice() {
+  if (manager_) {
+    manager_->set_device(nullptr);
+  }
+}
 
 TestSelectionOffer* TestSelectionDevice::OnDataOffer() {
   return delegate_->CreateAndSendOffer();

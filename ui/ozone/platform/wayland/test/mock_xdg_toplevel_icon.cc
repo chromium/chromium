@@ -7,6 +7,7 @@
 #include <wayland-server-core.h>
 
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -20,9 +21,11 @@ void CreateIcon(struct wl_client* client,
                 struct wl_resource* resource,
                 uint32_t id) {
   auto* global = GetUserDataAs<MockXdgToplevelIconManagerV1>(resource);
+  // No need to pass an on_resource_destroyed callback here, as the
+  // ~MockXdgToplevelIconV1() takes cares of the cleanup.
   wl_resource* icon = CreateResourceWithImpl<MockXdgToplevelIconV1>(
       client, &xdg_toplevel_icon_v1_interface, 1, &kMockXdgToplevelIconImpl, id,
-      global);
+      base::DoNothing(), global);
   global->set_icon(GetUserDataAs<MockXdgToplevelIconV1>(icon));
 }
 
