@@ -241,7 +241,7 @@ String CookieJar::Cookies() {
     if (delay.is_positive()) {
       // Report the actual delay caused by PlatformThread::Sleep(). See
       // https://crbug.com/412532502 for more details.
-      SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Blink.Cookies.Time.AblationSleepTime");
+      SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Blink.CookiesTime.AblationSleepTime");
       base::PlatformThread::Sleep(delay);
     }
   }
