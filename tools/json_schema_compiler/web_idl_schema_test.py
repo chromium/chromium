@@ -302,6 +302,10 @@ class WebIdlSchemaTest(unittest.TestCase):
         'optional': True,
         '$ref': 'ExampleType'
     }], getFunctionParameters(schema, 'takesOptionalCustomType'))
+    self.assertEqual([{
+        'name': 'enumArgument',
+        '$ref': 'EnumType'
+    }], getFunctionParameters(schema, 'takesEnum'))
 
   # Tests function descriptions are processed as expected.
   def testFunctionDescriptions(self):
@@ -444,8 +448,8 @@ class WebIdlSchemaTest(unittest.TestCase):
             'description': 'An ExampleType passed to the event listener.'
         }], event_two['parameters'])
 
-  # Tests that Dictionaries defined on the top level of the IDL file are
-  # processed into types on the resulting namespace.
+  # Tests that Dictionaries and Enums defined on the top level of the IDL file
+  # are processed into types on the resulting namespace.
   def testApiTypesOnNamespace(self):
     schema = self.idl_basics
     custom_type = getType(schema, 'ExampleType')
@@ -489,6 +493,19 @@ class WebIdlSchemaTest(unittest.TestCase):
             },
             'description': 'Comment on sequence type.',
         }, custom_type['properties']['booleanSequence'])
+
+    enum_expected = {
+        'enum': [{
+            'name': 'name1',
+            'description': 'Comment1.'
+        }, {
+            'name': 'name2'
+        }],
+        'description': 'Enum description.',
+        'type': 'string',
+        'id': 'EnumType'
+    }
+    self.assertEqual(enum_expected, getType(schema, 'EnumType'))
 
   # Tests that a top level API comment is processed into a description
   # attribute, with HTML paragraph nodes added due to the blank commented line.

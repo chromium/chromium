@@ -30,6 +30,7 @@ interface TestWebIdl {
   static undefined takesSequenceArgument(sequence<boolean> sequenceArgument);
   static undefined takesOptionalSequenceArgument(
       optional sequence<boolean> optionalSequenceArgument);
+  static undefined takesEnum(EnumType enumArgument);
 
   static ExampleType returnsCustomType();
   static undefined takesCustomType(ExampleType customTypeArgument);
@@ -118,6 +119,13 @@ dictionary ExampleType {
   boolean? optionalBoolean;
   // Comment on sequence type.
   sequence<boolean> booleanSequence;
+};
+
+// Enum description.
+enum EnumType {
+  // Comment1.
+  "name1",
+  "name2"
 };
 
 partial interface Browser {
