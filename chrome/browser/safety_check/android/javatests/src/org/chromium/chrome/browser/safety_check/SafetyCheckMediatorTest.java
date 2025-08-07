@@ -254,19 +254,18 @@ public class SafetyCheckMediatorTest {
         mPasswordCheckModel =
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mPasswordCheckControllerFactory = new FakePasswordCheckControllerFactory();
-        if (mUseGmsApi) {
-            // TODO(crbug.com/40854050): Use existing fake instead of mocking
-            PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
-                    mock(PasswordCheckupClientHelperFactory.class);
-            when(mockPasswordCheckFactory.createHelper()).thenReturn(mPasswordCheckupHelper);
-            PasswordCheckupClientHelperFactory.setFactoryForTesting(mockPasswordCheckFactory);
-            CredentialManagerLauncherFactory mockCredentialManagerLauncherFactory =
-                    mock(CredentialManagerLauncherFactory.class);
-            when(mockCredentialManagerLauncherFactory.createLauncher())
-                    .thenReturn(mCredentialManagerLauncher);
-            CredentialManagerLauncherFactory.setFactoryForTesting(
-                    mockCredentialManagerLauncherFactory);
-        }
+        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(mPrefService, true))
+                .thenReturn(mUseGmsApi);
+        // TODO(crbug.com/40854050): Use existing fake instead of mocking
+        PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
+                mock(PasswordCheckupClientHelperFactory.class);
+        when(mockPasswordCheckFactory.createHelper()).thenReturn(mPasswordCheckupHelper);
+        PasswordCheckupClientHelperFactory.setFactoryForTesting(mockPasswordCheckFactory);
+        CredentialManagerLauncherFactory mockCredentialManagerLauncherFactory =
+                mock(CredentialManagerLauncherFactory.class);
+        when(mockCredentialManagerLauncherFactory.createLauncher())
+                .thenReturn(mCredentialManagerLauncher);
+        CredentialManagerLauncherFactory.setFactoryForTesting(mockCredentialManagerLauncherFactory);
         mMediator =
                 createSafetyCheckMediator(mPasswordCheckModel, /* passwordCheckLocalModel= */ null);
 
@@ -715,8 +714,6 @@ public class SafetyCheckMediatorTest {
 
     @Test
     public void testClickListenerLeadsToUPMAccountPasswordCheckup() {
-        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(mPrefService, true))
-                .thenReturn(true);
         // Order: initial state -> safety check triggered -> check done -> load completed.
         mMediator.setInitialState();
         assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
@@ -754,8 +751,6 @@ public class SafetyCheckMediatorTest {
     public void testClickListenerLeadsToPasswordSettingsWhenUnchecked() {
         assumeTrue(mUseGmsApi);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
-        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(any(), eq(true)))
-                .thenReturn(true);
         PropertyModel passwordCheckLocalModel =
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         PropertyModel passwordCheckAccountModel =
@@ -777,8 +772,6 @@ public class SafetyCheckMediatorTest {
 
     @Test
     public void testClickListenerLeadsToUPMLocalPasswordCheckup() {
-        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(any(), eq(true)))
-                .thenReturn(mUseGmsApi);
         PropertyModel passwordCheckLocalModel =
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mMediator =
