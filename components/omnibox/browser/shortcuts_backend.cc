@@ -351,7 +351,7 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // suggestion types. Resurfacing a AI mode usage with a traditional search
   // shortcut match would be surprising. Repeated AI mode matches are probably
   // uncommon anyways.
-  if (omnibox_feature_configs::AiModeEchoMatch::Get()
+  if (omnibox_feature_configs::AiMode::Get()
           .do_not_show_historic_aim_suggestions &&
       match.IsSearchAimSuggestion()) {
     return;

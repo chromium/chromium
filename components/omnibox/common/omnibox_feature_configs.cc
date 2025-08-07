@@ -44,18 +44,20 @@ CalcProvider::CalcProvider() {
           .Get();
 }
 
-BASE_FEATURE(AiModeEchoMatch::kAiModeEchoMatch,
-             "AiModeEchoMatch",
+BASE_FEATURE(AiMode::kAiModeEchoMatchTweaks,
+             "kAiModeEchoMatchTweaks",
              base::FEATURE_ENABLED_BY_DEFAULT);
-AiModeEchoMatch::AiModeEchoMatch() {
-  enabled = base::FeatureList::IsEnabled(kAiModeEchoMatch);
+AiMode::AiMode() {
+  ai_mode_echo_match_tweaks =
+      base::FeatureList::IsEnabled(kAiModeEchoMatchTweaks);
   do_not_dedupe_aim_suggestions =
-      base::FeatureParam<bool>(&kAiModeEchoMatch, "DoNotDedupeAimSuggestions",
+      base::FeatureParam<bool>(&kAiModeEchoMatchTweaks,
+                               "DoNotDedupeAimSuggestions",
                                do_not_dedupe_aim_suggestions)
           .Get();
 
   do_not_show_historic_aim_suggestions =
-      base::FeatureParam<bool>(&kAiModeEchoMatch,
+      base::FeatureParam<bool>(&kAiModeEchoMatchTweaks,
                                "DoNotShowHistoricAimSuggestions",
                                do_not_show_historic_aim_suggestions)
           .Get();
