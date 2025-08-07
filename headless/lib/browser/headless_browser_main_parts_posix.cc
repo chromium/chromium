@@ -33,6 +33,8 @@
 #include "headless/public/switches.h"
 
 #if BUILDFLAG(USE_DBUS)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "dbus/bus.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #endif
 
@@ -177,7 +179,8 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
 #if BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(USE_DBUS)
-  bluez::BluezDBusManager::Initialize(/*system_bus=*/nullptr);
+  bluez::BluezDBusManager::Initialize(
+      dbus_thread_linux::GetSharedSystemBus().get());
 #endif
 
   // Set up crypt config. This needs to be done before anything starts the
