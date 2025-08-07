@@ -1389,9 +1389,8 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Close) {
   widget()->Close();
 }
 
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
-       CloseAllSecondaryWidgets) {
-  widget()->CloseAllSecondaryWidgets();
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, CloseAllWidgets) {
+  widget()->CloseAllWidgets();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, CloseNow) {
@@ -4012,17 +4011,17 @@ TEST_F(WidgetTest, CloseWidgetWhileAnimating) {
   EXPECT_EQ(widget_observer.bounds(), bounds);
 }
 
-// Test Widget::CloseAllSecondaryWidgets works as expected across platforms.
-// ChromeOS doesn't implement or need CloseAllSecondaryWidgets() since
-// everything is under a single root window.
+// Test Widget::CloseAllWidgets works as expected across platforms. ChromeOS
+// doesn't implement or need CloseAllWidgets() since everything is under a
+// single root window.
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
-TEST_F(DesktopWidgetTest, CloseAllSecondaryWidgets) {
+TEST_F(DesktopWidgetTest, CloseAllWidgets) {
   Widget* widget1 = CreateTopLevelNativeWidget();
   Widget* widget2 = CreateTopLevelNativeWidget();
   TestWidgetObserver observer1(widget1);
   TestWidgetObserver observer2(widget2);
   widget1->Show();  // Just show the first one.
-  Widget::CloseAllSecondaryWidgets();
+  Widget::CloseAllWidgets();
   EXPECT_TRUE(observer1.widget_closed());
   EXPECT_TRUE(observer2.widget_closed());
 }

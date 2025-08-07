@@ -1450,12 +1450,11 @@ namespace {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE))
 void CloseWindow(aura::Window* window) {
   if (window) {
-    Widget* widget = Widget::GetWidgetForNativeView(window);
-    if (widget && widget->is_secondary_widget()) {
-      // To avoid the delay in shutdown caused by using Close which may wait
-      // for animations, use CloseNow. Because this is only used on secondary
-      // widgets it seems relatively safe to skip the extra processing of
-      // Close.
+    if (Widget* widget = Widget::GetWidgetForNativeView(window)) {
+      // To avoid the delay in shutdown caused by using Close() which may wait
+      // for animations, use CloseNow(). Because this is only called during
+      // application exit and NativeWidgets have lifetimes decoupled from their
+      // associated Widget it is safe to call CloseNow() here.
       widget->CloseNow();
     }
   }
@@ -1473,7 +1472,7 @@ BOOL CALLBACK WindowCallbackProc(HWND hwnd, LPARAM lParam) {
 }  // namespace
 
 // static
-void Widget::CloseAllSecondaryWidgets() {
+void Widget::CloseAllWidgets() {
 #if BUILDFLAG(IS_WIN)
   EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, 0);
 #endif

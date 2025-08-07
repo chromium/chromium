@@ -603,9 +603,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       gfx::NativeWindow context,
       const gfx::Rect& bounds = gfx::Rect());
 
-  // Closes all Widgets that aren't identified as "secondary widgets". Called
-  // during application shutdown when the last non-secondary widget is closed.
-  static void CloseAllSecondaryWidgets();
+  // Closes all platform Widgets. Called during application shutdown to ensure
+  // no platform Widgets remain.
+  static void CloseAllWidgets();
 
   // Retrieves the Widget implementation associated with the given
   // NativeView or Window, or NULL if the supplied handle has no associated

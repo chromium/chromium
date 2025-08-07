@@ -143,7 +143,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   // Sanity check that the two widgets each have their own XID.
   ASSERT_NE(parent_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
             child_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  Widget::CloseAllSecondaryWidgets();
+  Widget::CloseAllWidgets();
   EXPECT_TRUE(DesktopWindowTreeHostPlatform::GetAllOpenWindows().empty());
 }
 

@@ -1222,7 +1222,7 @@ void NativeWidgetMac::OnWidgetDestroyed(Widget* widget) {
 // Widget:
 
 // static
-void Widget::CloseAllSecondaryWidgets() {
+void Widget::CloseAllWidgets() {
   NSArray* starting_windows = [NSApp windows];  // Creates an autoreleased copy.
   for (NSWindow* window in starting_windows) {
     // Ignore any windows that couldn't have been created by NativeWidgetMac or
@@ -1243,8 +1243,7 @@ void Widget::CloseAllSecondaryWidgets() {
     crash_reporter::ScopedCrashKeyString scopedWindowKey(&window_info_key,
                                                          value);
 
-    Widget* widget = GetWidgetForNativeWindow(gfx::NativeWindow(window));
-    if (widget && widget->is_secondary_widget()) {
+    if (GetWidgetForNativeWindow(gfx::NativeWindow(window))) {
       [window close];
     }
   }

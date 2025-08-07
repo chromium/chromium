@@ -933,13 +933,13 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   [native_parent close];
 }
 
-// Tests that CloseAllSecondaryWidgets behaves in various configurations.
-TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
+// Tests that CloseAllWidgets behaves in various configurations.
+TEST_F(NativeWidgetMacTest, CloseAllWidgetsValidState) {
   NativeWidgetMacTestWindow* __weak last_window_weak = nil;
   bool window_deallocated = false;
   @autoreleasepool {
-    // First verify the behavior of CloseAllSecondaryWidgets in the normal case,
-    // and how [NSApp windows] changes in response to Widget closure.
+    // First verify the behavior of CloseAllWidgets in the normal case, and how
+    // [NSApp windows] changes in response to Widget closure.
     Widget* widget = CreateWidgetWithTestWindow(
         Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
                            Widget::InitParams::TYPE_WINDOW),
@@ -947,7 +947,7 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
     last_window_weak.deallocFlag = &window_deallocated;
     TestWidgetObserver observer(widget);
     EXPECT_TRUE([NSApp.windows containsObject:last_window_weak]);
-    Widget::CloseAllSecondaryWidgets();
+    Widget::CloseAllWidgets();
     EXPECT_TRUE(observer.widget_closed());
   }
 
@@ -959,7 +959,7 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
   NativeWidgetMacTestWindow* __strong last_window_strong = nil;
   @autoreleasepool {
     // Repeat, but now retain a reference and close the window before
-    // CloseAllSecondaryWidgets().
+    // CloseAllWidgets().
     Widget* widget = CreateWidgetWithTestWindow(
         Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
                            Widget::InitParams::TYPE_WINDOW),
@@ -972,7 +972,7 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
 
   EXPECT_FALSE(window_deallocated);
   @autoreleasepool {
-    Widget::CloseAllSecondaryWidgets();
+    Widget::CloseAllWidgets();
     last_window_strong = nil;
   }
 
@@ -993,7 +993,7 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
       containsObject:parent->GetNativeWindow().GetNativeNSWindow()]);
   EXPECT_TRUE([[NSApp windows]
       containsObject:child->GetNativeWindow().GetNativeNSWindow()]);
-  Widget::CloseAllSecondaryWidgets();
+  Widget::CloseAllWidgets();
   EXPECT_TRUE(parent_observer.widget_closed());
   EXPECT_TRUE(child_observer.widget_closed());
 }
