@@ -5238,6 +5238,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.HomeAndWorkAffectedType"
+    enum="AutofillSettingsVisibleTypes" expires_after="2026-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs that a value for a specific type was changed or added, which caused a
+    home/work superset prompt to be shown. The metric is independent of the user
+    decision on the prompt and recorded on form submission.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.HomeAndWorkSupersetEditedType"
+    enum="AutofillSettingsVisibleTypes" expires_after="2026-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs that a specific type was edited in a home/work superset prompt. This
+    metric is emitted once the user-provided import decision is final.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.HomeAndWorkSupersetProfileDecision"
     enum="AutofillProfileImportDecision" expires_after="2026-05-01">
   <owner>jsobiech@google.com</owner>

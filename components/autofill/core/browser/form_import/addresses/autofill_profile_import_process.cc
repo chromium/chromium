@@ -467,6 +467,14 @@ void ProfileImportProcess::CollectMetrics(
     }
   } else if (import_type_ == AutofillProfileImportType::kHomeAndWorkSuperset) {
     autofill_metrics::LogHomeAndWorkSupersetImportDecision(user_decision_);
+    CHECK(merge_candidate_.has_value() && import_candidate_.has_value());
+    // Log the types that triggered the prompt.
+    for (const ProfileValueDifference& difference :
+         AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+             import_candidate_.value(), merge_candidate_.value(),
+             app_locale_)) {
+      autofill_metrics::LogHomeAndWorkSupersetAffectedType(difference.type);
+    }
   } else if (is_confirmable_update()) {
     autofill_metrics::LogProfileUpdateImportDecision(
         user_decision_, existing_profiles,
@@ -513,6 +521,9 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
       autofill_metrics::LogProfileUpdateEditedType(difference.type);
     } else if (is_migration()) {
       autofill_metrics::LogProfileMigrationEditedType(difference.type);
+    } else {
+      CHECK_EQ(import_type(), AutofillProfileImportType::kHomeAndWorkSuperset);
+      autofill_metrics::LogHomeAndWorkSupersetEditedType(difference.type);
     }
   }
   return edit_difference.size();

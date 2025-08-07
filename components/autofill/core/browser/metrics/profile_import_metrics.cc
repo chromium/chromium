@@ -233,6 +233,18 @@ void LogHomeAndWorkSupersetImportDecision(
       "Autofill.ProfileImport.HomeAndWorkSupersetProfileDecision", decision);
 }
 
+void LogHomeAndWorkSupersetAffectedType(FieldType affected_type) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.HomeAndWorkSupersetAffectedType",
+      ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
+}
+
+void LogHomeAndWorkSupersetEditedType(FieldType edited_type) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.HomeAndWorkSupersetEditedType",
+      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
+}
+
 // static
 void LogRemovedSettingInaccessibleFields(bool did_remove) {
   base::UmaHistogramBoolean(
