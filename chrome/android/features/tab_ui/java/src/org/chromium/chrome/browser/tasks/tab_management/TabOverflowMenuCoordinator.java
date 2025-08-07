@@ -45,6 +45,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
+import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
@@ -411,6 +412,9 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
         afterCreate();
+        modelList.addObserver(
+                new AccessibilityListObserver(
+                        mMenuHolder.getContentView(), /* headerModelList= */ null, modelList));
         mMenuHolder.show();
     }
 
