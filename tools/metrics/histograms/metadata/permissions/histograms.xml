@@ -1874,6 +1874,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.WindowManagementApi.Android.Allowed"
+    enum="BooleanAllowed" expires_after="M150">
+  <owner>renkens@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
+  <summary>
+    Reports whether a usage of the Window Management API on Android was allowed
+    or blocked (when AndroidWindowManagementWebApi feature flag is enabled).
+    Recorded once per call to Window Management API for Chrome on Android and
+    Android WebView. If sites can ask to manage windows on all users' displays,
+    the decision about allowing or blocking usage is determined by the user when
+    the site first wants to use the Window Mangement. After that decision, all
+    other usages on this site will use the same decision. If sites cannot ask to
+    manage windows on all users' displays, it will be blocked automatically.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.{PredictionModel}.InquiryDuration" units="ms"
     expires_after="2026-01-11">
   <owner>elklm@chromium.org</owner>

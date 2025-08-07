@@ -38,6 +38,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/android/ui_android_features.h"
 #endif  // IS_ANDROID
@@ -47,6 +48,11 @@ using network::mojom::PermissionsPolicyFeature;
 
 namespace permissions {
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kWindowManagementHistogramName[] =
+    "Permissions.WindowManagementApi.Android.Allowed";
+#endif  // IS_ANDROID
 
 class ScopedPartitionedOriginBrowserClient
     : public content::ContentBrowserClient {
@@ -380,11 +386,29 @@ TEST_F(PermissionManagerTest, AndroidWindowManagementPermission) {
   scoped_feature_list.InitWithFeatureState(ui::kAndroidWindowManagementWebApi,
                                            true);
 
-  CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
-                        PermissionStatus::ASK);
-  SetPermission(PermissionType::WINDOW_MANAGEMENT, PermissionStatus::GRANTED);
-  CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
-                        PermissionStatus::GRANTED);
+  {
+    base::HistogramTester histogram_tester;
+
+    CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
+                          PermissionStatus::ASK);
+    SetPermission(PermissionType::WINDOW_MANAGEMENT, PermissionStatus::GRANTED);
+    CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
+                          PermissionStatus::GRANTED);
+
+    histogram_tester.ExpectUniqueSample(kWindowManagementHistogramName, true,
+                                        1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    SetPermission(PermissionType::WINDOW_MANAGEMENT, PermissionStatus::DENIED);
+    CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
+                          PermissionStatus::DENIED);
+
+    histogram_tester.ExpectUniqueSample(kWindowManagementHistogramName, false,
+                                        1);
+  }
 }
 #endif
 
