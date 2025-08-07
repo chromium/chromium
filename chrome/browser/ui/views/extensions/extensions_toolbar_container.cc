@@ -471,6 +471,10 @@ bool ExtensionsToolbarContainer::ShouldForceVisibility(
 
 void ExtensionsToolbarContainer::UpdateIconVisibility(
     const std::string& extension_id) {
+  if (!GetWidget() || GetWidget()->IsClosed()) {
+    return;
+  }
+
   ToolbarActionView* const action_view = GetViewForId(extension_id);
   if (!action_view) {
     return;

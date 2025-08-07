@@ -141,7 +141,12 @@ void ExtensionPopup::AddedToWidget() {
 
 void ExtensionPopup::OnWidgetDestroying(views::Widget* widget) {
   BubbleDialogDelegateView::OnWidgetDestroying(widget);
+  scoped_devtools_observation_.reset();
   anchor_widget_observation_.Reset();
+  extension_registry_observation_.Reset();
+  extension_view_ = nullptr;
+  host_.reset();
+  browser_ = nullptr;
 }
 
 void ExtensionPopup::OnWidgetTreeActivated(views::Widget* root_widget,
