@@ -1903,7 +1903,17 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (sad_tab_helper) {
       sad_tab_helper->ReinstallInWebView();
     }
+
+    // Temporarily disable fast resize for to ensure that the new active tab
+    // updates its layout.
+    views::WebView* contents_view_to_layout =
+        multi_contents_view_ ? multi_contents_view_->GetActiveContentsView()
+                             : active_contents_view;
+    CHECK(contents_view_to_layout);
+    const bool original_fast_resize = contents_view_to_layout->GetFastResize();
+    contents_view_to_layout->SetFastResize(false);
     contents_container_->DeprecatedLayoutImmediately();
+    contents_view_to_layout->SetFastResize(original_fast_resize);
   } else if (tab_change_in_split_view) {
     UpdateActiveTabInSplitView();
   }

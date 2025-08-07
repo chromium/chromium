@@ -159,6 +159,10 @@ void WebView::SetFastResize(bool fast_resize) {
   holder_->set_fast_resize(fast_resize);
 }
 
+bool WebView::GetFastResize() const {
+  return holder_->fast_resize();
+}
+
 void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
                                           const gfx::Size& max_size) {
   DCHECK(!max_size.IsEmpty());

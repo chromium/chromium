@@ -103,6 +103,7 @@ class WEBVIEW_EXPORT WebView : public View,
   //         a continuous size operation completes. This allows for smoother
   //         resizing performance during interactive resizes and animations.
   void SetFastResize(bool fast_resize);
+  bool GetFastResize() const;
 
   // If enabled, this will make the WebView's preferred size dependent on the
   // WebContents' size.
