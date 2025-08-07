@@ -212,6 +212,29 @@ source_set("unit_tests") {
   }
 }
 
+source_set("tools_test_support") {
+  testonly = true
+  public_deps = [ "//base/test:test_support" ]
+  deps = [
+    ":actor",
+    ":impl",
+    ":test_support",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/zoom",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//testing/gtest",
+  ]
+  if (enable_glic) {
+    sources = [
+      "tools/tools_test_util.cc",
+      "tools/tools_test_util.h",
+    ]
+    deps += [ "//chrome/browser/glic" ]
+  }
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -220,8 +243,8 @@ source_set("browser_tests") {
     ":actor",
     ":impl",
     ":test_support",
+    ":tools_test_support",
     "ui:event_dispatcher",
-    "//base/test:test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
@@ -251,8 +274,6 @@ source_set("browser_tests") {
       "tools/select_tool_browsertest.cc",
       "tools/tab_management_tool_browsertest.cc",
       "tools/tool_agnostic_browsertest.cc",
-      "tools/tools_test_util.cc",
-      "tools/tools_test_util.h",
       "tools/type_tool_browsertest.cc",
       "tools/wait_tool_browsertest.cc",
     ]
