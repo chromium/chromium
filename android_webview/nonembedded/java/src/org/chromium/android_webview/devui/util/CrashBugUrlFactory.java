@@ -50,7 +50,6 @@ public class CrashBugUrlFactory {
             **DO NOT CHANGE BELOW THIS LINE**
 
             * Crash ID: http://crash/%s
-            * Instructions for triaging this report (Chromium members only): https://bit.ly/2SM1Y9t
             """;
 
     private final CrashInfo mCrashInfo;
@@ -133,6 +132,6 @@ public class CrashBugUrlFactory {
         String name = mCrashInfo.getCrashKeyOrDefault(CrashInfo.APP_PACKAGE_NAME_KEY, "");
         String versionCode =
                 mCrashInfo.getCrashKeyOrDefault(CrashInfo.APP_PACKAGE_VERSION_CODE_KEY, "");
-        return String.format(Locale.US, "%s (%s)", name, versionCode);
+        return String.format(Locale.US, "%s (versionCode=%s)", name, versionCode);
     }
 }

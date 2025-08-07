@@ -46,7 +46,7 @@ public class CrashBugUrlFactoryTest {
     public void testGetReportIntent() throws Throwable {
         Map<String, String> crashKeys = new HashMap<>();
         crashKeys.put(CrashInfo.APP_PACKAGE_NAME_KEY, "org.test.package");
-        crashKeys.put(CrashInfo.APP_PACKAGE_VERSION_CODE_KEY, "1.0.2.3");
+        crashKeys.put(CrashInfo.APP_PACKAGE_VERSION_CODE_KEY, "123");
         crashKeys.put(CrashInfo.WEBVIEW_VERSION_KEY, "10.0.1234.5");
         crashKeys.put(CrashInfo.ANDROID_SDK_INT_KEY, "100");
         CrashInfo crashInfo = new CrashInfo("12345678", crashKeys);
@@ -60,7 +60,7 @@ public class CrashBugUrlFactoryTest {
                         /* CrashInfo.ANDROID_SDK_INT_KEY */ "100",
                         /* CrashInfo.WEBVIEW_VERSION_KEY */ "10.0.1234.5",
                         CrashBugUrlFactory.getCurrentDevToolsVersion(),
-                        /* CrashAppPackageInfo */ "org.test.package (1.0.2.3)",
+                        /* CrashAppPackageInfo */ "org.test.package (versionCode=123)",
                         crashInfo.uploadId);
 
         Intent intent = new CrashBugUrlFactory(crashInfo).getReportIntent();
