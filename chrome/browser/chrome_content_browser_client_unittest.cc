@@ -158,6 +158,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/test/mock_entropy_provider.h"
 #include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
+#include "ui/accessibility/accessibility_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1823,6 +1824,13 @@ class ChromeContentBrowserClientFieldTrialTest
     base::MockEntropyProvider entropy_provider(0.9);
     trial_ = base::FieldTrialList::FactoryGetFieldTrial(
         "UiaProviderWin", 100, "Default_1234", entropy_provider);
+  }
+
+  void SetUp() override {
+    if (features::kUiaProvider.default_state ==
+        base::FEATURE_ENABLED_BY_DEFAULT) {
+      GTEST_SKIP() << "UiaProvider is enabled by default";
+    }
   }
 
   ChromeContentBrowserClient& client() { return client_; }
