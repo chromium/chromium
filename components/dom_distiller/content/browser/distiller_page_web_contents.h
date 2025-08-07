@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/dom_distiller/core/distiller_page.h"
+#include "components/dom_distiller/core/dom_distiller_constants.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -66,6 +67,7 @@ class DistillerPageWebContents : public DistillerPage,
 
   // DistillerPage implementation.
   bool ShouldFetchOfflineData() override;
+  DistillerType GetDistillerType() override;
 
   // content::WebContentsDelegate implementation.
   gfx::Size GetSizeForNewRenderView(

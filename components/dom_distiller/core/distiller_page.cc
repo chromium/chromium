@@ -120,9 +120,17 @@ void DistillerPage::DistillPage(
   ready_ = false;
   distiller_page_callback_ = std::move(callback);
 
-  DistillPageImpl(gurl, ShouldUseReadabilityDistiller()
-                            ? GetReadabilityDistillerScript()
-                            : GetDistillerScriptWithOptions(options));
+  std::string script;
+  switch (GetDistillerType()) {
+    case DistillerType::kReadability:
+      script = GetReadabilityDistillerScript();
+      break;
+    case DistillerType::kDOMDistiller:
+      script = GetDistillerScriptWithOptions(options);
+      break;
+  }
+
+  DistillPageImpl(gurl, script);
 }
 
 void DistillerPage::OnDistillationDone(const GURL& page_url,
@@ -139,12 +147,17 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
     found_content = false;
     result = DistillationParseResult::kNoData;
   } else {
-    found_content =
-        ShouldUseReadabilityDistiller()
-            ? ReadabilityDistillerResultToDomDistillerResult(
-                  *value, distiller_result.get())
-            : dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
-                  *value, distiller_result.get());
+    switch (GetDistillerType()) {
+      case DistillerType::kReadability:
+        found_content = ReadabilityDistillerResultToDomDistillerResult(
+            *value, distiller_result.get());
+        break;
+      case DistillerType::kDOMDistiller:
+        found_content =
+            dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
+                *value, distiller_result.get());
+    }
+
     if (found_content) {
       result = DistillationParseResult::kSuccess;
     } else {
