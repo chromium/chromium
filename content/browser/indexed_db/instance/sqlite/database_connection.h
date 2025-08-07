@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/sqlite/active_blob_streamer.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
@@ -98,7 +99,8 @@ class DatabaseConnection {
   Status CommitTransactionPhaseOne(
       base::PassKey<BackingStoreTransactionImpl>,
       const BackingStoreTransactionImpl& transaction,
-      BlobWriteCallback callback);
+      BlobWriteCallback callback,
+      SerializeFsaCallback serialize_fsa_handle);
   Status CommitTransactionPhaseTwo(
       base::PassKey<BackingStoreTransactionImpl>,
       const BackingStoreTransactionImpl& transaction);
@@ -200,7 +202,8 @@ class DatabaseConnection {
   // `ActiveBlobStreamer`.
   std::vector<blink::mojom::IDBExternalObjectPtr> CreateAllExternalObjects(
       base::PassKey<BackingStoreTransactionImpl>,
-      const std::vector<IndexedDBExternalObject>& objects);
+      const std::vector<IndexedDBExternalObject>& objects,
+      DeserializeFsaCallback deserialize_fsa_handle);
 
   // Called when the IDB database associated with this connection is deleted.
   // This should drop all data with the exception of active blobs, which may
@@ -238,6 +241,15 @@ class DatabaseConnection {
   // Invoked by an owned `BlobWriter` when it's done writing, or has encountered
   // an error.
   void OnBlobWriteComplete(int64_t blob_row_id, bool success);
+
+  // Invoked when an FSA handle has been serialized. `token` will be empty if
+  // the serialization was not successful.
+  void OnFsaHandleSerialized(int64_t blob_row_id,
+                             const std::vector<uint8_t>& token);
+
+  // Cancels all outstanding external object processing/writing, including blob
+  // writes and FSA handle serialization/writing. This is to be called on error.
+  void CancelBlobWriting();
 
   // Called when a blob that was opened for reading stops being "active", i.e.
   // when `ActiveBlobStreamer` in `active_blobs_` no longer has connections.
@@ -297,6 +309,16 @@ class DatabaseConnection {
   // bytes into the SQLite database. The map will be empty again after all blobs
   // are done writing successfully, or at least one has failed.
   std::map<int64_t, std::unique_ptr<BlobWriter>> blob_writers_;
+
+  // Tracks the number of currently existing operations that will write blobs
+  // into the database, resulting from a call to WriteNewBlobs(). This will be
+  // the sum of `blob_writers_.size()` and the number of FSA handle
+  // serialization operations that have not yet finished. This is eventually the
+  // same as the number of weak pointers currently vended from
+  // `blob_writers_weak_factory_`, but will be updated *while* an operation
+  // bound to such a weak pointer is executed (whereas the weak pointer itself
+  // will be destroyed only *after* the operation completes).
+  size_t outstanding_external_object_writes_ = 0U;
 
   // This is non-null whenever `blob_writers_` is non-empty.
   BlobWriteCallback blob_write_callback_;

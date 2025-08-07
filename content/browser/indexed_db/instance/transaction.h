@@ -125,6 +125,10 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     DCHECK_GE(pending_preemptive_events_, 0);
   }
 
+  // Wraps `BackingStore::Transaction::BuildMojoValue` while injecting
+  // appropriate helper functions.
+  blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value);
+
   enum class RunTasksResult { kError, kNotFinished, kCommitted, kAborted };
   std::tuple<RunTasksResult, Status> RunTasks();
 

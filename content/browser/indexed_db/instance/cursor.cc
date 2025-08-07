@@ -145,8 +145,7 @@ Status Cursor::AdvanceOperation(
   blink::mojom::IDBValuePtr mojo_value;
   IndexedDBValue* value = Value();
   if (value) {
-    mojo_value = transaction_->BackingStoreTransaction()->BuildMojoValue(
-        std::move(*value));
+    mojo_value = transaction_->BuildMojoValue(std::move(*value));
   } else {
     mojo_value = blink::mojom::IDBValue::New();
   }
@@ -223,8 +222,7 @@ Status Cursor::ContinueOperation(
   blink::mojom::IDBValuePtr mojo_value;
   IndexedDBValue* value = Value();
   if (value) {
-    mojo_value = transaction_->BackingStoreTransaction()->BuildMojoValue(
-        std::move(*value));
+    mojo_value = transaction_->BuildMojoValue(std::move(*value));
   } else {
     mojo_value = blink::mojom::IDBValue::New();
   }
@@ -350,9 +348,7 @@ Status Cursor::PrefetchIterationOperation(
   std::vector<blink::mojom::IDBValuePtr> mojo_values;
   mojo_values.reserve(found_values.size());
   for (IndexedDBValue& value : found_values) {
-    mojo_values.emplace_back(
-        transaction_->BackingStoreTransaction()->BuildMojoValue(
-            std::move(value)));
+    mojo_values.emplace_back(transaction_->BuildMojoValue(std::move(value)));
   }
 
   std::move(callback).Run(blink::mojom::IDBCursorResult::NewValues(

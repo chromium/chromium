@@ -45,6 +45,19 @@ using BlobWriteCallback =
     base::OnceCallback<Status(BlobWriteResult,
                               storage::mojom::WriteBlobToFileResult)>;
 
+// This callback will serialize a single object that represents an FSA handle
+// and return the serialized token asynchronously via the inner callback.
+using SerializeFsaCallback = base::RepeatingCallback<void(
+    blink::mojom::FileSystemAccessTransferToken&,
+    base::OnceCallback<void(
+        const std::vector<uint8_t>& /*serialized_token*/)>)>;
+
+// This callback will rehydrate a serialized FSA handle token into a mojo
+// endpoint which is returned asynchronously via the inner callback.
+using DeserializeFsaCallback = base::RepeatingCallback<void(
+    const std::vector<uint8_t>& /*serialized_token*/,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>)>;
+
 // This object represents a change in the database involving adding or removing
 // external objects. if external_objects() is empty, then objects are to be
 // deleted, and if external_objects() is populated, then objects are two be

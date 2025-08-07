@@ -88,7 +88,7 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   }
   int64_t blob_number() const { return blob_number_; }
   const base::Time& last_modified() const { return last_modified_; }
-  const std::vector<uint8_t> serialized_file_system_access_handle() const {
+  const std::vector<uint8_t>& serialized_file_system_access_handle() const {
     return serialized_file_system_access_handle_;
   }
   bool is_file_system_access_remote_valid() const {
@@ -108,7 +108,14 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   void set_size(int64_t size);
   void set_indexed_db_file_path(const base::FilePath& file_path);
   void set_last_modified(const base::Time& time);
+
+  // Note this setter is only used for the LevelDB store, as a way of
+  // temporarily holding onto the serialized token in between when the token is
+  // generated in WriteNewBlobs() and the token is written into the database in
+  // CommitPhaseTwo/EncodeExternalObjects. TODO(crbug.com/40253999): remove this
+  // when SQLite is the only store.
   void set_serialized_file_system_access_handle(std::vector<uint8_t> token);
+
   void set_blob_number(int64_t blob_number);
   void set_mark_used_callback(base::RepeatingClosure mark_used_callback);
   void set_release_callback(base::RepeatingClosure release_callback);

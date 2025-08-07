@@ -142,9 +142,11 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // and updates the primary blob journal, and kicks off the async writing
     // of the blob files. In case of crash/rollback, the journal indicates what
     // files should be cleaned up.
-    // The callback will be called eventually on success or failure, or
-    // immediately if phase one is complete due to lack of any blobs to write.
-    Status CommitPhaseOne(BlobWriteCallback callback) override;
+    // The blob write callback will be called eventually on success or failure,
+    // or immediately if phase one is complete due to lack of any blobs to
+    // write. The `serialize_fsa_handle` callback is not used.
+    Status CommitPhaseOne(BlobWriteCallback callback,
+                          SerializeFsaCallback serialize_fsa_handle) override;
     // CommitPhaseTwo is called once the blob files (if any) have been written
     // to disk, and commits the actual transaction to the backing store,
     // including blob journal updates, then deletes any blob files deleted
@@ -219,7 +221,11 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection) override;
-    blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value) override;
+
+    // `deserialize_fsa_handle` is not used in this implementation.
+    blink::mojom::IDBValuePtr BuildMojoValue(
+        IndexedDBValue value,
+        DeserializeFsaCallback deserialize_fsa_handle) override;
 
     Status PutExternalObjectsIfNeeded(const std::string& object_store_data_key,
                                       std::vector<IndexedDBExternalObject>*);

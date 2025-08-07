@@ -41,6 +41,7 @@
 #include "content/browser/indexed_db/instance/factory_client.h"
 #include "content/browser/indexed_db/instance/fake_transaction.h"
 #include "content/browser/indexed_db/instance/mock_factory_client.h"
+#include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -301,12 +302,18 @@ class DatabaseTest : public ::testing::Test {
         base::BindOnce(&DatabaseTest::OnBucketContextReadyForDestruction,
                        weak_factory_.GetWeakPtr());
 
+    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
+    file_system_access_context_ =
+        std::make_unique<test::MockFileSystemAccessContext>();
+    file_system_access_context_->Clone(
+        fsa_context.InitWithNewPipeAndPassReceiver());
+
     bucket_context_ = std::make_unique<BucketContext>(
         storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
         scoped_refptr<base::UpdateableSequencedTaskRunner>(),
         quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote());
+        /*file_system_access_context=*/std::move(fsa_context));
 
     bucket_context_->InitBackingStoreIfNeeded(true);
     db_ = bucket_context_->CreateAndAddDatabase(u"db");
@@ -328,6 +335,8 @@ class DatabaseTest : public ::testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<BucketContext> bucket_context_;
+  std::unique_ptr<test::MockFileSystemAccessContext>
+      file_system_access_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 

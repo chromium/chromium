@@ -6767,7 +6767,6 @@ crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/
 
 # To-be-fixed tests from the IndexedDB SQLite virtual suite.
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/clear-site-data/storage.https.html [ Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/fs/FileSystemBaseHandle-IndexedDB.https.any.html [ Crash Failure ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/storage/partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html [ Timeout ]
 
 # CustomizableSelectInPage

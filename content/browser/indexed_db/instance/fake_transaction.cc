@@ -25,7 +25,8 @@ FakeTransaction::FakeTransaction(
 
 FakeTransaction::~FakeTransaction() = default;
 
-Status FakeTransaction::CommitPhaseOne(BlobWriteCallback callback) {
+Status FakeTransaction::CommitPhaseOne(BlobWriteCallback callback,
+                                       SerializeFsaCallback /*unused*/) {
   return std::move(callback).Run(
       BlobWriteResult::kRunPhaseTwoAndReturnResult,
       storage::mojom::WriteBlobToFileResult::kSuccess);
@@ -189,8 +190,10 @@ FakeTransaction::OpenIndexCursor(int64_t object_store_id,
 }
 
 blink::mojom::IDBValuePtr FakeTransaction::BuildMojoValue(
-    IndexedDBValue value) {
-  return wrapped_transaction_->BuildMojoValue(std::move(value));
+    IndexedDBValue value,
+    DeserializeFsaCallback deserialize_fsa_handle) {
+  return wrapped_transaction_->BuildMojoValue(
+      std::move(value), std::move(deserialize_fsa_handle));
 }
 
 }  // namespace content::indexed_db

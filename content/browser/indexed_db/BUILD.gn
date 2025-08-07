@@ -148,6 +148,8 @@ source_set("unit_tests") {
     "instance/leveldb/tombstone_sweeper_unittest.cc",
     "instance/mock_factory_client.cc",
     "instance/mock_factory_client.h",
+    "instance/mock_file_system_access_context.cc",
+    "instance/mock_file_system_access_context.h",
     "instance/transaction_unittest.cc",
     "list_set_unittest.cc",
     "mock_mojo_indexed_db_database_callbacks.cc",

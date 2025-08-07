@@ -187,11 +187,13 @@ void InitializeNewDatabase(sql::Database* db,
       "(row_id INTEGER PRIMARY KEY,"
       // Corresponds to `IndexedDBExternalObject::ObjectType`.
       " object_type INTEGER NOT NULL,"
-      " mime_type TEXT NOT NULL,"
-      " size_bytes INTEGER NOT NULL,"
       // This can be null if the blob is stored on disk, which will be the
-      // case for legacy blobs.
+      // case for legacy blobs. It's also temporarily null while FSA handles are
+      // being serialized into a token (after which point, this holds the
+      // token).
       " bytes BLOB,"
+      " mime_type TEXT,"         // Null for FSA handles.
+      " size_bytes INTEGER,"     // Null for FSA handles.
       " file_name BLOB,"         // only for files
       " last_modified INTEGER)"  // only for files
       ));
@@ -835,7 +837,8 @@ void DatabaseConnection::BeginTransaction(
 Status DatabaseConnection::CommitTransactionPhaseOne(
     base::PassKey<BackingStoreTransactionImpl>,
     const BackingStoreTransactionImpl& transaction,
-    BlobWriteCallback callback) {
+    BlobWriteCallback callback,
+    SerializeFsaCallback serialize_fsa_handle) {
   if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly ||
       blobs_to_write_.empty()) {
     return std::move(callback).Run(
@@ -845,11 +848,21 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
 
   CHECK(blob_write_callback_.is_null());
   CHECK(blob_writers_.empty());
+  CHECK_EQ(outstanding_external_object_writes_, 0U);
 
   blob_write_callback_ = std::move(callback);
 
   auto blobs_to_write = std::move(blobs_to_write_);
   for (auto& [blob_row_id, external_object] : blobs_to_write) {
+    ++outstanding_external_object_writes_;
+    if (external_object.object_type() ==
+        IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
+      serialize_fsa_handle.Run(
+          *external_object.file_system_access_token_remote(),
+          base::BindOnce(&DatabaseConnection::OnFsaHandleSerialized,
+                         blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
+      continue;
+    }
     std::optional<sql::StreamingBlobHandle> blob_for_writing =
         db_->GetStreamingBlob("blobs", "bytes", blob_row_id,
                               /*readonly=*/false);
@@ -858,11 +871,12 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
         external_object, *std::move(blob_for_writing),
         base::BindOnce(&DatabaseConnection::OnBlobWriteComplete,
                        blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
+
     if (!writer) {
-      blob_writers_.clear();
-      return std::move(blob_write_callback_)
-          .Run(BlobWriteResult::kRunPhaseTwoAndReturnResult,
-               storage::mojom::WriteBlobToFileResult::kError);
+      CancelBlobWriting();
+      // This is currently ignored as the error is already surfaced through
+      // `blob_write_callback_`.
+      return Status::IOError();
     }
 
     blob_writers_[blob_row_id] = std::move(writer);
@@ -873,22 +887,43 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
 
 void DatabaseConnection::OnBlobWriteComplete(int64_t blob_row_id,
                                              bool success) {
-  CHECK_EQ(blob_writers_.erase(blob_row_id), 1U);
+  blob_writers_.erase(blob_row_id);
 
   if (!success) {
-    blob_writers_weak_factory_.InvalidateWeakPtrs();
-    blob_writers_.clear();
-    std::move(blob_write_callback_)
-        .Run(BlobWriteResult::kRunPhaseTwoAsync,
-             storage::mojom::WriteBlobToFileResult::kError);
+    CancelBlobWriting();
     return;
   }
 
-  if (blob_writers_.empty()) {
+  if (--outstanding_external_object_writes_ == 0) {
     std::move(blob_write_callback_)
         .Run(BlobWriteResult::kRunPhaseTwoAsync,
              storage::mojom::WriteBlobToFileResult::kSuccess);
   }
+}
+
+void DatabaseConnection::OnFsaHandleSerialized(
+    int64_t blob_row_id,
+    const std::vector<uint8_t>& data) {
+  if (!data.empty()) {
+    sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE,
+                                                     "UPDATE blobs "
+                                                     "SET bytes = ? "
+                                                     "WHERE row_id = ?"));
+    statement.BindBlob(0, data);
+    statement.BindInt64(1, blob_row_id);
+    TRANSIENT_CHECK(statement.Run());
+  }
+
+  OnBlobWriteComplete(blob_row_id, /*success=*/!data.empty());
+}
+
+void DatabaseConnection::CancelBlobWriting() {
+  blob_writers_weak_factory_.InvalidateWeakPtrs();
+  blob_writers_.clear();
+  outstanding_external_object_writes_ = 0;
+  std::move(blob_write_callback_)
+      .Run(BlobWriteResult::kRunPhaseTwoAsync,
+           storage::mojom::WriteBlobToFileResult::kError);
 }
 
 Status DatabaseConnection::CommitTransactionPhaseTwo(
@@ -1236,43 +1271,86 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
 IndexedDBValue DatabaseConnection::AddExternalObjectMetadataToValue(
     IndexedDBValue value,
     int64_t record_row_id) {
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT "
-      "  blobs.row_id, object_type, mime_type, size_bytes, file_name, "
-      "  last_modified "
-      "FROM blobs INNER JOIN blob_references"
-      "  ON blob_references.blob_row_id = blobs.row_id "
-      "WHERE"
-      "  blob_references.record_row_id = ?"));
-  statement.BindInt64(0, record_row_id);
-  while (statement.Step()) {
-    const int64_t blob_row_id = statement.ColumnInt64(0);
-    if (auto it = blobs_to_write_.find(blob_row_id);
-        it != blobs_to_write_.end()) {
-      // If the blob is being written in this transaction, copy the external
-      // object (and later the Blob mojo endpoint) from `blobs_to_write_`.
-      value.external_objects.emplace_back(it->second);
-    } else {
-      auto object_type = static_cast<IndexedDBExternalObject::ObjectType>(
-          statement.ColumnInt(1));
-      if (object_type == IndexedDBExternalObject::ObjectType::kBlob) {
-        // Otherwise, create a new `IndexedDBExternalObject` from the
-        // database.
-        value.external_objects.emplace_back(
-            /*type=*/statement.ColumnString16(2),
-            /*size=*/statement.ColumnInt64(3), blob_row_id);
-      } else if (object_type == IndexedDBExternalObject::ObjectType::kFile) {
-        value.external_objects.emplace_back(
-            blob_row_id, /*type=*/statement.ColumnString16(2),
-            /*file_name=*/statement.ColumnString16(4),
-            /*last_modified=*/statement.ColumnTime(5),
-            /*size=*/statement.ColumnInt64(3));
+  // First add Blob and File objects' metadata (not FSA handles).
+  {
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE,
+        "SELECT "
+        "  blobs.row_id, object_type, mime_type, size_bytes, file_name, "
+        "  last_modified "
+        "FROM blobs INNER JOIN blob_references"
+        "  ON blob_references.blob_row_id = blobs.row_id "
+        "WHERE"
+        "  blob_references.record_row_id = ? AND object_type != ? "
+        // The order is important because the serialized data uses indexes to
+        // refer to embedded external objects.
+        "ORDER BY blobs.row_id"));
+    statement.BindInt64(0, record_row_id);
+    statement.BindInt64(
+        1, static_cast<int>(
+               IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
+    while (statement.Step()) {
+      const int64_t blob_row_id = statement.ColumnInt64(0);
+      if (auto it = blobs_to_write_.find(blob_row_id);
+          it != blobs_to_write_.end()) {
+        // If the blob is being written in this transaction, copy the external
+        // object (and later the Blob mojo endpoint) from `blobs_to_write_`.
+        value.external_objects.emplace_back(it->second);
       } else {
-        NOTREACHED();
+        auto object_type = static_cast<IndexedDBExternalObject::ObjectType>(
+            statement.ColumnInt(1));
+        if (object_type == IndexedDBExternalObject::ObjectType::kBlob) {
+          // Otherwise, create a new `IndexedDBExternalObject` from the
+          // database.
+          value.external_objects.emplace_back(
+              /*type=*/statement.ColumnString16(2),
+              /*size=*/statement.ColumnInt64(3), blob_row_id);
+        } else if (object_type == IndexedDBExternalObject::ObjectType::kFile) {
+          value.external_objects.emplace_back(
+              blob_row_id, /*type=*/statement.ColumnString16(2),
+              /*file_name=*/statement.ColumnString16(4),
+              /*last_modified=*/statement.ColumnTime(5),
+              /*size=*/statement.ColumnInt64(3));
+        } else {
+          NOTREACHED();
+        }
       }
     }
+    TRANSIENT_CHECK(statement.Succeeded());
   }
+  // Then add FileSystemAccessHandle objects' metadata.
+  {
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE,
+        "SELECT "
+        "  blobs.row_id, bytes "
+        "FROM blobs INNER JOIN blob_references"
+        "  ON blob_references.blob_row_id = blobs.row_id "
+        "WHERE"
+        "  blob_references.record_row_id = ? AND object_type = ? "
+        "ORDER BY blobs.row_id"));
+    statement.BindInt64(0, record_row_id);
+    statement.BindInt64(
+        1, static_cast<int>(
+               IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
+    while (statement.Step()) {
+      const int64_t blob_row_id = statement.ColumnInt64(0);
+      if (auto it = blobs_to_write_.find(blob_row_id);
+          it != blobs_to_write_.end()) {
+        mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+            token_clone;
+        it->second.file_system_access_token_remote()->Clone(
+            token_clone.InitWithNewPipeAndPassReceiver());
+        value.external_objects.emplace_back(std::move(token_clone));
+      } else {
+        base::span<const uint8_t> serialized_handle = statement.ColumnBlob(1);
+        value.external_objects.emplace_back(std::vector<uint8_t>(
+            serialized_handle.begin(), serialized_handle.end()));
+      }
+    }
+    TRANSIENT_CHECK(statement.Succeeded());
+  }
+
   return value;
 }
 
@@ -1298,12 +1376,16 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
   // Insert external objects into relevant tables.
   for (auto& external_object : value.external_objects) {
-    // TODO(crbug.com/419208485): Support FSA handles.
-    TRANSIENT_CHECK(
-        external_object.object_type() !=
-        IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle);
     // Reserve space in the blob table. It's not actually written yet though.
-    {
+    if (external_object.object_type() ==
+        IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
+      sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE,
+                                                       "INSERT INTO blobs "
+                                                       "(object_type) "
+                                                       "VALUES (?)"));
+      statement.BindInt(0, static_cast<int>(external_object.object_type()));
+      TRANSIENT_CHECK(statement.Run());
+    } else {
       sql::Statement statement(
           db_->GetCachedStatement(SQL_FROM_HERE,
                                   "INSERT INTO blobs "
@@ -1471,7 +1553,8 @@ StatusOr<uint32_t> DatabaseConnection::GetIndexKeyCount(
 std::vector<blink::mojom::IDBExternalObjectPtr>
 DatabaseConnection::CreateAllExternalObjects(
     base::PassKey<BackingStoreTransactionImpl>,
-    const std::vector<IndexedDBExternalObject>& objects) {
+    const std::vector<IndexedDBExternalObject>& objects,
+    DeserializeFsaCallback deserialize_fsa_handle) {
   std::vector<blink::mojom::IDBExternalObjectPtr> mojo_objects;
   IndexedDBExternalObject::ConvertToMojo(objects, &mojo_objects);
 
@@ -1480,7 +1563,20 @@ DatabaseConnection::CreateAllExternalObjects(
     blink::mojom::IDBExternalObjectPtr& mojo_object = mojo_objects[i];
     if (object.object_type() ==
         IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
-      NOTIMPLEMENTED();
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+          mojo_token;
+      if (object.is_file_system_access_remote_valid()) {
+        // The remote will be valid if this is a pending FSA handle i.e. came
+        // from `blobs_to_write_`.
+        object.file_system_access_token_remote()->Clone(
+            mojo_token.InitWithNewPipeAndPassReceiver());
+      } else {
+        CHECK(!object.serialized_file_system_access_handle().empty());
+        deserialize_fsa_handle.Run(
+            object.serialized_file_system_access_handle(),
+            mojo_token.InitWithNewPipeAndPassReceiver());
+      }
+      mojo_object->set_file_system_access_token(std::move(mojo_token));
       continue;
     }
     mojo::PendingReceiver<blink::mojom::Blob> receiver =

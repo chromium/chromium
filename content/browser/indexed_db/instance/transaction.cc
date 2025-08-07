@@ -850,15 +850,41 @@ Status Transaction::DoPendingCommit() {
   } else {
     // CommitPhaseOne will call the callback synchronously if there are no blobs
     // to write.
-    s = backing_store_transaction_->CommitPhaseOne(base::BindOnce(
-        [](base::WeakPtr<Transaction> transaction, BlobWriteResult result,
-           storage::mojom::WriteBlobToFileResult error) {
-          if (!transaction) {
-            return Status::OK();
-          }
-          return transaction->BlobWriteComplete(result, error);
-        },
-        ptr_factory_.GetWeakPtr()));
+    s = backing_store_transaction_->CommitPhaseOne(
+        /*blob_write_callback=*/
+        base::BindOnce(
+            [](base::WeakPtr<Transaction> transaction, BlobWriteResult result,
+               storage::mojom::WriteBlobToFileResult error) {
+              if (!transaction) {
+                return Status::OK();
+              }
+              return transaction->BlobWriteComplete(result, error);
+            },
+            ptr_factory_.GetWeakPtr()),
+        // This callback is only used by SQLite. The LevelDB version of this
+        // code lives in `BackingStore::Transaction::WriteNewBlobs`.
+        /*serialize_fsa_callback=*/
+        base::BindRepeating(
+            [](base::WeakPtr<Transaction> transaction,
+               blink::mojom::FileSystemAccessTransferToken& token_remote,
+               base::OnceCallback<void(const std::vector<uint8_t>&)>
+                   deliver_serialized_token) {
+              if (!transaction) {
+                return;
+              }
+
+              // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
+              // SharedRemote, so this code can just move the remote, instead of
+              // cloning.
+              mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                  token_clone;
+              token_remote.Clone(token_clone.InitWithNewPipeAndPassReceiver());
+              transaction->bucket_context()
+                  ->file_system_access_context()
+                  ->SerializeHandle(std::move(token_clone),
+                                    std::move(deliver_serialized_token));
+            },
+            ptr_factory_.GetWeakPtr()));
   }
 
   return s;
@@ -1162,6 +1188,19 @@ IndexedDBKey Transaction::GenerateAutoIncrementKey(int64_t object_store_id) {
   }
 
   return IndexedDBKey(current_number, blink::mojom::IDBKeyType::Number);
+}
+
+blink::mojom::IDBValuePtr Transaction::BuildMojoValue(IndexedDBValue value) {
+  return backing_store_transaction_->BuildMojoValue(
+      std::move(value),
+      // Note that this callback is only used by the SQLite store. The LevelDB
+      // store reaches directly into the bucket context and its
+      // FileSystemAccessContext (a layering violation).
+      /*deserialize_handle=*/
+      base::BindRepeating(
+          &storage::mojom::FileSystemAccessContext::DeserializeHandle,
+          base::Unretained(bucket_context_->file_system_access_context()),
+          bucket_context_->bucket_info().storage_key));
 }
 
 }  // namespace content::indexed_db

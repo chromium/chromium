@@ -30,8 +30,11 @@ void BackingStoreTransactionImpl::Begin(std::vector<PartitionedLock> locks) {
   db_->BeginTransaction(PassKey(), *this);
 }
 
-Status BackingStoreTransactionImpl::CommitPhaseOne(BlobWriteCallback callback) {
-  return db_->CommitTransactionPhaseOne(PassKey(), *this, std::move(callback));
+Status BackingStoreTransactionImpl::CommitPhaseOne(
+    BlobWriteCallback callback,
+    SerializeFsaCallback serialize_fsa) {
+  return db_->CommitTransactionPhaseOne(PassKey(), *this, std::move(callback),
+                                        std::move(serialize_fsa));
 }
 
 Status BackingStoreTransactionImpl::CommitPhaseTwo() {
@@ -200,14 +203,15 @@ BackingStoreTransactionImpl::OpenIndexCursor(
 }
 
 blink::mojom::IDBValuePtr BackingStoreTransactionImpl::BuildMojoValue(
-    IndexedDBValue value) {
+    IndexedDBValue value,
+    DeserializeFsaCallback deserialize_handle) {
   auto mojo_value = blink::mojom::IDBValue::New();
   if (!value.empty()) {
     mojo_value->bits = std::move(value.bits);
   }
   if (!value.external_objects.empty()) {
-    mojo_value->external_objects =
-        db_->CreateAllExternalObjects(PassKey(), value.external_objects);
+    mojo_value->external_objects = db_->CreateAllExternalObjects(
+        PassKey(), value.external_objects, deserialize_handle);
   }
   return mojo_value;
 }

@@ -100,7 +100,9 @@ class BackingStore {
     // For now, refer to comments in level_db::BackingStore::Transaction for
     // documentation.
     virtual void Begin(std::vector<PartitionedLock> locks) = 0;
-    virtual Status CommitPhaseOne(BlobWriteCallback callback) = 0;
+    virtual Status CommitPhaseOne(
+        BlobWriteCallback blob_write_callback,
+        SerializeFsaCallback serialize_fsa_handle) = 0;
     virtual Status CommitPhaseTwo() = 0;
     virtual void Rollback() = 0;
 
@@ -197,7 +199,12 @@ class BackingStore {
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection) = 0;
-    virtual blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value) = 0;
+    // Builds a complete value to be passed to the renderer by creating external
+    // objects for `value`. `deserialize_handle` can be used to help create FSA
+    // handle external objects out of their serialized representations.
+    virtual blink::mojom::IDBValuePtr BuildMojoValue(
+        IndexedDBValue value,
+        DeserializeFsaCallback deserialize_handle) = 0;
   };
 
   // Another interface to be implemented by a backend implementation.

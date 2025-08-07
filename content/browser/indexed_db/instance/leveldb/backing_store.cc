@@ -2174,7 +2174,8 @@ void BackingStore::FlushForTesting() {
 }
 
 blink::mojom::IDBValuePtr BackingStore::Transaction::BuildMojoValue(
-    IndexedDBValue value) {
+    IndexedDBValue value,
+    DeserializeFsaCallback /*unused*/) {
   auto mojo_value = blink::mojom::IDBValue::New();
   if (!value.empty()) {
     mojo_value->bits = std::move(value.bits);
@@ -4231,7 +4232,9 @@ BackingStore::Transaction::PrepareCursor(std::unique_ptr<Cursor> cursor) {
   });
 }
 
-Status BackingStore::Transaction::CommitPhaseOne(BlobWriteCallback callback) {
+Status BackingStore::Transaction::CommitPhaseOne(
+    BlobWriteCallback callback,
+    SerializeFsaCallback /*unused*/) {
   DCHECK(transaction_.get());
   DCHECK(backing_store_);
   TRACE_EVENT0("IndexedDB", "BackingStore::Transaction::CommitPhaseOne");
