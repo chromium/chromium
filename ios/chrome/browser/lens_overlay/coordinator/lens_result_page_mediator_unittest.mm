@@ -179,10 +179,12 @@ TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
                 /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
   AttachFakeWebState();
   GURL result_url = GURL("https://www.google.com");
+  NSDictionary<NSString*, NSString*>* http_headers =
+      @{@"X-Lens-Capabilities" : @"<lens capabilities>"};
 
   // Expect that the light mode query param is added to the URL.
   [mediator_ setIsDarkMode:NO];
-  [mediator_ loadResultsURL:result_url];
+  [mediator_ loadResultsURL:result_url httpHeaders:http_headers];
   GURL light_mode_url = GURL("https://www.google.com?cs=0");
   EXPECT_TRUE(GetFakeNavigationManager()->LoadURLWithParamsWasCalled());
   std::optional<web::NavigationManager::WebLoadParams> load_params =
@@ -191,10 +193,12 @@ TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
   EXPECT_EQ(load_params->url, light_mode_url);
   // Expect that the client data header is added to the request.
   ASSERT_TRUE([load_params->extra_headers objectForKey:@"X-Client-Data"]);
+  ASSERT_EQ([load_params->extra_headers objectForKey:@"X-Lens-Capabilities"],
+            @"<lens capabilities>");
 
   // Expect that the dark mode query param is added to the URL.
   [mediator_ setIsDarkMode:YES];
-  [mediator_ loadResultsURL:result_url];
+  [mediator_ loadResultsURL:result_url httpHeaders:http_headers];
   GURL dark_mode_url = GURL("https://www.google.com?cs=1");
   EXPECT_TRUE(GetFakeNavigationManager()->LoadURLWithParamsWasCalled());
   load_params = GetFakeNavigationManager()->GetLastLoadURLWithParams();
@@ -202,6 +206,8 @@ TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
   EXPECT_EQ(load_params->url, dark_mode_url);
   // Expect that the client data header is added to the request.
   ASSERT_TRUE([load_params->extra_headers objectForKey:@"X-Client-Data"]);
+  ASSERT_EQ([load_params->extra_headers objectForKey:@"X-Lens-Capabilities"],
+            @"<lens capabilities>");
 }
 
 // Tests that web navigation to google properties without lns_surface=4 is not

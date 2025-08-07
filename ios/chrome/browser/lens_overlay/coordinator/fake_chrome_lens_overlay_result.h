@@ -14,6 +14,9 @@
 
 /// The result URL that is meant to be loaded in the LRP.
 @property(nonatomic, assign) GURL searchResultURL;
+// The results HTTP headers that are meant to be loaded in the LRP.
+@property(nonatomic, copy)
+    NSDictionary<NSString*, NSString*>* resultsHttpHeaders;
 /// The selected portion of the original snapshot.
 @property(nonatomic, strong) UIImage* selectionPreviewImage;
 /// Data containing the suggest signals.
