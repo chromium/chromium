@@ -9,8 +9,6 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
-class PrerenderService;
-
 namespace enterprise_connectors {
 class ConnectorsService;
 }
@@ -24,7 +22,6 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
   SafeBrowsingClientImpl(
       PrefService* pref_Service,
       safe_browsing::HashRealTimeService* hash_real_time_service,
-      PrerenderService* prerender_service,
       UrlLookupServiceFactory url_lookup_service_factory,
       enterprise_connectors::ConnectorsService* connectors_service);
 
@@ -47,7 +44,6 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
  private:
   raw_ptr<PrefService> pref_service_;
   raw_ptr<safe_browsing::HashRealTimeService> hash_real_time_service_;
-  raw_ptr<PrerenderService> prerender_service_;
   // When enterprise Url filtering is enabled, this factory returns the
   // enterprise Url lookup service. Otherwise, it returns the consumer service.
   UrlLookupServiceFactory url_lookup_service_factory_;
