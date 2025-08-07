@@ -12,13 +12,10 @@
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase_LateResolveEnabled) {
-  ScopedCSSRelativeColorLateResolveAlwaysForTest scoped_feature_for_test(true);
-
+TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase) {
   const String test_case = "rgb(from red r g b)";
   CSSParserTokenStream stream(test_case);
 
@@ -51,25 +48,6 @@ TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase_LateResolveEnabled) {
   EXPECT_EQ(To<CSSIdentifierValue>(channel2).GetValueID(), CSSValueID::kB);
 
   EXPECT_EQ(color->Alpha(), nullptr);
-}
-
-TEST(ColorFunctionParserTest,
-     RelativeColorWithKeywordBase_LateResolveDisabled) {
-  ScopedCSSRelativeColorLateResolveAlwaysForTest scoped_feature_for_test(false);
-
-  const String test_case = "rgb(from red r g b)";
-  CSSParserTokenStream stream(test_case);
-
-  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-
-  ColorFunctionParser parser;
-  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
-      stream, *context, css_parsing_utils::ColorParserContext());
-  EXPECT_TRUE(result->IsColorValue());
-  const cssvalue::CSSColor* color = To<cssvalue::CSSColor>(result);
-  EXPECT_EQ(color->Value(),
-            Color::FromColorSpace(Color::ColorSpace::kSRGB, 1, 0, 0));
 }
 
 TEST(ColorFunctionParserTest, RelativeColorWithInvalidChannelReference) {
