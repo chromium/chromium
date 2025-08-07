@@ -77,7 +77,7 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testDeleteTabGroupTitle() {
-        TabGroupTitleUtils.deleteTabGroupTitle(TAB_ID);
+        TabGroupVisualDataStore.deleteTabGroupTitle(TAB_ID);
 
         verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
         verify(mRemoveEditor).apply();
@@ -88,12 +88,12 @@ public class TabGroupTitleUtilsUnitTest {
         // Mock that we have a stored tab group title with reference to TAB_ID.
         when(mSharedPreferences.getString(String.valueOf(TAB_ID), null)).thenReturn(TAB_TITLE);
 
-        assertThat(TabGroupTitleUtils.getTabGroupTitle(TAB_ID), equalTo(TAB_TITLE));
+        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TAB_ID), equalTo(TAB_TITLE));
     }
 
     @Test
     public void testStoreTabGroupTitle() {
-        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, TAB_TITLE);
+        TabGroupVisualDataStore.storeTabGroupTitle(TAB_ID, TAB_TITLE);
 
         verify(mEditor).putString(eq(String.valueOf(TAB_ID)), eq(TAB_TITLE));
         verify(mPutStringEditor).apply();
@@ -101,7 +101,7 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testStoreTabGroupTitle_Empty() {
-        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, "");
+        TabGroupVisualDataStore.storeTabGroupTitle(TAB_ID, "");
 
         verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
         verify(mRemoveEditor).apply();
@@ -109,7 +109,7 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testStoreTabGroupTitle_Null() {
-        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, null);
+        TabGroupVisualDataStore.storeTabGroupTitle(TAB_ID, null);
 
         verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
         verify(mRemoveEditor).apply();

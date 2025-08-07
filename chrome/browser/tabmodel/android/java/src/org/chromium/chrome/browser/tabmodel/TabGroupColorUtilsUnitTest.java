@@ -115,7 +115,7 @@ public class TabGroupColorUtilsUnitTest {
         doAnswer(
                         invocation -> {
                             Token tabGroupId = invocation.getArgument(0);
-                            return TabGroupColorUtils.getTabGroupColor(
+                            return TabGroupVisualDataStore.getTabGroupColor(
                                     TAB_GROUP_ID_MAP.get(tabGroupId));
                         })
                 .when(mFilter)
@@ -124,7 +124,7 @@ public class TabGroupColorUtilsUnitTest {
                         invocation -> {
                             Token tabGroupId = invocation.getArgument(0);
                             int color = invocation.getArgument(1);
-                            TabGroupColorUtils.storeTabGroupColor(
+                            TabGroupVisualDataStore.storeTabGroupColor(
                                     TAB_GROUP_ID_MAP.get(tabGroupId), color);
                             return null;
                         })
@@ -136,7 +136,7 @@ public class TabGroupColorUtilsUnitTest {
 
     @Test
     public void testDeleteTabGroupColor() {
-        TabGroupColorUtils.deleteTabGroupColor(ROOT_ID_1);
+        TabGroupVisualDataStore.deleteTabGroupColor(ROOT_ID_1);
 
         verify(mEditor).remove(eq(String.valueOf(ROOT_ID_1)));
         verify(mRemoveEditor).apply();
@@ -148,12 +148,12 @@ public class TabGroupColorUtilsUnitTest {
         when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
                 .thenReturn(COLOR_1);
 
-        assertThat(TabGroupColorUtils.getTabGroupColor(ROOT_ID_1), equalTo(COLOR_1));
+        assertThat(TabGroupVisualDataStore.getTabGroupColor(ROOT_ID_1), equalTo(COLOR_1));
     }
 
     @Test
     public void testStoreTabGroupColor() {
-        TabGroupColorUtils.storeTabGroupColor(ROOT_ID_1, COLOR_1);
+        TabGroupVisualDataStore.storeTabGroupColor(ROOT_ID_1, COLOR_1);
 
         verify(mEditor).putInt(eq(String.valueOf(ROOT_ID_1)), eq(COLOR_1));
         verify(mPutIntEditor).apply();

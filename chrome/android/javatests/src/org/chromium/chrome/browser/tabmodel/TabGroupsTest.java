@@ -257,9 +257,9 @@ public class TabGroupsTest {
         Tab tab6 = tabs.get(6);
 
         // All of the old roots have titles set.
-        TabGroupTitleUtils.storeTabGroupTitle(tab0.getId(), "0");
-        TabGroupTitleUtils.storeTabGroupTitle(tab1.getId(), "1");
-        TabGroupTitleUtils.storeTabGroupTitle(tab6.getId(), "6");
+        TabGroupVisualDataStore.storeTabGroupTitle(tab0.getId(), "0");
+        TabGroupVisualDataStore.storeTabGroupTitle(tab1.getId(), "1");
+        TabGroupVisualDataStore.storeTabGroupTitle(tab6.getId(), "6");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -311,8 +311,8 @@ public class TabGroupsTest {
         Tab tab5 = tabs.get(5);
         Tab tab6 = tabs.get(6);
 
-        TabGroupTitleUtils.storeTabGroupTitle(OTHER_ROOT_ID_1, "together");
-        TabGroupTitleUtils.storeTabGroupTitle(tab4.getRootId(), "split");
+        TabGroupVisualDataStore.storeTabGroupTitle(OTHER_ROOT_ID_1, "together");
+        TabGroupVisualDataStore.storeTabGroupTitle(tab4.getRootId(), "split");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
