@@ -9,9 +9,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "components/tabs/public/tab_interface.h"
-#include "string.h"
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace page_actions {
 class PageActionController;
@@ -27,10 +25,16 @@ class CollaborationMessagingTabData;
 
 class CollaborationMessagingPageActionController {
  public:
+  DECLARE_USER_DATA(CollaborationMessagingPageActionController);
+
   CollaborationMessagingPageActionController(
+      tabs::TabInterface& tab,
       page_actions::PageActionController& page_action_controller,
       tab_groups::CollaborationMessagingTabData&
           collaboration_messaging_tab_data);
+
+  static CollaborationMessagingPageActionController* From(
+      tabs::TabInterface* tab);
 
   ~CollaborationMessagingPageActionController();
 
@@ -56,6 +60,8 @@ class CollaborationMessagingPageActionController {
   const raw_ref<page_actions::PageActionController> page_actions_controller_;
   const raw_ref<tab_groups::CollaborationMessagingTabData>
       collaboration_messaging_tab_data_;
+  ui::ScopedUnownedUserData<CollaborationMessagingPageActionController>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_COLLABORATION_MESSAGING_PAGE_ACTION_CONTROLLER_H_

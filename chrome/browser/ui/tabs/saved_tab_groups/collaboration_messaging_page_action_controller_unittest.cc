@@ -14,7 +14,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
-#include "components/signin/public/base/avatar_icon_util.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -22,6 +21,8 @@
 #include "memory"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "url/gurl.h"
 
 using collaboration::messaging::CollaborationEvent;
 using collaboration::messaging::MessageAttribution;
@@ -137,12 +138,14 @@ class CollaborationMessagingPageActionControllerTest : public testing::Test {
 
     tab_interface_ =
         std::make_unique<FakeTabInterface>(std::move(web_contents));
+    EXPECT_CALL(*tab_interface_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(data_host_));
 
     tab_data_ =
         std::make_unique<tab_groups::CollaborationMessagingTabData>(profile());
 
     controller_ = std::make_unique<CollaborationMessagingPageActionController>(
-        page_action_controller(), *tab_data_);
+        *tab_interface_, page_action_controller(), *tab_data_);
   }
 
   TestingProfile* profile() { return &profile_; }
@@ -166,6 +169,7 @@ class CollaborationMessagingPageActionControllerTest : public testing::Test {
   content::RenderViewHostTestEnabler test_enabler_;
   base::test::ScopedFeatureList features_;
   TestingProfile profile_;
+  ui::UnownedUserDataHost data_host_;
   std::unique_ptr<FakeTabInterface> tab_interface_;
   std::unique_ptr<tab_groups::CollaborationMessagingTabData> tab_data_;
   std::unique_ptr<CollaborationMessagingPageActionController> controller_;
