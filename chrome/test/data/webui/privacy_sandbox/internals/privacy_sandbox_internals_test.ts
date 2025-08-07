@@ -863,8 +863,10 @@ suite('PrefDisplayElementTest', function() {
 suite('ExpandableJsonViewerElement', function() {
   let jsonViewer: ExpandableJsonViewerElement;
   const kJsonViewerTitle = 'JSON Viewer Title';
+  const kJsonContent = '{}';
 
   suiteSetup(async function() {
+    await customElements.whenDefined('text-copy-button');
     await customElements.whenDefined('expandable-json-viewer');
   });
 
@@ -873,7 +875,7 @@ suite('ExpandableJsonViewerElement', function() {
     jsonViewer = document.createElement('expandable-json-viewer');
     document.body.appendChild(jsonViewer);
     const preElement = document.createElement('pre');
-    preElement.innerText = '{}';
+    preElement.innerText = kJsonContent;
     jsonViewer.configure(preElement, kJsonViewerTitle);
   });
 
@@ -886,7 +888,7 @@ suite('ExpandableJsonViewerElement', function() {
   test('rendersPassedChildElement', () => {
     const preElementFromDOM = jsonViewer.$('#json-content > pre');
     assertTrue(!!preElementFromDOM);
-    assertEquals(preElementFromDOM.textContent, '{}');
+    assertEquals(preElementFromDOM.textContent, kJsonContent);
   });
 
   test('clickingJsonHeaderTogglesState', async () => {
@@ -961,6 +963,22 @@ suite('ExpandableJsonViewerElement', function() {
         window.getComputedStyle(jsonContent).getPropertyValue('overflow'),
         'hidden');
   });
+
+  test('hasButtonToCopyContents', () => {
+    const copyButton: TextCopyButton|null = jsonViewer.$('text-copy-button');
+    assertTrue(!!copyButton);
+    assertEquals(copyButton.getAttribute('text-to-copy'), kJsonContent);
+  });
+
+  test('clickingCopyButtonDoesNotChangeContainerExpandedState', async () => {
+    const copyButton: TextCopyButton|null = jsonViewer.$('text-copy-button');
+    assertTrue(!!copyButton);
+
+    assertEquals(jsonViewer.hasAttribute('expanded'), false);
+    copyButton.click();
+    await microtasksFinished();
+    assertEquals(jsonViewer.hasAttribute('expanded'), false);
+  });
 });
 
 // Test the <text-copy-button> element.
@@ -1008,14 +1026,25 @@ suite('TextCopyButton', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     textCopyButton = document.createElement('text-copy-button');
-    textCopyButton.textToCopy = kTextToCopy;
+    textCopyButton.setAttribute('text-to-copy', kTextToCopy);
     document.body.appendChild(textCopyButton);
   });
 
-  test('clickingButtonCopiesText', async () => {
+  test('clickingButtonCopiesTextFromAttribute', async () => {
     textCopyButton.click();
     const clipboardText = await navigator.clipboard.readText();
     assertEquals(clipboardText, kTextToCopy);
+  });
+
+  test('updatesTextToCopyWhenTextToCopyAttributeIsChanged', async () => {
+    textCopyButton.click();
+    let clipboardText = await navigator.clipboard.readText();
+    assertEquals(clipboardText, kTextToCopy);
+
+    textCopyButton.setAttribute('text-to-copy', 'updated text');
+    textCopyButton.click();
+    clipboardText = await navigator.clipboard.readText();
+    assertEquals(clipboardText, 'updated text');
   });
 
   test('clickingButtonSetsRecentlyTextCopiedAttribute', async () => {

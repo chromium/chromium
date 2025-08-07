@@ -79,7 +79,7 @@ export class ContentSettingPatternSourceElement extends CustomElement {
       const patternHeader = this.getFieldElement(key + '-header');
       if (patternHeader) {
         const copyButton = document.createElement('text-copy-button');
-        copyButton.textToCopy = value;
+        copyButton.setAttribute('text-to-copy', value);
         patternHeader.appendChild(copyButton);
       }
     }
