@@ -4529,10 +4529,6 @@ const char kSharedHighlightingManagerName[] = "Refactoring Shared Highlighting";
 const char kSharedHighlightingManagerDescription[] =
     "Refactors Shared Highlighting by centralizing the IPC calls in a Manager.";
 
-const char kSanitizerApiName[] = "Sanitizer API";
-const char kSanitizerApiDescription[] =
-    "Enable the Sanitizer API. See: https://github.com/WICG/sanitizer-api";
-
 const char kUsePassthroughCommandDecoderName[] =
     "Use passthrough command decoder";
 const char kUsePassthroughCommandDecoderDescription[] =

@@ -2626,9 +2626,6 @@ extern const char kVulkanFromAngleDescription[];
 extern const char kSharedHighlightingManagerName[];
 extern const char kSharedHighlightingManagerDescription[];
 
-extern const char kSanitizerApiName[];
-extern const char kSanitizerApiDescription[];
-
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
