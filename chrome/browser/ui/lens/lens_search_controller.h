@@ -362,6 +362,11 @@ class LensSearchController {
   // Tracks the internal state machine.
   State state_ = State::kOff;
 
+  // Tracks the state of the Lens Search feature when the tab is backgrounded.
+  // This state is used to restore the Lens Search feature to the same state
+  // when the tab is foregrounded.
+  State backgrounded_state_ = State::kOff;
+
   // Indicates whether a trigger for the HaTS survey has occurred in the current
   // session. Note that a trigger does not mean the survey will actually be
   // shown.

@@ -2120,14 +2120,7 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
     UpdateEntryPointsState();
 
     // TODO(crbug.com/335516480): Schedule the UI to be suspended.
-    return;
   }
-
-  // This is still possible when the controller is in state kScreenshot and the
-  // tab was backgrounded. We should close the UI as the overlay has not been
-  // created yet.
-  lens_search_controller_->CloseLensSync(
-      lens::LensOverlayDismissalSource::kTabBackgroundedWhileScreenshotting);
 }
 
 void LensOverlayController::ActivityRequestedByOverlay(
