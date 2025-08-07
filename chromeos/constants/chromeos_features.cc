@@ -234,7 +234,7 @@ BASE_FEATURE(kFeatureManagementRoundedWindows,
 // `getAllScreensMedia` API.
 BASE_FEATURE(kMultiCaptureReworkedUsageIndicators,
              "MultiCaptureReworkedUsageIndicators",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the first wave of new features for the chrome.enterprise.platformKeys
 // API. That includes:

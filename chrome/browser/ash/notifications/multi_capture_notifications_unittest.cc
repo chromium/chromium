@@ -59,6 +59,9 @@ class MultiCaptureNotificationsTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kMultiCaptureReworkedUsageIndicators);
+
     UserDataAuthClient::InitializeFake();
 
     LogIn(kUserMail, kFakeGaia);
@@ -113,6 +116,9 @@ class MultiCaptureNotificationsTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
   unsigned int notification_count_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MultiCaptureNotificationsTestWithPrefs
