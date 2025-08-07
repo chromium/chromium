@@ -37,7 +37,7 @@ static_library("power_metrics") {
       "energy_metrics_provider_win.h",
     ]
 
-    libs = [ "Setupapi.lib" ]
+    libs = [ "setupapi.lib" ]
     ldflags = [ "/DELAYLOAD:setupapi.dll" ]
   }
 

@@ -148,7 +148,7 @@ source_set("cdm") {
 
     libs = [
       "mfuuid.lib",
-      "Propsys.lib",
+      "propsys.lib",
     ]
 
     deps += [

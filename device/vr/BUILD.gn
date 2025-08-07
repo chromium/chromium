@@ -241,7 +241,7 @@ if (enable_vr) {
       if (is_win) {
         libs = [
           "d3d11.lib",
-          "DXGI.lib",
+          "dxgi.lib",
         ]
 
         sources += [
@@ -356,7 +356,7 @@ if (enable_vr) {
 
       libs = [
         "d3d11.lib",
-        "DXGI.lib",
+        "dxgi.lib",
       ]
 
       deps = [ "//base" ]
@@ -433,7 +433,7 @@ if (enable_openxr) {
         sources += [ "openxr/test/openxr.def" ]
         libs = [
           "d3d11.lib",
-          "DXGI.lib",
+          "dxgi.lib",
         ]
       } else if (is_android) {
         configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
