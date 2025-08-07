@@ -47,8 +47,8 @@ class DocumentStyleSheetCollection final
   DocumentStyleSheetCollection& operator=(const DocumentStyleSheetCollection&) =
       delete;
 
-  void UpdateActiveStyleSheets(StyleEngine&, const MediaQueryEvaluator&);
-  void CollectStyleSheets(StyleEngine&,
+  void UpdateActiveStyleSheets(const StyleEngine&, const MediaQueryEvaluator&);
+  void CollectStyleSheets(const StyleEngine&,
                           const MediaQueryEvaluator&,
                           StyleSheetCollection&);
 
@@ -57,7 +57,8 @@ class DocumentStyleSheetCollection final
   }
 
  private:
-  void CollectStyleSheetsFromCandidates(StyleEngine&, StyleSheetCollection&);
+  void CollectStyleSheetsFromCandidates(const StyleEngine&,
+                                        StyleSheetCollection&);
 };
 
 }  // namespace blink

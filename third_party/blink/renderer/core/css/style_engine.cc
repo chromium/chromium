@@ -941,7 +941,7 @@ const Font* StyleEngine::ComputeFont(
 }
 
 RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet,
-                                      const MixinMap& mixins) {
+                                      const MixinMap& mixins) const {
   if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
     return nullptr;
   }
@@ -3180,7 +3180,7 @@ void StyleEngine::InvalidateFunctionalMediaDependentStylesIfNeeded() {
   });
 }
 
-const MediaQueryEvaluator& StyleEngine::EnsureMediaQueryEvaluator() {
+const MediaQueryEvaluator& StyleEngine::EnsureMediaQueryEvaluator() const {
   if (!media_query_evaluator_) {
     if (GetDocument().GetFrame()) {
       media_query_evaluator_ =

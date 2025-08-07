@@ -86,7 +86,7 @@ static void ExtractMixinsFromRules(
   }
 }
 
-void StyleSheetCollection::CreateRuleSets(StyleEngine& engine,
+void StyleSheetCollection::CreateRuleSets(const StyleEngine& engine,
                                           const MediaQueryEvaluator& medium) {
   MixinMap mixins;
   for (auto& [css_sheet, rule_set] : active_style_sheets_) {

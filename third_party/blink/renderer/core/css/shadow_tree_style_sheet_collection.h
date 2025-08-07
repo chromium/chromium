@@ -49,7 +49,7 @@ class ShadowTreeStyleSheetCollection final
   ShadowTreeStyleSheetCollection& operator=(
       const ShadowTreeStyleSheetCollection&) = delete;
 
-  void UpdateActiveStyleSheets(StyleEngine&, const MediaQueryEvaluator&);
+  void UpdateActiveStyleSheets(const StyleEngine&, const MediaQueryEvaluator&);
   bool IsShadowTreeStyleSheetCollection() const final { return true; }
 
   void Trace(Visitor* visitor) const override {
@@ -57,7 +57,7 @@ class ShadowTreeStyleSheetCollection final
   }
 
  private:
-  void CollectStyleSheets(StyleEngine&, StyleSheetCollection&);
+  void CollectStyleSheets(const StyleEngine&, StyleSheetCollection&);
 };
 
 template <>

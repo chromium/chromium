@@ -49,7 +49,7 @@ DocumentStyleSheetCollection::DocumentStyleSheetCollection(
 }
 
 void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
-    StyleEngine& engine,
+    const StyleEngine& engine,
     StyleSheetCollection& collection) {
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
@@ -92,7 +92,7 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
 }
 
 void DocumentStyleSheetCollection::CollectStyleSheets(
-    StyleEngine& engine,
+    const StyleEngine& engine,
     const MediaQueryEvaluator& medium,
     StyleSheetCollection& collection) {
   for (auto& sheet :
@@ -108,7 +108,7 @@ void DocumentStyleSheetCollection::CollectStyleSheets(
 }
 
 void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
-    StyleEngine& engine,
+    const StyleEngine& engine,
     const MediaQueryEvaluator& medium) {
   auto* collection = MakeGarbageCollected<StyleSheetCollection>();
   CollectStyleSheets(engine, medium, *collection);

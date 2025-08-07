@@ -293,7 +293,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return global_rule_set_->DocumentRulesSelectorsRuleSet();
   }
 
-  RuleSet* RuleSetForSheet(CSSStyleSheet&, const MixinMap& mixins);
+  RuleSet* RuleSetForSheet(CSSStyleSheet&, const MixinMap& mixins) const;
 
   // See StyleSheetContents::CreateUnconnectedRuleSet.
   //
@@ -863,7 +863,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       global_rule_set_->Update(GetDocument());
     }
   }
-  const MediaQueryEvaluator& EnsureMediaQueryEvaluator();
+  const MediaQueryEvaluator& EnsureMediaQueryEvaluator() const;
   void UpdateStyleSheetList(TreeScope&);
 
   // Returns true if any @font-face rules are added or removed.
@@ -1068,7 +1068,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   Member<StyleResolver> resolver_;
   Member<ViewportStyleResolver> viewport_resolver_;
-  Member<MediaQueryEvaluator> media_query_evaluator_;
+  mutable Member<MediaQueryEvaluator> media_query_evaluator_;
   Member<CSSGlobalRuleSet> global_rule_set_;
 
   PendingInvalidations pending_invalidations_;

@@ -47,7 +47,7 @@ ShadowTreeStyleSheetCollection::ShadowTreeStyleSheetCollection(
     : TreeScopeStyleSheetCollection(shadow_root) {}
 
 void ShadowTreeStyleSheetCollection::CollectStyleSheets(
-    StyleEngine& engine,
+    const StyleEngine& engine,
     StyleSheetCollection& collection) {
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
@@ -80,7 +80,7 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
 }
 
 void ShadowTreeStyleSheetCollection::UpdateActiveStyleSheets(
-    StyleEngine& engine,
+    const StyleEngine& engine,
     const MediaQueryEvaluator& medium) {
   auto* collection = MakeGarbageCollected<StyleSheetCollection>();
   CollectStyleSheets(engine, *collection);
