@@ -27,12 +27,17 @@ source_set("aim_eligibility_service") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
+    "//components/signin/public/identity_manager",
     "//components/variations/service",
     "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
   ]
 }

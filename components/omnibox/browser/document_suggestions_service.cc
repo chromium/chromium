@@ -120,7 +120,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
         semantics {
           sender: "Omnibox"
           description:
-            "Request for Google Drive document suggestions from the omnibox."
+            "Request for Google Drive document suggestions from the omnibox. "
             "User must be signed in and have default search provider set to "
             "Google."
           trigger: "Signed-in user enters text in the omnibox."
@@ -130,8 +130,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
         policy {
           cookies_allowed: YES
           cookies_store: "user"
-          setting:
-            "Coupled to Google default search plus signed-in"
+          setting: "Coupled to Google default search plus signed-in."
           chrome_policy {
             SearchSuggestEnabled {
                 policy_options {mode: MANDATORY}
