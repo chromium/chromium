@@ -453,7 +453,31 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
 
   add_if_not_empty(GetIconAccessibleName(suggestion.icon));
   text.push_back(suggestion.main_text.value);
-  if (!suggestion.minor_texts.empty()) {
+
+  const bool is_vcn =
+      suggestion.type == SuggestionType::kVirtualCreditCardEntry;
+  const bool is_iban = suggestion.type == SuggestionType::kIbanEntry;
+  const bool has_subtext =
+      !suggestion.labels.empty() && !suggestion.labels[0][0].value.empty();
+
+  std::u16string badge_text;
+  if (is_vcn) {
+    badge_text = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+  } else if (is_iban) {
+    badge_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_SUGGESTION_OPTION_VALUE);
+  }
+
+  // A badge is applied as a label view for the following cases:
+  // - A virtual card that does not have a product description or nickname.
+  // - An IBAN that does not have a nickname.
+  bool badge_used_as_minor_text = false;
+  if ((is_vcn && !suggestion.minor_texts.empty()) ||
+      (is_iban && !has_subtext)) {
+    add_if_not_empty(badge_text);
+    badge_used_as_minor_text = true;
+  } else if (!suggestion.minor_texts.empty()) {
     std::vector<std::u16string> text_values;
     for (const auto& minor_text : suggestion.minor_texts) {
       text_values.push_back(minor_text.value);
@@ -462,11 +486,26 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
     add_if_not_empty(sublabel);
   }
 
+  bool badge_added_to_labels = false;
   for (const std::vector<Suggestion::Text>& row : suggestion.labels) {
+    std::vector<std::u16string> row_values;
     for (const Suggestion::Text& label : row) {
       // `label_text` is not populated for footers or autocomplete entries.
-      add_if_not_empty(label.value);
+      if (!label.value.empty()) {
+        row_values.push_back(label.value);
+      }
     }
+    // If a badge is present and not used as minor text, apply it as a
+    // label view for these specific cases:
+    // - Virtual card that has a product description or nickname.
+    // - IBAN that has a nickname.
+    if (!badge_text.empty() && !badge_used_as_minor_text &&
+        !badge_added_to_labels) {
+      row_values.push_back(badge_text);
+      badge_added_to_labels = true;
+    }
+
+    add_if_not_empty(base::JoinString(row_values, u" "));
   }
 
   // `additional_label` is only populated in a passwords context.
