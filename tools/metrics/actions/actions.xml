@@ -24099,6 +24099,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiFREShown">
+  <owner>kanouche@google.com</owner>
+  <description>Reported when the BWG FRE was shown. iOS only.</description>
+</action>
+
 <action name="MobileGeminiLocationSettingsBack">
   <owner>joemerramos@google.com</owner>
   <description>

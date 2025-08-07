@@ -60,3 +60,7 @@ void RecordGeminiEntryPointImpression() {
     last_impression_time = now;
   }
 }
+
+void RecordFREShown() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiFREShown"));
+}

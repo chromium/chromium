@@ -56,4 +56,7 @@ void RecordBWGSessionTime(base::TimeDelta session_duration);
 // Can be called once every 10 minutes to avoid spam logging.
 void RecordGeminiEntryPointImpression();
 
+// Records that the BWG FRE was shown.
+void RecordFREShown();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
