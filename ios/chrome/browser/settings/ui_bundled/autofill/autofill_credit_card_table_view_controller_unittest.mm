@@ -44,7 +44,8 @@ class AutofillCreditCardTableViewControllerTest
                               ios::WebDataServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableCvcStorageAndFilling);
     // Set circular SyncService dependency to null.
     autofill::PersonalDataManagerFactory::GetForProfile(profile_.get())
         ->SetSyncServiceForTest(nullptr);
@@ -109,6 +110,7 @@ class AutofillCreditCardTableViewControllerTest
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Default test case of no credit cards.
@@ -116,9 +118,9 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestInitialization) {
   CreateController();
   CheckController();
 
-  // Expect two switch sections (the credit card Autofill switch and the
-  // mandatory reauth switch).
-  ASSERT_EQ(2, NumberOfSections());
+  // Expect three switch sections (the credit card Autofill switch, CVC
+  // storage autofill and mandatory reauth switch).
+  ASSERT_EQ(3, NumberOfSections());
   // Expect each switch section to contain one row.
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(1, NumberOfItemsInSection(1));
@@ -130,9 +132,9 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCard) {
   CreateController();
   CheckController();
 
-  // Expect three sections (credit card switch, mandatory reauth switch and
-  // credit card section).
-  ASSERT_EQ(3, NumberOfSections());
+  // Expect four sections (credit card switch, mandatory reauth switch,
+  // CVC storage switch and credit card section).
+  ASSERT_EQ(4, NumberOfSections());
   // Expect credit card section to contain one row (the credit card itself).
   EXPECT_EQ(1, NumberOfItemsInSection(2));
 }
@@ -144,15 +146,15 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   CreateController();
   CheckController();
 
-  // Expect three sections (credit card Autofill switch, mandatory reauth switch
-  // and credit card section).
-  ASSERT_EQ(3, NumberOfSections());
+  // Expect four sections (credit card Autofill switch, mandatory reauth switch,
+  // CVC storage switch and credit card section).
+  ASSERT_EQ(4, NumberOfSections());
   // Expect credit card section to contain one row (the credit card itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(2));
+  EXPECT_EQ(1, NumberOfItemsInSection(3));
 
   // Delete the credit card item and check that the section is removed.
-  EXPECT_TRUE(DeleteItemAndWait(2, 0, ^{
-    return NumberOfSections() == 2;
+  EXPECT_TRUE(DeleteItemAndWait(3, 0, ^{
+    return NumberOfSections() == 3;
   }));
 }
 
@@ -168,8 +170,9 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   CreateController();
   CheckController();
 
-  // Expect 2 sections, 1 for switches and 1 for mandatory reauth.
-  EXPECT_EQ(2, NumberOfSections());
+  // Expect 3 sections, 1 for switches, 1 for mandatory reauth and 1 for CVC
+  // storage switch.
+  EXPECT_EQ(3, NumberOfSections());
 
   // Expect Mandatory Reauth section to have 2 items, the switch and the
   // subtitle.
@@ -188,6 +191,57 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
       l10n_util::GetNSString(
           IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL),
       1);
+}
+
+// Tests that when the CVC storage feature is enabled, a CVC storage button
+// appears.
+TEST_F(AutofillCreditCardTableViewControllerTest, TestCVCStorageButtonExists) {
+  CreateController();
+  CheckController();
+
+  // Expect 3 sections: Autofill switch, mandatory reauth switch, and CVC
+  // storage.
+  EXPECT_EQ(3, NumberOfSections());
+
+  // Expect CVC storage section to have 1 item, the button.
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
+
+  // Confirm the text of the button.
+  CheckTextCellText(l10n_util::GetNSString(
+                        IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_LABEL),
+                    2, 0);
+
+  // Confirm the sublabel of the button.
+  CheckSectionFooter(
+      l10n_util::GetNSString(
+          IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_SUBLABEL),
+      2);
+}
+
+// Tests that when the CVC storage feature is disabled, a CVC storage button
+// does not appear.
+TEST_F(AutofillCreditCardTableViewControllerTest,
+       TestCVCStorageButtonNotExists_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
+
+  CreateController();
+  CheckController();
+
+  // Expect 2 sections: Autofill switch, mandatory reauth switch.
+  EXPECT_EQ(2, NumberOfSections());
+
+  // Confirm the text of Autofill switch.
+  CheckTextCellText(
+      l10n_util::GetNSString(IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_LABEL), 0,
+      0);
+
+  // Confirm the text of the mandatory reauth.
+  CheckTextCellText(
+      l10n_util::GetNSString(
+          IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL),
+      1, 0);
 }
 
 }  // namespace

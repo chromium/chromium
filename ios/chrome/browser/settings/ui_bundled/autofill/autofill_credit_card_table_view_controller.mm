@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -59,6 +60,7 @@ enum SectionIdentifier : NSInteger {
   SectionIdentifierAutofillCardSwitch = kSectionIdentifierEnumZero,
   SectionIdentifierMandatoryReauthSwitch,
   SectionIdentifierCards,
+  SectionIdentifierCVCStorage,
 };
 
 enum ItemType : NSInteger {
@@ -69,6 +71,8 @@ enum ItemType : NSInteger {
   ItemTypeHeader,
   ItemTypeMandatoryReauthSwitch,
   ItemTypeMandatoryReauthSwitchSubtitle,
+  ItemTypeCVCStorageButton,
+  ItemTypeCVCStorageButtonSubtitle,
 };
 
 }  // namespace
@@ -217,6 +221,15 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   [model setFooter:[self mandatoryReauthSwitchFooter]
       forSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
 
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
+    [model addSectionWithIdentifier:SectionIdentifierCVCStorage];
+    [model addItem:[self cvcStorageItem]
+        toSectionWithIdentifier:SectionIdentifierCVCStorage];
+    [model setFooter:[self cvcStorageFooter]
+        forSectionWithIdentifier:SectionIdentifierCVCStorage];
+  }
+
   [self populateCardSection];
 }
 
@@ -293,6 +306,24 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
       initWithType:ItemTypeMandatoryReauthSwitchSubtitle];
   footer.text = l10n_util::GetNSString(
       IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL);
+  return footer;
+}
+
+- (TableViewItem*)cvcStorageItem {
+  TableViewTextItem* cvcStorageItem =
+      [[TableViewTextItem alloc] initWithType:ItemTypeCVCStorageButton];
+
+  cvcStorageItem.text = l10n_util::GetNSString(
+      IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_LABEL);
+  cvcStorageItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  return cvcStorageItem;
+}
+
+- (TableViewHeaderFooterItem*)cvcStorageFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeCVCStorageButtonSubtitle];
+  footer.text = l10n_util::GetNSString(
+      IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_SUBLABEL);
   return footer;
 }
 
@@ -472,6 +503,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     case ItemTypeCard:
     case ItemTypeHeader:
     case ItemTypeMandatoryReauthSwitchSubtitle:
+    case ItemTypeCVCStorageButton:
+    case ItemTypeCVCStorageButtonSubtitle:
       break;
     case ItemTypeMandatoryReauthSwitch: {
       TableViewSwitchCell* switchCell =

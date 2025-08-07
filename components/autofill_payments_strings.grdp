@@ -569,6 +569,12 @@
     <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to turn on mandatory authentication when managing credit cards. This sublabel explains when the toggle is turned off Autofill will still request authentication occasionally.">
       For added protection, always use your fingerprint, face, or other screen lock when you pay using autofill
     </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_LABEL" desc="Label for a button that allows the users to manage security code (also known as CVC) autofill and/or delete saved CVCs.">
+      Save security codes
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_SUBLABEL" desc="Sublabel for a button that allows the users to manage security code (also known as CVC) autofill and/or delete saved CVCs">
+      Check out faster when your CVCs are saved
+    </message>
     <if expr="_google_chrome">
       <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
         Verify it's you so Chrome can fill in your payment info.
