@@ -530,6 +530,35 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Platform CDM"/>
 </enum>
 
+<enum name="DecoderStatus">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kFailed"/>
+  <int value="2" label="kAborted"/>
+  <int value="3" label="kInvalidArgument"/>
+  <int value="4" label="kInterrupted"/>
+  <int value="5" label="kDisconnected"/>
+  <int value="6" label="kOutOfMemory"/>
+  <int value="100" label="kNotInitialized"/>
+  <int value="101" label="kMissingCDM"/>
+  <int value="102" label="kFailedToGetVideoFrame"/>
+  <int value="103" label="kPlatformDecodeFailure"/>
+  <int value="104" label="kMalformedBitstream"/>
+  <int value="107" label="kFailedToGetDecoderBuffer"/>
+  <int value="108" label="kDecoderStreamInErrorState"/>
+  <int value="110" label="kDecoderStreamDemuxerError"/>
+  <int value="111" label="kKeyFrameRequired"/>
+  <int value="112" label="kMissingTimestamp"/>
+  <int value="200" label="kUnsupportedProfile"/>
+  <int value="201" label="kUnsupportedCodec"/>
+  <int value="202" label="kUnsupportedConfig"/>
+  <int value="203" label="kUnsupportedEncryptionMode"/>
+  <int value="204" label="kCantChangeCodec"/>
+  <int value="205" label="kFailedToCreateDecoder"/>
+  <int value="206" label="kTooManyDecoders"/>
+  <int value="207" label="kMediaFoundationNotAvailable"/>
+  <int value="300" label="kElidedEndOfStreamForConfigChange"/>
+</enum>
+
 <enum name="DesktopCaptureImplementationAndType">
   <int value="0" label="NoImplementationTypeNone"/>
   <int value="1" label="NoImplementationTypeScreen"/>

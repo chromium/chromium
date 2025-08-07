@@ -4977,6 +4977,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MojoAudioDecoder.Initialized" enum="DecoderStatus"
+    expires_after="M146">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the status of each call to MojoAudioDecoderService::Initialize().
+  </summary>
+</histogram>
+
+<histogram name="Media.MojoAudioDecoder.LastDecodeStatus" enum="DecoderStatus"
+    expires_after="M146">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the status of the last call to MojoAudioDecoderService::Decode()
+    prior to destruction of the MojoAudioDecoderService.
+  </summary>
+</histogram>
+
 <histogram name="Media.MojoStableVideoDecoder.Decode" units="ms"
     expires_after="2025-05-24">
   <owner>andrescj@chromium.org</owner>

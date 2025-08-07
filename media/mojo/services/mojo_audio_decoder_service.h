@@ -107,6 +107,9 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
+  // Last DecodeStatus seen by OnDecodeStatus(). Collected for logging purposes.
+  std::optional<DecoderStatus> last_decode_status_;
+
   base::WeakPtr<MojoAudioDecoderService> weak_this_;
   base::WeakPtrFactory<MojoAudioDecoderService> weak_factory_{this};
 };
