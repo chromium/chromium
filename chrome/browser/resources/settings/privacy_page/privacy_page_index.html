@@ -38,6 +38,13 @@
     </template>
   </template>
 
+  <template is="dom-if" if="[[renderView_(
+      routes_.COOKIES, currentRoute, inSearchMode)]]">
+    <settings-cookies-page slot="view" id="cookies" data-parent-view-id="old"
+        prefs="{{prefs}}">
+    </settings-cookies-page>
+  </template>
+
   <template is="dom-if" if="[[renderOldView_(currentRoute, inSearchMode)]]">
     <!-- TODO(crbug.com/424223101): Remove <settings-basic-page> once all UIs
         have been migrated to standalone views. -->

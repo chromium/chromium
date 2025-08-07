@@ -119,8 +119,7 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
           "settings-ui",
           "settings-main",
           "settings-privacy-page-index",
-          "settings-basic-page",
-          "settings-privacy-page",
+          "settings-cookies-page",
           "settings-subpage",
           "div#headerLine cr-icon-button[iron-icon='cr:help-outline']"};
 

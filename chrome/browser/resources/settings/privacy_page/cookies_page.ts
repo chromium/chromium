@@ -15,6 +15,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_settings/site_list.js';
 import './collapse_radio_button.js';
@@ -26,18 +27,17 @@ import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_to
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
 import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
@@ -49,8 +49,8 @@ export interface SettingsCookiesPageElement {
   };
 }
 
-const SettingsCookiesPageElementBase = RouteObserverMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
+const SettingsCookiesPageElementBase = RouteObserverMixin(SettingsViewMixin(
+    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))));
 
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   static get is() {
@@ -100,11 +100,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         },
       },
 
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
-
       is3pcdRedesignEnabled_: {
         type: Boolean,
         value: () =>
@@ -122,28 +117,16 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   declare searchTerm: string;
   declare private cookiesContentSettingType_: ContentSettingsTypes;
   declare private blockAllPref_: chrome.settingsPrivate.PrefObject;
-  declare focusConfig: FocusConfig;
   declare private is3pcdRedesignEnabled_: boolean;
   declare private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    assert(!oldConfig);
-    const selectSiteDataLinkRow = () => {
-      const toFocus =
-          this.shadowRoot!.querySelector<HTMLElement>('#site-data-trigger');
-      assert(toFocus);
-      focusWithoutInk(toFocus);
-    };
-    this.focusConfig.set(
-        `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
-        selectSiteDataLinkRow);
-  }
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
 
-  override currentRouteChanged(route: Route) {
-    if (route !== routes.COOKIES) {
+    if (newRoute !== routes.COOKIES) {
       this.$.toast.hide();
     }
   }
@@ -264,6 +247,21 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         this.isAlwaysBlock3pcsIncognitoEnabled_ ?
             'thirdPartyCookiesPageDescription' :
             'thirdPartyCookiesAlignedPageDescription');
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    return new Map([
+      [
+        `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
+        '#site-data-trigger',
+      ],
+    ]);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

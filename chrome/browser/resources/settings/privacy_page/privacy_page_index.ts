@@ -132,6 +132,8 @@ export class SettingsPrivacyPageIndexElement extends
         // Display the default views if in search mode, since they could be part
         // of search results.
         return this.inSearchMode ? this.getDefaultViews_() : [];
+      case routes.COOKIES:
+        return ['cookies'];
       case routes.SECURITY_KEYS:
         assert(this.enableSecurityKeysSubpage_);
         return ['securityKeys'];

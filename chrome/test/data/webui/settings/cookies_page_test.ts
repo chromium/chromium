@@ -89,6 +89,12 @@ suite('CookiesPageTest', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
+  test('SubpageTitle', function() {
+    assertEquals(
+        page.i18n('thirdPartyCookiesPageTitle'),
+        page.shadowRoot!.querySelector('settings-subpage')!.getAttribute(
+            'page-title'));
+  });
 
   test('ElementVisibility', async function() {
     await flushTasks();

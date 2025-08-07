@@ -65,7 +65,7 @@ suite('PrivacyPageIndex', function() {
     // <settings-basic-page> view.
     const routesToVisit: Array<{route: Route, viewId: string}> = [
       {route: routes.CLEAR_BROWSER_DATA, viewId: 'old'},
-      {route: routes.COOKIES, viewId: 'old'},
+      {route: routes.COOKIES, viewId: 'cookies'},
       {route: routes.SAFETY_HUB, viewId: 'safetyHub'},
       {route: routes.SECURITY, viewId: 'old'},
       {route: routes.SITE_SETTINGS_LOCATION, viewId: 'old'},

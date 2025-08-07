@@ -32,6 +32,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SECURITY = r.PRIVACY.createChild('/security');
 
   r.COOKIES = r.PRIVACY.createChild('/cookies');
+  r.COOKIES.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enableIncognitoTrackingProtections') ) {
     r.INCOGNITO_TRACKING_PROTECTIONS = r.PRIVACY.createChild('/incognito');
   }

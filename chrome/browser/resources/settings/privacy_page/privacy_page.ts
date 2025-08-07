@@ -527,18 +527,18 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   getAssociatedControlFor(childViewId: string): HTMLElement {
-    const ids = [
-      'securityKeys',
-      // TODO(crbug.com/424223101): Add more child view IDs as they
-      // are migrated to the new architecture.
-    ];
-    assert(ids.includes(childViewId));
-
     let triggerId: string|null = null;
     switch (childViewId) {
+      case 'cookies':
+        triggerId = 'thirdPartyCookiesLinkRow';
+        break;
       case 'securityKeys':
         triggerId = 'securityLinkRow';
         break;
+      // TODO(crbug.com/424223101): Add more child view IDs as they
+      // are migrated to the new architecture.
+      default:
+        assertNotReached();
     }
 
     assert(triggerId);

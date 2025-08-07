@@ -14,6 +14,7 @@ import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
@@ -57,7 +58,42 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   // SettingsViewMixin implementation.
-  getAssociatedControlFor(childViewId: string): HTMLElement {
+  override getFocusConfig() {
+    const map = new Map();
+
+    const focusInPrivacyPage = (selector: string) => {
+      const toFocus = this.shadowRoot!.querySelector('settings-privacy-page')!
+                          .shadowRoot!.querySelector<HTMLElement>(selector);
+      assert(toFocus);
+      toFocus.focus();
+    };
+
+    const focusInSecurityPage = (selector: string) => {
+      const toFocus =
+          this.shadowRoot!.querySelector('settings-privacy-page')!.shadowRoot!
+              .querySelector<HTMLElement>('settings-security-page')!.shadowRoot!
+              .querySelector<HTMLElement>(selector);
+      assert(toFocus);
+      toFocus.focus();
+    };
+
+    if (routes.COOKIES) {
+      map.set(
+          routes.COOKIES.path,
+          focusInPrivacyPage.bind(this, '#thirdPartyCookiesLinkRow'));
+    }
+
+    if (routes.SECURITY_KEYS) {
+      map.set(
+          routes.SECURITY_KEYS.path,
+          focusInSecurityPage.bind(this, '#securityKeysSubpageTrigger'));
+    }
+
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
     // TODO(crbug.com/424223101): getAssociatedControlFor() can only ever be
     // called for privacy specific subpages. Remove once the
     // <settings-basic-page> node intermediate layer is removed.

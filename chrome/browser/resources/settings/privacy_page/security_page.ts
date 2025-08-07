@@ -246,15 +246,6 @@ export class SettingsSecurityPageElement extends
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
 
-    if (routes.SECURITY_KEYS) {
-      this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#securityKeysSubpageTrigger');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
-    }
-
     if (routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER) {
       this.focusConfig.set(
           routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.path, () => {

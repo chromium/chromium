@@ -8,6 +8,8 @@ import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {beforeNextRender, dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import type {SettingsViewMixinInterface} from '../settings_page/settings_view_mixin.js';
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -67,8 +69,8 @@ type Constructor<T> = new (...args: any[]) => T;
  */
 export const MainPageMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
-    Constructor<MainPageMixinInterface> => {
-      const superClassBase = BaseMixin(superClass);
+    Constructor<MainPageMixinInterface&SettingsViewMixinInterface> => {
+      const superClassBase = SettingsViewMixin(BaseMixin(superClass));
 
       class MainPageMixin extends superClassBase {
         scroller: HTMLElement|null = null;
@@ -272,10 +274,11 @@ export const MainPageMixin = dedupingMixin(
           return [classifyRoute(oldRoute), classifyRoute(newRoute)];
         }
 
-        // TODO(dpapad): Figure out why adding the |override| keyword here
-        // throws an error.
-        currentRouteChanged(newRoute: Route, oldRoute: Route|null) {
-          const transition = this.getStateTransition_(newRoute, oldRoute);
+        override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+          super.currentRouteChanged(newRoute, oldRoute);
+
+          const transition =
+              this.getStateTransition_(newRoute, oldRoute || null);
           if (transition === null) {
             return;
           }
