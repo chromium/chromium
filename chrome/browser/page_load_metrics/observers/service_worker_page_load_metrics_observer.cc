@@ -80,34 +80,6 @@ const char
         "PageLoad.Clients.ServiceWorker2.PaintTiming."
         "NavigationToLargestContentfulPaint2.RaceNetworkRequestEligible";
 
-const char kHistogramServiceWorkerParseStartSearch[] =
-    "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.search";
-const char kHistogramServiceWorkerFirstContentfulPaintSearch[] =
-    "PageLoad.Clients.ServiceWorker2.PaintTiming."
-    "NavigationToFirstContentfulPaint.search";
-const char kHistogramServiceWorkerParseStartToFirstContentfulPaintSearch[] =
-    "PageLoad.Clients.ServiceWorker2.PaintTiming."
-    "ParseStartToFirstContentfulPaint.search";
-const char kHistogramServiceWorkerDomContentLoadedSearch[] =
-    "PageLoad.Clients.ServiceWorker2.DocumentTiming."
-    "NavigationToDOMContentLoadedEventFired.search";
-const char kHistogramServiceWorkerLoadSearch[] =
-    "PageLoad.Clients.ServiceWorker2.DocumentTiming.NavigationToLoadEventFired."
-    "search";
-
-const char kHistogramNoServiceWorkerFirstContentfulPaintSearch[] =
-    "PageLoad.Clients.NoServiceWorker2.PaintTiming."
-    "NavigationToFirstContentfulPaint.search";
-const char kHistogramNoServiceWorkerParseStartToFirstContentfulPaintSearch[] =
-    "PageLoad.Clients.NoServiceWorker2.PaintTiming."
-    "ParseStartToFirstContentfulPaint.search";
-const char kHistogramNoServiceWorkerDomContentLoadedSearch[] =
-    "PageLoad.Clients.NoServiceWorker2.DocumentTiming."
-    "NavigationToDOMContentLoadedEventFired.search";
-const char kHistogramNoServiceWorkerLoadSearch[] =
-    "PageLoad.Clients.NoServiceWorker2.DocumentTiming."
-    "NavigationToLoadEventFired.search";
-
 const char kHistogramServiceWorkerFirstContentfulPaintDocs[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToFirstContentfulPaint.docs";
@@ -205,16 +177,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       return;
     }
 
-    if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
-      PAGE_LOAD_HISTOGRAM(
-          internal::kHistogramNoServiceWorkerFirstContentfulPaintSearch,
-          timing.paint_timing->first_contentful_paint.value());
-      PAGE_LOAD_HISTOGRAM(
-          internal::
-              kHistogramNoServiceWorkerParseStartToFirstContentfulPaintSearch,
-          timing.paint_timing->first_contentful_paint.value() -
-              timing.parse_timing->parse_start.value());
-    } else if (IsDocsSite(GetDelegate().GetUrl())) {
+    if (IsDocsSite(GetDelegate().GetUrl())) {
       PAGE_LOAD_HISTOGRAM(
           internal::kHistogramNoServiceWorkerFirstContentfulPaintDocs,
           timing.paint_timing->first_contentful_paint.value());
@@ -247,15 +210,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     }
   }
 
-  if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramServiceWorkerFirstContentfulPaintSearch,
-        timing.paint_timing->first_contentful_paint.value());
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramServiceWorkerParseStartToFirstContentfulPaintSearch,
-        timing.paint_timing->first_contentful_paint.value() -
-            timing.parse_timing->parse_start.value());
-  } else if (IsDocsSite(GetDelegate().GetUrl())) {
+  if (IsDocsSite(GetDelegate().GetUrl())) {
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramServiceWorkerFirstContentfulPaintDocs,
         timing.paint_timing->first_contentful_paint.value());
@@ -285,45 +240,24 @@ void ServiceWorkerPageLoadMetricsObserver::OnDomContentLoadedEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.document_timing->dom_content_loaded_event_start,
-          GetDelegate())) {
-    return;
-  }
-  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
-    if (!page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl()))
-      return;
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramNoServiceWorkerDomContentLoadedSearch,
-        timing.document_timing->dom_content_loaded_event_start.value());
+          GetDelegate()) ||
+      !page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     return;
   }
   PAGE_LOAD_HISTOGRAM(
       internal::kHistogramServiceWorkerDomContentLoaded,
       timing.document_timing->dom_content_loaded_event_start.value());
-  if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramServiceWorkerDomContentLoadedSearch,
-        timing.document_timing->dom_content_loaded_event_start.value());
-  }
 }
 
 void ServiceWorkerPageLoadMetricsObserver::OnLoadEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.document_timing->load_event_start, GetDelegate()))
-    return;
-  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
-    if (!page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl()))
-      return;
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramNoServiceWorkerLoadSearch,
-                        timing.document_timing->load_event_start.value());
+          timing.document_timing->load_event_start, GetDelegate()) ||
+      !page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     return;
   }
   PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLoad,
                       timing.document_timing->load_event_start.value());
-  if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLoadSearch,
-                        timing.document_timing->load_event_start.value());
-  }
 }
 
 void ServiceWorkerPageLoadMetricsObserver::OnFirstInputInPage(
@@ -347,11 +281,6 @@ void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
           timing.parse_timing->parse_start, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStart,
                         timing.parse_timing->parse_start.value());
-
-    if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStartSearch,
-                          timing.parse_timing->parse_start.value());
-    }
     if (IsForwardBackLoad(transition_)) {
       PAGE_LOAD_HISTOGRAM(
           internal::kHistogramServiceWorkerParseStartForwardBack,

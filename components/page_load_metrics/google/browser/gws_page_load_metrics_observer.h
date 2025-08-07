@@ -37,6 +37,18 @@ extern const char kHistogramGWSConnectStart[];
 extern const char kHistogramGWSDomainLookupStart[];
 extern const char kHistogramGWSDomainLookupEnd[];
 
+extern const char kHistogramServiceWorkerParseStartSearch[];
+extern const char kHistogramServiceWorkerFirstContentfulPaintSearch[];
+extern const char
+    kHistogramServiceWorkerParseStartToFirstContentfulPaintSearch[];
+extern const char kHistogramServiceWorkerDomContentLoadedSearch[];
+extern const char kHistogramServiceWorkerLoadSearch[];
+extern const char kHistogramNoServiceWorkerFirstContentfulPaintSearch[];
+extern const char
+    kHistogramNoServiceWorkerParseStartToFirstContentfulPaintSearch[];
+extern const char kHistogramNoServiceWorkerDomContentLoadedSearch[];
+extern const char kHistogramNoServiceWorkerLoadSearch[];
+
 }  // namespace internal
 
 class GWSPageLoadMetricsObserver
@@ -115,6 +127,10 @@ class GWSPageLoadMetricsObserver
   void OnCustomUserTimingMarkObserved(
       const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
           timings) override;
+  void OnDomContentLoadedEventStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnLoadEventStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   // The methods below are only intended for use in testing.
   void SetIsFirstNavigationForTesting(bool is_first_navigation) {
