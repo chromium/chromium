@@ -41,9 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
-
-using blink::wtf_size_t;
+namespace blink {
 
 struct SameSizeAsRefCounted {
   uint32_t a;
@@ -69,11 +67,11 @@ struct SameSizeAsVectorWithInlineCapacity {
 };
 
 #if !DCHECK_IS_ON()
-ASSERT_SIZE(blink::RefCounted<int>, SameSizeAsRefCounted);
+ASSERT_SIZE(RefCounted<int>, SameSizeAsRefCounted);
 #endif
 
 ASSERT_SIZE(std::unique_ptr<int>, int*);
-ASSERT_SIZE(scoped_refptr<blink::RefCounted<int>>, int*);
+ASSERT_SIZE(scoped_refptr<RefCounted<int>>, int*);
 ASSERT_SIZE(Vector<int>, SameSizeAsVectorWithInlineCapacity<int>);
 // This is to avoid problem of comma in macro parameters.
 #define INLINE_CAPACITY_PARAMS(i) int, i
@@ -89,4 +87,4 @@ ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(3)>,
 static_assert(sizeof(wtf_size_t) <= sizeof(size_t));
 static_assert(std::is_signed_v<wtf_size_t> == std::is_signed_v<size_t>);
 
-}  // namespace WTF
+}  // namespace blink
