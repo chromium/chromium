@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Trusted Type violation report: sample for SVGScriptElement href assignment
-  assert_equals: expected "SVGScriptElement href|about:blank" but got "SVGAnimatedString baseVal|about:blank"
-Harness: the test ran to completion.
-
