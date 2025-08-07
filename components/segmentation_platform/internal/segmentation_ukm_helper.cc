@@ -105,7 +105,11 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult3,
     &Segmentation_ModelExecution::SetActualResult4,
     &Segmentation_ModelExecution::SetActualResult5,
-    &Segmentation_ModelExecution::SetActualResult6};
+    &Segmentation_ModelExecution::SetActualResult6,
+    &Segmentation_ModelExecution::SetActualResult7,
+    &Segmentation_ModelExecution::SetActualResult8,
+    &Segmentation_ModelExecution::SetActualResult9,
+    &Segmentation_ModelExecution::SetActualResult10};
 
 // 1 out of 100 model execution will be reported.
 const int kDefaultModelExecutionSamplingRate = 100;
