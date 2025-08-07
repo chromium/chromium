@@ -1146,6 +1146,12 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
 // Verifies that the Enteprise blocking interstitial is displayed for urls
 // blocked by Enterprise organizations.
+// TODO(crbug.com/429137228): Test is flaky on simulator. Re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testEnterpriseBlockingPage DISABLED_testEnterpriseBlockingPage
+#else
+#define MAYBE_testEnterpriseBlockingPage testEnterpriseBlockingPage
+#endif
 - (void)testEnterpriseBlockingPage {
   // TODO(crbug.com/429137228): Test is flaky on iOS 18.2. Re-enable the test.
   if (@available(iOS 18.2, *)) {
