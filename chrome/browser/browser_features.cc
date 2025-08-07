@@ -185,16 +185,6 @@ BASE_FEATURE(kPromoBrowserCommands,
 // ui/webui/resources/js/browser_command/browser_command.mojom
 const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 
-#if !BUILDFLAG(IS_ANDROID)
-// Keeps accessibility enabled for WebContents as ReadAnything observes changes
-// to the active WebContents. This is a holdback study to evaluate the impact of
-// the new behavior, whereby the accessibility modes required by ReadyAnything
-// are cleared on a WebContents when ReadAnything loses interest in it.
-BASE_FEATURE(kReadAnythingPermanentAccessibility,
-             "ReadAnythingPermanentAccessibility",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // When this feature is enabled, Chrome will register os_update_handler with
 // Omaha, to be run on OS upgrade.

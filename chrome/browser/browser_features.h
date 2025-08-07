@@ -74,10 +74,6 @@ extern base::FeatureParam<bool>
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
-#endif
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_DECLARE_FEATURE(kRegisterOsUpdateHandlerWin);
 BASE_DECLARE_FEATURE(kInstallPlatformExperienceHelperWin);

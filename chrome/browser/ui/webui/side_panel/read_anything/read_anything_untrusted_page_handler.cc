@@ -43,7 +43,6 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
@@ -199,48 +198,6 @@ InstallationState GetInstallationStateFromStatusCode(
 }
 #endif
 
-class PersistentAccessibilityHelper
-    : public content::WebContentsUserData<PersistentAccessibilityHelper> {
- public:
-  ~PersistentAccessibilityHelper() override = default;
-
-  // Persists `scoped_accessibility_mode` for `web_contents`.
-  static void PersistForWebContents(
-      content::WebContents& web_contents,
-      std::unique_ptr<content::ScopedAccessibilityMode>
-          scoped_accessibility_mode);
-
- private:
-  friend content::WebContentsUserData<PersistentAccessibilityHelper>;
-
-  PersistentAccessibilityHelper(
-      content::WebContents& web_contents,
-      std::unique_ptr<content::ScopedAccessibilityMode>
-          scoped_accessibility_mode)
-      : WebContentsUserData(web_contents),
-        scoped_accessibility_mode_(std::move(scoped_accessibility_mode)) {}
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
-};
-
-// static
-void PersistentAccessibilityHelper::PersistForWebContents(
-    content::WebContents& web_contents,
-    std::unique_ptr<content::ScopedAccessibilityMode>
-        scoped_accessibility_mode) {
-  if (auto* const instance = FromWebContents(&web_contents); instance) {
-    instance->scoped_accessibility_mode_ = std::move(scoped_accessibility_mode);
-  } else {
-    web_contents.SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new PersistentAccessibilityHelper(
-            web_contents, std::move(scoped_accessibility_mode))));
-  }
-}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PersistentAccessibilityHelper);
-
 }  // namespace
 
 ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
@@ -250,12 +207,14 @@ ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
     : page_handler_(page_handler) {
   Observe(web_contents);
 
-  // Enable accessibility for the top level render frame and all descendants.
-  // This causes AXTreeSerializer to reset and send accessibility events of
-  // the AXTree when it is re-serialized.
   if (!web_contents) {
     return;
   }
+
+  // Enable accessibility for the top level render frame and all descendants.
+  // This causes AXTreeSerializer to reset and send accessibility events of the
+  // AXTree when it is re-serialized.
+
   // Force a reset if web accessibility is already enabled to ensure that new
   // observers of accessibility events get the full accessibility tree from
   // scratch.
@@ -265,16 +224,6 @@ ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
   scoped_accessibility_mode_ =
       content::BrowserAccessibilityState::GetInstance()
           ->CreateScopedModeForWebContents(web_contents, accessibility_mode);
-
-  if (base::FeatureList::IsEnabled(
-          features::kReadAnythingPermanentAccessibility)) {
-    // If permanent accessibility for Read Anything is enabled, give ownership
-    // of the scoper to the WebContents. This ensures that those modes are kept
-    // active even when RA is no longer handling events from the WC. This
-    // codepath is to be deleted at the conclusion of the study.
-    PersistentAccessibilityHelper::PersistForWebContents(
-        *web_contents, std::move(scoped_accessibility_mode_));
-  }
 
   if (need_reset) {
     web_contents->ResetAccessibility();
