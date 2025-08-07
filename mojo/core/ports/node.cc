@@ -18,9 +18,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
@@ -70,9 +70,6 @@ class RandomNameGenerator {
   size_t cache_index_ = kRandomNameCacheSize;
 };
 
-base::LazyInstance<RandomNameGenerator>::Leaky g_name_generator =
-    LAZY_INSTANCE_INITIALIZER;
-
 int DebugError(const char* message, int error_code) {
   NOTREACHED() << "Oops: " << message;
 }
@@ -95,7 +92,8 @@ bool CanAcceptMoreMessages(const Port* port) {
 }
 
 void GenerateRandomPortName(PortName* name) {
-  *name = g_name_generator.Get().GenerateRandomPortName();
+  static base::NoDestructor<RandomNameGenerator> generator;
+  *name = generator->GenerateRandomPortName();
 }
 
 }  // namespace

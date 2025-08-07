@@ -17,8 +17,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
@@ -55,7 +55,10 @@ const char kTestChildMessagePipeName[] = "test_pipe";
 const char kDisableAllCapabilities[] = "disable-all-capabilities";
 
 // For use (and only valid) in a test child process:
-base::LazyInstance<IsolatedConnection>::Leaky g_child_isolated_connection;
+IsolatedConnection& GetChildIsolatedConnection() {
+  static base::NoDestructor<IsolatedConnection> connection;
+  return *connection;
+}
 
 int RunClientFunction(base::OnceCallback<int(MojoHandle)> handler,
                       bool pass_pipe_ownership_to_main) {
@@ -309,8 +312,7 @@ void MultiprocessTestHelper::ChildSetup() {
       invitation = IncomingInvitation::Accept(std::move(endpoint));
     primordial_pipe = invitation.ExtractMessagePipe(kTestChildMessagePipeName);
   } else {
-    primordial_pipe =
-        g_child_isolated_connection.Get().Connect(std::move(endpoint));
+    primordial_pipe = GetChildIsolatedConnection().Connect(std::move(endpoint));
   }
 }
 
