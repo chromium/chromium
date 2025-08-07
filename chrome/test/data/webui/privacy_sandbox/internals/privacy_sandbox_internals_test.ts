@@ -56,6 +56,108 @@ async function waitForCondition(checkFn: () => boolean): Promise<void> {
   });
 }
 
+// Test suite for search, filter, and highlight functionality on a Prefs page.
+suite('PrivacySandboxInternalsSearchTest', function() {
+  let page: InternalsPage;
+  let shadowRoot: ShadowRoot;
+  let searchInput: HTMLInputElement;
+
+  const MOCK_PREFS: PrivacySandboxInternalsPref[] = [
+    {name: 'enable_do_not_track', value: {boolValue: false}},
+    {
+      name: 'tracking_protection.fingerprinting_protection_enabled',
+      value: {boolValue: true},
+    },
+    {
+      name: 'tracking_protection.tracking_protection_onboarding_acked',
+      value: {boolValue: false},
+    },
+    {name: 'profile.cookie_controls_mode', value: {intValue: 2}},
+    {name: 'tpcd_experiment.profile_state', value: {intValue: 0}},
+  ];
+
+  setup(async function() {
+    const browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    browserProxy.testHandler.setPrefs(MOCK_PREFS);
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+
+    Router.resetInstanceForTesting();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    await browserProxy.testHandler.whenCalled('readPrefsWithPrefixes');
+    await microtasksFinished();
+
+    shadowRoot = page.shadowRoot!;
+    const searchBar = await waitForElement(shadowRoot, 'search-bar');
+    searchInput =
+        (await waitForElement(searchBar.shadowRoot!, '#search-input')) as
+        HTMLInputElement;
+  });
+
+  async function navigateTo(pageName: string) {
+    Router.getInstance().navigateTo(pageName);
+    await waitForCondition(() => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('page') === pageName;
+    });
+    await microtasksFinished();
+  }
+
+  async function typeInSearch(query: string) {
+    searchInput.value = query;
+    searchInput.dispatchEvent(new Event('input'));
+    await waitForCondition(() => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('search') === (query || null);
+    });
+    await microtasksFinished();
+  }
+
+  test('filtersPrefsBySearchTerm', async () => {
+    await navigateTo('tracking-protection');
+    await typeInSearch('onboarding');
+
+    const tpPanel =
+        await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
+    const matchingElement =
+        tpPanel.querySelector<PrefDisplayElement>('pref-display:not([hidden])');
+
+    assertTrue(
+        !!matchingElement, 'A visible matching element should be found.');
+    assertFalse(matchingElement.hidden);
+
+    const nonMatchingElement =
+        tpPanel.querySelector<PrefDisplayElement>('pref-display[hidden]');
+    assertTrue(
+        !!nonMatchingElement, 'A non-matching element should be hidden.');
+  });
+
+  test('searchingAndClearingFiltersPrefs', async () => {
+    await navigateTo('tracking-protection');
+
+    const tpPanel =
+        await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
+    await waitForElement(tpPanel, 'pref-display');
+    await typeInSearch('fingerprinting');
+    await waitForCondition(() => {
+      return tpPanel.querySelectorAll('pref-display:not([hidden])').length ===
+          1;
+    });
+    assertEquals(
+        tpPanel.querySelectorAll('pref-display:not([hidden])').length, 1,
+        'Search should result in exactly one match.');
+
+    await typeInSearch('');
+    await waitForCondition(() => {
+      return tpPanel.querySelectorAll('pref-display:not([hidden])').length > 1;
+    });
+    assertTrue(
+        tpPanel.querySelectorAll('pref-display:not([hidden])').length > 1,
+        'Clearing search should restore multiple prefs.');
+  });
+});
+
 // Test suite for the Search Bar UI.
 suite('SearchBarUITest', function() {
   let page: InternalsPage;
@@ -411,6 +513,7 @@ suite('InternalsPageTest', function() {
   });
 
   test('rendersAdvertisingPrefs', async () => {
+    Router.getInstance().navigateTo('advertising');
     const firstPrefElement = await waitForElement(
         internalsPage.shadowRoot!, '#advertising-prefs-panel > pref-display');
     assertTrue(
@@ -419,21 +522,19 @@ suite('InternalsPageTest', function() {
   });
 
   test('rendersTrackingProtectionPrefs', async () => {
-    const firstPrefElement = await waitForElement(
+    const firstPrefGroupElement = await waitForElement(
         internalsPage.shadowRoot!,
         '#tracking-protection-prefs-panel > pref-display');
     assertTrue(
-        !!firstPrefElement,
+        !!firstPrefGroupElement,
         'A <pref-display> element should be displayed for Tracking Protection Prefs.');
-  });
 
-  test('rendersTpcdExperimentPrefs', async () => {
-    const firstPrefElement = await waitForElement(
+    const secondPrefGroupElement = await waitForElement(
         internalsPage.shadowRoot!,
         '#tpcd-experiment-prefs-panel > pref-display');
     assertTrue(
-        !!firstPrefElement,
-        'A <pref-display> element should be displayed for TPCD Experiment Prefs.');
+        !!secondPrefGroupElement,
+        'A <pref-display> element should be displayed for 3PCD Experiment Prefs.');
   });
 });
 

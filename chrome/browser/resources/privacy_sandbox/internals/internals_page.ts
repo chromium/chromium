@@ -22,6 +22,13 @@ import type {PrivacySandboxInternalsPref} from './privacy_sandbox_internals.mojo
 import {PrivacySandboxInternalsBrowserProxy} from './privacy_sandbox_internals_browser_proxy.js';
 import {Router} from './router.js';
 import type {RouteObserver} from './router.js';
+import type {SearchBarElement} from './search_bar.js';
+
+// Caching interfaces
+interface CachedItem {
+  element: HTMLElement;
+  content: string;
+}
 
 const tpcdExperimentPrefPrefixes: string[] = [
   'tpcd_experiment.',
@@ -60,13 +67,11 @@ const prefPagesToCreate: PrivacySandboxInternalsPrefPageConfig[] = [
   {
     id: 'advertising',
     title: 'Advertising Prefs',
-    prefGroups: [
-      {
-        id: 'advertising',
-        title: 'Advertising Prefs',
-        prefPrefixes: advertisingPrefPrefixes,
-      },
-    ],
+    prefGroups: [{
+      id: 'advertising',
+      title: 'Advertising Prefs',
+      prefPrefixes: advertisingPrefPrefixes,
+    }],
   },
 ];
 
@@ -74,20 +79,30 @@ export class InternalsPage extends CustomElement implements RouteObserver {
   private browserProxy_: PrivacySandboxInternalsBrowserProxy =
       PrivacySandboxInternalsBrowserProxy.getInstance();
   private tabBox_: HTMLElement|null = null;
-  private panels_: NodeListOf<HTMLElement>;
+  private panels_: NodeListOf<HTMLElement> =
+      this.shadowRoot!.querySelectorAll('.panel');
+  private activePageName_: string|null = null;
+
+  // Caching arrays
+  private cachedItems_: Map<string, CachedItem[]> = new Map();
+
+  // A set to track which pages have had their data loaded to prevent
+  // re-fetching.
+  private loadedPages_: Set<string> = new Set();
+
   static get is() {
     return 'internals-page';
   }
 
   constructor() {
     super();
-    this.panels_ = this.shadowRoot!.querySelectorAll('.panel');
     Router.getInstance().addObserver(this);
   }
 
+  // Creates the static layout first, then processes the URL.
   connectedCallback() {
+    this.createInitialLayout();
     this.setupEventListeners();
-    this.load();
     const defaultPage =
         this.shadowRoot!.querySelector<HTMLElement>('[slot="tab"][selected]')
             ?.dataset['pageName']!;
@@ -110,55 +125,99 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     Router.getInstance().removeObserver(this);
   }
 
-  // This accepts a reference to an HTMLElement and a list of prefixes and it
-  // renders matching prefs from prefs in the HTMLElement.
-  maybeAddPrefsToDom(
-      parentElement: HTMLElement|null, prefixes: string[],
-      prefs: PrivacySandboxInternalsPref[]) {
-    if (parentElement) {
-      const filteredPrefs = prefs.filter(
-          (pref) => prefixes.some((prefix) => pref.name.startsWith(prefix)));
-      this.addPrefsToDom(parentElement, filteredPrefs);
-    } else {
-      console.error('Parent element not defined for prefixList:', prefixes);
-    }
-  }
-  // Accepts a list prefs and displays them in the parent element
-  addPrefsToDom(
-      parentElement: HTMLElement, prefs: PrivacySandboxInternalsPref[]) {
-    prefs.forEach(({name, value}) => {
-      const item = document.createElement('pref-display');
-      parentElement.appendChild(item);
-      item.configure(name, value);
-    });
-  }
-  // Called when the route changes, this method updates the selected tab in the
-  // UI to match the current page in the URL.
-  onRouteChanged(pageName: string): void {
-    const frameList =
-        this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page');
-    if (!frameList) {
+  // Function for updating the visible page and loading its data on demand.
+  async onRouteChanged(pageName: string|null, query: string|null):
+      Promise<void> {
+    if (!pageName) {
       return;
     }
+    this.activePageName_ = pageName;
+
+    const frameList =
+        this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
     const allTabsInDom =
         Array.from(frameList.querySelectorAll<HTMLElement>('[slot="tab"]'));
     let index = allTabsInDom.findIndex(
         (tab: HTMLElement) => tab.dataset['pageName'] === pageName);
-    // If no direct match, fall back to the pre-selected tab.
     if (index === -1) {
       index = allTabsInDom.findIndex(
           (tab: HTMLElement) => tab.hasAttribute('selected'));
     }
-    // If a match is found, update the UI. Otherwise, do nothing.
     if (index !== -1) {
       frameList.setAttribute('selected-index', index.toString());
     }
-    this.panels_.forEach(p => {
-      p.hidden = p.dataset['pageName'] !== pageName;
+
+    const allPanels = Array.from(this.panels_);
+    const activePanel = allPanels.find(p => p.dataset['pageName'] === pageName);
+
+    allPanels.forEach(p => {
+      p.hidden = (p !== activePanel);
     });
+
+    if (activePanel) {
+      // If the data for this page hasn't been loaded yet, load it now.
+      if (!this.loadedPages_.has(pageName)) {
+        await this.loadDataForPage(pageName);
+        this.loadedPages_.add(pageName);
+      }
+
+      // Now that data is guaranteed to be loaded, proceed with filtering.
+      const searchBar =
+          activePanel.querySelector<SearchBarElement>('search-bar');
+      if (searchBar) {
+        searchBar.setQuery(query || '');
+        this.filterContent(query);
+        if (query) {
+          searchBar.focusInput();
+        }
+      }
+    }
   }
-  // Create the DOM elements needed for the pref pages
-  createLayoutForPrefPages() {
+
+  // A router function to determine which data-loading function to call.
+  private async loadDataForPage(pageName: string) {
+    const prefPageConfig = prefPagesToCreate.find(p => p.id === pageName);
+    if (prefPageConfig) {
+      await this.loadPrefsForPage(prefPageConfig);
+      return;
+    }
+
+    const settingType = this.getContentSettingsTypeFromName(pageName);
+    if (settingType !== undefined) {
+      await this.loadContentSettingsData(settingType, pageName);
+      return;
+    }
+
+    console.warn(`No data loader found for page: ${pageName}`);
+  }
+
+  // Helper function to convert a page name string to its enum type.
+  private getContentSettingsTypeFromName(name: string): ContentSettingsType
+      |undefined {
+    const upperCaseName = name.toUpperCase();
+    return ContentSettingsType[upperCaseName as keyof typeof ContentSettingsType];
+  }
+
+  private filterContent(query: string|null) {
+    const lowerCaseQuery = query ? query.toLowerCase().trim() : '';
+    const activeItems = this.cachedItems_.get(this.activePageName_!) || [];
+
+    for (const item of activeItems) {
+      const isMatch = !lowerCaseQuery || item.content.includes(lowerCaseQuery);
+      item.element.hidden = !isMatch;
+    }
+  }
+
+  // Creates the static layout without fetching any data.
+  private createInitialLayout() {
+    this.createPrefPageLayout();
+    this.createContentSettingsPageLayout();
+    this.panels_ = this.shadowRoot!.querySelectorAll('.panel');
+  }
+
+  // Creates the DOM elements needed for the pref pages but does not populate
+  // them.
+  private createPrefPageLayout() {
     const headerTab = document.createElement('div');
     headerTab.innerText = 'Prefs';
     headerTab.className = 'settings-category-header';
@@ -170,7 +229,6 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     this.tabBox.appendChild(headerPanel);
 
     prefPagesToCreate.forEach((pageConfig) => {
-      // Create the tab for this preference page
       const tab = document.createElement('div');
       tab.setAttribute('slot', 'tab');
       tab.textContent = pageConfig.title;
@@ -179,69 +237,88 @@ export class InternalsPage extends CustomElement implements RouteObserver {
         tab.setAttribute('selected', '');
       }
       this.tabBox.appendChild(tab);
-      // Create the corresponding panel for the tab
+
       const panel = document.createElement('div');
       panel.setAttribute('slot', 'panel');
       panel.classList.add('panel');
       panel.dataset['pageName'] = pageConfig.id;
       panel.hidden = pageConfig.id !== 'tracking-protection';
-      // Create the inner structure for this panel
+
       const mainContentWrapper = document.createElement('div');
-      // Use a class for styling instead of a dynamic ID and inline styles
       mainContentWrapper.className = 'main-content-wrapper';
-      const searchBar = document.createElement('search-bar');
-      mainContentWrapper.appendChild(searchBar);
+
+      // Wrap the search-bar in a new container
+      const searchContainer = document.createElement('div');
+      searchContainer.className = 'search-bar-container';
+      searchContainer.appendChild(document.createElement('search-bar'));
+      mainContentWrapper.appendChild(searchContainer);
+
       const panelsContainer = document.createElement('div');
-      // Use a class here as well
       panelsContainer.className = 'panels-container';
-      // Create the content (headings and divs) inside the container
+
       pageConfig.prefGroups.forEach(group => {
         const heading = document.createElement('h3');
         heading.textContent = group.title;
         panelsContainer.appendChild(heading);
         const prefsPanelDiv = document.createElement('div');
-        // This ID is unique per group, so keeping it is fine
         prefsPanelDiv.id = `${group.id}-prefs-panel`;
         panelsContainer.appendChild(prefsPanelDiv);
       });
+
       mainContentWrapper.appendChild(panelsContainer);
       panel.appendChild(mainContentWrapper);
       this.tabBox.appendChild(panel);
     });
   }
 
-  // Fetch pref data and populate the pref pages
-  loadAndDisplayPrefs() {
-    const allPrefGroups =
-        prefPagesToCreate.flatMap((prefPage) => prefPage.prefGroups);
-    const allPrefPrefixes = [...new Set(
-        allPrefGroups.flatMap((prefGroup) => prefGroup.prefPrefixes))];
+  // Fetches and displays prefs for a *single* pref page configuration.
+  private async loadPrefsForPage(
+      pageConfig: PrivacySandboxInternalsPrefPageConfig) {
+    const allPrefPrefixesForPage =
+        pageConfig.prefGroups.flatMap((prefGroup) => prefGroup.prefPrefixes);
+    const uniquePrefixes = [...new Set(allPrefPrefixesForPage)];
 
-    this.browserProxy_.handler.readPrefsWithPrefixes(allPrefPrefixes)
-        .then(({prefs}) => allPrefGroups.forEach((prefGroup) => {
-          this.maybeAddPrefsToDom(
-              this.shadowRoot!.querySelector<HTMLElement>(
-                  '#' + prefGroup.id + '-prefs-panel'),
-              prefGroup.prefPrefixes, prefs);
-        }));
-  }
+    const {prefs} =
+        await this.browserProxy_.handler.readPrefsWithPrefixes(uniquePrefixes);
 
-  setupEventListeners() {
-    this.tabBox.addEventListener('selected-index-change', () => {
-      const selectedTab =
-          this.tabBox.querySelector<HTMLElement>('[slot="tab"][selected]');
-
-      if (selectedTab?.dataset['pageName']) {
-        Router.getInstance().navigateTo(selectedTab.dataset['pageName']);
-      }
+    pageConfig.prefGroups.forEach((prefGroup) => {
+      this.addPrefsToDom(
+          this.shadowRoot!.querySelector<HTMLElement>(
+              '#' + prefGroup.id + '-prefs-panel'),
+          prefs.filter(
+              (pref) => prefGroup.prefPrefixes.some(
+                  (prefix) => pref.name.startsWith(prefix))),
+          pageConfig.id);
     });
   }
 
-  async load() {
-    this.createLayoutForPrefPages();
-    this.loadAndDisplayPrefs();
-    const csPanels = new Map<ContentSettingsType, HTMLElement>();
-    const handler = this.browserProxy_.handler;
+  private addPrefsToDom(
+      parentElement: HTMLElement|null, prefs: PrivacySandboxInternalsPref[],
+      pageName: string) {
+    if (!parentElement) {
+      console.error('Parent element not found for pref group.');
+      return;
+    }
+
+    if (!this.cachedItems_.has(pageName)) {
+      this.cachedItems_.set(pageName, []);
+    }
+    const pageItems = this.cachedItems_.get(pageName)!;
+
+    prefs.forEach(({name, value}) => {
+      const item = document.createElement('pref-display');
+      item.configure(name, value);
+      parentElement.appendChild(item);
+      const contentString = `${name} ${JSON.stringify(value)}`.toLowerCase();
+      pageItems.push({
+        element: item,
+        content: contentString,
+      });
+    });
+  }
+
+  // Creates the layout for content settings pages without populating them.
+  private createContentSettingsPageLayout() {
     const shouldShowTpcdMetadataGrants =
         this.browserProxy_.shouldShowTpcdMetadataGrants();
 
@@ -252,13 +329,12 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       headerTab.setAttribute('role', 'heading');
       headerTab.setAttribute('slot', 'tab');
       this.tabBox.appendChild(headerTab);
-
       const headerPanel = document.createElement('div');
       headerPanel.setAttribute('slot', 'panel');
       this.tabBox.appendChild(headerPanel);
     };
 
-    const addContentSetting = (setting: ContentSettingsType) => {
+    const addContentSettingPanel = (setting: ContentSettingsType) => {
       // Controls the visibility of the TPCD_METADATA_GRANTS tab.
       if (setting === ContentSettingsType.TPCD_METADATA_GRANTS &&
           !shouldShowTpcdMetadataGrants) {
@@ -267,27 +343,42 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       if (setting === ContentSettingsType.DEFAULT) {
         return;
       }
+      const pageName = ContentSettingsType[setting].toLowerCase();
+
       const tab = document.createElement('div');
       tab.innerText = ContentSettingsType[setting];
       tab.setAttribute('slot', 'tab');
-      tab.dataset['pageName'] = ContentSettingsType[setting].toLowerCase();
+      tab.dataset['pageName'] = pageName;
       this.tabBox.appendChild(tab);
 
       const panel = document.createElement('div');
       panel.setAttribute('slot', 'panel');
       panel.classList.add('panel');
-      panel.dataset['pageName'] = ContentSettingsType[setting].toLowerCase();
+      panel.dataset['pageName'] = pageName;
       panel.hidden = true;
+
+      const mainContentWrapper = document.createElement('div');
+      mainContentWrapper.className = 'main-content-wrapper';
+
+      // Wrap the search-bar in a new container
+      const searchContainer = document.createElement('div');
+      searchContainer.className = 'search-bar-container';
+      searchContainer.appendChild(document.createElement('search-bar'));
+      mainContentWrapper.appendChild(searchContainer);
+
+      const panelsContainer = document.createElement('div');
+      panelsContainer.className = 'panels-container';
       const panelTitle = document.createElement('h2');
       panelTitle.innerText = ContentSettingsType[setting];
-      panel.appendChild(panelTitle);
+      panelsContainer.appendChild(panelTitle);
 
       const contentSettingsContainer = document.createElement('div');
       contentSettingsContainer.classList.add('content-settings');
-      panel.appendChild(contentSettingsContainer);
-      this.tabBox.appendChild(panel);
+      panelsContainer.appendChild(contentSettingsContainer);
 
-      csPanels.set(setting, contentSettingsContainer);
+      mainContentWrapper.appendChild(panelsContainer);
+      panel.appendChild(mainContentWrapper);
+      this.tabBox.appendChild(panel);
     };
 
     addHeaderToTabBox('Content Settings', 'settings-category-header');
@@ -303,37 +394,63 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     contentSettingGroups.forEach(group => {
       addHeaderToTabBox(group.name, 'setting-header');
       group.settings.forEach(setting => {
-        addContentSetting(setting);
+        addContentSettingPanel(setting);
         otherSettings.delete(setting);
       });
     });
 
-    if (otherSettings.size > 0) {
-      otherSettings.forEach(setting => addContentSetting(setting));
+    otherSettings.forEach(setting => addContentSettingPanel(setting));
+  }
+
+  // Fetches and displays data for a *single* content settings page.
+  private async loadContentSettingsData(
+      setting: ContentSettingsType, pageName: string) {
+    const panel = this.shadowRoot!.querySelector<HTMLElement>(
+        `.panel[data-page-name="${pageName}"] .content-settings`);
+    if (!panel) {
+      console.error(`Content settings panel for ${pageName} not found.`);
+      return;
     }
 
-    // Re-query panels to include the dynamically created ones for routing.
-    this.panels_ = this.shadowRoot!.querySelectorAll('.panel');
-    for (const [setting, panel] of csPanels.entries()) {
-      let mojoResponse;
-      if (setting === ContentSettingsType.TPCD_METADATA_GRANTS) {
-        // Prevents the TPCD Metadata Grants tab from loading and rendering if
-        // its flag is disabled.
-        if (!shouldShowTpcdMetadataGrants) {
-          continue;
-        }
-        // This one is special and can't be read through readContentSettings().
-        mojoResponse = await handler.getTpcdMetadataGrants();
-      } else {
-        mojoResponse = await handler.readContentSettings(setting);
+    const handler = this.browserProxy_.handler;
+    const shouldShowTpcdMetadataGrants =
+        this.browserProxy_.shouldShowTpcdMetadataGrants();
+    let mojoResponse;
+
+    if (setting === ContentSettingsType.TPCD_METADATA_GRANTS) {
+      if (!shouldShowTpcdMetadataGrants) {
+        return;
       }
-      mojoResponse.contentSettings.forEach((cs: any) => {
-        const item = document.createElement('content-setting-pattern-source');
-        panel.appendChild(item);
-        item.configure(handler, cs);
-        item.setAttribute('collapsed', 'true');
+      mojoResponse = await handler.getTpcdMetadataGrants();
+    } else {
+      mojoResponse = await handler.readContentSettings(setting);
+    }
+
+    if (!this.cachedItems_.has(pageName)) {
+      this.cachedItems_.set(pageName, []);
+    }
+    const pageItems = this.cachedItems_.get(pageName)!;
+
+    for (const cs of mojoResponse.contentSettings) {
+      const item = document.createElement('content-setting-pattern-source');
+      panel.appendChild(item);
+      const content = await item.configure(handler, cs);
+
+      pageItems.push({
+        element: item,
+        content: content.toLowerCase(),
       });
     }
+  }
+
+  private setupEventListeners() {
+    this.tabBox.addEventListener('selected-index-change', () => {
+      const selectedTab =
+          this.tabBox.querySelector<HTMLElement>('[slot="tab"][selected]');
+      if (selectedTab?.dataset['pageName']) {
+        Router.getInstance().navigateTo(selectedTab.dataset['pageName']);
+      }
+    });
   }
 }
 

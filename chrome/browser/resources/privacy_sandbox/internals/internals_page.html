@@ -32,11 +32,15 @@
     border-radius: 8px;
   }
 
+  content-setting-pattern-source[hidden] {
+    display: none;
+  }
+
   cr-frame-list {
     height: 100%;
   }
 
-  #main-content-wrapper {
+  .main-content-wrapper {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -50,9 +54,10 @@
     border-bottom: 1px solid var(--cr-separator-color, #e0e0e0);
   }
 
-  #panels-container {
+  .panels-container {
     flex-grow: 1;
     padding: 0 24px;
+    padding-bottom: 24px;
   }
 </style>
 

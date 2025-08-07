@@ -34,10 +34,9 @@ export class PrefDisplayElement extends CustomElement {
     }
 
     const valueElem = this.getElement('pref-value');
-
     const v = document.createElement('value-display');
     v.configure(value, valueLogicalFn, prefName);
-    valueElem.appendChild(v);
+    valueElem.replaceChildren(v);
   }
 }
 
