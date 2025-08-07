@@ -49,6 +49,7 @@ class MemorySaverBubbleViewTest
     : public MemorySaverUnitTestMixin<TestWithBrowserView>,
       public testing::WithParamInterface<std::tuple<int, int>> {
  public:
+  // MemorySaverUnitTestMixin:
   void SetUp() override {
     MemorySaverUnitTestMixin::SetUp();
 
@@ -56,6 +57,13 @@ class MemorySaverBubbleViewTest
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
     SetMemorySaverModeEnabled(true);
+  }
+  void TearDown() override {
+    auto* bubble_view = GetPageActionIconView()->GetBubble();
+    if (bubble_view && bubble_view->GetWidget()) {
+      bubble_view->GetWidget()->CloseNow();
+    }
+    MemorySaverUnitTestMixin::TearDown();
   }
 
   template <class T>
@@ -196,16 +204,22 @@ TEST_F(MemorySaverBubbleViewTest,
 
 // The correct label should be rendered for different memory savings amounts.
 TEST_P(MemorySaverBubbleViewTest, ShowsCorrectLabelsForDifferentSavings) {
+  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   AddNewTab(std::get<0>(GetParam()),
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   SetTabDiscardState(0, true);
 
+  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   ClickPageActionChip();
 
+  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   views::Label* label = GetMatchingView<views::Label>(
       MemorySaverResourceView::kMemorySaverResourceViewMemoryLabelElementId);
+  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   EXPECT_EQ(label->GetText(),
             l10n_util::GetStringUTF16(std::get<1>(GetParam())));
+  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
 }
 
 INSTANTIATE_TEST_SUITE_P(
