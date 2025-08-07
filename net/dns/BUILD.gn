@@ -434,6 +434,7 @@ source_set("tests") {
     "host_resolver_manager_ipv6_reachability_override_unittest.cc",
     "host_resolver_manager_unittest.cc",
     "host_resolver_service_endpoint_request_unittest.cc",
+    "host_resolver_system_task_unittest.cc",
     "https_record_rdata_unittest.cc",
     "httpssvc_metrics_unittest.cc",
     "loopback_only_unittest.cc",
