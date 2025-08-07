@@ -21,8 +21,11 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 @NullMarked
 class TabGroupVisualDataStore {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
-    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
     private static final String TAB_GROUP_COLLAPSED_FILE_NAME = "tab_group_collapsed";
+    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
+    private static final String COLOR_INITIAL_MIGRATION_CHECK = "migration_check";
+    private static final int COLOR_INITIAL_MIGRATION_NOT_DONE = 0;
+    private static final int COLOR_INITIAL_MIGRATION_DONE = 1;
 
     // Title methods
 
@@ -75,6 +78,21 @@ class TabGroupVisualDataStore {
     }
 
     // Color methods
+
+    /** Returns whether the initial migration of tab group colors has been done. */
+    static boolean isColorInitialMigrationDone() {
+        return getColorSharedPreferences()
+                        .getInt(COLOR_INITIAL_MIGRATION_CHECK, COLOR_INITIAL_MIGRATION_NOT_DONE)
+                == COLOR_INITIAL_MIGRATION_DONE;
+    }
+
+    /** This method sets the initial migration of tab group colors as done. */
+    static void setColorInitialMigrationDone() {
+        getColorSharedPreferences()
+                .edit()
+                .putInt(COLOR_INITIAL_MIGRATION_CHECK, COLOR_INITIAL_MIGRATION_DONE)
+                .apply();
+    }
 
     /**
      * This method stores tab group colors with reference to {@code tabRootId}. Package protected as

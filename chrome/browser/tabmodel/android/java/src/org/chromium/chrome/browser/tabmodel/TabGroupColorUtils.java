@@ -6,12 +6,8 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -26,10 +22,6 @@ import java.util.Set;
 @NullMarked
 public class TabGroupColorUtils {
     public static final int INVALID_COLOR_ID = -1;
-    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
-    private static final String MIGRATION_CHECK = "migration_check";
-    private static final int MIGRATION_NOT_DONE = 0;
-    private static final int MIGRATION_DONE = 1;
 
     /**
      * This method assigns a color to all tab groups which do not have an assigned tab color at
@@ -44,7 +36,7 @@ public class TabGroupColorUtils {
         // theory, once the migrations have been applied to everyone there won't be a need for this.
         //
         // If the migration is already done, skip the below logic.
-        if (getSharedPreferences().getInt(MIGRATION_CHECK, MIGRATION_NOT_DONE) == MIGRATION_DONE) {
+        if (TabGroupVisualDataStore.isColorInitialMigrationDone()) {
             return;
         }
 
@@ -66,7 +58,7 @@ public class TabGroupColorUtils {
         }
 
         // Mark that the initial migration of tab colors is complete.
-        getSharedPreferences().edit().putInt(MIGRATION_CHECK, MIGRATION_DONE).apply();
+        TabGroupVisualDataStore.setColorInitialMigrationDone();
     }
 
     /**
@@ -86,14 +78,6 @@ public class TabGroupColorUtils {
     }
 
     /**
-     * This method removes the shared preference file. TODO(b/41490324): Consider removing this when
-     * the feature is launched.
-     */
-    public static void clearTabGroupColorInfo() {
-        ContextUtils.getApplicationContext().deleteSharedPreferences(TAB_GROUP_COLORS_FILE_NAME);
-    }
-
-    /**
      * This method returns the color id list attributed to tab groups specifically.
      *
      * @return An array list of ids from 0 to n representing all colors in the palette
@@ -106,11 +90,6 @@ public class TabGroupColorUtils {
             colors.add(i);
         }
         return colors;
-    }
-
-    private static SharedPreferences getSharedPreferences() {
-        return ContextUtils.getApplicationContext()
-                .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     /** Get a map that indicates the current usage count of each tab group color. */
