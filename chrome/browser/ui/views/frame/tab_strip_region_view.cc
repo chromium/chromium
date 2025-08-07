@@ -347,35 +347,6 @@ views::Button* TabStripRegionView::GetNewTabButton() {
   return new_tab_button_;
 }
 
-glic::GlicButton* TabStripRegionView::GetGlicButton() {
-  if (tab_strip_action_container_) {
-    return tab_strip_action_container_->GetGlicButton();
-  }
-  return nullptr;
-}
-
-ProductSpecificationsButton*
-TabStripRegionView::GetProductSpecificationsButton() {
-  if (tab_strip_action_container_) {
-    return tab_strip_action_container_->GetProductSpecificationsButton();
-  }
-  return product_specifications_button_;
-}
-
-TabSearchButton* TabStripRegionView::GetTabSearchButton() {
-  if (tab_search_container_) {
-    // tab_search_container_ may be null if browser is not TYPE_NORMAL or
-    // ShouldShowNewTabButton(browser) otherwise returns false.
-    return tab_search_container_->tab_search_button();
-  } else {
-    return nullptr;
-  }
-}
-
-TabStripActionContainer* TabStripRegionView::GetTabStripActionContainer() {
-  return tab_strip_action_container_;
-}
-
 views::View::Views TabStripRegionView::GetChildrenInZOrder() {
   views::View::Views children;
 
@@ -508,10 +479,73 @@ gfx::Size TabStripRegionView::GetMinimumSize() const {
   return tab_strip_min_size;
 }
 
+gfx::Size TabStripRegionView::GetPreferredSizeForView() const {
+  return GetPreferredSize();
+}
+
 views::View* TabStripRegionView::GetDefaultFocusableChild() {
   auto* focusable_child = tab_strip_->GetDefaultFocusableChild();
   return focusable_child ? focusable_child
                          : AccessiblePaneView::GetDefaultFocusableChild();
+}
+
+TabSearchButton* TabStripRegionView::GetTabSearchButton() const {
+  if (tab_search_container_) {
+    // tab_search_container_ may be null if browser is not TYPE_NORMAL or
+    // ShouldShowNewTabButton(browser) otherwise returns false.
+    return tab_search_container_->tab_search_button();
+  } else {
+    return nullptr;
+  }
+}
+
+TabStripActionContainer* TabStripRegionView::GetTabStripActionContainer()
+    const {
+  return tab_strip_action_container_;
+}
+
+ProductSpecificationsButton*
+TabStripRegionView::GetProductSpecificationsButton() const {
+  if (tab_strip_action_container_) {
+    return tab_strip_action_container_->GetProductSpecificationsButton();
+  }
+  return product_specifications_button_;
+}
+
+glic::GlicButton* TabStripRegionView::GetGlicButton() const {
+  if (tab_strip_action_container_) {
+    return tab_strip_action_container_->GetGlicButton();
+  }
+  return nullptr;
+}
+
+bool TabStripRegionView::IsAnimating() const {
+  return tab_strip_->IsAnimating();
+}
+
+std::optional<int> TabStripRegionView::GetFocusedTabIndex() const {
+  return tab_strip_->GetFocusedTabIndex();
+}
+
+Tab* TabStripRegionView::GetTabAnchorViewAt(int tab_index) {
+  return tab_strip_->tab_at(tab_index);
+}
+
+views::View* TabStripRegionView::GetTabGroupAnchorView(
+    const tab_groups::TabGroupId& group) {
+  return tab_strip_->group_header(group);
+}
+
+gfx::Rect TabStripRegionView::GetBoundsInScreenForView() {
+  return views::View::GetBoundsInScreen();
+}
+
+TabDragContext* TabStripRegionView::GetDragContext() {
+  return tab_strip_->GetDragContext();
+}
+
+void TabStripRegionView::SetTabStripObserver(TabStripObserver* observer) {
+  tab_strip_->SetTabStripObserver(observer);
 }
 
 void TabStripRegionView::UpdateButtonBorders() {

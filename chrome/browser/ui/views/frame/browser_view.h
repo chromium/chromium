@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -85,7 +86,7 @@ class SidePanel;
 class TabDragDelegate;
 class TabSearchBubbleHost;
 class TabStrip;
-class TabStripRegionView;
+class TabStripViewInterface;
 class ToolbarButtonProvider;
 class ToolbarView;
 class TopContainerLoadingBar;
@@ -256,6 +257,10 @@ class BrowserView : public BrowserWindow,
   void SetContentBorderBounds(
       const std::optional<gfx::Rect>& region_capture_rect) {
     GetBrowserViewLayout()->SetContentBorderBounds(region_capture_rect);
+  }
+
+  TabStripViewInterface* tab_strip_view() const {
+    return tab_strip_region_view_.get();
   }
 
   TabStripRegionView* tab_strip_region_view() const {

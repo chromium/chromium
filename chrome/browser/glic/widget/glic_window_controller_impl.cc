@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
@@ -57,6 +57,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -100,10 +101,7 @@ mojom::PanelState CreatePanelState(bool widget_visible,
 }
 
 GlicButton* GetGlicButton(const Browser& browser) {
-  return browser.window()
-      ->AsBrowserView()
-      ->tab_strip_region_view()
-      ->GetGlicButton();
+  return browser.window()->AsBrowserView()->tab_strip_view()->GetGlicButton();
 }
 
 display::Display GetDisplayForOpeningDetached() {
@@ -1302,14 +1300,13 @@ Browser* GlicWindowControllerImpl::FindBrowserForAttachment() {
     }
 
     // If the profile is enabled, the Glic button must be available.
-    auto* tab_strip_region_view =
-        browser->GetBrowserView().tab_strip_region_view();
-    CHECK(tab_strip_region_view);
-    CHECK(tab_strip_region_view->GetGlicButton());
+    auto* tab_strip_view = browser->GetBrowserView().tab_strip_view();
+    CHECK(tab_strip_view);
+    CHECK(tab_strip_view->GetGlicButton());
 
     // Define attachment zone as the right of the tab strip. It either is the
     // width of the widget or 1/3 of the tab strip, whichever is smaller.
-    gfx::Rect attachment_zone = tab_strip_region_view->GetBoundsInScreen();
+    gfx::Rect attachment_zone = tab_strip_view->GetBoundsInScreenForView();
     int width = std::min(attachment_zone.width() / 3,
                          GlicWidget::GetInitialSize().width());
     attachment_zone.SetByBounds(attachment_zone.right() - width,
@@ -1320,7 +1317,7 @@ Browser* GlicWindowControllerImpl::FindBrowserForAttachment() {
     // If both the left center of the attachment zone and glic button right
     // center are occluded, don't consider for attachment.
     if (IsBrowserOccludedAtPoint(browser, attachment_zone.left_center()) &&
-        IsBrowserOccludedAtPoint(browser, tab_strip_region_view->GetGlicButton()
+        IsBrowserOccludedAtPoint(browser, tab_strip_view->GetGlicButton()
                                               ->GetBoundsInScreen()
                                               .right_center())) {
       continue;

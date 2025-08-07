@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,7 +29,8 @@ class TabSearchPositionMetricsLogger;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
-class TabStripRegionView final : public views::AccessiblePaneView {
+class TabStripRegionView final : public views::AccessiblePaneView,
+                                 public TabStripViewInterface {
   METADATA_HEADER(TabStripRegionView, views::AccessiblePaneView)
 
  public:
@@ -59,14 +61,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
   views::Button* GetNewTabButton();
-
-  TabSearchButton* GetTabSearchButton();
-
-  TabStripActionContainer* GetTabStripActionContainer();
-
-  ProductSpecificationsButton* GetProductSpecificationsButton();
-
-  glic::GlicButton* GetGlicButton();
 
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
@@ -104,12 +98,29 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   // views::AccessiblePaneView:
   void ChildPreferredSizeChanged(views::View* child) override;
-  gfx::Size GetMinimumSize() const override;
   views::View* GetDefaultFocusableChild() override;
 
   views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
 
   const Profile* profile() { return profile_; }
+
+  TabStrip* tab_strip() { return tab_strip_; }
+
+  // TabStripViewInterface:
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size GetPreferredSizeForView() const override;
+  TabSearchButton* GetTabSearchButton() const override;
+  TabStripActionContainer* GetTabStripActionContainer() const override;
+  ProductSpecificationsButton* GetProductSpecificationsButton() const override;
+  glic::GlicButton* GetGlicButton() const override;
+  bool IsAnimating() const override;
+  std::optional<int> GetFocusedTabIndex() const override;
+  Tab* GetTabAnchorViewAt(int tab_index) override;
+  views::View* GetTabGroupAnchorView(
+      const tab_groups::TabGroupId& group) override;
+  gfx::Rect GetBoundsInScreenForView() override;
+  TabDragContext* GetDragContext() override;
+  void SetTabStripObserver(TabStripObserver* observer) override;
 
  private:
   // Updates the border padding for `new_tab_button_` and
