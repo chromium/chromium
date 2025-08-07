@@ -27470,6 +27470,10 @@
                     "name": "Enabled_Phase3",
                     "enable_features": [
                         "WebViewStartupTasksYieldToNative"
+                    ],
+                    "disable_features": [
+                        "WebViewUseStartupTasksLogic",
+                        "WebViewUseStartupTasksLogicP2"
                     ]
                 }
             ]
@@ -27599,21 +27603,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewUseRenderingHeuristic"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewUseStartupTasksLogic": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewUseStartupTasksLogic"
                     ]
                 }
             ]
