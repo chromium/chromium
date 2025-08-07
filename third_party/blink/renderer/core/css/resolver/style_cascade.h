@@ -592,11 +592,6 @@ class CORE_EXPORT StyleCascade {
                            FunctionContext* function_context,
                            TokenSequence& out);
 
-  // TODO(crbug.com/416640817): Remove this function.
-  bool ResolveArgumentOrLocalInto(CSSVariableData* data,
-                                  const TokenSequence* fallback,
-                                  TokenSequence& out);
-
   // If `data` is non-nullptr, append that to `out`. Otherwise, consume
   // a fallback from the stream (starting with a kCommaToken),
   // resolve it, and (if successful) append that to `out` instead.

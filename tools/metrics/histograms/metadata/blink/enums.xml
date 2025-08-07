@@ -5953,8 +5953,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5331" label="WebAppManifestUpdate"/>
   <int value="5332" label="CSSEnvironmentVariable_PreferredTextScale"/>
   <int value="5333" label="ButtonTypeAttrInvalidWithCommandOrCommandfor"/>
-  <int value="5334" label="CSSVarFallbackCycle"/>
-  <int value="5335" label="CSSAttrFallbackCycle"/>
+  <int value="5334" label="OBSOLETE_CSSVarFallbackCycle"/>
+  <int value="5335" label="OBSOLETE_CSSAttrFallbackCycle"/>
   <int value="5336" label="CSSRainbowGradientPattern"/>
   <int value="5337" label="WebAppManifestStartUrl"/>
   <int value="5338" label="WebAppManifestDisplay"/>

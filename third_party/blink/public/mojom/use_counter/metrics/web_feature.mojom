@@ -4639,8 +4639,8 @@ enum WebFeature {
   kWebAppManifestUpdate = 5331,
   kCSSEnvironmentVariable_PreferredTextScale = 5332,
   kButtonTypeAttrInvalidWithCommandOrCommandfor = 5333,
-  kCSSVarFallbackCycle = 5334,
-  kCSSAttrFallbackCycle = 5335,
+  kOBSOLETE_CSSVarFallbackCycle = 5334,
+  kOBSOLETE_CSSAttrFallbackCycle = 5335,
   // The items above roughly this point are available in the M135 branch.
   kCSSRainbowGradientPattern = 5336,
   kWebAppManifestStartUrl = 5337,

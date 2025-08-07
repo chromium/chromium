@@ -1570,11 +1570,6 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
-      // Ignore cycles in unused var()/attr() fallbacks.
-      name: "CSSShortCircuitVarAttr",
-      status: "stable",
-    },
-    {
       // sibling-index() and sibling-count()
       name: "CSSSiblingFunctions",
       status: "stable",
