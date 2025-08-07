@@ -112,11 +112,33 @@ class PrerenderManager : public content::WebContentsObserver,
  private:
   class SearchPrerenderTask;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(PrewarmDecision)
+  enum class PrewarmDecision {
+    kReady = 0,
+    kAlreadyExists = 1,
+    kDisabled = 2,
+    kInHeadlessMode = 3,
+    kDebuggerAttached = 4,
+    kInvalidUrl = 5,
+    kNoTemplateUrlService = 6,
+    kNoDefaultSearchProvider = 7,
+    kNotSameOriginWithDSE = 8,
+    kMaxValue = kNotSameOriginWithDSE,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderPrewarmDecision)
+
   explicit PrerenderManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PrerenderManager>;
 
   void ResetPrerenderHandlesOnPrimaryPageChanged(
       content::NavigationHandle* navigation_handle);
+
+  // Decides if prewarm should be triggered. If not, returns the reason why.
+  // Otherwise, returns kReady and sets `prewarm_url`.
+  PrewarmDecision ShouldPrewarm(GURL& prewarm_url);
 
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
   std::optional<GURL> prewarm_url_for_testing_;

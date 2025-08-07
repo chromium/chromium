@@ -1878,6 +1878,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Prerender hit finished"/>
 </enum>
 
+<!-- LINT.IfChange(PrerenderPrewarmDecision) -->
+
+<enum name="PrerenderPrewarmDecision">
+  <int value="0" label="Ready to prewarm"/>
+  <int value="1" label="A prewarm page already exists"/>
+  <int value="2" label="Feature is disabled"/>
+  <int value="3" label="Running in headless mode"/>
+  <int value="4" label="Debugger is attached"/>
+  <int value="5" label="Invalid prewarm URL setting, maybe enabled manually"/>
+  <int value="6" label="No TemplateUrlService available"/>
+  <int value="7" label="No DefaultSearchProvider available"/>
+  <int value="8" label="Not aligned with the default search provider origin"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/preloading/prerender/prerender_manager.h:PrewarmDecision) -->
+
 <!-- LINT.IfChange(PrerenderProcessReuseAvailability) -->
 
 <enum name="PrerenderProcessReuseAvailability">
