@@ -513,6 +513,7 @@ targets.mixin(
 
 targets.mixin(
     name = "chromeos-generic-vm",
+    generate_pyl_entry = False,
     args = [
         "--magic-vm-cache=magic_cros_vm_cache",
     ],
@@ -1285,6 +1286,7 @@ targets.mixin(
 
 targets.mixin(
     name = "isolate_profile_data",
+    generate_pyl_entry = False,
     isolate_profile_data = True,
 )
 
