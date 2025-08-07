@@ -1411,10 +1411,6 @@ extern const char kHttpsUpgradesDescription[];
 extern const char kIgnoreGpuBlocklistName[];
 extern const char kIgnoreGpuBlocklistDescription[];
 
-extern const char kIncrementLocalSurfaceIdForMainframeSameDocNavigationName[];
-extern const char
-    kIncrementLocalSurfaceIdForMainframeSameDocNavigationDescription[];
-
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 

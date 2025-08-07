@@ -9234,16 +9234,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},
 #endif
 
-    {"increment-local-surface-id-for-mainframe-same-doc-navigation",
-     flag_descriptions::
-         kIncrementLocalSurfaceIdForMainframeSameDocNavigationName,
-     flag_descriptions::
-         kIncrementLocalSurfaceIdForMainframeSameDocNavigationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         blink::features::
-             kIncrementLocalSurfaceIdForMainframeSameDocNavigation)},
-
     {"enable-speculation-rules-prerendering-target-hint",
      flag_descriptions::kSpeculationRulesPrerenderingTargetHintName,
      flag_descriptions::kSpeculationRulesPrerenderingTargetHintDescription,

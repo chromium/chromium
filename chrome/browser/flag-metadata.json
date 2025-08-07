@@ -5851,11 +5851,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "increment-local-surface-id-for-mainframe-same-doc-navigation",
-    "owners": [ "lazzzis@google.com", "acondor@google.com", "clank-performance-team@google.com", "chrome-seamless-core@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "infinite-tabs-freezing",
     "owners": [ "fdoray@chromium.org", "catan-team@chromium.org" ],
     "expiry_milestone": 142

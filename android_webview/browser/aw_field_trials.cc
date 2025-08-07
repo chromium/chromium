@@ -204,8 +204,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(blink::features::kPaintHoldingForIframes);
 
   // Default Nav Transition does not support WebView.
-  aw_feature_overrides.DisableFeature(
-      blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation);
   // TODO(crbug.com/434928245): cleanup this feature gate in M141.
   aw_feature_overrides.DisableFeature(blink::features::kBackForwardTransitions);
 

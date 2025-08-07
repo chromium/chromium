@@ -509,4 +509,7 @@ struct WebPreferences {
   bool api_based_fingerprinting_interventions_enabled = false;
 
   bool content_based_fingerprinting_protection_enabled = false;
+
+  [EnableIf=is_android]
+  bool increment_local_surface_id_for_mainframe_same_doc_navigation = true;
 };

@@ -1808,9 +1808,7 @@ class SameDocNavigationEntryScreenshotBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {viz::mojom::EnableVizTestApis, {}},
         {blink::features::kBackForwardTransitions,
-         {{"min-required-physical-ram-mb", "0"}}},
-        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
-         {}}};
+         {{"min-required-physical-ram-mb", "0"}}}};
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 

@@ -649,6 +649,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
       const blink::web_pref::WebPreferences& r) {
     return r.long_press_link_select_text;
   }
+
+  static bool increment_local_surface_id_for_mainframe_same_doc_navigation(
+      const blink::web_pref::WebPreferences& r) {
+    return r.increment_local_surface_id_for_mainframe_same_doc_navigation;
+  }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)

@@ -377,9 +377,7 @@ class BackForwardTransitionAnimationManagerBrowserTest
   BackForwardTransitionAnimationManagerBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {blink::features::kBackForwardTransitions,
-         {{"min-required-physical-ram-mb", "0"}}},
-        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
-         {}}};
+         {{"min-required-physical-ram-mb", "0"}}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         /*disabled_features=*/{});
@@ -4514,8 +4512,6 @@ class BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {blink::features::kBackForwardTransitions,
          {{"min-required-physical-ram-mb", "0"}}},
-        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
-         {}},
         {features::kRenderDocument,
          {{kRenderDocumentLevelParameterName,
            GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames)}}}};

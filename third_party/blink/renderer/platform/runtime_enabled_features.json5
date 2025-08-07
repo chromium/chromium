@@ -2709,12 +2709,6 @@
       base_feature: "IncomingCallNotifications",
     },
     {
-       // When enabled, every traversable mainframe same-doc navigation will
-       // increment the `viz::LocalSurfaceId` from the impl thread.
-      name: "IncrementLocalSurfaceIdForMainframeSameDocNavigation",
-      status: {"Android": "stable"},
-    },
-    {
       name: "IndexedDbGetAllRecords",
       status: "stable",
     },
