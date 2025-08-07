@@ -654,6 +654,8 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
     [self addSubview:backgroundView];
     backgroundView.center =
         CGPointMake(kOverallWidth / 2.0, kOverallHeight / 2.0);
+    backgroundView.layer.cornerRadius = kSegmentHeight / 2;
+    backgroundView.layer.masksToBounds = YES;
     self.background = backgroundView;
     self.contentView = backgroundView.contentView;
   } else {
