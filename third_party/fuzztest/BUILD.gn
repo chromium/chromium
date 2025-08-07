@@ -124,13 +124,15 @@ if (use_centipede) {
       "src/centipede/runner_dl_info.cc",
       "src/centipede/runner_dl_info.h",
       "src/centipede/runner_fork_server.cc",
-      "src/centipede/runner_interceptors.cc",
       "src/centipede/runner_interface.h",
-      "src/centipede/runner_sancov.cc",
-      "src/centipede/runner_sancov_object.cc",
-      "src/centipede/runner_sancov_object.h",
       "src/centipede/runner_utils.cc",
       "src/centipede/runner_utils.h",
+      "src/centipede/sancov_callbacks.cc",
+      "src/centipede/sancov_interceptors.cc",
+      "src/centipede/sancov_object_array.cc",
+      "src/centipede/sancov_object_array.h",
+      "src/centipede/sancov_state.cc",
+      "src/centipede/sancov_state.h",
     ]
 
     deps = [
