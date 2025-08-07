@@ -20,12 +20,16 @@ struct AutofillFieldWithAttributeType;
 
 // RationalizeAndDetermineAttributeTypes() computes the static and dynamic
 // AttributeType assignments of a form (by calling `DetermineAttributeTypes()`)
-// and rationalize these attribute types assignments. Rationalization means (as
-// of now), checking whether the determined types satisfies the required fields
-// for the matching entity. For example, if the requirement for a passport
-// entity is that a form contains either number or expiry date and the
-// determined types are passport name and country, the rationalization will
-// completely filter out this output.
+// and rationalize these attribute types assignments.
+//
+// The rationalization steps are:
+// - Enforce the required fields constraints for the matching entity.
+//   For example, if the requirement for a passport entity is that a form
+//   contains either number or expiry date and the determined types are passport
+//   name and country, the rationalization completely filters out this output.
+// - Delete adjacent license plate number fields because.
+//   Such fields are likely split plate number fields, and Autofill AI currently
+//   does not have heuristics for splitting the values accordingly.
 //
 // The overloads are just specializations for performance
 // reasons. The following expressions are equivalent:
