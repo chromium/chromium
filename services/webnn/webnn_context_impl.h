@@ -45,7 +45,7 @@ class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
-    : public mojom::WebNNContext,
+    : public WebNNReceiverImpl<mojom::WebNNContext>,
       public WebNNObjectImpl<blink::WebNNContextToken> {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
@@ -54,24 +54,20 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   using CreateTensorImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>)>;
 
-  WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                   WebNNContextProviderImpl* context_provider,
-                   ContextProperties properties,
-                   mojom::CreateContextOptionsPtr options);
+  WebNNContextImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+      WebNNContextProviderImpl* context_provider,
+      ContextProperties properties,
+      mojom::CreateContextOptionsPtr options,
+      gpu::CommandBufferId command_buffer_id,
+      gpu::SequenceId sequence_id,
+      scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
 
-  ~WebNNContextImpl() override;
-
   virtual base::WeakPtr<WebNNContextImpl> AsWeakPtr()
       VALID_CONTEXT_REQUIRED(sequence_checker_) = 0;
-
-#if DCHECK_IS_ON()
-  // Callers which obtain a WeakPtr from the method above may use this helper to
-  // assert that the WeakPtr is being used correctly.
-  void AssertCalledOnValidSequence() const;
-#endif  // DCHECK_IS_ON()
 
   // Disassociates a `WebNNTensor` instance owned by this context by its handle.
   // Called when a `WebNNTensor` instance has a connection error. After this
@@ -141,7 +137,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   }
 
  protected:
-  void OnConnectionError();
+  ~WebNNContextImpl() override;
 
   // mojom::WebNNContext
   void CreateGraphBuilder(
@@ -202,7 +198,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       tensor_impls_;
 
  private:
-  void ResetReceiverWithReason(const std::string& message);
+  void OnDisconnect() override;
 
   // Graph builders owned by this context.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>
@@ -227,7 +223,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // with a SyncToken.
   const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
 
-  mojo::Receiver<mojom::WebNNContext> receiver_;
 
   // Marks the completion of previously scheduled tasks.
   // Used to generate a SyncToken for the renderer which can be passed

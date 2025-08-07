@@ -20,13 +20,19 @@
 namespace webnn::coreml {
 
 ContextImplCoreml::ContextImplCoreml(
-    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
-    mojom::CreateContextOptionsPtr options)
+    mojom::CreateContextOptionsPtr options,
+    gpu::CommandBufferId command_buffer_id,
+    gpu::SequenceId sequence_id,
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GraphBuilderCoreml::GetContextProperties(),
-                       std::move(options)) {}
+                       std::move(options),
+                       command_buffer_id,
+                       sequence_id,
+                       std::move(task_runner)) {}
 
 ContextImplCoreml::~ContextImplCoreml() = default;
 

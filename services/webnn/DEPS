@@ -1,7 +1,9 @@
 include_rules = [
   "+absl/container/flat_hash_set.h",
   "+content/test/fuzzer/mojolpm_fuzzer_support.h",
+  "+gpu/command_buffer/common/command_buffer_id.h",
   "+gpu/command_buffer/common/sync_token.h",
+  "+gpu/command_buffer/service/sequence_id.h",
   "+gpu/command_buffer/service/shared_context_state.h",
   "+gpu/command_buffer/service/scheduler_task_runner.h",
   "+gpu/command_buffer/service/scheduler.h",

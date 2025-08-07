@@ -30,48 +30,29 @@
 
 namespace webnn {
 
-// Generates unique IDs for WebNNContextImpl.
-base::AtomicSequenceNumber g_next_route_id;
-
 WebNNContextImpl::WebNNContextImpl(
-    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties,
-    mojom::CreateContextOptionsPtr options)
-    : context_provider_(context_provider),
+    mojom::CreateContextOptionsPtr options,
+    gpu::CommandBufferId command_buffer_id,
+    gpu::SequenceId sequence_id,
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
+    : WebNNReceiverImpl<mojom::WebNNContext>(std::move(receiver), task_runner),
+      context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
-      command_buffer_id_(
-          gpu::CommandBufferIdFromChannelAndRoute(context_provider->client_id(),
-                                                  g_next_route_id.GetNext())),
-      sequence_id_(context_provider_->scheduler()->CreateSequence(
-          gpu::SchedulingPriority::kNormal,
-          context_provider->main_thread_task_runner(),
-          gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE,
-          command_buffer_id_)),
-      scheduler_task_runner_(base::MakeRefCounted<gpu::SchedulerTaskRunner>(
-          *context_provider_->scheduler(),
-          sequence_id_)),
-      receiver_(this, std::move(receiver)) {
+      command_buffer_id_(command_buffer_id),
+      sequence_id_(sequence_id),
+      scheduler_task_runner_(std::move(task_runner)) {
   CHECK(context_provider_);
-  // Safe to use base::Unretained because the context_provider_ owns this class
-  // that won't be destroyed until this callback executes.
-  receiver_.set_disconnect_handler(
-      base::BindPostTask(scheduler_task_runner_,
-                         base::BindOnce(&WebNNContextImpl::OnConnectionError,
-                                        base::Unretained(this))));
-
-  // Safe to use base::Unretained because `this` is sequence-bound to
-  // scheduler_task_runner_. Deletion occurs via Shutdown(), which drops all
-  // pending tasks - including this one - before the object is destroyed.
   on_lost_callback_ = base::BindPostTaskToCurrentDefault(base::BindOnce(
       [](WebNNContextImpl* self, const std::string& reason) {
-        self->ResetReceiverWithReason(reason);
-        self->scheduler_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&WebNNContextImpl::OnConnectionError,
-                                      base::Unretained((self))));
+        self->GetMojoReceiver().ResetWithReason(/*custom_reason=*/0, reason);
+        self->PostTaskToOwningTaskRunner(
+            base::BindOnce(&WebNNContextImpl::OnDisconnect, self));
       },
-      base::Unretained(this)));
+      base::RetainedRef(this)));
 }
 
 WebNNContextImpl::~WebNNContextImpl() {
@@ -81,15 +62,9 @@ WebNNContextImpl::~WebNNContextImpl() {
   context_provider_->scheduler()->DestroySequence(sequence_id_);
 }
 
-void WebNNContextImpl::OnConnectionError() {
-  context_provider_->OnConnectionError(this);
+void WebNNContextImpl::OnDisconnect() {
+  context_provider_->RemoveWebNNContextImpl(this);
 }
-
-#if DCHECK_IS_ON()
-void WebNNContextImpl::AssertCalledOnValidSequence() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-#endif
 
 void WebNNContextImpl::ReportBadGraphBuilderMessage(
     const std::string& message,
@@ -126,7 +101,7 @@ void WebNNContextImpl::CreateTensor(
     mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
@@ -136,18 +111,18 @@ void WebNNContextImpl::CreateTensor(
             properties_, tensor_info->descriptor.data_type(),
             tensor_info->descriptor.shape(), "WebNNGraphConstant");
     if (!validated_descriptor.has_value()) {
-      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
       return;
     }
 
     if (!properties_.data_type_limits.constant.Has(
             validated_descriptor->data_type())) {
-      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
       return;
     }
 
     if (tensor_data.size() != validated_descriptor->PackedByteLength()) {
-      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
       return;
     }
   }
@@ -195,18 +170,18 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
-    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
   // WebNN graph constants cannot be shared since they may not be readable.
   if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
-    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
@@ -273,10 +248,6 @@ void WebNNContextImpl::RemoveWebNNGraphImpl(
   graph_impls_.erase(it);
 }
 
-void WebNNContextImpl::ResetReceiverWithReason(const std::string& message) {
-  receiver_.ResetWithReason(/*custom_reason_code=*/0, message);
-}
-
 void WebNNContextImpl::OnLost(const std::string& reason) {
   std::move(on_lost_callback_).Run(reason);
 }
@@ -285,7 +256,7 @@ scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
     const blink::WebNNTensorToken& tensor_handle) {
   const auto it = tensor_impls_.find(tensor_handle);
   if (it == tensor_impls_.end()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return nullptr;
   }
   return it->get();

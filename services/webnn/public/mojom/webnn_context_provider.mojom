@@ -31,7 +31,7 @@ struct CreateContextOptions {
 
 // Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.
 struct CreateContextSuccess {
-  pending_remote<WebNNContext>? context_remote;
+  pending_associated_remote<WebNNContext>? context_remote;
   ContextProperties context_properties;
   // context_handle is a generated token used as handle to identify the
   // the context from the renderer. The token is only valid for the lifetime
