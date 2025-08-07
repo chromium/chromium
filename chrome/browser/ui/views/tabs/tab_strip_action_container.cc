@@ -76,6 +76,8 @@ constexpr char kDeclutterTriggerOutcomeName[] =
 constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
 
+constexpr int kInsideBorderAroundGlicButtons = 2;
+constexpr int kOutsideBorderAroundGlicButtons = 11;
 #if BUILDFLAG(ENABLE_GLIC)
 constexpr int kLargeSpaceBetweenButtons = 6;
 #if !BUILDFLAG(IS_MAC)
@@ -447,9 +449,11 @@ std::unique_ptr<views::FlexLayoutView>
 TabStripActionContainer::CreateGlicActorButtonContainer() {
   auto glic_actor_button_container = std::make_unique<views::FlexLayoutView>();
   glic_actor_button_container->SetCollapseMargins(true);
+  glic_actor_button_container->SetCrossAxisAlignment(
+      views::LayoutAlignment::kCenter);
   glic_actor_button_container->SetBackground(views::CreateRoundedRectBackground(
       kColorNewTabButtonCRBackgroundFrameActive, gfx::RoundedCornersF(12),
-      gfx::Insets::VH(4, 4)));
+      gfx::Insets::VH(4, 8)));
 
   // Should be hidden until a task starts.
   glic_actor_button_container->SetVisible(false);
@@ -798,7 +802,10 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
   button->SetIsShowingNudge(true);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic_button_ && glic_button_->GetVisible() && button != glic_button_) {
+  // Only change the margins between the GlicButton and nudges that are NOT
+  // coming from the GlicActorTaskIcon.
+  if (glic_button_ && glic_button_->GetVisible() && button != glic_button_ &&
+      button != glic_actor_task_icon_) {
     const int space_between_buttons = kLargeSpaceBetweenButtons;
     gfx::Insets margin;
     margin.set_right(space_between_buttons);
@@ -975,9 +982,26 @@ void TabStripActionContainer::UpdateButtonBorders(
         views::CreateEmptyBorder(border_insets));
   }
   if (glic_button_) {
-    gfx::Insets glic_border = gfx::Insets().set_left_right(
-                                  border_insets.top(), border_insets.bottom()) +
-                              border_insets;
+    gfx::Insets glic_border;
+    // GlicActorTaskIcon will only ever be shown alongside the GlicButton.
+    if (glic_actor_task_icon_) {
+      gfx::Insets task_icon_border =
+          gfx::Insets().set_left_right(kOutsideBorderAroundGlicButtons,
+                                       kInsideBorderAroundGlicButtons) +
+          border_insets;
+      // If the GlicActorTaskIcon is also present, adjust the border on the
+      // GlicButton to allow the two buttons to sit closer together.
+      glic_border =
+          gfx::Insets().set_left_right(kInsideBorderAroundGlicButtons,
+                                       kOutsideBorderAroundGlicButtons) +
+          border_insets;
+      glic_actor_task_icon_->SetBorder(
+          views::CreateEmptyBorder(task_icon_border));
+    } else {
+      glic_border = gfx::Insets().set_left_right(border_insets.top(),
+                                                 border_insets.bottom()) +
+                    border_insets;
+    }
     glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
   }
 }
