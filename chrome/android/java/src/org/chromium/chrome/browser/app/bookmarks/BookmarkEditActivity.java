@@ -87,6 +87,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 public void bookmarkModelChanged() {
                     if (mModel.doesBookmarkExist(mBookmarkId)) {
                         updateViewContent(true);
+                    } else {
+                        finish();
                     }
                 }
             };
