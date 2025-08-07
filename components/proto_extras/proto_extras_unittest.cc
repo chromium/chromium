@@ -23,6 +23,14 @@ namespace {
 TEST(ProtoExtrasToValueTest, BasicField) {
   TestMessage message;
   EXPECT_THAT(message, EqualsTestMessage(TestMessage()));
+
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "double_field": 0.0,
+    "int32_field": 0,
+    "enum_field": "UNKNOWN",
+    "uint64_field": "0",
+  })!"));
+
   message.set_double_field(1.0);
   message.set_int32_field(2);
   message.mutable_nested_message_field()->set_int32_field(3);
@@ -183,13 +191,27 @@ TEST(ProtoExtrasToValueTest, UnknownFields) {
 
 TEST(ProtoExtrasProto2ToValueTest, EmbeddedMessageToValue) {
   EmbeddedMessage message;
-  base::Value::Dict result = Serialize(message);
-  EXPECT_EQ(0ul, result.size());
+  base::Value result = Serialize(message);
+  EXPECT_TRUE(result.is_dict());
+  EXPECT_EQ(0ul, result.GetDict().size());
   message.set_str_field("test");
   result = Serialize(message);
-  ASSERT_TRUE(result.FindString("str_field")) << result.DebugString();
-  EXPECT_EQ("test", *result.FindString("str_field"));
-  EXPECT_EQ(1ul, result.size());
+  EXPECT_TRUE(result.is_dict());
+  ASSERT_TRUE(result.GetDict().FindString("str_field")) << result.DebugString();
+  EXPECT_EQ("test", *result.GetDict().FindString("str_field"));
+  EXPECT_EQ(1ul, result.GetDict().size());
+}
+
+TEST(ProtoExtrasToValueTest, EmptyEmbeddedMessage) {
+  TestMessage message;
+  message.mutable_empty_embedded_message();
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "double_field": 0.0,
+    "int32_field": 0,
+    "enum_field": "UNKNOWN",
+    "empty_embedded_message": {},
+    "uint64_field": "0",
+  })!"));
 }
 
 TEST(ProtoExtrasProto2ToValueTest, Basic) {
@@ -597,6 +619,16 @@ TEST(ProtoExtrasProtoEqualityProto2, MapField) {
   EXPECT_NE(msg1, msg2);
   (*msg2.mutable_message_map_field())["hello2"].set_str_field("world2");
   EXPECT_EQ(msg1, msg2);
+}
+
+TEST(ProtoExtrasProto2ToValueTest, EmptyEmbeddedMessageToValue) {
+  TestMessageProto2 message;
+  message.mutable_empty_embedded_message();
+  base::Value result = Serialize(message);
+  ASSERT_TRUE(result.is_dict());
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "empty_embedded_message": {}
+  })!"));
 }
 
 }  // namespace

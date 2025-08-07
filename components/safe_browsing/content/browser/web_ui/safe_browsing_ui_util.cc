@@ -236,9 +236,10 @@ std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
 
 std::string SerializeClientPhishingRequest(
     const ClientPhishingRequestAndToken& cprat) {
-  base::Value::Dict value = Serialize(cprat.request);
-  value.Set("scoped_oauthtoken", cprat.token);
-  return SerializeJson(std::move(value));
+  base::Value value = Serialize(cprat.request);
+  CHECK(value.is_dict());
+  value.GetDict().Set("scoped_oauthtoken", cprat.token);
+  return SerializeJson(value);
 }
 
 std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
@@ -424,9 +425,10 @@ base::Value::Dict SerializeReferringAppInfo(
 
 std::string SerializePGPing(
     const LoginReputationClientRequestAndToken& request_and_token) {
-  base::Value::Dict request_dict = Serialize(request_and_token.request);
-  request_dict.Set("scoped_oauth_token", request_and_token.token);
-  return SerializeJson(request_dict);
+  base::Value request = Serialize(request_and_token.request);
+  CHECK(request.is_dict());
+  request.GetDict().Set("scoped_oauth_token", request_and_token.token);
+  return SerializeJson(request);
 }
 
 std::string SerializePGResponse(const LoginReputationClientResponse& response) {
@@ -434,9 +436,10 @@ std::string SerializePGResponse(const LoginReputationClientResponse& response) {
 }
 
 std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
-  base::Value::Dict request_dict = Serialize(ping.request);
-  request_dict.Set("scoped_oauth_token", ping.token);
-  return SerializeJson(request_dict);
+  base::Value request = Serialize(ping.request);
+  CHECK(request.is_dict());
+  request.GetDict().Set("scoped_oauth_token", ping.token);
+  return SerializeJson(request);
 }
 
 std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
@@ -495,7 +498,9 @@ std::string SerializeContentAnalysisRequest(
     const std::string& upload_info,
     const std::string& upload_url,
     const enterprise_connectors::ContentAnalysisRequest& request) {
-  base::Value::Dict request_dict = Serialize(request);
+  base::Value request_value = Serialize(request);
+  CHECK(request_value.is_dict());
+  base::Value::Dict& request_dict = request_value.GetDict();
   request_dict.Set("access_token", access_token_truncated);
   request_dict.Set("upload_info", upload_info);
   request_dict.Set("upload_url", upload_url);

@@ -10,6 +10,8 @@ option optimize_for = LITE_RUNTIME;
 
 import "components/proto_extras/test_proto/test_proto_dependency.proto";
 
+message EmptyEmbeddedMessage {}
+
 message TestMessage {
   double double_field = 1;
 
@@ -48,4 +50,5 @@ message TestMessage {
 
   map<int32, string> primitive_map_field = 14;
   map<string, DependencyMessage> message_map_field = 15;
+  EmptyEmbeddedMessage empty_embedded_message = 16;
 }

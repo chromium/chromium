@@ -262,6 +262,14 @@ $print_to_definitions$
   void PrintMatcher(const Descriptor& message, Printer* printer) const {
     std::string message_class_name = ClassName(&message);
     std::string matcher_name = UniqueMatcherName(message);
+    if (message.field_count() == 0) {
+      printer->Emit({{"matcher_name", matcher_name}},
+                    R"(
+MATCHER_P($matcher_name$, expected, "") {
+  return true;
+})");
+      return;
+    }
 
     printer->Emit(
         {{"message_type", message_class_name}, {"matcher_name", matcher_name}},
