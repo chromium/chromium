@@ -76,11 +76,6 @@ bool ContainsViewWithId(const views::View* view, ui::ElementIdentifier id) {
 
 class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
  public:
-  explicit DiceMigrationServiceBrowserTest(bool enable_feature = true) {
-    scoped_feature_list_.InitWithFeatureState(
-        switches::kOfferMigrationToDiceUsers, enable_feature);
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     disclaimer_service_resetter_ =
@@ -144,7 +139,8 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kOfferMigrationToDiceUsers};
   base::ScopedClosureRunner disclaimer_service_resetter_;
   base::HistogramTester histogram_tester_;
 };
@@ -1097,30 +1093,20 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTestWithMockedTime,
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-class DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled
+class DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled
     : public DiceMigrationServiceBrowserTest {
  public:
-  DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled()
-      : DiceMigrationServiceBrowserTest(
-            /*enable_feature=*/IsFlagEnabled()) {}
-
-  bool IsFlagEnabled() const {
-    std::string_view test_name =
-        testing::UnitTest::GetInstance()->current_test_info()->name();
-    // This calculates the number of times "PRE_" appears in the test name.
-    int pre_count = 0;
-    while (test_name.starts_with("PRE_")) {
-      pre_count++;
-      test_name.remove_prefix(4);
-    }
-    // The feature is enabled for the main test, disabled for the pre-test and
-    // enabled for the pre-pre-test, and so on.
-    return pre_count % 2 == 0;
+  DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        switches::kRollbackDiceMigration);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 DICE_MIGRATION_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
+    DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled,
     SavePrefsForBackup) {
   // The user is implicitly signed in.
   ASSERT_TRUE(IsImplicitlySignedIn());
@@ -1165,152 +1151,28 @@ DICE_MIGRATION_TEST_F(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
-    PRE_PRE_PRE_PostRestore) {
-  ImplicitlySignIn(kTestEmail);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
-    PRE_PRE_PostRestore) {
-  // The user is implicitly signed in.
-  ASSERT_TRUE(IsImplicitlySignedIn());
-
-  // Pre-migration prefs.
-  ASSERT_FALSE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_FALSE(GetPrefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-
-  ASSERT_TRUE(
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
-  FireDialogTriggerTimer();
-
-  // The dialog is shown.
-  views::Widget* dialog_widget =
-      GetDiceMigrationService()->GetDialogWidgetForTesting();
-  ASSERT_TRUE(dialog_widget);
-
-  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-  // Simulate clicking on accept button.
-  dialog_widget->CloseWithReason(
-      views::Widget::ClosedReason::kAcceptButtonClicked);
-  waiter.Wait();
-
-  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
-  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
-
-  // The explicit sign-in pref is set, this marks the user as explicitly
-  // signed in.
-  ASSERT_TRUE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_TRUE(GetPrefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-  ASSERT_TRUE(IsExplicitlySignedIn());
-
-  histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
-    PRE_PostRestore) {
-  histogram_tester_.ExpectUniqueSample(kRestoredFromBackupHistogram, true, 1);
-
-  // The user is implicitly signed in.
-  ASSERT_TRUE(IsImplicitlySignedIn());
-
-  // Prefs restored from backup.
-  ASSERT_FALSE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_FALSE(GetPrefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-
-  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
-  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
-
-  // Set the dialog last shown time to
-  // (`kOfferMigrationToDiceUsersMinTimeBetweenDialogs` + 1) days ago to allow
-  // the dialog to be shown again.
-  GetProfile()->GetPrefs()->SetTime(
-      kDiceMigrationDialogLastShownTime,
-      base::Time::Now() -
-          (switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get() +
-           base::Days(1)));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
-    PostRestore) {
-  histogram_tester_.ExpectTotalCount(kRestoredFromBackupHistogram, 0);
-
-  // The user is implicitly signed in.
-  ASSERT_TRUE(IsImplicitlySignedIn());
-
-  // Prefs restored from backup.
-  ASSERT_FALSE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_FALSE(GetPrefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-
-  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
-  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
-
-  ASSERT_TRUE(
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
-  FireDialogTriggerTimer();
-
-  // The dialog is shown.
-  views::Widget* dialog_widget =
-      GetDiceMigrationService()->GetDialogWidgetForTesting();
-  ASSERT_TRUE(dialog_widget);
-
-  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-  // Simulate clicking on accept button.
-  dialog_widget->CloseWithReason(
-      views::Widget::ClosedReason::kAcceptButtonClicked);
-  waiter.Wait();
-
-  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
-  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
-
-  // The explicit sign-in pref is set, this marks the user as explicitly
-  // signed in.
-  ASSERT_TRUE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_TRUE(GetPrefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-  ASSERT_TRUE(IsExplicitlySignedIn());
-
-  histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
-  histogram_tester_.ExpectTotalCount(kRestoredFromBackupHistogram, 0);
-}
-
-class DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled
+class DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled
     : public DiceMigrationServiceBrowserTest {
  public:
-  DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled()
-      : DiceMigrationServiceBrowserTest(
-            /*enable_feature=*/content::IsPreTest()) {}
-
-  bool IsFlagEnabled() const {
-    std::string_view test_name =
-        testing::UnitTest::GetInstance()->current_test_info()->name();
-    // This calculates the number of times "PRE_" appears in the test name.
-    int pre_count = 0;
-    while (test_name.starts_with("PRE_")) {
-      pre_count++;
-      test_name.remove_prefix(4);
-    }
-    // The feature is disabled for the main test, enabled for the pre-test and
-    // disabled for the pre-pre-test, and so on.
-    return pre_count % 2 != 0;
+  DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled() {
+    // Only enable the rollback feature in the main test to allow testing the
+    // rollback flow.
+    scoped_feature_list_.InitWithFeatureState(switches::kRollbackDiceMigration,
+                                              !content::IsPreTest());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled,
+    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
     PRE_PRE_Restore) {
   ImplicitlySignIn(kTestEmail);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled,
+    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
     PRE_Restore) {
   // The user is implicitly signed in.
   ASSERT_TRUE(IsImplicitlySignedIn());
@@ -1376,7 +1238,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled,
+    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
     Restore) {
   histogram_tester_.ExpectUniqueSample(kRestoredFromBackupHistogram, true, 1);
 
@@ -1406,13 +1268,13 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled,
+    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
     PRE_PRE_RestoreFailed) {
   ImplicitlySignIn(kTestEmail);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled,
+    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
     PRE_RestoreFailed) {
   // The user is implicitly signed in.
   ASSERT_TRUE(IsImplicitlySignedIn());
@@ -1479,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceMigrationServiceRestoreFromBackupBrowserTestFlagDisabled,
+    DiceMigrationServiceRestoreFromBackupBrowserTestFlagEnabled,
     RestoreFailed) {
   histogram_tester_.ExpectUniqueSample(kRestoredFromBackupHistogram, false, 1);
 
@@ -1510,6 +1372,144 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
   // The migration pref is not reset.
   EXPECT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
+}
+
+class DiceMigrationServiceRestoreFromBackupBrowserTestReMigration
+    : public DiceMigrationServiceBrowserTest {
+ public:
+  DiceMigrationServiceRestoreFromBackupBrowserTestReMigration() {
+    // Only enable the rollback feature for the last pre-test to allow DICe
+    // migration to be tested in the main test.
+    std::string_view test_name =
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+    // This calculates the number of times "PRE_" appears in the test name.
+    int pre_count = 0;
+    while (test_name.starts_with("PRE_")) {
+      pre_count++;
+      test_name.remove_prefix(4);
+    }
+    scoped_feature_list_.InitWithFeatureState(switches::kRollbackDiceMigration,
+                                              pre_count == 1);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DiceMigrationServiceRestoreFromBackupBrowserTestReMigration,
+    PRE_PRE_PRE_PostRestore) {
+  ImplicitlySignIn(kTestEmail);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceMigrationServiceRestoreFromBackupBrowserTestReMigration,
+    PRE_PRE_PostRestore) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(IsImplicitlySignedIn());
+
+  // Pre-migration prefs.
+  ASSERT_FALSE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(GetPrefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  FireDialogTriggerTimer();
+
+  // The dialog is shown.
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Simulate clicking on accept button.
+  dialog_widget->CloseWithReason(
+      views::Widget::ClosedReason::kAcceptButtonClicked);
+  waiter.Wait();
+
+  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
+  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
+
+  // The explicit sign-in pref is set, this marks the user as explicitly
+  // signed in.
+  ASSERT_TRUE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_TRUE(GetPrefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+  ASSERT_TRUE(IsExplicitlySignedIn());
+
+  histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceMigrationServiceRestoreFromBackupBrowserTestReMigration,
+    PRE_PostRestore) {
+  histogram_tester_.ExpectUniqueSample(kRestoredFromBackupHistogram, true, 1);
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(IsImplicitlySignedIn());
+
+  // Prefs restored from backup.
+  ASSERT_FALSE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(GetPrefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+
+  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
+  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
+
+  // Set the dialog last shown time to
+  // (`kOfferMigrationToDiceUsersMinTimeBetweenDialogs` + 1) days ago to allow
+  // the dialog to be shown again.
+  GetProfile()->GetPrefs()->SetTime(
+      kDiceMigrationDialogLastShownTime,
+      base::Time::Now() -
+          (switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get() +
+           base::Days(1)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceMigrationServiceRestoreFromBackupBrowserTestReMigration,
+    PostRestore) {
+  histogram_tester_.ExpectTotalCount(kRestoredFromBackupHistogram, 0);
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(IsImplicitlySignedIn());
+
+  // Prefs restored from backup.
+  ASSERT_FALSE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(GetPrefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+
+  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
+  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
+
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  FireDialogTriggerTimer();
+
+  // The dialog is shown.
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Simulate clicking on accept button.
+  dialog_widget->CloseWithReason(
+      views::Widget::ClosedReason::kAcceptButtonClicked);
+  waiter.Wait();
+
+  ASSERT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
+  ASSERT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
+
+  // The explicit sign-in pref is set, this marks the user as explicitly
+  // signed in.
+  ASSERT_TRUE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_TRUE(GetPrefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+  ASSERT_TRUE(IsExplicitlySignedIn());
+
+  histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(kRestoredFromBackupHistogram, 0);
 }
 
 }  // namespace

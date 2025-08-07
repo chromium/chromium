@@ -234,6 +234,10 @@ BASE_FEATURE(kOfferMigrationToDiceUsers,
              "OfferMigrationToDiceUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRollbackDiceMigration,
+             "RollbackDiceMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kOfferMigrationToDiceUsersMinDelay,
                    &kOfferMigrationToDiceUsers,

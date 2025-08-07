@@ -245,11 +245,13 @@ DiceMigrationService::DiceMigrationService(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing)
     : profile_(profile) {
   CHECK(profile_);
-  if (!base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)) {
+  if (base::FeatureList::IsEnabled(switches::kRollbackDiceMigration)) {
     RestoreImplicitlySignedInStateFromBackupIfExists(profile_->GetPrefs());
     return;
   }
-
+  if (!base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)) {
+    return;
+  }
   const std::optional<DialogNotShownReason> not_shown_reason =
       ShouldStartDialogTriggerTimer();
   base::UmaHistogramBoolean(kDialogTimerStartedHistogram,
