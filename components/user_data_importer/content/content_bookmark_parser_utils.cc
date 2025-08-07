@@ -28,15 +28,14 @@ namespace user_data_importer {
 
 namespace {
 
-static std::string stripDt(const std::string& lineDt) {
+std::string_view StripDt(std::string_view line) {
   // Remove "<DT>" if the line starts with "<DT>".  This may not occur if
   // "<DT>" was on the previous line.  Liberally accept entries that do not
   // have an opening "<DT>" at all.
-  std::string line = lineDt;
-  static const char kDtTag[] = "<DT>";
+  static constexpr char kDtTag[] = "<DT>";
   if (base::StartsWith(line, kDtTag, base::CompareCase::INSENSITIVE_ASCII)) {
-    line.erase(0, std::size(kDtTag) - 1);
-    base::TrimString(line, " ", &line);
+    line.remove_prefix(std::size(kDtTag) - 1);
+    line = base::TrimWhitespaceASCII(line, base::TRIM_LEADING);
   }
   return line;
 }
@@ -103,7 +102,7 @@ std::optional<bool> GetBoolAttribute(const std::string& attribute_list,
                                      const std::string& attribute) {
   std::optional<std::string> bool_value =
       GetAttribute(attribute_list, attribute);
-  if (bool_value.has_value()) {
+  if (bool_value) {
     if (bool_value.value() == "1") {
       return true;
     } else if (bool_value.value() == "0") {
@@ -183,7 +182,7 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   const char kUuidAttribute[] = "UUID";
   const char kSyncedAttribute[] = "SYNCED";
 
-  std::string line = stripDt(lineDt);
+  std::string_view line = StripDt(lineDt);
 
   if (!base::StartsWith(line, kFolderOpen, base::CompareCase::SENSITIVE)) {
     return false;
@@ -200,10 +199,9 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
                         base::OnStringConversionError::SKIP, folder_name);
   *folder_name = base::UnescapeForHTML(*folder_name);
 
-  std::string attribute_list =
-      line.substr(std::size(kFolderOpen), tag_end - std::size(kFolderOpen) - 1);
-  std::string value;
-
+  // TODO(crbug.com/436476129): Refactor `attribute_list` to a string_view.
+  std::string attribute_list = std::string(line.substr(
+      std::size(kFolderOpen), tag_end - std::size(kFolderOpen) - 1));
   // Add date
   *add_date = GetTimeAttribute(attribute_list, kAddDateAttribute)
                   .value_or(base::Time::Now());
@@ -249,7 +247,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   const char kUuidAttribute[] = "UUID";
   const char kSyncedAttribute[] = "SYNCED";
 
-  std::string line = stripDt(lineDt);
+  std::string_view line = StripDt(lineDt);
   title->clear();
   *url = GURL();
   *favicon = GURL();
@@ -270,13 +268,13 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
     return false;  // No end tag or start tag is broken.
   }
 
-  std::string attribute_list =
-      line.substr(std::size(kItemOpen), tag_end - std::size(kItemOpen) - 1);
+  std::string attribute_list = std::string(
+      line.substr(std::size(kItemOpen), tag_end - std::size(kItemOpen) - 1));
 
   // We don't import Live Bookmark folders, which is Firefox's RSS reading
   // feature, since the user never necessarily bookmarked them and we don't
   // have this feature to update their contents.
-  if (GetAttribute(attribute_list, kFeedURLAttribute).has_value()) {
+  if (GetAttribute(attribute_list, kFeedURLAttribute)) {
     return false;
   }
 
@@ -344,7 +342,7 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
   const char kHrefAttributeUpper[] = "HREF";
   const char kHrefAttributeLower[] = "href";
 
-  std::string line = stripDt(lineDt);
+  std::string_view line = StripDt(lineDt);
   title->clear();
   *url = GURL();
 
@@ -361,9 +359,8 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
     return false;  // No end tag or start tag is broken.
   }
 
-  std::string attribute_list =
-      line.substr(std::size(kItemOpen), tag_end - std::size(kItemOpen) - 1);
-
+  std::string attribute_list = std::string(
+      line.substr(std::size(kItemOpen), tag_end - std::size(kItemOpen) - 1));
   // Title
   base::CodepageToUTF16(line.substr(tag_end, end - tag_end), charset.c_str(),
                         base::OnStringConversionError::SKIP, title);
