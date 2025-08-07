@@ -180,7 +180,7 @@ gn_args = struct(
     config = _config,
 )
 
-def register_gn_args(builder_group, bucket, builder, gn_args, use_siso, use_siso_rbe_client):
+def register_gn_args(builder_group, bucket, builder, gn_args, use_siso):
     """Register GN args for a builder.
 
     Internally creates a node of gn_config kind for a builder.
@@ -195,9 +195,6 @@ def register_gn_args(builder_group, bucket, builder, gn_args, use_siso, use_siso
             the "name" parameter.
         use_siso: (boolean) if True, configs will automatically set the use_siso
             GN arg to true unless it is set by the config.
-        use_siso_rbe_client: (boolean) if True, configs will automatically set
-            use_reclient = false unless it is set by the config. it will enable
-            Siso's builtin RBE client instead of Reclient.
 
     Returns:
         A list of generated GN args file paths relative to the per-builder
@@ -210,7 +207,6 @@ def register_gn_args(builder_group, bucket, builder, gn_args, use_siso, use_siso
     if not settings.project.startswith("chrome"):
         if use_siso:
             defaults["use_siso"] = True
-        if use_siso_rbe_client:
             defaults["use_reclient"] = False
 
     # Function for formating GN config for GN config node creation.

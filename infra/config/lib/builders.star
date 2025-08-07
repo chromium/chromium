@@ -244,54 +244,6 @@ def _pgo_property(*, use_pgo, skip_profile_upload):
 
     return pgo or None
 
-_VALID_REPROXY_ENV_PREFIX_LIST = ["RBE_", "GLOG_", "GOMA_"]
-
-def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, bootstrap_env, scandeps_server, disable_bq_upload):
-    reclient = {}
-    if not instance:
-        return None
-    reclient["instance"] = instance
-    reclient["metrics_project"] = "chromium-reclient-metrics"
-    service = defaults.get_value("reclient_service", service)
-    if service:
-        reclient["service"] = service
-    jobs = defaults.get_value("reclient_jobs", jobs)
-    if jobs:
-        reclient["jobs"] = jobs
-    rewrapper_env = defaults.get_value("reclient_rewrapper_env", rewrapper_env)
-    if rewrapper_env:
-        for k in rewrapper_env:
-            if not k.startswith("RBE_"):
-                fail("Environment variables in rewrapper_env must start with " +
-                     "'RBE_', got '%s'" % k)
-        reclient["rewrapper_env"] = rewrapper_env
-    bootstrap_env = defaults.get_value("reclient_bootstrap_env", bootstrap_env)
-    if bootstrap_env:
-        for k in bootstrap_env:
-            if not any([k.startswith(prefix) for prefix in _VALID_REPROXY_ENV_PREFIX_LIST]):
-                fail("Environment variables in bootstrap_env must start with one of (" +
-                     ", ".join(_VALID_REPROXY_ENV_PREFIX_LIST) +
-                     "), got '%s'" % k)
-        reclient["bootstrap_env"] = bootstrap_env
-    if scandeps_server:
-        reclient["scandeps_server"] = scandeps_server
-    profiler_service = defaults.get_value("reclient_profiler_service", profiler_service)
-    if profiler_service:
-        reclient["profiler_service"] = profiler_service
-    publish_trace = defaults.get_value("reclient_publish_trace", publish_trace)
-    if publish_trace:
-        reclient["publish_trace"] = True
-    if cache_silo:
-        reclient["cache_silo"] = cache_silo
-    ensure_verified = defaults.get_value("reclient_ensure_verified", ensure_verified)
-    if ensure_verified:
-        reclient["ensure_verified"] = True
-    disable_bq_upload = defaults.get_value("reclient_disable_bq_upload", disable_bq_upload)
-    if disable_bq_upload:
-        reclient["disable_bq_upload"] = True
-
-    return reclient
-
 def _resultdb_settings(*, resultdb_enable, resultdb_bigquery_exports, resultdb_index_by_timestamp):
     resultdb_enable = defaults.get_value("resultdb_enable", resultdb_enable)
     if not resultdb_enable:
@@ -355,17 +307,6 @@ defaults = args.defaults(
     resultdb_enable = True,
     resultdb_bigquery_exports = [],
     resultdb_index_by_timestamp = False,
-    reclient_service = None,
-    reclient_jobs = None,
-    reclient_rewrapper_env = None,
-    reclient_bootstrap_env = None,
-    reclient_profiler_service = None,
-    reclient_publish_trace = None,
-    reclient_scandeps_server = args.COMPUTE,
-    reclient_cache_silo = None,
-    reclient_ensure_verified = None,
-    reclient_disable_bq_upload = None,
-    reclient_enabled = True,
     siso_enabled = None,
     siso_project = None,
     siso_configs = ["builder"],
@@ -458,17 +399,6 @@ def builder(
         resultdb_enable = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
         resultdb_index_by_timestamp = args.DEFAULT,
-        reclient_service = args.DEFAULT,
-        reclient_jobs = args.DEFAULT,
-        reclient_rewrapper_env = args.DEFAULT,
-        reclient_bootstrap_env = args.DEFAULT,
-        reclient_profiler_service = args.DEFAULT,
-        reclient_publish_trace = args.DEFAULT,
-        reclient_scandeps_server = args.DEFAULT,
-        reclient_cache_silo = None,
-        reclient_ensure_verified = None,
-        reclient_disable_bq_upload = None,
-        reclient_enabled = args.DEFAULT,
         siso_enabled = args.DEFAULT,
         siso_project = args.DEFAULT,
         siso_configs = args.DEFAULT,
@@ -653,33 +583,6 @@ def builder(
             timestamp, i.e. for purposes of retrieving a test's history. If
             false, the results will not be searchable by timestamp on ResultDB's
             test history api.
-        reclient_service: a string indicating the RBE service to dial via gRPC.
-            By default, this is "remotebuildexecution.googleapis.com:443" (set
-            in the reclient recipe module). Has no effect if reclient_instance
-            is not set.
-        reclient_jobs: an integer indicating the number of concurrent
-            compilations to run when using re-client as the compiler. Has no
-            effect if reclient_instance is not set.
-        reclient_rewrapper_env: a map that sets the rewrapper flags via the
-            environment variables. All such vars must start with the "RBE_"
-            prefix. Has no effect if reclient_instance is not set.
-        reclient_bootstrap_env: a map that sets the bootstrap flags via the
-            environment variables. All such vars must start with the "RBE_"
-            prefix. Has no effect if reclient_instance is not set.
-        reclient_profiler_service: a string indicating service name for
-            re-client's cloud profiler. Has no effect if reclient_instance is
-            not set.
-        reclient_publish_trace: If True, it publish trace by rpl2cloudtrace. Has
-            no effect if reclient_instance is not set.
-        reclient_scandeps_server: If true, reproxy should start its own scandeps_server
-        reclient_cache_silo: A string indicating a cache siling key to use for
-            remote caching. Has no effect if reclient_instance is not set.
-        reclient_ensure_verified: If True, it verifies build artifacts. Has no
-            effect if reclient_instance is not set.
-        reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
-            BigQuery after each build
-        reclient_enabled: If True, $build/reclient properties will be set.
-            Otherwise, Siso's builtin RBE client will be used.
         siso_enabled: If True, $build/siso properties will be set, and Siso will
             be used at compile step.
         siso_project: a string indicating the GCP project hosting the RBE
@@ -689,8 +592,6 @@ def builder(
         siso_enable_cloud_profiler: If True, enable cloud profiler in Siso.
         siso_enable_cloud_trace: If True, enable cloud trace in Siso.
         siso_enable_cloud_monitoring: If true, enable cloud monitoring in Siso.
-            When Siso uses Reclient for remote executions, this flag is noop because
-            Reclient already sends metrics to Cloud monitoring.
         siso_experiments: a list of experiment flags for siso.
         siso_remote_jobs: an integer indicating the number of concurrent remote jobs
             to run when building with Siso.
@@ -698,9 +599,8 @@ def builder(
             used remote execution and fail the build if any step used it.
         siso_output_local_strategy: a string indicating the output strategy
             for `--output_local_strategy`. full, greedy or minimum.
-        siso_remote_linking: If True, enable remote linking. Siso has to use the
-            builtin RBE client instead of Reclient. Relevant configs and GN args
-            will be adjusted accordingly.
+        siso_remote_linking: If True, enable remote linking. Relevant configs
+            and GN args will be adjusted accordingly.
         siso_limits: a string to override sito limits.
         health_spec: a health spec instance describing the threshold for when
             the builder should be considered unhealthy.
@@ -720,8 +620,8 @@ def builder(
             will use this service account instead.
         shadow_siso_project: If set, then led builds for this builder will
             use the RBE and other cloud instances of this project instead of the
-            ones of siso_project. The other reclient, siso values will continue
-            to be used for the shadow build.
+            ones of siso_project. The other siso values will continue to be used
+            for the shadow build.
         shadow_properties: If set, the led builds created for this Builder will
             override the top-level input properties with the same keys.
         gn_args: If set, the GN args config to use for the builder. It can be
@@ -764,9 +664,6 @@ def builder(
              "use coverage_gs_bucket, use_clang_coverage, use_java_coverage, " +
              "use_javascript_coverage, coverage_exclude_sources, " +
              "coverage_test_types instead")
-    if "$build/reclient" in properties:
-        fail('Setting "$build/reclient" property is not supported: ' +
-             "use reclient_instance and reclient_rewrapper_env instead")
     if "$build/pgo" in properties:
         fail('Setting "$build/pgo" property is not supported: ' +
              "use use_pgo and skip_profile_upload instead")
@@ -871,56 +768,6 @@ def builder(
     use_siso = defaults.get_value("siso_enabled", siso_enabled) and rbe_project
     use_siso_remote_linking = use_siso and defaults.get_value("siso_remote_linking", siso_remote_linking)
 
-    # When remote linking is enabled, Siso needs to use the builtin-RBE client
-    # instead of Reclient.
-    if use_siso_remote_linking:
-        use_reclient = False
-    else:
-        use_reclient = defaults.get_value("reclient_enabled", reclient_enabled)
-    use_siso_rbe_client = not use_reclient
-
-    if use_reclient:
-        reclient_scandeps_server = defaults.get_value(
-            "reclient_scandeps_server",
-            reclient_scandeps_server,
-        )
-
-        # Enable scandeps_server by default for Chromium.
-        if reclient_scandeps_server == args.COMPUTE:
-            reclient_scandeps_server = settings.project.startswith("chromium") or (os and os.category == os_category.MAC)
-
-        reclient = _reclient_property(
-            instance = rbe_project,
-            service = reclient_service,
-            jobs = reclient_jobs,
-            rewrapper_env = reclient_rewrapper_env,
-            bootstrap_env = reclient_bootstrap_env,
-            profiler_service = reclient_profiler_service,
-            publish_trace = reclient_publish_trace,
-            scandeps_server = reclient_scandeps_server,
-            cache_silo = reclient_cache_silo,
-            ensure_verified = reclient_ensure_verified,
-            disable_bq_upload = reclient_disable_bq_upload,
-        )
-        if reclient != None:
-            properties["$build/reclient"] = reclient
-            shadow_reclient_instance = shadow_rbe_project
-            shadow_reclient = _reclient_property(
-                instance = shadow_reclient_instance,
-                service = reclient_service,
-                jobs = reclient_jobs,
-                rewrapper_env = reclient_rewrapper_env,
-                bootstrap_env = reclient_bootstrap_env,
-                profiler_service = reclient_profiler_service,
-                publish_trace = reclient_publish_trace,
-                scandeps_server = reclient_scandeps_server,
-                cache_silo = reclient_cache_silo,
-                ensure_verified = reclient_ensure_verified,
-                disable_bq_upload = reclient_disable_bq_upload,
-            )
-            if shadow_reclient:
-                shadow_properties["$build/reclient"] = shadow_reclient
-                shadow_rbe_project = shadow_reclient["instance"]
     if use_siso:
         siso = {
             "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
@@ -946,9 +793,7 @@ def builder(
         if siso_limits:
             siso["limits"] = siso_limits
 
-        # Since Siso's remote linking doesn't use Reclient, it needs to enable
-        # Cloud Monitoring for monitoring and alerts.
-        if defaults.get_value("siso_enable_cloud_monitoring", siso_enable_cloud_monitoring) and use_siso_rbe_client:
+        if defaults.get_value("siso_enable_cloud_monitoring", siso_enable_cloud_monitoring):
             siso["enable_cloud_monitoring"] = True
 
             # TODO: crbug.com/368518993 - It uses the same GCP project with
@@ -1086,9 +931,7 @@ def builder(
 
     register_recipe_experiments_ref(bucket, name, executable)
 
-    # When Siso enables remote linking, it must use the builtin RBE client
-    # instead of Reclient. Modify GN args inside register_gn_args().
-    additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args, use_siso, use_siso_rbe_client)
+    additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args, use_siso)
 
     builder_config_settings = defaults.get_value(
         "builder_config_settings",

@@ -321,10 +321,6 @@ ci.builder(
         short_name = "32",
     ),
     cq_mirrors_console_view = "mirrors",
-    # TODO(crbug.com/40926931): Remove once the bug is closed.
-    reclient_bootstrap_env = {
-        "RBE_experimental_exit_on_stuck_actions": "true",
-    },
 )
 
 ci.builder(
@@ -655,10 +651,6 @@ ci.builder(
     # Can flakily hit the default 3 hour timeout due to inconsistent compile
     # times.
     execution_timeout = 4 * time.hour,
-    # Increase timeout for connecting to dependency scanner
-    reclient_bootstrap_env = {
-        "RBE_depsscan_connect_timeout": "120s",
-    },
 )
 
 ci.thin_tester(
@@ -899,9 +891,6 @@ ci.builder(
         short_name = "det",
     ),
     execution_timeout = 12 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_timeout": "10m",
-    },
 )
 
 ci.builder(
