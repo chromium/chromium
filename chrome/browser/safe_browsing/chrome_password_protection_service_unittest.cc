@@ -35,7 +35,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -286,8 +285,7 @@ class ChromePasswordProtectionServiceTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ChromePasswordProtectionServiceTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()),
-        local_state_(TestingBrowserProcess::GetGlobal()) {
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
   }
 
@@ -534,7 +532,6 @@ class ChromePasswordProtectionServiceTest
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   TestingProfileManager profile_manager_;
-  ScopedTestingLocalState local_state_;
   base::MockCallback<
       ChromePasswordProtectionService::ChangePhishedCredentialsCallback>
       mock_add_callback_;

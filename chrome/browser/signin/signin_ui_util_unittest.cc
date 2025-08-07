@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -41,10 +40,9 @@ TEST(GetAllowedDomainTest, WithValidPattern) {
 }
 
 TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
-  // Setup a testing profile manager with mock time and scoped local state.
+  // Setup a testing profile manager with mock time.
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager.SetUp());
   std::string name("testing_profile");

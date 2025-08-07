@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url.h"
@@ -143,12 +142,6 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
  private:
   static TestingProfile::TestingFactories
   SetUpRequiredServicesWithCustomLocalState(PrefService* local_state_override);
-
-  // Populated only if the calling test did not previously set up a
-  // local state. This object would then own the process-global local
-  // state.
-  // Don't access it directly, prefer using `local_state_` instead.
-  std::unique_ptr<ScopedTestingLocalState> owned_local_state_;
 
   // We pass `local_state_` to the constructor in some cases where we can't
   // or don't want to use `g_browser_process->local_state()`.

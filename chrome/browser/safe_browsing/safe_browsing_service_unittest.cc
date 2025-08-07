@@ -32,10 +32,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_testing_local_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 using network::GetUploadData;
 using testing::Return;
 using testing::ReturnRef;
@@ -213,13 +209,6 @@ class SafeBrowsingServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<TestingBrowserProcess> browser_process_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Local state is needed to construct ProxyConfigService, which is a
-  // dependency of PingManager on ChromeOS.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<SafeBrowsingService> sb_service_;
   TestingProfile::Builder profile_builder_;

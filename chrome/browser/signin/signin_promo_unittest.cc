@@ -17,7 +17,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -611,7 +610,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags, RecordSignInPromoShownWithAccount) {
   // Test setup for adding an account with cookies.
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   network::TestURLLoaderFactory url_loader_factory =
       network::TestURLLoaderFactory();
 
@@ -655,7 +653,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags, RecordSignInPromoShownWithAccount) {
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
        RecordSignInPromoShownWithAccount_PromoShouldShowForDifferentType) {
   // Test setup for adding an account with cookies.
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   network::TestURLLoaderFactory url_loader_factory =
       network::TestURLLoaderFactory();
 
@@ -711,7 +708,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
        RecordSignInPromoShownWithAccount_BookmarkPromoAlwaysShown) {
   // Test setup for adding an account with cookies.
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   network::TestURLLoaderFactory url_loader_factory =
       network::TestURLLoaderFactory();
 
@@ -761,8 +757,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 
 class SyncPromoIdentityPillManagerTest : public testing::Test {
  public:
-  SyncPromoIdentityPillManagerTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+  SyncPromoIdentityPillManagerTest() {
     // Environment setup for adding an account with cookies to store the
     // per-account prefs.
     TestingProfile::Builder builder;
@@ -792,10 +787,11 @@ class SyncPromoIdentityPillManagerTest : public testing::Test {
 
   Profile& profile() { return *profile_.get(); }
 
-  PrefService& local_state() { return *local_state_.Get(); }
+  PrefService& local_state() {
+    return *TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
  private:
-  ScopedTestingLocalState local_state_;
   network::TestURLLoaderFactory url_loader_factory_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;

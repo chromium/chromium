@@ -24,9 +24,9 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/keyword_table.h"
@@ -153,14 +153,7 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
     PrefService* local_state)
     : local_state_(local_state) {
   if (!local_state_) {
-    if (g_browser_process->local_state()) {
-      local_state_ = g_browser_process->local_state();
-    } else {
-      // `g_browser_process->local_state()` might be null in unit tests.
-      owned_local_state_ = std::make_unique<ScopedTestingLocalState>(
-          TestingBrowserProcess::GetGlobal());
-      local_state_ = owned_local_state_->Get();
-    }
+    local_state_ = TestingBrowserProcess::GetGlobal()->local_state();
   }
   CHECK(local_state_);
 
@@ -214,9 +207,10 @@ TemplateURLServiceTestUtil::SetUpRequiredServicesWithCustomLocalState(
                     regional_capabilities::RegionalCapabilitiesServiceFactory::
                         GetInstance()
                             ->GetForProfile(profile);
-            PrefService* local_state = local_state_override
-                                           ? local_state_override
-                                           : g_browser_process->local_state();
+            PrefService* local_state =
+                local_state_override
+                    ? local_state_override
+                    : TestingBrowserProcess::GetGlobal()->local_state();
             CHECK(local_state);
 
             return std::make_unique<search_engines::SearchEngineChoiceService>(

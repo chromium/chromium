@@ -26,10 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_testing_local_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace site_protection {
 namespace {
 
@@ -204,13 +200,6 @@ class SiteProtectionMetricsObserverTest
 
  protected:
   raw_ptr<TestingBrowserProcess> browser_process_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Local state is needed to construct ProxyConfigService, which is a
-  // dependency of PingManager on ChromeOS.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<TestSafeBrowsingDatabaseManager>
       safe_browsing_database_manager_;

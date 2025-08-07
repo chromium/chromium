@@ -27,7 +27,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/fake_profile_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -122,8 +121,7 @@ class DiceSignedInProfileCreatorTest
       public testing::WithParamInterface<std::tuple<bool, bool>>,
       public ProfileManagerObserver {
  public:
-  DiceSignedInProfileCreatorTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+  DiceSignedInProfileCreatorTest() {
     scoped_feature_list_.InitWithFeatureState(
         profile_management::features::kThirdPartyProfileManagement,
         enable_third_party_management_feature());
@@ -140,7 +138,6 @@ class DiceSignedInProfileCreatorTest
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     profile_manager()->AddObserver(this);
   }
-
 
   ~DiceSignedInProfileCreatorTest() override { DeleteProfiles(); }
 
@@ -273,7 +270,6 @@ class DiceSignedInProfileCreatorTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
   raw_ptr<UnittestProfileManager, DanglingUntriaged> profile_manager_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
