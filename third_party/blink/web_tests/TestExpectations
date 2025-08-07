@@ -4689,11 +4689,7 @@ crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transfor
 crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-015.html [ Failure ]
 crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-016.html [ Failure ]
 crbug.com/1223979 external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-017.html [ Failure ]
-crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-01.html [ Failure ]
-crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-02.html [ Failure ]
-crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-03.html [ Failure ]
-crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-04.html [ Failure ]
-crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-05.html [ Failure ]
+crbug.com/1223979 external/wpt/css/css-text/word-spacing/word-spacing-001.html [ Failure ]
 
 # Implement text-group-align
 crbug.com/1405830 external/wpt/css/css-text/text-group-align/text-group-align-center-vlr.html [ Failure ]

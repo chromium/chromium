@@ -361,6 +361,7 @@ std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(LayoutUnit available_line_size,
     case ETextAlign::kStart:
     case ETextAlign::kEnd:
     case ETextAlign::kJustify:
+    case ETextAlign::kMatchParent:
       NOTREACHED();
   }
   return {LayoutUnit(), LayoutUnit()};

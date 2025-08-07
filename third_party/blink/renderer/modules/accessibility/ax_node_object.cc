@@ -154,6 +154,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_desc_element.h"
@@ -3988,6 +3989,10 @@ ax::mojom::blink::TextAlign AXNodeObject::GetTextAlign() const {
       return ax::mojom::blink::TextAlign::kCenter;
     case ETextAlign::kJustify:
       return ax::mojom::blink::TextAlign::kJustify;
+    case ETextAlign::kMatchParent:
+      return style->IsLeftToRightDirection()
+                 ? ax::mojom::blink::TextAlign::kLeft
+                 : ax::mojom::blink::TextAlign::kRight;
   }
 }
 

@@ -346,9 +346,7 @@ ol {
 
 li {
     display: list-item;
-    /* TODO(crbug.com/40774317, crbug.com/40787216): We should use
-       text-align: match-parent once it is supported. */
-    text-align: -webkit-match-parent;
+    text-align: match-parent;
 }
 
 :is(dir, dl, menu, ol, ul) dir,

@@ -258,6 +258,7 @@
 "right"
 "center"
 "justify"
+"match-parent"
 "-webkit-left"
 "-webkit-right"
 "-webkit-center"

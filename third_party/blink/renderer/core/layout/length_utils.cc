@@ -1672,10 +1672,12 @@ LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
                                   TextDirection direction,
                                   LayoutUnit space_left) {
   bool is_ltr = IsLtr(direction);
-  if (text_align == ETextAlign::kStart || text_align == ETextAlign::kJustify)
+  if (text_align == ETextAlign::kStart || text_align == ETextAlign::kJustify ||
+      text_align == ETextAlign::kMatchParent) {
     text_align = is_ltr ? ETextAlign::kLeft : ETextAlign::kRight;
-  else if (text_align == ETextAlign::kEnd)
+  } else if (text_align == ETextAlign::kEnd) {
     text_align = is_ltr ? ETextAlign::kRight : ETextAlign::kLeft;
+  }
 
   switch (text_align) {
     case ETextAlign::kLeft:

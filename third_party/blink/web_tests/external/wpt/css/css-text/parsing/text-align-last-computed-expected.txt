@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property text-align-last value 'match-parent'
-  assert_true: 'match-parent' is a supported value for text-align-last. expected true got false
-Harness: the test ran to completion.
-

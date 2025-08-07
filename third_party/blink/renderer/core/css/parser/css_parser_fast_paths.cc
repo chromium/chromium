@@ -1368,10 +1368,22 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kTableLayout:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFixed;
     case CSSPropertyID::kTextAlign:
+      if (RuntimeEnabledFeatures::CSSTextAlignMatchParentEnabled()) {
+        return (value_id >= CSSValueID::kWebkitAuto &&
+                value_id <= CSSValueID::kInternalCenter) ||
+               value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd;
+      }
       return (value_id >= CSSValueID::kWebkitAuto &&
-              value_id <= CSSValueID::kInternalCenter) ||
+              value_id <= CSSValueID::kInternalCenter &&
+              value_id != CSSValueID::kMatchParent) ||
              value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd;
     case CSSPropertyID::kTextAlignLast:
+      if (RuntimeEnabledFeatures::CSSTextAlignMatchParentEnabled()) {
+        return (value_id >= CSSValueID::kLeft &&
+                value_id <= CSSValueID::kMatchParent) ||
+               value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
+               value_id == CSSValueID::kAuto;
+      }
       return (value_id >= CSSValueID::kLeft &&
               value_id <= CSSValueID::kJustify) ||
              value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||

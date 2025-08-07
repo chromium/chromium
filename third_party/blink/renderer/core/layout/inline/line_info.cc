@@ -133,6 +133,7 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
     case ETextAlign::kCenter:
     case ETextAlign::kWebkitCenter:
     case ETextAlign::kJustify:
+    case ETextAlign::kMatchParent:
       return true;
     case ETextAlign::kLeft:
     case ETextAlign::kWebkitLeft:
@@ -161,6 +162,7 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
     case ETextAlignLast::kEnd:
     case ETextAlignLast::kCenter:
     case ETextAlignLast::kJustify:
+    case ETextAlignLast::kMatchParent:
       return true;
     case ETextAlignLast::kLeft:
       if (IsRtl(BaseDirection()))

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -778,7 +779,19 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
 
   CaretAlignment alignment = kAlignLeft;
 
-  switch (current_style.GetTextAlign()) {
+  ETextAlign reference_align = current_style.GetTextAlign();
+  const ComputedStyle* reference_style = &current_style;
+
+  if (reference_align == ETextAlign::kMatchParent) {
+    if (!Parent()) {
+      reference_align = ETextAlign::kStart;
+    } else {
+      reference_align = Parent()->StyleRef().GetTextAlign();
+      reference_style = &Parent()->StyleRef();
+    }
+  }
+
+  switch (reference_align) {
     case ETextAlign::kLeft:
     case ETextAlign::kWebkitLeft:
       break;
@@ -792,12 +805,17 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
       break;
     case ETextAlign::kJustify:
     case ETextAlign::kStart:
-      if (!current_style.IsLeftToRightDirection())
+      if (!reference_style->IsLeftToRightDirection()) {
         alignment = kAlignRight;
+      }
       break;
     case ETextAlign::kEnd:
-      if (current_style.IsLeftToRightDirection())
+      if (reference_style->IsLeftToRightDirection()) {
         alignment = kAlignRight;
+      }
+      break;
+    case ETextAlign::kMatchParent:
+      // Already handled above by resolving to parent's alignment
       break;
   }
 

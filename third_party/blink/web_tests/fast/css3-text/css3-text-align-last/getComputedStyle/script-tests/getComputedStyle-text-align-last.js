@@ -41,6 +41,7 @@ valueSettingTest('left');
 valueSettingTest('right');
 valueSettingTest('center');
 valueSettingTest('justify');
+valueSettingTest('match-parent');
 valueSettingTest('auto');
 
 defaultValue = 'auto'

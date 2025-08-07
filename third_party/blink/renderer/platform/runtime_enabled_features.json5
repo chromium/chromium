@@ -1612,6 +1612,11 @@
       },
     },
     {
+      // https://issues.chromium.org/40787216: CSS `text-align: match-parent` value
+      name: "CSSTextAlignMatchParent",
+      status: "experimental",
+    },
+    {
       // crbug.com/1463890: CSS `text-autospace` property
       name: "CSSTextAutoSpace",
       status: "stable",

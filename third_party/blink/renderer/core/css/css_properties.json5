@@ -5663,7 +5663,7 @@
       field_template: "keyword",
       keywords: [
         "left", "right", "center", "justify", "-webkit-left", "-webkit-right",
-        "-webkit-center", "start", "end"
+        "-webkit-center", "start", "end", "match-parent"
       ],
       typedom_types: ["Keyword"],
       default_value: "start",
@@ -5678,7 +5678,9 @@
       inherited: true,
       field_group: "*",
       field_template: "keyword",
-      keywords: ["auto", "start", "end", "left", "right", "center", "justify"],
+      keywords: ["auto", "start", "end", "left", "right", "center", "justify",
+        "match-parent"
+      ],
       default_value: "auto",
       typedom_types: ["Keyword"],
       valid_for_page_context: true,

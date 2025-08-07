@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/text_utils.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -57,6 +58,8 @@ bool ShouldAlignCaretRight(ETextAlign text_align, TextDirection direction) {
       return IsRtl(direction);
     case ETextAlign::kEnd:
       return IsLtr(direction);
+    case ETextAlign::kMatchParent:
+      return IsRtl(direction);
   }
   NOTREACHED();
 }

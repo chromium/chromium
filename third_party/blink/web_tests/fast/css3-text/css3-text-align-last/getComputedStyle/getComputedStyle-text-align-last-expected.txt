@@ -36,6 +36,11 @@ PASS e.style.textAlignLast is 'justify'
 PASS computedStyle.textAlignLast is 'justify'
 
 
+Value 'match-parent':
+PASS e.style.textAlignLast is 'match-parent'
+PASS computedStyle.textAlignLast is 'match-parent'
+
+
 Value 'auto':
 PASS e.style.textAlignLast is 'auto'
 PASS computedStyle.textAlignLast is 'auto'
