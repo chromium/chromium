@@ -18,6 +18,8 @@
   raw_ptr<WebStateList> _webStateList;
   // Session start time for duration tracking.
   base::TimeTicks _sessionStartTime;
+  // Tracks if user has received the first response in current session.
+  BOOL _hasReceivedFirstResponse;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
@@ -41,6 +43,8 @@
   [self setSessionActive:YES clientID:clientID];
   // Start session timer.
   _sessionStartTime = base::TimeTicks::Now();
+  // Reset first response flag for new session.
+  _hasReceivedFirstResponse = NO;
 }
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
@@ -59,6 +63,10 @@
 - (void)responseReceivedWithClientID:(NSString*)clientID
                             serverID:(NSString*)serverID {
   [self updateSessionWithClientID:clientID serverID:serverID];
+  if (!_hasReceivedFirstResponse) {
+    _hasReceivedFirstResponse = YES;
+    RecordFirstResponseReceived();
+  }
 }
 
 - (void)didTapBWGSettingsButton {

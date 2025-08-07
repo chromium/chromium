@@ -59,4 +59,7 @@ void RecordGeminiEntryPointImpression();
 // Records that the BWG FRE was shown.
 void RecordFREShown();
 
+// Records user action for first response received.
+void RecordFirstResponseReceived();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
