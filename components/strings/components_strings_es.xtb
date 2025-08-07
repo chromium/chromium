@@ -1581,7 +1581,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3677008721441257057">Quizás quisiste decir: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;</translation>
 <translation id="3678029195006412963">No se ha podido firmar la solicitud</translation>
 <translation id="3678529606614285348">Abre una página en una nueva ventana de Incógnito (Ctrl + Mayús + N).</translation>
-<translation id="3678914302246317895">Introduce el código de verificación de <ph name="OTP_LENGTH" /> dígitos</translation>
+<translation id="3678914302246317895">Introduce el código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Datos del certificado</translation>
 <translation id="3681421644246505351">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente.</translation>
 <translation id="3681841880472207951">Vídeo Quicktime</translation>
@@ -3341,7 +3341,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6695428916538794739">Películas de acción y aventuras</translation>
 <translation id="6696424331653607346">Guías y diarios de viaje</translation>
 <translation id="6696575039575740785">Instalación de aplicaciones web no permitida</translation>
-<translation id="6698097747703777657">¿No has recibido tu código? <ph name="BEGIN_LINK" />Obtener nuevo código<ph name="END_LINK" /></translation>
+<translation id="6698097747703777657">¿No has recibido tu código? <ph name="BEGIN_LINK" />Obtén uno nuevo<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="6698769547327354196">Para desactivar Pix en Chrome, ve a tu <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" />.</translation>
 <translation id="67007264085648978">Control deslizante de tiempo</translation>

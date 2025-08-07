@@ -945,7 +945,7 @@ Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 Se bloquearán los orígenes que coincidan con los patrones de política bloqueados y permitidos.
 Los orígenes no especificados en la política ni en la configuración del usuario requerirán un gesto previo del usuario para llamar a esta API.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
-<translation id="1647420986475965896">Configuración de las recomendaciones del Modo IA de la Búsqueda en la barra de direcciones y el cuadro de búsqueda de la página Nueva pestaña</translation>
+<translation id="1647420986475965896">Configuración de las recomendaciones de Modo IA de la Búsqueda en la barra de direcciones y el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="1647558381546345298">Si se establece la política, se configura el tamaño de caché que utilizará <ph name="PRODUCT_NAME" /> para almacenar archivos multimedia en caché (en el disco), independientemente de si el usuario ha utilizado o no el indicador "--media-cache-size". El valor especificado en esta política no es un límite fijo en el sistema de almacenamiento en caché, sino una sugerencia. Los valores se redondean.
 
       Si se le asigna el valor "0" a la política, se utilizará el tamaño de caché predeterminado y los usuarios no podrán cambiarlo.
@@ -2289,7 +2289,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
       Si la política no se define, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> no estará disponible para ninguna aplicación web.
 Para mejorar la privacidad, esta política no admitirá que se actualice el valor de la política durante una sesión abierta y, por lo tanto, los cambios solo se aplicarán cuando el usuario cierre sesión y vuelva a iniciarla.
 El usuario puede tener la seguridad de que ninguna otra aplicación podrá capturar las pantallas después de iniciar sesión si no se había permitido ya al principio de la sesión.</translation>
-<translation id="2614156176932194496">Configuración de las integraciones del Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.</translation>
+<translation id="2614156176932194496">Configuración de las integraciones de Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="2615240493030733717">Informar sobre la zona horaria</translation>
 <translation id="2619258867868873629">El destino de Guardar como PDF y de Guardar en Google Drive en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Configura la lista de dominios en los que <ph name="PRODUCT_NAME" /> debe inhabilitar <ph name="PASSWORD_MANAGER_NAME" />. Esto significa que los flujos de trabajo de guardar y rellenar se desactivarán, lo que asegura que las contraseñas de esos sitios web no se puedan guardar ni rellenar automáticamente en formularios web.
@@ -2385,7 +2385,7 @@ El sistema solo consultará los registros AAAA cuando sea alcanzable para un hos
 <translation id="2702682139813393777">Forzar que los hosts de mensajería nativa de Windows se inicien mediante cmd.exe</translation>
 <translation id="270582584528242502">No mostrar un cuadro de diálogo de advertencia cuando el usuario intenta salir</translation>
 <translation id="2706708761587205154">Permitir imprimir solo con PIN</translation>
-<translation id="2706972066112233185">Esta política controla la sección de recomendaciones del Modo IA en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.
+<translation id="2706972066112233185">Esta política controla la sección de recomendaciones de Modo IA en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.
 
 Esta función está disponible para todos los usuarios que tienen Google como buscador predeterminado, a menos que esta política lo inhabilite.
 
@@ -4002,7 +4002,7 @@ Ten en cuenta que esta política no tendrá efecto si se asigna el valor <ph nam
 
  Si no se define esta política o se le asigna un valor vacío o no válido, no se añadirá un valor <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a las solicitudes de trabajo de impresión.
 </translation>
-<translation id="3895626555961466729">Permitir recomendaciones del Modo IA.</translation>
+<translation id="3895626555961466729">Permitir recomendaciones de Modo IA.</translation>
 <translation id="3896591584655529057">Habilitar el almacenamiento de llaves de acceso con el Gestor de contraseñas</translation>
 <translation id="3896751141670591496">Si la política se habilita o no se define, se mostrarán advertencias de seguridad cuando se usen marcas de línea de comandos potencialmente peligrosas para iniciar Chrome.
 
@@ -4359,7 +4359,7 @@ Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED" /> (1) a esta política,
 
           Si no se asigna ningún valor a esta política, los mensajes de voz se inhabilitarán inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlos en cualquier momento.</translation>
 <translation id="4173974507809462880">Mostrar la pantalla de dirección de desplazamiento del panel táctil durante el inicio de sesión</translation>
-<translation id="4175770453187201981">Esta política controla las integraciones del Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.
+<translation id="4175770453187201981">Esta política controla las integraciones de Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.
 
 Para acceder a esta función, Google debe estar configurado como buscador predeterminado del usuario.
 
@@ -4674,7 +4674,7 @@ Se eliminó en la versión M112.</translation>
 
       Para que se aplique esta política, se necesitan ajustes adicionales. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="4402887080007986374">La versión válida de los Términos del Servicio de Edu Coexistence</translation>
-<translation id="4405712318246131640">No permitir integraciones del Modo IA.</translation>
+<translation id="4405712318246131640">No permitir integraciones de Modo IA.</translation>
 <translation id="4408428864159735559">Lista de sistemas de archivos de red compartidos preconfigurados.</translation>
 <translation id="4410236409016356088">Habilitar la limitación de ancho de banda</translation>
 <translation id="4410361389637971319">Permitir que los orígenes de aplicaciones web aisladas usen Direct Sockets</translation>
@@ -6471,7 +6471,7 @@ Si no se define esta política o se le asigna una lista vacía, se le mostrarán
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Permitir que las aplicaciones de Chrome se ejecuten en sesiones de kiosco.</translation>
 <translation id="5607021831414604820">Habilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
-<translation id="5607808178576647930">Permitir integraciones del Modo IA.</translation>
+<translation id="5607808178576647930">Permitir integraciones de Modo IA.</translation>
 <translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
 <translation id="5609294254185484756">Controla la experiencia de usuario de las funciones inhabilitadas que aparecen en <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> en las sesiones de invitado gestionadas.
 
@@ -10370,7 +10370,7 @@ Para obtener más información sobre las tecnologías antiguas, consulta la pág
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
-<translation id="8309511882585098865">No permitir recomendaciones del Modo IA.</translation>
+<translation id="8309511882585098865">No permitir recomendaciones de Modo IA.</translation>
 <translation id="8310392396850884147">Admitir encabezados de solicitud CORS sin comodín.</translation>
 <translation id="8312129124898414409">Permite establecer si los sitios web tienen permiso para utilizar la generación de claves. El uso de la generación de claves se puede permitir o rechazar en todos los sitios web.
 

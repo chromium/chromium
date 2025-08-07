@@ -876,7 +876,7 @@
 <translation id="1596709061955594992">تم إيقاف اتصال البلوتوث. يُرجى تفعيل اتصال البلوتوث لرؤية الأجهزة المتاحة.</translation>
 <translation id="1596780725094407793">- بما في ذلك النطاقات الفرعية</translation>
 <translation id="1597806446183714225">يمكنك تحسين جودة الصوت لجعل الأصوات تبدو طبيعية وواضحة.</translation>
-<translation id="1598163867407640634">استخدِم <ph name="SITE_ETLD_PLUS_ONE" /> مع <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="1598163867407640634">استخدِم <ph name="SITE_ETLD_PLUS_ONE" /> مع <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">أوقف المشرف التحديثات.</translation>
 <translation id="1600857548979126453">الدخول إلى الواجهة الخلفية لبرنامج تصحيح أخطاء الصفحة</translation>
 <translation id="1601481906560916994">إبقاء الموقع الإلكتروني نشطًا</translation>
@@ -6471,7 +6471,7 @@
 <translation id="5533343601674003130">‏خدمة PDF</translation>
 <translation id="5537725057119320332">بث</translation>
 <translation id="5539070192556911367">‏لا يمكن التواصل مع Google</translation>
-<translation id="5542132724887566711">الملف التعريفي</translation>
+<translation id="5542132724887566711">الملف الشخصي</translation>
 <translation id="5542750926112347543">تم حظر ملفات تعريف الارتباط الواردة من <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">جارٍ الربط بشبكة <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">جارٍ التحقق من الحالة ...</translation>
@@ -10601,7 +10601,7 @@
 <translation id="8472623782143987204">يستند إلى الجهاز</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
-<translation id="847433688444405067">التصفّح على جميع الأجهزة</translation>
+<translation id="847433688444405067">تابِع التصفّح أينما كنت</translation>
 <translation id="8474378002946546633">السماح بالإشعارات</translation>
 <translation id="8474561048882755118">تساعدك هذه الميزة في الاطّلاع على المنتجات المشابهة جنبًا إلى جنب وإجراء مقارنة سهلة بين التفاصيل التي تهمّك</translation>
 <translation id="8475313423285172237">‏أضاف برنامج آخر بجهاز الكمبيوتر إضافة قد تؤدي إلى تغيير طريقة عمل Chrome.</translation>

@@ -8271,7 +8271,7 @@
 <translation id="6851181413209322061">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已为孩子开启“其他网络与应用活动记录”设置，系统可能会将这些数据保存到其 Google 账号中。</translation>
 <translation id="6851497530878285708">已启用此应用</translation>
 <translation id="6852290167968069627">ChromeOS 无法恢复您的上一个会话，因为网络出问题了。请连接到稳定的网络，然后重试。</translation>
-<translation id="6852529053326738838">请询问贵组织，或使用您的工作电子邮件地址进行注册，以检查您的账号是否符合条件。</translation>
+<translation id="6852529053326738838">请询问贵组织，或使用您的工作邮箱进行注册，以检查您的账号是否符合条件。</translation>
 <translation id="6853029310037965825">从<ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />安装的<ph name="APP_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> 年</translation>
 <translation id="68541483639528434">关闭其他标签页</translation>
@@ -8783,7 +8783,7 @@
 <translation id="7235305658956131898">由设备管理员安装的 Android 应用。</translation>
 <translation id="7235716375204803342">正在获取活动…</translation>
 <translation id="7235737137505019098">您的安全密钥没有足够的空间来存储任何其他账号。</translation>
-<translation id="7235873936132740888">网站可在您点击特定类型的链接时处理特殊任务，例如：在您的电子邮件客户端中创建新邮件，或者向您的在线日历添加新活动</translation>
+<translation id="7235873936132740888">网站可在您点击特定类型的链接时处理特殊任务，例如：在您的邮件客户端中创建新邮件，或者向您的在线日历添加新活动</translation>
 <translation id="7237454422623102448">系统设置</translation>
 <translation id="7237820815228048635">适用于 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /></translation>
 <translation id="7238609589076576185">已插入重音符号。</translation>

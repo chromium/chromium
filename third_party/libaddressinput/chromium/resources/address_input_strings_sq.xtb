@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1340068511406764697">Duhet të japësh një kod postar, për shembull <ph name="EXAMPLE" />. Nuk e di kodin tënd postar? Gjeje <ph name="BEGIN_LINK" />këtu<ph name="END_LINK" />.</translation>
-<translation id="2053553514270667976">Kodi postar</translation>
+<translation id="2053553514270667976">Kodi ZIP</translation>
 <translation id="2096368010154057602">Departamenti</translation>
 <translation id="2577522251608256362">Lagjja</translation>
 <translation id="3050787670591910834">Duhet të japësh një kod postar, për shembull <ph name="EXAMPLE" />.</translation>
@@ -28,19 +28,19 @@
 <translation id="6768780634682399515">Eircode</translation>
 <translation id="6777217372746654521">Ky rresht adrese duket se përmban një kuti postare. Përdor një adresë rruge ose ndërtese.</translation>
 <translation id="6839929833149231406">Zona</translation>
-<translation id="684852933191805996">Beliferejn</translation>
-<translation id="6970216967273061347">Distrikti</translation>
-<translation id="7087282848513945231">Konteja</translation>
+<translation id="684852933191805996">Periferia</translation>
+<translation id="6970216967273061347">Rrethi</translation>
+<translation id="7087282848513945231">Qarku</translation>
 <translation id="7139724024395191329">Emirati</translation>
 <translation id="7393381084163773901">Adresa e rrugës</translation>
 <translation id="7602447984296396718">Ky kod ZIP, me sa duket nuk përputhet me pjesën tjetër të kësaj adrese.</translation>
 <translation id="7738983109397305830">Me sa duhet ky kod postar nuk përputhet me pjesën tjetër të kësaj adrese. Nuk e di kodin tënd postar? Gjeje <ph name="BEGIN_LINK" />këtu<ph name="END_LINK" />.</translation>
 <translation id="777702478322588152">Prefektura</translation>
-<translation id="7805765407568469194">Fshati / qyteza</translation>
+<translation id="7805765407568469194">Fshati / Qyteza</translation>
 <translation id="8184169487503545976">Ky format kodi ZIP nuk njihet.</translation>
 <translation id="820600307078153032">Ky format i kodit ZIP nuk njihet. Shembulli i kodit ZIP të vlefshëm: <ph name="EXAMPLE" />.</translation>
 <translation id="8446364922515257065">Do/Si</translation>
-<translation id="8449204988444194299">Zyrë postare lokale</translation>
+<translation id="8449204988444194299">Zyra postare lokale</translation>
 <translation id="8471101563037901452">Me sa duhet ky kod postar nuk përputhet me pjesën tjetër të kësaj adrese. Nuk e di kodin tënd postar? Gjeje <ph name="BEGIN_LINK" />këtu<ph name="END_LINK" />.</translation>
 <translation id="9104066683700680171">Ky kod postar, me sa duket nuk përputhet me pjesën tjetër të kësaj adrese.</translation>
 <translation id="9207002871037636573">Duhet të japësh një kod postar, për shembull <ph name="EXAMPLE" />.</translation>

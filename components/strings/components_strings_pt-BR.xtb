@@ -1581,7 +1581,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3677008721441257057">Você quis dizer &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Não foi possível assinar a solicitação</translation>
 <translation id="3678529606614285348">Abrir página em uma nova janela anônima (Ctrl-Shift-N)</translation>
-<translation id="3678914302246317895">Insira o código de verificação de <ph name="OTP_LENGTH" /> dígitos</translation>
+<translation id="3678914302246317895">Insira o código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3681421644246505351">O Chrome registra temas do seu interesse com base no seu histórico de navegação recente.</translation>
 <translation id="3681841880472207951">Vídeo QuickTime</translation>

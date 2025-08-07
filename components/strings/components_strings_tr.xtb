@@ -1581,7 +1581,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; adresine gitmek mi istemiştiniz?</translation>
 <translation id="3678029195006412963">İstek imzalanamadı</translation>
 <translation id="3678529606614285348">Sayfayı yeni Gizli pencerede açın (Ctrl-Üst Karakter-N)</translation>
-<translation id="3678914302246317895"><ph name="OTP_LENGTH" /> haneli doğrulama kodunu girin</translation>
+<translation id="3678914302246317895"><ph name="OTP_LENGTH" /> basamaklı doğrulama kodunu girin</translation>
 <translation id="3681007416295224113">Sertifika bilgileri</translation>
 <translation id="3681421644246505351">Chrome, son tarama geçmişinize göre ilgi alanlarınızı kaydeder.</translation>
 <translation id="3681841880472207951">Quicktime video</translation>
