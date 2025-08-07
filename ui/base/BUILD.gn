@@ -217,7 +217,6 @@ component("base") {
     "ui_base_exports.cc",
     "ui_base_paths.cc",
     "ui_base_paths.h",
-    "ui_base_switches.cc",
     "ui_base_switches.h",
     "ui_base_switches_util.cc",
     "ui_base_switches_util.h",
@@ -272,7 +271,6 @@ component("base") {
       "win/hwnd_metrics.h",
       "win/hwnd_subclass.cc",
       "win/hwnd_subclass.h",
-      "win/internal_constants.cc",
       "win/internal_constants.h",
       "win/lock_state.cc",
       "win/lock_state.h",
@@ -350,7 +348,6 @@ component("base") {
       "cocoa/user_interface_item_command_handler.h",
       "cocoa/views_hostable.h",
       "cocoa/window_size_constants.h",
-      "cocoa/window_size_constants.mm",
       "dragdrop/os_exchange_data_provider_builder_mac.h",
       "dragdrop/os_exchange_data_provider_builder_mac.mm",
       "dragdrop/os_exchange_data_provider_mac.h",
@@ -1374,10 +1371,7 @@ if (is_linux || is_chromeos) {
   # This source set defines linux wm role names and must not have any external
   # dependencies and be kept as minimal as possible.
   source_set("wm_role_names") {
-    sources = [
-      "wm_role_names_linux.cc",
-      "wm_role_names_linux.h",
-    ]
+    sources = [ "wm_role_names_linux.h" ]
   }
 }
 

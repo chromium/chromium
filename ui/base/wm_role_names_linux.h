@@ -9,7 +9,7 @@ namespace ui {
 
 // Return the status-icon wm_role_name. Only used to construct status-icon
 // windows for x11.
-extern const char kStatusIconWmRoleName[];
+inline constexpr char kStatusIconWmRoleName[] = "status-icon";
 
 }  // namespace ui
 

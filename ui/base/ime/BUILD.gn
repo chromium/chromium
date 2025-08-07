@@ -60,7 +60,6 @@ component("ime_types") {
 component("ime") {
   output_name = "ui_base_ime"
   sources = [
-    "constants.cc",
     "constants.h",
     "events.cc",
     "events.h",
