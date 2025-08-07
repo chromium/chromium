@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view.h"

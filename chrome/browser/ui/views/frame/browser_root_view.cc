@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -538,6 +539,14 @@ void BrowserRootView::OnFilteringComplete(int sequence,
 void BrowserRootView::SetOnFilteringCompleteClosureForTesting(
     base::OnceClosure closure) {
   on_filtering_complete_closure_ = std::move(closure);
+}
+
+TabStrip* BrowserRootView::tabstrip() {
+  return browser_view_->tabstrip();
+}
+
+ToolbarView* BrowserRootView::toolbar() {
+  return browser_view_->toolbar();
 }
 
 std::optional<GURL> BrowserRootView::GetPasteAndGoURL(
