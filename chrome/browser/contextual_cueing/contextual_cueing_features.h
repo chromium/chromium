@@ -80,6 +80,9 @@ extern const base::FeatureParam<bool>
 
 // How many pages can be pinned and still trigger a zero state suggestion.
 extern const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions;
+
+// Timeout before giving up on getting context from a page.
+extern const base::FeatureParam<base::TimeDelta> kZSSPageContextTimeout;
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_

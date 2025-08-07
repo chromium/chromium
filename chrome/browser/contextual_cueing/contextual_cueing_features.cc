@@ -120,6 +120,11 @@ const base::FeatureParam<bool> kAllowContextualSuggestionsForSearchResultsPages(
     "ZSSAllowContextualSuggestionsForSearchResultsPages",
     true);
 
+const base::FeatureParam<base::TimeDelta> kZSSPageContextTimeout(
+    &kGlicZeroStateSuggestions,
+    "ZSSPageContextTimeout",
+    base::Seconds(5));
+
 #if BUILDFLAG(ENABLE_GLIC)
 const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions(
     &glic::mojom::features::kZeroStateSuggestionsV2,
