@@ -210,9 +210,6 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
     if "isolate_profile_data" in mixin:
         formatter.add_line("'isolate_profile_data': {},".format(mixin["isolate_profile_data"]))
 
-    if "timeout_sec" in mixin:
-        formatter.add_line("'timeout_sec': {},".format(mixin["timeout_sec"]))
-
     for swarming_attr in ("swarming", "android_swarming", "chromeos_swarming"):
         if swarming_attr in mixin:
             swarming = mixin[swarming_attr]
@@ -235,6 +232,12 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
         skylab = mixin["skylab"]
         if generate_skylab_container:
             formatter.open_scope("'skylab': {")
+        if skylab.tast_expr:
+            formatter.add_line("'tast_expr': '{}',".format(skylab.tast_expr))
+        if skylab.test_level_retries:
+            formatter.add_line("'test_level_retries': {},".format(skylab.test_level_retries))
+        if skylab.timeout_sec:
+            formatter.add_line("'timeout_sec': {},".format(skylab.timeout_sec))
         if skylab.cros_board:
             formatter.add_line("'cros_board': '{}',".format(skylab.cros_board))
         if skylab.cros_build_target:
@@ -441,11 +444,6 @@ def _generate_test_suites_pyl(ctx):
 
             if target_test_config.telemetry_test_name:
                 test_formatter.add_line("'telemetry_test_name': '{}',".format(target_test_config.telemetry_test_name))
-
-            if suite_test_config.tast_expr:
-                test_formatter.add_line("'tast_expr': '{}',".format(suite_test_config.tast_expr))
-            if suite_test_config.test_level_retries:
-                test_formatter.add_line("'test_level_retries': {},".format(suite_test_config.test_level_retries))
 
             # The order that mixins are declared is significant,
             # DEFINITION_ORDER preserves the order that the edges were added

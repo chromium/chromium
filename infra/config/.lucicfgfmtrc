@@ -105,8 +105,6 @@ rules {
         arg: "results_handler"
         arg: "is_android_webview"
         arg: "telemetry_test_name"
-        arg: "tast_expr"
-        arg: "test_level_retries"
         arg: "mixins"
         arg: "remove_mixins"
 
@@ -135,16 +133,22 @@ rules {
         arg: "chromeos_swarming"
         arg: "merge"
         arg: "resultdb"
-        arg: "timeout_sec"
+        arg: "skylab"
         arg: "experiment_percentage"
 
         # swarming
-        arg: "shards"
+        arg: "targets.swarming.shards"
         arg: "dimensions"
         arg: "optional_dimensions"
         arg: "expiration_sec"
         arg: "hard_timeout_sec"
         arg: "io_timeout_sec"
+
+        # "skylab"
+        arg: "tast_expr"
+        arg: "test_level_retries"
+        arg: "targets.skylab.shards"
+        arg: "timeout_sec"
 
         # resultdb
         arg: "enable"

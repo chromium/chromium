@@ -399,18 +399,24 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "shards-20",
-    shards = 20,
+    name = "skylab-shards-20",
+    skylab = targets.skylab(
+        shards = 20,
+    ),
 )
 
 targets.mixin(
-    name = "shards-30",
-    shards = 30,
+    name = "skylab-shards-30",
+    skylab = targets.skylab(
+        shards = 30,
+    ),
 )
 
 targets.mixin(
-    name = "shards-50",
-    shards = 50,
+    name = "skylab-shards-50",
+    skylab = targets.skylab(
+        shards = 50,
+    ),
 )
 
 targets.mixin(
@@ -1217,7 +1223,9 @@ targets.mixin(
 
 targets.mixin(
     name = "long_skylab_timeout",
-    timeout_sec = 10800,
+    skylab = targets.skylab(
+        timeout_sec = 10800,
+    ),
 )
 
 targets.mixin(
