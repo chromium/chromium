@@ -473,7 +473,10 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             mEdgeToEdgeController = newController;
             if (mEdgeToEdgeController != null) {
                 mEdgeToEdgeController.registerObserver(this);
-                overrideBottomInset(mEdgeToEdgeController.getBottomInsetPx());
+                onToEdgeChange(
+                        mEdgeToEdgeController.getBottomInsetPx(),
+                        mEdgeToEdgeController.isDrawingToEdge(),
+                        mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
             }
         }
     }
