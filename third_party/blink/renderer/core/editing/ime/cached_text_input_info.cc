@@ -131,19 +131,17 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
     DCHECK(layout_object_) << container;
   }
 
-  if (RuntimeEnabledFeatures::FastSelectionSyncEnabled()) {
-    if (const auto* text_control = EnclosingTextControl(&container)) {
-      text_control->AnalyzeInnerEditorValue(&offset_map_);
-      if (IsEditable(*container_)) {
-        // We assume this function is called after `TextControlElement::
-        // SubtreeHasChanged()`. So we can avoid the slow
-        // SerializeInnerEditorValue().
-        text_ = text_control->InnerEditorValue();
-        DCHECK(EqualIgnoringNullity(text_,
-                                    text_control->SerializeInnerEditorValue()));
-      }
-      return;
+  if (const auto* text_control = EnclosingTextControl(&container)) {
+    text_control->AnalyzeInnerEditorValue(&offset_map_);
+    if (IsEditable(*container_)) {
+      // We assume this function is called after `TextControlElement::
+      // SubtreeHasChanged()`. So we can avoid the slow
+      // SerializeInnerEditorValue().
+      text_ = text_control->InnerEditorValue();
+      DCHECK(EqualIgnoringNullity(text_,
+                                  text_control->SerializeInnerEditorValue()));
     }
+    return;
   }
 
   TextIteratorAlgorithm<EditingStrategy> it(ComputeWholeContentRange(container),

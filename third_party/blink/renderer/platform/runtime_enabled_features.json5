@@ -2081,11 +2081,6 @@
       // Not enabled due to a RTL issue. crbug.com/1421016.
     },
     {
-      // crbug.com/414112253
-      name: "FastSelectionSync",
-      status: "stable",
-    },
-    {
       name: "FedCm",
       public: true,
       status: "stable",
@@ -4879,7 +4874,7 @@
       // crbug.com/414858401
       name: "TextareaMultipleIfcs",
       status: "stable",
-      depends_on: ["FastSelectionSync", "TextareaLineEndingsAsBr"],
+      depends_on: ["TextareaLineEndingsAsBr"],
     },
     {
       // crbug.com/341564372

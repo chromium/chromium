@@ -6004,13 +6004,9 @@ void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
         offset = 0;
       size_t length =
           selection.EndOffset() - offset + kExtraCharsBeforeAndAfterSelection;
-      if (base::FeatureList::IsEnabled(blink::features::kFastSelectionSync)) {
-        WebString value = controller->TextInputInfo().value;
-        text = value.IsNull() ? value.Utf16()
-                              : value.Substring(offset, length).Utf16();
-      } else {
-        text = frame_->RangeAsText(WebRange(offset, length)).Utf16();
-      }
+      WebString value = controller->TextInputInfo().value;
+      text = value.IsNull() ? value.Utf16()
+                            : value.Substring(offset, length).Utf16();
     } else {
       offset = selection.StartOffset();
       text = frame_->SelectionAsText().Utf16();
