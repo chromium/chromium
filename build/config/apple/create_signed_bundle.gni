@@ -270,8 +270,11 @@ template("apple_mobile_create_signed_bundle") {
       deps = []
     }
 
+    if (target_environment != "catalyst") {
+      post_processing_manifest = "$target_out_dir/$_target_name.manifest"
+    }
+
     post_processing_script = "//build/config/apple/codesign.py"
-    post_processing_manifest = "$target_out_dir/$_target_name.manifest"
     post_processing_sources = [ _bundle_binary_path ]
     if (_enable_entitlements) {
       if (defined(invoker.entitlements_target)) {
@@ -311,8 +314,11 @@ template("apple_mobile_create_signed_bundle") {
       "-i=" + ios_code_signing_identity,
       "-b=" + rebase_path(_bundle_binary_path, root_build_dir),
       "-M=" + rebase_path(ios_mobileprovision_files_filelist, root_build_dir),
-      "-L=" + rebase_path(post_processing_manifest, root_build_dir),
     ]
+    if (target_environment != "catalyst") {
+      post_processing_args +=
+          [ "-L=" + rebase_path(post_processing_manifest, root_build_dir) ]
+    }
     post_processing_sources += ios_mobileprovision_files
     post_processing_sources += [ ios_mobileprovision_files_filelist ]
     if (_enable_entitlements) {
