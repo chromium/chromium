@@ -6227,11 +6227,8 @@
   },
   {
     "name": "language-detection-api",
-    "owners": [
-      "fergal@chromium.org",
-      "builtin-ai@chromium.org"
-    ],
-    "expiry_milestone": 140
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "language-packs-in-settings",
@@ -8200,17 +8197,17 @@
   },
   {
     "name": "prompt-api-for-gemini-nano",
-    "owners": ["//chrome/browser/ai/OWNERS"],
-    "expiry_milestone": 140
+   "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "prompt-api-for-gemini-nano-multimodal-input",
-    "owners": ["//chrome/browser/ai/OWNERS"],
-    "expiry_milestone": 140
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "proofreader-api-for-gemini-nano",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org", "queeniezhang@google.com"],
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "queeniezhang@google.com"],
     "expiry_milestone": 150
   },
   {
@@ -8679,8 +8676,8 @@
   },
   {
     "name": "rewriter-api-for-gemini-nano",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
-    "expiry_milestone": 140
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "right-edge-goes-forward-gesture-nav",
@@ -9357,8 +9354,8 @@
   },
   {
     "name": "summarization-api-for-gemini-nano",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
-    "expiry_milestone": 140
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "supervised-user-block-interstitial-v3",
@@ -9861,11 +9858,8 @@
   },
   {
     "name": "translation-api",
-    "owners": [
-      "fergal@chromium.org",
-      "builtin-ai@chromium.org"
-    ],
-    "expiry_milestone": 142
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "trees-in-viz",
@@ -10601,8 +10595,8 @@
   },
   {
     "name": "writer-api-for-gemini-nano",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
-    "expiry_milestone": 140
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "xslt",
