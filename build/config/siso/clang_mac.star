@@ -36,7 +36,7 @@ def __step_config(ctx, step_config):
             "clang": reproxy_config["platform"],
             "clang_large": largePlatform,
         })
-        step_config["input_deps"].update(clang_all.input_deps)
+        step_config["input_deps"].update(clang_all.input_deps(ctx))
 
         clang_rules = clang_unix.rules(ctx)
 

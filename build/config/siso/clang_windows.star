@@ -49,7 +49,7 @@ def __step_config(ctx, step_config):
             "clang-cl_large": largePlatform,
             "lld-link": largePlatform,
         })
-        step_config["input_deps"].update(clang_all.input_deps)
+        step_config["input_deps"].update(clang_all.input_deps(ctx))
 
         # when win_toolchain_dir is unknown (e.g.
         # missing build/win_toolchain.json), we can't run
