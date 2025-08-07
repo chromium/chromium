@@ -256,8 +256,9 @@ class TypefaceData {
   TypefaceData& operator=(const TypefaceData&) = delete;
 
   ~TypefaceData() {
-    hb_face_destroy(face_);
+    auto* tmp = face_.get();
     face_ = nullptr;
+    hb_face_destroy(tmp);
   }
 
   hb_face_t* face() { return face_; }
