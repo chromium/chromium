@@ -20,6 +20,6 @@ items:
 - caption: Disable Kiosk application logs
   value: false
 example_value: false
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:141-
 tags: []
