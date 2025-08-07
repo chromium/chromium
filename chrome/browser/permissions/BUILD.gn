@@ -167,6 +167,7 @@ source_set("permissions") {
       deps += [ "//third_party/tflite_support" ]
     }
     deps += [
+      "//chrome/browser/passage_embeddings",
       "//components/passage_embeddings",
       "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
     ]
