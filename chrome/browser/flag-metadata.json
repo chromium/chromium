@@ -10187,12 +10187,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "verbose-logging-in-nacl",
-    "owners": [ "fabiansommer@chromium.org", "native-client-dev@googlegroups.com" ],
-    // This flag is useful for debugging NaCl-related issues.
-    "expiry_milestone": 140
-  },
-  {
     "name": "video-picture-in-picture-controls-update-2024",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 145
