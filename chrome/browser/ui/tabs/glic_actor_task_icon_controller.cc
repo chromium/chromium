@@ -57,24 +57,27 @@ void GlicActorTaskIconController::OnStateUpdate(
       break;
   }
 
-  switch (floaty_state) {
-    // Floaty state will only ever be sent if a task is not inactive (so if
-    // the Task Icon is already open).
-    case glic::GlicWindowController::State::kOpen:
-      if (floaty_view == glic::mojom::CurrentView::kConversation) {
+  if (task_state !=
+      actor::ui::ActorUiStateManagerInterface::UiState::kInactive) {
+    switch (floaty_state) {
+      case glic::GlicWindowController::State::kOpen:
+        if (floaty_view == glic::mojom::CurrentView::kConversation &&
+            task_state !=
+                actor::ui::ActorUiStateManagerInterface::UiState::kInactive) {
+          tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
+          tab_strip_action_container_->HighlightGlicButton();
+        } else if (floaty_view == glic::mojom::CurrentView::kActuation) {
+          tab_strip_action_container_->UnhighlightGlicButton();
+          tab_strip_action_container_->HighlightGlicActorTaskIcon();
+        }
+        break;
+      case glic::GlicWindowController::State::kClosed:
         tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
-        tab_strip_action_container_->HighlightGlicButton();
-      } else if (floaty_view == glic::mojom::CurrentView::kActuation) {
         tab_strip_action_container_->UnhighlightGlicButton();
-        tab_strip_action_container_->HighlightGlicActorTaskIcon();
-      }
-      break;
-    case glic::GlicWindowController::State::kClosed:
-      tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
-      tab_strip_action_container_->UnhighlightGlicButton();
-      break;
-    case glic::GlicWindowController::State::kWaitingForGlicToLoad:
-      break;
+        break;
+      case glic::GlicWindowController::State::kWaitingForGlicToLoad:
+        break;
+    }
   }
 }
 #endif
