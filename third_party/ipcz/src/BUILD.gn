@@ -355,6 +355,10 @@ ipcz_source_set("ipcz_test_support") {
     ":reference_drivers",
     ":util",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs = [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 ipcz_source_set("ipcz_tests_sources") {

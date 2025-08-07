@@ -38,6 +38,10 @@ config("quiche_internal_config") {
       "-Wno-deprecated-declarations",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs = [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 config("quiche_config") {
@@ -90,10 +94,6 @@ component("quiche") {
   ]
 
   defines = [ "IS_QUICHE_IMPL" ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("net_quic_proto") {
@@ -331,10 +331,6 @@ static_library("quiche_tool_support") {
     "//third_party/quic_trace:quic_trace_proto",
     "//url",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # QUICHE-provided CLI tools that don't use epoll.
@@ -783,10 +779,6 @@ source_set("quiche_tests") {
 
   # TODO(crbug.com/433273929): Remove once fixed.
   configs += [ ":no_nonnull" ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("net_quic_framer_fuzzer") {

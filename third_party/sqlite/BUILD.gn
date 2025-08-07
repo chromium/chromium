@@ -457,6 +457,10 @@ source_set("sql_query_proto_to_string") {
     "fuzz/sql_query_proto_to_string.h",
   ]
   deps = [ ":sqlite3_lpm_fuzzer_input" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # LPM-based fuzzer test.

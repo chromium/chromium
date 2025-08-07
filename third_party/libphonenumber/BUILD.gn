@@ -104,7 +104,10 @@ test("libphonenumber_unittests") {
     "dist/cpp/test/phonenumbers/unicodestring_test.cc",
   ]
 
-  configs += [ ":libphonenumber_config_internal" ]
+  configs += [
+    ":libphonenumber_config_internal",
+    "//build/config/compiler:no_exit_time_destructors",
+  ]
 
   include_dirs = [ "dist/cpp/test" ]
 
