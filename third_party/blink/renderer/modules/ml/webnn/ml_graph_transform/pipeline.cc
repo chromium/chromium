@@ -26,9 +26,11 @@ void MLGraphTransformPipeline::InitTransformers(MLGraphBuilder* graph_builder) {
 
   // Non-essential transformers. For better performance.
   transformers_.push_back(
-      MakeGarbageCollected<ConstantFoldingTransformer>(graph_builder));
-  transformers_.push_back(
       MakeGarbageCollected<QDQDetectionTransformer>(graph_builder));
+  // The QDQDetectionTransformer might shuffle transposes up the graph that can
+  // be constant folded.
+  transformers_.push_back(
+      MakeGarbageCollected<ConstantFoldingTransformer>(graph_builder));
   transformers_.push_back(
       MakeGarbageCollected<TransposeEliminationTransformer>(graph_builder));
 }

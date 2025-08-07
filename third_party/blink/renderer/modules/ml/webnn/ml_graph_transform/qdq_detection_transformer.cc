@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/qdq_detection_transformer.h"
 
+#include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
@@ -97,6 +98,15 @@ void QDQDetectionTransformer::HandleQuantize(
   //                Q
   //
   MLOperator* q = quantize;
+
+  // The current context's transpose opSupportLimits needs to support the
+  // quantized data type.
+  if (!graph_builder_->GetContext()
+           ->GetProperties()
+           .data_type_limits.transpose_input.Supports(
+               q->Outputs()[0]->Descriptor())) {
+    return;
+  }
 
   MLOperand* q_input_operand = q->PositionalInputs()[0];
   if (q_input_operand->Kind() != webnn::mojom::blink::Operand::Kind::kOutput) {
