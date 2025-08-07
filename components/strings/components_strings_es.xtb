@@ -420,7 +420,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1706625117072057435">Niveles de zoom</translation>
 <translation id="1706922226983368260">Llave de acceso • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; supuestamente, su certificado de seguridad es válido a partir de mañana. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.}other{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; supuestamente, su certificado de seguridad es válido dentro de # días. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.}}</translation>
-<translation id="1709711942721576168">Botón del Modo IA, activar para preguntar al Modo IA</translation>
+<translation id="1709711942721576168">Botón de Modo IA, activar para preguntar a Modo IA</translation>
 <translation id="1710259589646384581">Sistema operativo</translation>
 <translation id="1711234383449478798">Ignorada porque no se le ha asignado el valor <ph name="VALUE" /> a <ph name="POLICY_NAME" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> quiere almacenar datos de forma permanente en tu ordenador local</translation>
@@ -1444,7 +1444,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="343474037147570563">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlos.</translation>
 <translation id="3435557549311968410">Impresión continua (corta)</translation>
 <translation id="3435738964857648380">Seguridad</translation>
-<translation id="3436118221454753036">Pregunta al Modo IA</translation>
+<translation id="3436118221454753036">Pregunta a Modo IA</translation>
 <translation id="3440783957068352691">cuadrada</translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
@@ -1602,7 +1602,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3677008721441257057">Quizás quisiste decir: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;</translation>
 <translation id="3678029195006412963">No se ha podido firmar la solicitud</translation>
 <translation id="3678529606614285348">Abre una página en una nueva ventana de Incógnito (Ctrl + Mayús + N).</translation>
-<translation id="3678914302246317895">Introduce el código de verificación de <ph name="OTP_LENGTH" /> dígitos</translation>
+<translation id="3678914302246317895">Introduce el código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Datos del certificado</translation>
 <translation id="3681421644246505351">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente.</translation>
 <translation id="3681841880472207951">Vídeo Quicktime</translation>
@@ -3029,7 +3029,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6108849843016142864">Reptiles y anfibios</translation>
 <translation id="610911394827799129">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en la página <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Tus búsquedas, las mejores coincidencias y el contenido de las páginas se envían a Google. Puede que todo esta información la vean revisores humanos para mejorar esta función.</translation>
-<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Intro para preguntar al Modo IA</translation>
+<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Intro para preguntar a Modo IA</translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes que se hayan copiado en el portapapeles</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
 <translation id="6118782133429281336">La lista de orígenes está vacía.</translation>
@@ -3380,7 +3380,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6695428916538794739">Películas de acción y aventuras</translation>
 <translation id="6696424331653607346">Guías y diarios de viaje</translation>
 <translation id="6696575039575740785">Instalación de aplicaciones web no permitida</translation>
-<translation id="6698097747703777657">¿No has recibido tu código? <ph name="BEGIN_LINK" />Obtener nuevo código<ph name="END_LINK" /></translation>
+<translation id="6698097747703777657">¿No has recibido tu código? <ph name="BEGIN_LINK" />Obtén uno nuevo<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="6698769547327354196">Para desactivar Pix en Chrome, ve a tu <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" />.</translation>
 <translation id="67007264085648978">Control deslizante de tiempo</translation>

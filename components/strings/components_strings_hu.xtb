@@ -420,7 +420,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1706625117072057435">Nagyítási/kicsinyítési szintek</translation>
 <translation id="1706922226983368260">Azonosítókulcs • „<ph name="PHONE_NAME" />”</translation>
 <translation id="1706954506755087368">{1,plural, =1{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg holnaptól érvényes. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}other{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg # nap múlva lép érvénybe. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}}</translation>
-<translation id="1709711942721576168">AI mód gomb. Aktiválja az AI módtól való kérdezéshez.</translation>
+<translation id="1709711942721576168">AI-mód gomb. Aktiválja az AI-módtól való kérdezéshez.</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Figyelmen kívül hagyva, mivel a(z) <ph name="POLICY_NAME" /> nincs erre az értékre állítva: <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni a helyi számítógépen</translation>
@@ -2930,7 +2930,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5967592137238574583">Kapcsolattartási adatok szerkesztése</translation>
 <translation id="5967867314010545767">Eltávolítás az előzmények közül</translation>
 <translation id="5968022600320704045">Nincsenek keresési találatok</translation>
-<translation id="5968400720580217226">AI mód</translation>
+<translation id="5968400720580217226">AI-mód</translation>
 <translation id="5969199813874624822">Mentés és az ár nyomon követése</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">6. tekercs</translation>
