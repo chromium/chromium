@@ -120,7 +120,6 @@ android_library("java") {
     ":utils_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
-    "account_storage_notice:java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
@@ -263,10 +262,7 @@ generate_jni("utils_jni_headers") {
 
 java_group("javatests") {
   testonly = true
-  deps = [
-    "account_storage_notice:javatests",
-    "grouped_affiliations:javatests",
-  ]
+  deps = [ "grouped_affiliations:javatests" ]
 }
 
 robolectric_binary("password_manager_junit_tests") {
@@ -311,7 +307,6 @@ robolectric_binary("password_manager_junit_tests") {
     ":utils_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
-    "account_storage_notice:junit",
     "add_username_dialog:junit",
     "bottom_sheet:junit",
     "grouped_affiliations:junit",
@@ -684,7 +679,6 @@ group("password_manager_android") {
     ":shared_preferences_delegate",
     ":utils",
     ":utils_jni_headers",
-    "account_storage_notice",
     "add_username_dialog:android",
     "grouped_affiliations:public",
     "one_time_passwords:backend",

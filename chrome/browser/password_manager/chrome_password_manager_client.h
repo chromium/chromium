@@ -48,7 +48,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/timer/timer.h"
-#include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
 #include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
@@ -100,7 +99,6 @@ namespace password_manager {
 class CredManController;
 class FieldInfoManager;
 class KeyboardReplacingSurfaceVisibilityController;
-class PasswordCredentialFillerImpl;
 class SmsOtpBackend;
 class WebAuthnCredentialsDelegate;
 }  // namespace password_manager
@@ -421,17 +419,9 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   TouchToFillController* GetOrCreateTouchToFillController();
 
-  void MaybeShowAccountStorageNotice(base::OnceClosure callback);
-
   void ContinueShowKeyboardReplacingSurface(
       base::WeakPtr<password_manager::PasswordManagerDriver> weak_driver,
       const autofill::PasswordSuggestionRequest& request,
-      password_manager::CredManController::PasskeyDelayCallback delay_callback);
-
-  void ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone(
-      base::WeakPtr<password_manager::ContentPasswordManagerDriver> weak_driver,
-      autofill::TriggeringField triggering_field,
-      std::unique_ptr<password_manager::PasswordCredentialFillerImpl> filler,
       password_manager::CredManController::PasskeyDelayCallback delay_callback);
 #endif
 
@@ -539,8 +529,6 @@ class ChromePasswordManagerClient
   SaveUpdatePasswordMessageDelegate save_update_password_message_delegate_;
   GeneratedPasswordSavedMessageDelegate
       generated_password_saved_message_delegate_;
-
-  std::unique_ptr<AccountStorageNotice> account_storage_notice_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // As a mojo service, will be registered into service registry

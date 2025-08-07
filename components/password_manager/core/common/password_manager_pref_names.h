@@ -69,11 +69,6 @@ inline constexpr char kDeletingUndecryptablePasswordsEnabled[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
-// Boolean pref indicating if the one-time notice for account storage was shown.
-// The notice informs passwords will start being saved to the signed-in account.
-inline constexpr char kAccountStorageNoticeShown[] =
-    "password_manager.account_storage_notice_shown";
-
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API. This pref is not synced. Its value is set
 // by fetching the latest value from Google Mobile Services. Except for

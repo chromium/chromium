@@ -192,6 +192,7 @@
 #if BUILDFLAG(IS_ANDROID)
 using base::android::BuildInfo;
 using password_manager::CredentialCache;
+using password_manager::PasswordCredentialFillerImpl;
 #endif
 
 using autofill::mojom::FocusedFieldType;
@@ -199,7 +200,6 @@ using autofill::password_generation::PasswordGenerationType;
 using password_manager::BadMessageReason;
 using password_manager::ContentPasswordManagerDriverFactory;
 using password_manager::FieldInfoManager;
-using password_manager::PasswordCredentialFillerImpl;
 using password_manager::PasswordForm;
 using password_manager::PasswordManagerClientHelper;
 using password_manager::PasswordManagerDriver;
@@ -368,15 +368,8 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     return false;
   }
 
-  // base::Unretained() is safe: If the callback is called, AccountStorageNotice
-  // is alive, then so are its parent ChromePasswordManagerClient, its sibling
-  // SaveUpdatePasswordMessageDelegate and web_contents() (the client is per
-  // web_contents()).
-  MaybeShowAccountStorageNotice(base::BindOnce(
-      &SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt,
-      base::Unretained(&save_update_password_message_delegate_),
-      base::Unretained(web_contents()), std::move(form_to_save),
-      update_password, base::Unretained(this)));
+  save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
+      web_contents(), std::move(form_to_save), update_password, this);
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
@@ -641,45 +634,17 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
   // without being called.
   auto split_delay_callback =
       base::SplitOnceCallback(std::move(delay_callback));
-  password_manager::ContentPasswordManagerDriver* content_driver =
+  password_manager::ContentPasswordManagerDriver* driver =
       static_cast<password_manager::ContentPasswordManagerDriver*>(
           weak_driver.get());
   if (GetOrCreateCredManController()->Show(
           GetWebAuthnCredManDelegateForDriver(weak_driver.get()),
           std::make_unique<PasswordCredentialFillerImpl>(weak_driver, request),
-          content_driver->AsWeakPtrImpl(),
-          request.field.show_webauthn_credentials,
+          driver->AsWeakPtrImpl(), request.field.show_webauthn_credentials,
           std::move(split_delay_callback.first))) {
     return;
   }
 
-  // base::Unretained() is safe: if the callback is called, AccountStorageNotice
-  // is alive, then so is its parent ChromePasswordManagerClient.
-  MaybeShowAccountStorageNotice(base::BindOnce(
-      &ChromePasswordManagerClient::
-          ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone,
-      base::Unretained(this), content_driver->AsWeakPtrImpl(),
-      request.field,  // Intentional & cheap copy.
-      std::make_unique<PasswordCredentialFillerImpl>(weak_driver, request),
-      std::move(split_delay_callback.second)));
-}
-
-void ChromePasswordManagerClient::
-    ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone(
-        base::WeakPtr<password_manager::ContentPasswordManagerDriver>
-            weak_driver,
-        autofill::TriggeringField triggering_field,
-        std::unique_ptr<PasswordCredentialFillerImpl> filler,
-        password_manager::CredManController::PasskeyDelayCallback
-            delay_callback) {
-  // TODO(crbug.com/346748438): Maybe don't show TTF if there was a navigation.
-  if (!weak_driver) {
-    // No further suggestions are possible: without the driver, there is no
-    // PasswordAutofillManager anymore.
-    return;
-  }
-
-  password_manager::ContentPasswordManagerDriver* driver = weak_driver.get();
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
   std::vector<password_manager::PasskeyCredential> passkeys;
   bool should_show_hybrid_option = false;
@@ -690,7 +655,7 @@ void ChromePasswordManagerClient::
       passkeys = *maybe_passkeys.value();
       should_show_hybrid_option =
           webauthn_delegate->IsSecurityKeyOrHybridFlowAvailable();
-    } else if (!delay_callback.is_null() &&
+    } else if (!split_delay_callback.second.is_null() &&
                maybe_passkeys.error() ==
                    password_manager::WebAuthnCredentialsDelegate::
                        PasskeysUnavailableReason::kNotReceived) {
@@ -699,17 +664,19 @@ void ChromePasswordManagerClient::
                              RequestNotificationWhenPasskeysReady,
                          webauthn_delegate->AsWeakPtr());
 
-      std::move(delay_callback).Run(std::move(notification_callback));
+      std::move(split_delay_callback.second)
+          .Run(std::move(notification_callback));
       return;
     }
   }
 
-  const PasswordForm* form_to_fill = password_manager_.GetParsedObservedForm(
-      driver, triggering_field.element_id);
+  const PasswordForm* form_to_fill =
+      password_manager_.GetParsedObservedForm(driver, request.field.element_id);
   auto ttf_controller_autofill_delegate =
       std::make_unique<TouchToFillControllerAutofillDelegate>(
           this, GetDeviceAuthenticator(), webauthn_delegate->AsWeakPtr(),
-          std::move(filler), form_to_fill, triggering_field.element_id,
+          std::make_unique<PasswordCredentialFillerImpl>(weak_driver, request),
+          form_to_fill, request.field.element_id,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(
               should_show_hybrid_option));
 
@@ -721,7 +688,7 @@ void ChromePasswordManagerClient::
       std::move(passkeys), driver->AsWeakPtrImpl());
   if (!ttf_controller->Show(std::move(ttf_controller_autofill_delegate),
                             GetWebAuthnCredManDelegateForDriver(driver))) {
-    driver->GetPasswordAutofillManager()->ShowSuggestions(triggering_field);
+    driver->GetPasswordAutofillManager()->ShowSuggestions(request.field);
   }
 }
 #endif
@@ -1797,33 +1764,6 @@ ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
         std::make_unique<AcknowledgeGroupedCredentialSheetController>());
   }
   return touch_to_fill_controller_.get();
-}
-
-void ChromePasswordManagerClient::MaybeShowAccountStorageNotice(
-    base::OnceClosure callback) {
-  // Unretained() is safe because `this` outlives `account_storage_notice_`.
-  auto destroy_notice_cb = base::BindOnce(
-      [](ChromePasswordManagerClient* client) {
-        client->account_storage_notice_.reset();
-      },
-      base::Unretained(this));
-  const bool had_notice = account_storage_notice_.get();
-  account_storage_notice_ = AccountStorageNotice::MaybeShow(
-      SyncServiceFactory::GetForProfile(profile_), profile_->GetPrefs(),
-      web_contents()->GetNativeView()->GetWindowAndroid(),
-      std::move(destroy_notice_cb).Then(std::move(callback)));
-  // MaybeShow() will return non-null at most once, since this is a one-off
-  // notice. So the possible cases are:
-  // - `account_storage_notice_` was null and stayed so:  No notice shown, just
-  //   invokes `callback`.
-  // - `account_storage_notice_` was null and became non-null: Shows the notice.
-  // - (Speculative) `account_storage_notice_` was non-null and became null:
-  //   Hides the notice and executes `callback`. The alternative would be to
-  //   ignore `callback` and wait for `account_storage_notice_` to go away, but
-  //   that's dangerous (if there's a bug and `account_storage_notice_` is never
-  //   reset, the method would always no-op, breaking the saving/filling
-  //   callers).
-  CHECK(!had_notice || !account_storage_notice_);
 }
 
 password_manager::CredManController*

@@ -143,7 +143,6 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/password_manager/android:test_support_java",
     "//chrome/browser/password_manager/android:utils_java",
-    "//chrome/browser/password_manager/android/account_storage_toggle:java",
     "//chrome/browser/password_manager/android/pwd_check_wrapper:test_support_java",
     "//chrome/browser/policy/android:java",
     "//chrome/browser/preferences:java",

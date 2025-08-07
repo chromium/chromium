@@ -1104,6 +1104,12 @@ inline constexpr char kInvalidationClientIDCache[] =
 inline constexpr char kInvalidationTopicsToHandler[] =
     "invalidation.per_sender_topics_to_handler";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 08/2025.
+constexpr char kObsoleteAccountStorageNoticeShown[] =
+    "password_manager.account_storage_notice_shown";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1567,6 +1573,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2025.
   registry->RegisterDictionaryPref(kInvalidationClientIDCache);
   registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 08/2025.
+  registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2865,6 +2876,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 08/2025.
   profile_prefs->ClearPref(kInvalidationClientIDCache);
   profile_prefs->ClearPref(kInvalidationTopicsToHandler);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 08/2025.
+  profile_prefs->ClearPref(kObsoleteAccountStorageNoticeShown);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

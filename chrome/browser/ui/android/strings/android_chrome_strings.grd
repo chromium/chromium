@@ -686,24 +686,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORD_SAVING_OFF_BY_ADMINISTRATOR" desc="Subtitle for the settings menu item leading to the Password Manager UI surface, shown when the device administrator set saving passwords to disabled.">
         Password saving is turned off by your administrator
       </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE" desc="Title of the sheet that notifies the user they are saving passwords to their Google Account.">
-        Passwords on all your devices
-      </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE" desc="Subtitle of the sheet that notifies the user they are saving passwords to their Google Account.">
-        When you’re signed in to Chrome, passwords you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK">&lt;link&gt;</ph>go to settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT" desc="Button text for the sheet that notifies the user they are saving passwords to their Google Account.">
-        Got it
-      </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_HALF_HEIGHT_ACCESSIBILITY_LABEL" desc="Accessibility label of the sheet that notifies the user they are saving passwords to their Google Account, when the sheet is at half height.">
-        Passwords on all your devices opened at half height
-      </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_FULL_HEIGHT_ACCESSIBILITY_LABEL" desc="Accessibility label of the sheet that notifies the user they are saving passwords to their Google Account, when the sheet is at full height.">
-        Passwords on all your devices opened at full height
-      </message>
-      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_CLOSED_ACCESSIBILITY_LABEL" desc="Accessibility label of the sheet that notifies the user they are saving passwords to their Google Account, when the sheet is closed.">
-        Passwords on all your devices closed
-      </message>
       <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_TITLE" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn you if a password was compromised in a data breach
       </message>

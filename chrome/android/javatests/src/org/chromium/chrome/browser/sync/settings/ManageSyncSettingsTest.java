@@ -31,14 +31,12 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static java.util.Map.entry;
 
 import android.app.Dialog;
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -76,7 +74,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
-import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -1412,41 +1409,6 @@ public class ManageSyncSettingsTest {
 
         // The error card is now hidden.
         Assert.assertFalse(preference.isShown());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testPasswordsToggleWithHighlighting() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-
-        Bundle args = new Bundle();
-        args.putBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT, true);
-        mSettingsActivityTestRule.startSettingsActivity(args);
-
-        ChromeSwitchPreference toggle =
-                (ChromeSwitchPreference)
-                        mSettingsActivityTestRule
-                                .getFragment()
-                                .findPreference(
-                                        ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
-        @Nullable Integer backgroundColor = toggle.getBackgroundColor();
-        Assert.assertNotNull(backgroundColor);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testPasswordsToggleWithoutHighlighting() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-
-        ManageSyncSettings settings = startManageSyncPreferences();
-
-        ChromeSwitchPreference toggle =
-                (ChromeSwitchPreference)
-                        settings.findPreference(
-                                ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
-        Assert.assertNull(toggle.getBackgroundColor());
     }
 
     @Test
