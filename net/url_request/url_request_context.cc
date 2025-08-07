@@ -95,6 +95,14 @@ URLRequestContext::~URLRequestContext() {
   DCHECK(host_resolver());
   host_resolver()->OnShutdown();
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  if (device_bound_session_service_) {
+    // The SessionService may have pending URLRequests that use this
+    // context.
+    device_bound_session_service_.reset();
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
   AssertNoURLRequests();
 }
 
