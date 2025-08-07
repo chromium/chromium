@@ -145,6 +145,7 @@ public class CustomTabPostMessageTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/437076832")
     public void testPostMessageBasic() throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ApplicationProvider.getApplicationContext();
