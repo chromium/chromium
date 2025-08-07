@@ -135,9 +135,6 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionControllerBrowserTest,
   tab_groups::CollaborationMessagingTabData* tab_data =
       GetTabDataAtIndex(browser(), 0);
 
-  CollaborationMessagingPageActionController* controller =
-      GetControllerAtIndex(browser(), 0);
-
   EXPECT_FALSE(GetBubbleCoordinator(browser())->IsShowing());
 
   RunTestSequence(
@@ -145,7 +142,6 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionControllerBrowserTest,
         // Dispatch "added" message.
         tab_data->set_mocked_avatar_for_testing(favicon::GetDefaultFavicon());
         tab_data->SetMessage(message);
-        controller->HandleUpdate(tab);
       }),
       WaitForPageActionButtonVisible(),
       PressButton(kCollaborationMessagingPageActionIconElementId),

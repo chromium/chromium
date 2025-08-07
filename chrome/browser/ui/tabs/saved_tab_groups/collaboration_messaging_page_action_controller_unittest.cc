@@ -69,8 +69,13 @@ class FakeTabInterface : public tabs::MockTabInterface {
       : contents_(std::move(contents)) {}
   content::WebContents* GetContents() const override { return contents_.get(); }
 
+  bool IsActivated() const override { return activated_; }
+
+  void SetTabActivation(bool activated) { activated_ = activated; }
+
  private:
   std::unique_ptr<content::WebContents> contents_;
+  bool activated_ = true;
 };
 
 class FakePageActionController : public page_actions::MockPageActionController {
@@ -199,8 +204,6 @@ TEST_F(CollaborationMessagingPageActionControllerTest,
   tab_data()->set_mocked_avatar_for_testing(favicon::GetDefaultFavicon());
   tab_data()->SetMessage(message);
 
-  controller()->HandleUpdate(tab_interface());
-
   EXPECT_EQ(page_action_controller().last_text(), TabAddedLabel());
 }
 
@@ -226,8 +229,6 @@ TEST_F(CollaborationMessagingPageActionControllerTest,
   tab_data()->set_mocked_avatar_for_testing(favicon::GetDefaultFavicon());
   tab_data()->SetMessage(message);
 
-  controller()->HandleUpdate(tab_interface());
-
   EXPECT_EQ(page_action_controller().last_text(), TabUpdatedLabel());
 }
 
@@ -247,8 +248,6 @@ TEST_F(CollaborationMessagingPageActionControllerTest, AvatarShouldDraw) {
   tab_data()->set_mocked_avatar_for_testing(favicon::GetDefaultFavicon());
   tab_data()->SetMessage(message);
 
-  controller()->HandleUpdate(tab_interface());
-
   EXPECT_TRUE(page_action_controller().is_image_set());
 }
 
@@ -260,8 +259,6 @@ TEST_F(CollaborationMessagingPageActionControllerTest, IconShouldHide) {
 
   tab_data()->set_mocked_avatar_for_testing(favicon::GetDefaultFavicon());
   tab_data()->SetMessage(message);
-
-  controller()->HandleUpdate(tab_interface());
 
   EXPECT_TRUE(page_action_controller().is_image_set());
 
@@ -275,7 +272,22 @@ TEST_F(CollaborationMessagingPageActionControllerTest, IconShouldHide) {
   tab_data()->set_mocked_avatar_for_testing(gfx::Image());
   tab_data()->ClearMessage(message);
 
-  controller()->HandleUpdate(tab_interface());
-
   EXPECT_FALSE(page_action_controller().is_image_set());
+}
+
+TEST_F(CollaborationMessagingPageActionControllerTest,
+       PageActionDoesNotShowOnInactiveTab) {
+  EXPECT_CALL(page_action_controller(),
+              Show(kActionShowCollaborationRecentActivity))
+      .Times(0);
+  EXPECT_CALL(page_action_controller(),
+              ShowSuggestionChip(kActionShowCollaborationRecentActivity, _))
+      .Times(0);
+
+  auto message =
+      CreateMessage(kGivenName, kAvatarUrl, CollaborationEvent::TAB_ADDED);
+
+  tab_interface()->SetTabActivation(false);
+  tab_data()->set_mocked_avatar_for_testing(favicon::GetDefaultFavicon());
+  tab_data()->SetMessage(message);
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_page_action_controller.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -45,6 +46,16 @@ CollaborationMessagingPageActionController::
       collaboration_messaging_tab_data_(collaboration_messaging_tab_data),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   CHECK(IsPageActionMigrated(PageActionIconType::kCollaborationMessaging));
+
+  tab_activated_subscription_ = tab.RegisterDidActivate(base::BindRepeating(
+      &CollaborationMessagingPageActionController::HandleUpdate,
+      base::Unretained(this)));
+
+  tab_data_updated_subscription_ =
+      collaboration_messaging_tab_data.RegisterMessageChangedCallback(
+          base::BindRepeating(
+              &CollaborationMessagingPageActionController::HandleUpdate,
+              base::Unretained(this), base::Unretained(&tab)));
 }
 
 CollaborationMessagingPageActionController::
@@ -58,6 +69,12 @@ CollaborationMessagingPageActionController::From(tabs::TabInterface* tab) {
 
 void CollaborationMessagingPageActionController::HandleUpdate(
     tabs::TabInterface* tab) {
+  // Don't try to show page action on an inactive tab - this will be handled by
+  // the tab activated callback.
+  if (!tab->IsActivated()) {
+    return;
+  }
+
   const bool should_show_page_action =
       collaboration_messaging_tab_data_->HasMessage();
 

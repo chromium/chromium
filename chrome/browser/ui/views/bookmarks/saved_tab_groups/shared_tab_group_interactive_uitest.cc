@@ -53,17 +53,43 @@ constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 constexpr char kRecallHistogram[] = "TabGroups.Shared.Recall.Desktop";
 constexpr char kManageHistogram[] = "TabGroups.Shared.Manage.Desktop";
 
+struct SharedTabGroupInteractiveUiTestParams {
+  bool page_actions_migration_enabled = false;
+};
+
 class SharedTabGroupInteractiveUiTest
-    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
+    : public TabStripInteractiveTestMixin<InteractiveBrowserTest>,
+      public ::testing::WithParamInterface<
+          SharedTabGroupInteractiveUiTestParams> {
  public:
   SharedTabGroupInteractiveUiTest() = default;
   ~SharedTabGroupInteractiveUiTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupSyncServiceDesktopMigration,
-         data_sharing::features::kDataSharingFeature},
-        {tabs::kTabGroupShortcuts});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {tab_groups::kTabGroupSyncServiceDesktopMigration, {}},
+        {data_sharing::features::kDataSharingFeature, {}},
+    };
+    std::vector<base::test::FeatureRef> disabled_features = {
+        tabs::kTabGroupShortcuts};
+
+    if (GetParam().page_actions_migration_enabled) {
+      enabled_features.push_back({
+          features::kPageActionsMigration,
+          {
+              {
+                  features::kPageActionsMigrationCollaborationMessaging.name,
+                  "true",
+              },
+          },
+      });
+    } else {
+      disabled_features.push_back(features::kPageActionsMigration);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+    CHECK_EQ(IsPageActionMigrated(PageActionIconType::kCollaborationMessaging),
+             GetParam().page_actions_migration_enabled);
     InProcessBrowserTest::SetUp();
   }
 
@@ -184,7 +210,7 @@ class SharedTabGroupInteractiveUiTest
 
 // Verify the feedback button is only shown when there is at least one shared
 // tab group in the current browser.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, FeedbackButtonVisible) {
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest, FeedbackButtonVisible) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
                 data_sharing::MemberRole::kOwner, /*should_sign_in=*/false);
@@ -207,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, FeedbackButtonVisible) {
 }
 
 // Take a screenshot of the shared tab group in app menu > tab groups.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        SharedTabGroupInAppMenu) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
@@ -229,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 }
 
 // Take a screenshot of the shared tab group in the everything menu.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        SharedTabGroupInEverythingMenu) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
@@ -248,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 }
 
 // Take a screenshot of the shared tab group in the TabStrip.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        SharedTabGroupInTabStrip) {
   const char kTabGroupHeaderToScreenshot[] = "Tab group header to hover";
 
@@ -274,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify the closed metric is recorded when a shared group is closed from the
 // TabGroupEditorBubble.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        RecordMetricOnSharedGroupClosing) {
   base::HistogramTester histogram_tester;
 
@@ -297,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify the OpenedFromBookmarksBar metric is recorded when a shared group is
 // opened from the bookmarks bar.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        RecordMetricOnSharedGroupOpeningFromBookmarksBar) {
   ::base::HistogramTester histogram_tester;
 
@@ -322,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify the OpenedFromEverythingMenu metric is recorded when a shared group is
 // opened from the everything menu.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        RecordMetricOnSharedGroupOpeningFromEverythingMenu) {
   ::base::HistogramTester histogram_tester;
 
@@ -349,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify the OpenedFromSubmenu metric is recoreded when a shared group is
 // opened from the app menu > tab groups sub menu.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        RecordMetricOnSharedGroupOpeningFromAppMenu) {
   ::base::HistogramTester histogram_tester;
 
@@ -380,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify the ShareGroup metric is recorded when the "Share group" button is
 // pressed in the tab group editor bubble.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        RecordMetricWhenShareGroupPressed) {
   ::base::HistogramTester histogram_tester;
 
@@ -403,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify the ManageGroup metric is recorded when the "Manage group" button is
 // pressed in the tab group editor bubble.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        RecordMetricWhenManagedGroupPressed) {
   ::base::HistogramTester histogram_tester;
 
@@ -428,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify the DeleteGroup metric is recorded when the "Delete group" button is
 // pressed in the tab group editor bubble.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        RecordMetricWhenDeleteGroupPressed) {
   ::base::HistogramTester histogram_tester;
 
@@ -461,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 #else
 #define MAYBE_LeaveGroupPressed LeaveGroupPressed
 #endif
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        MAYBE_LeaveGroupPressed) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
@@ -477,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 
 // Verify members see the leave group button instead of the delete button in the
 // context menu of a tab group. Pressing the button displays a dialog.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
                        LeaveGroupPressedFromContextMenu) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
@@ -494,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
 }
 
 // Verify remove last tab will display the close last tab dialog.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, GroupCloseLastTab) {
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest, GroupCloseLastTab) {
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
                 data_sharing::MemberRole::kMember, /*should_sign_in=*/false);
@@ -514,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, GroupCloseLastTab) {
 }
 
 // Verify members see the recent activity button when activity exists.
-IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, RecentActivity) {
+IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest, RecentActivity) {
   syncer::CollaborationId collaboration_id("fake_collaboration_id");
   TabGroupId group_id = CreateNewTabGroup();
   ShareTabGroup(group_id, collaboration_id, data_sharing::MemberRole::kMember,
@@ -532,5 +558,23 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, RecentActivity) {
       ClickMouse(), WaitForHide(kRecentActivityBubbleDialogId),
       FinishTabstripAnimations());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SharedTabGroupInteractiveUiTest,
+    ::testing::Values(
+        SharedTabGroupInteractiveUiTestParams{
+            .page_actions_migration_enabled = false,
+        },
+        SharedTabGroupInteractiveUiTestParams{
+            .page_actions_migration_enabled = true,
+        }),
+    [](const ::testing::TestParamInfo<
+        SharedTabGroupInteractiveUiTest::ParamType>& info) {
+      return base::StrCat({
+          info.param.page_actions_migration_enabled ? "NewPageAction"
+                                                    : "OriginalPageAction",
+      });
+    });
 
 }  // namespace tab_groups

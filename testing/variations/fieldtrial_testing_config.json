@@ -16754,6 +16754,7 @@
                     "name": "Enabled",
                     "params": {
                         "autofill_address": "true",
+                        "collaboration_messaging": "true",
                         "discounts": "true",
                         "file_system_access": "true",
                         "find": "true",
