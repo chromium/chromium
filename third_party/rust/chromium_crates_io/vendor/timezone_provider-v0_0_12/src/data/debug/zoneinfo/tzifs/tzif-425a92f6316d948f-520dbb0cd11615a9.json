@@ -1,0 +1,35 @@
+{
+  "ids": [
+    "america/el_salvador"
+  ],
+  "tzif": {
+    "posix": {
+      "abbr": "CST",
+      "offset": -21600,
+      "transition": null
+    },
+    "transition_types": [
+      1,
+      2,
+      1,
+      2
+    ],
+    "transitions": [
+      547020000,
+      559717200,
+      578469600,
+      591166800
+    ],
+    "types": [
+      {
+        "offset": -21408
+      },
+      {
+        "offset": -18000
+      },
+      {
+        "offset": -21600
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "ids": [
+    "asia/kathmandu",
+    "asia/katmandu"
+  ],
+  "tzif": {
+    "posix": {
+      "abbr": "+0545",
+      "offset": 20700,
+      "transition": null
+    },
+    "transition_types": [
+      1
+    ],
+    "transitions": [
+      504901800
+    ],
+    "types": [
+      {
+        "offset": 20476
+      },
+      {
+        "offset": 20700
+      }
+    ]
+  }
+}
