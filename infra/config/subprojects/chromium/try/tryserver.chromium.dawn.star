@@ -19,7 +19,6 @@ try_.defaults.set(
     check_for_flakiness_with_resultdb = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_enabled = False,
     service_account = try_.gpu.SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,

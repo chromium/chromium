@@ -29,7 +29,6 @@ ci.defaults.set(
     properties = {
         "dawn_ref": settings.dawn_ref,
     },
-    reclient_enabled = False,
     service_account = ci.gpu.SERVICE_ACCOUNT,
     shadow_service_account = ci.gpu.SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,

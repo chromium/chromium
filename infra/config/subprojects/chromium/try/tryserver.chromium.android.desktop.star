@@ -21,7 +21,6 @@ try_.defaults.set(
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 4,
-    reclient_enabled = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,

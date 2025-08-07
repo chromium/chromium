@@ -64,7 +64,6 @@ defaults.set(
     properties = {
         "perf_dashboard_machine_group": "ChromiumWebRTC",
     },
-    reclient_enabled = False,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,

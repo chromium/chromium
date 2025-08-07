@@ -21,7 +21,6 @@ try_.defaults.set(
     compilator_cores = 32,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 4,
-    reclient_enabled = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
     # crbug.com/372192123 - downloading with "minimum" strategy doesn't work

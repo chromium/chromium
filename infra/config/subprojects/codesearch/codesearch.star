@@ -34,7 +34,6 @@ try_.defaults.set(
     cq_group = "cq",
     execution_timeout = 9 * time.hour,
     expiration_timeout = 2 * time.hour,
-    reclient_enabled = False,
     service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,

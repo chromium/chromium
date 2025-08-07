@@ -93,7 +93,6 @@ defaults.set(
     cpu = cpu.X86_64,
     build_numbers = True,
     execution_timeout = 2 * time.hour,
-    reclient_enabled = False,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
