@@ -23,15 +23,12 @@
 namespace ui {
 
 namespace {
-constexpr int32_t kPrimaryDisplayId = 0;
-}  // namespace
-
-struct TestDisplayParams {
+struct DisplayParams {
   int32_t sdk_display_id;
   std::string label;
-  std::vector<int32_t> bounds;
+  std::vector<int32_t> bounds;  // {left, top, right, bottom}
   gfx::Rect scaled_bounds;
-  std::vector<int32_t> insets;
+  std::vector<int32_t> insets;  // {left, top, right, bottom}
   gfx::Rect scaled_work_area;
   float dip_scale;
   int32_t rotation_degrees;
@@ -40,15 +37,54 @@ struct TestDisplayParams {
   bool is_internal;
 };
 
-class DisplayAndroidManagerTest : public testing::TestWithParam<bool> {
+const DisplayParams kPrimaryDisplayParams = {
+    .sdk_display_id = 0,
+    .label = "primary",
+    .bounds = {0, 0, 1920, 1080},
+    .scaled_bounds = {0, 0, 1536, 864},
+    .insets = {10, 20, 30, 40},
+    .scaled_work_area = {8, 16, 1504, 816},
+    .dip_scale = 1.25,
+    .rotation_degrees = 0,
+    .bits_per_pixel = 24,
+    .bits_per_component = 8,
+    .is_internal = true};
+const DisplayParams kExternalDisplayParams{
+    .sdk_display_id = 1,
+    .label = "external",
+    .bounds = {0, -1440, 900, 0},
+    .scaled_bounds = {0, -1440, 900, 1440},
+    .insets = {1, 2, 3, 4},
+    .scaled_work_area = {1, -1438, 896, 1434},
+    .dip_scale = 1,
+    .rotation_degrees = 90,
+    .bits_per_pixel = 12,
+    .bits_per_component = 0,
+    .is_internal = false};
+const DisplayParams kSecondExternalDisplayParams{
+    .sdk_display_id = 2,
+    .label = "second_external",
+    .bounds = {-720, 192, 0, 672},
+    .scaled_bounds = {-720, 192, 720, 480},
+    .insets = {0, 0, 0, 0},
+    .scaled_work_area = {-720, 192, 720, 480},
+    .dip_scale = 1,
+    .rotation_degrees = 0,
+    .bits_per_pixel = 12,
+    .bits_per_component = 0,
+    .is_internal = false};
+}  // namespace
+
+class DisplayAndroidManagerTest : public testing::Test {
  public:
   DisplayAndroidManagerTest()
       : env_(base::android::AttachCurrentThread()),
         display_android_manager_(false) {
-    display_android_manager_.SetPrimaryDisplayId(env_, kPrimaryDisplayId);
+    display_android_manager_.SetPrimaryDisplayId(
+        env_, kPrimaryDisplayParams.sdk_display_id);
   }
 
-  void AddDisplay(const TestDisplayParams& display_params) {
+  void AddDisplay(const DisplayParams& display_params) {
     display_android_manager_.UpdateDisplay(
         env_, display_params.sdk_display_id,
         base::android::ConvertUTF8ToJavaString(env_, display_params.label),
@@ -75,8 +111,16 @@ class DisplayAndroidManagerTest : public testing::TestWithParam<bool> {
     return display_android_manager_.GetNumDisplays();
   }
 
+  display::Display GetDisplayNearestPoint(const gfx::Point& point) const {
+    return display_android_manager_.GetDisplayNearestPoint(point);
+  }
+
+  display::Display GetDisplayMatching(const gfx::Rect& match_rect) const {
+    return display_android_manager_.GetDisplayMatching(match_rect);
+  }
+
   void CompareDisplayParamsWithDisplay(
-      const TestDisplayParams& display_params) const {
+      const DisplayParams& display_params) const {
     const auto& display = GetDisplay(display_params.sdk_display_id);
 
     EXPECT_EQ(display.id(), display_params.sdk_display_id);
@@ -107,69 +151,116 @@ class DisplayAndroidManagerTest : public testing::TestWithParam<bool> {
   DisplayAndroidManager display_android_manager_;
 };
 
-INSTANTIATE_TEST_SUITE_P(DisplayAndroidManagerTest,
-                         DisplayAndroidManagerTest,
-                         testing::Values(true, false));
-
-TEST_P(DisplayAndroidManagerTest, General) {
-  static const TestDisplayParams primary_display_params{
-      .sdk_display_id = kPrimaryDisplayId,
-      .label = "label_1",
-      .bounds = {0, 0, 1920, 1080},
-      .scaled_bounds = {0, 0, 1536, 864},
-      .insets = {10, 20, 30, 40},
-      .scaled_work_area = {8, 16, 1504, 816},
-      .dip_scale = 1.25,
-      .rotation_degrees = 0,
-      .bits_per_pixel = 24,
-      .bits_per_component = 8,
-      .is_internal = true};
-  static const TestDisplayParams secondary_display_params{
-      .sdk_display_id = 1,
-      .label = "label_2",
-      .bounds = {0, -1440, 900, 0},
-      .scaled_bounds = {0, -1440, 900, 1440},
-      .insets = {1, 2, 3, 4},
-      .scaled_work_area = {1, -1438, 896, 1434},
-      .dip_scale = 1,
-      .rotation_degrees = 90,
-      .bits_per_pixel = 12,
-      .bits_per_component = 0,
-      .is_internal = false};
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  if (GetParam()) {
-    scoped_feature_list.InitAndEnableFeature(kAndroidUseCorrectDisplayWorkArea);
-  }
-
+TEST_F(DisplayAndroidManagerTest, General) {
   // Checking the initial state
   EXPECT_EQ(GetDisplaysNum(), 0);
   EXPECT_TRUE(display::GetInternalDisplayIds().empty());
 
   // Adding the primary internal display
-  AddDisplay(primary_display_params);
+  AddDisplay(kPrimaryDisplayParams);
   EXPECT_EQ(GetDisplaysNum(), 1);
   EXPECT_EQ(display::GetInternalDisplayIds().size(), std::size_t(1));
 
-  // Adding the secondary external display
-  AddDisplay(secondary_display_params);
+  // Adding the external display
+  AddDisplay(kExternalDisplayParams);
   EXPECT_EQ(GetDisplaysNum(), 2);
   EXPECT_EQ(display::GetInternalDisplayIds().size(), std::size_t(1));
 
   // Comparing displays
-  CompareDisplayParamsWithDisplay(primary_display_params);
-  CompareDisplayParamsWithDisplay(secondary_display_params);
+  CompareDisplayParamsWithDisplay(kPrimaryDisplayParams);
+  CompareDisplayParamsWithDisplay(kExternalDisplayParams);
 
   // Removing external display
-  RemoveDisplay(secondary_display_params.sdk_display_id);
+  RemoveDisplay(kExternalDisplayParams.sdk_display_id);
   EXPECT_EQ(display::GetInternalDisplayIds().size(), std::size_t(1));
 
   // Removing internal display
-  RemoveDisplay(primary_display_params.sdk_display_id);
+  RemoveDisplay(kPrimaryDisplayParams.sdk_display_id);
 
   // Checking the finished state
   EXPECT_EQ(GetDisplaysNum(), 0);
   EXPECT_TRUE(display::GetInternalDisplayIds().empty());
+}
+
+TEST_F(DisplayAndroidManagerTest, WorkArea) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAndroidUseCorrectDisplayWorkArea);
+
+  AddDisplay(kPrimaryDisplayParams);
+  CompareDisplayParamsWithDisplay(kPrimaryDisplayParams);
+
+  AddDisplay(kExternalDisplayParams);
+  CompareDisplayParamsWithDisplay(kExternalDisplayParams);
+}
+
+TEST_F(DisplayAndroidManagerTest, DisplayTopology) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAndroidWindowManagementWebApi);
+
+  // Display Topology
+  //             (0, -1440) +-------------+
+  //                        |             |
+  //                        |             |
+  //                        |             |
+  //                        |             |
+  //                        |             |
+  //                        |             |
+  //                        |             | (900, 0)
+  //                 (0, 0) +-------------+----------+
+  //                        |                        |
+  //  (-720, 192) +---------+                        |
+  //              |         |                        |
+  //              +---------+ (0, 672)               |
+  //                        |                        |
+  //                        +------------------------+ (1536, 864)
+
+  AddDisplay(kPrimaryDisplayParams);
+  AddDisplay(kExternalDisplayParams);
+  AddDisplay(kSecondExternalDisplayParams);
+
+  // Point is located on the border between primary and second external
+  // displays. This border belongs to the primary display.
+  EXPECT_EQ(GetDisplayNearestPoint(gfx::Point(0, 432)).id(),
+            kPrimaryDisplayParams.sdk_display_id);
+  {
+    // Point is located on the equal distance from external and second
+    // external displays. Each of them can be returned.
+    const auto display_id = GetDisplayNearestPoint(gfx::Point(-384, -192)).id();
+    EXPECT_TRUE(display_id == kExternalDisplayParams.sdk_display_id ||
+                display_id == kSecondExternalDisplayParams.sdk_display_id);
+  }
+  // Point is located near primary and external displays. If the display is
+  // determined by pixel coordinates, the primary display will be closer to the
+  // point.
+  EXPECT_EQ(GetDisplayNearestPoint(gfx::Point(1800, -700)).id(),
+            kExternalDisplayParams.sdk_display_id);
+  // Point is at the corner of the external display.
+  EXPECT_EQ(GetDisplayNearestPoint(gfx::Point(900, -1440)).id(),
+            kExternalDisplayParams.sdk_display_id);
+  // Point doesn't belong to any displays.
+  EXPECT_EQ(GetDisplayNearestPoint(gfx::Point(-900, -500)).id(),
+            kSecondExternalDisplayParams.sdk_display_id);
+
+  // Rectangle covers all displays. Display with the most area should be
+  // returned.
+  EXPECT_EQ(GetDisplayMatching(gfx::Rect(-720, -1440, 2256, 2304)).id(),
+            kPrimaryDisplayParams.sdk_display_id);
+  // Rectangle intersects with primary and external displays. The center of the
+  // rectangle is located on the border of these displays.
+  EXPECT_EQ(GetDisplayMatching(gfx::Rect(800, -100, 200, 200)).id(),
+            kPrimaryDisplayParams.sdk_display_id);
+  // Rectangle intersects with primary and external displays. If the
+  // intersection area is counted in pixel coordinates, the primary display will
+  // have the most intersection area.
+  EXPECT_EQ(GetDisplayMatching(gfx::Rect(800, -1000, 1100, 900)).id(),
+            kExternalDisplayParams.sdk_display_id);
+  // Rectangle is fully located inside second_external_display.
+  EXPECT_EQ(GetDisplayMatching(gfx::Rect(100, -1340, 700, 1240)).id(),
+            kExternalDisplayParams.sdk_display_id);
+  // Rectangle intersects with all displays. Display with the most
+  // intersection area should be returned.
+  EXPECT_EQ(GetDisplayMatching(gfx::Rect(-600, -300, 700, 600)).id(),
+            kSecondExternalDisplayParams.sdk_display_id);
 }
 
 }  // namespace ui
