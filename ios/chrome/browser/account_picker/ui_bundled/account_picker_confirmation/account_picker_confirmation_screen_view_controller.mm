@@ -201,8 +201,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   [super viewDidLoad];
   // Set the navigation title in the left bar button item to have left
   // alignment.
-  if (IsSaveToPhotosTitleImprovementEnabled() &&
-      _configuration.useBrandedTitle) {
+  if (_configuration.useBrandedTitle) {
     if (_configuration.brandedSymbolName) {
       self.navigationItem.titleView = CreateGooglePhotosImageView(
           _configuration.titleText, _configuration.brandedSymbolName);
@@ -345,10 +344,8 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
     [_askEveryTimeSwitch addTarget:self
                             action:@selector(askEveryTimeSwitchAction:)
                   forControlEvents:UIControlEventValueChanged];
-    _askEveryTimeSwitch.on = YES;
-    if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
-      _askEveryTimeSwitch.on = NO;
-    }
+    _askEveryTimeSwitch.on = NO;
+
     [_askEveryTimeSwitch
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
@@ -446,8 +443,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
 }
 
 - (void)askEveryTimeSwitchAction:(id)sender {
-  BOOL shouldAskEveryTime = !(_askEveryTimeSwitch.on ==
-                              IsSaveToPhotosAccountPickerImprovementEnabled());
+  BOOL shouldAskEveryTime = !_askEveryTimeSwitch.on;
   [_actionDelegate
       accountPickerConfirmationScreenViewController:self
                                     setAskEveryTime:shouldAskEveryTime];

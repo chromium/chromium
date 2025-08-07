@@ -466,9 +466,6 @@ extern const char kIOSChooseFromDriveSimulatedClickDescription[];
 extern const char kIOSManageAccountStorageName[];
 extern const char kIOSManageAccountStorageDescription[];
 
-extern const char kIOSSaveToPhotosImprovementsName[];
-extern const char kIOSSaveToPhotosImprovementsDescription[];
-
 extern const char kIOSEnterpriseRealtimeUrlFilteringName[];
 extern const char kIOSEnterpriseRealtimeUrlFilteringDescription[];
 

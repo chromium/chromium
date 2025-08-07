@@ -788,11 +788,6 @@ const char kIOSManageAccountStorageName[] = "Allow managing Account storage.";
 const char kIOSManageAccountStorageDescription[] =
     "Add entry points to manage Google One account storage.";
 
-const char kIOSSaveToPhotosImprovementsName[] =
-    "IOS Save to Photos Improvements";
-const char kIOSSaveToPhotosImprovementsDescription[] =
-    "Enables the Save to Photos Improvements on iOS.";
-
 const char kIOSPasswordBottomSheetAutofocusName[] =
     "IOS Password Manager Bottom Sheet Autofocus";
 const char kIOSPasswordBottomSheetAutofocusDescription[] =

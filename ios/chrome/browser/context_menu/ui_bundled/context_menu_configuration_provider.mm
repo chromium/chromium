@@ -803,7 +803,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     [imageSavingElements addObject:saveImageToPhotosAction];
   }
 
-  if (IsSaveToPhotosActionImprovementEnabled() && saveToPhotosAvailable) {
+  if (saveToPhotosAvailable) {
     UIImage* image;
     if (@available(iOS 17, *)) {
       image = DefaultSymbolWithPointSize(kPhotoBadgeArrowDownSymbol,

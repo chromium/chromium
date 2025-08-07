@@ -186,10 +186,7 @@
   }
 
   BOOL askEveryTimeSwitchOn =
-      !_prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
-  if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
-    askEveryTimeSwitchOn = !askEveryTimeSwitchOn;
-  }
+      _prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
   [self.accountConfirmationConsumer
       setIdentityButtonAvatar:_accountManagerService
                                   ->GetIdentityAvatarWithIdentity(

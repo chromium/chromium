@@ -172,13 +172,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_saveToPhotosAskEveryTimeSwitch) {
     _saveToPhotosAskEveryTimeSwitch =
         [[TableViewSwitchItem alloc] initWithType:ItemTypeAskEveryTime];
-    if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
-      _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
-          IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME);
-    } else {
-      _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
-          IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
-    }
+    _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
+        IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME);
   }
   return _saveToPhotosAskEveryTimeSwitch;
 }
@@ -224,10 +219,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)saveToPhotosAskEveryTimeSwitchAction:(UISwitch*)sender {
-  BOOL askWhichAccountToUseEveryTime = sender.isOn;
-  if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
-    askWhichAccountToUseEveryTime = !sender.isOn;
-  }
+  BOOL askWhichAccountToUseEveryTime = !sender.isOn;
   [self.saveToPhotosSettingsMutator
       setAskWhichAccountToUseEveryTime:askWhichAccountToUseEveryTime];
   if (!askWhichAccountToUseEveryTime) {
