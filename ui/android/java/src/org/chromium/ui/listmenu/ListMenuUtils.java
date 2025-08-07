@@ -282,7 +282,8 @@ public class ListMenuUtils {
                 firstItem = mContentModelList.get(0);
             }
             if (firstItem instanceof ListItem firstListItem && firstListItem.model != null) {
-                if (firstListItem.model.containsKey(TITLE)) {
+                if (firstListItem.model.containsKey(TITLE)
+                        && firstListItem.model.get(TITLE) != null) {
                     CharSequence title = firstListItem.model.get(TITLE);
                     if (title.length() != 0) {
                         accessibilityPaneTitle = String.valueOf(title);
