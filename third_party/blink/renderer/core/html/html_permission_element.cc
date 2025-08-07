@@ -100,10 +100,14 @@ constexpr int kMaxLengthToFontSizeRatio = 3;
 constexpr int kMinLengthToFontSizeRatio = 1;
 constexpr int kMaxVerticalPaddingToFontSizeRatio = 1;
 constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
+constexpr float kMaxBorderWidthToFontSizeRatio = 0.5;
 constexpr float kIntersectionThreshold = 1.0f;
 
 constexpr float kDefaultSmallFontSize = 13;     // Default 'small' font size.
 constexpr float kDefaultXxxLargeFontSize = 48;  // Default 'xxxlarge' font size.
+
+constexpr float kDefaultMaxPercentRadiusWidth = 25;
+constexpr float kDefaultMaxPercentRadiusHeight = 50;
 
 // These display styles are not allowed for permission elements as they can mess
 // with the layout in unsupported ways. Additionally, all "table" styles are
@@ -903,18 +907,40 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.ResetPaddingBottom();
   }
 
-  if (builder.BorderBottomWidth() > builder.FontSize()) {
-    builder.SetBorderBottomWidth(builder.FontSize());
+  if (builder.BorderBottomWidth() >
+      builder.FontSize() * kMaxBorderWidthToFontSizeRatio) {
+    builder.SetBorderBottomWidth(builder.FontSize() *
+                                 kMaxBorderWidthToFontSizeRatio);
   }
-  if (builder.BorderTopWidth() > builder.FontSize()) {
-    builder.SetBorderTopWidth(builder.FontSize());
+  if (builder.BorderTopWidth() >
+      builder.FontSize() * kMaxBorderWidthToFontSizeRatio) {
+    builder.SetBorderTopWidth(builder.FontSize() *
+                              kMaxBorderWidthToFontSizeRatio);
   }
-  if (builder.BorderLeftWidth() > builder.FontSize()) {
-    builder.SetBorderLeftWidth(builder.FontSize());
+  if (builder.BorderLeftWidth() >
+      builder.FontSize() * kMaxBorderWidthToFontSizeRatio) {
+    builder.SetBorderLeftWidth(builder.FontSize() *
+                               kMaxBorderWidthToFontSizeRatio);
   }
-  if (builder.BorderRightWidth() > builder.FontSize()) {
-    builder.SetBorderRightWidth(builder.FontSize());
+  if (builder.BorderRightWidth() >
+      builder.FontSize() * kMaxBorderWidthToFontSizeRatio) {
+    builder.SetBorderRightWidth(builder.FontSize() *
+                                kMaxBorderWidthToFontSizeRatio);
   }
+
+  // The radius is adjusted to be at most the hardcoded percentage.
+  builder.SetBorderTopLeftRadius(AdjustedPercentBoundedRadius(
+      builder.BorderTopLeftRadius(), kDefaultMaxPercentRadiusWidth,
+      kDefaultMaxPercentRadiusHeight));
+  builder.SetBorderTopRightRadius(AdjustedPercentBoundedRadius(
+      builder.BorderTopRightRadius(), kDefaultMaxPercentRadiusWidth,
+      kDefaultMaxPercentRadiusHeight));
+  builder.SetBorderBottomLeftRadius(AdjustedPercentBoundedRadius(
+      builder.BorderBottomLeftRadius(), kDefaultMaxPercentRadiusWidth,
+      kDefaultMaxPercentRadiusHeight));
+  builder.SetBorderBottomRightRadius(AdjustedPercentBoundedRadius(
+      builder.BorderBottomRightRadius(), kDefaultMaxPercentRadiusWidth,
+      kDefaultMaxPercentRadiusHeight));
 
   // The base `text-decoration` property must be reset for each `<permission>`
   // element. This prevents any `text-decoration` from a parent element from
@@ -1578,6 +1604,35 @@ Length HTMLPermissionElement::AdjustedBoundedLengthWrapper(
   }
   return HTMLPermissionElementUtils::AdjustedBoundedLength(
       length, lower_bound, upper_bound, should_multiply_by_content_size);
+}
+
+LengthSize HTMLPermissionElement::AdjustedPercentBoundedRadius(
+    const LengthSize& length_size,
+    float width_percent_bound,
+    float height_percent_bound) {
+  LengthSize adjusted_length_size;
+
+  auto* width_upper_bound_expr =
+      MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(0, width_percent_bound,
+                           /*has_explicit_pixels=*/false,
+                           /*has_explicit_percent=*/true));
+  adjusted_length_size.SetWidth(Length(CalculationValue::CreateSimplified(
+      HTMLPermissionElementUtils::BuildLengthBoundExpr(
+          length_size.Width(), nullptr, width_upper_bound_expr),
+      Length::ValueRange::kNonNegative)));
+
+  auto* height_upper_bound_expr =
+      MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(0, height_percent_bound,
+                           /*has_explicit_pixels=*/false,
+                           /*has_explicit_percent=*/true));
+  adjusted_length_size.SetHeight(Length(CalculationValue::CreateSimplified(
+      HTMLPermissionElementUtils::BuildLengthBoundExpr(
+          length_size.Height(), nullptr, height_upper_bound_expr),
+      Length::ValueRange::kNonNegative)));
+
+  return adjusted_length_size;
 }
 
 void HTMLPermissionElement::DidFinishLifecycleUpdate(

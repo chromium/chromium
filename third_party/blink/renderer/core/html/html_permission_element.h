@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -462,6 +463,12 @@ class CORE_EXPORT HTMLPermissionElement
                                       std::optional<float> lower_bound,
                                       std::optional<float> upper_bound,
                                       bool should_multiply_by_content_size);
+
+  // A method which bounds the specified radius on the width and height sides
+  // using the provided percentage bounds.
+  LengthSize AdjustedPercentBoundedRadius(const LengthSize& length_size,
+                                          float width_percent_bound,
+                                          float height_percent_bound);
 
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;

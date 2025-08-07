@@ -62,6 +62,7 @@ permission::-internal-permission-container {
   min-height: inherit;
   max-height: inherit;
   margin: auto;
+  text-indent: 0px;
 }
 
 ::permission-icon {
