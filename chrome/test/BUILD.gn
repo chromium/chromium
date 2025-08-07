@@ -7389,6 +7389,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/enterprise/platform_auth:test_utils",
       "//chrome/browser/ui/pdf/infobar:unit_tests",
+      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:unit_tests",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",
     ]
@@ -7472,7 +7473,6 @@ test("unit_tests") {
       "//chrome/browser:chrome_process_finder",
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
-      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:unit_tests",
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/chrome_elf:constants",
       "//chrome/common/notifications",

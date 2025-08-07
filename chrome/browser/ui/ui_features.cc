@@ -61,12 +61,14 @@ BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
 BASE_FEATURE(kOfferPinToTaskbarInFirstRunExperience,
              "OfferPinToTaskbarInFirstRunExperience",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kOfferPinToTaskbarInfoBar,
-             "OfferPinToTaskbarInfoBar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Shows an infobar at startup offering to pin Chrome to the taskbar (on
+// Windows) or the Dock (on MacOS).
+BASE_FEATURE(kOfferPinToTaskbarInfoBar,
+             "OfferPinToTaskbarInfoBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Shows an infobar on PDFs offering to become the default PDF viewer if Chrome
 // isn't the default already.
 BASE_FEATURE(kPdfInfoBar, "PdfInfoBar", base::FEATURE_DISABLED_BY_DEFAULT);

@@ -707,6 +707,14 @@ Chromium is unable to recover your settings.
           Pin Chromium
         </message>
       </if>
+      <if expr="is_macosx">
+        <message name="IDS_PIN_INFOBAR_DOCK_TEXT" desc="Text to show in an infobar when Chromium is not in the Dock.">
+          Keep Chromium in your Dock to get to it quickly anytime
+        </message>
+        <message name="IDS_PIN_INFOBAR_DOCK_BUTTON" desc="Label for the button on an infobar offering to keep Chromium in the Dock.">
+          Keep in Dock
+        </message>
+      </if>
         <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
           Chromium isn't your default browser
         </message>

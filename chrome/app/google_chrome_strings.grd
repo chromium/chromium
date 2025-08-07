@@ -684,6 +684,14 @@ Google Chrome is unable to recover your settings.
           Pin Chrome
         </message>
       </if>
+      <if expr="is_macosx">
+        <message name="IDS_PIN_INFOBAR_DOCK_TEXT" desc="Text to show in an infobar when Chrome is not in the Dock.">
+          Keep Chrome in your Dock to get to it quickly anytime
+        </message>
+        <message name="IDS_PIN_INFOBAR_DOCK_BUTTON" desc="Label for the button on an infobar offering to keep Chrome in the Dock.">
+          Keep in Dock
+        </message>
+      </if>
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Google Chrome is not the current default browser.">
         Google Chrome isn't your default browser
       </message>

@@ -44,10 +44,10 @@ BASE_DECLARE_FEATURE(kExtensionsCollapseMainMenu);
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault);
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarInFirstRunExperience);
-BASE_DECLARE_FEATURE(kOfferPinToTaskbarInfoBar);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kOfferPinToTaskbarInfoBar);
 BASE_DECLARE_FEATURE(kPdfInfoBar);
 
 enum class PdfInfoBarTrigger { kPdfLoad = 0, kStartup = 1 };

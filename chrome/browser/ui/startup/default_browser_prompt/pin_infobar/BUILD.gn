@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win)
+assert(is_win || is_mac)
 
 source_set("pin_infobar") {
   sources = [
@@ -20,6 +20,10 @@ source_set("pin_infobar") {
     "//components/vector_icons",
     "//ui/gfx:native_widget_types",
   ]
+
+  if (is_mac) {
+    sources += [ "pin_infobar_mac_util.h" ]
+  }
 }
 
 source_set("impl") {
@@ -39,13 +43,22 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common:constants",
-    "//chrome/install_static:install_static_util",
-    "//chrome/installer/util:with_no_strings",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
     "//components/tabs:public",
     "//ui/base",
   ]
+
+  if (is_win) {
+    deps += [
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:with_no_strings",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "pin_infobar_mac_util.mm" ]
+  }
 }
 
 source_set("unit_tests") {
