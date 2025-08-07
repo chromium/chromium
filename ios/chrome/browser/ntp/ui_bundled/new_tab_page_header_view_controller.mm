@@ -317,7 +317,7 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
 
 - (CGFloat)pinnedOffsetY {
   CGFloat offsetY = [self headerHeight];
-  if (IsSplitToolbarMode(self)) {
+  if (IsSplitToolbarMode(self) && !CanShowTabStrip(self)) {
     offsetY -= content_suggestions::FakeToolbarHeight();
   }
 

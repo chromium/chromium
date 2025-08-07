@@ -1157,7 +1157,8 @@ CGFloat SpaceBetweenModules() {
 
 // Returns YES if scroll should be skipped when focusing the omnibox.
 - (BOOL)shouldSkipScrollToFocusOmnibox {
-  return self.scrolledToMinimumHeight || IsSplitToolbarMode(self);
+  return self.scrolledToMinimumHeight ||
+         (IsSplitToolbarMode(self) && !CanShowTabStrip(self));
 }
 
 // Returns the collection view containing all NTP content.

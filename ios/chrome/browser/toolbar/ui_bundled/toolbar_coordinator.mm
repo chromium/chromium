@@ -453,7 +453,8 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   if (webState && IsVisibleURLNewTabPage(webState)) {
     self.primaryToolbarViewController.view.hidden =
-        IsSplitToolbarMode(self.traitEnvironment);
+        IsSplitToolbarMode(self.traitEnvironment) &&
+        !CanShowTabStrip(self.traitEnvironment);
   }
 }
 
