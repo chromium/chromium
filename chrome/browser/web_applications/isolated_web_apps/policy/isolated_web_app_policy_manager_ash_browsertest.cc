@@ -58,6 +58,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -74,6 +75,7 @@
 namespace web_app {
 
 namespace {
+
 const web_package::test::Ed25519KeyPair kPublicKeyPair1 =
     web_package::test::Ed25519KeyPair::CreateRandom();
 const web_package::test::Ed25519KeyPair kPublicKeyPair2 =
@@ -94,6 +96,15 @@ constexpr char kDisplayName[] = "display name";
 constexpr char kOrphanedBundleDirectory[] = "6zsr4hjoudsu6ihf";
 
 using policy::DeveloperToolsPolicyHandler;
+
+using UpdateDiscoveryTaskFuture =
+    base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
+
+void WaitForProfile() {
+  ProfileWaiter waiter;
+  waiter.WaitForProfileAdded();
+}
+
 }  // namespace
 
 class IsolatedWebAppPolicyManagerAshBrowserTestBase
@@ -107,16 +118,9 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
  protected:
   explicit IsolatedWebAppPolicyManagerAshBrowserTestBase(bool is_user_session)
       : is_user_session_(is_user_session) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kIsolatedWebApps};
     if (is_user_session_) {
       login_manager_mixin_.AppendRegularUsers(1);
-    } else {
-      enabled_features.push_back(
-          features::kIsolatedWebAppManagedGuestSessionInstall);
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -124,7 +128,20 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     AddInitialBundles();
   }
 
-  ~IsolatedWebAppPolicyManagerAshBrowserTestBase() override = default;
+  void TearDownOnMainThread() override {
+    // Each session start, IWA cache manager checks for the updates. Wait for
+    // this result to avoid crashes in tests.
+    WaitForInitialUpdateDiscoveryTasksToFinish();
+    ash::LoginManagerTest::TearDownOnMainThread();
+  }
+
+  void WaitForInitialUpdateDiscoveryTasksToFinish() {
+    for (auto& update_future : initial_discovery_update_futures_) {
+      EXPECT_TRUE(update_future.Wait());
+    }
+    initial_discovery_update_futures_.clear();
+    initial_discovery_update_waiters_.clear();
+  }
 
   const webapps::AppId kAppId1 =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(kWebBundleId1)
@@ -271,8 +288,8 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
   }
 
   base::Version GetIsolatedWebAppVersion(const webapps::AppId& app_id) {
-    return WebAppProvider::GetForTest(GetProfileForTest())
-        ->registrar_unsafe()
+    return provider()
+        .registrar_unsafe()
         .GetAppById(app_id)
         ->isolation_data()
         ->version();
@@ -293,7 +310,8 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
         .Wait();
   }
 
-  void StartLogin() {
+  void StartLogin(const std::vector<webapps::AppId>&
+                      wait_for_initial_update_for_apps = {}) {
     if (is_user_session_) {
       LoginUser(login_manager_mixin_.users()[0].account_id);
     } else {
@@ -307,6 +325,31 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
       ash::UserContext user_context(user_manager::UserType::kPublicAccount,
                                     account_id_);
       controller->Login(user_context, ash::SigninSpecifics());
+
+      if (!wait_for_initial_update_for_apps.empty()) {
+        WaitForProfile();
+        CreateInitialDiscoveryUpdateWaiters(wait_for_initial_update_for_apps);
+      }
+    }
+  }
+
+  void CreateInitialDiscoveryUpdateWaiters(const webapps::AppId& app_id) {
+    CreateInitialDiscoveryUpdateWaiters(std::vector<webapps::AppId>{app_id});
+  }
+
+  void CreateInitialDiscoveryUpdateWaiters(
+      const std::vector<webapps::AppId>& app_ids) {
+    // The initial update is checked on the session start only  inside Managed
+    // Guest Session and kiosk.
+    if (is_user_session_) {
+      return;
+    }
+    for (const auto& app_id : app_ids) {
+      initial_discovery_update_futures_.emplace_back();
+      initial_discovery_update_waiters_.push_back(
+          std::make_unique<UpdateDiscoveryTaskResultWaiter>(
+              provider(), app_id,
+              initial_discovery_update_futures_.back().GetCallback()));
     }
   }
 
@@ -331,6 +374,13 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     return ash::FakeSessionManagerClient::Get();
   }
 
+  WebAppProvider& provider() {
+    CHECK(GetProfileForTest());
+    auto* provider = WebAppProvider::GetForTest(GetProfileForTest());
+    CHECK(provider);
+    return *provider;
+  }
+
   const AccountId account_id_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
           kUserMail,
@@ -348,6 +398,9 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
+  std::vector<UpdateDiscoveryTaskFuture> initial_discovery_update_futures_;
+  std::vector<std::unique_ptr<UpdateDiscoveryTaskResultWaiter>>
+      initial_discovery_update_waiters_;
 };
 
 class IsolatedWebAppPolicyManagerAshBrowserTest
@@ -362,13 +415,12 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
       const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
 };
 
-// TODO(crbug.com/435371796): Test is flaky.
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       DISABLED_InstallIsolatedWebAppOnLogin) {
+                       InstallIsolatedWebAppOnLogin) {
   AddUser(/*set_iwa_policy_on_login=*/true);
 
   // Log in in the managed guest session.
-  ASSERT_NO_FATAL_FAILURE(StartLogin());
+  ASSERT_NO_FATAL_FAILURE(StartLogin({kAppId1}));
   WaitForSessionStart();
 
   Profile* profile = GetProfileForTest();
@@ -377,19 +429,14 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   WebAppTestInstallObserver observer(profile);
   observer.BeginListeningAndWait({kAppId1});
 
-  ASSERT_EQ(
-      WebAppProvider::GetForTest(profile)->registrar_unsafe().GetInstallState(
-          kAppId1),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  ASSERT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1).GetString(), "7.0.6");
 }
 
-// TODO(crbug.com/435371796): Test is flaky.
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       DISABLED_PolicyUpdate) {
+                       PolicyUpdate) {
   AddUser();
-
-  SetPolicyWithOneApp();
 
   // Log in in the managed guest session.
   // There no IWA policy set at the moment of login.
@@ -397,33 +444,34 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   WaitForSessionStart();
 
   Profile* profile = GetProfileForTest();
-  const WebAppProvider* provider = WebAppProvider::GetForTest(profile);
 
   // Set the policy with 1 IWA and wait for the IWA to be installed.
   {
     SetPolicyWithOneApp();
+    CreateInitialDiscoveryUpdateWaiters(kAppId1);
 
     WebAppTestInstallObserver observer(profile);
     observer.BeginListeningAndWait({kAppId1});
 
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId1),
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   }
 
   // Set the policy with 2 IWAs and wait for the IWA to be installed.
   {
     SetPolicyWithTwoApps();
+    CreateInitialDiscoveryUpdateWaiters(kAppId2);
 
     WebAppTestInstallObserver observer2(profile);
     observer2.BeginListeningAndWait({kAppId2});
 
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId2),
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId2),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   }
 }
-// TODO(crbug.com/436526657): Test is flaky.
+
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       DISABLED_InstallUpdateChannelVersion) {
+                       InstallUpdateChannelVersion) {
   AddUser();
 
   ASSERT_NO_FATAL_FAILURE(StartLogin());
@@ -434,6 +482,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   // Update channel with higher version than on the "default" channel
   {
     SetPolicyWithBetaChannelApp(kWebBundleId1);
+    CreateInitialDiscoveryUpdateWaiters(kAppId1);
 
     WebAppTestInstallObserver install_observer(profile);
     install_observer.BeginListeningAndWait({kAppId1});
@@ -444,6 +493,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   // Update channel with lower version than on the "default" channel
   {
     SetPolicyWithBetaChannelApp(kWebBundleId2);
+    CreateInitialDiscoveryUpdateWaiters(kAppId2);
 
     WebAppTestInstallObserver install_observer(profile);
     install_observer.BeginListeningAndWait({kAppId2});
@@ -467,10 +517,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   WebAppTestInstallObserver observer(profile);
   observer.BeginListeningAndWait({kAppId1});
 
-  ASSERT_EQ(
-      WebAppProvider::GetForTest(profile)->registrar_unsafe().GetInstallState(
-          kAppId1),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  ASSERT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1), kPinnedVersion);
 }
 
@@ -483,20 +531,18 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
 
-  const WebAppProvider* provider =
-      WebAppProvider::GetForTest(GetProfileForTest());
-
   // Set the policy with 2 IWAs and wait for the IWAs to be installed.
   {
     WebAppTestInstallObserver install_observer(GetProfileForTest());
     install_observer.BeginListening({kAppId1, kAppId2});
 
     SetPolicyWithTwoApps();
+    CreateInitialDiscoveryUpdateWaiters({kAppId1, kAppId2});
     install_observer.Wait();
 
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId1),
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId2),
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId2),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   }
 
@@ -521,9 +567,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
     EXPECT_TRUE(uninstall_browsing_data_future.Wait());
     EXPECT_EQ(uninstall_observer.Wait(), kAppId2);
 
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId1),
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-    EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(kAppId2));
+    EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId2));
   }
 
   // Set the policy with 2 IWAs and wait for the second IWA to be re-installed.
@@ -534,9 +580,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
     SetPolicyWithTwoApps();
     install_observer.Wait();
 
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId1),
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(kAppId2),
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId2),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   }
 }
@@ -583,6 +629,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
     install_observer.BeginListening({kAppId1});
 
     SetPolicyWithOneApp();
+    CreateInitialDiscoveryUpdateWaiters(kAppId1);
     install_observer.Wait();
 
     EXPECT_EQ(WebAppProvider::GetForTest(GetProfileForTest())
@@ -629,6 +676,7 @@ class CleanupOrphanedBundlesTest
   }
 
   void TearDownOnMainThread() override {
+    IsolatedWebAppPolicyManagerAshBrowserTestBase::TearDownOnMainThread();
     last_simulate_orphaned_bundle_profile_ = nullptr;
   }
 
@@ -669,7 +717,6 @@ class CleanupOrphanedBundlesTest
   raw_ptr<Profile> last_simulate_orphaned_bundle_profile_ = nullptr;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
@@ -681,9 +728,7 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   WaitForSessionStart();
 
   Profile* const profile = GetProfileForTest();
-  WebAppProvider::GetForTest(profile)
-      ->command_manager()
-      .AwaitAllCommandsCompleteForTesting();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // Make sure we simulated the orphaned bundle for the profile we run the
   // cleanup command on.
@@ -704,8 +749,7 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   WaitForSessionStart();
 
   Profile* const profile = GetProfileForTest();
-  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  WebAppCommandManager& command_manager = provider->command_manager();
+  WebAppCommandManager& command_manager = provider().command_manager();
   command_manager.AwaitAllCommandsCompleteForTesting();
 
   SimulateOrphanedBundle(profile, kOrphanedBundleDirectory);
@@ -720,7 +764,7 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   SetPolicyWithOneApp();
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_NE(provider->registrar_unsafe().GetInstallState(kAppId1),
+  EXPECT_NE(provider().registrar_unsafe().GetInstallState(kAppId1),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
 
   // Wait until the cleanup is done.
