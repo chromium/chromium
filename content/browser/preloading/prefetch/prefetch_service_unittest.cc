@@ -490,7 +490,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"}}}},
-        {});
+        {blink::features::kRemovePurposeHeaderForPrefetch});
   }
 
   void MakePrefetchService(std::unique_ptr<MockPrefetchServiceDelegate>

@@ -2551,9 +2551,9 @@ class LoadingPredictorPrefetchBrowserTest
  private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // Monitor only prefetches.
-    if (request.headers.find(blink::kPurposeHeaderName) ==
+    if (request.headers.find(blink::kSecPurposeHeaderName) ==
             request.headers.end() ||
-        (request.headers.at(blink::kPurposeHeaderName) !=
+        (request.headers.at(blink::kSecPurposeHeaderName) !=
          blink::kSecPurposePrefetchHeaderValue)) {
       return;
     }

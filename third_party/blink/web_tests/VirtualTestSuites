@@ -783,25 +783,6 @@
     ],
     "expires": "Jul 1, 2025"
   },
-  {
-    "prefix": "disable-purpose-prefetch-header",
-    "owners": [
-      "stevenwei@microsoft.com"
-    ],
-    "platforms": [
-      "Mac",
-      "Win",
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/preload/prefetch-headers.https.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=RemovePurposeHeaderForPrefetch"
-    ],
-    "expires": "Nov 27, 2025"
-  },
   "Exclusive tests due to crbug.com/349939555",
   {
     "prefix": "disable-raster-inducing-scroll",
@@ -925,6 +906,25 @@
     "owners": [
       "arakeri@microsoft.com"
     ]
+  },
+  {
+    "prefix": "enable-purpose-prefetch-header",
+    "owners": [
+      "stevenwei@microsoft.com"
+    ],
+    "platforms": [
+      "Mac",
+      "Win",
+      "Linux"
+    ],
+    "bases": [
+      "http/tests/misc/prefetch-purpose.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--disable-features=RemovePurposeHeaderForPrefetch"
+    ],
+    "expires": "Aug 1, 2026"
   },
   {
     "prefix": "enable-system-cursor-size-for-svg",

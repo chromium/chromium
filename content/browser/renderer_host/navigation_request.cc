@@ -420,9 +420,7 @@ void AddAdditionalRequestHeaders(
   }
 
   // Add the "Sec-Purpose: prefetch;prerender" header to prerender navigations
-  // including subframe navigations. Add "Purpose: prefetch" as well for
-  // compatibility concerns (See
-  // https://github.com/WICG/nav-speculation/issues/133).
+  // including subframe navigations.
   if (frame_tree_node->frame_tree().is_prerendering()) {
     PrerenderHost::GetFromFrameTreeNode(*frame_tree_node)
         .AddAdditionalRequestHeaders(*headers, *frame_tree_node);

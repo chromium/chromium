@@ -36,6 +36,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace {
@@ -294,15 +295,16 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
     const bool is_prefetch =
-        request.headers.find(blink::kPurposeHeaderName) !=
+        request.headers.find(blink::kSecPurposeHeaderName) !=
             request.headers.end() &&
-        request.headers.find(blink::kPurposeHeaderName)->second ==
-            blink::kSecPurposePrefetchHeaderValue;
-    CHECK_EQ(is_prefetch,
-             request.headers.find(blink::kSecPurposeHeaderName) !=
-                     request.headers.end() &&
-                 request.headers.find(blink::kSecPurposeHeaderName)->second ==
-                     blink::kSecPurposePrefetchPrerenderHeaderValue);
+        (request.headers.find(blink::kSecPurposeHeaderName)->second ==
+             blink::kSecPurposePrefetchHeaderValue ||
+         request.headers.find(blink::kSecPurposeHeaderName)->second ==
+             blink::kSecPurposePrefetchAnonymousClientIpHeaderValue ||
+         request.headers.find(blink::kSecPurposeHeaderName)->second ==
+             blink::kSecPurposePrefetchPrerenderHeaderValue ||
+         request.headers.find(blink::kSecPurposeHeaderName)->second ==
+             blink::kSecPurposePrefetchPrerenderPreviewHeaderValue);
 
     if (request.GetURL().spec().find(kSearchTerms_502OnPrefetch) !=
             std::string::npos &&
