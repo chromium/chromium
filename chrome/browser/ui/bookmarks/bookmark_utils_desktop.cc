@@ -27,13 +27,18 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
@@ -64,6 +69,12 @@ base::WeakPtr<content::NavigationHandle> BookmarkNavigationWrapper::NavigateTo(
 void BookmarkNavigationWrapper::SetInstanceForTesting(
     BookmarkNavigationWrapper* instance) {
   g_nav_wrapper_test_instance = instance;
+}
+
+std::optional<bool> override_connected_group_for_testing = std::nullopt;
+
+void SetOverrideConnectedGroupForTesting(bool value) {
+  override_connected_group_for_testing = value;
 }
 
 namespace {
@@ -261,19 +272,40 @@ void GetURLsAndFoldersForOpenTabs(
   GetURLsAndFoldersForTabEntries(folder_data, tab_entries, groups_by_index);
 }
 
+std::optional<base::Uuid> GetConnectedTabGroupIdFromBookmarkFolder(
+    const tab_groups::TabGroupSyncService* tab_group_sync_service,
+    std::optional<base::Uuid> bookmark_folder_id) {
+  if (!tab_group_sync_service || !bookmark_folder_id.has_value()) {
+    return std::nullopt;
+  }
+
+  std::vector<tab_groups::SavedTabGroup> saved_groups =
+      tab_group_sync_service->GetAllGroups();
+  auto it = std::find_if(saved_groups.begin(), saved_groups.end(),
+                         [&](const tab_groups::SavedTabGroup& group) {
+                           return group.bookmark_node_id().has_value() &&
+                                  group.bookmark_node_id().value() ==
+                                      bookmark_folder_id.value();
+                         });
+
+  if (it == saved_groups.end()) {
+    return std::nullopt;
+  }
+
+  return it->saved_guid();
+}
+
 // Open a folder of bookmarks as tabs.
 void DoOpen(Browser* browser,
             std::vector<UrlAndId> url_and_ids_to_open,
             WindowOpenDisposition initial_disposition,
+            std::optional<base::Uuid> bookmark_folder_node_id,
             std::optional<std::u16string> folder_title,
             bool add_to_split,
             page_load_metrics::NavigationHandleUserData::InitiatorLocation
                 navigation_type,
             std::optional<BookmarkLaunchAction> launch_action,
             chrome::MessageBoxResult result) {
-  if (result != chrome::MESSAGE_BOX_RESULT_YES) {
-    return;
-  }
   const auto opened_web_contents = OpenAllHelper(
       browser, std::move(url_and_ids_to_open), initial_disposition,
       navigation_type, std::move(launch_action));
@@ -302,22 +334,138 @@ void DoOpen(Browser* browser,
       return;
     }
 
-    std::optional<tab_groups::TabGroupId> new_group_id =
-        model->AddToNewGroup(tab_indices);
-    if (!new_group_id.has_value()) {
-      return;
+    tab_groups::TabGroupSyncService* tab_group_sync_service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+            browser->profile());
+
+    std::optional<base::Uuid> connected_group_id =
+        GetConnectedTabGroupIdFromBookmarkFolder(tab_group_sync_service,
+                                                 bookmark_folder_node_id);
+    bool is_new_group = true;
+    if (features::IsBookmarkTabGroupConversionEnabled() &&
+        connected_group_id.has_value() &&
+        result == chrome::MESSAGE_BOX_RESULT_YES) {
+      is_new_group = false;
     }
 
-    // Use the bookmark folder's title as the group's title.
-    TabGroup* group = model->group_model()->GetTabGroup(new_group_id.value());
-    const tab_groups::TabGroupVisualData* current_visual_data =
-        group->visual_data();
-    tab_groups::TabGroupVisualData new_visual_data(
-        folder_title.value(), current_visual_data->color(),
-        current_visual_data->is_collapsed());
-    model->ChangeTabGroupVisuals(group->id(), new_visual_data);
+    if (is_new_group) {
+      // Create a new group and add the tabs.
+      std::optional<tab_groups::TabGroupId> new_group_id =
+          model->AddToNewGroup(tab_indices);
 
-    model->OpenTabGroupEditor(new_group_id.value());
+      if (!new_group_id.has_value()) {
+        return;
+      }
+
+      // Use the bookmark folder's title as the group's title.
+      // TODO(http://crbug.com/436846784): Suggest a new name for the new tab
+      // group if there is already a tab group with the same name.
+      TabGroup* group = model->group_model()->GetTabGroup(new_group_id.value());
+      const tab_groups::TabGroupVisualData* current_visual_data =
+          group->visual_data();
+      tab_groups::TabGroupVisualData new_visual_data(
+          folder_title.value(), current_visual_data->color(),
+          current_visual_data->is_collapsed());
+      model->ChangeTabGroupVisuals(group->id(), new_visual_data);
+
+      model->OpenTabGroupEditor(new_group_id.value());
+
+      if (!tab_group_sync_service ||
+          !features::IsBookmarkTabGroupConversionEnabled()) {
+        return;
+      }
+
+      if (connected_group_id.has_value()) {
+        // Disconnect from old group.
+        tab_group_sync_service->UpdateBookmarkNodeId(connected_group_id.value(),
+                                                     std::nullopt);
+      }
+
+      // Connect to new group.
+      std::optional<tab_groups::SavedTabGroup> new_tab_group =
+          tab_group_sync_service->GetGroup(new_group_id.value());
+      if (new_tab_group.has_value()) {
+        tab_group_sync_service->UpdateBookmarkNodeId(
+            new_tab_group->saved_guid(), bookmark_folder_node_id);
+      }
+    } else {
+      if (!tab_group_sync_service) {
+        return;
+      }
+
+      // Open existing group and replace existing tabs with the new ones.
+      std::optional<tab_groups::TabGroupId> existing_group_id =
+          tab_group_sync_service->OpenTabGroup(
+              connected_group_id.value(),
+              std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+                  browser, tab_groups::OpeningSource::kConnectOnGroupShare));
+
+      if (!existing_group_id.has_value()) {
+        return;
+      }
+
+      gfx::Range range = model->group_model()
+                             ->GetTabGroup(existing_group_id.value())
+                             ->ListTabs();
+      std::vector<content::WebContents*> existing_tabs_in_group;
+      for (size_t index = range.start(); index < range.end(); index++) {
+        existing_tabs_in_group.push_back(model->GetWebContentsAt(index));
+      }
+      model->AddToExistingGroup(tab_indices, existing_group_id.value());
+      for (content::WebContents* existing_tab : existing_tabs_in_group) {
+        model->CloseWebContentsAt(model->GetIndexOfWebContents(existing_tab),
+                                  TabCloseTypes::CLOSE_NONE);
+      }
+    }
+  }
+}
+
+void DoOpenPromptConfirm(
+    Browser* browser,
+    std::vector<UrlAndId> url_and_ids_to_open,
+    WindowOpenDisposition initial_disposition,
+    std::optional<base::Uuid> bookmark_folder_node_id,
+    std::optional<std::u16string> folder_title,
+    bool add_to_split,
+    page_load_metrics::NavigationHandleUserData::InitiatorLocation
+        navigation_type,
+    std::optional<BookmarkLaunchAction> launch_action,
+    chrome::MessageBoxResult result) {
+  if (result != chrome::MESSAGE_BOX_RESULT_YES) {
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+  std::optional<base::Uuid> connected_group_id =
+      GetConnectedTabGroupIdFromBookmarkFolder(tab_group_sync_service,
+                                               bookmark_folder_node_id);
+  if (features::IsBookmarkTabGroupConversionEnabled() &&
+      folder_title.has_value() && connected_group_id.has_value()) {
+    if (override_connected_group_for_testing.has_value()) {
+      DoOpen(browser, std::move(url_and_ids_to_open), initial_disposition,
+             bookmark_folder_node_id, folder_title, add_to_split,
+             navigation_type, launch_action,
+             override_connected_group_for_testing.value()
+                 ? chrome::MESSAGE_BOX_RESULT_YES
+                 : chrome::MESSAGE_BOX_RESULT_NO);
+    } else {
+      // Show UI dialog for user selection.
+      // TODO(crbug.com/436350653): Add localization strings.
+      chrome::ShowQuestionMessageBoxAsync(
+          browser->window()->GetNativeWindow(),
+          l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+          l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+          base::BindOnce(DoOpen, browser, std::move(url_and_ids_to_open),
+                         initial_disposition, bookmark_folder_node_id,
+                         folder_title, add_to_split, navigation_type,
+                         launch_action));
+    }
+
+  } else {
+    DoOpen(browser, std::move(url_and_ids_to_open), initial_disposition,
+           bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
+           launch_action, chrome::MESSAGE_BOX_RESULT_YES);
   }
 }
 
@@ -335,11 +483,17 @@ void OpenAllIfAllowed(
   std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
       nodes, initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
 
+  std::optional<base::Uuid> bookmark_folder_node_id;
+  if (nodes.size() == 1 && nodes[0]->is_folder()) {
+    bookmark_folder_node_id = nodes[0]->uuid();
+  }
+
   // Skip the prompt if there are few bookmarks.
   size_t child_count = url_and_ids.size();
   if (child_count < bookmarks::kNumBookmarkUrlsBeforePrompting) {
-    DoOpen(
+    DoOpenPromptConfirm(
         browser, std::move(url_and_ids), initial_disposition,
+        bookmark_folder_node_id,
         context == bookmarks::OpenAllBookmarksContext::kInGroup
             ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
             : std::nullopt,
@@ -359,7 +513,8 @@ void OpenAllIfAllowed(
       l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
                                  base::NumberToString16(child_count)),
       base::BindOnce(
-          DoOpen, browser, std::move(url_and_ids), initial_disposition,
+          DoOpenPromptConfirm, browser, std::move(url_and_ids),
+          initial_disposition, bookmark_folder_node_id,
           context == bookmarks::OpenAllBookmarksContext::kInGroup
               ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
               : std::nullopt,

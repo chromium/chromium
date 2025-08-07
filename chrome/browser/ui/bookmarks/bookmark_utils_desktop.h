@@ -47,6 +47,9 @@ class BookmarkNavigationWrapper {
   static void SetInstanceForTesting(BookmarkNavigationWrapper* instance);
 };
 
+// Set whether to override connected group to skip UI for testing.
+void SetOverrideConnectedGroupForTesting(bool value);
+
 using TabGroupData =
     std::pair<std::optional<tab_groups::TabGroupId>, std::u16string>;
 
