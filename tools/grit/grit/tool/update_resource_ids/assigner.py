@@ -277,7 +277,7 @@ def GenerateNewIds(item_list, use_naive):
   """
   Assigner = NaiveCoarseIdAssigner if use_naive else DagCoarseIdAssigner
   coarse_id_assigner = Assigner(item_list, 10)
-  quota_assigner = QuotaAssigner(Aligner(expand=1.15, slack=3, align=10))
+  quota_assigner = QuotaAssigner(Aligner())
   for item, start_id in coarse_id_assigner.GenStartIds():  # Topo-sorted.
     cur_id = start_id
     for tag, next_id in quota_assigner.Gen(item, start_id):  # Sorted by |lo|.
