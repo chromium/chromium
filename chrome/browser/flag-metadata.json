@@ -5857,7 +5857,8 @@
   {
     "name": "incognito-screenshot",
     "owners": [ "zalmashni@google.com", "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
-    "expiry_milestone": 140
+    // This flag is used by testers and developers to screenshot incognito features.
+    "expiry_milestone": -1
   },
   {
     "name": "increment-local-surface-id-for-mainframe-same-doc-navigation",
