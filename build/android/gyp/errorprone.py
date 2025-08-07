@@ -31,7 +31,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InlineMeInliner',
     'InlineMeSuggester',
     # High priority to enable:
-    'HidingField',
     'AlreadyChecked',
     'DirectInvocationOnMock',
     'MockNotUsedInProduction',
