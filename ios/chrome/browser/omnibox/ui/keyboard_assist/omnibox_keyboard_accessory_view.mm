@@ -28,6 +28,26 @@ namespace {
 // should be shown.
 constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
+// The glass effect view height.
+constexpr CGFloat kGlassEffectViewHeight = 58;
+
+// Corner radius of the keyboard accessory on iOS 26.0+.
+constexpr CGFloat kCornerRadius = 24;
+
+// Alpha of the tint color for the glass effect. A lower alpha will produce a
+// more pronounced glass effect.
+constexpr CGFloat kGlassTintAlpha = 0.5;
+
+// Shadow parameters. Used when the liquid glass effect is enabled.
+constexpr CGFloat kShadowRadius = 16.0;
+constexpr CGFloat kShadowVerticalOffset = 4.0;
+constexpr CGFloat kShadowOpacity = 0.12;
+
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
+
 }  // namespace
 
 @interface OmniboxKeyboardAccessoryView () <SearchEngineObserving>
@@ -116,8 +136,47 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
   const CGFloat kButtonHeight = 36.0;
   const CGFloat kBetweenShortcutButtonSpacing = 5.0;
   const CGFloat kBetweenSearchButtonSpacing = 12.0;
-  const CGFloat kHorizontalMargin = 10.0;
-  const CGFloat kVerticalMargin = 4.0;
+  const CGFloat kSearchStackViewLeadingMargin =
+      GlassEffectEnabled() ? 22.0 : 10.0;
+  const CGFloat kShortcutStackViewTrailingMargin =
+      GlassEffectEnabled() ? 22.0 : 10.0;
+  const CGFloat kSearchStackViewTopMargin = 4.0;
+  const CGFloat kSearchStackViewBottomMargin =
+      GlassEffectEnabled() ? 16.0 : 4.0;
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    // Create glass effect
+    UIGlassEffect* glassEffect = [[UIGlassEffect alloc] init];
+    glassEffect.interactive = YES;
+    glassEffect.tintColor = [[UIColor colorNamed:kSecondaryBackgroundColor]
+        colorWithAlphaComponent:kGlassTintAlpha];
+    UIVisualEffectView* effectView =
+        [[UIVisualEffectView alloc] initWithEffect:glassEffect];
+    effectView.layer.shadowRadius = kShadowRadius;
+    effectView.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
+    effectView.layer.shadowOpacity = kShadowOpacity;
+    effectView.layer.shadowColor =
+        [UIColor colorNamed:kBackgroundShadowColor].CGColor;
+    effectView.layer.masksToBounds = NO;
+    effectView.cornerConfiguration = [UICornerConfiguration
+        configurationWithRadius:
+            [UICornerRadius
+                containerConcentricRadiusWithMinimum:kCornerRadius]];
+    effectView.translatesAutoresizingMaskIntoConstraints = NO;
+    [effectView.heightAnchor constraintEqualToConstant:kGlassEffectViewHeight]
+        .active = YES;
+
+    [self addSubview:effectView];
+
+    // Insets around the effectView to keep it floating above keyboard.
+    const NSDirectionalEdgeInsets effectViewInsets =
+        NSDirectionalEdgeInsetsMake(0, 12., 12., 12.);
+    AddSameConstraintsWithInsets(effectView, self.safeAreaLayoutGuide,
+                                 effectViewInsets);
+  }
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
 
   // Create and add stackview filled with the shortcut buttons.
   UIStackView* shortcutStackView = [[UIStackView alloc] init];
@@ -157,17 +216,18 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
   [NSLayoutConstraint activateConstraints:@[
     [searchStackView.leadingAnchor
         constraintEqualToAnchor:layoutGuide.leadingAnchor
-                       constant:kHorizontalMargin],
+                       constant:kSearchStackViewLeadingMargin],
     [shortcutStackView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor
-                       constant:-kHorizontalMargin],
+                       constant:-kShortcutStackViewTrailingMargin],
     [searchStackView.trailingAnchor
         constraintLessThanOrEqualToAnchor:shortcutStackView.leadingAnchor],
-    [searchStackView.topAnchor constraintEqualToAnchor:layoutGuide.topAnchor
-                                              constant:kVerticalMargin],
+    [searchStackView.topAnchor
+        constraintEqualToAnchor:layoutGuide.topAnchor
+                       constant:kSearchStackViewTopMargin],
     [searchStackView.bottomAnchor
         constraintEqualToAnchor:layoutGuide.bottomAnchor
-                       constant:-kVerticalMargin],
+                       constant:-kSearchStackViewBottomMargin],
     [shortcutStackView.topAnchor
         constraintEqualToAnchor:searchStackView.topAnchor],
     [shortcutStackView.bottomAnchor
