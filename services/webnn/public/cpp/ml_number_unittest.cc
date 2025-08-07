@@ -228,12 +228,12 @@ TEST(MLNumberTest, ComparedNegativeInfinityWithInt64Value) {
   EXPECT_FALSE(a.IsGreaterThan(b, OperandDataType::kInt64));
 }
 
-TEST(MLNumberTest, ComparedNANWithFloat32) {
+TEST(MLNumberTest, InitializedFromNAN) {
   MLNumber a = MLNumber::FromFloat64(NAN);
-  MLNumber b = MLNumber::FromFloat64(324);
-  EXPECT_FALSE(a.IsGreaterThan(b, OperandDataType::kFloat32));
-  EXPECT_TRUE(b.IsGreaterThan(a, OperandDataType::kFloat32));
-  EXPECT_EQ(a.AsFloat32(), 0);
+  EXPECT_TRUE(a.IsNaN());
+  EXPECT_TRUE(std::isnan(a.AsFloat64()));
+  EXPECT_EQ(a.AsUint64(), 0ULL);
+  EXPECT_EQ(a.AsInt64(), 0LL);
 }
 
 }  // namespace webnn

@@ -506,7 +506,7 @@ TEST_F(WebNNGraphImplTest, ClampTest) {
         .input = {.type = OperandDataType::kInt32, .dimensions = {2, 3, 4}},
         .attributes = {.min_value = NAN, .max_value = 3.0},
         .output = {.type = OperandDataType::kInt32, .dimensions = {2, 3, 4}},
-        .expected = true}
+        .expected = false}
         .Test(*this);
   }
   {
@@ -515,7 +515,7 @@ TEST_F(WebNNGraphImplTest, ClampTest) {
         .input = {.type = OperandDataType::kInt32, .dimensions = {2, 3, 4}},
         .attributes = {.min_value = -3.0, .max_value = NAN},
         .output = {.type = OperandDataType::kInt32, .dimensions = {2, 3, 4}},
-        .expected = true}
+        .expected = false}
         .Test(*this);
   }
   {

@@ -49,7 +49,6 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) MLNumber {
   uint16_t AsFloat16() const;
   float AsFloat32() const;
   double AsFloat64() const;
-
   int8_t AsInt8() const;
   uint8_t AsUint8() const;
   int32_t AsInt32() const;
@@ -58,6 +57,7 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) MLNumber {
   uint64_t AsUint64() const;
 
   BaseType GetBaseType() const;
+  bool IsNaN() const;
 
  private:
   explicit MLNumber(double number);

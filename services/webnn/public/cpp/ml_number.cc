@@ -33,7 +33,7 @@ constexpr T CastTo(const std::variant<double, int64_t, uint64_t>& number) {
 
 // static
 MLNumber MLNumber::FromFloat64(double number) {
-  return isnan(number) ? MLNumber(0.0) : MLNumber(number);
+  return MLNumber(number);
 }
 
 // static
@@ -149,6 +149,10 @@ MLNumber::BaseType MLNumber::GetBaseType() const {
           [](const int64_t& _) { return BaseType::kSignedInteger; },
           [](const uint64_t& _) { return BaseType::kUnsignedInteger; }},
       number_);
+}
+
+bool MLNumber::IsNaN() const {
+  return std::isnan(AsFloat64());
 }
 
 }  // namespace webnn

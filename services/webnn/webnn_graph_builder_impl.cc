@@ -105,8 +105,12 @@ webnn::PaddingMode MojoPaddingModeToComponent(const mojom::PaddingMode& mode) {
   }
 }
 
-inline bool ValidateClampAttributes(const mojom::Clamp& clamp,
-                                    webnn::OperandDataType data_type) {
+bool ValidateClampAttributes(const mojom::Clamp& clamp,
+                             webnn::OperandDataType data_type) {
+  if (clamp.min_value.IsNaN() || clamp.max_value.IsNaN()) {
+    return false;
+  }
+
   return !clamp.min_value.IsGreaterThan(clamp.max_value, data_type);
 }
 

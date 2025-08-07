@@ -1876,7 +1876,18 @@ MLOperand* MLGraphBuilder::clamp(MLOperand* input,
     return nullptr;
   }
 
-  if (min_value->IsGreaterThan(*max_value, input->DataType())) {
+  // The behavior on different backends and hardware is inconsistent when NaN is
+  // used for min_value or max_value. So we normalize it with minValue:NaN
+  // coerced to -Infinity and maxValue:NaN coerced to Infinity.
+  // This is being discussed in WG:
+  // https://github.com/webmachinelearning/webnn/issues/874
+  webnn::MLNumber coerced_min_value = min_value->IsNaN()
+                                          ? webnn::MLNumber::NegativeInfinity()
+                                          : std::move(*min_value);
+  webnn::MLNumber coerced_max_value =
+      max_value->IsNaN() ? webnn::MLNumber::Infinity() : std::move(*max_value);
+
+  if (coerced_min_value.IsGreaterThan(coerced_max_value, input->DataType())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
         "The min value should be less than or equal to "
@@ -1885,7 +1896,8 @@ MLOperand* MLGraphBuilder::clamp(MLOperand* input,
   }
 
   auto* clamp = MakeGarbageCollected<MLClampOperator>(
-      this, options->label(), std::move(*min_value), std::move(*max_value));
+      this, options->label(), std::move(coerced_min_value),
+      std::move(coerced_max_value));
   MLOperand* output = MLOperand::CreateOutput(this, input->Descriptor(), clamp);
 
   clamp->Connect({input}, {output});
