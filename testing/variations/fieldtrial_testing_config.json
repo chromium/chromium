@@ -20970,6 +20970,33 @@
             ]
         }
     ],
+    "SafetyHubDisruptiveNotificationRevocationDesktop": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Moderate_v1",
+                    "params": {
+                        "experiment_version": "1",
+                        "max_engagement_score": "0.0",
+                        "min_engagement_score_delta": "3.0",
+                        "min_notification_count": "4",
+                        "shadow_run": "false",
+                        "waiting_for_metrics_days": "1",
+                        "waiting_time_as_proposed": "1d"
+                    },
+                    "enable_features": [
+                        "SafetyHubDisruptiveNotificationRevocation"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafetyHubOneOffHats": [
         {
             "platforms": [

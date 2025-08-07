@@ -70,8 +70,12 @@ class AppMenuBrowserTest : public UiBrowserTest {
  public:
   AppMenuBrowserTest() {
     // Disable the comparison tables submenu.
-    scoped_feature_list_.InitAndDisableFeature(
-        commerce::kProductSpecifications);
+    // TODO(crbug.com/429347589): Clean up and update test to work by triggering
+    // disruptive notification revocation (or other SH feature).
+    scoped_feature_list_.InitWithFeatures(
+        {}, /*disabled_features=*/{
+            features::kSafetyHubDisruptiveNotificationRevocation,
+            commerce::kProductSpecifications});
   }
 
   // UiBrowserTest:

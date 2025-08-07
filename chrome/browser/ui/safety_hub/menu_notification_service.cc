@@ -64,8 +64,6 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
   pref_dict_key_map_ = {
       {safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
        "unused-site-permissions"},
-      {safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
-       "notification-permissions"},
       {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe-browsing"},
   };
 
@@ -80,13 +78,20 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
       base::BindRepeating(&SafetyHubService::GetCachedResult,
                           base::Unretained(revoked_permissions_service)),
       stored_notifications);
-  SetInfoElement(
-      safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
-      MenuNotificationPriority::LOW,
-      features::kNotificationPermissionsNotificationInterval.Get(),
-      base::BindRepeating(&SafetyHubService::GetCachedResult,
-                          base::Unretained(notification_permissions_service)),
-      stored_notifications);
+  if (!base::FeatureList::IsEnabled(
+          features::kSafetyHubDisruptiveNotificationRevocation) ||
+      features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get()) {
+    pref_dict_key_map_
+        [safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS] =
+            "notification-permissions";
+    SetInfoElement(
+        safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
+        MenuNotificationPriority::LOW,
+        features::kNotificationPermissionsNotificationInterval.Get(),
+        base::BindRepeating(&SafetyHubService::GetCachedResult,
+                            base::Unretained(notification_permissions_service)),
+        stored_notifications);
+  }
   SetInfoElement(safety_hub::SafetyHubModuleType::SAFE_BROWSING,
                  MenuNotificationPriority::MEDIUM,
                  features::kSafeBrowsingNotificationInterval.Get(),
