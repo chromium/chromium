@@ -1022,7 +1022,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public final void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
+    public void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
         try {
             TraceEvent.begin("Tab.show");
             if (!isHidden()) return;
@@ -1033,6 +1033,9 @@ class TabImpl implements Tab {
 
             loadIfNeeded(caller);
 
+            if (mNativeTabAndroid == 0) {
+                throw new IllegalStateException("TabImpl's native pointer is 0 when showing.");
+            }
             // TODO(crbug.com/40199376): We should provide a timestamp that apporoximates the input
             // event timestamp. When presenting a Tablet UI, StripLayoutTab.handleClick does
             // receive a timestamp. When presenting a Phone UI

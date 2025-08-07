@@ -118,6 +118,11 @@ public class MockTab extends TabImpl {
         return mIsDestroyed;
     }
 
+    @Override
+    public void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
+        // Intentionally do nothing.
+    }
+
     public void setIsInitialized(boolean isInitialized) {
         mIsInitialized = isInitialized;
     }
