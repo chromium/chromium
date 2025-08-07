@@ -16,8 +16,6 @@
 #include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "device/vr/android/local_texture.h"
-#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
-#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -150,31 +148,6 @@ struct WebXrFrame {
   std::unique_ptr<viz::BeginFrameArgs> begin_frame_args;
 
   std::vector<gpu::SyncToken> reclaimed_sync_tokens;
-
-  // Tracking states for browser overlay UI:
-  // These values are currently set to defaults such that callers who do not use
-  // overlays can still function as normal without setting any of these values.
-
-  // This tracks whether or not we are expecting a submit to come in from either
-  // the page or the browser overlay. Used by the state machine to block the
-  // advance from animating to processing until all expected sources have
-  // submitted frames.
-  bool waiting_for_webxr = false;
-  bool waiting_for_overlay = false;
-
-  // This tracks whether the page or overlay have actually submitted content
-  // that needs to be rendered. Needs to be separated from any actual image in
-  // the case that a missing frame is submitted.
-  bool webxr_submitted = true;
-  bool overlay_submitted = false;
-
-  // A store of frame data. This is used to avoid computing it twice if the data
-  // needs to be sent to both the page and the compositor. Note that the
-  // frame_data cannot be cloned and so must be consumed upon sending it to the
-  // page; however, this will largely match the behavior before this was
-  // possible.
-  mojom::XRFrameDataPtr frame_data = nullptr;
-  mojom::XRRenderInfoPtr render_info = nullptr;
   // End of elements that need to be reset on Recycle
 
   base::TimeTicks time_pose;
@@ -187,10 +160,6 @@ struct WebXrFrame {
 
   std::unique_ptr<WebXrSharedBuffer> camera_image_shared_buffer;
 
-  gpu::SyncToken webxr_sync_token;
-
-  gfx::GpuMemoryBufferHandle overlay_handle;
-
   // Viewport bounds used for rendering, in texture coordinates with uv=(0, 1)
   // corresponding to viewport pixel (0, 0) as set by UpdateLayerBounds.
   //
@@ -198,10 +167,6 @@ struct WebXrFrame {
   // Cardboard makes use of both.
   gfx::RectF bounds_left;
   gfx::RectF bounds_right;
-
-  // Viewport bounds for overlay, in texture coordinates.
-  gfx::RectF overlay_bounds_left;
-  gfx::RectF overlay_bounds_right;
 };
 
 class WebXrPresentationState {

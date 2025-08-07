@@ -36,8 +36,7 @@ using CardboardRequestSessionCallback =
 class CardboardRenderLoop : public base::android::JavaHandlerThread,
                             public device::mojom::XRFrameDataProvider,
                             public device::mojom::XRSessionController,
-                            public device::mojom::XRPresentationProvider,
-                            public mojom::ImmersiveOverlay {
+                            public device::mojom::XRPresentationProvider {
  public:
   CardboardRenderLoop(std::unique_ptr<CardboardImageTransportFactory>
                           cardboard_image_transport_factory,
@@ -54,8 +53,6 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
                      const gfx::Size& frame_size,
                      display::Display::Rotation display_rotation,
                      mojom::XRRuntimeSessionOptionsPtr options);
-
-  void RequestOverlay(mojo::PendingReceiver<mojom::ImmersiveOverlay> receiver);
 
   // mojom::XRFrameDataProvider
   void GetFrameData(mojom::XRFrameDataRequestOptionsPtr options,
@@ -103,33 +100,19 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
 
   bool IsSubmitFrameExpected(int16_t frame_index);
 
-  void ProcessFrameDrawnIntoTexture();
+  void ProcessFrameFromMailbox(int16_t frame_index,
+                               const gpu::MailboxHolder& mailbox);
+  void ProcessFrameDrawnIntoTexture(const gpu::SyncToken& sync_token);
   void OnWebXrTokenSignaled(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
-  void StartNewAnimatingFrame();
   void TransitionProcessingFrameToRendering();
   void ClearRenderingFrame(WebXrFrame* frame);
-  void RenderFrame();
+  void RenderFrame(const gfx::Transform& uv_transform);
   void FinishFrame(int16_t frame_index);
   void FinishRenderingFrame(WebXrFrame* frame = nullptr);
-  void MaybeStartNextFrame();
-  void PrepareAnimatingFrameForContent();
 
   void Pause();
   void Resume();
-
-  // ImmersiveOverlay:
-  void SubmitOverlayTexture(int16_t frame_id,
-                            gfx::GpuMemoryBufferHandle texture,
-                            const gpu::SyncToken& sync_token,
-                            const gfx::RectF& left_bounds,
-                            const gfx::RectF& right_bounds,
-                            SubmitOverlayTextureCallback callback) override;
-  void RequestNextOverlayPose(RequestNextOverlayPoseCallback callback) override;
-  void SetOverlayAndWebXRVisibility(bool overlay_visible,
-                                    bool webxr_visible) override;
-  void RequestNotificationOnWebXrSubmitted(
-      RequestNotificationOnWebXrSubmittedCallback callback) override;
 
   // These are only alive until CreateSession is called
   std::unique_ptr<CardboardImageTransportFactory>
@@ -147,8 +130,6 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   scoped_refptr<gl::GLContext> context_;
   gfx::RectF left_bounds_;
   gfx::RectF right_bounds_;
-  bool webxr_visible_ = true;  // The browser may hide a presenting session.
-  bool overlay_visible_ = false;
 
   // Input Parameters
   bool trigger_pressed_ = false;
@@ -156,12 +137,6 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
 
   // Owned by our parent (cardboard_device)
   raw_ptr<CardboardSdk> cardboard_sdk_;
-
-  // Overlay data
-  SubmitOverlayTextureCallback overlay_submit_callback_;
-  RequestNotificationOnWebXrSubmittedCallback on_webxr_submitted_;
-  mojo::Receiver<mojom::ImmersiveOverlay> overlay_receiver_{this};
-  base::OnceClosure pending_request_overlay_pose_;
 
   // Session Controllers
   mojo::Receiver<mojom::XRFrameDataProvider> frame_data_receiver_{this};

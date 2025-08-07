@@ -34,6 +34,20 @@ namespace {
 // as used for estimating prediction times.
 constexpr unsigned kSlidingAverageSize = 5;
 
+device::mojom::XRRenderInfoPtr GetRenderInfo(
+    const device::mojom::XRFrameData& frame_data) {
+  device::mojom::XRRenderInfoPtr result = device::mojom::XRRenderInfo::New();
+
+  result->frame_id = frame_data.render_info->frame_id;
+  result->mojo_from_viewer = frame_data.render_info->mojo_from_viewer.Clone();
+
+  for (size_t i = 0; i < frame_data.render_info->views.size(); i++) {
+    result->views.push_back(frame_data.render_info->views[i]->Clone());
+  }
+
+  return result;
+}
+
 }  // namespace
 
 namespace device {
@@ -307,8 +321,7 @@ void OpenXrRenderLoop::StartPendingFrame() {
     pending_frame_->frame_data_ = GetNextFrameData();
     // GetNextFrameData() should never return null:
     DCHECK(pending_frame_->frame_data_);
-    pending_frame_->render_info_ =
-        pending_frame_->frame_data_->render_info.Clone();
+    pending_frame_->render_info_ = GetRenderInfo(*pending_frame_->frame_data_);
   }
 }
 
