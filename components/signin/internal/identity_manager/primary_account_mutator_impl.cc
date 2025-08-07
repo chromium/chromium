@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"

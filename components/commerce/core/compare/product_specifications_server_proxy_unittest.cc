@@ -18,6 +18,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"

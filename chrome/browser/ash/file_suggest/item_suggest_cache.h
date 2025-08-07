@@ -16,6 +16,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "url/gurl.h"
 
 class Profile;
 

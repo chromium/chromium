@@ -17,6 +17,8 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
+#include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace base {
 class TimeDelta;
@@ -37,7 +39,6 @@ enum class Channel;
 }
 
 class GoogleServiceAuthError;
-class GURL;
 
 namespace endpoint_fetcher {
 

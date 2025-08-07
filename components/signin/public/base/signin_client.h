@@ -16,17 +16,21 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace signin {
 class BoundSessionOAuthMultiLoginDelegate;
 }
 
+class GaiaAuthConsumer;
+class GaiaAuthFetcher;
 class PrefService;
 
 namespace content_settings {
 class Observer;
+}
+
+namespace gaia {
+class GaiaSource;
 }
 
 namespace network {

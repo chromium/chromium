@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

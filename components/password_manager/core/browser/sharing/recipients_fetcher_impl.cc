@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

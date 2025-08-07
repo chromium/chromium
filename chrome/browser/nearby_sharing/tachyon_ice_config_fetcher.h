@@ -19,6 +19,7 @@
 
 namespace network {
 class SharedURLLoaderFactory;
+class SimpleURLLoader;
 }  // namespace network
 
 // Fetches a list of ICE servers using the Tachyon API. The lifetime of this

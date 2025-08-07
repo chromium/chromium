@@ -16,9 +16,7 @@
 #include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace base {
 class GURL;
-}  // namespace base
 
 namespace network {
 class SimpleURLLoader;

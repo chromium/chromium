@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
+#import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"

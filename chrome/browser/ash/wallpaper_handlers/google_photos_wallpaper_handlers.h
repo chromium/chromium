@@ -18,13 +18,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 class Profile;
 
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
 
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;

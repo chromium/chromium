@@ -31,6 +31,10 @@
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
+
 namespace screen_ai {
 class OpticalCharacterRecognizer;
 }  // namespace screen_ai
