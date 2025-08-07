@@ -60,24 +60,41 @@ void WriteToFile(const base::FilePath& path,
                  bool is_base64) {
   DCHECK(!path.empty());
 
-  if (!is_base64) {
-    base::WriteFile(path, content);
+  std::optional<std::vector<uint8_t>> decoded_content;
+  if (is_base64) {
+    decoded_content = base::Base64Decode(content);
+    if (!decoded_content) {
+      LOG(ERROR) << "Invalid base64. Not writing " << path;
+      return;
+    }
+  }
+  base::span<const uint8_t> content_span =
+      decoded_content ? *decoded_content : base::as_byte_span(content);
+
+  base::File file(path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    LOG(ERROR) << "Failed to open file: " << path.value();
     return;
   }
-
-  const std::optional<std::vector<uint8_t>> decoded_content =
-      base::Base64Decode(content);
-  if (decoded_content) {
-    base::WriteFile(path, decoded_content.value());
-  } else {
-    LOG(ERROR) << "Invalid base64. Not writing " << path;
+  if (!file.WriteAndCheck(0, content_span)) {
+    LOG(ERROR) << "Failed to write: " << path.value();
+    return;
   }
 }
 
 void AppendToFile(const base::FilePath& path, const std::string& content) {
   DCHECK(!path.empty());
 
-  base::AppendToFile(path, content);
+  base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
+  if (!file.IsValid()) {
+    LOG(ERROR) << "Failed to open file: " << path.value();
+    return;
+  }
+  if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(content))) {
+    LOG(ERROR) << "Failed to append: " << path.value();
+    return;
+  }
 }
 
 }  // namespace
@@ -184,9 +201,9 @@ void DevToolsFileHelper::Append(const std::string& url,
   if (it == saved_files_.end()) {
     return;
   }
-  std::move(callback).Run();
-  file_task_runner_->PostTask(FROM_HERE,
-                              BindOnce(&AppendToFile, it->second, content));
+  file_task_runner_->PostTaskAndReply(
+      FROM_HERE, BindOnce(&AppendToFile, it->second, content),
+      std::move(callback));
 }
 
 void DevToolsFileHelper::SaveToFileSelected(const std::string& url,
