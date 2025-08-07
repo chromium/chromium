@@ -572,6 +572,11 @@ UIButton* CreateAutofillFormButton() {
   buttonConfiguration.contentInsets =
       NSDirectionalEdgeInsetsMake(kAutofillFormButtonVerticalInsets, 0,
                                   kAutofillFormButtonVerticalInsets, 0);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  }
+#endif
   button.configuration = buttonConfiguration;
 
   [button.heightAnchor
