@@ -27,26 +27,26 @@ import {
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
-import type {MapperOptionsStorage} from '../../MapperOptions.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import type {ContextConfigStorage} from './ContextConfigStorage.js';
 import type {UserContextStorage} from './UserContextStorage.js';
 
 export class BrowserProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #configStorage: ContextConfigStorage;
   readonly #userContextStorage: UserContextStorage;
-  readonly #mapperOptionsStorage: MapperOptionsStorage;
 
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
-    mapperOptionsStorage: MapperOptionsStorage,
+    configStorage: ContextConfigStorage,
     userContextStorage: UserContextStorage,
   ) {
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#mapperOptionsStorage = mapperOptionsStorage;
+    this.#configStorage = configStorage;
     this.#userContextStorage = userContextStorage;
   }
 
@@ -69,9 +69,13 @@ export class BrowserProcessor {
     const w3cParams = params as Browser.CreateUserContextParameters;
 
     if (w3cParams.acceptInsecureCerts !== undefined) {
+      const globalConfig = this.#configStorage.getActiveConfig(
+        undefined,
+        undefined,
+      );
       if (
         w3cParams.acceptInsecureCerts === false &&
-        this.#mapperOptionsStorage.mapperOptions?.acceptInsecureCerts === true
+        globalConfig.acceptInsecureCerts === true
       )
         // TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3398
         throw new UnknownErrorException(
@@ -106,13 +110,10 @@ export class BrowserProcessor {
       request,
     );
 
-    this.#userContextStorage.getConfig(
-      context.browserContextId,
-    ).acceptInsecureCerts = params['acceptInsecureCerts'];
-
-    this.#userContextStorage.getConfig(
-      context.browserContextId,
-    ).userPromptHandler = params['unhandledPromptBehavior'];
+    this.#configStorage.updateUserContextConfig(context.browserContextId, {
+      acceptInsecureCerts: params['acceptInsecureCerts'],
+      userPromptHandler: params['unhandledPromptBehavior'],
+    });
 
     return {
       userContext: context.browserContextId,

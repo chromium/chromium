@@ -26,8 +26,9 @@ import type {Result} from '../utils/result.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
-import {type MapperOptions, MapperOptionsStorage} from './MapperOptions.js';
+import type {MapperOptions} from './MapperOptions.js';
 import {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
+import {ContextConfigStorage} from './modules/browser/ContextConfigStorage.js';
 import {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpTargetManager} from './modules/cdp/CdpTargetManager.js';
 import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
@@ -90,6 +91,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
+    const contextConfigStorage = new ContextConfigStorage();
     const userContextStorage = new UserContextStorage(browserCdpClient);
     this.#eventManager = new EventManager(
       this.#browsingContextStorage,
@@ -101,7 +103,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       browserCdpClient,
       logger,
     );
-    const mapperOptionsStorage = new MapperOptionsStorage();
     this.#bluetoothProcessor = new BluetoothProcessor(
       this.#eventManager,
       this.#browsingContextStorage,
@@ -114,12 +115,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#realmStorage,
       this.#preloadScriptStorage,
       networkStorage,
-      mapperOptionsStorage,
+      contextConfigStorage,
       this.#bluetoothProcessor,
       userContextStorage,
       parser,
       async (options: MapperOptions) => {
-        mapperOptionsStorage.mapperOptions = options;
         // This is required to ignore certificate errors when service worker is fetched.
         await browserCdpClient.sendCommand(
           'Security.setIgnoreCertificateErrors',
@@ -127,20 +127,23 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
             ignore: options.acceptInsecureCerts ?? false,
           },
         );
+        contextConfigStorage.updateGlobalConfig({
+          acceptInsecureCerts: options.acceptInsecureCerts ?? false,
+          userPromptHandler: options.unhandledPromptBehavior,
+          prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,
+        });
         new CdpTargetManager(
           cdpConnection,
           browserCdpClient,
           selfTargetId,
           this.#eventManager,
           this.#browsingContextStorage,
-          userContextStorage,
           this.#realmStorage,
           networkStorage,
+          contextConfigStorage,
           this.#bluetoothProcessor,
           this.#preloadScriptStorage,
           defaultUserContextId,
-          options?.['goog:prerenderingDisabled'] ?? false,
-          options?.unhandledPromptBehavior,
           logger,
         );
 

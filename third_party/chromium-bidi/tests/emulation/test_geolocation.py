@@ -233,9 +233,6 @@ async def test_geolocation_iframe(websocket, context_id, iframe_id,
     iframe_geolocation = await get_geolocation(websocket, iframe_id)
     assert iframe_geolocation == emulated_geolocation
 
-    pytest.xfail(
-        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3532")
-
     # Move iframe out of process.
     await goto_url(websocket, iframe_id, url_example_another_origin)
     await set_permission(websocket, get_origin(url_example_another_origin),

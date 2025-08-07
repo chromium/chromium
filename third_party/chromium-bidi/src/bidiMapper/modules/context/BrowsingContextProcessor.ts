@@ -26,6 +26,8 @@ import {
   NoSuchAlertException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
+import type {ContextConfig} from '../browser/ContextConfig.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -35,6 +37,7 @@ import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #contextConfigStorage: ContextConfigStorage;
   readonly #eventManager: EventManager;
   readonly #userContextStorage: UserContextStorage;
 
@@ -42,8 +45,10 @@ export class BrowsingContextProcessor {
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
     userContextStorage: UserContextStorage,
+    contextConfigStorage: ContextConfigStorage,
     eventManager: EventManager,
   ) {
+    this.#contextConfigStorage = contextConfigStorage;
     this.#userContextStorage = userContextStorage;
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
@@ -200,6 +205,15 @@ export class BrowsingContextProcessor {
   async setViewport(
     params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
+    const config: ContextConfig = {};
+    // `undefined` means no changes should be done to the config.
+    if (params.devicePixelRatio !== undefined) {
+      config.devicePixelRatio = params.devicePixelRatio;
+    }
+    if (params.viewport !== undefined) {
+      config.viewport = params.viewport;
+    }
+
     const impactedTopLevelContexts =
       await this.#getRelatedTopLevelBrowsingContexts(
         params.context,
@@ -207,16 +221,14 @@ export class BrowsingContextProcessor {
       );
 
     for (const userContextId of params.userContexts ?? []) {
-      const userContextConfig =
-        this.#userContextStorage.getConfig(userContextId);
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, config);
+    }
 
-      // `undefined` means not changes should be done to the config.
-      if (params.devicePixelRatio !== undefined) {
-        userContextConfig.devicePixelRatio = params.devicePixelRatio;
-      }
-      if (params.viewport !== undefined) {
-        userContextConfig.viewport = params.viewport;
-      }
+    if (params.context !== undefined) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        params.context,
+        config,
+      );
     }
 
     await Promise.all(

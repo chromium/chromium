@@ -174,9 +174,6 @@ async def test_locale_iframe(websocket, context_id, iframe_id, html,
 
     assert await get_locale(websocket, iframe_id) == some_locale
 
-    pytest.xfail(
-        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3532")
-
     # Move iframe out of process
     await goto_url(websocket, iframe_id,
                    html("<h1>FRAME</h1>", same_origin=False))

@@ -23,7 +23,3 @@ export interface MapperOptions {
   unhandledPromptBehavior?: Session.UserPromptHandler;
   'goog:prerenderingDisabled'?: boolean;
 }
-
-export class MapperOptionsStorage {
-  mapperOptions?: MapperOptions;
-}

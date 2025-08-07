@@ -26,6 +26,7 @@ exec(
       return (
         file !== 'node_modules' &&
         // Required for in IntelliJ.
+        file !== '.idea' &&
         !file.endsWith('.iml')
       );
     })

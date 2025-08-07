@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 import {
   BrowsingContext,
   ChromiumBidi,
+  type Emulation,
   InvalidArgumentException,
   InvalidSelectorException,
   NoSuchElementException,
@@ -37,7 +38,7 @@ import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {UserContextConfig} from '../browser/UserContextConfig.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -85,9 +86,7 @@ export class BrowsingContextImpl {
   readonly #logger?: LoggerFn;
   readonly #navigationTracker: NavigationTracker;
   readonly #realmStorage: RealmStorage;
-  // The deferred will be resolved when the default realm is created.
-  readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
-  readonly #userContextConfig: UserContextConfig;
+  readonly #configStorage: ContextConfigStorage;
 
   // Set when the user prompt is opened. Required to provide the type in closing event.
   #lastUserPromptType?: BrowsingContext.UserPromptType;
@@ -96,17 +95,15 @@ export class BrowsingContextImpl {
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
     userContext: string,
-    userContextConfig: UserContextConfig,
     cdpTarget: CdpTarget,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    configStorage: ContextConfigStorage,
     url: string,
     originalOpener?: string,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
-    this.#userContextConfig = userContextConfig;
     this.#cdpTarget = cdpTarget;
     this.#id = id;
     this.#parentId = parentId;
@@ -114,7 +111,7 @@ export class BrowsingContextImpl {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
-    this.#unhandledPromptBehavior = unhandledPromptBehavior;
+    this.#configStorage = configStorage;
     this.#logger = logger;
     this.#originalOpener = originalOpener;
 
@@ -133,28 +130,26 @@ export class BrowsingContextImpl {
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
     userContext: string,
-    userContextConfig: UserContextConfig,
     cdpTarget: CdpTarget,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    configStorage: ContextConfigStorage,
     url: string,
     originalOpener?: string,
-    unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
       id,
       parentId,
       userContext,
-      userContextConfig,
       cdpTarget,
       eventManager,
       browsingContextStorage,
       realmStorage,
+      configStorage,
       url,
       originalOpener,
-      unhandledPromptBehavior,
       logger,
     );
 
@@ -903,22 +898,22 @@ export class BrowsingContextImpl {
     promptType: BrowsingContext.UserPromptType,
   ): Session.UserPromptHandlerType {
     const defaultPromptHandler = Session.UserPromptHandlerType.Dismiss;
+    const contextConfig = this.#configStorage.getActiveConfig(
+      this.top.id,
+      this.userContext,
+    );
 
     switch (promptType) {
       case BrowsingContext.UserPromptType.Alert:
         return (
-          this.#userContextConfig.userPromptHandler?.alert ??
-          this.#userContextConfig.userPromptHandler?.default ??
-          this.#unhandledPromptBehavior?.alert ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.alert ??
+          contextConfig.userPromptHandler?.default ??
           defaultPromptHandler
         );
       case BrowsingContext.UserPromptType.Beforeunload:
         return (
-          this.#userContextConfig.userPromptHandler?.beforeUnload ??
-          this.#userContextConfig.userPromptHandler?.default ??
-          this.#unhandledPromptBehavior?.beforeUnload ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.beforeUnload ??
+          contextConfig.userPromptHandler?.default ??
           // In WebDriver Classic spec, `beforeUnload` prompt should be accepted by
           // default. Step 4 of "Get the prompt handler" algorithm
           // (https://w3c.github.io/webdriver/#dfn-get-the-prompt-handler):
@@ -928,18 +923,14 @@ export class BrowsingContextImpl {
         );
       case BrowsingContext.UserPromptType.Confirm:
         return (
-          this.#userContextConfig.userPromptHandler?.confirm ??
-          this.#userContextConfig.userPromptHandler?.default ??
-          this.#unhandledPromptBehavior?.confirm ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.confirm ??
+          contextConfig.userPromptHandler?.default ??
           defaultPromptHandler
         );
       case BrowsingContext.UserPromptType.Prompt:
         return (
-          this.#userContextConfig.userPromptHandler?.prompt ??
-          this.#userContextConfig.userPromptHandler?.default ??
-          this.#unhandledPromptBehavior?.prompt ??
-          this.#unhandledPromptBehavior?.default ??
+          contextConfig.userPromptHandler?.prompt ??
+          contextConfig.userPromptHandler?.default ??
           defaultPromptHandler
         );
     }
@@ -1896,6 +1887,47 @@ export class BrowsingContextImpl {
     );
 
     return {nodes};
+  }
+
+  #getAllRelatedCdpTargets() {
+    const targets = new Set<CdpTarget>();
+    targets.add(this.cdpTarget);
+    this.allChildren.forEach((c) => targets.add(c.cdpTarget));
+    return Array.from(targets);
+  }
+
+  async setTimezoneOverride(timezone: string | null): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setTimezoneOverride(timezone),
+      ),
+    );
+  }
+  async setLocaleOverride(locale: string | null): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setLocaleOverride(locale),
+      ),
+    );
+  }
+
+  async setGeolocationOverride(
+    geolocation:
+      | Emulation.GeolocationCoordinates
+      | Emulation.GeolocationPositionError
+      | null,
+  ): Promise<void> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setGeolocationOverride(geolocation),
+      ),
+    );
+  }
+  async setScreenOrientationOverride(
+    screenOrientation: Emulation.ScreenOrientation | null,
+  ): Promise<void> {
+    await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
   }
 }
 

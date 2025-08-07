@@ -20,6 +20,7 @@ import type {
   EmptyResult,
   Emulation,
 } from '../../../protocol/generated/webdriver-bidi.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -27,13 +28,16 @@ import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js'
 export class EmulationProcessor {
   #userContextStorage: UserContextStorage;
   #browsingContextStorage: BrowsingContextStorage;
+  #contextConfigStorage: ContextConfigStorage;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     userContextStorage: UserContextStorage,
+    contextConfigStorage: ContextConfigStorage,
   ) {
     this.#userContextStorage = userContextStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#contextConfigStorage = contextConfigStorage;
   }
 
   async setGeolocationOverride(
@@ -80,16 +84,23 @@ export class EmulationProcessor {
       params.userContexts,
     );
 
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          geolocation,
+        },
+      );
+    }
     for (const userContextId of params.userContexts ?? []) {
-      const userContextConfig =
-        this.#userContextStorage.getConfig(userContextId);
-      userContextConfig.geolocation = geolocation;
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        geolocation,
+      });
     }
 
     await Promise.all(
       browsingContexts.map(
-        async (context) =>
-          await context.cdpTarget.setGeolocationOverride(geolocation),
+        async (context) => await context.setGeolocationOverride(geolocation),
       ),
     );
     return {};
@@ -109,15 +120,23 @@ export class EmulationProcessor {
       params.userContexts,
     );
 
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          locale,
+        },
+      );
+    }
     for (const userContextId of params.userContexts ?? []) {
-      const userContextConfig =
-        this.#userContextStorage.getConfig(userContextId);
-      userContextConfig.locale = locale;
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        locale,
+      });
     }
 
     await Promise.all(
       browsingContexts.map(
-        async (context) => await context.cdpTarget.setLocaleOverride(locale),
+        async (context) => await context.setLocaleOverride(locale),
       ),
     );
     return {};
@@ -131,18 +150,24 @@ export class EmulationProcessor {
       params.userContexts,
     );
 
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          screenOrientation: params.screenOrientation,
+        },
+      );
+    }
     for (const userContextId of params.userContexts ?? []) {
-      const userContextConfig =
-        this.#userContextStorage.getConfig(userContextId);
-      userContextConfig.screenOrientation = params.screenOrientation;
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        screenOrientation: params.screenOrientation,
+      });
     }
 
     await Promise.all(
       browsingContexts.map(
         async (context) =>
-          await context.cdpTarget.setScreenOrientationOverride(
-            params.screenOrientation,
-          ),
+          await context.setScreenOrientationOverride(params.screenOrientation),
       ),
     );
     return {};
@@ -227,16 +252,23 @@ export class EmulationProcessor {
       params.userContexts,
     );
 
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          timezone,
+        },
+      );
+    }
     for (const userContextId of params.userContexts ?? []) {
-      const userContextConfig =
-        this.#userContextStorage.getConfig(userContextId);
-      userContextConfig.timezone = timezone;
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        timezone,
+      });
     }
 
     await Promise.all(
       browsingContexts.map(
-        async (context) =>
-          await context.cdpTarget.setTimezoneOverride(timezone),
+        async (context) => await context.setTimezoneOverride(timezone),
       ),
     );
     return {};
