@@ -301,8 +301,9 @@ InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() {
 }
 
 void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "fledge", "reporting_phase", top_level_seller_winning_bid_info_.trace_id);
+  TRACE_EVENT_BEGIN(
+      "fledge", "reporting_phase",
+      perfetto::Track(top_level_seller_winning_bid_info_.trace_id));
 
   DCHECK(!callback_);
 
@@ -538,8 +539,8 @@ void InterestGroupAuctionReporter::OnSellerWorkletFatalError(
 void InterestGroupAuctionReporter::OnSellerWorkletReceived(
     const SellerWinningBidInfo* seller_info,
     const std::optional<std::string>& top_seller_signals) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "seller_worklet_report_result",
-                                    seller_info->trace_id);
+  TRACE_EVENT_BEGIN("fledge", "seller_worklet_report_result",
+                    perfetto::Track(seller_info->trace_id));
 
   auction_worklet::mojom::ComponentAuctionOtherSellerPtr other_seller;
   auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
@@ -654,8 +655,8 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     PrivateAggregationRequests pa_requests,
     auction_worklet::mojom::SellerTimingMetricsPtr timing_metrics,
     const std::vector<std::string>& errors) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_report_result",
-                                  seller_info->trace_id);
+  // End "seller_worklet_report_result" trace event.
+  TRACE_EVENT_END("fledge", perfetto::Track(seller_info->trace_id));
   seller_worklet_handle_.reset();
 
   log_private_aggregation_requests_callback_.Run(pa_requests);
@@ -824,9 +825,9 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
 
 void InterestGroupAuctionReporter::OnBidderWorkletReceived(
     const std::string& signals_for_winner) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+  TRACE_EVENT_BEGIN(
       "fledge", "bidder_worklet_report_win",
-      top_level_seller_winning_bid_info_.trace_id);
+      perfetto::Track(top_level_seller_winning_bid_info_.trace_id));
 
   const SellerWinningBidInfo& seller_info = GetBidderAuction();
   const blink::AuctionConfig* auction_config = seller_info.auction_config;
@@ -973,8 +974,9 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     auction_worklet::mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
     auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
     const std::vector<std::string>& errors) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_report_win",
-                                  top_level_seller_winning_bid_info_.trace_id);
+  // End "bidder_worklet_report_win" trace event.
+  TRACE_EVENT_END("fledge",
+                  perfetto::Track(top_level_seller_winning_bid_info_.trace_id));
 
   reporter_worklet_state_ = ReporterState::kAllWorkletsCompleted;
 
@@ -1112,10 +1114,12 @@ bool InterestGroupAuctionReporter::AddReportWinResult(
 
 void InterestGroupAuctionReporter::OnReportingComplete(
     const std::vector<std::string>& errors) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase",
-                                  top_level_seller_winning_bid_info_.trace_id);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "auction",
-                                  top_level_seller_winning_bid_info_.trace_id);
+  // End "reporting_phase" trace event.
+  TRACE_EVENT_END("fledge",
+                  perfetto::Track(top_level_seller_winning_bid_info_.trace_id));
+  // End "auction" trace event.
+  TRACE_EVENT_END("fledge",
+                  perfetto::Track(top_level_seller_winning_bid_info_.trace_id));
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   reporting_complete_ = true;
   MaybeSendPrivateAggregationReports();

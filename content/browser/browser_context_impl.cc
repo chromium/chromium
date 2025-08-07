@@ -39,6 +39,7 @@
 #include "media/capabilities/webrtc_video_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "storage/browser/file_system/external_mount_points.h"
@@ -156,9 +157,9 @@ BrowserContextImpl::~BrowserContextImpl() {
                                           std::move(resource_context_));
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
-      "browser_context_impl", static_cast<void*>(this));
+  // Corresponds to the TRACE_EVENT_BEGIN in NotifyWillBeDestroyed.
+  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+                  "browser_context_impl", static_cast<void*>(this));
 }
 
 bool BrowserContextImpl::ShutdownStarted() {
@@ -168,9 +169,10 @@ bool BrowserContextImpl::ShutdownStarted() {
 void BrowserContextImpl::NotifyWillBeDestroyed() {
   TRACE_EVENT1("shutdown", "BrowserContextImpl::NotifyWillBeDestroyed",
                "browser_context_impl", static_cast<void*>(this));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
-      "browser_context_impl", static_cast<void*>(this));
+  TRACE_EVENT_BEGIN("shutdown",
+                    "BrowserContextImpl::NotifyWillBeDestroyed() called.",
+                    perfetto::Track::FromPointer(this), "browser_context_impl",
+                    static_cast<void*>(this));
   // Make sure NotifyWillBeDestroyed is idempotent.  This helps facilitate the
   // pattern where NotifyWillBeDestroyed is called from *both*
   // ShellBrowserContext and its derived classes (e.g. WebTestBrowserContext).

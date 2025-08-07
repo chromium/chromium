@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -315,10 +316,10 @@ MHTMLGenerationManager::Job::~Job() {
 void MHTMLGenerationManager::Job::initializeJob(WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-      "page-serialization", "SavingMhtmlJob", this, "url",
-      web_contents->GetLastCommittedURL().possibly_invalid_spec(), "file",
-      params_.file_path.AsUTF8Unsafe());
+  TRACE_EVENT_BEGIN("page-serialization", "SavingMhtmlJob",
+                    perfetto::Track::FromPointer(this), "url",
+                    web_contents->GetLastCommittedURL().possibly_invalid_spec(),
+                    "file", params_.file_path.AsUTF8Unsafe());
 
   // Only include nodes from the primary frame tree, since an MHTML document
   // would not be able to load inner frame trees (e.g. fenced frames).
@@ -406,9 +407,9 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
                                           weak_factory_.GetWeakPtr());
   writer_->SerializeAsMHTML(std::move(params), std::move(response_callback));
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("page-serialization", "WaitingOnRenderer",
-                                    this, "frame tree node id",
-                                    frame_tree_node_id_of_busy_frame_);
+  TRACE_EVENT_BEGIN("page-serialization", "WaitingOnRenderer",
+                    perfetto::Track::FromPointer(this), "frame tree node id",
+                    frame_tree_node_id_of_busy_frame_);
   return mojom::MhtmlSaveStatus::kSuccess;
 }
 
@@ -454,9 +455,9 @@ void MHTMLGenerationManager::Job::OnFinished(
   mojom::MhtmlSaveStatus save_status = close_file_result.save_status;
   int64_t file_size = close_file_result.file_size;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2("page-serialization", "SavingMhtmlJob", this,
-                                  "job save status", save_status, "file size",
-                                  file_size);
+  // Corresponds to the TRACE_EVENT_BEGIN in initializeJob.
+  TRACE_EVENT_END("page-serialization", perfetto::Track::FromPointer(this),
+                  "job save status", save_status, "file size", file_size);
 
   std::move(callback_).Run(close_file_result.file_size);
 
@@ -478,8 +479,9 @@ void MHTMLGenerationManager::Job::MarkAsFinished() {
   // |watcher_| notifications similar to |writer_|, since it exists in
   // the download sequence, so we handle the case in DoneWritingToDisk().
 
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("page-serialization", "JobFinished",
-                                      this);
+  TRACE_EVENT_INSTANT("page-serialization",
+                      perfetto::StaticString("JobFinished"),
+                      perfetto::Track::FromPointer(this));
 }
 
 void MHTMLGenerationManager::Job::CloseFile(
@@ -507,8 +509,8 @@ void MHTMLGenerationManager::Job::SerializeAsMHTMLResponse(
     const std::vector<std::string>& digests_of_uris_of_serialized_resources) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("page-serialization", "WaitingOnRenderer",
-                                  this);
+  // Corresponds to the TRACE_EVENT_BEGIN in SendToNextRenderFrame.
+  TRACE_EVENT_END("page-serialization", perfetto::Track::FromPointer(this));
 
   frame_tree_node_id_of_busy_frame_ = FrameTreeNodeId();
 

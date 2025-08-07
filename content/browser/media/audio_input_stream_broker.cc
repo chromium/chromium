@@ -51,7 +51,8 @@ AudioInputStreamBroker::AudioInputStreamBroker(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(renderer_factory_client_);
   DCHECK(deleter_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "AudioInputStreamBroker", this);
+  TRACE_EVENT_BEGIN("audio", "AudioInputStreamBroker",
+                    perfetto::Track::FromPointer(this));
 
   // Unretained is safe because |this| owns |renderer_factory_client_|.
   renderer_factory_client_.set_disconnect_handler(base::BindOnce(
@@ -75,12 +76,14 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
   // TODO(crbug.com/40091014) update tab recording indicator.
 
   if (awaiting_created_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
-                                    "failed or cancelled");
+    // End "CreateStream" trace event.
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "success",
+                    "failed or cancelled");
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "AudioInputStreamBroker", this,
-                                  "disconnect reason",
-                                  static_cast<uint32_t>(disconnect_reason_));
+  // End "AudioInputStreamBroker" trace event.
+  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this),
+                  "disconnect reason",
+                  static_cast<uint32_t>(disconnect_reason_));
 }
 
 void AudioInputStreamBroker::CreateStream(
@@ -88,8 +91,8 @@ void AudioInputStreamBroker::CreateStream(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!observer_receiver_.is_bound());
   DCHECK(!pending_client_receiver_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "CreateStream", this, "device id",
-                                    device_id_);
+  TRACE_EVENT_BEGIN("audio", "CreateStream", perfetto::Track::FromPointer(this),
+                    "device id", device_id_);
   awaiting_created_ = true;
 
   mojo::PendingRemote<media::mojom::AudioInputStreamClient> client;
@@ -133,8 +136,9 @@ void AudioInputStreamBroker::StreamCreated(
     const std::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   awaiting_created_ = false;
-  TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
-                                  !!data_pipe);
+  // End "CreateStream" trace event.
+  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "success",
+                  !!data_pipe);
 
   if (!data_pipe) {
     disconnect_reason_ = DisconnectReason::kStreamCreationFailed;

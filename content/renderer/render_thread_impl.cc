@@ -162,6 +162,7 @@
 #include "third_party/blink/public/web/web_user_level_memory_pressure_signal_generator.h"
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/ui_base_switches.h"
@@ -1429,13 +1430,12 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync() {
 
 void RenderThreadImpl::EstablishGpuChannel(
     EstablishGpuChannelCallback callback) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "gpu", "RenderThreadImpl::EstablishGpuChannel", this);
+  TRACE_EVENT_BEGIN("gpu", "RenderThreadImpl::EstablishGpuChannel",
+                    perfetto::Track::FromPointer(this));
   gpu_->EstablishGpuChannel(base::BindOnce(
       [](EstablishGpuChannelCallback callback, RenderThreadImpl* thread,
          scoped_refptr<gpu::GpuChannelHost> host) {
-        TRACE_EVENT_NESTABLE_ASYNC_END0(
-            "gpu", "RenderThreadImpl::EstablishGpuChannel", thread);
+        TRACE_EVENT_END("gpu", perfetto::Track::FromPointer(thread));
         if (host)
           GetContentClient()->SetGpuInfo(host->gpu_info());
         std::move(callback).Run(std::move(host));

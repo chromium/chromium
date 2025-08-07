@@ -28,6 +28,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
@@ -121,7 +122,8 @@ ChildProcessLauncher::ChildProcessLauncher(
 #endif
 {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("startup", "ChildProcessLauncher", this);
+  TRACE_EVENT_BEGIN("startup", "ChildProcessLauncher",
+                    perfetto::Track::FromPointer(this));
 
 #if BUILDFLAG(IS_WIN)
   should_launch_elevated_ = delegate->ShouldLaunchElevated();
@@ -179,7 +181,8 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
 #endif
                                   int error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("startup", "ChildProcessLauncher", this);
+  // Corresponds to the TRACE_EVENT_BEGIN in ChildProcessLauncher.
+  TRACE_EVENT_END("startup", perfetto::Track::FromPointer(this));
 
   starting_ = false;
   process_ = std::move(process);

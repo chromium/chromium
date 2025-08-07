@@ -9412,10 +9412,10 @@ void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidStartLoading",
                         "frame_tree_node", frame_tree_node);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-      "browser,navigation", "WebContentsImpl Loading", this, "URL", "NULL",
-      "Primary Main FrameTreeNode id",
-      GetPrimaryFrameTree().root()->frame_tree_node_id());
+  TRACE_EVENT_BEGIN("browser,navigation", "WebContentsImpl Loading",
+                    perfetto::Track::FromPointer(this), "URL", "NULL",
+                    "Primary Main FrameTreeNode id",
+                    GetPrimaryFrameTree().root()->frame_tree_node_id());
   SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
   observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
 
@@ -9448,8 +9448,9 @@ void WebContentsImpl::DidStopLoading() {
   std::string url =
       (entry ? entry->GetVirtualURL().possibly_invalid_spec() : "NULL");
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("browser,navigation",
-                                  "WebContentsImpl Loading", this, "URL", url);
+  // WebContentsImpl Loading
+  TRACE_EVENT_END("browser,navigation", perfetto::Track::FromPointer(this),
+                  "URL", url);
   SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
   observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
 

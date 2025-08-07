@@ -40,7 +40,7 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
   NOTREACHED();
 }
 
-const char* GetEventName(NavigationThrottleEvent event) {
+perfetto::StaticString GetEventName(NavigationThrottleEvent event) {
   switch (event) {
     case NavigationThrottleEvent::kNoEvent:
       DUMP_WILL_BE_NOTREACHED();
@@ -163,9 +163,9 @@ void NavigationThrottleRunner::ProcessInternal() {
   for (size_t i = next_index_; i < throttles.size(); ++i) {
     TRACE_EVENT0("navigation",
                  "NavigationThrottleRunner::ProcessInternal.loop");
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "navigation", GetEventName(current_event_), local_navigation_id,
-        "throttle", throttles[i]->GetNameForLogging());
+    TRACE_EVENT_BEGIN("navigation", GetEventName(current_event_),
+                      perfetto::Track::Global(local_navigation_id), "throttle",
+                      throttles[i]->GetNameForLogging());
 
     base::Time start = base::Time::Now();
     NavigationThrottle::ThrottleCheckResult result =
@@ -173,14 +173,16 @@ void NavigationThrottleRunner::ProcessInternal() {
     if (!weak_ref) {
       // The NavigationThrottle execution has destroyed this
       // NavigationThrottleRunner. Return immediately.
-      TRACE_EVENT_NESTABLE_ASYNC_END1("navigation", "", local_navigation_id,
-                                      "result", "deleted");
+      // GetEventName(current_event_)
+      TRACE_EVENT_END("navigation",
+                      perfetto::Track::Global(local_navigation_id), "result",
+                      "deleted");
       return;
     }
     RecordExecutionTimeHistogram(current_event_, start);
-    TRACE_EVENT_NESTABLE_ASYNC_END1("navigation", GetEventName(current_event_),
-                                    local_navigation_id, "result",
-                                    result.action());
+    // GetEventName(current_event_)
+    TRACE_EVENT_END("navigation", perfetto::Track::Global(local_navigation_id),
+                    "result", result.action());
 
     switch (result.action()) {
       case NavigationThrottle::PROCEED:

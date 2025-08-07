@@ -460,8 +460,8 @@ KeepAliveURLLoader::KeepAliveURLLoader(
   CHECK(storage_partition_);
   TRACE_EVENT("loading", "KeepAliveURLLoader::KeepAliveURLLoader", "request_id",
               request_id_, "url", last_url_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading", "KeepAliveURLLoader",
-                                    request_id_, "url", last_url_);
+  TRACE_EVENT_BEGIN("loading", "KeepAliveURLLoader",
+                    perfetto::Track(request_id_), "url", last_url_);
 
   original_resource_request_ = resource_request_;
 
@@ -526,7 +526,8 @@ void KeepAliveURLLoader::StartInternal(bool is_retry) {
 KeepAliveURLLoader::~KeepAliveURLLoader() {
   TRACE_EVENT("loading", "KeepAliveURLLoader::~KeepAliveURLLoader",
               "request_id", request_id_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "KeepAliveURLLoader", request_id_);
+  // End "KeepAliveURLLoader" trace event.
+  TRACE_EVENT_END("loading", perfetto::Track(request_id_));
 
   // Allows logging to start as early as possible.
   request_tracker_.reset();

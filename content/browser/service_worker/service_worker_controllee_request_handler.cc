@@ -219,14 +219,11 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
         "ServiceWorker.FoundServiceWorkerRegistrationOnNavigation",
         status == blink::ServiceWorkerStatusCode::kOk);
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+    TRACE_EVENT_BEGIN(
         "ServiceWorker",
         "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
-        TRACE_ID_LOCAL(this), find_registration_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "ServiceWorker",
-        "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
-        TRACE_ID_LOCAL(this), now);
+        perfetto::Track::FromPointer(this), find_registration_start_time);
+    TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), now);
   }
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {

@@ -87,6 +87,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
@@ -4408,8 +4409,8 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
   DCHECK(!backing_store_->in_memory());
   DCHECK(!external_object_change_map_.empty());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "IndexedDB", "BackingStore::Transaction::WriteNewBlobs", this);
+  TRACE_EVENT_BEGIN("IndexedDB", "BackingStore::Transaction::WriteNewBlobs",
+                    perfetto::Track::FromPointer(this));
 
   // Count how many objects we need to write by excluding all empty files and
   // blobs.
@@ -4432,8 +4433,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
     }
   }
   if (num_objects_to_write == 0) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "IndexedDB", "BackingStore::Transaction::WriteNewBlobs", this);
+    TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
     return std::move(callback).Run(
         BlobWriteResult::kRunPhaseTwoAndReturnResult,
         storage::mojom::WriteBlobToFileResult::kSuccess);
@@ -4457,9 +4457,8 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
         if (result != storage::mojom::WriteBlobToFileResult::kSuccess) {
           auto on_complete = std::move(write_state.on_complete);
           transaction->write_state_.reset();
-          TRACE_EVENT_NESTABLE_ASYNC_END0(
-              "IndexedDB", "BackingStore::Transaction::WriteNewBlobs",
-              transaction.get());
+          TRACE_EVENT_END("IndexedDB",
+                          perfetto::Track::FromPointer(transaction.get()));
           std::move(on_complete).Run(BlobWriteResult::kFailure, result);
           return;
         }
@@ -4467,9 +4466,8 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
         if (write_state.calls_left == 0) {
           auto on_complete = std::move(write_state.on_complete);
           transaction->write_state_.reset();
-          TRACE_EVENT_NESTABLE_ASYNC_END0(
-              "IndexedDB", "BackingStore::Transaction::WriteNewBlobs",
-              transaction.get());
+          TRACE_EVENT_END("IndexedDB",
+                          perfetto::Track::FromPointer(transaction.get()));
           std::move(on_complete)
               .Run(BlobWriteResult::kRunPhaseTwoAsync, result);
         }

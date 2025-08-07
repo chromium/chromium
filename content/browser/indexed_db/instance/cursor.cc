@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using blink::IndexedDBKey;
 
@@ -77,7 +78,8 @@ Cursor::Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
       cursor_type_(cursor_type),
       transaction_(std::move(transaction)),
       cursor_(std::move(cursor)) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", "Cursor::open", this);
+  TRACE_EVENT_BEGIN("IndexedDB", "Cursor::open",
+                    perfetto::Track::FromPointer(this));
 }
 
 Cursor::~Cursor() {
@@ -385,7 +387,8 @@ void Cursor::Close() {
   if (closed_) {
     return;
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", "Cursor::open", this);
+  // Corresponds to the TRACE_EVENT_BEGIN in the constructor.
+  TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
   TRACE_EVENT0("IndexedDB", "Cursor::Close");
   closed_ = true;
   cursor_.reset();

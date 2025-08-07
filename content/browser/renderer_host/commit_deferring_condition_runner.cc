@@ -58,11 +58,10 @@ CommitDeferringConditionRunner::CommitDeferringConditionRunner(
 
 CommitDeferringConditionRunner::~CommitDeferringConditionRunner() {
   if (is_deferred_) {
-    // Pass a nullptr and it will close the opening slice.
-    TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr,
-                                    TRACE_ID_LOCAL(this));
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "navigation", "CommitDeferringConditionRunning", TRACE_ID_LOCAL(this));
+    // End `condition->TraceEventName()` trace event.
+    TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+    // End "CommitDeferringConditionRunning" trace event.
+    TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
   }
 }
 
@@ -88,10 +87,10 @@ CommitDeferringConditionRunner::GetDeferringConditionForTesting() const {
 void CommitDeferringConditionRunner::ResumeProcessing() {
   DCHECK(is_deferred_);
   is_deferred_ = false;
-  // Pass a nullptr and it will close the opening slice.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr, TRACE_ID_LOCAL(this));
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "navigation", "CommitDeferringConditionRunning", TRACE_ID_LOCAL(this));
+  // End `condition->TraceEventName()` trace event.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  // End "CommitDeferringConditionRunning" trace event.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
   // This is resuming from a check that resolved asynchronously. The current
   // check is always at the front of the vector so pop it and then proceed with
   // the next one.
@@ -198,11 +197,11 @@ void CommitDeferringConditionRunner::ProcessConditions() {
     switch (condition->WillCommitNavigation(std::move(resume_closure))) {
       case CommitDeferringCondition::Result::kDefer:
         is_deferred_ = true;
-        TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation",
-                                          "CommitDeferringConditionRunning",
-                                          TRACE_ID_LOCAL(this));
-        TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-            "navigation", condition->TraceEventName(), TRACE_ID_LOCAL(this));
+        TRACE_EVENT_BEGIN("navigation", "CommitDeferringConditionRunning",
+                          perfetto::Track::FromPointer(this));
+        TRACE_EVENT_BEGIN("navigation",
+                          perfetto::DynamicString(condition->TraceEventName()),
+                          perfetto::Track::FromPointer(this));
         return;
       // TODO(crbug.com/40270812): Also add instant tracing for the condition
       // that is being resolved synchronously.

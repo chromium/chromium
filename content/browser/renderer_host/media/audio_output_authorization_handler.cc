@@ -73,10 +73,11 @@ void CheckAccessOnUIThread(
 class AudioOutputAuthorizationHandler::TraceScope {
  public:
   explicit TraceScope(const std::string& device_id) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "audio", "Audio output device authorization", this);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "Request for device", this,
-                                      "device id", device_id);
+    TRACE_EVENT_BEGIN("audio", "Audio output device authorization",
+                      perfetto::Track::FromPointer(this));
+    TRACE_EVENT_BEGIN("audio", "Request for device",
+                      perfetto::Track::FromPointer(this), "device id",
+                      device_id);
   }
 
   TraceScope(const TraceScope&) = delete;
@@ -84,50 +85,57 @@ class AudioOutputAuthorizationHandler::TraceScope {
 
   ~TraceScope() {
     if (waiting_for_params_) {
-      TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "Getting audio parameters", this,
-                                      "cancelled", true);
+      // End "Getting audio parameters" trace event.
+      TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "cancelled",
+                      true);
     }
     if (checking_access_) {
-      TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "Checking access", this,
-                                      "cancelled", true);
+      // End "Checking access" trace event.
+      TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "cancelled",
+                      true);
     }
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Request for device", this);
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio",
-                                    "Audio output device authorization", this);
+    // End "Request for device" trace event.
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
+    // End "Audio output device authorization" trace event.
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
   }
 
-  void SimpleEvent(const char* event) {
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", event, this);
+  void SimpleEvent(perfetto::StaticString event) {
+    TRACE_EVENT_INSTANT("audio", event, perfetto::Track::FromPointer(this));
   }
 
   void UsingSessionId(const base::UnguessableToken& session_id,
                       const std::string& device_id) {
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "Using session id", this,
-                                        "session id", session_id.ToString(),
-                                        "device id", device_id);
+    TRACE_EVENT_INSTANT("audio", "Using session id",
+                        perfetto::Track::FromPointer(this), "session id",
+                        session_id.ToString(), "device id", device_id);
   }
 
   void CheckAccessStart(const std::string& device_id) {
     checking_access_ = true;
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "Checking access", this,
-                                      "device id", device_id);
+    TRACE_EVENT_BEGIN("audio", "Checking access",
+                      perfetto::Track::FromPointer(this), "device id",
+                      device_id);
   }
 
   void AccessChecked(bool has_access) {
     checking_access_ = false;
-    TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "Checking access", this,
-                                    "access granted", has_access);
+    // End "Checking access" trace event.
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this),
+                    "access granted", has_access);
   }
 
   void StartedGettingAudioParameters(const std::string& raw_device_id) {
     waiting_for_params_ = true;
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "Getting audio parameters", this,
-                                      "device id", raw_device_id);
+    TRACE_EVENT_BEGIN("audio", "Getting audio parameters",
+                      perfetto::Track::FromPointer(this), "device id",
+                      raw_device_id);
   }
 
   void FinishedGettingAudioParameters() {
     waiting_for_params_ = false;
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Getting audio parameters", this);
+    // End "Getting audio parameters" trace event.
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
   }
 
  private:

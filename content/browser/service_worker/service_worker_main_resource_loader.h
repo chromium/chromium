@@ -186,7 +186,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   void Fallback(ResponseHeadUpdateParams response_header_params);
 
-  std::string GetInitialServiceWorkerStatusString();
+  std::string_view GetInitialServiceWorkerStatusString();
   std::string GetFrameTreeNodeTypeString();
   bool IsEligibleForRecordingTimingMetrics();
   void RecordFindRegistrationToCompletedTrace();

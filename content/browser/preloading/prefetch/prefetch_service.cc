@@ -750,8 +750,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     return;
   }
   CHECK(prefetch_container);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading",
-                                    "PrefetchService::CheckEligibility", this);
+  TRACE_EVENT_BEGIN("loading", "PrefetchService::CheckEligibility",
+                    perfetto::Track::FromPointer(this));
 
   // Inject failure in tests.
   if (GetForceIneligibilityForTesting().has_value()) {
@@ -833,8 +833,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
 void PrefetchService::CheckHasServiceWorker(CheckEligibilityParams params) {
   const auto prefetch_container = params.prefetch_container;
   CHECK(prefetch_container);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "loading", "PrefetchService::CheckHasServiceWorker", this);
+  TRACE_EVENT_BEGIN("loading", "PrefetchService::CheckHasServiceWorker",
+                    perfetto::Track::FromPointer(this));
 
   if (params.is_redirect) {
     switch (prefetch_container->service_worker_state()) {
@@ -917,8 +917,8 @@ void PrefetchService::OnGotServiceWorkerResult(
     ServiceWorkerCapability service_worker_capability) {
   const auto prefetch_container = params.prefetch_container;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "loading", "PrefetchService::CheckHasServiceWorker", this);
+  // End "PrefetchService::CheckHasServiceWorker" trace event.
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
   TRACE_EVENT1("loading", "PrefetchService::OnGotServiceWorkerResult",
                "prefetch_url",
                prefetch_container ? prefetch_container->GetURL().spec() : "");
@@ -984,8 +984,8 @@ void PrefetchService::OnGotServiceWorkerResult(
   StoragePartition* default_storage_partition =
       browser_context_->GetDefaultStoragePartition();
   CHECK(default_storage_partition);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading", "PrefetchService::CheckCookies",
-                                    this);
+  TRACE_EVENT_BEGIN("loading", "PrefetchService::CheckCookies",
+                    perfetto::Track::FromPointer(this));
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   options.set_return_excluded_cookies();
   // `url` is needed to avoid use-after-move.
@@ -1002,8 +1002,8 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
     const net::CookieAccessResultList& excluded_cookies) {
   const auto prefetch_container = params.prefetch_container;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "PrefetchService::CheckCookies",
-                                  this);
+  // End "PrefetchService::CheckCookies" trace event.
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
   TRACE_EVENT1("loading", "PrefetchService::OnGotCookiesForEligibilityCheck",
                "prefetch_url",
                prefetch_container ? prefetch_container->GetURL().spec() : "");
@@ -1086,8 +1086,8 @@ void PrefetchService::StartProxyLookupCheck(CheckEligibilityParams params) {
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading", "PrefetchService::ProxyCheck",
-                                    this);
+  TRACE_EVENT_BEGIN("loading", "PrefetchService::ProxyCheck",
+                    perfetto::Track::FromPointer(this));
   // Start proxy check for this prefetch, and give ownership of the
   // |ProxyLookupClientImpl| to |prefetch_container|.
   // `url` is needed to avoid use-after-move.
@@ -1106,8 +1106,8 @@ void PrefetchService::StartProxyLookupCheck(CheckEligibilityParams params) {
 void PrefetchService::OnGotProxyLookupResult(CheckEligibilityParams params,
                                              bool has_proxy) {
   const auto prefetch_container = params.prefetch_container;
-  TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "PrefetchService::ProxyCheck",
-                                  this);
+  // End "PrefetchService::ProxyCheck" trace event.
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
   TRACE_EVENT1("loading", "PrefetchService::OnGotProxyLookupResult",
                "prefetch_url",
                prefetch_container ? prefetch_container->GetURL().spec() : "");
@@ -1129,8 +1129,8 @@ void PrefetchService::OnGotEligibilityForNonRedirect(
     CheckEligibilityParams params,
     PreloadingEligibility eligibility) {
   const auto prefetch_container = params.prefetch_container;
-  TRACE_EVENT_NESTABLE_ASYNC_END0("loading",
-                                  "PrefetchService::CheckEligibility", this);
+  // End "PrefetchService::CheckEligibility" trace event.
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
   TRACE_EVENT1("loading", "PrefetchService::OnGotEligibilityForNonRedirect",
                "prefetch_url",
                prefetch_container ? prefetch_container->GetURL().spec() : "");
@@ -1199,8 +1199,8 @@ void PrefetchService::OnGotEligibilityForRedirect(
     CheckEligibilityParams params,
     PreloadingEligibility eligibility) {
   const auto prefetch_container = params.prefetch_container;
-  TRACE_EVENT_NESTABLE_ASYNC_END0("loading",
-                                  "PrefetchService::CheckEligibility", this);
+  // End "PrefetchService::CheckEligibility" trace event.
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
   TRACE_EVENT1("loading", "PrefetchService::OnGotEligibilityForRedirect",
                "prefetch_url",
                prefetch_container ? prefetch_container->GetURL().spec() : "");

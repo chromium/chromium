@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using blink::IndexedDBIndexKeys;
 using blink::IndexedDBKey;
@@ -148,7 +149,8 @@ Transaction::Transaction(
       bucket_context_(std::move(bucket_context)),
       backing_store_transaction_(std::move(backing_store_transaction)),
       receiver_(this) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", "Transaction::lifetime", this);
+  TRACE_EVENT_BEGIN("IndexedDB", "Transaction::lifetime",
+                    perfetto::Track::FromPointer(this));
 
   locks_receiver_.SetUserData(
       LockRequestData::kKey,
@@ -170,7 +172,8 @@ Transaction::Transaction(
 }
 
 Transaction::~Transaction() {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", "Transaction::lifetime", this);
+  // Corresponds to the TRACE_EVENT_BEGIN in the constructor.
+  TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
   // It shouldn't be possible for this object to get deleted until it's either
   // complete or aborted.
   DCHECK_EQ(state_, FINISHED);

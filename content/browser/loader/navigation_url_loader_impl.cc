@@ -2024,10 +2024,10 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
-      request_info_->common_params->navigation_start, "FrameTreeNode id",
-      frame_tree_node_id_);
+  TRACE_EVENT_BEGIN("navigation", "Navigation timeToResponseStarted",
+                    perfetto::Track::FromPointer(this),
+                    request_info_->common_params->navigation_start,
+                    "FrameTreeNode id", frame_tree_node_id_);
 
   mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
       accept_ch_frame_observer;
@@ -2322,9 +2322,10 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
     const GlobalRequestID& global_request_id,
     bool is_download,
     network::mojom::URLResponseHeadPtr response_head) {
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
-      "&NavigationURLLoaderImpl", static_cast<void*>(this), "success", true);
+  // End "Navigation timeToResponseStarted" trace event.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this),
+                  "&NavigationURLLoaderImpl", static_cast<void*>(this),
+                  "success", true);
 
   NavigationURLLoaderDelegate::EarlyHints early_hints;
   if (early_hints_manager_) {
@@ -2367,9 +2368,10 @@ void NavigationURLLoaderImpl::NotifyRequestRedirected(
 
 void NavigationURLLoaderImpl::NotifyRequestFailed(
     const network::URLLoaderCompletionStatus& status) {
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
-      "&NavigationURLLoaderImpl", static_cast<void*>(this), "success", false);
+  // End "Navigation timeToResponseStarted" trace event.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this),
+                  "&NavigationURLLoaderImpl", static_cast<void*>(this),
+                  "success", false);
   delegate_->OnRequestFailed(status);
 }
 

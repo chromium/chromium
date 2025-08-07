@@ -356,8 +356,8 @@ void DedicatedWorkerHost::StartScriptLoad(
       nearest_ancestor_render_frame_host->GetSiteInstance()->GetPartitionDomain(
           storage_partition_impl);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "loading", "WorkerScriptFetcher CreateAndStart", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("loading", "WorkerScriptFetcher CreateAndStart",
+                    perfetto::Track::FromPointer(this));
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host_->GetDeprecatedID(), token_, script_url,
       *nearest_ancestor_render_frame_host, creator_render_frame_host,
@@ -384,8 +384,8 @@ void DedicatedWorkerHost::ReportNoBinderForInterface(const std::string& error) {
 void DedicatedWorkerHost::DidStartScriptLoad(
     std::optional<WorkerScriptFetcherResult> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "loading", "WorkerScriptFetcher CreateAndStart", TRACE_ID_LOCAL(this));
+  // WorkerScriptFetcher CreateAndStart
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
   TRACE_EVENT("loading", "DedicatedWorkerHost::DidStartScriptLoad",
               "final_response_url", script_request_url_);
 
