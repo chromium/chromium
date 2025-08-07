@@ -1931,8 +1931,17 @@ dialog:where(:modal) {
       content: '\2713';
     }
   }
-  select option:not(:checked)::checkmark {
-    visibility: hidden;
+
+  @supports blink-feature(CustomizableSelectMultiplePopup) {
+    select option:not(:checked)::checkmark {
+      /* appearance:auto renders a box instead of empty space. */
+      visibility: -internal-auto-base(visible, hidden);
+    }
+  }
+  @supports not blink-feature(CustomizableSelectMultiplePopup) {
+    select option:not(:checked)::checkmark {
+      visibility: hidden;
+    }
   }
 
   select:-internal-autofill-selected,
@@ -2133,7 +2142,7 @@ dialog:where(:modal) {
   }
 }
 
-/* TODO choose appearance:auto styles and set them in here with !important */
+/* TODO consider making appearance:auto styles !important */
 /* Most of these rules are copied from CustomizableSelect styles but without
  * [multiple] in the selector. */
 @supports blink-feature(CustomizableSelectMultiplePopup) {
@@ -2188,7 +2197,8 @@ dialog:where(:modal) {
   }
   select:not(:-internal-list-box)::picker(select) {
     box-sizing: border-box;
-    border: 1px solid;
+    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+    border-radius: -internal-auto-base(2px, 0);
     padding: 0;
     color: -internal-auto-base(inherit, CanvasText);
     background-color: Canvas;
@@ -2251,5 +2261,17 @@ dialog:where(:modal) {
   select:not(:-internal-list-box) optgroup legend {
     padding-inline: -internal-auto-base(2px, 0.5em);
     min-block-size: -internal-auto-base(initial, 1lh);
+  }
+
+  /* The svg data urls in the below ::checkmark rules are built to match the
+   * checkbox rendering in NativeThemeBase. */
+  select[multiple] option::checkmark {
+    /* The svg is 13px by 13px. Without this height rule, the svg would not be
+     * vertically centered within the ::checkmark. */
+    height: -internal-auto-base(13px, initial);
+    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220.5%22%20y%3D%220.5%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23767676%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E), '\2713');
+  }
+  select[multiple] option:checked::checkmark {
+    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%230075FF%22%2F%3E%3Cpath%20d%3D%22M2.6%207%20l2.6%202.5%20L10.4%202.6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E), '\2713');
   }
 }
