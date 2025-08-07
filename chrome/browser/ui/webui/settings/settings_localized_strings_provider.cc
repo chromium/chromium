@@ -1690,7 +1690,6 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
       {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
 #if !BUILDFLAG(IS_CHROMEOS)
       {"signinAllowedTitle", IDS_SETTINGS_SIGNIN_ALLOWED},
-      {"signinAllowedDescription", IDS_SETTINGS_SIGNIN_ALLOWED_DESC},
 #endif
       {"enablePersonalizationLogging", IDS_SETTINGS_ENABLE_LOGGING_PREF},
       {"enablePersonalizationLoggingDesc",
@@ -1720,6 +1719,14 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CHROME_SIGNIN_OPTION_SAVED_TOAST_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  #if !BUILDFLAG(IS_CHROMEOS)
+  html_source->AddLocalizedString(
+      "signinAllowedDescription",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? IDS_SETTINGS_SIGNIN_ALLOWED_DESC_2
+          : IDS_SETTINGS_SIGNIN_ALLOWED_DESC);
+  #endif
 }
 
 void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {

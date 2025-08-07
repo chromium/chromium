@@ -152,6 +152,9 @@ Chrome understands forms better and can autofill them faster for you. This setti
     <message name="IDS_SETTINGS_SIGNIN_ALLOWED_DESC" desc="The description of the preference to allow to sign-in to Chrome">
     By turning this off, you can sign in to Google sites like Gmail without signing in to Chrome
     </message>
+    <message name="IDS_SETTINGS_SIGNIN_ALLOWED_DESC_2" desc="The description of the preference to allow to sign-in to Chrome">
+    Shows prompts to sign in to Chrome
+    </message>
   </if>
 
   <!-- Site Settings -->
