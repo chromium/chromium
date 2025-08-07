@@ -5,7 +5,6 @@
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/test_extension_dir.h"
 
