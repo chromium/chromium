@@ -46,6 +46,7 @@
 #include "chrome/browser/support_tool/ash/system_state_data_collector.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/user_manager/user_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
@@ -79,7 +80,9 @@ constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] = {
     support_tool::CHROMEOS_TRAFFIC_COUNTERS,
     support_tool::CHROMEOS_VIRTUAL_KEYBOARD,
     support_tool::CHROMEOS_NETWORK_HEALTH,
-    support_tool::CHROMEOS_APP_SERVICE};
+    support_tool::CHROMEOS_APP_SERVICE,
+    support_tool::CHROMEOS_KIOSK_APP_LEVEL_LOGS,
+};
 
 // Data collector types that can only work on if IS_CHROMEOS_WITH_HW_DETAILS
 // flag is turned on. IS_CHROMEOS_WITH_HW_DETAILS flag will be turned on for
@@ -267,6 +270,17 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 "running apps.",
                 std::make_unique<system_logs::AppServiceLogSource>()));
         break;
+      case support_tool::CHROMEOS_KIOSK_APP_LEVEL_LOGS: {
+        if (chromeos::IsKioskSession()) {
+          const std::set<base::FilePath> kioskAppLevelSystemLogs = {
+              base::FilePath("kiosk_apps.log"),
+              base::FilePath("kiosk_apps.1.log"),
+          };
+          handler->AddDataCollector(std::make_unique<SystemLogsDataCollector>(
+              kioskAppLevelSystemLogs));
+        }
+        break;
+      }
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
         handler->AddDataCollector(

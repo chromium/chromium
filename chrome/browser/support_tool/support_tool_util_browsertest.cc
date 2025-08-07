@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/support_tool/support_tool_util.h"
+
 #include <set>
 #include <string>
 #include <vector>
@@ -14,7 +16,6 @@
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
-#include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -24,8 +25,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Profile;
@@ -62,6 +69,28 @@ class SupportToolUtilTest : public InProcessBrowserTest {
 class SupportToolUtilLoginScreenTest : public ash::LoginManagerTest {
  public:
   SupportToolUtilLoginScreenTest() = default;
+};
+
+class SupportToolUtilKioskSessionTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<ash::KioskMixin::Config> {
+ public:
+  SupportToolUtilKioskSessionTest() = default;
+  ~SupportToolUtilKioskSessionTest() override = default;
+  SupportToolUtilKioskSessionTest(const SupportToolUtilKioskSessionTest&) =
+      delete;
+  void operator=(const SupportToolUtilKioskSessionTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(ash::kiosk::test::WaitKioskLaunched());
+  }
+
+  Profile* profile() { return &ash::kiosk::test::CurrentProfile(); }
+
+ private:
+  ash::KioskMixin kiosk_{&mixin_host_,
+                         /*cached_configuration=*/GetParam()};
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -101,11 +130,19 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilTest, GetSupportToolHandler) {
   std::vector<support_tool::DataCollectorType> data_collectors =
       GetAllAvailableDataCollectorsOnDevice();
 
+  std::set<support_tool::DataCollectorType> excluded_data_collectors = {};
+#if BUILDFLAG(IS_CHROMEOS)
+  // These data collectors shouldn't be included unless the device is logged in
+  // as kiosk session.
+  excluded_data_collectors.insert(
+      support_tool::DataCollectorType::CHROMEOS_KIOSK_APP_LEVEL_LOGS);
+#endif
+
   std::unique_ptr<SupportToolHandler> handler = GetSupportToolHandler(
       kCaseId, kEmail, kIssueDescription, kUploadId, browser()->profile(),
       std::set<support_tool::DataCollectorType>(data_collectors.begin(),
                                                 data_collectors.end()));
-  EXPECT_EQ(data_collectors.size(),
+  EXPECT_EQ(data_collectors.size() - excluded_data_collectors.size(),
             handler->GetDataCollectorsForTesting().size());
 }
 
@@ -123,7 +160,8 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilLoginScreenTest, GetSupportToolHandler) {
   // depend on data from user session.
   std::set<support_tool::DataCollectorType> excluded_data_collectors = {
       support_tool::DataCollectorType::CHROMEOS_CHROME_USER_LOGS,
-      support_tool::DataCollectorType::SIGN_IN_STATE};
+      support_tool::DataCollectorType::SIGN_IN_STATE,
+      support_tool::DataCollectorType::CHROMEOS_KIOSK_APP_LEVEL_LOGS};
 
   std::unique_ptr<SupportToolHandler> handler = GetSupportToolHandler(
       kCaseId, kEmail, kIssueDescription, kUploadId, signin_profile,
@@ -138,5 +176,25 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilLoginScreenTest, GetSupportToolHandler) {
                                   signin_profile, excluded_data_collectors);
   EXPECT_EQ(0U, handler->GetDataCollectorsForTesting().size());
 }
+
+IN_PROC_BROWSER_TEST_P(SupportToolUtilKioskSessionTest, GetSupportToolHandler) {
+  ASSERT_TRUE(chromeos::IsKioskSession());
+
+  std::vector<support_tool::DataCollectorType> all_data_collectors =
+      GetAllAvailableDataCollectorsOnDevice();
+
+  std::unique_ptr<SupportToolHandler> handler = GetSupportToolHandler(
+      kCaseId, kEmail, kIssueDescription, kUploadId, profile(),
+      std::set<support_tool::DataCollectorType>(all_data_collectors.begin(),
+                                                all_data_collectors.end()));
+  EXPECT_EQ(all_data_collectors.size(),
+            handler->GetDataCollectorsForTesting().size());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupportToolUtilKioskSessionTest,
+    testing::ValuesIn(ash::KioskMixin::ConfigsToAutoLaunchEachAppType()),
+    ash::KioskMixin::ConfigName);
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
