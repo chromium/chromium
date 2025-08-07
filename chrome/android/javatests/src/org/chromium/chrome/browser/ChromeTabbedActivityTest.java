@@ -75,6 +75,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.VersioningMessageController;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -108,6 +109,7 @@ public class ChromeTabbedActivityTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private VersioningMessageController mVersioningMessageController;
     private ChromeTabbedActivity mActivity;
 
     @Before
@@ -672,6 +674,8 @@ public class ChromeTabbedActivityTest {
         savedTabGroup.savedTabs = List.of(savedTab);
 
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncService.getVersioningMessageController())
+                .thenReturn(mVersioningMessageController);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedTabGroup);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
         when(mTabGroupSyncService.isObservingLocalChanges()).thenReturn(true);
