@@ -31,7 +31,7 @@ bool FakePrerenderService::IsLoadingPrerender() {
   return false;
 }
 
-void FakePrerenderService::CancelPrerender() {
+void FakePrerenderService::CancelAllPrerenders() {
   preload_url_ = GURL();
 }
 

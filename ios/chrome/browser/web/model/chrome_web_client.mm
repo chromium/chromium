@@ -604,7 +604,7 @@ void ChromeWebClient::WillDisplayMediaCapturePermissionPrompt(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   if (prerender_service &&
       prerender_service->IsWebStatePrerendered(web_state)) {
-    prerender_service->CancelPrerender();
+    prerender_service->CancelAllPrerenders();
   }
 }
 

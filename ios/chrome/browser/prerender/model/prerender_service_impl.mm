@@ -48,14 +48,14 @@ bool PrerenderServiceImpl::MaybeLoadPrerenderedURL(
     ui::PageTransition transition,
     Browser* browser) {
   if (!HasPrerenderForUrl(url)) {
-    CancelPrerender();
+    CancelAllPrerenders();
     return false;
   }
 
   std::unique_ptr<web::WebState> new_web_state =
       [controller_ releasePrerenderContents];
   if (!new_web_state) {
-    CancelPrerender();
+    CancelAllPrerenders();
     return false;
   }
 
@@ -70,7 +70,7 @@ bool PrerenderServiceImpl::MaybeLoadPrerenderedURL(
   // crbug.com/1010765 for the triggering security fixes.
   if (web_state_list->GetActiveWebState()->GetVisibleURL() ==
       new_web_state->GetVisibleURL()) {
-    CancelPrerender();
+    CancelAllPrerenders();
     return false;
   }
 
@@ -101,7 +101,7 @@ bool PrerenderServiceImpl::IsLoadingPrerender() {
   return loading_prerender_;
 }
 
-void PrerenderServiceImpl::CancelPrerender() {
+void PrerenderServiceImpl::CancelAllPrerenders() {
   [controller_ cancelPrerender];
 }
 

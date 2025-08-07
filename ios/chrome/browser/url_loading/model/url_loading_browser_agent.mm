@@ -214,7 +214,7 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   if (!current_web_state ||
       (profile->IsOffTheRecord() && !IsURLAllowedInIncognito(web_params.url))) {
     if (prerender_service) {
-      prerender_service->CancelPrerender();
+      prerender_service->CancelAllPrerenders();
     }
     notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type);
 

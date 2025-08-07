@@ -60,7 +60,7 @@ class PrerenderService : public KeyedService {
 
   // Cancels any outstanding prerender requests and destroys any prerendered
   // pages.
-  virtual void CancelPrerender() = 0;
+  virtual void CancelAllPrerenders() = 0;
 
   // Returns true if there is a prerender for the given `url`.
   virtual bool HasPrerenderForUrl(const GURL& url) = 0;

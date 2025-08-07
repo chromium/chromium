@@ -70,7 +70,7 @@ bool SafeBrowsingClientImpl::OnMainFrameUrlQueryCancellationDecided(
   // When a prendered page is unsafe, cancel the prerender.
   if (prerender_service_ &&
       prerender_service_->IsWebStatePrerendered(web_state)) {
-    prerender_service_->CancelPrerender();
+    prerender_service_->CancelAllPrerenders();
     return false;
   }
 

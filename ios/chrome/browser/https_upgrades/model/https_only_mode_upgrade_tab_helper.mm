@@ -215,8 +215,8 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
       ResetState();
       std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Cancel());
-      prerender_service_->CancelPrerender();
-      // IMPORTANT: CancelPrerender() destroys the web state. Do not access
+      prerender_service_->CancelAllPrerenders();
+      // IMPORTANT: CancelAllPrerenders() destroys the web state. Do not access
       // it after here.
       return;
     }

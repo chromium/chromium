@@ -188,7 +188,7 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
     PrerenderService* service =
         PrerenderServiceFactory::GetForProfile(profile_);
     if (service) {
-      service->CancelPrerender();
+      service->CancelAllPrerenders();
     }
   }
 }
@@ -233,7 +233,7 @@ void ChromeOmniboxClientIOS::OnResultChanged(
                             location_bar_->GetWebState(),
                             is_inline_autocomplete);
   } else {
-    service->CancelPrerender();
+    service->CancelAllPrerenders();
   }
 }
 

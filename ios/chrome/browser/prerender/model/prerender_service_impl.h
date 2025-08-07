@@ -33,7 +33,7 @@ class PrerenderServiceImpl : public PrerenderService {
                                ui::PageTransition transition,
                                Browser* browser) override;
   bool IsLoadingPrerender() override;
-  void CancelPrerender() override;
+  void CancelAllPrerenders() override;
   bool HasPrerenderForUrl(const GURL& url) override;
   bool IsWebStatePrerendered(web::WebState* web_state) override;
 

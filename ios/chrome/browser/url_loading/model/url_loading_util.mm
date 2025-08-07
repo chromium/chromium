@@ -33,7 +33,7 @@ void LoadJavaScriptURL(const GURL& url,
   PrerenderService* prerenderService =
       PrerenderServiceFactory::GetForProfile(profile);
   if (prerenderService) {
-    prerenderService->CancelPrerender();
+    prerenderService->CancelAllPrerenders();
   }
   NSString* jsToEval = [base::SysUTF8ToNSString(url.GetContent())
       stringByRemovingPercentEncoding];

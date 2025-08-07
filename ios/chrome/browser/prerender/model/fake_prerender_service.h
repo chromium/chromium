@@ -22,7 +22,6 @@ class FakePrerenderService : public PrerenderService {
     prerender_web_state_ = web_state;
   }
 
- private:
   // PrerenderService:
   void SetDelegate(id<PreloadControllerDelegate> delegate) override;
   void StartPrerender(const GURL& url,
@@ -34,10 +33,11 @@ class FakePrerenderService : public PrerenderService {
                                ui::PageTransition transition,
                                Browser* browser) override;
   bool IsLoadingPrerender() override;
-  void CancelPrerender() override;
+  void CancelAllPrerenders() override;
   bool HasPrerenderForUrl(const GURL& url) override;
   bool IsWebStatePrerendered(web::WebState* web_state) override;
 
+ private:
   raw_ptr<web::WebState> prerender_web_state_ = nullptr;
 
   // The URL for the in-progress preload.
