@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/btm_utils.h"
+#include "content/public/common/buildflags.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 
 namespace features {
@@ -209,9 +210,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnInvalidation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnResubscribe);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceSubresourceResponseStartedIPC);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureOfOtherTabs);
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRenderDocument);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRenderDocumentCompositorReuse);
 #if BUILDFLAG(IS_ANDROID)
@@ -302,9 +303,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyBaseline);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableExperimentalWebAssemblyJSPI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kEnableExperimentalWebAssemblySharedEverything);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kElementCaptureOfOtherTabs);
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyLazyCompilation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTiering);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTrapHandler);

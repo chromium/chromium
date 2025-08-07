@@ -35,6 +35,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/media_observer.h"
 #include "content/public/browser/media_request_state.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -83,7 +84,7 @@ using ::blink::mojom::CapturedWheelActionPtr;
 using ::blink::mojom::ZoomLevelAction;
 using CapturedSurfaceControllerFactoryCallback =
     ::content::MediaStreamManager::CapturedSurfaceControllerFactoryCallback;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 using DeviceStoppedCallback =
     ::content::MediaStreamManager::DeviceStoppedCallback;
@@ -346,12 +347,15 @@ class TestMediaStreamDispatcherHost
       const base::UnguessableToken& device_id,
       RequestCapturedSurfaceControlPermissionCallback callback) override {}
   void FocusCapturedSurface(const std::string& label, bool focus) override {}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
   void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
                              media::mojom::SubCaptureTargetType type,
                              const base::Token& target,
                              uint32_t sub_capture_target_version,
                              ApplySubCaptureTargetCallback callback) override {}
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
   void GetOpenDevice(int32_t page_request_id,
                      const base::UnguessableToken& session_id,

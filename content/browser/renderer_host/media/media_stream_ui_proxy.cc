@@ -71,12 +71,10 @@ class MediaStreamUIProxy::Core {
   void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect);
 
-#if !BUILDFLAG(IS_ANDROID)
   void SetFocus(const DesktopMediaID& media_id,
                 bool focus,
                 bool is_from_microtask,
                 bool is_from_timer);
-#endif
 
   // The type blink::mojom::StreamDevices is not movable, therefore stream
   // devices cannot be captured for usage with PostTask.
@@ -241,7 +239,6 @@ void MediaStreamUIProxy::Core::OnRegionCaptureRectChanged(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
                                         bool focus,
                                         bool is_from_microtask,
@@ -251,7 +248,6 @@ void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
     ui_->SetFocus(media_id, focus, is_from_microtask, is_from_timer);
   }
 }
-#endif
 
 void MediaStreamUIProxy::Core::ProcessAccessRequestResponseForPostTask(
     int render_process_id,
@@ -472,7 +468,6 @@ void MediaStreamUIProxy::OnRegionCaptureRectChanged(
                                 core_->GetWeakPtr(), region_capture_rec));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
                                   bool focus,
                                   bool is_from_microtask,
@@ -483,7 +478,6 @@ void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
       FROM_HERE, base::BindOnce(&Core::SetFocus, core_->GetWeakPtr(), media_id,
                                 focus, is_from_microtask, is_from_timer));
 }
-#endif
 
 void MediaStreamUIProxy::ProcessAccessRequestResponse(
     blink::mojom::StreamDevicesSetPtr stream_devices_set,

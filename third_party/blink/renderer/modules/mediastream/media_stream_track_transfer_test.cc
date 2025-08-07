@@ -168,23 +168,14 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
   ScopedMockUserMediaClient scoped_user_media_client(&scope.GetWindow());
 
   auto data = TransferredValuesTabCaptureVideo();
-#if BUILDFLAG(IS_ANDROID)
-  data.track_impl_subtype = MediaStreamTrack::GetStaticWrapperTypeInfo();
-  data.sub_capture_target_version = std::nullopt;
-#endif
   scoped_user_media_client.display_mock_media_stream_dispatcher_host
       .SetStreamDevices(DevicesTabCaptureVideo(data.session_id));
 
   auto* new_track =
       MediaStreamTrack::FromTransferredState(scope.GetScriptState(), data);
 
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(new_track->GetWrapperTypeInfo(),
-            MediaStreamTrack::GetStaticWrapperTypeInfo());
-#else
   EXPECT_EQ(new_track->GetWrapperTypeInfo(),
             BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo());
-#endif
   EXPECT_EQ(new_track->Component()->GetSourceName(), "device_name");
   // TODO(crbug.com/1288839): the ID needs to be set correctly
   // EXPECT_EQ(new_track->id(), "component_id");

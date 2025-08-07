@@ -182,7 +182,6 @@ class MediaStreamUI {
   virtual void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect) {}
 
-#if !BUILDFLAG(IS_ANDROID)
   // Focuses the display surface represented by |media_id|.
   //
   // |is_from_microtask| and |is_from_timer| are used to distinguish:
@@ -194,7 +193,6 @@ class MediaStreamUI {
                         bool focus,
                         bool is_from_microtask,
                         bool is_from_timer) {}
-#endif
 };
 
 // Callback used return results of media access requests.

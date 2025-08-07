@@ -132,13 +132,11 @@ class MockMediaDevicesDispatcherHost final
   void SetPreferredSinkId(const String& sink_id,
                           SetPreferredSinkIdCallback callback) override {}
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
 
   void ProduceSubCaptureTargetId(
       SubCaptureTarget::Type type,
       ProduceSubCaptureTargetIdCallback callback) override {}
-#endif
 
  private:
   mojo::RemoteSet<mojom::blink::MediaDevicesListener> listeners_;

@@ -3926,8 +3926,9 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      public: true,
       name: "RegionCapture",
-      status: {"Android": "", "default": "stable"},
+      status: {"Android": "experimental", "iOS": "", "default": "stable"},
     },
     {
       name: "RelatedWebsitePartitionAPI",

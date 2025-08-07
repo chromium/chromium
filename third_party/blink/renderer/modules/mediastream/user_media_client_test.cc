@@ -278,7 +278,6 @@ class MediaDevicesDispatcherHostMock
     NOTREACHED();
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {
     NOTREACHED();
   }
@@ -288,7 +287,6 @@ class MediaDevicesDispatcherHostMock
       ProduceSubCaptureTargetIdCallback callback) override {
     NOTREACHED();
   }
-#endif
 
   void GetAllVideoInputDeviceFormats(
       const String& device_id,
@@ -421,7 +419,6 @@ class MockMediaDevicesDispatcherHost
     NOTREACHED();
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {
     NOTREACHED();
   }
@@ -431,7 +428,6 @@ class MockMediaDevicesDispatcherHost
       ProduceSubCaptureTargetIdCallback callback) override {
     std::move(callback).Run("");
   }
-#endif
 
   void GetAllVideoInputDeviceFormats(
       const String&,

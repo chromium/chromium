@@ -20,10 +20,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#error Region Capture not supported on Android.
-#endif
-
 namespace content {
 
 // TODO(crbug.com/40203554): Remove this protected static function.

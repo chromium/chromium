@@ -239,6 +239,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableGetDisplayMedia,
            raw_ref(features::kUserMediaScreenCapturing)},
+          {wf::EnableRegionCapture,
+           raw_ref(features::kUserMediaScreenCapturing)},
 #endif
           {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
           {wf::EnableIntegrityPolicyScript,

@@ -349,7 +349,6 @@ interface MediaStreamDispatcherHost {
   // a higher version.)
   //
   // The callback reports success/failure.
-  [EnableIfNot=is_android|is_ios]
   ApplySubCaptureTarget(mojo_base.mojom.UnguessableToken session_id,
                         media.mojom.SubCaptureTargetType type,
                         mojo_base.mojom.Token sub_capture_target,

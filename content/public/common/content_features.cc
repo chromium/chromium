@@ -868,7 +868,7 @@ BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
              "ReduceSubresourceResponseStartedIPC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 // When a Web application is video-capturing a tab, it can use the Region
 // Capture API to crop the resulting video.
 // - If `kRegionCaptureOfOtherTabs` is disabled, the Web application can only
@@ -880,7 +880,7 @@ BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
 BASE_FEATURE(kRegionCaptureOfOtherTabs,
              "RegionCaptureOfOtherTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 // RenderDocument:
 //
@@ -1339,7 +1339,7 @@ BASE_FEATURE(kWebAssemblyBaseline,
              "WebAssemblyBaseline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 // When a Web application is video-capturing a tab, it can use the Element
 // Capture API to restrict the resulting video.
 // - If `kElementCaptureOfOtherTabs` is disabled, the Web application can only
@@ -1351,7 +1351,7 @@ BASE_FEATURE(kWebAssemblyBaseline,
 BASE_FEATURE(kElementCaptureOfOtherTabs,
              "ElementCaptureOfOtherTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 // Enable WebAssembly JSPI.
 BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,

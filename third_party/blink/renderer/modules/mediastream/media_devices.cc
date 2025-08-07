@@ -191,7 +191,6 @@ enum class DisplayCapturePolicyResult {
   kMaxValue = kAllowed
 };
 
-#if !BUILDFLAG(IS_IOS)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ProduceTargetFunctionResult {
@@ -236,8 +235,6 @@ void RecordUma(SubCaptureTarget::Type type, ProduceTargetPromiseResult result) {
     NOTREACHED();
   }
 }
-
-#endif  // !BUILDFLAG(IS_IOS)
 
 // When `blink::features::kGetDisplayMediaRequiresUserActivation` is enabled,
 // calls to `getDisplayMedia()` will require a transient user activation. This
@@ -379,7 +376,6 @@ bool EqualDeviceForDeviceChange(const WebMediaDeviceInfo& lhs,
          lhs.group_id == rhs.group_id && lhs.IsAvailable() == rhs.IsAvailable();
 }
 
-#if !BUILDFLAG(IS_IOS)
 base::Token SubCaptureTargetIdToToken(const WTF::String& id) {
   if (id.empty()) {
     return base::Token();
@@ -392,7 +388,6 @@ base::Token SubCaptureTargetIdToToken(const WTF::String& id) {
   DCHECK(!token.is_zero());
   return token;
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 media::MediaPermission::Type ToMediaPermissionType(
     mojom::blink::MediaDeviceType media_device_type) {
@@ -951,11 +946,6 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
     ScriptState* script_state,
     Element* element,
     ExceptionState& exception_state) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return EmptyPromise();
-#else
   if (!MayProduceSubCaptureTarget(script_state, element, exception_state,
                                   SubCaptureTarget::Type::kCropTarget)) {
     // Exception thrown by helper.
@@ -1008,7 +998,6 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
   RecordUma(SubCaptureTarget::Type::kCropTarget,
             ProduceTargetFunctionResult::kPromiseProduced);
   return promise;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
@@ -1415,9 +1404,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(scheduled_events_);
   visitor->Trace(enumerate_device_requests_);
 
-#if !BUILDFLAG(IS_IOS)
   visitor->Trace(crop_target_resolvers_);
-#endif  // !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   visitor->Trace(restriction_target_resolvers_);
@@ -1489,7 +1476,6 @@ void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_IOS)
 // Checks whether the production of a SubCaptureTarget of the given type is
 // allowed. Throw an appropriate exception if not.
 bool MediaDevices::MayProduceSubCaptureTarget(ScriptState* script_state,
@@ -1555,7 +1541,5 @@ void MediaDevices::ResolveCropTargetPromise(Element* element,
   RecordUma(SubCaptureTarget::Type::kCropTarget,
             ProduceTargetPromiseResult::kPromiseResolved);
 }
-
-#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace blink

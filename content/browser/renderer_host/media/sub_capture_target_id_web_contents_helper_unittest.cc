@@ -17,9 +17,8 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#error Region Capture not supported on Android.
-#endif
+static_assert(BUILDFLAG(ENABLE_SCREEN_CAPTURE),
+              "Region Capture requires enable_screen_capture = true.");
 
 namespace content {
 

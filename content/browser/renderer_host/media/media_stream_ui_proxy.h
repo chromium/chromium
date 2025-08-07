@@ -100,7 +100,6 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   virtual void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Determines whether the captured display surface represented by |media_id|
   // should be focused or not.
   // Only the first call to this method on a given object has an effect; the
@@ -115,7 +114,6 @@ class CONTENT_EXPORT MediaStreamUIProxy {
                         bool focus,
                         bool is_from_microtask,
                         bool is_from_timer);
-#endif
 
  protected:
   explicit MediaStreamUIProxy(RenderFrameHostDelegate* test_render_delegate);

@@ -2968,6 +2968,8 @@ source_set("browser") {
     sources += [
       "media/capture/frame_sink_video_capture_device.cc",
       "media/capture/frame_sink_video_capture_device.h",
+      "media/capture/sub_capture_target_id_web_contents_helper.cc",
+      "media/capture/sub_capture_target_id_web_contents_helper.h",
       "media/capture/web_contents_auto_scaler.cc",
       "media/capture/web_contents_auto_scaler.h",
       "media/capture/web_contents_frame_tracker.cc",
@@ -3433,14 +3435,6 @@ source_set("browser") {
       # supported in Android.
       "installedapp/fetch_related_web_apps_task.cc",
       "installedapp/fetch_related_web_apps_task.h",
-
-      # Non-Android platforms that don't presently support
-      # enable_screen_capture, like Fuchsia, nevertheless compile
-      # these files. This follows the pattern of #ifdef-ing around Android
-      # to restrict APK-size, but not introducing the additional complexity
-      # this produces for other feature/platform pairs.
-      "media/capture/sub_capture_target_id_web_contents_helper.cc",
-      "media/capture/sub_capture_target_id_web_contents_helper.h",
 
       # Support for restricting NetworkService disk access to a certain path.
       # Not available on Android.

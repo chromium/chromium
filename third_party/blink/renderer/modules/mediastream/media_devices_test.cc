@@ -314,7 +314,6 @@ class MockMediaDevicesDispatcherHost final
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
 
   void ProduceSubCaptureTargetId(
@@ -335,7 +334,7 @@ class MockMediaDevicesDispatcherHost final
     std::vector<String>& queue = next_ids_[type];
     queue.push_back(std::move(next_id));
   }
-#endif
+
   void SetOutputDeviceStatus(media::OutputDeviceStatus status) {
     output_device_status_ = status;
   }
@@ -563,7 +562,6 @@ void VerifyAudioInputCapabilities(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
   if (CropTarget* crop_target =
           V8CropTarget::ToWrappable(value.GetIsolate(), value.V8Value())) {
@@ -577,7 +575,6 @@ SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
 
   NOTREACHED();
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool ProduceSubCaptureTargetAndGetPromise(V8TestingScope& scope,
                                           SubCaptureTarget::Type type,
@@ -598,7 +595,6 @@ bool ProduceSubCaptureTargetAndGetPromise(V8TestingScope& scope,
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void ProduceSubCaptureTargetAndGetTester(
     V8TestingScope& scope,
     SubCaptureTarget::Type type,
@@ -620,7 +616,6 @@ void ProduceSubCaptureTargetAndGetTester(
       return;
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class MockMediaPermission : public media::MediaPermission {
  public:
@@ -1321,6 +1316,20 @@ class ProduceSubCaptureTargetTest
   ScopedElementCaptureForTest scoped_element_capture_;
 };
 
+/*
+kRestrictionTarget is related to Element Capture. When Element Capture is
+enabled for android as well this condition will be simplified to have the same
+tests set for all platforms.
+*/
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+INSTANTIATE_TEST_SUITE_P(
+    _,
+    ProduceSubCaptureTargetTest,
+    ::testing::Values(std::make_pair(SubCaptureTarget::Type::kCropTarget,
+                                     /* Element Capture enabled: */ false),
+                      std::make_pair(SubCaptureTarget::Type::kCropTarget,
+                                     /* Element Capture enabled: */ true)));
+#else
 INSTANTIATE_TEST_SUITE_P(
     _,
     ProduceSubCaptureTargetTest,
@@ -1330,21 +1339,20 @@ INSTANTIATE_TEST_SUITE_P(
                                      /* Element Capture enabled: */ true),
                       std::make_pair(SubCaptureTarget::Type::kRestrictionTarget,
                                      /* Element Capture enabled: */ true)));
+#endif
 
-// Note: This test runs on non-Android too in order to prove that the test
+// Note: This test runs on non-IOS too in order to prove that the test
 // itself is sane. (Rather than, for example, an exception always being thrown.)
-TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
+TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnIos) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Note that the test will NOT produce false-positive on failure to call this.
   // Rather, GTEST_FAIL would be called by ProduceCropTarget or
   // ProduceRestrictionTarget if it ends up being called.
   dispatcher_host().SetNextId(
       type_, String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-#endif
 
   SetBodyContent(R"HTML(
     <div id='test-div'></div>
@@ -1356,16 +1364,10 @@ TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
   bool got_promise =
       ProduceSubCaptureTargetAndGetPromise(scope, type_, media_devices, div);
   platform()->RunUntilIdle();
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(got_promise);
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-#else  // Non-Android shown to work, proving the test is sane.
   EXPECT_TRUE(got_promise);
   EXPECT_FALSE(scope.GetExceptionState().HadException());
-#endif
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(ProduceSubCaptureTargetTest, IdWithValidElement) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
@@ -1537,7 +1539,6 @@ TEST_P(ProduceSubCaptureTargetTest, IdStringFormat) {
   EXPECT_TRUE(id.ContainsOnlyASCIIOrEmpty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(id.Ascii()).is_valid());
 }
-#endif
 
 // TODO(crbug.com/1418194): Add tests after MediaDevicesDispatcherHost
 // has been updated.

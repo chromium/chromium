@@ -46,9 +46,9 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #include "content/browser/media/capture/sub_capture_target_id_web_contents_helper.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 using blink::mojom::MediaDeviceType;
 
@@ -309,7 +309,7 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
           render_frame_host_id_, std::move(config)));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
     const std::string& label) {
   media_stream_manager_->SetCapturedDisplaySurfaceFocus(
@@ -345,7 +345,7 @@ void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
           render_frame_host_id_, type),
       std::move(callback));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 void MediaDevicesDispatcherHost::SetPreferredSinkId(
     const std::string& hashed_sink_id,

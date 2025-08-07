@@ -68,13 +68,14 @@ class MockMojoMediaStreamDispatcherHost
                void(const base::UnguessableToken&,
                     RequestCapturedSurfaceControlPermissionCallback));
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
+#endif
+
   MOCK_METHOD5(ApplySubCaptureTarget,
                void(const base::UnguessableToken&,
                     media::mojom::blink::SubCaptureTargetType,
                     const base::Token&,
                     uint32_t,
                     ApplySubCaptureTargetCallback));
-#endif
   void GetOpenDevice(int32_t request_id,
                      const base::UnguessableToken&,
                      const base::UnguessableToken&,

@@ -61,6 +61,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -4255,7 +4256,7 @@ void MediaStreamManager::OnRegionCaptureRectChanged(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
     const std::string& label,
     bool focus,
@@ -4301,7 +4302,9 @@ void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
   request->ui_proxy->SetFocus(media_id, focus, is_from_microtask,
                               is_from_timer);
 }
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void MediaStreamManager::SendWheel(
     GlobalRenderFrameHostId capturer_rfh_id,
     const base::UnguessableToken& session_id,

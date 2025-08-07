@@ -19,6 +19,7 @@
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/buildflags.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -139,11 +140,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       KeepDeviceAliveForTransferCallback callback) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void FocusCapturedSurface(const std::string& label, bool focus) override;
-  void ApplySubCaptureTarget(const base::UnguessableToken& session_id,
-                             media::mojom::SubCaptureTargetType type,
-                             const base::Token& sub_capture_target,
-                             uint32_t sub_capture_target_version,
-                             ApplySubCaptureTargetCallback callback) override;
   void SendWheel(const base::UnguessableToken& session_id,
                  blink::mojom::CapturedWheelActionPtr action) override;
   void UpdateZoomLevel(const base::UnguessableToken& session_id,
@@ -152,6 +148,14 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void RequestCapturedSurfaceControlPermission(
       const base::UnguessableToken& session_id,
       RequestCapturedSurfaceControlPermissionCallback callback) override;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+  void ApplySubCaptureTarget(const base::UnguessableToken& session_id,
+                             media::mojom::SubCaptureTargetType type,
+                             const base::Token& sub_capture_target,
+                             uint32_t sub_capture_target_version,
+                             ApplySubCaptureTargetCallback callback) override;
   void OnSubCaptureTargetValidationComplete(
       const base::UnguessableToken& session_id,
       media::mojom::SubCaptureTargetType type,
@@ -159,7 +163,8 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       uint32_t sub_capture_target_version,
       ApplySubCaptureTargetCallback callback,
       bool target_passed_validation);
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
   void GetOpenDevice(int32_t page_request_id,
                      const base::UnguessableToken& session_id,
                      const base::UnguessableToken& transfer_id,
