@@ -36,8 +36,6 @@ specific_include_rules = {
     "+components/origin_trials/browser",
   ],
   "headless_browser_main_parts_posix.cc": [
-    "+components/dbus",
-    "+dbus",
     "+device/bluetooth",
   ],
   "headless_browser_impl.*": [
