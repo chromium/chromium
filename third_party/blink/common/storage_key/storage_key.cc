@@ -16,8 +16,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "url/gurl.h"
 

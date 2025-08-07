@@ -12,13 +12,16 @@
 #include <tuple>
 
 #include "base/unguessable_token.h"
-#include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/origin.h"
+
+namespace net {
+class CookiePartitionKey;
+class IsolationInfo;
+}
 
 namespace blink {
 

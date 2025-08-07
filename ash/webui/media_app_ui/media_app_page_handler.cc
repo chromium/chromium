@@ -11,6 +11,7 @@
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/web_contents.h"

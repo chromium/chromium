@@ -5,6 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CLEAR_SITE_DATA_UTILS_H_
 #define CONTENT_PUBLIC_BROWSER_CLEAR_SITE_DATA_UTILS_H_
 
+#include <optional>
+#include <set>
+#include <string>
+
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
