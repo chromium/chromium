@@ -241,10 +241,12 @@ export declare interface GlicBrowserHost {
    * rejected.
    *
    * If the task ID is not provided or 0, the most recent task is stopped.
+   * If the stopReason is not provided, it uses the default value
+   * ActorTaskStopReason.TASK_COMPLETE.
    *
    * @todo Require callers to provide a valid ID.
    */
-  stopActorTask?(taskId?: number): void;
+  stopActorTask?(taskId?: number, stopReason?: ActorTaskStopReason): void;
 
   /**
    * Pauses the actor task with the given ID in the browser if it exists. No-op
@@ -1284,6 +1286,14 @@ export enum ActorTaskPauseReason {
   PAUSED_BY_USER = 1,
 }
 
+/* The reason/source of why an actor task was stopped. */
+export enum ActorTaskStopReason {
+  /* Actor task is complete. */
+  TASK_COMPLETE = 0,
+  /* Actor task was stopped by the user. */
+  STOPPED_BY_USER = 1,
+}
+
 export enum PerformActionsErrorReason {
   UNKNOWN = 0,
 
@@ -1744,4 +1754,5 @@ export interface ExtensibleEnums {
   hostCapability: typeof HostCapability;
   actorTaskState: typeof ActorTaskState;
   actorTaskPauseReason: typeof ActorTaskPauseReason;
+  actorTaskStopReason: typeof ActorTaskStopReason;
 }

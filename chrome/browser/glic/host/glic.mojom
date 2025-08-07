@@ -177,6 +177,14 @@ enum ActorTaskPauseReason {
   kPausedByUser = 1,
 };
 
+// The reason/source of why an actor task was stopped.
+// This MUST be kept in sync with the glic_api.ts enum.
+[Stable, Extensible]
+enum ActorTaskStopReason {
+  [Default] kTaskComplete = 0,
+  kStoppedByUser = 1,
+};
+
 // Reason why capturing desktop screenshot failed. This MUST be kept in sync
 // with the glic_api.ts enum.
 [Stable, Extensible]
@@ -547,10 +555,11 @@ interface WebClientHandler {
       result<mojo_base.mojom.ProtoWrapper, PerformActionsErrorReason>;
 
   // Immediately stops the actor from taking any further actions associated with
-  // the given id and exits acting mode. Any in flight actions are canceled and
+  // the given id and exits acting mode. The stop_reason indicates the reason
+  // for why the stop was initiated. Any in flight actions are canceled and
   // their callbacks will be (asynchronously) invoked. No-op if a task with the
   // given id does not exist. An id of 0 refers to the most recent task.
-  StopActorTask(int32 task_id);
+  StopActorTask(int32 task_id, ActorTaskStopReason stop_reason);
 
   // Pauses the task associated with the given id. Any restrictions on the tab
   // which would prevent user interaction with it are lifted. The pause_reason

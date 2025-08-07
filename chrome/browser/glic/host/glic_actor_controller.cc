@@ -45,7 +45,8 @@ GlicActorController::~GlicActorController() = default;
 
 // TODO(mcnee): Determine if we need additional mechanisms, within the browser,
 // to stop a task.
-void GlicActorController::StopTask(actor::TaskId task_id) {
+void GlicActorController::StopTask(actor::TaskId task_id,
+                                   mojom::ActorTaskStopReason stop_reason) {
   actor::ActorTask* task = GetCurrentTask();
   if (!task) {
     return;

@@ -31,7 +31,7 @@ class GlicActorController {
   GlicActorController& operator=(const GlicActorController&) = delete;
   ~GlicActorController();
 
-  void StopTask(actor::TaskId task_id);
+  void StopTask(actor::TaskId task_id, mojom::ActorTaskStopReason stop_reason);
   void PauseTask(actor::TaskId task_id,
                  mojom::ActorTaskPauseReason pause_reason);
   void ResumeTask(

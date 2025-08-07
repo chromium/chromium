@@ -863,13 +863,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->PerformActions(actions_proto, std::move(callback));
   }
 
-  void StopActorTask(int32_t task_id) override {
+  void StopActorTask(int32_t task_id,
+                     mojom::ActorTaskStopReason stop_reason) override {
     if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
       receiver_.ReportBadMessage(
           "StopActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    glic_service_->StopActorTask(actor::TaskId(task_id));
+    glic_service_->StopActorTask(actor::TaskId(task_id), stop_reason);
   }
 
   void PauseActorTask(int32_t task_id,

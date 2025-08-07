@@ -456,10 +456,11 @@ void GlicKeyedService::PerformActions(
 // TODO(crbug.com/411462297): Stop/Pause/Resume task need to be routed to go
 // through the ActorKeyedService, rather than the deprecated ActorController
 // which ignores the task_id.
-void GlicKeyedService::StopActorTask(actor::TaskId task_id) {
+void GlicKeyedService::StopActorTask(actor::TaskId task_id,
+                                     mojom::ActorTaskStopReason stop_reason) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(actor_controller_);
-  actor_controller_->StopTask(task_id);
+  actor_controller_->StopTask(task_id, stop_reason);
 }
 
 void GlicKeyedService::PauseActorTask(
