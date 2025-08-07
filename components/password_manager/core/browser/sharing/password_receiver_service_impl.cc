@@ -239,6 +239,9 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   if (features_util::IsAccountStorageEnabled(sync_service_)) {
     password_store = account_password_store_;
   } else if (sync_service_ && sync_service_->IsSyncFeatureEnabled()) {
+    // TODO(crbug.com/40066949): Remove this branch once IsSyncFeatureEnabled()
+    // is removed from the codebase. See ConsentLevel::kSync documentation for
+    // details.
     password_store = profile_password_store_;
   }
   // `password_store` shouldn't generally be null, since in those scenarios no
