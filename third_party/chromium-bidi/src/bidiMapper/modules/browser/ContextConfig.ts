@@ -25,7 +25,8 @@ import type {
 
 /**
  * Represents a context configurations. It can be global, per User Context, or per
- * Browsing Context.
+ * Browsing Context. The undefined value means the config will be taken from the upstream
+ * config. `null` values means the value should be default regardless of the upstream.
  */
 export class ContextConfig {
   acceptInsecureCerts?: boolean;
@@ -43,4 +44,27 @@ export class ContextConfig {
   // Timezone is kept in CDP format with GMT prefix for offset values.
   timezone?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
+
+  /**
+   * Merges multiple `ContextConfig` objects. The configs are merged in the
+   * order they are provided. For each property, the value from the last config
+   * that defines it (i.e., the value is not `undefined`) will be used.
+   * The final result will not contain any `undefined` properties.
+   */
+  static merge(...configs: (ContextConfig | undefined)[]): ContextConfig {
+    const result = new ContextConfig();
+
+    for (const config of configs) {
+      if (!config) {
+        continue;
+      }
+      for (const key in config) {
+        const value = config[key as keyof ContextConfig];
+        if (value !== undefined) {
+          (result as any)[key] = value;
+        }
+      }
+    }
+    return result;
+  }
 }

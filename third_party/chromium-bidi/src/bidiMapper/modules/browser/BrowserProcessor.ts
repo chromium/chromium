@@ -69,10 +69,7 @@ export class BrowserProcessor {
     const w3cParams = params as Browser.CreateUserContextParameters;
 
     if (w3cParams.acceptInsecureCerts !== undefined) {
-      const globalConfig = this.#configStorage.getActiveConfig(
-        undefined,
-        undefined,
-      );
+      const globalConfig = this.#configStorage.getGlobalConfig();
       if (
         w3cParams.acceptInsecureCerts === false &&
         globalConfig.acceptInsecureCerts === true
