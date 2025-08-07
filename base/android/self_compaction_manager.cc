@@ -37,7 +37,7 @@ BASE_FEATURE_PARAM(size_t,
 
 BASE_FEATURE(kUseRunningCompact,
              "UseRunningCompact",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(size_t,
                    kUseRunningCompactDelayAfterPreFreezeTasks,
                    &kUseRunningCompact,
@@ -47,7 +47,7 @@ BASE_FEATURE_PARAM(size_t,
                    kUseRunningCompactMaxSize,
                    &kUseRunningCompact,
                    "running_compact_max_chunk_size",
-                   10);
+                   100);
 
 namespace {
 
