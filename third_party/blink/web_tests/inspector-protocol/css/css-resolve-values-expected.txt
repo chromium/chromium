@@ -95,6 +95,11 @@ Test resolveValues on custom property
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
 {"results":["invalid","10px","30px","6px","11px"]}
 
+Running test: testCustomProperty
+Test resolveValues on custom property with cycle should ignore custom property
+{"input": [var(--prop)]}
+{"results":["13px"]}
+
 Running test: testRegisterCustomProperty
 Test resolveValues on register custom property
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
@@ -229,4 +234,9 @@ Running test: testResolveInvalidPercentageValues
 Test resolveValues with invalid percentage expressions
 {"input": [calc(,%,calc(10 + 20)%,calc(10 + 30%]}
 {"results":["calc(","%","calc(10 + 20)%","calc(10 + 30%"]}
+
+Running test: testResolveValuesWithVar
+Test resolveValues with var() for width property
+{"input": [var(--x),attr(data-foo type(<length>)),attr(invalid, 3px),var(--invalid, 3px),var(--cycle1)]}
+{"results":["165px","13px","3px","3px","var(--cycle1)"]}
 

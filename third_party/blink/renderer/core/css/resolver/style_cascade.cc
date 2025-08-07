@@ -433,6 +433,24 @@ const CSSValue* StyleCascade::Resolve(StyleResolverState& state,
   return cascade.Resolve(name, value, tree_scope, origin, resolver);
 }
 
+const CSSUnparsedDeclarationValue* StyleCascade::ResolveSubstitutions(
+    StyleResolverState& state,
+    const CSSUnparsedDeclarationValue& value,
+    const TreeScope* tree_scope) {
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+  CascadeResolver resolver(CascadeFilter(), /*generation=*/0);
+  const CSSParserContext* context = cascade.GetParserContext(value);
+  CSSParserTokenStream stream(value.VariableDataValue()->OriginalText());
+  TokenSequence sequence;
+  if (!cascade.ResolveTokensInto(stream, tree_scope, resolver, *context,
+                                 /*function_context=*/ nullptr,
+                                 /*stop_type=*/ kEOFToken, sequence)) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
+      sequence.BuildVariableData());
+}
+
 void StyleCascade::AnalyzeIfNeeded() {
   if (needs_match_result_analyze_) {
     AnalyzeMatchResult();

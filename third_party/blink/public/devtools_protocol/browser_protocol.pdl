@@ -2496,8 +2496,7 @@ experimental domain CSS
   # resolved even then, return the provided value without any changes.
   experimental command resolveValues
     parameters
-      # Substitution functions (var()/env()/attr()) and cascade-dependent
-      # keywords (revert/revert-layer) do not work.
+      # Cascade-dependent keywords (revert/revert-layer) do not work.
       array of string values
       # Id of the node in whose context the expression is evaluated
       DOM.NodeId nodeId

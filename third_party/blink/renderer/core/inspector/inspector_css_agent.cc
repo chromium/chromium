@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -104,6 +105,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -2261,21 +2263,21 @@ protocol::Response InspectorCSSAgent::resolveValues(
         "Computed style of element is null.");
   }
 
-  const AtomicString custom_property_name(
+  const AtomicString temp_custom_property_name(
       ("--" + base::UnguessableToken::Create().ToString()).c_str());
   std::optional<AutoRegistration> auto_registration;
   CSSSyntaxDefinition syntax_definition = CreateCombinedSyntax();
   PropertyRegistration* property_registration =
       MakeGarbageCollected<PropertyRegistration>(
-          custom_property_name, syntax_definition, /* inherits */ false,
+          temp_custom_property_name, syntax_definition, /* inherits */ false,
           /* initial */ nullptr);
   // Temporary register property with combined syntax.
-  auto_registration.emplace(document, custom_property_name,
+  auto_registration.emplace(document, temp_custom_property_name,
                             *property_registration);
-  CustomProperty temporary_custom_property(custom_property_name, document);
+  CustomProperty temporary_custom_property(temp_custom_property_name, document);
 
   std::optional<CSSPropertyName> property_name =
-      CSSPropertyName(custom_property_name);
+      CSSPropertyName(temp_custom_property_name);
   if (property_name_str.has_value()) {
     property_name =
         CSSPropertyName::From(execution_context, *property_name_str);
@@ -2292,9 +2294,36 @@ protocol::Response InspectorCSSAgent::resolveValues(
 
   *results = std::make_unique<protocol::Array<String>>();
   for (auto value : *values) {
+    CSSVariableData* data =
+        CSSVariableData::Create(value, /* is_animation_tainted= */ false,
+                                /* is_attr_tainted= */ false,
+                                /*needs_variable_resolution=*/true);
+    if (!data) {
+      (*results)->emplace_back(value);
+      continue;
+    }
+
+    const CSSUnparsedDeclarationValue* unparsed =
+        MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, parser_context);
+    if (!unparsed) {
+      (*results)->emplace_back(value);
+      continue;
+    }
+
+    StyleResolverState state(element->GetDocument(), *element);
+    state.EnsureParentStyle();
+    state.SetStyle(*element->GetComputedStyle());
+    const CSSUnparsedDeclarationValue* substituted =
+        StyleCascade::ResolveSubstitutions(state, *unparsed, &document);
+
+    if (!substituted) {
+      (*results)->emplace_back(value);
+      continue;
+    }
+
     const CSSValue* computed_value = nullptr;
-    const CSSValue* parsed_value =
-        CSSParser::ParseSingleValue(property_name->Id(), value, parser_context);
+    const CSSValue* parsed_value = CSSParser::ParseSingleValue(
+        property_name->Id(), substituted->CssText(), parser_context);
     if (parsed_value) {
       computed_value =
           StyleResolver::ComputeValue(element, *property_name, *parsed_value);
@@ -2305,14 +2334,14 @@ protocol::Response InspectorCSSAgent::resolveValues(
       }
     } else {
       auto local_context = CSSParserLocalContext();
-      parsed_value = temporary_custom_property.Parse(value, *parser_context,
-                                                     local_context);
+      parsed_value = temporary_custom_property.Parse(
+          substituted->CssText(), *parser_context, local_context);
       if (!parsed_value) {
         (*results)->emplace_back(value);
         continue;
       }
       computed_value = StyleResolver::ComputeValue(
-          element, CSSPropertyName(custom_property_name), *parsed_value);
+          element, CSSPropertyName(temp_custom_property_name), *parsed_value);
     }
 
     if (!computed_value) {

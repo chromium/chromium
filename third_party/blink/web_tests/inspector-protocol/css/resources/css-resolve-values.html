@@ -9,6 +9,9 @@
     font-size: 30px;
   }
   body {
+    --x: 33em;
+    --cycle1: var(--cycle2);
+    --cycle2: var(--cycle1);
     width: 1000px;
     height: 6000px;
   }
@@ -60,7 +63,7 @@
 
 <body>
   <div class="outer">
-    <div class="inner">test</div>
+    <div class="inner" data-foo="13px">test</div>
   </div>
   <div class="display-none">test</div>
 </body>
