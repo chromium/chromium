@@ -28,7 +28,6 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -491,8 +490,8 @@ class ManagementUIHandlerTests :
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
+    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
+        TestingBrowserProcess::GetGlobal()->local_state()));
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
     fake_user_manager_->AddGaiaUser(account_id,
@@ -508,8 +507,8 @@ class ManagementUIHandlerTests :
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
     ash::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    stub_resolver_config_reader_ =
-        std::make_unique<StubResolverConfigReader>(local_state_.Get());
+    stub_resolver_config_reader_ = std::make_unique<StubResolverConfigReader>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
         stub_resolver_config_reader_.get());
     // The |DeviceSettingsTestBase| setup above instantiates
@@ -541,7 +540,8 @@ class ManagementUIHandlerTests :
             base::SingleThreadTaskRunner::GetCurrentDefault());
     manager_ = std::make_unique<TestDeviceCloudPolicyManagerAsh>(
         std::move(store), &state_keys_broker_);
-    manager_.get()->Initialize(local_state_.Get());
+    manager_.get()->Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   base::Value::List SetUpForReportingInfo() {
@@ -551,9 +551,10 @@ class ManagementUIHandlerTests :
       return {};
     }
     const TestDeviceStatusCollector status_collector(
-        local_state_.Get(), GetTestConfig().report_activity_times,
-        GetTestConfig().report_nics, GetTestConfig().report_hardware_data,
-        GetTestConfig().report_users, GetTestConfig().report_crash_info,
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        GetTestConfig().report_activity_times, GetTestConfig().report_nics,
+        GetTestConfig().report_hardware_data, GetTestConfig().report_users,
+        GetTestConfig().report_crash_info,
         GetTestConfig().report_app_info_and_activity);
     settings_.device_settings()->SetTrustedStatus(
         ash::CrosSettingsProvider::TRUSTED);
@@ -572,8 +573,9 @@ class ManagementUIHandlerTests :
     profile_->GetPrefs()->SetBoolean(
         crostini::prefs::kReportCrostiniUsageEnabled,
         GetTestConfig().crostini_report_usage);
-    local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
-                                   GetTestConfig().cloud_reporting_enabled);
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+        enterprise_reporting::kCloudReportingEnabled,
+        GetTestConfig().cloud_reporting_enabled);
     profile_->GetPrefs()->SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
     profile_->GetPrefs()->SetInteger(
@@ -679,7 +681,8 @@ class ManagementUIHandlerTests :
 #if BUILDFLAG(IS_CHROMEOS)
     handler_.SetDeviceManagedForTesting(GetTestConfig().managed_device);
     handler_.SetDeviceDomain(GetTestConfig().device_domain);
-    handler_.CreateSecureDnsManagerForTesting(local_state_.Get(), *user_.get());
+    handler_.CreateSecureDnsManagerForTesting(
+        TestingBrowserProcess::GetGlobal()->local_state(), *user_.get());
 #else
     handler_.SetBrowserManagedForTesting(GetTestConfig().managed_browser);
 #endif
@@ -753,7 +756,6 @@ class ManagementUIHandlerTests :
   policy::PolicyMap empty_policy_map_;
   std::u16string device_domain_;
   ContextualManagementSourceUpdate extracted_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   TestingPrefServiceSimple user_prefs_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1505,11 +1507,13 @@ TEST_F(ManagementUIHandlerTests, ReportLegacyTechReport) {
 TEST_F(ManagementUIHandlerTests,
        ShowPrivacyDisclosureForSecureDnsWithIdentifiers) {
   ResetTestConfig();
-  local_state_.Get()->SetManagedPref(prefs::kDnsOverHttpsMode,
-                                     base::Value(SecureDnsConfig::kModeSecure));
-  local_state_.Get()->Set(prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
-  local_state_.Get()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                          base::Value("www.test-dns.com"));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+      prefs::kDnsOverHttpsMode, base::Value(SecureDnsConfig::kModeSecure));
+  TestingBrowserProcess::GetGlobal()->local_state()->Set(
+      prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
+  TestingBrowserProcess::GetGlobal()->local_state()->Set(
+      prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+      base::Value("www.test-dns.com"));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1542,8 +1546,8 @@ TEST_F(ManagementUIHandlerTests, ShowPrivacyDisclosureForActiveProxy) {
   ResetTestConfig();
   // Set pref to use a proxy.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-  ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                     local_state_.Get());
+  ash::NetworkHandler::Get()->InitializePrefServices(
+      &user_prefs_, TestingBrowserProcess::GetGlobal()->local_state());
   user_prefs_.SetUserPref(proxy_config::prefs::kProxy,
                           ProxyConfigDictionary::CreateAutoDetect());
   base::RunLoop().RunUntilIdle();
@@ -1558,8 +1562,8 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
   ResetTestConfig();
   // Simulate network disconnected state.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-  ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                     local_state_.Get());
+  ash::NetworkHandler::Get()->InitializePrefServices(
+      &user_prefs_, TestingBrowserProcess::GetGlobal()->local_state());
   ash::NetworkStateHandler::NetworkStateList networks;
   ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
       ash::NetworkTypePattern::Default(),
@@ -1587,8 +1591,8 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
   ResetTestConfig();
   // Set pref not to use proxy.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-  ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                     local_state_.Get());
+  ash::NetworkHandler::Get()->InitializePrefServices(
+      &user_prefs_, TestingBrowserProcess::GetGlobal()->local_state());
   user_prefs_.SetUserPref(proxy_config::prefs::kProxy,
                           ProxyConfigDictionary::CreateDirect());
   base::RunLoop().RunUntilIdle();
@@ -1648,8 +1652,8 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
   policy::PolicyMap policies;
   EXPECT_CALL(policy_service_, GetPolicies(_))
       .WillRepeatedly(ReturnRef(policies));
-  local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
-                                 true);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      enterprise_reporting::kCloudReportingEnabled, true);
   ASSERT_TRUE(SetUpProfileAndHandler());
 
   profile_->GetPrefs()->SetInteger(
@@ -1702,8 +1706,8 @@ TEST_F(ManagementUIHandlerTests,
   policy::PolicyMap policies;
   EXPECT_CALL(policy_service_, GetPolicies(_))
       .WillRepeatedly(ReturnRef(policies));
-  local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
-                                 true);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      enterprise_reporting::kCloudReportingEnabled, true);
   profile_->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_->GetPrefs()->SetInteger(
@@ -1783,8 +1787,8 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   EXPECT_CALL(policy_service_,
               GetPolicies(on_prem_reporting_extension_beta_policy_namespace))
       .WillOnce(ReturnRef(on_prem_reporting_extension_beta_policies));
-  local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
-                                 true);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      enterprise_reporting::kCloudReportingEnabled, true);
   profile_->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_->GetPrefs()->SetInteger(

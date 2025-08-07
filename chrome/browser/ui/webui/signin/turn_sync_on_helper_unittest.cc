@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/profile_waiter.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -385,7 +384,7 @@ class WeakClosure {
 
 class TurnSyncOnHelperTest : public testing::Test {
  public:
-  TurnSyncOnHelperTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  TurnSyncOnHelperTest() = default;
 
   void SetUp() override {
     const base::FilePath temp_user_data_dir =
@@ -807,7 +806,6 @@ class TurnSyncOnHelperTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_;
   CoreAccountId account_id_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

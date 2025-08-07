@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -183,7 +182,6 @@ class SessionControllerClientImplTest : public testing::Test {
 
  private:
   // Sorted in the production initialization order.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   ash::SessionTerminationManager session_termination_manager_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager user_manager_;

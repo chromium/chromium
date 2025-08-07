@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
@@ -72,8 +71,7 @@ class TestingDefaultBrowserHandler : public DefaultBrowserHandler {
 
 class DefaultBrowserHandlerTest : public testing::Test {
  public:
-  DefaultBrowserHandlerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DefaultBrowserHandlerTest() = default;
 
   void SetUp() override {
     handler_ = std::make_unique<TestingDefaultBrowserHandler>();
@@ -166,13 +164,14 @@ class DefaultBrowserHandlerTest : public testing::Test {
 
   content::TestWebUI* test_web_ui() { return test_web_ui_.get(); }
 
-  TestingPrefServiceSimple* local_state() { return testing_local_state_.Get(); }
+  TestingPrefServiceSimple* local_state() {
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
 

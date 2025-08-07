@@ -30,7 +30,6 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -141,9 +140,7 @@ class MockPageInfoUI : public PageInfoUI {
 
 class PageInfoTest : public ChromeRenderViewHostTestHarness {
  public:
-  PageInfoTest() : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
-    SetURL("http://www.example.com");
-  }
+  PageInfoTest() { SetURL("http://www.example.com"); }
 
   ~PageInfoTest() override = default;
 
@@ -315,7 +312,6 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   security_state::VisibleSecurityState visible_security_state_;
 
  private:
-  ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<PageInfo> page_info_;
   std::unique_ptr<MockPageInfoUI> mock_ui_;
 

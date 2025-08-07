@@ -15,7 +15,6 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/features.h"
@@ -40,12 +39,8 @@ class PerformanceControlsMetricsTest
   }
 
   TestingPrefServiceSimple* prefs() {
-    return scoped_testing_local_state_.Get();
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   }
-
- private:
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(PerformanceControlsMetricsTest, DailyMetricsResets) {

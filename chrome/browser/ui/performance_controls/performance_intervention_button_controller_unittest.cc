@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -101,8 +100,6 @@ class PerformanceInterventionButtonControllerUnitTest : public testing::Test {
   feature_engagement::test::ScopedIphFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<PerformanceInterventionButtonController> controller_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
 };

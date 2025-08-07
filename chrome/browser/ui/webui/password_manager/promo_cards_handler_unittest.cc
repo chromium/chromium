@@ -16,7 +16,6 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -71,8 +70,7 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   PromoCardsHandlerTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -140,7 +138,6 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<PromoCardsHandler> handler_;
   raw_ptr<MockPromoCard> card1_;
   raw_ptr<MockPromoCard> card2_;
-  ScopedTestingLocalState testing_local_state_;
 };
 
 TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {

@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -16,7 +15,9 @@ namespace default_browser {
 
 class PinInfoBarPrefsTest : public testing::Test {
  protected:
-  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
+  TestingPrefServiceSimple* local_state() {
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  }
 
   void FastForwardBy(base::TimeDelta time) {
     task_environment_.FastForwardBy(time);
@@ -26,9 +27,6 @@ class PinInfoBarPrefsTest : public testing::Test {
   // Must be the first member.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  // Must be before `profile_`.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(PinInfoBarPrefsTest, SetInfoBarShownRecently) {

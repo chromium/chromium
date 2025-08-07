@@ -23,8 +23,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -191,7 +191,6 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
       : task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
-        scoped_local_state_(TestingBrowserProcess::GetGlobal()),
         upgrade_detector_(task_environment_.GetMockClock(),
                           task_environment_.GetMockTickClock()) {
     // Unittests failed when the system is on battery. This class is using a
@@ -206,7 +205,7 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
   // Sets the browser.relaunch_notification preference in Local State to
   // |value|.
   void SetNotificationPref(int value) {
-    scoped_local_state_.Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         prefs::kRelaunchNotification, std::make_unique<base::Value>(value));
   }
 
@@ -231,7 +230,6 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
   base::test::ScopedPowerMonitorTestSource power_monitor_source_;
 
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_local_state_;
   FakeUpgradeDetector upgrade_detector_;
 };
 
@@ -943,7 +941,7 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
 
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        TestingBrowserProcess::GetGlobal()->GetTestingLocalState(),
+        TestingBrowserProcess::GetGlobal()->local_state(),
         /*cros_settings=*/nullptr));
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->OnUserManagerCreated(user_manager_.Get());

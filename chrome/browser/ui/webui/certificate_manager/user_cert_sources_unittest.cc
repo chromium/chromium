@@ -14,9 +14,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/server_certificate_database/server_certificate_database.h"
 #include "components/server_certificate_database/server_certificate_database_service.h"
 #include "net/cert/x509_certificate.h"
@@ -66,7 +66,7 @@ class FakeCertificateManagerPage
 
 class UserCertSourcesUnitTest : public ChromeRenderViewHostTestHarness {
  public:
-  UserCertSourcesUnitTest() : state_(TestingBrowserProcess::GetGlobal()) {
+  UserCertSourcesUnitTest() {
     feature_list_.InitWithFeatures({features::kEnableCertManagementUIV2,
                                     features::kEnableCertManagementUIV2Write},
                                    {});
@@ -108,7 +108,6 @@ class UserCertSourcesUnitTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ScopedTestingLocalState state_;
 };
 
 TEST_F(UserCertSourcesUnitTest, TestGetCertificateInfos) {

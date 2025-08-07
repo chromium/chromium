@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -28,10 +27,10 @@ namespace {
 
 class WallpaperControllerClientImplTest : public testing::Test {
  public:
-  WallpaperControllerClientImplTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+  WallpaperControllerClientImplTest() {
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
+        std::make_unique<user_manager::FakeUserManager>(
+            TestingBrowserProcess::GetGlobal()->local_state()));
   }
 
   void SetUp() override {
@@ -63,7 +62,6 @@ class WallpaperControllerClientImplTest : public testing::Test {
   }
 
  private:
-  ScopedTestingLocalState local_state_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;

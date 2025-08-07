@@ -6,15 +6,13 @@
 
 #include "chrome/browser/global_features.h"
 #include "chrome/common/chrome_version.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class WhatsNewStorageServiceTest : public testing::Test {
  public:
-  WhatsNewStorageServiceTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  WhatsNewStorageServiceTest() = default;
   ~WhatsNewStorageServiceTest() override = default;
 
   void SetUp() override {
@@ -38,7 +36,6 @@ class WhatsNewStorageServiceTest : public testing::Test {
 
  protected:
   raw_ptr<whats_new::WhatsNewStorageService> storage_service_;
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(WhatsNewStorageServiceTest, StoresModulesData) {
@@ -124,7 +121,8 @@ TEST_F(WhatsNewStorageServiceTest, StoresEditionsData) {
 }
 
 TEST_F(WhatsNewStorageServiceTest, StoresEditionsDataWithPreviousData) {
-  ScopedDictPrefUpdate update(local_state_.Get(), prefs::kWhatsNewEditionUsed);
+  ScopedDictPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
+                              prefs::kWhatsNewEditionUsed);
   update->Set("OldEdition100", 100);
   update->Set("OldEdition101", 101);
   EXPECT_FALSE(storage_service_->ReadEditionData().empty());

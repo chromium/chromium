@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
@@ -148,12 +147,6 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
 }
 
 TEST_F(CastDeviceSelectorViewTest, ShowPermissionRejectedError) {
-  // Initialize `local_state` with TestingBrowserProcess::GetGlobal().
-  // `g_browser_process` will then be associated with this local state.
-  std::unique_ptr<ScopedTestingLocalState> local_state =
-      std::make_unique<ScopedTestingLocalState>(
-          TestingBrowserProcess::GetGlobal());
-
   CreateCastDeviceSelectorView(/*show_devices=*/true);
 
   // Show the permission rejected error.
