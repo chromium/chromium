@@ -73,6 +73,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -503,7 +504,8 @@ void ManagePasswordsUIController::OnCredentialLeak(
     ClearPopUpFlagForBubble();
   }
 
-  if (password_manager::IsPasswordChangeSupported(details.leak_type)) {
+  if (password_manager::IsPasswordChangeSupported(details.leak_type) &&
+      !password_manager::IsPasswordSavedAsBackup(details.leak_type)) {
     auto* password_change_service = GetPasswordChangeService(web_contents());
     CHECK(password_change_service);
 
