@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/android/jni_android.h"
 #include "components/input/android/jni_headers/InputUtils_jni.h"
 #include "components/input/features.h"
 #endif
@@ -80,6 +81,14 @@ bool InputUtils::IsTransferInputToVizSupported() {
   return false;
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+void InputUtils::RunGarbageCollection() {
+  Java_InputUtils_runGarbageCollection(base::android::AttachCurrentThread());
+}
+
+#endif
 
 ChromeLatencyInfo2::InputType InputEventTypeToProto(
     blink::WebInputEvent::Type event_type) {
