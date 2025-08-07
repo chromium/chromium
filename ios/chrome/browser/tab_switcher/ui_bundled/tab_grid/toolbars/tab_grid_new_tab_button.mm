@@ -107,13 +107,13 @@ const CGFloat kLargeSizeIPad = 52;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
       if (@available(iOS 26, *)) {
         UIButtonConfiguration* config = self.configuration;
-        config.background.backgroundColor = UIColor.grayColor;
+        config.background.backgroundColor = UIColor.whiteColor;
         self.configuration = config;
       } else {
 #endif
         _imageContainer.image = SymbolWithPalette(_symbol, @[
           UIColor.blackColor,
-          self.enabled ? UIColor.whiteColor : UIColor.grayColor
+          self.enabled ? UIColor.whiteColor : UIColor.whiteColor
         ]);
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
       }
