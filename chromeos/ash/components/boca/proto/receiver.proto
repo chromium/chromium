@@ -10,27 +10,21 @@ import "chromeos/ash/components/boca/proto/session.proto";
 option optimize_for = LITE_RUNTIME;
 
 message ReceiverConnection {
-  UserIdentity presenter = 1;
+  UserDeviceInfo presenter = 1;
 
-  DeviceInfo presenter_device_info = 2;
+  UserDeviceInfo initiator = 2;
 
-  UserIdentity initiator = 3;
+  string connection_code = 3;
 
-  DeviceInfo initiator_device_info = 4;
+  ReceiverState state = 4;
 
-  enum ConnectionType {
-    CONNECTION_TYPE_UNKNOWN = 0;
+  Timestamp request_time = 5;
+}
 
-    CRD = 1;
-  }
+message UserDeviceInfo {
+  UserIdentity user_identity = 1;
 
-  ConnectionType connection_type = 5;
-
-  string connection_code = 6;
-
-  ReceiverState state = 7;
-
-  boca.Timestamp request_time = 8;
+  DeviceInfo device_info = 2;
 }
 
 enum ReceiverState {
