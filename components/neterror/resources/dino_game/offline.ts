@@ -1555,11 +1555,13 @@ export class Runner {
    * Play a sound.
    */
   private playSound(soundBuffer?: AudioBuffer) {
-    assert(this.audioContext);
-    const sourceNode = this.audioContext.createBufferSource();
-    sourceNode.buffer = soundBuffer || null;
-    sourceNode.connect(this.audioContext.destination);
-    sourceNode.start(0);
+    if (soundBuffer) {
+      assert(this.audioContext);
+      const sourceNode = this.audioContext.createBufferSource();
+      sourceNode.buffer = soundBuffer || null;
+      sourceNode.connect(this.audioContext.destination);
+      sourceNode.start(0);
+    }
   }
 
   /**
