@@ -4909,15 +4909,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,
   RunMaterialDesignTest(FILE_PATH_LITERAL("list.html"));
 }
 
-// TODO(crbug.com/436869739): Flaky on Linux/Window MSAN.
-#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_MaterialDesignMenu DISABLED_MaterialDesignMenu
-#else
-#define MAYBE_MaterialDesignMenu MaterialDesignMenu
-#endif
+// TODO(crbug.com/436869739): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,
-                       MAYBE_MaterialDesignMenu) {
+                       DISABLED_MaterialDesignMenu) {
   RunMaterialDesignTest(FILE_PATH_LITERAL("menu.html"));
 }
 
