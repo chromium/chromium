@@ -1507,6 +1507,7 @@ test("content_browsertests") {
     "../browser/file_system/file_system_url_loader_factory_browsertest.cc",
     "../browser/file_system/fileapi_browsertest.cc",
     "../browser/file_system_access/file_system_access_clipboard_browsertest.cc",
+    "../browser/file_system_access/file_system_access_directory_handle_impl_browsertest.cc",
     "../browser/file_system_access/file_system_access_drag_drop_browsertest.cc",
     "../browser/file_system_access/file_system_access_file_handle_impl_browsertest.cc",
     "../browser/file_system_access/file_system_access_file_modification_host_impl_browsertest.cc",
