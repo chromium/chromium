@@ -29,16 +29,13 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void OnUiEvent(SyncUiEvent event) override;
   ActorUiTabControllerInterface* GetUiTabController(
       tabs::TabInterface* tab) override;
+  void MaybeShowToast(BrowserWindowInterface* bwi) override;
 
 // TODO(crbug.com/424495020): Post-task icon refactor, look into removing these
 // functions from AUSM.
 #if BUILDFLAG(ENABLE_GLIC)
   void OnGlicUpdateFloatyState(glic::GlicWindowController::State floaty_state,
-                               BrowserWindowInterface* bwi,
                                glic::mojom::CurrentView current_view) override;
-
-  // Update the UI based on the current floaty view (conversation or actuation).
-  void OnGlicCurrentViewChanged(glic::mojom::CurrentView new_view) override;
 
   base::CallbackListSubscription RegisterFloatyTaskStateChange(
       FloatyTaskStateChangeCallback callback) override;
@@ -61,9 +58,6 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // `current_time`.
   std::vector<TaskId> GetCompletedTasks(base::Time current_time) const;
 
-  // Shows toast that notifies user the Actor is working in the background.
-  // Shows a maximum of kToastShownMax per profile.
-  void MaybeShowToast(BrowserWindowInterface* bwi);
 
   base::OneShotTimer update_profile_scoped_ui_debounce_timer_;
   base::OneShotTimer completed_tasks_expiry_timer_;

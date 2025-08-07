@@ -855,6 +855,13 @@ void GlicWindowControllerImpl::ClientReadyToShow(
   }
 }
 
+void GlicWindowControllerImpl::OnViewChanged(mojom::CurrentView view) {
+  if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
+    actor_keyed_service->GetActorUiStateManager()->OnGlicUpdateFloatyState(
+        state(), view);
+  }
+}
+
 void GlicWindowControllerImpl::GlicLoadedAndReadyToDisplay() {
   login_page_committed_ = false;
   if (state_ == State::kClosed || state_ == State::kOpen) {
@@ -1509,12 +1516,17 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
   }
   state_ = new_state;
 
-  // Inform UI components of glic panel open/close.
-  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
   if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
+    // Show toast if floaty is closed.
+    Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+    if (state_ == State::kClosed) {
+      actor_keyed_service->GetActorUiStateManager()->MaybeShowToast(
+          last_active_browser);
+    }
+
+    // Regardless, update the ActorUiStateManager.
     actor_keyed_service->GetActorUiStateManager()->OnGlicUpdateFloatyState(
-        state_, last_active_browser,
-        glic_service_->host().GetPrimaryCurrentView());
+        state_, glic_service_->host().GetPrimaryCurrentView());
   }
 
   if (IsWindowOpenAndReady()) {

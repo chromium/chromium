@@ -239,35 +239,10 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
 #if BUILDFLAG(ENABLE_GLIC)
 void ActorUiStateManager::OnGlicUpdateFloatyState(
     glic::GlicWindowController::State floaty_state,
-    BrowserWindowInterface* bwi,
     glic::mojom::CurrentView current_view) {
-  switch (floaty_state) {
-    case glic::GlicWindowController::State::kClosed:
-      if (features::kGlicActorUiToast.Get()) {
-        MaybeShowToast(bwi);
-      }
-      break;
-    case glic::GlicWindowController::State::kOpen:
-    case glic::GlicWindowController::State::kWaitingForGlicToLoad:
-      break;
-  }
   if (state_ != UiState::kInactive) {
     floaty_task_state_change_callback_list_.Notify(state_, floaty_state,
                                                    current_view);
-  }
-}
-
-void ActorUiStateManager::OnGlicCurrentViewChanged(
-    glic::mojom::CurrentView new_view) {
-  if (state_ != UiState::kInactive) {
-    // TODO(crbug.com/436308132): Investigate removing this GlicKeyedService
-    // usage and passing the window state through OnViewChanged.
-    if (auto* glic_keyed_service =
-            glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-                actor_service_->GetProfile())) {
-      floaty_task_state_change_callback_list_.Notify(
-          state_, glic_keyed_service->window_controller().state(), new_view);
-    }
   }
 }
 
@@ -279,6 +254,10 @@ ActorUiStateManager::RegisterFloatyTaskStateChange(
 #endif
 
 void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
+  if (!features::kGlicActorUiToast.Get()) {
+    return;
+  }
+
   PrefService* pref_service = actor_service_->GetProfile()->GetPrefs();
   int toast_shown_count = pref_service->GetInteger(kToastShown);
   if (toast_shown_count >= kToastShownMax) {

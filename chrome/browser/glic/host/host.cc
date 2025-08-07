@@ -323,12 +323,6 @@ void Host::OnViewChanged(GlicWebClientAccess* client,
   if (primary_current_view_ != new_view) {
     primary_current_view_ = new_view;
     observers_.Notify(&Observer::OnViewChanged, primary_current_view_);
-    // Call the ActorUiStateManager directly on view as we want to avoid adding
-    // any GlicKeyedService dependencies to the AUSM.
-    if (auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_)) {
-      actor_keyed_service->GetActorUiStateManager()->OnGlicCurrentViewChanged(
-          new_view);
-    }
   }
 }
 

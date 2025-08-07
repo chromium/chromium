@@ -52,15 +52,15 @@ class ActorUiStateManagerInterface {
   virtual ActorUiTabControllerInterface* GetUiTabController(
       tabs::TabInterface* tab) = 0;
 
+  // Shows toast that notifies user the Actor is working in the background.
+  // Shows a maximum of kToastShownMax per profile.
+  virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
+
 #if BUILDFLAG(ENABLE_GLIC)
-  // Called on glic window (floaty) state change. Receives new state and the
-  // last active window before the floaty became active.
+  // Called on glic window (floaty) state change OR view change.
   virtual void OnGlicUpdateFloatyState(
       glic::GlicWindowController::State floaty_state,
-      BrowserWindowInterface* bwi,
       glic::mojom::CurrentView current_view) = 0;
-
-  virtual void OnGlicCurrentViewChanged(glic::mojom::CurrentView new_view) = 0;
 
   // Register for this callback to detect changes to the glic floaty status and
   // UiState.

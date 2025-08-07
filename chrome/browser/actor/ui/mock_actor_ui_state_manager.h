@@ -35,17 +35,13 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               GetUiTabController,
               (tabs::TabInterface * tab),
               (override));
+  MOCK_METHOD(void, MaybeShowToast, (BrowserWindowInterface * bwi), (override));
 
 #if BUILDFLAG(ENABLE_GLIC)
   MOCK_METHOD(void,
               OnGlicUpdateFloatyState,
               (glic::GlicWindowController::State floaty_state,
-               BrowserWindowInterface* interface,
                glic::mojom::CurrentView current_view),
-              (override));
-  MOCK_METHOD(void,
-              OnGlicCurrentViewChanged,
-              (glic::mojom::CurrentView new_view),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterFloatyTaskStateChange,
