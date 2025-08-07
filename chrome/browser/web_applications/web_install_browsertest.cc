@@ -54,16 +54,8 @@ constexpr char kNotAllowedError[] = "NotAllowedError";
 constexpr char kTypeError[] = "TypeError";
 }  // namespace
 
-enum class APISignature {
-  kZeroParameter,
-  kOneParameter,
-  kTwoParameter,
-};
-
 namespace web_app {
-class WebInstallCurrentDocumentBrowserTest
-    : public WebAppBrowserTestBase,
-      public ::testing::WithParamInterface<APISignature> {
+class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
  public:
   WebInstallCurrentDocumentBrowserTest() = default;
 
@@ -73,7 +65,7 @@ class WebInstallCurrentDocumentBrowserTest
   }
 
   // 0 parameter navigator.install()
-  bool TryInstallApp() {
+  bool TryInstallApp(bool with_gesture = true) {
     const std::string script =
         "navigator.install()"
         ".then(result => {"
@@ -81,35 +73,6 @@ class WebInstallCurrentDocumentBrowserTest
         "}).catch(error => {"
         "  webInstallError = error;"
         "});";
-
-    return ExecJs(web_contents(), script);
-  }
-
-  // 1 param navigator.install(install_url)
-  bool TryInstallApp(std::string install_url) {
-    const std::string script = "navigator.install('" + install_url +
-                               "').then(result => {"
-                               "  webInstallResult = result;"
-                               "}).catch(error => {"
-                               "  webInstallError = error;"
-                               "});";
-
-    return ExecJs(web_contents(), script);
-  }
-
-  // 2 param navigator.install(install_url, manifest_id)
-  // `with_gesture` behavior handling is identical for all 3 signatures, so
-  // only test with the 2 param signature to avoid redundancy.
-  bool TryInstallApp(std::string install_url,
-                     std::string manifest_id,
-                     bool with_gesture = true) {
-    const std::string script = "navigator.install('" + install_url + "', '" +
-                               manifest_id +
-                               "').then(result => {"
-                               "  webInstallResult = result;"
-                               "}).catch(error => {"
-                               "  webInstallError = error;"
-                               "});";
 
     if (with_gesture) {
       return ExecJs(web_contents(), script);
@@ -177,7 +140,7 @@ class WebInstallCurrentDocumentBrowserTest
       blink::features::kWebAppInstallation};
 };
 
-IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest, Install) {
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
   GURL current_doc_url =
       https_server()->GetURL("/banners/manifest_with_id_test_page.html");
   const std::string manifest_id =
@@ -195,17 +158,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest, Install) {
   ui_test_utils::BrowserChangeObserver wait_for_web_app(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
-  switch (GetParam()) {
-    case APISignature::kZeroParameter:
-      ASSERT_TRUE(TryInstallApp());
-      break;
-    case APISignature::kOneParameter:
-      ASSERT_TRUE(TryInstallApp(current_doc_url.spec()));
-      break;
-    case APISignature::kTwoParameter:
-      ASSERT_TRUE(TryInstallApp(current_doc_url.spec(), manifest_id));
-      break;
-  }
+  ASSERT_TRUE(TryInstallApp());
 
   // Verify that the app was installed.
   EXPECT_TRUE(install_future.Wait());
@@ -251,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest, Install) {
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
-IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        UserAcceptsOpenDialog) {
   GURL current_doc_url =
       https_server()->GetURL("/banners/manifest_with_id_test_page.html");
@@ -278,17 +231,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
   // Call navigator.install() to trigger the intent picker.
-  switch (GetParam()) {
-    case APISignature::kZeroParameter:
-      ASSERT_TRUE(TryInstallApp());
-      break;
-    case APISignature::kOneParameter:
-      ASSERT_TRUE(TryInstallApp(current_doc_url.spec()));
-      break;
-    case APISignature::kTwoParameter:
-      ASSERT_TRUE(TryInstallApp(current_doc_url.spec(), manifest_id));
-      break;
-  }
+  ASSERT_TRUE(TryInstallApp());
 
   // Verify the app was launched again after accepting the intent picker.
   auto* launched_app_browser = wait_for_launch_app.Wait();
@@ -304,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                                 apps::LaunchSource::kFromReparenting, 2);
 }
 
-IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        UserCancelsOpenDialog) {
   GURL current_doc_url =
       https_server()->GetURL("/banners/manifest_with_id_test_page.html");
@@ -327,29 +270,12 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
   auto auto_cancel_intent_picker =
       IntentPickerBubbleView::SetAutoCancelIntentPickerBubbleForTesting();
 
-  // Call navigator.install() to trigger the intent picker.
-  switch (GetParam()) {
-    case APISignature::kZeroParameter:
-      ASSERT_TRUE(TryInstallApp());
-      break;
-    case APISignature::kOneParameter:
-      ASSERT_TRUE(TryInstallApp(current_doc_url.spec()));
-      break;
-    case APISignature::kTwoParameter:
-      ASSERT_TRUE(TryInstallApp(current_doc_url.spec(), manifest_id));
-      break;
-  }
+  ASSERT_TRUE(TryInstallApp());
 
   // Validate JS results.
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         WebInstallCurrentDocumentBrowserTest,
-                         testing::Values(APISignature::kZeroParameter,
-                                         APISignature::kOneParameter,
-                                         APISignature::kTwoParameter));
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        IntentPickerAfterTabSwitching) {
@@ -556,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
 
   NavigateAndConfigureCurrentDocumentForInstall(current_doc_url);
 
-  ASSERT_TRUE(TryInstallApp(current_doc_url.spec()));
+  ASSERT_TRUE(TryInstallApp());
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -569,24 +495,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
 
   NavigateAndConfigureCurrentDocumentForInstall(current_doc_url);
 
-  ASSERT_TRUE(TryInstallApp(current_doc_url.spec()));
-
-  EXPECT_FALSE(ResultExists());
-  EXPECT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kDataError);
-}
-
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
-                       IdMismatch) {
-  // Has "id": "some_id"
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
-  const std::string manifest_id =
-      https_server()->GetURL("/incorrect_id").spec();
-
-  NavigateAndConfigureCurrentDocumentForInstall(current_doc_url);
-
-  ASSERT_TRUE(TryInstallApp(current_doc_url.spec(), manifest_id));
+  ASSERT_TRUE(TryInstallApp());
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -603,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallServiceImplBrowserTestBadInput,
 
   std::string install_url = GetInstallableAppURL().spec();
   std::string manifest_id = install_url;
-  ASSERT_TRUE(TryInstallApp(install_url, manifest_id, /*with_gesture=*/false));
+  ASSERT_TRUE(TryInstallApp(/*with_gesture=*/false));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());

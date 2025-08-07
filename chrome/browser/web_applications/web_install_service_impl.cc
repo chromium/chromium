@@ -131,17 +131,8 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     return;
   }
 
-  GURL install_target;
   const GURL current_url = rfh->GetLastCommittedURL();
-
-  // `options` is null if the 0-parameter signature was called.
-  if (!options) {
-    // No parameters means we want to install the current document.
-    install_target = current_url;
-  } else {
-    install_target = GURL(options->install_url);
-  }
-  install_options_ = std::move(options);
+  GURL install_target = options ? GURL(options->install_url) : current_url;
 
   // Do not allow installation of file:// or chrome:// urls.
   if (!install_target.SchemeIsHTTPOrHTTPS()) {
@@ -162,14 +153,25 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     return;
   }
 
-  // Initiate installation of the current document.
-  // TODO(crbug.com/407473727): Treat install(self) and install(self, self) as
-  // background installs, but skip the permissions checking code. Tests will
-  // also likely need updating.
-  if (install_target == current_url) {
+  // Initiate installation of the current document if no install options were
+  // given.
+  if (!options) {
     TryInstallCurrentDocument(std::move(callback));
 
     // Current document installs don't require the permissions checking code.
+    return;
+  }
+
+  // Store the original install params for later. Current document doesn't need
+  // these, as only the 0 parameter signature can do current document installs.
+  install_options_ = std::move(options);
+
+  // If the given url to install matches the current url, skip
+  // requesting permission since the user is still installing the current
+  // document, even though it's in the background.
+  if (install_target == current_url) {
+    OnPermissionDecided(std::move(callback), std::vector<PermissionStatus>(
+                                                 {PermissionStatus::GRANTED}));
     return;
   }
 
@@ -183,8 +185,7 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
 
   RequestWebInstallPermission(
       base::BindOnce(&WebInstallServiceImpl::OnPermissionDecided,
-                     weak_ptr_factory_.GetWeakPtr(), install_target,
-                     install_options_->manifest_id, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(
@@ -302,20 +303,9 @@ void WebInstallServiceImpl::OnDidRetrieveManifestForCurrentDocumentInstall(
     return;
   }
 
-  // The manifest must have a developer-specified id if navigator.install was
-  // invoked without a `manifest_id` (ie. the 0 or 1 parameter version).
-  bool manifest_must_have_id =
-      !install_options_ || !install_options_->manifest_id;
-  if (manifest_must_have_id && !opt_manifest->has_custom_id) {
-    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kDataError,
-                            GURL());
-    return;
-  }
-  // navigator.install was invoked with a manifest_id, so the current document
-  // is not required to have a developer-specified id. However, the id passed
-  // to navigator.install must match the current document's computed id.
-  if (!manifest_must_have_id &&
-      install_options_->manifest_id.value() != opt_manifest->id) {
+  // The manifest must have a developer-specified id since the current document
+  // version of navigator.install does not take a `manifest_id`.
+  if (!opt_manifest->has_custom_id) {
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kDataError,
                             GURL());
     return;
@@ -379,8 +369,6 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
 }
 
 void WebInstallServiceImpl::OnPermissionDecided(
-    const GURL& install_target,
-    const std::optional<GURL>& manifest_id,
     InstallCallback callback,
     const std::vector<PermissionStatus>& permission_status) {
   CHECK_EQ(permission_status.size(), 1u);
@@ -422,8 +410,8 @@ void WebInstallServiceImpl::OnPermissionDecided(
   // Check if the background document is already installed so we can show the
   // launch dialog instead of the install dialog. See definition for details
   // on how we check if the app is installed.
-  std::optional<webapps::AppId> app_id =
-      IsAppInstalled(profile, install_target, manifest_id);
+  std::optional<webapps::AppId> app_id = IsAppInstalled(
+      profile, install_options_->install_url, install_options_->manifest_id);
   if (app_id) {
     // See `IsAppInstalled` for why this can be unsafe.
     const GURL& installed_manifest_id =
@@ -432,7 +420,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
 
     // Get the information to display in the launch dialog.
     provider->scheduler().FetchInstallInfoFromInstallUrl(
-        installed_manifest_id, install_target,
+        installed_manifest_id, install_options_->install_url,
         base::BindOnce(
             &WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id.value(),
@@ -440,7 +428,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
     return;
   }
 
-  // `install_target` was not installed. Proceed with the background install.
+  // `install_url` was not installed. Proceed with the background install.
 
   // Register the background install on the current web contents.
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
@@ -448,7 +436,8 @@ void WebInstallServiceImpl::OnPermissionDecided(
           webapps::WebappInstallSource::WEB_INSTALL);
 
   provider->ui_manager().TriggerInstallDialogForBackgroundInstall(
-      web_contents, std::move(install_tracker), install_target, manifest_id,
+      web_contents, std::move(install_tracker), install_options_->install_url,
+      install_options_->manifest_id,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

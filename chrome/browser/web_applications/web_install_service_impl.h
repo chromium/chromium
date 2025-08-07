@@ -79,8 +79,6 @@ class WebInstallServiceImpl
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
 
   void OnPermissionDecided(
-      const GURL& install_target,
-      const std::optional<GURL>& manifest_id,
       InstallCallback callback,
       const std::vector<blink::mojom::PermissionStatus>& permission_status);
 
@@ -103,6 +101,8 @@ class WebInstallServiceImpl
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
 
+  // The original parameters received from the blink sides - a required
+  // `install_url` and an optional `manifest_id`.
   blink::mojom::InstallOptionsPtr install_options_;
   const content::GlobalRenderFrameHostId frame_routing_id_;
   base::WeakPtrFactory<web_app::WebInstallServiceImpl> weak_ptr_factory_{this};
