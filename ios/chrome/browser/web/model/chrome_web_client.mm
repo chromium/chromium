@@ -54,8 +54,7 @@
 #import "ios/chrome/browser/permissions/model/features.h"
 #import "ios/chrome/browser/permissions/model/geolocation_api_usage_java_script_feature.h"
 #import "ios/chrome/browser/permissions/model/media_api_usage_java_script_feature.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
@@ -600,11 +599,8 @@ void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
 void ChromeWebClient::WillDisplayMediaCapturePermissionPrompt(
     web::WebState* web_state) const {
   // When a prendered page displays a prompt, cancel the prerender.
-  PrerenderService* prerender_service = PrerenderServiceFactory::GetForProfile(
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
-  if (prerender_service &&
-      prerender_service->IsWebStatePrerendered(web_state)) {
-    prerender_service->CancelAllPrerenders();
+  if (auto* tab_helper = PrerenderTabHelper::FromWebState(web_state)) {
+    tab_helper->CancelPrerender();
   }
 }
 
