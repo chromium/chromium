@@ -284,6 +284,11 @@
     right: var(--cr-searchbox-voice-icon-offset);
   }
 
+  :host([compose-button-enabled][dropdown-is-visible]) #voiceSearchButton,
+  :host([compose-button-enabled][dropdown-is-visible]) #lensSearchButton {
+    display: none;
+  }
+
   :host-context([dir='rtl']) .searchbox-icon-button {
     left: 16px;
     right: unset;
