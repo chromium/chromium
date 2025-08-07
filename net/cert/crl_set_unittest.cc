@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
-#include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -163,11 +162,13 @@ TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlocklist) {
         x509_util::CryptoBufferAsStringPiece(diginotar_cert->cert_buffer()),
         &spki));
 
-    std::string spki_sha256 = crypto::SHA256HashString(spki);
+    SHA256HashValue spki_sha256 = crypto::hash::Sha256(spki);
 
-    EXPECT_EQ(CRLSet::REVOKED, set1->CheckSPKI(spki_sha256))
+    EXPECT_EQ(CRLSet::REVOKED,
+              set1->CheckSPKI(base::as_string_view(spki_sha256)))
         << "Public key not blocked for " << kDigiNotarFilenames[i];
-    EXPECT_EQ(CRLSet::REVOKED, set2->CheckSPKI(spki_sha256))
+    EXPECT_EQ(CRLSet::REVOKED,
+              set2->CheckSPKI(base::as_string_view(spki_sha256)))
         << "Public key not blocked for " << kDigiNotarFilenames[i];
   }
 }
@@ -189,7 +190,7 @@ TEST(CRLSetTest, BlockedSubjects) {
 
   std::string_view spki;
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(root_der, &spki));
-  SHA256HashValue spki_sha256 = crypto::hash::Sha256(base::as_byte_span(spki));
+  SHA256HashValue spki_sha256 = crypto::hash::Sha256(spki);
 
   std::string_view subject;
   ASSERT_TRUE(asn1::ExtractSubjectFromDERCert(root_der, &subject));

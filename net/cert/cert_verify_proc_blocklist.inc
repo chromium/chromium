@@ -6,7 +6,7 @@
 // are stored within net/data/ssl/blocklist. Further details about the
 // rationale is documented in net/data/ssl/blocklist/README.md
 static constexpr uint8_t
-    kSPKIBlockList[][crypto::kSHA256Length] = {
+    kSPKIBlockList[][crypto::hash::kSha256Size] = {
         // 2740d956b1127b791aa1b3cc644a4dbedba76186a23638b95102351a834ea861.pem
         {0x04, 0xdd, 0xe9, 0xaa, 0x9a, 0x79, 0xf6, 0x14, 0x98, 0x68, 0x23,
          0x25, 0xfa, 0x08, 0x70, 0x27, 0x67, 0x07, 0xfb, 0x9c, 0xa9, 0x53,
@@ -399,7 +399,7 @@ static constexpr uint8_t
 
 // Hashes of SubjectPublicKeyInfos known to be used for interception by a
 // party other than the device or machine owner.
-static constexpr uint8_t kKnownInterceptionList[][crypto::kSHA256Length] = {
+static constexpr uint8_t kKnownInterceptionList[][crypto::hash::kSha256Size] = {
     // 1df696f021ab1c3ace9a376b07ed7256a40214cd3396d7934087614924e2d7ef.pem
     {0xb1, 0x3f, 0xa2, 0xe6, 0x13, 0x1a, 0x88, 0x8a, 0x01, 0xf3, 0xd6, 0x20,
      0x56, 0xfb, 0x0e, 0xfb, 0xe9, 0x99, 0xeb, 0x6b, 0x6e, 0x14, 0x92, 0x76,

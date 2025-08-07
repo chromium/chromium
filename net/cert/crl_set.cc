@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/trace_constants.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -89,10 +89,12 @@ static const int kCurrentFileVersion = 0;
 bool ReadCRL(std::string_view* data,
              std::string* out_parent_spki_hash,
              std::vector<std::string>* out_serials) {
-  if (data->size() < crypto::kSHA256Length)
+  if (data->size() < crypto::hash::kSha256Size) {
     return false;
-  *out_parent_spki_hash = std::string(data->substr(0, crypto::kSHA256Length));
-  data->remove_prefix(crypto::kSHA256Length);
+  }
+  *out_parent_spki_hash =
+      std::string(data->substr(0, crypto::hash::kSha256Size));
+  data->remove_prefix(crypto::hash::kSha256Size);
 
   uint32_t num_serials;
   if (data->size() < sizeof(num_serials))
@@ -283,12 +285,12 @@ bool CRLSet::Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set) {
 #include "net/cert/cert_verify_proc_blocklist.inc"
   for (const auto& hash : kSPKIBlockList) {
     crl_set->blocked_spkis_.emplace_back(reinterpret_cast<const char*>(hash),
-                                         crypto::kSHA256Length);
+                                         crypto::hash::kSha256Size);
   }
 
   for (const auto& hash : kKnownInterceptionList) {
     crl_set->known_interception_spkis_.emplace_back(
-        reinterpret_cast<const char*>(hash), crypto::kSHA256Length);
+        reinterpret_cast<const char*>(hash), crypto::hash::kSha256Size);
   }
 
   // Sort, as these will be std::binary_search()'d.
@@ -309,7 +311,8 @@ CRLSet::Result CRLSet::CheckSPKI(std::string_view spki_hash) const {
 
 CRLSet::Result CRLSet::CheckSubject(std::string_view encoded_subject,
                                     std::string_view spki_hash) const {
-  const std::string digest(crypto::SHA256HashString(encoded_subject));
+  const std::string digest(
+      base::as_string_view(crypto::hash::Sha256(encoded_subject)));
   const auto i = limited_subjects_.find(digest);
   if (i == limited_subjects_.end()) {
     return GOOD;
@@ -423,8 +426,9 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
       return nullptr;
     }
 
-    subject_hash.assign(crypto::SHA256HashString(
-        std::string_view(reinterpret_cast<char*>(x501_data), x501_len)));
+    // SAFETY: x501_data is a pointer to data that is x501_len bytes in length
+    subject_hash.assign(base::as_string_view(
+        crypto::hash::Sha256(UNSAFE_BUFFERS(base::span(x501_data, x501_len)))));
     OPENSSL_free(x501_data);
   }
 
