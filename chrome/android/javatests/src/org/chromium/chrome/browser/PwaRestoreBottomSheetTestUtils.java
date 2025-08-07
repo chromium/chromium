@@ -32,15 +32,12 @@ public class PwaRestoreBottomSheetTestUtils {
     }
 
     /** Set the app list to use for testing. */
-    public static void setAppListForRestoring(String[][] appList, int[] lastUsedInDays)
-            throws Exception {
+    public static void setAppListForRestoring(String[][] appList) throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PwaRestoreBottomSheetTestUtilsJni.get()
                             .setAppListForRestoring(
-                                    appList,
-                                    lastUsedInDays,
-                                    ProfileManager.getLastUsedRegularProfile());
+                                    appList, ProfileManager.getLastUsedRegularProfile());
                 });
     }
 
@@ -53,7 +50,6 @@ public class PwaRestoreBottomSheetTestUtils {
     interface Natives {
         void waitForWebApkDatabaseInitialization(@JniType("Profile*") Profile profile);
 
-        void setAppListForRestoring(
-                String[][] appList, int[] lastUsedInDays, @JniType("Profile*") Profile profile);
+        void setAppListForRestoring(String[][] appList, @JniType("Profile*") Profile profile);
     }
 }

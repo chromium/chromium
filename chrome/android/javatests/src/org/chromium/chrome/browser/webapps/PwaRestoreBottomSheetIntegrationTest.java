@@ -73,7 +73,6 @@ public class PwaRestoreBottomSheetIntegrationTest {
         {"https://example.com/app2/", "App 2", ICON_URL2},
         {"https://example.com/app3/", "App 3", ICON_URL1}
     };
-    private static final int[] sDefaultLastUsed = {1, 2, 3};
 
     private static final String TAG = "PwaRestoreIntegrTest";
 
@@ -97,15 +96,13 @@ public class PwaRestoreBottomSheetIntegrationTest {
         mPreferences.writeBoolean(ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, true);
     }
 
-    private boolean setTestAppsForRestoring(String[][] appList, int[] lastUsed) {
-        Assert.assertEquals(appList.length, lastUsed.length);
-
+    private boolean setTestAppsForRestoring(String[][] appList) {
         for (String[] app : appList) {
             app[2] = mTestServer.getURL(app[2]);
         }
         try {
             PwaRestoreBottomSheetTestUtils.waitForWebApkDatabaseInitialization();
-            PwaRestoreBottomSheetTestUtils.setAppListForRestoring(appList, lastUsed);
+            PwaRestoreBottomSheetTestUtils.setAppListForRestoring(appList);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "setTestAppsForRestoring failed " + e);
@@ -223,7 +220,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // and then presses the Back in the OS twice to see what happens (first click should
         // navigate back to the initial dialog state, second click closes the dialog).
 
-        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -252,7 +249,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestore"})
     @DisabledTest(message = "https://crbug.com/425736622")
     public void testClickForwarding() {
-        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -288,7 +285,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestore"})
     @DisabledTest(message = "https://crbug.com/425736622")
     public void testDeselectAll() throws Exception {
-        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -339,7 +336,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestore"})
     @DisabledTest(message = "https://crbug.com/425736622")
     public void testRestoreClosesUi() throws Exception {
-        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
