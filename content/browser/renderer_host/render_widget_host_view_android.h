@@ -809,7 +809,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   ScreenStateChangeHandler screen_state_change_handler_;
 
-  bool keyboard_locked_ = false;
   std::optional<base::flat_set<ui::DomCode>> locked_keyboard_keys_;
 
   base::WeakPtrFactory<RenderWidgetHostViewAndroid> weak_ptr_factory_{this};
