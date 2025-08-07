@@ -99,10 +99,6 @@ tast.inputs.VirtualKeyboardSpeech
 # b/424789710
 tast.apps.LaunchGalleryFromNotifications.stable
 
-# b/433816171
-tast.secagentd.FileEvents.auth_factors@trogdor
-tast.secagentd.FileEvents.cookies@trogdor
-
 # https://crbug.com/434741638
 apps.Sharesheet
 tast.apps.Sharesheet
