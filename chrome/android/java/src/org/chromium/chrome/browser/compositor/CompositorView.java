@@ -412,7 +412,14 @@ public class CompositorView extends FrameLayout
     }
 
     private boolean canUseSurfaceControl() {
-        return !mIsInXr && !mSelectionHandlesActive;
+        if (mSelectionHandlesActive) {
+            return false;
+        }
+        boolean xrUsesSurfaceControl =
+                mNativeCompositorView != 0
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.ANDROID_XR_USES_SURFACE_CONTROL);
+        return xrUsesSurfaceControl || !mIsInXr;
     }
 
     /**
