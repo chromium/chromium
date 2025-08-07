@@ -45,13 +45,6 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-// Templates in this file are instantiated many times with different types.
-// Adding the regular GC_PLUGIN_IGNORE annotations to fields in the templates
-// results in the annotation being duplicated many times, growing the debug
-// symbols, and regressing binary size. To avoid the binary size regression,
-// mark the file to ignore instead.
-GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
-
 #if !defined(DUMP_HASHTABLE_STATS)
 #define DUMP_HASHTABLE_STATS 0
 #endif
@@ -639,7 +632,7 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTable final {
+class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   DISALLOW_NEW();
 
  public:
@@ -2070,6 +2063,9 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
 
 template <typename HashTableType, typename Traits>
 struct HashTableConstIteratorAdapter {
+  STACK_ALLOCATED();
+
+ public:
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
   using iterator_category = std::bidirectional_iterator_tag;
@@ -2173,6 +2169,9 @@ std::ostream& operator<<(
 
 template <typename HashTableType, typename Traits>
 struct HashTableIteratorAdapter {
+  STACK_ALLOCATED();
+
+ public:
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
   using iterator_category = std::bidirectional_iterator_tag;

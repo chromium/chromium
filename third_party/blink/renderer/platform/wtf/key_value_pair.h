@@ -28,21 +28,15 @@
 
 #include <utility>
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
-// Templates in this file are instantiated many times with different types.
-// Adding the regular GC_PLUGIN_IGNORE annotations to fields in the templates
-// results in the annotation being duplicated many times, growing the debug
-// symbols, and regressing binary size. To avoid the binary size regression,
-// mark the file to ignore instead.
-GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
-
 namespace blink {
 
 template <typename KeyTypeArg, typename ValueTypeArg>
-struct KeyValuePair {
+struct GC_PLUGIN_IGNORE("crbug.com/428987863") KeyValuePair {
   using KeyType = KeyTypeArg;
   using ValueType = ValueTypeArg;
 
@@ -130,6 +124,9 @@ template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableConstIteratorAdapter<HashTableType,
                                      KeyValuePair<KeyType, MappedType>>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
+  STACK_ALLOCATED();
+
+ public:
   typedef KeyValuePair<KeyType, MappedType> ValueType;
   typedef HashTableConstKeysIterator<HashTableType, KeyType, MappedType>
       KeysIterator;
@@ -181,6 +178,9 @@ template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableIteratorAdapter<HashTableType,
                                 KeyValuePair<KeyType, MappedType>>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
+  STACK_ALLOCATED();
+
+ public:
   typedef KeyValuePair<KeyType, MappedType> ValueType;
   typedef HashTableKeysIterator<HashTableType, KeyType, MappedType>
       KeysIterator;
