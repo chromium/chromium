@@ -71,8 +71,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
@@ -181,7 +181,7 @@ ArcServiceLauncher::ArcServiceLauncher(
     : arc_service_manager_(std::make_unique<ArcServiceManager>()),
       arc_session_manager_(
           CreateArcSessionManager(arc_service_manager_->arc_bridge_service(),
-                                  chrome::GetChannel(),
+                                  ash::GetChannel(),
                                   scheduler_configuration_manager)),
       scheduler_configuration_manager_(scheduler_configuration_manager),
       arc_dlc_installer_(std::make_unique<ArcDlcInstaller>(
@@ -445,7 +445,7 @@ void ArcServiceLauncher::ResetForTesting() {
   // may be referred from existing KeyedService, so destoying it would cause
   // unexpected behavior, specifically on test teardown.
   arc_session_manager_ = CreateArcSessionManager(
-      arc_service_manager_->arc_bridge_service(), chrome::GetChannel(),
+      arc_service_manager_->arc_bridge_service(), ash::GetChannel(),
       scheduler_configuration_manager_);
 
   // Recreate arc_dlc_installer_ after shutdown because browser_test will run

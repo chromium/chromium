@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -75,7 +75,7 @@ ProfileAuthServersSyncBridge::Create(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::PRINTERS_AUTHORIZATION_SERVERS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              chrome::GetChannel())),
+                              ash::GetChannel())),
       std::move(store_factory), observer));
 }
 

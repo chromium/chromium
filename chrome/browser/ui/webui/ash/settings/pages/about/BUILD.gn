@@ -35,7 +35,6 @@ static_library("about") {
     "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
-    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chromeos/dbus/constants",
     "//components/policy/core/common",

@@ -97,7 +97,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_tab_helper.h",
   "+chrome/browser/web_applications/web_app_utils.h",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",

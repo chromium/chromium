@@ -46,7 +46,6 @@ include_rules = [
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/webui/ash",
-  "+chrome/common/channel_info.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]

@@ -78,11 +78,11 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/specialized_features/feedback.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
@@ -519,7 +519,7 @@ version_info::Channel ChromeShellDelegate::GetChannel() {
     // Simulate a non-stable channel so the release track UI is visible.
     return version_info::Channel::BETA;
   }
-  return chrome::GetChannel();
+  return ash::GetChannel();
 }
 
 void ChromeShellDelegate::ForceSkipWarningUserOnClose(

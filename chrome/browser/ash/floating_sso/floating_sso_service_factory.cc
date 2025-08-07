@@ -11,8 +11,8 @@
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
-#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -88,7 +88,7 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::COOKIES,
               base::BindRepeating(&syncer::ReportUnrecoverableError,
-                                  chrome::GetChannel())),
+                                  ash::GetChannel())),
           DataTypeStoreServiceFactory::GetForProfile(profile)
               ->GetStoreFactory()),
       cookie_manager_callback);

@@ -76,7 +76,6 @@ include_rules = [
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/webui/ash/emoji",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",

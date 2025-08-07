@@ -37,7 +37,6 @@ include_rules = [
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/ash/mako",
   "+chrome/browser/ui/webui/ash/settings/search",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/extensions",

@@ -24,7 +24,7 @@ static_library("device_info") {
   ]
 
   deps = [
-    "//chrome/common:channel_info",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/system",
     "//components/version_info",
   ]

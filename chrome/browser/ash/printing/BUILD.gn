@@ -126,6 +126,7 @@ static_library("printing") {
     "//chrome/browser/sync:factories",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/cups_proxy",
     "//chromeos/ash/components/dbus/debug_daemon",

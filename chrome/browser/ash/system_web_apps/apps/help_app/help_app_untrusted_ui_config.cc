@@ -33,11 +33,11 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -71,7 +71,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddString("boardName", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("chromeOSVersion", base::SysInfo::OperatingSystemVersion());
   source->AddString("chromeVersion", chrome::kChromeVersion);
-  source->AddInteger("channel", static_cast<int>(chrome::GetChannel()));
+  source->AddInteger("channel", static_cast<int>(ash::GetChannel()));
   system::StatisticsProvider* provider =
       system::StatisticsProvider::GetInstance();
   // MachineStatistics may not exist for browser tests, but it is fine for these

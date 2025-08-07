@@ -64,7 +64,6 @@ include_rules = [
   "+chrome/browser/ui/webui/signin/ash",
   "+chrome/browser/ui/zoom",
   "+chrome/browser/webshare",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_isolated_world_ids.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_paths_internal.h",

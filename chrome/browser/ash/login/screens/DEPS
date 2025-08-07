@@ -69,7 +69,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/ui/webui/signin/ash",
   "+chrome/browser/unified_consent",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/pref_names.h",

@@ -15,8 +15,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -225,7 +225,7 @@ bool AmbientClientImpl::ShouldUseProdServer() {
   if (ash::features::IsAmbientModeDevUseProdEnabled())
     return true;
 
-  auto channel = chrome::GetChannel();
+  auto channel = ash::GetChannel();
   return channel == version_info::Channel::STABLE ||
          channel == version_info::Channel::BETA;
 }

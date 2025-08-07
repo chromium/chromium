@@ -17,5 +17,4 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/memory_details.h",
-  "+chrome/common/channel_info.h",
 ]
