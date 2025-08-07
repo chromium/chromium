@@ -7,6 +7,7 @@
 
 #include <gio/gio.h>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -34,7 +35,8 @@ namespace remoting {
 // latest operation should take effect.
 class GnomeDisplayConfigDBusClient {
  public:
-  using Callback = base::OnceCallback<void(GnomeDisplayConfig)>;
+  using CallbackSignature = void(GnomeDisplayConfig);
+  using Callback = base::OnceCallback<CallbackSignature>;
 
   // Represents an active subscription. Once the subscription is destroyed, the
   // registered callback will no longer be called by
@@ -118,7 +120,8 @@ class GnomeDisplayConfigDBusClient {
       GUARDED_BY_CONTEXT(sequence_checker_);
   GDBusConnectionRef dbus_connection_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  Callback pending_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceCallbackList<CallbackSignature> pending_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -65,12 +65,12 @@ void GnomeDisplayConfigDBusClient::GetMonitorsConfig(
     // The DBus connection is not yet made. When the connection is made,
     // OnDBusGet() will check if there is any pending callback. If so, it
     // will trigger a new call to the DBus GetCurrentState() method.
-    pending_callback_ = std::move(callback);
+    pending_callbacks_.AddUnsafe(std::move(callback));
     return;
   }
 
-  bool need_new_call = pending_callback_.is_null();
-  pending_callback_ = std::move(callback);
+  bool need_new_call = pending_callbacks_.empty();
+  pending_callbacks_.AddUnsafe(std::move(callback));
   if (need_new_call) {
     CallDBusGetCurrentState();
   }
@@ -192,7 +192,7 @@ void GnomeDisplayConfigDBusClient::OnDBusGet(
   dbus_connection_ = GDBusConnectionRef(std::move(dbus_connection));
   HOST_LOG << "Got session D-Bus";
 
-  if (pending_callback_) {
+  if (!pending_callbacks_.empty()) {
     CallDBusGetCurrentState();
   }
 }
@@ -222,7 +222,7 @@ void GnomeDisplayConfigDBusClient::OnDisplayConfigCurrentState(
   if (!g_variant_check_format_string(config.get(), kCurrentStateFormat,
                                      /*copy_only=*/FALSE)) {
     LOG(ERROR) << __func__ << " : config has incorrect type.";
-    pending_callback_.Reset();
+    pending_callbacks_.Clear();
     return;
   }
 
@@ -255,7 +255,7 @@ void GnomeDisplayConfigDBusClient::OnDisplayConfigCurrentState(
   HOST_LOG << "Global scale required: "
            << (global_scale_required ? "yes" : "no");
 
-  std::move(pending_callback_).Run(display_config);
+  std::move(pending_callbacks_).Notify(display_config);
 }
 
 void GnomeDisplayConfigDBusClient::OnDisplayConfigCurrentStateError() {
@@ -263,7 +263,7 @@ void GnomeDisplayConfigDBusClient::OnDisplayConfigCurrentStateError() {
 
   // Reset the callback, so that subsequent calls to GetMonitorsConfig() will
   // actually send a D-Bus request.
-  pending_callback_.Reset();
+  pending_callbacks_.Clear();
 }
 
 }  // namespace remoting
