@@ -1217,6 +1217,26 @@
             ]
         }
     ],
+    "AnnotatedPageContentExtraction": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Glic",
+                    "params": {
+                        "capture_delay": "5s",
+                        "include_inner_text": "true",
+                        "on_critical_path": "true"
+                    },
+                    "enable_features": [
+                        "AnnotatedPageContentExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApiPrintingMarginsAndScale": [
         {
             "platforms": [
