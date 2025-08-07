@@ -1569,7 +1569,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Daemons{ProcessMemoryType}" units="MiB"
-    expires_after="2025-08-31">
+    expires_after="2026-02-05">
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1620,7 +1620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Renderers{ProcessMemoryType}" units="MiB"
-    expires_after="2023-08-08">
+    expires_after="2026-02-05">
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1633,7 +1633,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.VMs{ProcessMemoryType}" units="MiB"
-    expires_after="2025-09-14">
+    expires_after="2026-02-05">
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
