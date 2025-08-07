@@ -59,8 +59,7 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
 - (NSArray*)accessibilityElements {
   NSMutableArray* accessibleElements = [[NSMutableArray alloc] init];
 
-  if (IsContextualPanelEnabled() && self.contextualPanelEntrypointView &&
-      !self.contextualPanelEntrypointView.hidden) {
+  if (IsContextualPanelEnabled() && self.contextualPanelEntrypointView) {
     [accessibleElements addObject:self.contextualPanelEntrypointView];
   }
 
