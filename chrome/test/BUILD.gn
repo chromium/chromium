@@ -9476,7 +9476,6 @@ test("unit_tests") {
       "../common/apps/platform_apps/media_galleries_permission_unittest.cc",
       "../common/extensions/api/common_extension_api_unittest.cc",
       "../common/extensions/api/extension_action/browser_action_manifest_unittest.cc",
-      "../common/extensions/api/url_handlers/url_handlers_parser_unittest.cc",
       "../common/extensions/chrome_extensions_client_unittest.cc",
       "../common/extensions/extension_unittest.cc",
 
@@ -9496,7 +9495,12 @@ test("unit_tests") {
     sources += [ "../common/extensions/manifest_tests/extension_manifests_side_panel_unittest.cc" ]
 
     # Platform apps are not supported on desktop Android.
-    sources += [ "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc" ]
+    if (enable_platform_apps) {
+      sources += [
+        "../common/extensions/api/url_handlers/url_handlers_parser_unittest.cc",
+        "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc",
+      ]
+    }
 
     if (enterprise_data_controls) {
       sources += [

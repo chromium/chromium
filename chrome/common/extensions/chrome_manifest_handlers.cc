@@ -16,10 +16,14 @@
 #include "chrome/common/extensions/manifest_handlers/natively_connectable_handler.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/extensions/manifest_handlers/theme_handler.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handler_registry.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #endif
 
@@ -47,6 +51,9 @@ void RegisterChromeManifestHandlers() {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterHandler(std::make_unique<SidePanelManifestHandler>());
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   registry->RegisterHandler(std::make_unique<UrlHandlersParser>());
 #endif
 
