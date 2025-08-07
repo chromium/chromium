@@ -201,7 +201,9 @@ class SafariDataImporterTest : public testing::Test {
     base::FilePath path = dir.GetPath().AppendASCII("bookmarks.html");
     ASSERT_TRUE(base::WriteFile(path, html_data));
 
-    importer_->PrepareBookmarks(std::move(path));
+    importer_->PrepareBookmarks(
+        SafariDataImporter::BlockingWorker::BookmarkUnzipResult(
+            std::move(path), html_data.length()));
     Synchronize();
   }
 
@@ -217,7 +219,9 @@ class SafariDataImporterTest : public testing::Test {
   }
 
   void PreparePaymentCards(std::vector<PaymentCardEntry> payment_cards) {
-    importer_->PreparePaymentCards(std::move(payment_cards));
+    importer_->PreparePaymentCards(
+        SafariDataImporter::BlockingWorker::PaymentCardParseResult(
+            std::move(payment_cards), /*size=*/0));
     Synchronize();
   }
 

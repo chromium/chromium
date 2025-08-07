@@ -9,6 +9,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
+#include "components/user_data_importer/utility/importer_metrics_recorder.h"
 #include "components/user_data_importer/utility/parsing_ffi/lib.rs.h"
 #include "components/user_data_importer/utility/safari_data_import_client.h"
 
@@ -108,10 +109,38 @@ class SafariDataImporter {
     // Returns the uncompressed size of a file within the zip file archive.
     size_t GetUncompressedFileSizeInBytes(FileType filetype);
 
+    struct BookmarkUnzipResult {
+      std::optional<base::FilePath> path;
+      size_t file_size_bytes;
+
+      explicit BookmarkUnzipResult(std::optional<base::FilePath> p,
+                                   size_t size);
+      ~BookmarkUnzipResult();
+
+      BookmarkUnzipResult(BookmarkUnzipResult&&);
+      BookmarkUnzipResult& operator=(BookmarkUnzipResult&&);
+      BookmarkUnzipResult(const BookmarkUnzipResult&) = delete;
+      BookmarkUnzipResult& operator=(const BookmarkUnzipResult&) = delete;
+    };
+
     // Unzips bookmarks in the ZIP archive and writes the contents to a
     // `bookmarks.html` file in a tmp directory. Returns nullopt if the file
     // could not be created.
-    std::optional<base::FilePath> WriteBookmarksToTmpFile();
+    BookmarkUnzipResult WriteBookmarksToTmpFile();
+
+    struct PaymentCardParseResult {
+      std::vector<PaymentCardEntry> entries;
+      size_t file_size_bytes;
+
+      explicit PaymentCardParseResult(std::vector<PaymentCardEntry> e,
+                                      size_t size);
+      ~PaymentCardParseResult();
+
+      PaymentCardParseResult(PaymentCardParseResult&&);
+      PaymentCardParseResult& operator=(PaymentCardParseResult&&);
+      PaymentCardParseResult(const PaymentCardParseResult&) = delete;
+      PaymentCardParseResult& operator=(const PaymentCardParseResult&) = delete;
+    };
 
     void ParseBookmarks(
         std::optional<base::FilePath> bookmarks_html,
@@ -119,7 +148,7 @@ class SafariDataImporter {
 
     // Finds a file containing payment cards in the ZIP archive, parses it, and
     // returns the output. Returns empty on error.
-    std::vector<PaymentCardEntry> ParsePaymentCards();
+    PaymentCardParseResult ParsePaymentCards();
 
     // Attempts to import history from the zip file archive.
     // `parse_history_callback` may be called multiple times during this
@@ -149,15 +178,24 @@ class SafariDataImporter {
 
   // Converts payment_cards to autofill::CreditCard objects. Informs `client_`
   // that cards are ready when done.
-  void PreparePaymentCards(std::vector<PaymentCardEntry> payment_cards);
+  void PreparePaymentCards(
+      BlockingWorker::PaymentCardParseResult payment_cards);
 
   // Attempts to parse the provided HTML data. Informs `client_` that bookmarks
   // are ready when done.
-  void PrepareBookmarks(std::optional<base::FilePath> html);
+  void PrepareBookmarks(BlockingWorker::BookmarkUnzipResult result);
+
+  // Receives the result of the first pass of the password importer, which
+  // parses passwords and identifies any conflicts, then pauses. Informs the
+  // client that passwords are ready.
+  void OnPasswordsParsed(const password_manager::ImportResults& results);
 
   // Receives the result of parsing bookmarks, stores them for later use,
-  // and invokes `callback` with the number of parsed bookmarks.
+  // and informs the client that bookmarks are ready.
   void OnBookmarksParsed(BookmarkParser::BookmarkParsingResult result);
+
+  // Logs an error and indicates to the client that no bookmarks are available.
+  void OnBookmarkParsingError(BookmarkParser::BookmarkParsingError error);
 
   // Calls `history_callback` with an approximation of the number of URLs
   // contained in one or more files with total size `file_size_bytes`.
@@ -170,6 +208,11 @@ class SafariDataImporter {
   // Invoked once parsing of history is completed. Forwards the results to
   // `client_`.
   void OnHistoryImportCompleted();
+
+  // Invoked once parsing of passwords is completed. Forwards the results to
+  // `client_`.
+  void OnPasswordImportCompleted(
+      const password_manager::ImportResults& results);
 
   // Imports Credit Cards to the Payments Data Manager.
   void ContinueImportPaymentCards();
@@ -223,6 +266,9 @@ class SafariDataImporter {
   // Reading List entries which have been parsed, but not yet committed to
   // permanent storage.
   std::vector<ImportedBookmarkEntry> pending_reading_list_;
+
+  // Helper object which logs metrics about the import flow.
+  ImporterMetricsRecorder metrics_recorder_;
 
   // The application locale, used to set credit card information.
   const std::string app_locale_;

@@ -143,7 +143,7 @@ static_library("utility") {
       "//components/autofill/core/common",
       "//components/user_data_importer/common",
       "//components/user_data_importer/content",
-      "//components/user_data_importer/utility:safari_data_importer",
+      "//components/user_data_importer/utility:bookmarks",
       "//services/proxy_resolver:lib",
       "//services/screen_ai",
     ]
