@@ -699,11 +699,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     std::string value;
   };
 
-  // Invokes the test helper command by running a unit test from the
-  // "updater_integration_tests_helper" program. The program returns 0 if
-  // the unit test passes.
-  void RunCommand(const std::string& command_switch,
-                  const std::vector<Param>& params) const {
+  base::CommandLine GenerateHelperCommand(
+      const std::string& command_switch,
+      const std::vector<Param>& params) const {
     const base::CommandLine command_line =
         *base::CommandLine::ForCurrentProcess();
     base::FilePath path(command_line.GetProgram());
@@ -740,9 +738,17 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                                           command_line.GetSwitchValueNative(s));
       }
     }
+    return helper_command;
+  }
 
+  // Invokes the test helper command by running a unit test from the
+  // "updater_integration_tests_helper" program. The program returns 0 if
+  // the unit test passes.
+  void RunCommand(const std::string& command_switch,
+                  const std::vector<Param>& params) const {
     int exit_code = -1;
-    Run(updater_scope_, helper_command, &exit_code);
+    Run(updater_scope_, GenerateHelperCommand(command_switch, params),
+        &exit_code);
 
     // A failure here indicates that the integration test helper
     // process ran but the invocation of the test helper command was not
@@ -756,6 +762,15 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void RunCommand(const std::string& command_switch) const {
     RunCommand(command_switch, {});
+  }
+
+  // Similar to `RunCommand` above, but runs the test helper de-elevated.
+  void RunCommandDeElevated(const std::string& command_switch,
+                            const std::vector<Param>& params) const {
+    int exit_code = -1;
+    RunDeElevated(updater_scope_, GenerateHelperCommand(command_switch, params),
+                  &exit_code);
+    ASSERT_EQ(exit_code, 0);
   }
 
   const UpdaterScope updater_scope_;

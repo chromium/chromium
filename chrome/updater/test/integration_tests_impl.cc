@@ -26,6 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -83,6 +84,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/file_version_info_win.h"
+#include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
@@ -1216,14 +1218,18 @@ void SetAppTag(UpdaterScope scope,
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
 
-void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
+void Run(
+    UpdaterScope scope,
+    base::CommandLine command_line,
+    int* exit_code,
+    base::FunctionRef<base::Process(const base::CommandLine&)> launch_process) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
   if (IsSystemInstall(scope)) {
     command_line.AppendSwitch(kSystemSwitch);
     command_line = MakeElevated(command_line);
   }
   VLOG(0) << " Run command: " << command_line.GetCommandLineString();
-  base::Process process = base::LaunchProcess(command_line, {});
+  base::Process process = launch_process(command_line);
   VPLOG_IF(0, !process.IsValid());
   ASSERT_TRUE(process.IsValid());
 
@@ -1236,6 +1242,21 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
       2 * TestTimeouts::action_max_timeout(), exit_code);
   VPLOG_IF(0, !succeeded);
   ASSERT_TRUE(succeeded);
+}
+
+void RunDeElevated(UpdaterScope scope,
+                   base::CommandLine command_line,
+                   int* exit_code) {
+#if BUILDFLAG(IS_WIN)
+  Run(scope, command_line, exit_code,
+      [](const base::CommandLine& command_line) {
+        auto process = base::win::RunDeElevated(command_line);
+        VPLOG_IF(0, !process->IsValid()) << process.error();
+        return process.has_value() ? process->Duplicate() : base::Process();
+      });
+#else
+  Run(scope, command_line, exit_code);
+#endif
 }
 
 void ExpectCliResult(base::CommandLine command_line,
