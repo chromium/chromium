@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
+#import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -110,5 +111,5 @@ bool PrerenderServiceImpl::HasPrerenderForUrl(const GURL& url) {
 }
 
 bool PrerenderServiceImpl::IsWebStatePrerendered(web::WebState* web_state) {
-  return [controller_ isWebStatePrerendered:web_state];
+  return PrerenderTabHelper::FromWebState(web_state) != nullptr;
 }

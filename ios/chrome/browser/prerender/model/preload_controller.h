@@ -65,9 +65,6 @@ class WebState;
 // Cancels any outstanding prerender requests and destroys any prerendered Tabs.
 - (void)cancelPrerender;
 
-// Returns whether `webState` is the WebState used for pre-rendering.
-- (BOOL)isWebStatePrerendered:(web::WebState*)webState;
-
 // Returns the currently prerendered WebState, or nil if none exists.  After
 // this method is called, the PrerenderController reverts to a non-prerendering
 // state.

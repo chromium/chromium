@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_impl.h"
 
-#import "base/memory/ptr_util.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -27,10 +26,10 @@
 class SafeBrowsingClientImplTest : public PlatformTest {
  protected:
   SafeBrowsingClientImplTest()
-      : prerender_service_(base::WrapUnique(new FakePrerenderService())),
+      : prerender_service_(std::make_unique<FakePrerenderService>()),
         profile_(TestProfileIOS::Builder().Build()),
-        web_state_(base::WrapUnique(new web::FakeWebState())) {
-    client_ = base::WrapUnique(new SafeBrowsingClientImpl(
+        web_state_(std::make_unique<web::FakeWebState>()) {
+    client_ = std::make_unique<SafeBrowsingClientImpl>(
         /*pref_service=*/profile_->GetPrefs(),
         /*hash_real_time_service=*/nullptr, prerender_service_.get(),
         /*url_lookup_service_factory=*/
@@ -39,18 +38,16 @@ class SafeBrowsingClientImplTest : public PlatformTest {
               return nullptr;
             }),
         enterprise_connectors::ConnectorsServiceFactory::GetForProfile(
-            profile_.get())));
+            profile_.get()));
   }
 
-  // Configures `prerender_service_` to prerender `web_state_`.
+  // Configure `web_state_` as a prerendered WebState.
   void PrerenderWebState() const {
-    FakePrerenderService* fake_prerender_service =
-        static_cast<FakePrerenderService*>(prerender_service_.get());
-    fake_prerender_service->set_prerender_web_state(web_state_.get());
+    prerender_service_->SetPrerenderWebState(web_state_.get());
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<PrerenderService> prerender_service_;
+  std::unique_ptr<FakePrerenderService> prerender_service_;
   std::unique_ptr<SafeBrowsingClientImpl> client_;
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
