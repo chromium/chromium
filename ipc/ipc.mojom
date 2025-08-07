@@ -14,19 +14,10 @@ struct Message {
   array<mojo.native.SerializedHandle>? handles;
 };
 
-feature kMojoIpcChannelReceive {
-  const string name = "MojoIpcChannelReceive";
-  const bool default_state = true;
-};
-
 interface Channel {
   // Informs the remote end of this client's PID. Must be called exactly once,
   // before any calls to Receive() below.
   SetPeerPid(int32 pid);
-
-  // Transmits a classical Chrome IPC message.
-  [UnlimitedSize, RuntimeFeature=kMojoIpcChannelReceive]
-  Receive(Message message);
 
   // Requests a Channel-associated interface.
   GetAssociatedInterface(

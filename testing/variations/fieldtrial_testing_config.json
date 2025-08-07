@@ -15352,27 +15352,6 @@
             ]
         }
     ],
-    "MojoIpcChannelReceive": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "MojoIpcChannelReceive"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoPredictiveAllocation": [
         {
             "platforms": [
