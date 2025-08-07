@@ -26,6 +26,8 @@ class RegionalCapabilitiesServiceClientAndroid
   ~RegionalCapabilitiesServiceClientAndroid() override;
 
   void FetchCountryId(CountryIdCallback country_id_fetched_callback) override;
+
+  Program GetDeviceProgram() override;
 };
 
 }  // namespace regional_capabilities

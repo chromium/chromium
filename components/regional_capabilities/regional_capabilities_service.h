@@ -76,6 +76,12 @@ class RegionalCapabilitiesService : public KeyedService {
     // the service for the current run.
     virtual void FetchCountryId(
         CountryIdCallback country_id_fetched_callback) = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+    // Synchronously reads the device's regional capabilities program
+    // configuration.
+    virtual Program GetDeviceProgram() = 0;
+#endif
   };
 
   RegionalCapabilitiesService(

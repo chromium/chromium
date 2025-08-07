@@ -44,6 +44,10 @@ class FakeRegionalCapabilitiesServiceClient
 
   CountryId GetVariationsLatestCountryId() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  Program GetDeviceProgram() override;
+#endif
+
  private:
   const CountryId country_id_;
 };

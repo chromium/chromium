@@ -9,10 +9,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/regional_capabilities/android/jni_headers/RegionalCapabilitiesServiceClientAndroid_jni.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client.h"
 #include "components/country_codes/country_codes.h"
 #include "components/variations/service/variations_service.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/regional_capabilities/android/jni_headers/RegionalCapabilitiesServiceClientAndroid_jni.h"
 
 using ::country_codes::CountryId;
 
@@ -57,6 +60,12 @@ void JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
   std::string device_country_code = base::ToUpperASCII(
       base::android::ConvertJavaStringToUTF8(env, j_device_country));
   std::move(*heap_callback).Run(CountryId(device_country_code));
+}
+
+Program RegionalCapabilitiesServiceClientAndroid::GetDeviceProgram() {
+  return static_cast<Program>(
+      Java_RegionalCapabilitiesServiceClientAndroid_getDeviceProgram(
+          jni_zero::AttachCurrentThread()));
 }
 
 }  // namespace regional_capabilities

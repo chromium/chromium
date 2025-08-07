@@ -13,7 +13,7 @@ namespace regional_capabilities {
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.regional_capabilities
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: RegionalProgram
-enum class Program {
+enum class Program: int {
   kDefault = 0,
   kTaiyaki,
   kWaffle,

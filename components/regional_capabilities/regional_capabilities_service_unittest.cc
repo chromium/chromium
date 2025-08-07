@@ -53,6 +53,10 @@ class AsyncRegionalCapabilitiesServiceClient
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  Program GetDeviceProgram() override { return Program::kDefault; }
+#endif
+
   void SetFetchedCountry(std::optional<CountryId> fetched_country_id) {
     fetched_country_id_ = fetched_country_id;
     if (cached_country_id_callback_ && fetched_country_id_.has_value()) {

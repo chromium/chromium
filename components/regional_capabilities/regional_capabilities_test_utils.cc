@@ -40,6 +40,12 @@ FakeRegionalCapabilitiesServiceClient::GetVariationsLatestCountryId() {
   return country_id_;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+Program FakeRegionalCapabilitiesServiceClient::GetDeviceProgram() {
+  return Program::kDefault;
+}
+#endif
+
 namespace testing {}  // namespace testing
 
 }  // namespace regional_capabilities

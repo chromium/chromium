@@ -15,10 +15,10 @@
 #include "components/country_codes/country_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::country_codes::CountryId;
-
 namespace regional_capabilities {
 namespace {
+
+using ::country_codes::CountryId;
 
 constexpr char kBelgiumCountryCode[] = "BE";
 
@@ -58,7 +58,7 @@ class TestSupportAndroid {
 
 TEST(RegionalCapabilitiesServiceClientAndroidTest, FetchCountryId_Sync) {
   RegionalCapabilitiesServiceClientAndroid client(
-      /* variations_service= */ nullptr);
+      /*variations_service=*/nullptr);
 
   TestSupportAndroid test_support;
   test_support.ReturnDeviceCountry(kBelgiumCountryCode);
@@ -73,7 +73,7 @@ TEST(RegionalCapabilitiesServiceClientAndroidTest, FetchCountryId_Sync) {
 
 TEST(RegionalCapabilitiesServiceClientAndroidTest, FetchCountryId_Async) {
   RegionalCapabilitiesServiceClientAndroid client(
-      /* variations_service= */ nullptr);
+      /*variations_service=*/nullptr);
 
   TestSupportAndroid test_support;
 
@@ -91,7 +91,7 @@ TEST(RegionalCapabilitiesServiceClientAndroidTest, FetchCountryId_Async) {
 
 TEST(RegionalCapabilitiesServiceClientAndroidTest, FetchCountryId_Failure) {
   RegionalCapabilitiesServiceClientAndroid client(
-      /* variations_service= */ nullptr);
+      /*variations_service=*/nullptr);
 
   TestSupportAndroid test_support;
   test_support.TriggerDeviceCountryFailure();
@@ -104,6 +104,13 @@ TEST(RegionalCapabilitiesServiceClientAndroidTest, FetchCountryId_Failure) {
 
   // The callback is dropped.
   EXPECT_EQ(actual_country_id, std::nullopt);
+}
+
+TEST(RegionalCapabilitiesServiceClientAndroidTest,
+     ReturnsDefaultDeviceProgram) {
+  RegionalCapabilitiesServiceClientAndroid client(
+      /*variations_service=*/nullptr);
+  EXPECT_EQ(client.GetDeviceProgram(), Program::kDefault);
 }
 
 }  // namespace

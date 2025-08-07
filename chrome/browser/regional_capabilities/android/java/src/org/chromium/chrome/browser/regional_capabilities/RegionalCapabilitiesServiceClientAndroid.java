@@ -15,9 +15,11 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.regional_capabilities.RegionalProgram;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 
 /**
@@ -32,6 +34,8 @@ import org.chromium.components.search_engines.SearchEngineChoiceService;
 public class RegionalCapabilitiesServiceClientAndroid {
     private static @Nullable RegionalCapabilitiesServiceClientAndroid sInstance;
 
+    private RegionalCapabilitiesServiceClientDelegate mDelegate;
+
     /** Returns the instance of the singleton. Creates the instance if needed. */
     @MainThread
     public static RegionalCapabilitiesServiceClientAndroid getInstance() {
@@ -39,6 +43,7 @@ public class RegionalCapabilitiesServiceClientAndroid {
         if (sInstance == null) {
             sInstance = new RegionalCapabilitiesServiceClientAndroid();
         }
+
         return sInstance;
     }
 
@@ -58,6 +63,10 @@ public class RegionalCapabilitiesServiceClientAndroid {
     @MainThread
     public RegionalCapabilitiesServiceClientAndroid() {
         ThreadUtils.checkUiThread();
+        ServiceLoaderUtil.maybeCreate(RegionalCapabilitiesServiceClientDelegate.class);
+        if (mDelegate == null) {
+            mDelegate = new NoOpRegionalCapabilitiesServiceClientDelegate();
+        }
     }
 
     private void requestDeviceCountryInternal(Callback<@Nullable String> deviceCountryCallback) {
@@ -97,6 +106,19 @@ public class RegionalCapabilitiesServiceClientAndroid {
                                 RegionalCapabilitiesServiceClientAndroidJni.get()
                                         .processDeviceCountryResponse(
                                                 ptrToNativeCallback, deviceCountry));
+    }
+
+    private @RegionalProgram int getDeviceProgramInternal() {
+        return mDelegate.getDeviceProgram();
+    }
+
+    /**
+     * Called by the native RegionalCapabilitiesService to synchronously read the device program.
+     */
+    @CalledByNative
+    private static @RegionalProgram int getDeviceProgram() {
+        ThreadUtils.checkUiThread();
+        return getInstance().getDeviceProgramInternal();
     }
 
     @NativeMethods
