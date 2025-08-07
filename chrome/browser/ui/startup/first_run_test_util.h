@@ -19,8 +19,6 @@ class FirstRunService;
 void SetIsFirstRun(bool is_first_run);
 
 // Returns the value of the `prefs::kFirstRunFinished` local pref.
-// Causes the test to fail if local prefs are not available. In unit tests, make
-// sure to configure them, e.g. by using `ScopedTestingLocalState`.
 bool GetFirstRunFinishedPrefValue();
 
 // Helps with testing the behaviour of the `FirstRunService`.

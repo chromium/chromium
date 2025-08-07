@@ -15,11 +15,10 @@
 #include "chrome/browser/win/cloud_synced_folder_checker.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
 #include "chrome/browser/win/installer_downloader/system_info_provider.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
@@ -58,10 +57,11 @@ class InstallerDownloaderModelTest : public testing::Test {
         std::move(mock_system_info_provider_ptr));
   }
 
-  TestingPrefServiceSimple& GetLocalState() { return *local_state_.Get(); }
+  PrefService& GetLocalState() {
+    return *TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<InstallerDownloaderModelImpl> model_;
   raw_ptr<MockSystemInfoProvider> mock_system_info_provider_;
   content::MockDownloadManager mock_download_manager_;
