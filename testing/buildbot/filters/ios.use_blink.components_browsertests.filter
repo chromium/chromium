@@ -2,6 +2,7 @@
 # resource assertion.
 -DistilledPageJsTest.SettingsDialogTest
 -DistillerPageWebContentsTest.BasicDistillationWorks
+-DistillerPageWebContentsTest.DistillerContentsIgnoreRedirects
 -DistillerPageWebContentsTest.HandlesRelativeImages
 -DistillerPageWebContentsTest.HandlesRelativeLinks
 -DistillerPageWebContentsTest.HandlesRelativeVideos
