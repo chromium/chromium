@@ -28,7 +28,7 @@ import {
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import type {ContextConfig} from '../browser/ContextConfig.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
-import type {UserContextStorage} from '../browser/UserContextStorage';
+import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';

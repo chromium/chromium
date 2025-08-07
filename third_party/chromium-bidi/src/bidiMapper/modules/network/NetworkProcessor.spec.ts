@@ -16,7 +16,10 @@
  */
 import {expect} from 'chai';
 
-import {NetworkProcessor} from './NetworkProcessor.js';
+import {UnsupportedOperationException} from '../../../protocol/ErrorResponse.js';
+import type {Network} from '../../../protocol/protocol.js';
+
+import {NetworkProcessor, parseBiDiHeaders} from './NetworkProcessor.js';
 
 describe('NetworkProcessor', () => {
   describe('parse url string', () => {
@@ -207,6 +210,100 @@ describe('NetworkProcessor', () => {
       expect(NetworkProcessor.isMethodValid('\\')).to.be.false;
       expect(NetworkProcessor.isMethodValid('"')).to.be.false;
       expect(NetworkProcessor.isMethodValid('')).to.be.false;
+    });
+  });
+  describe('parseBiDiHeaders', () => {
+    const SOME_HEADER_NAME = 'SOME HEADER NAME';
+    const SOME_HEADER_VALUE = 'SOME HEADER VALUE';
+    const ANOTHER_HEADER_NAME = 'ANOTHER HEADER NAME';
+    const ANOTHER_HEADER_VALUE = 'ANOTHER HEADER VALUE';
+
+    it('should return an empty object for an empty array', () => {
+      const result = parseBiDiHeaders([]);
+      expect(result).to.deep.equal({});
+    });
+
+    it('should parse a single header', () => {
+      const headers: Network.Header[] = [
+        {
+          name: SOME_HEADER_NAME,
+          value: {type: 'string', value: SOME_HEADER_VALUE},
+        },
+      ];
+      const result = parseBiDiHeaders(headers);
+      expect(result).to.deep.equal({
+        [SOME_HEADER_NAME]: SOME_HEADER_VALUE,
+      });
+    });
+
+    it('should parse multiple unique headers', () => {
+      const headers: Network.Header[] = [
+        {
+          name: SOME_HEADER_NAME,
+          value: {type: 'string', value: SOME_HEADER_VALUE},
+        },
+        {
+          name: ANOTHER_HEADER_NAME,
+          value: {type: 'string', value: ANOTHER_HEADER_VALUE},
+        },
+      ];
+      const result = parseBiDiHeaders(headers);
+      expect(result).to.deep.equal({
+        [SOME_HEADER_NAME]: SOME_HEADER_VALUE,
+        [ANOTHER_HEADER_NAME]: ANOTHER_HEADER_VALUE,
+      });
+    });
+
+    it('should combine multiple headers with the same name', () => {
+      const headers: Network.Header[] = [
+        {
+          name: SOME_HEADER_NAME,
+          value: {type: 'string', value: 'SOME VALUE'},
+        },
+        {
+          name: SOME_HEADER_NAME,
+          value: {type: 'string', value: 'ANOTHER VALUE'},
+        },
+        {
+          name: SOME_HEADER_NAME,
+          value: {type: 'string', value: 'YET ANOTHER VALUE'},
+        },
+      ];
+      const result = parseBiDiHeaders(headers);
+      expect(result).to.deep.equal({
+        [SOME_HEADER_NAME]: 'SOME VALUE, ANOTHER VALUE, YET ANOTHER VALUE',
+      });
+    });
+
+    it('should throw for non-string header values', () => {
+      const headers: Network.Header[] = [
+        {
+          name: SOME_HEADER_NAME,
+          value: {type: 'base64', value: '...'},
+        },
+      ];
+      expect(() => parseBiDiHeaders(headers)).to.throw(
+        UnsupportedOperationException,
+        'Only string headers values are supported',
+      );
+    });
+
+    it('should be case-sensitive for header names', () => {
+      const headers: Network.Header[] = [
+        {
+          name: 'SOME HEADER NAME',
+          value: {type: 'string', value: 'SOME VALUE'},
+        },
+        {
+          name: 'some header name',
+          value: {type: 'string', value: 'some value'},
+        },
+      ];
+      const result = parseBiDiHeaders(headers);
+      expect(result).to.deep.equal({
+        ['SOME HEADER NAME']: 'SOME VALUE',
+        'some header name': 'some value',
+      });
     });
   });
 });

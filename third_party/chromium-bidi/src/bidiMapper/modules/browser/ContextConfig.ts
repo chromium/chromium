@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import type {Protocol} from 'devtools-protocol';
+
 import type {
   BrowsingContext,
   Emulation,
@@ -29,6 +31,8 @@ export class ContextConfig {
   acceptInsecureCerts?: boolean;
   viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
+  // Extra headers are kept in CDP format.
+  extraHeaders?: Protocol.Network.Headers;
   geolocation?:
     | Emulation.GeolocationCoordinates
     | Emulation.GeolocationPositionError
@@ -36,6 +40,7 @@ export class ContextConfig {
   locale?: string | null;
   prerenderingDisabled?: boolean;
   screenOrientation?: Emulation.ScreenOrientation | null;
+  // Timezone is kept in CDP format with GMT prefix for offset values.
   timezone?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
 }

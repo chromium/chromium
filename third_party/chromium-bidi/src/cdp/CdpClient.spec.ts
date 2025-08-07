@@ -22,7 +22,7 @@ import sinon from 'sinon';
 
 import {StubTransport} from '../utils/transportStub.spec.js';
 
-import type {CdpClient} from './CdpClient';
+import type {CdpClient} from './CdpClient.js';
 import {MapperCdpConnection} from './CdpConnection.js';
 
 chai.use(chaiAsPromised);

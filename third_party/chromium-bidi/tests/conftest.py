@@ -403,6 +403,22 @@ def url_cacheable(local_server_http):
 
 
 @pytest.fixture
+def get_url_echo(local_server_http, local_server_http_another_host):
+    def get_url_echo(same_origin=True):
+        if same_origin:
+            return local_server_http.url_echo()
+        return local_server_http_another_host.url_echo()
+
+    return get_url_echo
+
+
+@pytest.fixture
+def url_echo(get_url_echo):
+    """Returns a URL that, when fetched, echoes back the details of the request."""
+    return get_url_echo()
+
+
+@pytest.fixture
 def read_messages(websocket, read_all_messages):
     """
     Reads the specified number of messages from the WebSocket, returning them in

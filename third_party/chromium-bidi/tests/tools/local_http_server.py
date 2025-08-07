@@ -15,6 +15,7 @@
 
 import base64
 import http.client
+import json
 import socket
 import ssl
 import time
@@ -54,6 +55,7 @@ class LocalHttpServer:
     __path_hang_forever = "/hang_forever"
     __path_hang_forever_download = "/hang_forever_download"
     __path_cacheable = "/cacheable"
+    __path_echo = "/echo"
 
     content_200: str = 'default 200 page'
 
@@ -149,6 +151,19 @@ class LocalHttpServer:
                                      mimetype=data["content_type"],
                                      headers=data["headers"])
             return FlaskResponse("Not Found", status=404)
+
+        @self.__app.route(self.__path_echo)
+        def process_echo():
+            data = {
+                "method": request.method,
+                "args": request.args,
+                "headers": dict(request.headers),
+                "origin": request.origin,
+                "json": request.json if request.is_json else None,
+                "form": request.form if request.form else None,
+                "data": request.data.decode('utf-8') if request.data else None,
+            }
+            return FlaskResponse(json.dumps(data), mimetype="application/json")
 
         @self.__app.route(self.__path_permanent_redirect)
         def route_permanent_redirect():
@@ -348,6 +363,10 @@ class LocalHttpServer:
             return self._build_url(path)
 
         return self._build_url(self.__path_200)
+
+    def url_echo(self) -> str:
+        """Returns the URL for the base page (used to prevent CORS issues)."""
+        return self._build_url(self.__path_echo)
 
     def url_permanent_redirect(self) -> str:
         """Returns the URL for a page that permanently redirects to the default 200 page."""

@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
+import type {Protocol} from 'devtools-protocol';
+
 import {
   Network,
   type EmptyResult,
   NoSuchRequestException,
   InvalidArgumentException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
+import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -33,15 +38,18 @@ export class NetworkProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
   readonly #userContextStorage: UserContextStorage;
+  readonly #contextConfigStorage: ContextConfigStorage;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     userContextStorage: UserContextStorage,
+    contextConfigStorage: ContextConfigStorage,
   ) {
     this.#userContextStorage = userContextStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#networkStorage = networkStorage;
+    this.#contextConfigStorage = contextConfigStorage;
   }
 
   async addIntercept(
@@ -534,6 +542,68 @@ export class NetworkProcessor {
     this.#networkStorage.disownData(params);
     return {};
   }
+
+  async setExtraHeaders(
+    params: Network.SetExtraHeadersParameters,
+  ): Promise<EmptyResult> {
+    if (params.userContexts !== undefined && params.contexts !== undefined) {
+      throw new InvalidArgumentException(
+        'contexts and userContexts are mutually exclusive',
+      );
+    }
+
+    const cdpExtraHeaders = parseBiDiHeaders(params.headers);
+    const affectedCdpTargets = new Set<CdpTarget>();
+
+    if (params.userContexts === undefined && params.contexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        extraHeaders: cdpExtraHeaders,
+      });
+      this.#browsingContextStorage
+        .getAllContexts()
+        .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+    }
+
+    if (params.userContexts !== undefined) {
+      // Assert the user contexts exist.
+      await this.#userContextStorage.verifyUserContextIdList(
+        params.userContexts,
+      );
+      params.userContexts.forEach((userContext) => {
+        this.#contextConfigStorage.updateUserContextConfig(userContext, {
+          extraHeaders: cdpExtraHeaders,
+        });
+        this.#browsingContextStorage
+          .getAllContexts()
+          .filter((c) => c.userContext === userContext)
+          .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+      });
+    }
+    if (params.contexts !== undefined) {
+      this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
+      params.contexts.forEach((browsingContextId) => {
+        this.#contextConfigStorage.updateBrowsingContextConfig(
+          browsingContextId,
+          {extraHeaders: cdpExtraHeaders},
+        );
+
+        affectedCdpTargets.add(
+          this.#browsingContextStorage.getContext(browsingContextId).cdpTarget,
+        );
+        this.#browsingContextStorage
+          .getContext(browsingContextId)
+          .allChildren.forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+      });
+    }
+
+    await Promise.all(
+      Array.from(affectedCdpTargets).map((cdpTarget) =>
+        cdpTarget.setExtraHeaders(cdpExtraHeaders),
+      ),
+    );
+
+    return {};
+  }
 }
 
 /**
@@ -557,4 +627,28 @@ function unescapeURLPattern(pattern: string) {
     isEscaped = false;
   }
   return result;
+}
+
+// Export for testing.
+export function parseBiDiHeaders(
+  headers: Network.Header[],
+): Protocol.Network.Headers {
+  const parsedHeaders: Protocol.Network.Headers = {};
+  for (const bidiHeader of headers) {
+    if (bidiHeader.value.type === 'string') {
+      if (parsedHeaders[bidiHeader.name] === undefined) {
+        parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
+      } else {
+        // Combine headers with the same name, meaning concatenate them with 0x2C 0x20
+        // separator: https://fetch.spec.whatwg.org/#concept-header-list-combine.
+        parsedHeaders[bidiHeader.name] =
+          `${parsedHeaders[bidiHeader.name]}, ${bidiHeader.value.value}`;
+      }
+    } else {
+      throw new UnsupportedOperationException(
+        'Only string headers values are supported',
+      );
+    }
+  }
+  return parsedHeaders;
 }

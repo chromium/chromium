@@ -676,6 +676,10 @@ export class CdpTarget {
       promises.push(this.setTimezoneOverride(config.timezone));
     }
 
+    if (config.extraHeaders !== undefined) {
+      promises.push(this.setExtraHeaders(config.extraHeaders));
+    }
+
     if (config.acceptInsecureCerts !== undefined) {
       promises.push(
         this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
@@ -857,5 +861,11 @@ export class CdpTarget {
         timezoneId: timezone,
       });
     }
+  }
+
+  async setExtraHeaders(headers: Protocol.Network.Headers): Promise<void> {
+    await this.cdpClient.sendCommand('Network.setExtraHTTPHeaders', {
+      headers,
+    });
   }
 }
