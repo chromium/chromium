@@ -46,8 +46,6 @@ class LogoService : public KeyedService {
   //     |on_fresh_decoded_logo_available| would be called in the callback
   //     interface with type DETERMINED.
   // 3.  Call observer->OnObserverRemoved().
-  // TODO(crbug.com/423883582): Need to be removed once LogoController is
-  // removed.
   virtual void GetLogo(LogoObserver* observer) = 0;
 
  protected:
