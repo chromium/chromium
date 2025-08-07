@@ -49,6 +49,16 @@
 // and accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithBackgroundColor:(NSString*)colorName;
 
+// Returns a matcher for element with with background/foreground colors related
+// to the Primary type and accessibility trait UIAccessibilityTraitButton.
++ (id<GREYMatcher>)buttonWithPrimaryColor;
+// Returns a matcher for element with with background/foreground colors related
+// to the Secondary type and accessibility trait UIAccessibilityTraitButton.
++ (id<GREYMatcher>)buttonWithSecondaryColor;
+// Returns a matcher for element with with background/foreground colors related
+// to the Equal Weight type and accessibility trait UIAccessibilityTraitButton.
++ (id<GREYMatcher>)buttonWithEqualWeightColor;
+
 // Matcher for context menu items with accessibility label
 // corresponding to `label`.
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabel:(NSString*)label;

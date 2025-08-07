@@ -665,22 +665,15 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
   // Verify that the primary and secondary buttons have the same foreground and
   // background colors.
-  NSString* foregroundColorName = kBlueColor;
-  NSString* backgroundColorName = kBlueHaloColor;
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithEqualWeightColor(),
+                            chrome_test_util::PromoScreenPrimaryButtonMatcher(),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
-              chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
-              chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::PromoScreenSecondaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(chrome_test_util::ButtonWithEqualWeightColor(),
+                     chrome_test_util::PromoScreenSecondaryButtonMatcher(),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
   [[self elementInteractionWithGreyMatcher:chrome_test_util::
                                                PromoScreenPrimaryButtonMatcher()
@@ -748,16 +741,13 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Verify that buttons have the expected colors.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithPrimaryColor(),
+                            chrome_test_util::PromoScreenPrimaryButtonMatcher(),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithForegroundColor(
-                         kSolidButtonTextColor),
-                     chrome_test_util::ButtonWithBackgroundColor(kBlueColor),
-                     chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithForegroundColor(kBlueColor),
+          grey_allOf(chrome_test_util::ButtonWithSecondaryColor(),
                      chrome_test_util::PromoScreenSecondaryButtonMatcher(),
                      nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
@@ -813,22 +803,15 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
   // Verify that the primary and secondary buttons have the same foreground and
   // background colors.
-  NSString* foregroundColorName = kBlueColor;
-  NSString* backgroundColorName = kBlueHaloColor;
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithEqualWeightColor(),
+                            chrome_test_util::PromoScreenPrimaryButtonMatcher(),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
-              chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
-              chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::PromoScreenSecondaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(chrome_test_util::ButtonWithEqualWeightColor(),
+                     chrome_test_util::PromoScreenSecondaryButtonMatcher(),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
   [[self elementInteractionWithGreyMatcher:chrome_test_util::
                                                PromoScreenPrimaryButtonMatcher()
@@ -1026,16 +1009,13 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       assertWithMatcher:grey_notNil()];
   // Verify that buttons have the expected colors.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithPrimaryColor(),
+                            chrome_test_util::PromoScreenPrimaryButtonMatcher(),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithForegroundColor(
-                         kSolidButtonTextColor),
-                     chrome_test_util::ButtonWithBackgroundColor(kBlueColor),
-                     chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithForegroundColor(kBlueColor),
+          grey_allOf(chrome_test_util::ButtonWithSecondaryColor(),
                      chrome_test_util::PromoScreenSecondaryButtonMatcher(),
                      nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.

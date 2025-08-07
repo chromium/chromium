@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/buttons_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -254,12 +255,38 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     foregroundColorMatcher, nil);
 }
 
++ (id<GREYMatcher>)buttonWithPrimaryColor {
+  return grey_allOf([self buttonWithForegroundColor:kSolidButtonTextColor],
+                    [self buttonWithBackgroundColor:kBlueColor], nil);
+}
+
++ (id<GREYMatcher>)buttonWithSecondaryColor {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    return grey_allOf([self buttonWithForegroundColor:kSolidBlackColor],
+                      [self buttonWithBackgroundColor:kSolidWhiteColor], nil);
+  }
+#endif
+  return grey_allOf([self buttonWithForegroundColor:kBlueColor], nil);
+}
+
++ (id<GREYMatcher>)buttonWithEqualWeightColor {
+  return grey_allOf([self buttonWithForegroundColor:kBlueColor],
+                    [self buttonWithBackgroundColor:kBlueHaloColor], nil);
+}
+
 + (id<GREYMatcher>)buttonWithBackgroundColor:(NSString*)colorName {
   GREYMatchesBlock matches = ^BOOL(id element) {
     if (![element isKindOfClass:UIButton.class]) {
       return NO;
     }
     UIButton* button = base::apple::ObjCCastStrict<UIButton>(element);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      return CGColorEqualToColor([UIColor colorNamed:colorName].CGColor,
+                                 button.tintColor.CGColor);
+    }
+#endif
     return CGColorEqualToColor(
         [UIColor colorNamed:colorName].CGColor,
         button.configuration.background.backgroundColor.CGColor);
