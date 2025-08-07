@@ -656,4 +656,15 @@ void LogPageContentCaptureFailure(PasswordChangeFlowStep step) {
       "PasswordManager.PasswordChange.FailedCapturingPageContent", step);
 }
 
+void LogPrimaryPasswordUpdatedWithBackup(ukm::SourceId ukm_source_id) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChangeRecoveryFlow",
+      password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+          kPrimaryPasswordUpdated);
+  ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id)
+      .SetPasswordChangeRecoveryFlow(static_cast<int>(
+          PasswordChangeRecoveryFlowState::kPrimaryPasswordUpdated))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 }  // namespace password_manager::metrics_util

@@ -90,7 +90,8 @@ TestInfobarPasswordDelegate::TestInfobarPasswordDelegate(
           password_manager::features_util::PasswordAccountStorageUserState::
               kSyncUser,
           CreateFormManager(),
-          nullptr),
+          nullptr,
+          ukm::kInvalidSourceId),
       infobar_message_(infobar_message) {}
 
 bool TestInfobarPasswordDelegate::Create(

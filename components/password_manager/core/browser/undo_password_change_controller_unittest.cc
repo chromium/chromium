@@ -230,7 +230,7 @@ TEST_F(UndoPasswordChangeControllerTest, OnTroubleSigningIn) {
   const auto password_details = GetSuggestionDetails(credential);
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  const auto expected_metric_state = password_manager::
+  const auto expected_metric_state = password_manager::metrics_util::
       PasswordChangeRecoveryFlowState::kTroubleSigningInClicked;
 
   controller_.OnSuggestionSelected(credential);
@@ -424,7 +424,7 @@ TEST_F(UndoPasswordChangeControllerTest, OnSuggestionsHidden) {
   base::RunLoop run_loop;
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  const auto expected_metric_state = password_manager::
+  const auto expected_metric_state = password_manager::metrics_util::
       PasswordChangeRecoveryFlowState::kProactiveRecoveryPopupShown;
 
   controller_.OnLoginPotentiallyFailed(&driver_, failed_login_form_);

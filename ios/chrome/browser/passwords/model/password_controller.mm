@@ -462,7 +462,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
           accountToStorePassword,
           /*password_update=*/false, accountStorageUserState, std::move(form),
-          self.dispatcher);
+          self.dispatcher, self.ukmSourceId);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordSave, std::move(delegate),
           /*skip_banner=*/manual);
@@ -483,7 +483,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
               ? accountToStorePassword
               : std::nullopt,
           /*password_update=*/true, accountStorageUserState, std::move(form),
-          self.dispatcher);
+          self.dispatcher, self.ukmSourceId);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordUpdate, std::move(delegate),
           /*skip_banner=*/manual);

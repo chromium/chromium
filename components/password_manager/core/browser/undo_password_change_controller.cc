@@ -59,11 +59,12 @@ void UndoPasswordChangeController::OnTroubleSigningInClicked(
 
   base::UmaHistogramEnumeration(
       kPasswordChangeRecoveryFlowStateHistogram,
-      PasswordChangeRecoveryFlowState::kTroubleSigningInClicked);
+      password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+          kTroubleSigningInClicked);
   ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id_)
-      .SetPasswordChangeRecoveryFlow(
-          static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
-                               kTroubleSigningInClicked))
+      .SetPasswordChangeRecoveryFlow(static_cast<int>(
+          password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+              kTroubleSigningInClicked))
       .Record(ukm::UkmRecorder::Get());
 }
 
@@ -110,11 +111,12 @@ void UndoPasswordChangeController::OnSuggestionsHidden() {
 
     base::UmaHistogramEnumeration(
         kPasswordChangeRecoveryFlowStateHistogram,
-        PasswordChangeRecoveryFlowState::kProactiveRecoveryPopupShown);
+        password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+            kProactiveRecoveryPopupShown);
     ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id_)
-        .SetPasswordChangeRecoveryFlow(
-            static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
-                                 kProactiveRecoveryPopupShown))
+        .SetPasswordChangeRecoveryFlow(static_cast<int>(
+            password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+                kProactiveRecoveryPopupShown))
         .Record(ukm::UkmRecorder::Get());
   }
   FinishObserving();

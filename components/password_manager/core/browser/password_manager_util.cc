@@ -268,6 +268,17 @@ const password_manager::PasswordForm* FindLoginWithChangedPassword(
              : nullptr;
 }
 
+const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
+    const password_manager::PasswordFormManagerForUI& submitted_manager) {
+  const password_manager::PasswordForm* changed_password_form =
+      FindLoginWithChangedPassword(submitted_manager);
+  if (changed_password_form &&
+      changed_password_form->GetPasswordBackup().has_value()) {
+    return changed_password_form;
+  }
+  return nullptr;
+}
+
 const PasswordForm* GetMatchForUpdating(
     const PasswordForm& submitted_form,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
