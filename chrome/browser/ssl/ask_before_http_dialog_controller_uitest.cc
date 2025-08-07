@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -33,7 +35,15 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "ui/views/controls/styled_label.h"
+
+using security_interstitials::MetricsHelper;
+using security_interstitials::https_only_mode::BlockingResult;
+using security_interstitials::https_only_mode::InterstitialReason;
+using security_interstitials::https_only_mode::kInterstitialReasonHistogram;
+using UkmEntry = ukm::builders::HttpsFirstMode_Event;
 
 // This is a subset of variations from `HttpsUpgradesTestType` that are
 // particularly relevant for testing the Ask-before-HTTP native warning dialog.
@@ -165,6 +175,8 @@ class AskBeforeHttpDialogControllerUiTest
         test_type() == AskBeforeHttpDialogControllerTestType::kAll) {
       SetBalancedPref(true);
     }
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   void TearDownOnMainThread() override {
@@ -218,6 +230,24 @@ class AskBeforeHttpDialogControllerUiTest
   net::EmbeddedTestServer* http_server() { return &http_server_; }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
+  base::HistogramTester* histograms() { return &histograms_; }
+
+  // Checks that the interstitial UKM has an entry for `url` and `result`.
+  void ExpectUKMEntry(const GURL& url, BlockingResult result) {
+    auto entries = test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+
+    test_ukm_recorder_->ExpectEntrySourceHasUrl(entries[0], url);
+    test_ukm_recorder_->ExpectEntryMetric(entries[0], "Result",
+                                          static_cast<int>(result));
+  }
+
+  // Checks that the interstitial UKM has no entry.
+  void ExpectEmptyUKM() {
+    auto entries = test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+    EXPECT_EQ(0u, entries.size());
+  }
+
  private:
   // TODO(https://crbug.com/423465927): Explore a better approach to make the
   // existing tests run with the prewarm feature enabled.
@@ -228,6 +258,7 @@ class AskBeforeHttpDialogControllerUiTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   content::ContentMockCertVerifier mock_cert_verifier_;
   base::HistogramTester histograms_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
@@ -269,6 +300,9 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
 
   RunTestSequence(InAnyContext(
       EnsureNotPresent(AskBeforeHttpDialogController::kContinueButtonId)));
+
+  // No warning was shown so no action was taken on the warning.
+  ExpectEmptyUKM();
 }
 
 // If the user triggers an Ask-before-HTTP warning for a host and then
@@ -291,6 +325,32 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
           InstrumentTab(kTestTab),
           PressButton(AskBeforeHttpDialogController::kContinueButtonId),
           WaitForWebContentsNavigation(kTestTab, http_url)));
+
+  // Verify that the interstitial metrics were correctly recorded.
+  histograms()->ExpectTotalCount("interstitial.https_first_mode.decision", 2);
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::SHOW, 1);
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::PROCEED, 1);
+
+  histograms()->ExpectTotalCount(kInterstitialReasonHistogram, 1);
+  switch (test_type()) {
+    case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeOnly:
+    case AskBeforeHttpDialogControllerTestType::kAll:
+      histograms()->ExpectBucketCount(kInterstitialReasonHistogram,
+                                      InterstitialReason::kPref, 1);
+      break;
+    case AskBeforeHttpDialogControllerTestType::kHttpsFirstBalancedMode:
+      histograms()->ExpectBucketCount(kInterstitialReasonHistogram,
+                                      InterstitialReason::kBalanced, 1);
+      break;
+    case AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIncognito:
+      histograms()->ExpectBucketCount(kInterstitialReasonHistogram,
+                                      InterstitialReason::kIncognito, 1);
+      break;
+  }
+
+  ExpectUKMEntry(http_url, BlockingResult::kInterstitialProceed);
 }
 
 // If the user triggers an Ask-before-HTTP warning for a host and then
@@ -315,6 +375,14 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
           WaitForWebContentsNavigation(kTestTab, GURL("about:blank"))));
 
   EXPECT_EQ(GURL("about:blank"), contents->GetLastCommittedURL());
+
+  // Verify that the interstitial metrics were correctly recorded.
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::SHOW, 1);
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::DONT_PROCEED, 1);
+
+  ExpectUKMEntry(http_url, BlockingResult::kInterstitialDontProceed);
 }
 
 // If the user triggers an Ask-before-HTTP warning for a host and then
@@ -349,6 +417,10 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
                 ->GetVisibleURL()
                 .query(),
             "p=first_mode");
+
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.interaction",
+                                  MetricsHelper::Interaction::SHOW_LEARN_MORE,
+                                  1);
 }
 
 // If the user triggers an Ask-before-HTTP warning for a host, then clicking
@@ -379,4 +451,40 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
           PressButton(kToolbarForwardButtonElementId),
           WaitForWebContentsNavigation(kTestTab, http_url),
           EnsurePresent(AskBeforeHttpDialogController::kContinueButtonId)));
+
+  // Metrics should be logged for showing the warning dialog twice.
+  // Pressing the back button should count as not proceeding through the warning
+  // for metrics.
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::SHOW, 2);
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::DONT_PROCEED, 1);
+
+  ExpectUKMEntry(http_url, BlockingResult::kInterstitialDontProceed);
+}
+
+// Closing the tab of the warning dialog counts as not proceeding through
+// the warning for metrics.
+IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
+                       FailedUpgrade_WarningShown_CloseTab) {
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  RunTestSequence(InAnyContext(
+      WaitForShow(AskBeforeHttpDialogController::kGoBackButtonId)));
+
+  // Close the dialog by closing the tab.
+  chrome::CloseWebContents(GetBrowser(), contents, false);
+
+  // Verify that the interstitial metrics were correctly recorded.
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::SHOW, 1);
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::DONT_PROCEED, 1);
+
+  ExpectUKMEntry(http_url, BlockingResult::kInterstitialDontProceed);
 }

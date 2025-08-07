@@ -17,6 +17,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/class_property.h"
@@ -138,7 +139,8 @@ AskBeforeHttpDialogController::~AskBeforeHttpDialogController() {
 
 void AskBeforeHttpDialogController::ShowDialog(
     content::WebContents* web_contents,
-    const GURL& request_url) {
+    const GURL& request_url,
+    ukm::SourceId navigation_source_id) {
   // If we are triggering a new dialog, that means another navigation
   // finished, so we should prefer to replace the dialog and cancel
   // the old one. TabDialogManager handles this for us.
@@ -170,6 +172,22 @@ void AskBeforeHttpDialogController::ShowDialog(
   // safety" action.
   tab_dialog_params->block_new_modal = false;
 
+  // Track the source ID for the navigation that triggered the dialog.
+  navigation_source_id_ = navigation_source_id;
+
+  // Configure the metrics helper for this instance of the warning dialog.
+  security_interstitials::MetricsHelper::ReportDetails settings;
+  settings.metric_prefix = "https_first_mode";
+  // TODO(crbug.com/351990829): Consider if we want to record repeated
+  // visit metrics (for both the new dialog UI and for the old interstitial UI).
+  metrics_helper_ = std::make_unique<security_interstitials::MetricsHelper>(
+      request_url, settings, nullptr);
+
+  metrics_helper_->RecordUserDecision(
+      security_interstitials::MetricsHelper::SHOW);
+  metrics_helper_->RecordUserInteraction(
+      security_interstitials::MetricsHelper::TOTAL_VISITS);
+
   dialog_widget_ =
       tab_interface_->GetTabFeatures()
           ->tab_dialog_manager()
@@ -185,10 +203,27 @@ bool AskBeforeHttpDialogController::HasOpenDialogWidget() const {
 
 void AskBeforeHttpDialogController::CloseDialogWidget(
     views::Widget::ClosedReason reason) {
-  // TODO(crbug.com/351990829): Record metrics for each reason the dialog went
-  // away.
   // NOTE: Losing focus (e.g., switching away from the tab with the dialog)
   // does not cause the widget to be closed.
+  if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
+    // User pressed the "Continue to site" button.
+    RecordHttpsFirstModeUKM(navigation_source_id_,
+                            security_interstitials::https_only_mode::
+                                BlockingResult::kInterstitialProceed);
+    metrics_helper_->RecordUserDecision(
+        security_interstitials::MetricsHelper::PROCEED);
+  } else {
+    // All other cases are the user not proceeding (either actively clicking "Go
+    // back", or dismissing the warning for some other reason like closing the
+    // tab).
+    RecordHttpsFirstModeUKM(navigation_source_id_,
+                            security_interstitials::https_only_mode::
+                                BlockingResult::kInterstitialDontProceed);
+    metrics_helper_->RecordUserDecision(
+        security_interstitials::MetricsHelper::DONT_PROCEED);
+  }
+  navigation_source_id_ = ukm::kInvalidSourceId;
+  metrics_helper_.reset();
   dialog_widget_.reset();
 }
 
@@ -232,8 +267,6 @@ AskBeforeHttpDialogController::CreateDialogModel(const GURL& request_url) {
       interstitial_state =
           ComputeInterstitialState(tab_interface_->GetContents(), request_url);
 
-  // TODO(crbug.com/351990829): Record warning reason metrics.
-
   AddAskBeforeHttpDialogText(
       *dialog_model,
       security_interstitials::https_only_mode::GetInterstitialReason(
@@ -244,7 +277,9 @@ AskBeforeHttpDialogController::CreateDialogModel(const GURL& request_url) {
 
 void AskBeforeHttpDialogController::OnHelpCenterLinkClicked(
     const ui::Event& event) {
-  // TODO(crbug.com/351990829): Record metrics for user clicking "learn more".
+  metrics_helper_->RecordUserInteraction(
+      security_interstitials::MetricsHelper::SHOW_LEARN_MORE);
+
   tab_interface_->GetBrowserWindowInterface()->OpenGURL(
       GURL(kLearnMoreLink),
       ui::DispositionFromEventFlags(event.flags(),
@@ -273,8 +308,6 @@ void AskBeforeHttpDialogController::OnContinueButtonClicked(
   if (HasOpenDialogWidget()) {
     CloseDialogWidget(views::Widget::ClosedReason::kCancelButtonClicked);
   }
-  // TODO(crbug.com/351990829): Record metrics for user clicking "continue to
-  // site".
 
   // LINT.IfChange(HttpsFirstModeProceedLogic)
   content::WebContents* web_contents = tab_interface_->GetContents();
