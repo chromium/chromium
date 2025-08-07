@@ -92,7 +92,6 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   struct IconSizeAndPurpose {
     SquareSizePx size_px = 0;
     IconPurpose purpose = IconPurpose::ANY;
-    bool is_trusted = false;
   };
 
   // For each of |purposes|, in the given order, looks for an icon with size at
@@ -100,8 +99,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   std::optional<IconSizeAndPurpose> FindIconMatchBigger(
       const webapps::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
-      SquareSizePx min_size,
-      bool skip_trusted_icons_for_favicons = false) const;
+      SquareSizePx min_size) const;
   // Returns whether there is a downloaded icon of at least |min_size| for any
   // of the given |purposes|.
   bool HasSmallestIcon(const webapps::AppId& app_id,
@@ -258,8 +256,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   std::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const webapps::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
-      SquareSizePx max_size,
-      bool skip_trusted_icons_for_favicons = false) const;
+      SquareSizePx max_size) const;
 
   void OnReadFavicons(ReadImageSkiaCallback callback,
                       std::map<SquareSizePx, SkBitmap> icon_bitmaps);

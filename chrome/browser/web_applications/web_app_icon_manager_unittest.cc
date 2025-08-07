@@ -69,17 +69,7 @@ std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
 
 }  // namespace
 
-class WebAppIconManagerTest : public WebAppTest,
-                              public testing::WithParamInterface<bool> {
- public:
-  WebAppIconManagerTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kWebAppUsePrimaryIcon);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kWebAppUsePrimaryIcon);
-    }
-  }
-
+class WebAppIconManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
@@ -285,14 +275,9 @@ class WebAppIconManagerTest : public WebAppTest,
   TestFileUtils& file_utils() {
     return *fake_provider().file_utils()->AsTestFileUtils();
   }
-
-  bool IsTrustedIconsEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {
+TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -332,7 +317,7 @@ TEST_P(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {
       icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, sizes_px));
 }
 
-TEST_P(WebAppIconManagerTest, WriteAndReadIcons_MaskableOnly) {
+TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MaskableOnly) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -371,7 +356,7 @@ TEST_P(WebAppIconManagerTest, WriteAndReadIcons_MaskableOnly) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, WriteAndReadIcons_MonochromeOnly) {
+TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MonochromeOnly) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -413,7 +398,7 @@ TEST_P(WebAppIconManagerTest, WriteAndReadIcons_MonochromeOnly) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
+TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -476,7 +461,7 @@ TEST_P(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
+TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -547,7 +532,7 @@ TEST_P(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, OverwriteIcons) {
+TEST_F(WebAppIconManagerTest, OverwriteIcons) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -642,7 +627,7 @@ TEST_P(WebAppIconManagerTest, OverwriteIcons) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, ReadAllIconsLastUpdateTime) {
+TEST_F(WebAppIconManagerTest, ReadAllIconsLastUpdateTime) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -665,7 +650,7 @@ TEST_P(WebAppIconManagerTest, ReadAllIconsLastUpdateTime) {
   EXPECT_FALSE(time_data_map[sizes_px[1]].is_null());
 }
 
-TEST_P(WebAppIconManagerTest, ReadAllShortcutMenuIconsWithTimestamp) {
+TEST_F(WebAppIconManagerTest, ReadAllShortcutMenuIconsWithTimestamp) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -723,7 +708,7 @@ TEST_P(WebAppIconManagerTest, ReadAllShortcutMenuIconsWithTimestamp) {
       time_data_map[1][IconPurpose::MONOCHROME][icon_size::k128].is_null());
 }
 
-TEST_P(WebAppIconManagerTest, ReadShortcutsMenuIconsFailed) {
+TEST_F(WebAppIconManagerTest, ReadShortcutsMenuIconsFailed) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -748,7 +733,7 @@ TEST_P(WebAppIconManagerTest, ReadShortcutsMenuIconsFailed) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
+TEST_F(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -829,7 +814,7 @@ TEST_P(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, WriteNonProductIconsEmptyMaps) {
+TEST_F(WebAppIconManagerTest, WriteNonProductIconsEmptyMaps) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -857,7 +842,7 @@ TEST_P(WebAppIconManagerTest, WriteNonProductIconsEmptyMaps) {
   // are read. (When there is a read function.)
 }
 
-TEST_P(WebAppIconManagerTest, WriteTrustedIconsIntoDisk) {
+TEST_F(WebAppIconManagerTest, WriteTrustedIconsIntoDisk) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -909,7 +894,7 @@ TEST_P(WebAppIconManagerTest, WriteTrustedIconsIntoDisk) {
   gfx::test::AreBitmapsEqual(maskable_bitmap3, maskable_icons[icon_size::k96]);
 }
 
-TEST_P(WebAppIconManagerTest, WriteTrustedAndManifestIconsBoth) {
+TEST_F(WebAppIconManagerTest, WriteTrustedAndManifestIconsBoth) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -963,10 +948,7 @@ class WebAppIconManagerTrustedIconReadTest : public WebAppIconManagerTest {
   base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 };
 
-TEST_P(WebAppIconManagerTest, WriteAndReadTrustedIcons) {
-  if (!IsTrustedIconsEnabled()) {
-    GTEST_SKIP() << "Only test with trusted icons";
-  }
+TEST_F(WebAppIconManagerTrustedIconReadTest, WriteAndReadTrustedIcons) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1021,15 +1003,17 @@ TEST_P(WebAppIconManagerTest, WriteAndReadTrustedIcons) {
               gfx::test::EqualsBitmap(any_bitmap2));
 }
 
-TEST_P(WebAppIconManagerTest, ReadTrustedIconsFallbackToManifest) {
+TEST_F(WebAppIconManagerTrustedIconReadTest,
+       ReadTrustedIconsFallbackToManifest) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
+  AddAppToRegistry(std::move(web_app));
 
   IconBitmaps manifest_icons;
-  SkBitmap any_bitmap1 = CreateSquareIcon(icon_size::k128, SK_ColorGREEN);
-  SkBitmap any_bitmap2 = CreateSquareIcon(icon_size::k512, SK_ColorBLUE);
-  manifest_icons.any[icon_size::k128] = any_bitmap1;
-  manifest_icons.any[icon_size::k512] = any_bitmap2;
+  SkBitmap any_bitmap1 = CreateSquareIcon(icon_size::k64, SK_ColorGREEN);
+  SkBitmap any_bitmap2 = CreateSquareIcon(icon_size::k128, SK_ColorBLUE);
+  manifest_icons.any[icon_size::k64] = any_bitmap1;
+  manifest_icons.any[icon_size::k128] = any_bitmap2;
 
   IconBitmaps trusted_icons;
   SkBitmap any_trusted_bitmap1 = CreateSquareIcon(icon_size::k256, SK_ColorRED);
@@ -1037,12 +1021,6 @@ TEST_P(WebAppIconManagerTest, ReadTrustedIconsFallbackToManifest) {
       CreateSquareIcon(icon_size::k512, SK_ColorCYAN);
   trusted_icons.any[icon_size::k256] = any_trusted_bitmap1;
   trusted_icons.any[icon_size::k512] = any_trusted_bitmap2;
-
-  web_app->SetDownloadedIconSizes(IconPurpose::ANY,
-                                  {icon_size::k128, icon_size::k512});
-  web_app->SetStoredTrustedIconSizes(IconPurpose::ANY,
-                                     {icon_size::k256, icon_size::k512});
-  AddAppToRegistry(std::move(web_app));
 
   // Verify writing trusted icons to disk correctly.
   base::RunLoop run_loop;
@@ -1061,21 +1039,16 @@ TEST_P(WebAppIconManagerTest, ReadTrustedIconsFallbackToManifest) {
   std::map<SquareSizePx, SkBitmap> bitmaps_from_disk = icons_future.Get();
   EXPECT_EQ(2u, bitmaps_from_disk.size());
 
-  SkBitmap bitmap_for_both =
-      IsTrustedIconsEnabled() ? any_trusted_bitmap2 : any_bitmap2;
-
   // This is obtained from the directory containing the manifest icons.
   EXPECT_THAT(bitmaps_from_disk[icon_size::k128],
-              gfx::test::EqualsBitmap(any_bitmap1));
+              gfx::test::EqualsBitmap(any_bitmap2));
   // This is obtained from the directory containing the trusted icons.
   EXPECT_THAT(bitmaps_from_disk[icon_size::k512],
-              gfx::test::EqualsBitmap(bitmap_for_both));
+              gfx::test::EqualsBitmap(any_trusted_bitmap2));
 }
 
-TEST_P(WebAppIconManagerTest, TrustedIconsOfSizeNotFoundNoFallback) {
-  if (!IsTrustedIconsEnabled()) {
-    GTEST_SKIP() << "Only test with trusted icons";
-  }
+TEST_F(WebAppIconManagerTrustedIconReadTest,
+       TrustedIconsOfSizeNotFoundNoFallback) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1111,7 +1084,7 @@ TEST_P(WebAppIconManagerTest, TrustedIconsOfSizeNotFoundNoFallback) {
   EXPECT_FALSE(base::Contains(bitmaps_from_disk, icon_size::k256));
 }
 
-TEST_P(WebAppIconManagerTest, WriteOtherIconsToDisk) {
+TEST_F(WebAppIconManagerTest, WriteOtherIconsToDisk) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1135,7 +1108,7 @@ TEST_P(WebAppIconManagerTest, WriteOtherIconsToDisk) {
   // icons are read. (When there is a read function.)
 }
 
-TEST_P(WebAppIconManagerTest, WritePendingTrustedIconsIntoDisk) {
+TEST_F(WebAppIconManagerTest, WritePendingTrustedIconsIntoDisk) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1191,7 +1164,7 @@ TEST_P(WebAppIconManagerTest, WritePendingTrustedIconsIntoDisk) {
   gfx::test::AreBitmapsEqual(maskable_bitmap3, maskable_icons[icon_size::k96]);
 }
 
-TEST_P(WebAppIconManagerTest, WritePendingManifestIconsIntoDisk) {
+TEST_F(WebAppIconManagerTest, WritePendingManifestIconsIntoDisk) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1247,7 +1220,7 @@ TEST_P(WebAppIconManagerTest, WritePendingManifestIconsIntoDisk) {
   gfx::test::AreBitmapsEqual(maskable_bitmap3, maskable_icons[icon_size::k96]);
 }
 
-TEST_P(WebAppIconManagerTest, WritePendingTrustedAndPendingManifestIconsBoth) {
+TEST_F(WebAppIconManagerTest, WritePendingTrustedAndPendingManifestIconsBoth) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1307,7 +1280,7 @@ TEST_P(WebAppIconManagerTest, WritePendingTrustedAndPendingManifestIconsBoth) {
 
 // Verify that pending update data can be written and it won't wipe out the
 // manifest icon data even if manifest_icons is empty.
-TEST_P(WebAppIconManagerTest, PendingIconsDoNotOverwriteManifestIcons) {
+TEST_F(WebAppIconManagerTest, PendingIconsDoNotOverwriteManifestIcons) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
   AddAppToRegistry(std::move(web_app));
@@ -1371,7 +1344,7 @@ TEST_P(WebAppIconManagerTest, PendingIconsDoNotOverwriteManifestIcons) {
 // Creating shortcut icons but no manifest icons can cause the top level icon
 // storing directory to not be created. Verify storing of pending update images
 // works fine without that, and with other icons also working correctly.
-TEST_P(WebAppIconManagerTest, PendingIconsEmptyManifestIconDirShortcutIcons) {
+TEST_F(WebAppIconManagerTest, PendingIconsEmptyManifestIconDirShortcutIcons) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1444,7 +1417,7 @@ TEST_P(WebAppIconManagerTest, PendingIconsEmptyManifestIconDirShortcutIcons) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, ReadIconsFailed) {
+TEST_F(WebAppIconManagerTest, ReadIconsFailed) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1476,7 +1449,7 @@ TEST_P(WebAppIconManagerTest, ReadIconsFailed) {
   run_loop.Run();
 }
 
-TEST_P(WebAppIconManagerTest, FindExact) {
+TEST_F(WebAppIconManagerTest, FindExact) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1517,7 +1490,7 @@ bool operator==(const IconSizeAndPurpose& a, const IconSizeAndPurpose& b) {
   return a.size_px == b.size_px && a.purpose == b.purpose;
 }
 
-TEST_P(WebAppIconManagerTest, FindSmallest) {
+TEST_F(WebAppIconManagerTest, FindSmallest) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1603,7 +1576,7 @@ TEST_P(WebAppIconManagerTest, FindSmallest) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, DeleteData_Success) {
+TEST_F(WebAppIconManagerTest, DeleteData_Success) {
   const webapps::AppId app1_id = GenerateAppId(
       /*manifest_id_path=*/std::nullopt, GURL("https://example.com/"));
   const webapps::AppId app2_id = GenerateAppId(
@@ -1649,7 +1622,7 @@ TEST_P(WebAppIconManagerTest, DeleteData_Success) {
   EXPECT_FALSE(file_utils().DirectoryExists(app2_dir));
 }
 
-TEST_P(WebAppIconManagerTest, DeleteData_Failure) {
+TEST_F(WebAppIconManagerTest, DeleteData_Failure) {
   const webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, GURL("https://example.com/"));
 
@@ -1664,7 +1637,7 @@ TEST_P(WebAppIconManagerTest, DeleteData_Failure) {
   run_loop.Run();
 }
 
-TEST_P(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success_AnyOnly) {
+TEST_F(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success_AnyOnly) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1697,7 +1670,7 @@ TEST_P(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success_AnyOnly) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success) {
+TEST_F(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1765,7 +1738,7 @@ TEST_P(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, ReadSmallestCompressedIcon_Failure) {
+TEST_F(WebAppIconManagerTest, ReadSmallestCompressedIcon_Failure) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1797,7 +1770,7 @@ TEST_P(WebAppIconManagerTest, ReadSmallestCompressedIcon_Failure) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, ReadIconAndResize_Success_AnyOnly) {
+TEST_F(WebAppIconManagerTest, ReadIconAndResize_Success_AnyOnly) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1836,7 +1809,7 @@ TEST_P(WebAppIconManagerTest, ReadIconAndResize_Success_AnyOnly) {
   run_loop.Run();
 }
 
-TEST_P(WebAppIconManagerTest, ReadIconAndResize_Success_AnyAndMaskable) {
+TEST_F(WebAppIconManagerTest, ReadIconAndResize_Success_AnyAndMaskable) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1878,7 +1851,7 @@ TEST_P(WebAppIconManagerTest, ReadIconAndResize_Success_AnyAndMaskable) {
             ReadIconAndResize(app_id, IconPurpose::MASKABLE, 1024));
 }
 
-TEST_P(WebAppIconManagerTest, ReadIconAndResize_Failure) {
+TEST_F(WebAppIconManagerTest, ReadIconAndResize_Failure) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1913,7 +1886,7 @@ TEST_P(WebAppIconManagerTest, ReadIconAndResize_Failure) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, CacheExistingAppFavicon) {
+TEST_F(WebAppIconManagerTest, CacheExistingAppFavicon) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1933,7 +1906,7 @@ TEST_P(WebAppIconManagerTest, CacheExistingAppFavicon) {
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
 }
 
-TEST_P(WebAppIconManagerTest, CacheAppFaviconWithResize) {
+TEST_F(WebAppIconManagerTest, CacheAppFaviconWithResize) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1956,7 +1929,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFaviconWithResize) {
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
 }
 
-TEST_P(WebAppIconManagerTest, CacheNewAppFavicon) {
+TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1976,7 +1949,7 @@ TEST_P(WebAppIconManagerTest, CacheNewAppFavicon) {
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(0, 0));
 }
 
-TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -2021,7 +1994,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -2060,7 +2033,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
   }
 }
 
-TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -2070,7 +2043,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
   EXPECT_TRUE(image_skia.isNull());
 }
 
-TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -2087,7 +2060,7 @@ TEST_P(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
   EXPECT_TRUE(image_skia.isNull());
 }
 
-TEST_P(WebAppIconManagerTest,
+TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_DownsizingFromSingleIcon) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
@@ -2121,7 +2094,7 @@ TEST_P(WebAppIconManagerTest,
   EXPECT_FALSE(image_skia.HasRepresentation(32.0f));
 }
 
-TEST_P(WebAppIconManagerTest,
+TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_BiggerUiScaleFactorIconMissing) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
@@ -2153,7 +2126,25 @@ TEST_P(WebAppIconManagerTest,
   EXPECT_FALSE(image_skia.HasRepresentation(3.0f));
 }
 
-TEST_P(WebAppIconManagerTest, ReadAllIcons_AnyOnly) {
+class WebAppIconManagerTrustedIconTest
+    : public WebAppIconManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAppIconManagerTrustedIconTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kWebAppUsePrimaryIcon);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kWebAppUsePrimaryIcon);
+    }
+  }
+
+  bool IsTrustedIconsEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(WebAppIconManagerTrustedIconTest, ReadAllIcons_AnyOnly) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -2207,7 +2198,7 @@ TEST_P(WebAppIconManagerTest, ReadAllIcons_AnyOnly) {
   EXPECT_EQ(0u, trusted_icons.maskable.size());
 }
 
-TEST_P(WebAppIconManagerTest, ReadAllIcons_AnyAndMaskable) {
+TEST_P(WebAppIconManagerTrustedIconTest, ReadAllIcons_AnyAndMaskable) {
   auto web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
 
@@ -2279,7 +2270,7 @@ TEST_P(WebAppIconManagerTest, ReadAllIcons_AnyAndMaskable) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppIconManagerTest,
+                         WebAppIconManagerTrustedIconTest,
                          ::testing::Bool(),
                          [](::testing::TestParamInfo<bool> info) {
                            return info.param ? "TrustedIconsOn"
@@ -2290,7 +2281,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 using WebAppIconManagerTest_NotificationIconAndTitle = WebAppIconManagerTest;
 
 // TODO(b/321111988): Reenable this test.
-TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        DISABLED_CacheAppMonochromeFavicon_NoMissingIcons) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   web_app->SetThemeColor(std::make_optional(SK_ColorBLUE));
@@ -2333,7 +2324,7 @@ TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
   }
 }
 
-TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_CacheAfterAppInstall) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   web_app->SetThemeColor(std::make_optional(SK_ColorGREEN));
@@ -2369,7 +2360,7 @@ TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
   EXPECT_FALSE(monochrome_image.HasRepresentation(32.0f));
 }
 
-TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoThemeColor) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   web_app->SetThemeColor(std::nullopt);
@@ -2403,7 +2394,7 @@ TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
   EXPECT_FALSE(monochrome_image.HasRepresentation(3.0));
 }
 
-TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
+TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoIcons) {
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const webapps::AppId app_id = web_app->app_id();
@@ -2412,14 +2403,6 @@ TEST_P(WebAppIconManagerTest_NotificationIconAndTitle,
   gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
   EXPECT_TRUE(monochrome_image.isNull());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppIconManagerTest_NotificationIconAndTitle,
-                         ::testing::Bool(),
-                         [](::testing::TestParamInfo<bool> info) {
-                           return info.param ? "TrustedIconsOn"
-                                             : "TrustedIconsOff";
-                         });
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
