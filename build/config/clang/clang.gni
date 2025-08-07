@@ -12,12 +12,13 @@ default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
   # coding guidelines, etc. Only used when compiling with Chrome's Clang, not
-  # Chrome OS's.
+  # Chrome OS's. Setting this enables all of the functionality of the plugin.
   clang_use_chrome_plugins =
       is_clang && current_os != "zos" &&
       default_toolchain != "//build/toolchain/cros:target"
 
-  # Use this instead of clang_use_chrome_plugins to enable just the raw-ptr-plugin.
+  # Use this instead of clang_use_chrome_plugins to enable just the raw-ptr
+  # functionality of the plugin.
   clang_use_raw_ptr_plugin = false
 
   enable_check_raw_ptr_fields =
@@ -31,6 +32,10 @@ declare_args() {
       build_with_chromium && !is_official_build &&
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_win ||
        is_mac || is_ios || is_chromeos)
+
+  # Use this instead of clang_use_chrome_plugins to enable just the unsafe
+  # buffers functionality of the plugin
+  clang_use_unsafe_buffers_plugin = false
 
   clang_base_path = default_clang_base_path
 
