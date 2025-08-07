@@ -281,9 +281,6 @@ extern const char kDownloadAutoDeletionClearFilesOnEveryStartupDescription[];
 extern const char kDownloadAutoDeletionName[];
 extern const char kDownloadAutoDeletionDescription[];
 
-extern const char kDownloadedPDFOpeningName[];
-extern const char kDownloadedPDFOpeningDescription[];
-
 extern const char kDownloadListName[];
 extern const char kDownloadListDescription[];
 

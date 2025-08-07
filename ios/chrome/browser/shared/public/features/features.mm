@@ -517,10 +517,6 @@ bool IsDownloadAutoDeletionFeatureEnabled() {
   return base::FeatureList::IsEnabled(kDownloadAutoDeletionFeatureEnabled);
 }
 
-BASE_FEATURE(kDownloadedPDFOpening,
-             "DownloadedPDFOpening",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kDownloadListUITypeParam[] = "DownloadListUIType";
 
 bool IsDownloadListEnabled() {

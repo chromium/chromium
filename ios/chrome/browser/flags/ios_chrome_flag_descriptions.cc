@@ -500,10 +500,6 @@ extern const char kDownloadAutoDeletionDescription[] =
     "When enabled, files downloaded on the device can be scheduled to be "
     "deleted automatically after 30 days.";
 
-const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
-const char kDownloadedPDFOpeningDescription[] =
-    "Enables the direct opening of downloaded PDF files in Chrome";
-
 const char kDownloadListName[] = "Enable Download List";
 const char kDownloadListDescription[] =
     "Controls the UI type for the download list. When enabled, allows "

@@ -522,9 +522,6 @@ BASE_DECLARE_FEATURE(kDownloadAutoDeletionFeatureEnabled);
 // Whether the kDownloadAutoDeletion feature is enabled.
 bool IsDownloadAutoDeletionFeatureEnabled();
 
-// Feature flag that allows opening the downloaded PDF files in Chrome.
-BASE_DECLARE_FEATURE(kDownloadedPDFOpening);
-
 // Download List UI feature constants and types.
 extern const char kDownloadListUITypeParam[];
 

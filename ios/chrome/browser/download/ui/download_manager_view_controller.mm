@@ -774,10 +774,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     case kDownloadManagerStateSucceeded:
       switch (_downloadFileDestination) {
         case DownloadFileDestination::kFiles:
-          return (base::FeatureList::IsEnabled(kDownloadedPDFOpening) &&
-                  _canOpenFile)
-                     ? self.openButton
-                     : self.openInButton;
+          return (_canOpenFile) ? self.openButton : self.openInButton;
         case DownloadFileDestination::kDrive:
           return _installDriveButtonVisible ? self.installAppButton
                                             : self.openInDriveButton;

@@ -2443,11 +2443,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "downloaded-pdf-opening-ios",
-    "owners": [ "erahmaoui@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "downloads-migrate-to-jobs-api",
     "owners": ["shaktisahu@chromium.org", "qinmin@chromium.org"],
     "expiry_milestone": 125
