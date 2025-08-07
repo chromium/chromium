@@ -23,13 +23,13 @@
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/tpcd/experiment/mock_experiment_manager.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
@@ -56,8 +56,6 @@ constexpr char kTestEmail[] = "test@test.com";
 class PrivacySandboxSettingsDelegateTest : public testing::Test {
  public:
   PrivacySandboxSettingsDelegateTest() {
-    local_state_ = std::make_unique<ScopedTestingLocalState>(
-        TestingBrowserProcess::GetGlobal());
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment();
     adapter_ =
@@ -98,7 +96,6 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
   signin::IdentityTestEnvironment* identity_test_env() {
     return adapter_->identity_test_env();
   }
-  ScopedTestingLocalState* local_state() { return local_state_.get(); }
   TestingProfile* profile() { return profile_.get(); }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
@@ -111,7 +108,6 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adapter_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<tpcd::experiment::MockExperimentManager> experiment_manager_;
   std::unique_ptr<PrivacySandboxSettingsDelegate> delegate_;
@@ -562,8 +558,8 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   cookie_settings()->SetDefaultCookieSetting(test_case.cookie_content_setting);
 
   if (test_case.install_date.has_value()) {
-    local_state()->Get()->SetInt64(metrics::prefs::kInstallDate,
-                                   test_case.install_date->ToTimeT());
+    TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
+        metrics::prefs::kInstallDate, test_case.install_date->ToTimeT());
   }
 
 #if BUILDFLAG(IS_ANDROID)

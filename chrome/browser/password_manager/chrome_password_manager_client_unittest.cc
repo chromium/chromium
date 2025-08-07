@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/autofill_test_utils.h"
@@ -71,6 +70,7 @@
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
@@ -430,8 +430,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
  public:
   ChromePasswordManagerClientTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        local_state_(TestingBrowserProcess::GetGlobal()) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDelayedWarnings);
   }
   ~ChromePasswordManagerClientTest() override = default;
@@ -486,7 +485,6 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   FormData CreateLoginFormDataForFrame(content::RenderFrameHost* rfh);
 
   FakePasswordAutofillAgent fake_agent_;
-  ScopedTestingLocalState local_state_;
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
@@ -1022,7 +1020,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoAuthenticator) {
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoBiometrics) {
   device_reauth::MockDeviceAuthenticator authenticator;
   // Both prefs are registered by the `PasswordManager`.
-  local_state_.Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       password_manager::prefs::kHadBiometricsAvailable, false);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
@@ -1034,7 +1032,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoBiometrics) {
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingDisabled) {
   device_reauth::MockDeviceAuthenticator authenticator;
   // Both prefs are registered by the `PasswordManager`.
-  local_state_.Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       password_manager::prefs::kHadBiometricsAvailable, true);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
@@ -1048,7 +1046,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingDisabled) {
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingEnabled) {
   device_reauth::MockDeviceAuthenticator authenticator;
   // Both prefs are registered by the `PasswordManager`.
-  local_state_.Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       password_manager::prefs::kHadBiometricsAvailable, true);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
@@ -1064,7 +1062,7 @@ TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthSettingEnabledKillFlagEnabled) {
   device_reauth::MockDeviceAuthenticator authenticator;
   // Both prefs are registered by the `PasswordManager`.
-  local_state_.Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       password_manager::prefs::kHadBiometricsAvailable, true);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
@@ -1079,7 +1077,7 @@ TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthSettingEnabledKillFlagDisabled) {
   device_reauth::MockDeviceAuthenticator authenticator;
   // Both prefs are registered by the `PasswordManager`.
-  local_state_.Get()->SetBoolean(
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       password_manager::prefs::kHadBiometricsAvailable, true);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);

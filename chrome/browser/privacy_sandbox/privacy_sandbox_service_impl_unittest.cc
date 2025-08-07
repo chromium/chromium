@@ -38,7 +38,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_profile_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -53,6 +52,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
@@ -486,7 +486,9 @@ class PrivacySandboxServiceTest : public testing::Test {
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
 
-  PrefService* local_state() { return local_state_.Get(); }
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
   TestingProfile* profile() { return default_profile_; }
   PrivacySandboxServiceImpl* privacy_sandbox_service() {
     return privacy_sandbox_service_.get();
@@ -546,10 +548,7 @@ class PrivacySandboxServiceTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
 
   // In production, ProfileManager is created much earlier than Profile
-  // creation. Some of the tests using this fixture needs local_state,
-  // so instead of let TestingProfileManager generate it, we instantiate
-  // it independently.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+  // creation.
   std::unique_ptr<TestingProfileManager> default_profile_manager_;
   raw_ptr<TestingProfile> default_profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

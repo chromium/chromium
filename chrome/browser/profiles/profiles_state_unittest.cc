@@ -13,10 +13,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -82,10 +82,9 @@ INSTANTIATE_TEST_SUITE_P(ProfilesState,
 class IsGuestModeEnabledTest : public testing::TestWithParam<bool> {
  public:
   IsGuestModeEnabledTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()),
-        testing_local_state_(TestingBrowserProcess::GetGlobal()) {
-    testing_local_state_.Get()->SetBoolean(prefs::kBrowserGuestModeEnabled,
-                                           BrowserGuestModePrefValue());
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+        prefs::kBrowserGuestModeEnabled, BrowserGuestModePrefValue());
   }
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
@@ -129,7 +128,6 @@ class IsGuestModeEnabledTest : public testing::TestWithParam<bool> {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  ScopedTestingLocalState testing_local_state_;
 };
 
 TEST_P(IsGuestModeEnabledTest, NoProfiles) {

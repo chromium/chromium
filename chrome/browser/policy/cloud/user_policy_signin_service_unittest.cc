@@ -27,7 +27,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -142,7 +141,7 @@ class UserPolicySigninServiceTest : public testing::Test {
         test_url_loader_factory_.GetSafeWeakWrapper());
 
     g_browser_process->browser_policy_connector()->Init(
-        scoped_testing_local_state_.Get(),
+        TestingBrowserProcess::GetGlobal()->local_state(),
         test_url_loader_factory_.GetSafeWeakWrapper());
 
     // Create a testing profile with cloud-policy-on-signin enabled, and bring
@@ -318,8 +317,6 @@ class UserPolicySigninServiceTest : public testing::Test {
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
 
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
