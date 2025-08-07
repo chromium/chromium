@@ -258,15 +258,15 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // DECLARE/DEFINE_EXPORTED_... below.
 
 // Use this code in the .h file to declare a new identifier.
-#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                     \
-  extern const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
-  inline constexpr ui::ElementIdentifier IdentifierName(                     \
+#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                       \
+  extern const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
+  inline constexpr ::ui::ElementIdentifier IdentifierName(                     \
       &IdentifierName##Provider)
 
 // Use this code in the .cc file to define a new identifier.
-#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                \
-  const ui::internal::ElementIdentifierImpl IdentifierName##Provider { \
-    #IdentifierName                                                    \
+#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                  \
+  const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider { \
+    #IdentifierName                                                      \
   }
 
 // Declaring identifiers that can be used in other components:
@@ -276,32 +276,32 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 
 // Use this code in the .h file to declare a new exported identifier.
 #define DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, IdentifierName) \
-  ExportName extern const ui::internal::ElementIdentifierImpl                 \
+  ExportName extern const ::ui::internal::ElementIdentifierImpl               \
       IdentifierName##Provider;                                               \
-  ExportName extern const ui::ElementIdentifier IdentifierName
+  ExportName extern const ::ui::ElementIdentifier IdentifierName
 
 // Use this code in the .cc file to define a new exported identifier.
-#define DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(IdentifierName)      \
-  const ui::internal::ElementIdentifierImpl IdentifierName##Provider{ \
-      #IdentifierName};                                               \
-  const ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
+#define DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(IdentifierName)        \
+  const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider{ \
+      #IdentifierName};                                                 \
+  const ::ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
 
 // Declaring identifiers in a class:
 
 // Use this code in your class declaration in its .h file to declare an
 // identifier that is scoped to your class.
-#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(IdentifierName)               \
-  static const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
-  static constexpr ui::ElementIdentifier IdentifierName {             \
-    &IdentifierName##Provider                                                \
+#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                 \
+  static const ::ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
+  static constexpr ::ui::ElementIdentifier IdentifierName {                    \
+    &IdentifierName##Provider                                                  \
   }
 
 // Use this code in your class definition .cc file to define the member
 // variables
 #define DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName)    \
-  const ui::internal::ElementIdentifierImpl                                 \
+  const ::ui::internal::ElementIdentifierImpl                               \
       ClassName::IdentifierName##Provider{#ClassName "::" #IdentifierName}; \
-  constexpr ui::ElementIdentifier ClassName::IdentifierName
+  constexpr ::ui::ElementIdentifier ClassName::IdentifierName
 
 // Declaring local identifiers in functions, class methods, or local to a .cc
 // file (often used in tests). File and line are included to guarantee that the
@@ -319,10 +319,10 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // mangled with the file and line so that it can be used in local or module
 // scope (typically in tests) without having to worry about name collisions.
 #define DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(File, Line, IdentifierName) \
-  static constexpr ui::internal::ElementIdentifierImpl                    \
+  static constexpr ::ui::internal::ElementIdentifierImpl                  \
       IdentifierName##Provider{                                           \
           LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, IdentifierName)};     \
-  constexpr ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
+  constexpr ::ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
 
 // Use this code to declare a local identifier in a function body or module
 // scope. The name will be mangled with the file and line so that it can be used

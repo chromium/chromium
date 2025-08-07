@@ -59,28 +59,28 @@ extern std::ostream& operator<<(std::ostream& os,
 
 #define DECLARE_TYPED_IDENTIFIER_VALUE(Type, Name) \
   DECLARE_ELEMENT_IDENTIFIER_VALUE(Name##Impl);    \
-  extern const ui::TypedIdentifier<Type> Name
+  extern const ::ui::TypedIdentifier<Type> Name
 
 #define DEFINE_TYPED_IDENTIFIER_VALUE(Type, Name) \
   DEFINE_ELEMENT_IDENTIFIER_VALUE(Name##Impl);    \
-  constexpr ui::TypedIdentifier<Type> Name(Name##Impl)
+  constexpr ::ui::TypedIdentifier<Type> Name(Name##Impl)
 
 #define DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(Type, Name) \
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(Name##Impl);    \
-  static constexpr ui::TypedIdentifier<Type> Name {      \
+  static constexpr ::ui::TypedIdentifier<Type> Name {    \
     Name##Impl                                           \
   }
 
 #define DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(Class, Type, Name) \
   DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(Class, Name##Impl);    \
-  constexpr ui::TypedIdentifier<Type> Class::Name
+  constexpr ::ui::TypedIdentifier<Type> Class::Name
 
 #define DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(Type, Name)                  \
   DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, Name##Impl); \
-  constexpr ui::TypedIdentifier<Type> Name(Name##Impl)
+  constexpr ::ui::TypedIdentifier<Type> Name(Name##Impl)
 
 #define DEFINE_MACRO_TYPED_IDENTIFIER_VALUE(File, Line, Type, Name) \
   DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(File, Line, Name##Impl);    \
-  constexpr ui::TypedIdentifier<Type> Name(Name##Impl)
+  constexpr ::ui::TypedIdentifier<Type> Name(Name##Impl)
 
 #endif  // UI_BASE_INTERACTION_TYPED_IDENTIFIER_H_
