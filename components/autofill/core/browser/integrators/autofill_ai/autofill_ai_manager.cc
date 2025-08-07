@@ -372,7 +372,7 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
       };
 
   // Since the `on_suggestion_data_returned` callback is called synchronously,
-  // we can assume that `suggestions_generated` will hold correct value.
+  // we can assume that `suggestions` will hold correct value.
   suggestion_generator.FetchSuggestionData(form.ToFormData(), trigger_field,
                                            &form, autofill_field, *client_,
                                            on_suggestion_data_returned);
