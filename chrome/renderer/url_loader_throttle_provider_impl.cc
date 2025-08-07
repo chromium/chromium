@@ -161,6 +161,16 @@ URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
 
 URLLoaderThrottleProviderImpl::~URLLoaderThrottleProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(https://crbug.com/437115067): Remove this once `MemoryMappedRuleset`
+  // lifetime guarantees are cleaned up.
+  if (main_thread_task_runner_ &&
+      !main_thread_task_runner_->RunsTasksInCurrentSequence()) {
+    // Ensure the ruleset is released on the correct sequence if it is not the
+    // current one.
+    main_thread_task_runner_->ReleaseSoon(
+        FROM_HERE, std::move(fingerprinting_protection_ruleset_));
+  }
 }
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
