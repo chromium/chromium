@@ -53,10 +53,7 @@ source_set("unit_tests") {
 
 # Constants only target without dependencies to allow embedders to only include relevant code.
 android_library("constants_java") {
-  sources = [
-    "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettingsConstants.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebsiteSettingsConstants.java",
-  ]
+  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettingsConstants.java" ]
 }
 
 android_library("java") {

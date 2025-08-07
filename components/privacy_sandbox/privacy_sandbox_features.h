@@ -169,10 +169,6 @@ BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingIn3pcUx);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingFor3pcb);
 
-// Enables showing new RWS UI.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
-
 // Privacy UX features end
 
 #if BUILDFLAG(IS_ANDROID)
