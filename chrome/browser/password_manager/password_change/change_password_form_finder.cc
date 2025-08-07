@@ -198,6 +198,11 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
       web_contents_, dom_node_id,
       base::BindOnce(&ChangePasswordFormFinder::OnButtonClicked,
                      weak_ptr_factory_.GetWeakPtr()));
+  form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
+      web_contents_, client_,
+      base::BindOnce(&ChangePasswordFormFinder::OnSubsequentFormWaitingResult,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::TimeDelta::Max());
 }
 
 void ChangePasswordFormFinder::OnButtonClicked(bool result) {
@@ -216,11 +221,6 @@ void ChangePasswordFormFinder::OnButtonClicked(bool result) {
     std::move(callback_).Run(nullptr);
     return;
   }
-
-  form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
-      web_contents_, client_,
-      base::BindOnce(&ChangePasswordFormFinder::OnSubsequentFormWaitingResult,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(

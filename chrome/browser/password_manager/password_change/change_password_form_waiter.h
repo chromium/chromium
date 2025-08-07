@@ -33,9 +33,11 @@ class ChangePasswordFormWaiter
   using PasswordFormFoundCallback =
       base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
-  ChangePasswordFormWaiter(content::WebContents* web_contents,
-                           password_manager::PasswordManagerClient* client,
-                           PasswordFormFoundCallback callback);
+  ChangePasswordFormWaiter(
+      content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
+      PasswordFormFoundCallback callback,
+      base::TimeDelta timeout = kChangePasswordFormWaitingTimeout);
 
   ~ChangePasswordFormWaiter() override;
 
@@ -49,6 +51,7 @@ class ChangePasswordFormWaiter
 
   void OnTimeout();
 
+  const base::TimeDelta timeout_;
   base::OneShotTimer timeout_timer_;
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<password_manager::PasswordManagerClient> client_;
