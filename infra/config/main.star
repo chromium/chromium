@@ -316,7 +316,6 @@ exec("//subprojects/infra.star")
 branches.exec("//subprojects/codesearch/subproject.star")
 branches.exec("//subprojects/findit/subproject.star")
 branches.exec("//subprojects/flakiness/subproject.star")
-branches.exec("//subprojects/reclient/subproject.star")
 branches.exec("//subprojects/reviver/subproject.star")
 branches.exec("//subprojects/webrtc/subproject.star")
 

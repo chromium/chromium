@@ -108,30 +108,6 @@
       ],
     },
   },
-  'chromeos-generic-vm': {
-    'args': [
-      '--magic-vm-cache=magic_cros_vm_cache',
-    ],
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'kvm': '1',
-        'os': 'Ubuntu-22.04',
-        'pool': 'chromium.tests',
-      },
-      'optional_dimensions': {
-        '60': {
-          'caches': 'cros_vm',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'cros_vm',
-          'path': 'magic_cros_vm_cache',
-        },
-      ],
-    },
-  },
   'chromeos-tast-public-builder': {
     'args': ["tast.setup.FieldTrialConfig=enable", "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)", "shard_method=hash"],
   },
@@ -336,9 +312,6 @@
         },
       ],
     },
-  },
-  'isolate_profile_data': {
-    'isolate_profile_data': True,
   },
   'limited_capacity_bot': {
     'fail_if_unused': False,
