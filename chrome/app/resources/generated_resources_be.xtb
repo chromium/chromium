@@ -645,6 +645,7 @@
 <translation id="1438630805136563416">Выдалена дзеянне "<ph name="REMOVED_ACTION" />"</translation>
 <translation id="1439671507542716852">доўгатэрміновая падтрымка</translation>
 <translation id="1440090277117135316">Рэгістрацыя ў навучальнай установе выканана</translation>
+<translation id="1441971243157709645">Прынтар пад кіраваннем</translation>
 <translation id="1442054921249164535">Іншыя даныя</translation>
 <translation id="144283815522798837">Выбрана: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задаць актыўны білет Kerberos</translation>
@@ -5056,6 +5057,10 @@
 <translation id="4501530680793980440">Пацвердзіць выдаленне</translation>
 <translation id="4502423230170890588">Выдаліць з гэтай прылады</translation>
 <translation id="4502477450742595012">Націсніце правай кнопкай мышы на ўкладку і выберыце "Дадаць укладку ў новую групу"</translation>
+<translation id="4503362512377701151">Мы паказваем групы ўкладак, якімі вы нядаўна карысталіся, каб вы маглі заўсёды працягнуць з месца, на якім спыніліся.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="4503748371388753124">У вашым камп’ютары ўсталявана прылада бяспекі Trusted Platform Module (TPM), якая выкарыстоўваецца для рэалізацыі многіх крытычна важных функцый бяспекі ў Chrome OS Flex. Каб даведацца больш, адкрыйце Даведачны цэнтр Chromebook: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Файлы cookie дазволены}=1{Файлы cookie дазволены, 1 выключэнне}one{Файлы cookie дазволены, {COUNT} выключэнне}few{Файлы cookie дазволены, {COUNT} выключэнні}many{Файлы cookie дазволены, {COUNT} выключэнняў}other{Файлы cookie дазволены, {COUNT} выключэння}}</translation>
 <translation id="4504940961672722399">Каб выкарыстаць гэта пашырэнне, націсніце на гэты значок або націсніце клавішы <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -7422,7 +7427,7 @@
 <translation id="6206199626856438589">Будзе выкананы выхад з паказаных сайтаў, у тым ліку на адкрытых укладках</translation>
 <translation id="6206311232642889873">&amp;Капіраваць відарыс</translation>
 <translation id="6207200176136643843">Скінуць маштаб да стандартнага</translation>
-<translation id="6207937957461833379">Краіна або рэгіён</translation>
+<translation id="6207937957461833379">Краіна/рэгіён</translation>
 <translation id="6208521041562685716">Ідзе актывацыя мабільнай перадачы даных</translation>
 <translation id="6208725777148613371">Не ўдалося захаваць элемент у сэрвісе "<ph name="WEB_DRIVE" />": <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209908325007204267">Прылада ўключае ў сябе ліцэнзію Chrome Enterprise, але ваша імя карыстальніка не звязана з карпаратыўным уліковым запісам. Стварыце карпаратыўны ўліковы запіс, наведаўшы старонку g.co/ChromeEnterpriseAccount з іншай прылады.</translation>

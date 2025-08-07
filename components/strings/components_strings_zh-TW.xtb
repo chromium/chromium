@@ -314,6 +314,7 @@
 <translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1524669537550112617">附家具租屋</translation>
 <translation id="1527263332363067270">正在等待連線…</translation>
+<translation id="1527490370616010873">Google 不是你的自動填入服務供應商。如要啟用這些設定並使用 Google 帳戶中的付款資訊，請前往<ph name="BEGIN_LINK" />自動填入服務設定<ph name="END_LINK" />。</translation>
 <translation id="1528311629279578926">公開頁面要連線到私人網路上的裝置或伺服器，因此系統封鎖連線。請重新載入這個頁面允許連線。</translation>
 <translation id="1529789484829130889">紙匣 8</translation>
 <translation id="1530707389502320859">你剛才嘗試造訪的網站可能是假網站。攻擊者有時會在網址中加入難以辨識的細微變更來仿冒網站。</translation>
@@ -820,7 +821,6 @@
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
 <translation id="2354001756790975382">其他書籤</translation>
 <translation id="2355395290879513365">攻擊者可能會看到你正在這個網站上瀏覽的圖片，並以修改圖片內容的方式讓你受騙。</translation>
-<translation id="2356070529366658676">詢問</translation>
 <translation id="2356941001189392209">你造訪的網頁網址清單 (僅列出發生舊版技術事件的網址)</translation>
 <translation id="2357481397660644965">你的裝置是由 <ph name="DEVICE_MANAGER" /> 管理，帳戶是由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多種</translation>
@@ -1193,6 +1193,7 @@
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="300580149047131921">最近使用過</translation>
+<translation id="3006864083554020786">住家地址</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵瀏覽可用動作，按下 Enter 鍵則可執行所選動作。</translation>
 <translation id="3010991137650052245">如要允許這個網站使用<ph name="PERMISSION" />，請將存取權授予 <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">家庭用品</translation>
@@ -1437,7 +1438,6 @@
 <translation id="3422248202833853650">嘗試關閉其他程式以釋出記憶體。</translation>
 <translation id="3422472998109090673">目前無法連上 <ph name="HOST_NAME" />。</translation>
 <translation id="3423742043356668186">指定的系統</translation>
-<translation id="3427092606871434483">允許 (預設)</translation>
 <translation id="3427342743765426898">重做編輯(&amp;R)</translation>
 <translation id="342781501876943858">如果你在其他網站上重複使用過你的密碼，Chromium 會建議你重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
@@ -1826,6 +1826,7 @@
 <translation id="404831776305217138">擴充功能 ID「<ph name="EXTENSION_ID" />」的更新網址無效，或採用不支援的網路通訊協定。支援的網路通訊協定為：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
 <translation id="4050392779074832022">你將可在各項 Google 產品中使用這項資訊</translation>
 <translation id="4050599136622776556">Chromium 正在嘗試編輯付款方式。</translation>
+<translation id="4052683751389375539">編輯，在新視窗開啟</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4059523390906550209">進一步瞭解 Sensitive Data Protection</translation>
@@ -2008,7 +2009,6 @@
 <translation id="4308567447483056043">由於使用者無任何聯盟關係，因此系統已忽略這項政策。如要套用這項政策，必須由同一機構透過管理控制台管理 Chrome 瀏覽器和設定檔。</translation>
 <translation id="4310496734563057511">如果你與其他人共用這部裝置，可以開啟 Windows Hello，讓系統在有人使用已儲存的密碼時驗證身分</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步資料</translation>
 <translation id="4316057107946726368">請輸入原因訊息 (最多 <ph name="MAX_CHAR_COUNT" /> 個半形字元)。已輸入 <ph name="ACTUAL_CHAR_COUNT" /> 個半形字元 (上限：<ph name="MAX_CHAR_COUNT" /> 個半形字元)。</translation>
 <translation id="4318213823155573975">頭飾</translation>
@@ -3518,6 +3518,7 @@
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可以暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">已關閉安全付款憑證驗證表</translation>
+<translation id="6883745783646124431">公司地址</translation>
 <translation id="6884662655240309489">粗細：1</translation>
 <translation id="6886283082988906333">ZIP 封存檔</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4225,7 +4226,6 @@
 <translation id="8035152190676905274">畫筆</translation>
 <translation id="8035264638816032066">系統會將新增到表格的分頁標題和網頁網址傳送給 Google</translation>
 <translation id="8037117624646282037">最近使用過裝置的使用者</translation>
-<translation id="8037357227543935929">詢問 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>
 <translation id="8038182528865038593">紅色 2</translation>
 <translation id="8041089156583427627">提供意見</translation>

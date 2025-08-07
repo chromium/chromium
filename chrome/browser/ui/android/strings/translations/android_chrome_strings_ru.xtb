@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">Настроить доступ</translation>
 <translation id="3622349720008044802">Управление окнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт}one{и ещё # сайт}few{и ещё # сайта}many{и ещё # сайтов}other{и ещё # сайта}}</translation>
+<translation id="3623464286911819905">Режим чтения недоступен.</translation>
 <translation id="3625870480639975468">Исходный масштаб</translation>
 <translation id="3631987586758005671">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="363484704507524488">Изменить параметры проверки личности можно в настройках защиты от кражи. <ph name="BEGIN_LINK" />Открыть настройки<ph name="END_LINK" /></translation>

@@ -643,6 +643,7 @@
 <translation id="1438630805136563416">ತೆಗೆದುಹಾಕಲಾದ ಕ್ರಿಯೆ <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">ದೀರ್ಘ-ಕಾಲದ ಬೆಂಬಲ</translation>
 <translation id="1440090277117135316">ಶಾಲಾ ದಾಖಲಾತಿ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
+<translation id="1441971243157709645">ನಿರ್ವಹಿಸಲಾದ ಪ್ರಿಂಟರ್</translation>
 <translation id="1442054921249164535">ಇತರೆ ಡೇಟಾ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1442851588227551435">ಸಕ್ರಿಯ Kerberos ಟಿಕೆಟ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
@@ -5062,6 +5063,10 @@
 <translation id="4501530680793980440">ತೆಗೆದುಹಾಕುವಿಕೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4502423230170890588">ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4502477450742595012">ಟ್ಯಾಬ್ ಮೇಲೆ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಹಾಗೂ "ಹೊಸ ಗುಂಪಿಗಾಗಿ ಟ್ಯಾಬ್ ಸೇರಿಸಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="4503362512377701151">ನೀವು ಎಲ್ಲಿಗೆ ನಿಲ್ಲಿಸಿದ್ದಿರೋ, ಅಲ್ಲಿಂದಲೇ ಸುಲಭವಾಗಿ ಮುಂದುವರಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು, ನಿಮ್ಮ ಇತ್ತೀಚೆಗೆ ಬಳಸಲಾದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ನೀವು ನೋಡುತ್ತಿದ್ದೀರಿ.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ನೀವು ಕಾರ್ಡ್ ಮೆನುವಿನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಹೆಚ್ಚಿನ ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="4503748371388753124">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ChromeOS Flex ನಲ್ಲಿ ಹಲವು ಗಂಭೀರ ಭದ್ರತೆ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಕಾರ್ಯಗತಗೊಳಿಸಲು ಬಳಸಲಾಗುವ, ವಿಶ್ವಾಸಾರ್ಹ ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್ ಮಾಡ್ಯೂಲ್ (TPM) ಅನ್ನು ಹೊಂದಿದೆ. ಇನ್ನಷ್ಟು ತಿಳಿಯಲು Chromebook ಸಹಾಯ ಕೇಂದ್ರಕ್ಕೆ ಭೇಟಿ ನೀಡಿ: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}=1{ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ, 1 ವಿನಾಯಿತಿಯಿದೆ}one{ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ, {COUNT} ವಿನಾಯಿತಿಗಳಿವೆ}other{ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ, {COUNT} ವಿನಾಯಿತಿಗಳಿವೆ}}</translation>
 <translation id="4504940961672722399">ಈ ಐಕಾನ್‌ ಕ್ಲಿಕ್ ಮಾಡುವುದರ ಮೂಲಕ ಅಥವಾ <ph name="EXTENSION_SHORTCUT" /> ಒತ್ತುವುದರ ಮೂಲಕ ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಿ.</translation>
@@ -6051,6 +6056,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> ಗಾಗಿ</translation>
 <translation id="5203035663139409780">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಫೈಲ್‌ಗಳು ಅಥವಾ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ವಿಸ್ತರಣೆಯನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}one{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}other{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> ಗಾಗಿ ರಿಕವರಿ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="5204673965307125349">ಸಾಧನವನ್ನು ಪವರ್‌ವಾಷ್ ಮಾಡಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5204967432542742771">ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="5205484256512407285">ವರ್ಗಾವಣೆ ಮಾಡಲು ಎಂದಿಗೂ ಮೊಬೈಲ್ ಡೇಟಾ ಬಳಸಬೇಡಿ</translation>
@@ -11559,6 +11565,7 @@
 <translation id="9057354806206861646">ಅಪ್‌ಡೇಟ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ದಿನಕ್ಕೆ ಸುಮಾರು 1 ನೋಟಿಫಿಕೇಶನ್}one{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="9058760336383947367">ಪ್ರಿಂಟರ್ PPD ಅನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="9061521313218438086">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಲ್ಲಿ ಯಾವುದಾದರೂ ಒಂದು ಸಾರ್ವಜನಿಕ ಡೇಟಾ ಉಲ್ಲಂಘನೆ ಮಾಡುತ್ತಿದೆ ಎಂದು Chrome ಗೆ ಕಂಡುಬಂದರೆ, ನೀವು ಸೈನ್ ಇನ್ ಆಗಿದ್ದರೆ Google Password Manager ನಿಮಗಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸುವ ಅವಕಾಶವನ್ನು ನೀಡಬಹುದು.</translation>
 <translation id="9061694916020926968">Steam for Chromebook (ಬೀಟಾ) ಅನ್ನು ಬಳಸಲು, ನೀವು Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರಬೇಕಾಗುತ್ತದೆ. ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> ನೇ ಸಾಲಿನಿಂದ <ph name="ERROR_LINE_END" /> ನೇ ಸಾಲಿನವರೆಗೆ ದೋಷವಿದೆ</translation>

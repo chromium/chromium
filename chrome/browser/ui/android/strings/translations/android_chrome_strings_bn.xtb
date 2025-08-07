@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">অ্যাক্সেস ম্যানেজ করুন</translation>
 <translation id="3622349720008044802">উইন্ডো ম্যানেজ করুন</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ ১টি সাইট}one{+ #টি সাইট}other{+ #টি সাইট}}</translation>
+<translation id="3623464286911819905">রিডার মোড উপলভ্য নেই</translation>
 <translation id="3625870480639975468">জুম রিসেট করুন</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-এর সাথে শেয়ার করা হচ্ছে</translation>
 <translation id="363484704507524488">চুরি থেকে সুরক্ষা সংক্রান্ত সেটিংসে গিয়ে আপনি পরিচয় চেক করার সেটিংস ম্যানেজ করতে পারবেন। <ph name="BEGIN_LINK" />সেটিংসে যান<ph name="END_LINK" /></translation>

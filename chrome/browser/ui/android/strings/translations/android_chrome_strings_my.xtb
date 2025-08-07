@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">သုံးခွင့် စီမံရန်</translation>
 <translation id="3622349720008044802">ဝင်းဒိုးများ စီမံပါ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ဝဘ်ဆိုက် + ၁ ခု}other{ဝဘ်ဆိုက် + # ခု}}</translation>
+<translation id="3623464286911819905">စာဖတ်မုဒ်ကို မရနိုင်ပါ</translation>
 <translation id="3625870480639975468">ဇူးမ် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> သို့ မျှဝေနေသည်</translation>
 <translation id="363484704507524488">‘မည်သူမည်ဝါဖြစ်ကြောင်း စစ်ဆေးခြင်း’ ကို ခိုးယူမှုမှ ကာကွယ်ခြင်း ဆက်တင်များတွင် စီမံနိုင်သည်။ <ph name="BEGIN_LINK" />ဆက်တင်များသို့ သွားရန်<ph name="END_LINK" /></translation>

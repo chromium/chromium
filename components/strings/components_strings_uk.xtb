@@ -315,6 +315,7 @@
 <translation id="1521655867290435174">Google Таблиці</translation>
 <translation id="1524669537550112617">Оренда мебльованого житла</translation>
 <translation id="1527263332363067270">Очікується з’єднання…</translation>
+<translation id="1527490370616010873">Google не вибрано як сервіс автозаповнення. Щоб увімкнути ці налаштування й використовувати платіжну інформацію з облікового запису Google, перейдіть у <ph name="BEGIN_LINK" />налаштування сервісів автозаповнення<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">З’єднання заблоковано, оскільки його ініціювала загальнодоступна сторінка для підключення до пристроїв або серверів у вашій приватній мережі. Щоб дозволити з’єднання, оновіть сторінку.</translation>
 <translation id="1529789484829130889">Лоток 8</translation>
 <translation id="1530707389502320859">Сайт, на який ви намагалися перейти, виглядає несправжнім. Зловмисники іноді імітують сайти, вносячи майже непомітні зміни в URL-адресу.</translation>
@@ -821,7 +822,6 @@
 <translation id="2353297238722298836">Дозволено використовувати камеру та мікрофон</translation>
 <translation id="2354001756790975382">Інші закладки</translation>
 <translation id="2355395290879513365">Зловмисники можуть бачити зображення, які ви переглядаєте на цьому сайті, і змінювати їх із метою ошукати вас.</translation>
-<translation id="2356070529366658676">Запитувати</translation>
 <translation id="2356941001189392209">Обмежений список URL-адрес відвіданих сторінок, на яких виявлено події застарілих технологій</translation>
 <translation id="2357481397660644965">Вашим пристроєм керує <ph name="DEVICE_MANAGER" />, а обліковим записом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Декілька</translation>
@@ -1194,6 +1194,7 @@
 <translation id="3002501248619246229">Перевірте лоток введення медіа</translation>
 <translation id="3005723025932146533">Показати збережену копію</translation>
 <translation id="300580149047131921">Використано нещодавно</translation>
+<translation id="3006864083554020786">домашня адреса</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />: натисніть Tab, щоб переглянути доступні дії, а потім – Enter, щоб виконати вибрану дію.</translation>
 <translation id="3010991137650052245">Щоб застосовувати на цьому сайті дозвіл "<ph name="PERMISSION" />", надайте його <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Господарчі товари</translation>
@@ -1439,7 +1440,6 @@
 <translation id="3422248202833853650">Щоб звільнити пам’ять, закрийте інші програми.</translation>
 <translation id="3422472998109090673">Хост <ph name="HOST_NAME" /> зараз недоступний.</translation>
 <translation id="3423742043356668186">Вказано системою</translation>
-<translation id="3427092606871434483">Дозволяти (за умовчанням)</translation>
 <translation id="3427342743765426898">&amp;Повторити редагування</translation>
 <translation id="342781501876943858">Chromium радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="3428151540071562330">Щонайменше один ідентифікатор URI шаблону сервера DnsOverHttpsTemplates недійсний і не використовуватиметься.</translation>
@@ -1828,6 +1828,7 @@
 <translation id="404831776305217138">URL-адреса оновлення для розширення з ідентифікатором <ph name="EXTENSION_ID" /> недійсна або використовує непідтримувану схему. Підтримувані схеми: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> і <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ви зможете використовувати цю адресу в усіх продуктах Google</translation>
 <translation id="4050599136622776556">Chromium намагається змінити способи оплати.</translation>
+<translation id="4052683751389375539">Редагувати (відкриється нове вікно)</translation>
 <translation id="405399507749852140">Отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4059523390906550209">Докладніше про захист конфіденційних даних</translation>
@@ -2010,7 +2011,6 @@
 <translation id="4308567447483056043">Правило ігнорується, оскільки цей користувач є стороннім. Щоб застосувати це правило, веб-переглядачем і профілем Chrome має керувати на консолі адміністратора та сама організація.</translation>
 <translation id="4310496734563057511">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, увімкніть Windows Hello, щоб підтверджувати свою особу щоразу, коли ви вводите збережений пароль</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Блокувати (за умовчанням)</translation>
 <translation id="4314815835985389558">Керувати синхронізацією</translation>
 <translation id="4316057107946726368">Укажіть підставу (максимальна кількість символів: <ph name="MAX_CHAR_COUNT" />). Використано символів: <ph name="ACTUAL_CHAR_COUNT" /> з <ph name="MAX_CHAR_COUNT" />.</translation>
 <translation id="4318213823155573975">Головні убори</translation>
@@ -3520,6 +3520,7 @@
 <translation id="6881240511396774766">Швидко створити новий документ Google</translation>
 <translation id="6882210908253838664">Якщо сайт не працює, спробуйте надати йому тимчасовий дозвіл на використання сторонніх файлів cookie. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Екран автентифікації облікових даних для безпечних платежів закрито</translation>
+<translation id="6883745783646124431">робоча адреса</translation>
 <translation id="6884662655240309489">Розмір 1</translation>
 <translation id="6886283082988906333">Архів .zip</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4227,7 +4228,6 @@
 <translation id="8035152190676905274">Перо</translation>
 <translation id="8035264638816032066">Назви вкладок і URL-адреси сторінок, які ви додаєте в таблицю, надсилаються в Google</translation>
 <translation id="8037117624646282037">Хто нещодавно користувався пристроєм</translation>
-<translation id="8037357227543935929">Запитувати (за умовчанням)</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">Червоний 2</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>

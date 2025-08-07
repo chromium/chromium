@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3622349720008044802">ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ಸೈಟ್}one{+ # ಸೈಟ್‌ಗಳು}other{+ # ಸೈಟ್‌ಗಳು}}</translation>
+<translation id="3623464286911819905">ರೀಡರ್ ಮೋಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3625870480639975468">ಝೂಮ್ ಅನ್ನು ಮರುಹೊಂದಿಸು</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="363484704507524488">'ಕಳ್ಳತನದಿಂದ ರಕ್ಷಣೆ' ಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಗುರುತಿನ ಪರಿಶೀಲನೆಯನ್ನು ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ<ph name="END_LINK" /></translation>
@@ -767,6 +768,7 @@
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4668279686271488041">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಜಾಹೀರಾತು-ಮಾಪನ ಡೇಟಾವನ್ನು ನಿಯಮಿತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4668347365065281350">ಕುಕೀಗಳು ಮತ್ತು ಸ್ಥಳೀಯವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಡೇಟಾ ಸೇರಿದ ಹಾಗೆ, ಸೈಟ್‌ಗಳು ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಎಲ್ಲಾ ಡೇಟಾ</translation>
+<translation id="4673702426794876519">ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="4678082183394354975">ಸೈಟ್‌ಗಳಿಗಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು Chrome ನಲ್ಲಿ ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4682306524980568490"><ph name="MAX_INSTANCE_COUNT" /> ವಿಂಡೋಗಳನ್ನು ಮಾತ್ರ ತೋರಿಸಲಾಗಿದೆ</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>

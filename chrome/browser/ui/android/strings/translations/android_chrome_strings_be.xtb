@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">Кіраванне доступам</translation>
 <translation id="3622349720008044802">Кіраванне вокнамі</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}one{+ # сайт}few{+ # сайты}many{+ # сайтаў}other{+ # сайта}}</translation>
+<translation id="3623464286911819905">Рэжым чытання недаступны</translation>
 <translation id="3625870480639975468">Скінуць маштабаванне</translation>
 <translation id="3631987586758005671">Абагульваецца з прыладай "<ph name="DEVICE_NAME" />"</translation>
 <translation id="363484704507524488">Кіраваць функцыяй праверкі асобы можна ў наладах абароны ад крадзяжу. <ph name="BEGIN_LINK" />Перайсці ў налады<ph name="END_LINK" /></translation>
@@ -768,6 +769,7 @@
 <translation id="4663756553811254707">Закладкі (<ph name="NUMBER_OF_BOOKMARKS" />) выдалены</translation>
 <translation id="4668279686271488041">Даныя вымярэння паказчыкаў, звязаных з рэкламай, рэгулярна выдаляюцца з прылады.</translation>
 <translation id="4668347365065281350">Усе даныя, захаваныя сайтамі, у тым ліку файлы cookie і іншыя лакальна захаваныя даныя</translation>
+<translation id="4673702426794876519">Акно ў рэжыме інкогніта</translation>
 <translation id="4678082183394354975">У браўзеры Chrome уключана цёмная тэма для сайтаў</translation>
 <translation id="4682306524980568490">Максімальная колькасць вокнаў, якую можна адкрыць: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>

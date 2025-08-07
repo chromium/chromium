@@ -316,6 +316,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
 <translation id="1524669537550112617">Patalpų su baldais nuoma</translation>
 <translation id="1527263332363067270">Laukiama ryšio…</translation>
+<translation id="1527490370616010873">„Google“ nėra jūsų automatinio pildymo teikėjas. Jei norite įgalinti šiuos nustatymus ir naudoti mokėjimo informaciją iš „Google“ paskyros, eikite į <ph name="BEGIN_LINK" />automatinio pildymo paslaugų nustatymus<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Ryšys užblokuotas, nes jį inicijavo viešas puslapis, skirtas prisijungti prie privataus tinklo įrenginių ar serverių. Įkelkite šį puslapį iš naujo, kad leistumėte prisijungti.</translation>
 <translation id="1529789484829130889">8 dėklas</translation>
 <translation id="1530707389502320859">Svetainė, kurioje ką tik bandėte apsilankyti, atrodo kaip suklastota svetainė. Užpuolėjai kartais sukuria svetainių kopijas ir atlieka nedidelius, sunkiai pastebimus URL pakeitimus.</translation>
@@ -824,7 +825,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2353297238722298836">Fotoaparatas ir mikrofonas leidžiami</translation>
 <translation id="2354001756790975382">Kitos žymės</translation>
 <translation id="2355395290879513365">Užpuolikai galbūt galės matyti, kuriuos šios svetainės vaizdus peržiūrite, ir juos pakeis siekdami jus suklaidinti.</translation>
-<translation id="2356070529366658676">Paklausti</translation>
 <translation id="2356941001189392209">Ribotas puslapių, kuriuose lankotės ir kuriuose vyksta įvykiai, susiję su pasenusiomis technologijomis, URL sąrašas</translation>
 <translation id="2357481397660644965">Jūsų įrenginį valdo <ph name="DEVICE_MANAGER" />, o paskyrą – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Kelios</translation>
@@ -1449,7 +1449,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3422248202833853650">Pabandykite išeiti iš kitų programų, kad atlaisvintumėte atminties.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> šiuo metu nepasiekiama.</translation>
 <translation id="3423742043356668186">Nurodyta sistema</translation>
-<translation id="3427092606871434483">Leisti (numatytoji parinktis)</translation>
 <translation id="3427342743765426898">&amp;Redaguoti dar kartą</translation>
 <translation id="342781501876943858">„Chromium“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="3428151540071562330">Vienas arba keli „DnsOverHttpsTemplates“ serverio šablono URI yra netinkami ir nebus naudojami.</translation>
@@ -2021,7 +2020,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4308567447483056043">Šios politikos nepaisoma, nes naudotojas nesusietas. Kad būtų taikoma ši politika, „Chrome“ naršyklę ir profilį turi tvarkyti ta pati organizacija per administratoriaus pultą.</translation>
 <translation id="4310496734563057511">Jei bendrinate šį įrenginį su kitais žmonėmis, galite įjungti „Windows Hello“, kad patvirtintumėte savo tapatybę, kai naudojate išsaugotą slaptažodį</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Užblokuoti (numatytoji parinktis)</translation>
 <translation id="4314815835985389558">Sinchronizavimo tvarkymas</translation>
 <translation id="4316057107946726368">Įveskite pateisinimo pranešimą, sudarytą daugiausia iš <ph name="MAX_CHAR_COUNT" /> simb. Naudojama simbolių: <ph name="ACTUAL_CHAR_COUNT" /> iš <ph name="MAX_CHAR_COUNT" />.</translation>
 <translation id="4318213823155573975">Galvos apdangalas</translation>
@@ -4247,7 +4245,6 @@ Papildoma išsami informacija:
 <translation id="8035152190676905274">Rašiklis</translation>
 <translation id="8035264638816032066">Skirtukų pavadinimai ir puslapių, kuriuos pridedate prie lentelės, URL siunčiami „Google“</translation>
 <translation id="8037117624646282037">Kas neseniai naudojo įrenginį</translation>
-<translation id="8037357227543935929">Klausti (numatytoji parinktis)</translation>
 <translation id="803771048473350947">Failas</translation>
 <translation id="8038182528865038593">2 raudona</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>

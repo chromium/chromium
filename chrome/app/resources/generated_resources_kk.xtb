@@ -5904,6 +5904,7 @@
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> тілін өшіру</translation>
 <translation id="5111326646107464148">Топты жаңа терезеде ашу</translation>
+<translation id="511147239888121455">Ақпаратыңыздың сақтық көшірмесін жасау қажет пе?</translation>
 <translation id="5111646998522066203">Инкогнито режимінен шығу</translation>
 <translation id="5111692334209731439">&amp;Бетбелгі басқарушысы</translation>
 <translation id="5111794652433847656">Бұл құрылғыда <ph name="APP_NAME" /> үшін ешқандай кіру кілті жоқ.</translation>
@@ -6039,6 +6040,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> доменіне арналған</translation>
 <translation id="5203035663139409780">Құрылғыңыздағы файлдарды немесе қалталарды өзгерте алады</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Кеңейтімді көру үшін басыңыз.}other{Бұл кеңейтімдерді көру үшін басыңыз.}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> мекенжайына арналған қалпына келтіру құпия сөзі</translation>
 <translation id="5204673965307125349">Құрылғыға Powerwash қолданып, қайталап көріңіз.</translation>
 <translation id="5204967432542742771">Құпия сөз енгізу</translation>
 <translation id="5205484256512407285">Тасымалдау үшін ешқашан мобильдік интернетті пайдаланбау</translation>
@@ -8190,6 +8192,7 @@
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> жүйесінің Google-мен бөлісуі мүмкін деректері және олардың қалай пайдаланылатыны туралы толық ақпаратты g.co/flex/HWDataCollection бетінен қараңыз.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Интернет пайдаланушылары үшін қауіпсіздікті жақсартады.</translation>
 <translation id="6771503742377376720">Сертификат беретін орган</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> жұмыс мекенжайына арналған қосымша опциялар</translation>
 <translation id="6772974422346500939">Ашу және өңдеу</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Сайтқа бір реттік құпия сөз қажет</translation>
@@ -10015,6 +10018,7 @@
 <translation id="8025151549289123443">Құлыптаулы экран және кіру</translation>
 <translation id="8025291188699172126">Жаңартулар туралы</translation>
 <translation id="8026471514777758216">Барлық құрылғыңыз</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> үй мекенжайына арналған қосымша опциялар</translation>
 <translation id="8026784703228858744">Бетбелгілерді және т.б. ақпаратты синхрондап сақтаңыз.</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 күн бұрын кірдіңіз}=1{1 күн бұрын кірдіңіз}other{# күн бұрын кірдіңіз}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10163,6 +10167,7 @@
 <translation id="8121537075864592453">Толық экран өшірілді</translation>
 <translation id="8121750884985440809">Қазір экраныңызды трансляциялап жатырсыз.</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Құпия сөздерді, бетбелгілерді, т.б. деректі барлық құрылғыдан оңай алу үшін олардың сақтық көшірмесін жасаңыз</translation>
 <translation id="81238879832906896">Сары және ақ гүл</translation>
 <translation id="8123975449645947908">Артқа айналдыру</translation>
 <translation id="8124313775439841391">Басқарылатын ONC</translation>
@@ -11538,6 +11543,7 @@
 <translation id="9057354806206861646">Кестені жаңарту</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Күніне шамамен 1 хабарландыру}other{Күніне шамамен {NUM_NOTIFICATION} хабарландыру}}</translation>
 <translation id="9058760336383947367">Принтердің PPD файлын көру</translation>
+<translation id="9061521313218438086">Chrome құпия сөздеріңіздің бірін баршаға ашық қолды болған деректерден тапса, аккаунтқа кіріп тұрсаңыз, Google Password Manager құпия сөзіңізді сіздің орныңызға өзгертіп беруді ұсынуы мүмкін.</translation>
 <translation id="9061694916020926968">Steam for Chromebook (бета) қолданбасын пайдалану үшін Google аккаунтына кіруіңіз керек. Аккаунтқа кіріп, әрекетті қайталаңыз.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> аралығындағы жолдарда қате шықты</translation>

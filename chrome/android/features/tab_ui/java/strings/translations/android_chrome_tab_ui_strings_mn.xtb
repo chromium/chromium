@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">Идэвхгүй хэсэг рүү зөөх</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг тэмдэглэх}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг тэмдэглэх}}</translation>
 <translation id="2055057176188061528">Табын бүлэг сонгох эсвэл шинэ табын бүлэг үүсгэнэ үү</translation>
+<translation id="2074527029802029717">Unpin tab</translation>
 <translation id="2118649612461486615">Дэлгүүрийн мэдээлэл</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Та хаасан таб, бүлгээ саяхны табын хэсэг болон табын бүлгийн хэсгээс дахин нээх боломжтой. Таны нууцлалтай таб боломжгүй байх болно.}other{Та хаасан таб, бүлгээ саяхны табын хэсэг болон табын бүлгийн хэсгээс дахин нээх боломжтой. Таны нууцлалтай # таб боломжгүй байх болно.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>

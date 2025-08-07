@@ -315,6 +315,7 @@
 <translation id="1521655867290435174">Google Таблицы</translation>
 <translation id="1524669537550112617">Аренда меблированного жилья</translation>
 <translation id="1527263332363067270">Ожидание подключения…</translation>
+<translation id="1527490370616010873">Автозаполнение выполняется не через Google. Если вы хотите включить параметры на этой странице и использовать платежные данные из своего аккаунта Google, измените <ph name="BEGIN_LINK" />настройки сервисов автозаполнения<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Соединение заблокировано, поскольку оно было инициировано общедоступной страницей для подключения к устройствам или серверам в вашей частной сети. Чтобы разрешить соединение, обновите эту страницу.</translation>
 <translation id="1529789484829130889">Лоток 8</translation>
 <translation id="1530707389502320859">Сайт, на который вы пытались перейти, похож на подделку. Иногда злоумышленники создают копии сайтов и вносят небольшие изменения в их адрес, которые сложно заметить сразу.</translation>
@@ -821,7 +822,6 @@
 <translation id="2353297238722298836">Доступ к камере и микрофону разрешен</translation>
 <translation id="2354001756790975382">Другие закладки</translation>
 <translation id="2355395290879513365">Злоумышленники могут видеть изображения, которые видны вам, и изменять их в целях мошенничества.</translation>
-<translation id="2356070529366658676">Спрашивать</translation>
 <translation id="2356941001189392209">URL только тех посещенных вами страниц, на которых зафиксированы события, связанные с устаревшими технологиями.</translation>
 <translation id="2357481397660644965">Вашим устройством управляет <ph name="DEVICE_MANAGER" />, а аккаунтом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Несколько</translation>
@@ -1439,7 +1439,6 @@
 <translation id="3422248202833853650">Закройте другие программы, чтобы освободить память.</translation>
 <translation id="3422472998109090673">Сайт <ph name="HOST_NAME" /> недоступен.</translation>
 <translation id="3423742043356668186">Использовать системные параметры</translation>
-<translation id="3427092606871434483">Разрешить (по умолчанию)</translation>
 <translation id="3427342743765426898">&amp;Повторить изменения</translation>
 <translation id="342781501876943858">Chromium рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="3428151540071562330">Один или несколько серверных шаблонов URI DnsOverHttpsTemplates недействительны и не будут использоваться.</translation>
@@ -2011,7 +2010,6 @@
 <translation id="4308567447483056043">Это правило игнорируется, так как пользователь не связан с организацией. Чтобы оно применялось, одна организация должна управлять браузером и профилем Chrome через консоль администратора.</translation>
 <translation id="4310496734563057511">Если устройством пользуется кто-то ещё, включите Windows Hello, чтобы только вы могли получать доступ к своим сохраненным паролям.</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
 <translation id="4314815835985389558">Настройки синхронизации</translation>
 <translation id="4316057107946726368">Укажите обоснование. Максимальное количество символов – <ph name="MAX_CHAR_COUNT" />. Использовано <ph name="ACTUAL_CHAR_COUNT" /> из <ph name="MAX_CHAR_COUNT" />.</translation>
 <translation id="4318213823155573975">Головные уборы</translation>
@@ -3167,7 +3165,7 @@
 <translation id="6284449872909111707">Текстовые и мгновенные сообщения</translation>
 <translation id="6284517535531159884">Тип файла конфигурации для модификации</translation>
 <translation id="6287197303017372967">Проложить маршруты до пункта назначения с пошаговыми инструкциями, используя функцию навигации</translation>
-<translation id="6288559570252410796">Спросить ИИ от Google</translation>
+<translation id="6288559570252410796">Спросить в режиме ИИ от Google</translation>
 <translation id="628877850550444614">Доступна скидка</translation>
 <translation id="6289939620939689042">Цвет страницы</translation>
 <translation id="6292819926564202163">Поисковая система в Chrome</translation>
@@ -3571,7 +3569,7 @@
 <translation id="695140971690006676">Сбросить все</translation>
 <translation id="6954049078461159956">Хоккей</translation>
 <translation id="695582302419398462">Картон (двухслойный)</translation>
-<translation id="6957153644870901611">Включите улучшенное автозаполнение. Эта функция поддерживает больше типов полей.</translation>
+<translation id="6957153644870901611">Включите улучшенное автозаполнение: оно поддерживает больше типов полей.</translation>
 <translation id="6957887021205513506">Возможно, сертификат сервера фальсифицирован.</translation>
 <translation id="6958564499836457428">Открыть настройки конфиденциальности в аккаунте Google</translation>
 <translation id="6961844873822989059">Разрешено отправлять запрос на использование шрифтов, установленных на устройстве</translation>
@@ -4229,7 +4227,6 @@
 <translation id="8035152190676905274">Ручка</translation>
 <translation id="8035264638816032066">Заголовки вкладок и URL страниц, которые вы добавляете в таблицу, отправляются в Google.</translation>
 <translation id="8037117624646282037">Кто недавно работал с устройством.</translation>
-<translation id="8037357227543935929">Спрашивать (по умолчанию)</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">Красный 2</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
@@ -4398,7 +4395,7 @@
 <translation id="831997045666694187">До вечера</translation>
 <translation id="8321448084834652864">Вы в любой момент можете изменить поисковую систему по умолчанию в настройках Chromium.</translation>
 <translation id="8321476692217554900">уведомления</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, чтобы перейти к разговору с ИИ от Google, нажмите Ввод</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, задать вопрос в режиме ИИ от Google, нажмите Ввод</translation>
 <translation id="8322402665880479974">Кровати и изголовья</translation>
 <translation id="8323505966575306467">Усильте защиту паролей</translation>
 <translation id="832547548543012337">Удаление паспорта</translation>
@@ -4941,7 +4938,7 @@
 <translation id="950926967802086924">Ключ доступа • Google Менеджер паролей</translation>
 <translation id="955429569736351433">Дано разрешение на использование VR</translation>
 <translation id="955627189349169688">Вы можете отключить эту функцию в <ph name="BEGIN_LINK" />настройках синхронизации Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Кнопка, при нажатии которой вы переходите в режим разговора с ИИ от Google</translation>
+<translation id="95676157383774931">Нажмите, чтобы задать вопрос в режиме ИИ от Google</translation>
 <translation id="95721182352849470">Желтый 2</translation>
 <translation id="961663415146723894">Скрепление снизу</translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>

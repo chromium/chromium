@@ -315,6 +315,7 @@
 <translation id="1521655867290435174">Google Таблицалары</translation>
 <translation id="1524669537550112617">Ижарага берилүүчү эмеректер</translation>
 <translation id="1527263332363067270">Туташуу күтүлүүдө…</translation>
+<translation id="1527490370616010873">Google автотолтуруу провайдериңиз эмес. Бул параметрлерди иштетип, Google аккаунтуңуздагы төлөм маалыматын колдонуу үчүн <ph name="BEGIN_LINK" />Автотолтуруу кызматтарынын параметрлерине<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="1528311629279578926">Түзмөктөр жана серверлер менен жеке тармак аркылуу байланышуу үчүн жалпыга ачык барак колдонулгандыктан, туташуу бөгөттөлдү. Байланышууга уруксат берүү үчүн бул баракты кайрадан жүктөңүз.</translation>
 <translation id="1529789484829130889">8-түпкүч</translation>
 <translation id="1530707389502320859">Сиз баш баккыңыз келген сайт жасалма окшойт. Чабуулчулар кээ бир учурларда URL'дерге кичинекей, көзгө көрүнбөгөн өзгөртүүлөрдү киргизип, сайттарды туурашат.</translation>
@@ -821,7 +822,6 @@
 <translation id="2353297238722298836">Камера менен микрофонду колдонууга уруксат берилди</translation>
 <translation id="2354001756790975382">Башка кыстармалар</translation>
 <translation id="2355395290879513365">Сиз бул сайтта көрүп жаткан сүрөттөрдү чабуулчулар да көрүп алып, сүрөттөрдү өзгөртүп, сизди алдашы да мүмкүн.</translation>
-<translation id="2356070529366658676">Сураңыз</translation>
 <translation id="2356941001189392209">Эски технологиялар менен байланышкан иш-чаралар орун алган барактардын (сиз баш баккан) чектелген тизмеси</translation>
 <translation id="2357481397660644965">Түзмөгүңүздү <ph name="DEVICE_MANAGER" /> жана аккаунтуңузду <ph name="ACCOUNT_MANAGER" /> башкарууда.</translation>
 <translation id="2359629602545592467">Бир нече</translation>
@@ -1194,6 +1194,7 @@
 <translation id="3002501248619246229">Киргизүү түпкүчүнүн медиасын текшерүү</translation>
 <translation id="3005723025932146533">Сакталган көчүрмөнү көрсөтүү</translation>
 <translation id="300580149047131921">Жакында колдонулду</translation>
+<translation id="3006864083554020786">үй дареги</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, жеткиликтүү аракеттерди карап чыгуу үчүн Tab баскычын басып, тандалган аракетти аткаруу үчүн Enter баскычын басыңыз.</translation>
 <translation id="3010991137650052245">Бул сайтта <ph name="PERMISSION" /> колдонуу үчүн <ph name="SHORT_PRODUCT_NAME" /> аны колдонууга уруксат беришиңиз керек</translation>
 <translation id="3013711734159931232">Үй буюмдары</translation>
@@ -1439,7 +1440,6 @@
 <translation id="3422248202833853650">Эстутумду бошотуу үчүн башка программаларды жаап көрүңүз.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> сайты учурда жеткиликсиз.</translation>
 <translation id="3423742043356668186">Система белгиленди</translation>
-<translation id="3427092606871434483">Уруксат берүү (демейки)</translation>
 <translation id="3427342743765426898">Түзөтүүнү &amp;кайталоо</translation>
 <translation id="342781501876943858">Сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chromium аны өзгөртүүнү сунуштайт.</translation>
 <translation id="3428151540071562330">Бир же бир нече DnsOverHttpsTemplates серверлериндеги URI даректеринин үлгүлөрү жараксыз жана колдонулбайт.</translation>
@@ -1827,6 +1827,7 @@
 <translation id="404831776305217138"><ph name="EXTENSION_ID" /> идентификатору менен кеңейтүүнү жаңыртуу URL'и жараксыз же колдоого алынбаган схеманы пайдаланат. <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> жана <ph name="FILE_SCHEME" /> схемалары колдоого алынат.</translation>
 <translation id="4050392779074832022">Аны бардык Google кызматтарында колдоно аласыз</translation>
 <translation id="4050599136622776556">Chromium төлөм ыкмаларын түзөтүүгө аракет кылууда.</translation>
+<translation id="4052683751389375539">Түзөтүү, жаңы терезеде ачылат</translation>
 <translation id="405399507749852140">Кандайдыр бир сайтта баасы төмөндөсө, эскертүүлөрдү алыңыз</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Купуя маалыматты коргоо жөнүндө кеңири маалымат алыңыз</translation>
@@ -2009,7 +2010,6 @@
 <translation id="4308567447483056043">Колдонуучунун тиешеси жок болгондуктан, саясат этибарга алынган жок. Бул саясатты колдонуу үчүн Chrome серепчиси жана профиль бир эле уюмга таандык Администратордун консолу тарабынан тескелиши керек.</translation>
 <translation id="4310496734563057511">Эгер бул түзмөктү башкалар менен бөлүшүп колдонсоңуз, сакталган сырсөздү колдонуп жаткан сиз экениңизди ырастоо үчүн Windows Hello функциясын күйгүзүңүз</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Бөгөттөө (демейки)</translation>
 <translation id="4314815835985389558">Шайкештирүүнү башкаруу</translation>
 <translation id="4316057107946726368"><ph name="MAX_CHAR_COUNT" /> символдон ашпаган түздөө билдирүүсүн киргизиңиз. <ph name="ACTUAL_CHAR_COUNT" /> символдун ичинен <ph name="MAX_CHAR_COUNT" /> символ колдонулду.</translation>
 <translation id="4318213823155573975">Баш кийим</translation>
@@ -3519,6 +3519,7 @@
 <translation id="6881240511396774766">Жаңы Google документин тез түзүү</translation>
 <translation id="6882210908253838664">Эгер сайт иштебей жатса, ага үчүнчү тараптын cookie файлдарын колдонууга убактылуу уруксат берип көрүңүз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Коопсуз төлөм үчүн эсептик дайындардын аныктыгын текшерүү барагы жабылды</translation>
+<translation id="6883745783646124431">жумуш дареги</translation>
 <translation id="6884662655240309489">Өлчөмү: 1</translation>
 <translation id="6886283082988906333">ZIP архиви</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4225,7 +4226,6 @@
 <translation id="8035152190676905274">Калем</translation>
 <translation id="8035264638816032066">Таблицага кошулган өтмөктөрдүн аталыштары жана URL даректери Google'га жөнөтүлдү</translation>
 <translation id="8037117624646282037">Түзмөктү акыркы жолу ким колдонду</translation>
-<translation id="8037357227543935929">Суроо (демейки)</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">Кызыл 2</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>

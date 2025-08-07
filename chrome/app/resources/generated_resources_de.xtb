@@ -1000,6 +1000,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1668804837842452164">Für <ph name="EMAIL" /> in <ph name="BRAND" /> speichern</translation>
 <translation id="1668979692599483141">Weitere Informationen zu Vorschlägen</translation>
 <translation id="1670399744444387456">Grundlegend</translation>
+<translation id="1671749176392751693">Verwendung von Kennungen für geschützte Inhalte erlaubt</translation>
 <translation id="1673137583248014546"><ph name="URL" /> möchte den Hersteller und das Modell deines Sicherheitsschlüssels aufrufen</translation>
 <translation id="1674073353928166410">Alle (<ph name="URL_COUNT" />) in Inkognitofenster öffnen</translation>
 <translation id="1674142805528405174">Der Google Passwortmanager kann für dein Konto ein starkes Passwort festlegen und es in deinem Konto unter <ph name="EMAIL" /> speichern.</translation>
@@ -1797,6 +1798,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2234876718134438132">Synchronisierung und Google-Dienste</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
+<translation id="2236963250883149540">Deine Arbeitsadresse aus Chrome Autofill entfernen?</translation>
 <translation id="2238379619048995541">Daten für aktiven Zustand</translation>
 <translation id="2240582393605484605">Daten, die nur auf diesem Gerät gespeichert werden, bleiben im vorhandenen Profil</translation>
 <translation id="2241053333139545397">Eigene Daten auf verschiedenen Websites lesen und ändern</translation>
@@ -2383,6 +2385,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2624142942574147739">Diese Seite greift auf Kamera und Mikrofon zu.</translation>
 <translation id="2626799779920242286">Versuche es später erneut.</translation>
 <translation id="2627424346328942291">Teilen nicht möglich</translation>
+<translation id="2628258844236035475">Deine Privatadresse aus Chrome Autofill entfernen?</translation>
 <translation id="2628770867680720336">Zur Aktivierung der ADB-Fehlerbehebung muss dieses Chromebook auf die Werkseinstellungen zurückgesetzt werden. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android-Apps entwickeln</translation>
 <translation id="2629437048544561682">Arbeitsbereich löschen</translation>
@@ -3842,6 +3845,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3665100783276035932">Die meisten Websites sollten wie erwartet funktionieren</translation>
 <translation id="3665301845536101715">In Seitenleiste öffnen</translation>
 <translation id="3665589677786828986">Chrome hat festgestellt, dass einige deiner Einstellungen von einem anderen Programm manipuliert wurden, und hat sie auf die ursprünglichen Standardwerte zurückgesetzt.</translation>
+<translation id="3665918214153961651">Datei wird hochgeladen</translation>
 <translation id="3665919494326051362">Die aktuelle Version ist <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Debugging-Dump für Intel-WLAN-NICs</translation>
 <translation id="3666971425390608309">Download von „<ph name="FILE_NAME" />“ wurde pausiert.</translation>
@@ -4235,6 +4239,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3913689539406883376">Aktivieren, wenn der Computer vom Stromnetz getrennt ist</translation>
 <translation id="3914173277599553213">Erforderlich</translation>
 <translation id="3914568430265141791">Ordner „<ph name="FOLDER_TITLE" />“ öffnen</translation>
+<translation id="3914894336972817683">Datei kann nicht hochgeladen werden. Sie ist anscheinend leer.</translation>
 <translation id="3915280005470252504">Sprachsuche verwenden</translation>
 <translation id="3916445069167113093">Dateien dieses Typs können Schäden an deinem Computer verursachen. Möchtest du <ph name="FILE_NAME" /> trotzdem behalten?</translation>
 <translation id="3917184139185490151">Dein Computer enthält einen Sicherheitschip, über den viele wichtige Sicherheitsfunktionen in Chrome OS implementiert werden. Weitere Informationen dazu findest du in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
@@ -4311,6 +4316,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3959969108528118741">Inhaber</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Weitere Aktionen für „<ph name="IBAN_DESCRIPTION" />“</translation>
+<translation id="3961823084595287812"><ph name="HOST" /> immer erlauben, Kennungen zum Wiedergeben geschützter Inhalte zu verwenden</translation>
 <translation id="3964480518399667971">Mobilfunknetz ausschalten</translation>
 <translation id="3965467402665811906">Websites dürfen darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> beenden</translation>
@@ -5966,6 +5972,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5154108062446123722">Erweiterte Einstellungen für <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Betreff</translation>
 <translation id="5154917547274118687">Speicher</translation>
+<translation id="5155299520372681119">Der Dateiupload ist abgelaufen und wurde entfernt.</translation>
 <translation id="5155327081870541046">Gib in die Adressleiste das Kürzel für die Website ein, auf der du suchen möchtest, z. B. „@bookmarks“. Drücke dann das von dir bevorzugte Tastenkürzel und gib den gewünschten Suchbegriff ein.</translation>
 <translation id="5156638757840305347">Der Cursor wird hervorgehoben, wenn er erscheint oder bewegt wird</translation>
 <translation id="5157250307065481244">Websitedetails ansehen</translation>
@@ -6244,6 +6251,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="536278396489099088">ChromeOS-Systemstatus und -Berichte</translation>
 <translation id="5362916924854054326">SharePoint- und OneDrive-Dateien nicht anzeigen</translation>
 <translation id="5363109466694494651">Powerwash durchführen und zurücksetzen</translation>
+<translation id="5365858324977454035">Unerwarteter Fehler, Datei konnte nicht hochgeladen werden.</translation>
 <translation id="5365881113273618889">Der ausgewählte Ordner enthält vertrauliche Dateien. Möchtest du <ph name="APP_NAME" /> wirklich dauerhaft Schreibzugriff auf diesen Ordner gewähren?</translation>
 <translation id="536638840841140142">Keine</translation>
 <translation id="5368246151595623328">„<ph name="NETWORK_NAME" />“ gespeichert von „<ph name="DEVICE_NAME" />“</translation>
@@ -6272,6 +6280,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="538822246583124912">Die Unternehmensrichtlinie hat sich geändert. Die Schaltfläche für Tests wurde zur Symbolleiste hinzugefügt. Klicke auf die Schaltfläche, um das Dialogfeld zum Aktivieren von Tests zu öffnen.</translation>
 <translation id="5388436023007579456">Apps und Websites mit Kameraberechtigung sowie Systemdienste können die Kamera verwenden. Möglicherweise musst du die App neu starten oder die Seite aktualisieren, damit die Kamera verwendet werden kann.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 Website mit vielen Benachrichtigungen gefunden}other{{NUM_SITES} Websites mit vielen Benachrichtigungen gefunden}}</translation>
+<translation id="5388719243178419614">Datei kann nicht hochgeladen werden. Die Bilddatei konnte nicht verarbeitet werden.</translation>
 <translation id="5388885445722491159">Gepaart</translation>
 <translation id="5389224261615877010">Regenbogen</translation>
 <translation id="5389794555912875905">Vor dem Aufrufen unsicherer Websites Warnungen einblenden (empfohlen)</translation>
@@ -6314,6 +6323,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5414836363063783498">Wird überprüft...</translation>
 <translation id="5415328625985164836">Dies ist ein Betaprogramm. Du kannst jetzt Steam verwenden, um einige Games auf Chromebook zu spielen.</translation>
 <translation id="5415497281076257439">Wortgruppe</translation>
+<translation id="5417293056300086453">Diese Website kann Kennungen verwenden, um geschützte Inhalte wiederzugeben.</translation>
 <translation id="5417312524372586921">Browserdesigns</translation>
 <translation id="541737483547792035">Anzeige vergrößern</translation>
 <translation id="541822678830750798">Berechtigung zum Lesen und Ändern dieser Website wird angefordert</translation>
@@ -6847,6 +6857,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5804259315582798390">Fehler beim Aktivieren der lokalen Datenwiederherstellung</translation>
 <translation id="5805268472388605531">Drücke und halte die Tasten gedrückt, um Akzentzeichen und Sonderzeichen zu sehen</translation>
 <translation id="5805697420284793859">Fenstermanager</translation>
+<translation id="5806322307130093061">Eingabetaste drücken, um die Datei „<ph name="FILE_NAME" />“ zu löschen</translation>
 <translation id="5806447147478173900">Von angezeigten Websites belegter Speicherplatz insgesamt: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Standard)</translation>
 <translation id="5807774529265708172">Bildschirmtastatur ein- oder ausblenden</translation>
@@ -6986,6 +6997,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5902892210366342391">Vor dem Aufrufen unsicherer Websites im Inkognitomodus Warnungen einblenden</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
+<translation id="5906457147959147328">Weiterhin zulassen, dass diese Website Kennungen verwendet, um geschützte Inhalte wiederzugeben</translation>
 <translation id="5906655207909574370">Fast fertig! Starte dein Gerät neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="5906732635754427568">Daten, die dieser App zugewiesen sind, werden von diesem Gerät entfernt.</translation>
 <translation id="5906974869830879618">Bitte gib eine PIN ein</translation>
@@ -7831,6 +7843,8 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6521214596282732365">Websites verwenden deine Schriftarten normalerweise, damit du mit Onlinetools für Design und Grafik High-Fidelity-Inhalte erstellen kannst</translation>
 <translation id="6523574494641144162">Google Passwortmanager konnte diese Passwörter nicht in deinem Google-Konto speichern. Du kannst sie auf diesem Gerät speichern.</translation>
 <translation id="652492607360843641">Du bist mit einem <ph name="NETWORK_TYPE" />-Netzwerk verbunden.</translation>
+<translation id="6525594601091660913">&gt;
+        Datei wurde hochgeladen</translation>
 <translation id="6525767484449074555">Klicke auf „Installieren“</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6527574156657772563">Keine verfügbaren Geräte. Füge deinem Smartphone dein Google-Konto hinzu, um es mit diesem <ph name="DEVICE_TYPE" /> zu verbinden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -8963,8 +8977,10 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 Lesezeichen wird nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto.}other{{BOOKMARK_COUNT} Lesezeichen werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}}</translation>
 <translation id="7328867076235380839">Ungültige Kombination</translation>
+<translation id="7329009627557479564">Datei kann nicht hochgeladen werden. Sie überschreitet die unterstützte Maximalgröße.</translation>
 <translation id="7329154610228416156">Du konntest nicht angemeldet werden, weil in der Konfiguration eine unsichere URL angegeben ist (<ph name="BLOCKED_URL" />). Bitte wende dich an deinen Administrator.</translation>
 <translation id="7330533963640151632"><ph name="FEATURE_NAME" />-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
+<translation id="733058866272972585">Diese Website darf keine Kennungen verwenden, um geschützte Inhalte wiederzugeben.</translation>
 <translation id="7331646370422660166">Alt + Abwärtspfeil</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Tab-Duplikate</translation>
@@ -9214,6 +9230,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7490683549040131791">Restliche Passwörter prüfen</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 Cookie}other{{NUM_COOKIES} Cookies}}</translation>
+<translation id="7493355200491857618">Verwendung von Kennungen für geschützte Inhalte abgelehnt</translation>
 <translation id="7493386493263658176">Die Erweiterung <ph name="EXTENSION_NAME" /> erfasst unter Umständen alle von dir eingegebenen Textinhalte, einschließlich personenbezogener Daten wie Passwörter und Kreditkartennummern. Möchtest du diese Erweiterung verwenden?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android-App</translation>
@@ -10208,6 +10225,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
 <translation id="8163152278172770963">Websites dürfen den Bild-im-Bild-Modus nicht automatisch aktivieren</translation>
 <translation id="8163708146810922598">ältestem</translation>
+<translation id="8164842729077473463">Weiterhin verhindern, dass diese Website Kennungen verwendet, um geschützte Inhalte wiederzugeben</translation>
 <translation id="8165997195302308593">Crostini-Portweiterleitung</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{eine Telefonnummer}other{# Telefonnummern}}</translation>
 <translation id="8168435359814927499">Inhalte</translation>
@@ -10957,6 +10975,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8686142379631285985">Angemeldet als <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">„<ph name="FILE_NAME" />“ abbrechen</translation>
 <translation id="8687527282898211955">PIN einrichten</translation>
+<translation id="8687774873995698516"><ph name="HOST" /> immer daran hindern, Kennungen zum Wiedergeben geschützter Inhalte zu verwenden</translation>
 <translation id="8688672835843460752">Verfügbar</translation>
 <translation id="8689811383248488428">Ablehnen und Profil schließen</translation>
 <translation id="8689998525144040851">100</translation>
@@ -11302,12 +11321,14 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> von <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">App wird installiert…</translation>
 <translation id="891931289445130855">Daten und Berechtigungen löschen</translation>
+<translation id="8919468987486771003">Datei kann nicht hochgeladen werden. Die Validierungsprüfungen für den Dateiupload sind fehlgeschlagen.</translation>
 <translation id="8920133120839850939">Wähle den Tab „Weitere Touch-Gesten“ aus und aktiviere „Zwischen Seiten wechseln“, um durch Wischen zwischen den Seiten zu wechseln</translation>
 <translation id="8921369299636221117">Der Dienst „Concierge“ ist nicht verfügbar.</translation>
 <translation id="8922348435910470639">Doppelt gebucht</translation>
 <translation id="8922624386829239660">Bildschirm bewegen, wenn die Maus den Bildschirmrand berührt</translation>
 <translation id="8923880975836399332">Dunkles Blaugrün</translation>
 <translation id="8925124370124776087">Titelleiste ist jetzt ausgeblendet</translation>
+<translation id="8925308599005372373">PDF hochladen</translation>
 <translation id="8925458182817574960">&amp;Einstellungen</translation>
 <translation id="8926389886865778422">Nicht mehr fragen</translation>
 <translation id="8926555406617248399">Tabs ausgeblendet</translation>

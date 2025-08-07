@@ -551,6 +551,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3619255692378312441">Hantera åtkomst</translation>
 <translation id="3622349720008044802">Hantera fönster</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 webbplats}other{+ # webbplatser}}</translation>
+<translation id="3623464286911819905">Läsläget är inte tillgängligt</translation>
 <translation id="3625870480639975468">Återställ zoom</translation>
 <translation id="3631987586758005671">Delas med <ph name="DEVICE_NAME" /></translation>
 <translation id="363484704507524488">Du kan hantera identitetskollen i inställningarna för stöldskydd. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /></translation>
@@ -769,6 +770,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bokmärken har raderats</translation>
 <translation id="4668279686271488041">Data för annonsmätning raderas regelbundet från enheten</translation>
 <translation id="4668347365065281350">All data som sparas av webbplatser, inklusive cookies och annan lokalt sparad data</translation>
+<translation id="4673702426794876519">Inkognitofönster</translation>
 <translation id="4678082183394354975">Mörkt tema för webbplatser har aktiverats i Chrome</translation>
 <translation id="4682306524980568490">Endast <ph name="MAX_INSTANCE_COUNT" /> fönster kan visas</translation>
 <translation id="4684427112815847243">Synkronisera allt</translation>

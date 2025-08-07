@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">Your organisation turned off private browsing.</translation>
 <translation id="2122754583996902531">Your browser is managed. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Your organisation's chats aren't used to improve our models. Gemini may display inaccurate info, including about people, so double-check it. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">The following passwords were not imported to Google Password Manager because they don't match with the requirements.</translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="2147127444698817042">Only available on iPhone</translation>
 <translation id="2148799636999124959">Quickly sign in to sites and apps with your saved passwords.</translation>
@@ -899,6 +900,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4621768135601674446">Open reading mode options</translation>
 <translation id="4624080227980645783">New Incognito window</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
+<translation id="4629065796475200039">Your password wasn't imported</translation>
 <translation id="4630212057753624203">Sample bubble</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> reused passwords</translation>
 <translation id="4631890462758052414">New Incognito tab</translation>
@@ -1504,6 +1506,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="6791425686608802741">Tap 'Add tab to new group'</translation>
 <translation id="6794476726485507147">Choose a date and time to receive a reminder notification to revisit this page</translation>
+<translation id="6795481620482106033">Invalid data</translation>
 <translation id="6807287147325542056">Passwords in other apps</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
@@ -1733,6 +1736,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7749790401023484470">You have not selected any text.</translation>
 <translation id="7757015014239760147">No username ••••••••</translation>
 <translation id="775755486779745798">Autofill the expiry month <ph name="MONTH" /></translation>
+<translation id="7759809451544302770">Optional</translation>
 <translation id="7765158879357617694">Move</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
 <translation id="7772948288262733182">Welcome back</translation>

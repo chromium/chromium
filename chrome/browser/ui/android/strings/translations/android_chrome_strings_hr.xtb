@@ -551,6 +551,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3619255692378312441">Upravljajte pristupom</translation>
 <translation id="3622349720008044802">Upravljanje prozorima</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{i još jedna web-lokacija}one{i još # web-lokacija}few{i još # web-lokacije}other{i još # web-lokacija}}</translation>
+<translation id="3623464286911819905">Način čitača nije dostupan</translation>
 <translation id="3625870480639975468">Poništavanje zumiranja</translation>
 <translation id="3631987586758005671">Dijeljenje s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="363484704507524488">Provjerom identiteta možete upravljati u postavkama zaštite od krađe. <ph name="BEGIN_LINK" />Otvori postavke<ph name="END_LINK" /></translation>

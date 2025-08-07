@@ -385,6 +385,7 @@
 <translation id="2434405374328098816">Вы ўжо захавалі пароль для карыстальніка <ph name="USERNAME" /> на вэб-сайце <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Каб праглядаць сайты ў рэжыме інкогніта, прагартайце экран улева.</translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} элемент гісторыі}one{{count} элемент гісторыі}few{{count} элементы гісторыі}many{{count} элементаў гісторыі}other{{count} элемента гісторыі}}</translation>
 <translation id="2461070143328828326">Налады пароляў</translation>
 <translation id="2462736546165239215">Тут вы можаце знайсці ўсю гісторыю прагляду сайтаў.</translation>
 <translation id="2466518891828668184">Захоўвайце паролі, каб хутка ўваходзіць на сайты і ў праграмы.</translation>
@@ -1153,7 +1154,7 @@
 <translation id="5576885723883013398">Новае акно</translation>
 <translation id="5578795271662203820">Шукаць гэты відарыс праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Схаваць пункт "Спіс на прагляд"</translation>
-<translation id="5581786858144165447">Рэжым "Спытаць AI"</translation>
+<translation id="5581786858144165447">Спытаць у рэжыме AI</translation>
 <translation id="5585019845078534178">Карткі</translation>
 <translation id="5595485650161345191">Рэдагаваць адрас</translation>
 <translation id="559567008082979829">Наладзьце, каб спампоўкі выдаляліся праз адзін месяц.</translation>
@@ -1507,6 +1508,7 @@
 <translation id="6791425686608802741">Націсніце "Дадаць укладку ў новую групу".</translation>
 <translation id="6794476726485507147">Выберыце дату і час для атрымання апавяшчэння з напамінам паўторна наведаць гэту старонку</translation>
 <translation id="6795481620482106033">Няправільныя даныя</translation>
+<translation id="6797543908718012274">Уключыць рэжым чытання</translation>
 <translation id="6807287147325542056">Паролі ў іншых праграмах</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{{count} закладка захавана ў вашым Уліковым запісе Google ({email})}few{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{{count} закладак захавана ў вашым Уліковым запісе Google ({email})}other{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
@@ -1736,6 +1738,7 @@
 <translation id="7749790401023484470">Вы не выбралі тэкст</translation>
 <translation id="7757015014239760147">Няма імені карыстальніка ••••••••</translation>
 <translation id="775755486779745798">Аўтаматычна запоўніць месяц заканчэння тэрміну дзеяння <ph name="MONTH" /></translation>
+<translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772948288262733182">З вяртаннем!</translation>

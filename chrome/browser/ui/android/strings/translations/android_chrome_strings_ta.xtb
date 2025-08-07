@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">அணுகலை நிர்வகித்தல்</translation>
 <translation id="3622349720008044802">சாளரங்களை நிர்வகித்தல்</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 தளம்}other{+ # தளங்கள்}}</translation>
+<translation id="3623464286911819905">படித்தல் பயன்முறையைப் பயன்படுத்த முடியாது</translation>
 <translation id="3625870480639975468">பெரிதாக்குவதை மீட்டமை</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> உடன் பகிர்கிறது</translation>
 <translation id="363484704507524488">‘திருட்டிலிருந்து பாதுகாத்தல்’ அமைப்புகளில் அடையாளச் சரிபார்ப்பை நீங்கள் நிர்வகிக்கலாம். <ph name="BEGIN_LINK" />அமைப்புகளுக்குச் செல்<ph name="END_LINK" />.</translation>
@@ -768,6 +769,7 @@
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> புக்மார்க்குகள் நீக்கப்பட்டன</translation>
 <translation id="4668279686271488041">உங்கள் சாதனத்திலிருந்து விளம்பர அளவீட்டுத் தரவு அவ்வப்போது நீக்கப்படும்</translation>
 <translation id="4668347365065281350">குக்கீகள், சாதனத்தில் சேமிக்கப்பட்ட பிற தரவுகள் உட்பட தளங்கள் மூலம் சேமிக்கப்பட்ட தரவுகள் அனைத்தும்</translation>
+<translation id="4673702426794876519">மறைநிலைச் சாளரம்</translation>
 <translation id="4678082183394354975">தளங்களுக்கான டார்க் தீம் Chromeமில் இயக்கப்பட்டுள்ளது</translation>
 <translation id="4682306524980568490"><ph name="MAX_INSTANCE_COUNT" /> சாளரங்கள் மட்டுமே காட்டப்படும்</translation>
 <translation id="4684427112815847243">அனைத்தையும் ஒத்திசை</translation>

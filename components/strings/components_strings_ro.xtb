@@ -315,6 +315,7 @@
 <translation id="1521655867290435174">Foi de calcul Google</translation>
 <translation id="1524669537550112617">Proprietăți de închiriat mobilate</translation>
 <translation id="1527263332363067270">Se așteaptă conectarea…</translation>
+<translation id="1527490370616010873">Google nu este furnizorul tău de completare automată. Pentru a activa aceste setări și a folosi informațiile de plată din Contul Google, accesează <ph name="BEGIN_LINK" />Setările serviciilor de completare automată<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Conexiunea este blocată deoarece a fost inițiată de o pagină publică pentru conectarea la dispozitive sau servere din rețeaua ta privată. Reîncarcă această pagină pentru a permite conexiunea.</translation>
 <translation id="1529789484829130889">Tava 8</translation>
 <translation id="1530707389502320859">Site-ul pe care ai încercat să-l accesezi pare fals. Uneori, atacatorii imită site-uri aducând modificări mici, greu de observat, adresei URL.</translation>
@@ -821,7 +822,6 @@
 <translation id="2353297238722298836">Camera foto și microfonul sunt permise</translation>
 <translation id="2354001756790975382">Alte marcaje</translation>
 <translation id="2355395290879513365">Este posibil ca atacatorii să poată vedea imaginile la care te uiți pe acest site și să te păcălească prin modificarea lor.</translation>
-<translation id="2356070529366658676">Întreabă-mă</translation>
 <translation id="2356941001189392209">O listă limitată de adrese URL ale paginilor pe care le accesezi și unde au loc evenimente privind tehnologia veche</translation>
 <translation id="2357481397660644965">Dispozitivul este gestionat de <ph name="DEVICE_MANAGER" />, iar contul tău este gestionat de <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Mai multe</translation>
@@ -1194,6 +1194,7 @@
 <translation id="3002501248619246229">Verifică suportul din tava de intrare</translation>
 <translation id="3005723025932146533">Afișați o copie salvată</translation>
 <translation id="300580149047131921">Utilizată recent</translation>
+<translation id="3006864083554020786">adresa de acasă</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab pentru a răsfoi acțiunile disponibile, apoi pe Enter pentru a executa acțiunea selectată.</translation>
 <translation id="3010991137650052245">Pentru a folosi <ph name="PERMISSION" /> pe acest site, permite accesul browserului <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Consumabile pentru casă</translation>
@@ -1439,7 +1440,6 @@
 <translation id="3422248202833853650">Încearcă să ieși din celelalte programe pentru a elibera memoria.</translation>
 <translation id="3422472998109090673">Momentan, <ph name="HOST_NAME" /> nu poate fi accesat.</translation>
 <translation id="3423742043356668186">Indicată de sistem</translation>
-<translation id="3427092606871434483">Permite (în mod prestabilit)</translation>
 <translation id="3427342743765426898">&amp;Repetați editarea</translation>
 <translation id="342781501876943858">Chromium îți recomandă să resetezi parola dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="3428151540071562330">Una sau mai multe dintre adresele URI pentru șabloanele de server DnsOverHttpsTemplates este nevalidă și nu va fi folosită.</translation>
@@ -1828,6 +1828,7 @@
 <translation id="404831776305217138">Adresa URL pentru actualizarea extensiei cu codul <ph name="EXTENSION_ID" /> nu este validă sau folosește o schemă neacceptată. Schemele acceptate sunt <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> și <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">O vei putea folosi în toate produsele Google</translation>
 <translation id="4050599136622776556">Chromium încearcă să modifice metodele de plată.</translation>
+<translation id="4052683751389375539">Editează, se deschide o fereastră nouă</translation>
 <translation id="405399507749852140">Primește alerte dacă prețul scade pe orice site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Află mai multe despre protecția datelor sensibile</translation>
@@ -2010,7 +2011,6 @@
 <translation id="4308567447483056043">Politica este ignorată deoarece utilizatorul nu este afiliat. Pentru ca această politică să fie aplicată, browserul și profilul Chrome trebuie să fie gestionate prin intermediul consolei de administrare de aceeași organizație.</translation>
 <translation id="4310496734563057511">Dacă folosești dispozitivul în comun cu alte persoane, poți activa Windows Hello pentru a-ți confirma identitatea atunci când utilizezi o parolă salvată</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Blochează (în mod prestabilit)</translation>
 <translation id="4314815835985389558">Gestionează sincronizarea</translation>
 <translation id="4316057107946726368">Introdu un mesaj de justificare de maximum <ph name="MAX_CHAR_COUNT" /> caractere. Ai folosit <ph name="ACTUAL_CHAR_COUNT" /> din <ph name="MAX_CHAR_COUNT" /> caractere.</translation>
 <translation id="4318213823155573975">Accesorii de purtat pe cap</translation>
@@ -3520,6 +3520,7 @@
 <translation id="6881240511396774766">Creează rapid un nou document Google</translation>
 <translation id="6882210908253838664">Dacă un site nu funcționează, poți încerca să-i acorzi permisiunea temporară de a folosi cookie-uri terță parte. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Foaia de autentificare cu date de conectare pentru plăți securizate este închisă</translation>
+<translation id="6883745783646124431">adresa de la serviciu</translation>
 <translation id="6884662655240309489">Mărimea 1</translation>
 <translation id="6886283082988906333">Arhivă ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4227,7 +4228,6 @@ Detalii suplimentare:
 <translation id="8035152190676905274">Stilou</translation>
 <translation id="8035264638816032066">Titlurile filelor și adresele URL ale paginilor pe care le adaugi în tabel se trimit la Google</translation>
 <translation id="8037117624646282037">Cine a folosit recent dispozitivul</translation>
-<translation id="8037357227543935929">Solicită (în mod prestabilit)</translation>
 <translation id="803771048473350947">Fișier</translation>
 <translation id="8038182528865038593">Roșu 2</translation>
 <translation id="8041089156583427627">Trimiteți feedback</translation>

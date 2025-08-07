@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">ย้ายไปยังส่วนที่ไม่ได้ใช้งาน</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2055057176188061528">เลือกกลุ่มแท็บหรือสร้างกลุ่มแท็บใหม่</translation>
+<translation id="2074527029802029717">ยกเลิกการปักหมุดแท็บ</translation>
 <translation id="2118649612461486615">ข้อมูลร้านค้า</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{แท็บและกลุ่มที่ปิดไว้สามารถเปิดอีกครั้งได้ในส่วน "แท็บล่าสุด" และส่วน "กลุ่มแท็บ" แท็บที่ไม่ระบุตัวตนจะไม่พร้อมใช้งาน}other{แท็บและกลุ่มที่ปิดไว้สามารถเปิดอีกครั้งได้ในส่วน "แท็บล่าสุด" และส่วน "กลุ่มแท็บ" แท็บที่ไม่ระบุตัวตน # แท็บจะไม่พร้อมใช้งาน}}</translation>
 <translation id="2162620598375156287">ตอนนี้ราคา <ph name="CURRENT_PRICE" /> ใน <ph name="SOURCE_WEBSITE" /></translation>

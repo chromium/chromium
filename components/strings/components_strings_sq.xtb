@@ -315,6 +315,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1521655867290435174">Fletët e Google</translation>
 <translation id="1524669537550112617">Ambiente të mobiluara me qira</translation>
 <translation id="1527263332363067270">Në pritje të lidhjes...</translation>
+<translation id="1527490370616010873">Google nuk është ofruesi yt i plotësimit automatik. Për t'i aktivizuar këto cilësime dhe për të përdorur informacionin për pagesën nga "Llogaria jote e Google", vizito <ph name="BEGIN_LINK" />Cilësimet e shërbimeve të plotësimit automatik<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Lidhja është bllokuar sepse ajo është nisur nga një faqe publike për t'u lidhur me pajisjet ose serverët në rrjetin tënd privat. Ringarkoje këtë faqe për të lejuar lidhjen.</translation>
 <translation id="1529789484829130889">Tabakaja 8</translation>
 <translation id="1530707389502320859">Sajti ku sapo u përpoqe të hyje duket i rremë. Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek URL-ja ndryshime të vogla që janë të vështira për t'u shikuar.</translation>
@@ -821,7 +822,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2353297238722298836">Kamera dhe mikrofoni lejohen</translation>
 <translation id="2354001756790975382">Faqeshënues të tjerë</translation>
 <translation id="2355395290879513365">Sulmuesit mund të arrijnë t'i shikojnë imazhet që po shikon në këtë sajt dhe të të mashtrojnë duke i modifikuar ato.</translation>
-<translation id="2356070529366658676">Pyet</translation>
 <translation id="2356941001189392209">Një listë e kufizuar e URL-ve të faqeve që viziton ti ku ka ngjarje të teknologjisë së vjetër</translation>
 <translation id="2357481397660644965">Pajisja jote menaxhohet nga <ph name="DEVICE_MANAGER" /> dhe llogaria jote menaxhohet nga <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Disa</translation>
@@ -1194,6 +1194,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3002501248619246229">Kontrollo median e tabakasë së hyrjes</translation>
 <translation id="3005723025932146533">Shfaq një kopje të ruajtur</translation>
 <translation id="300580149047131921">Përdorur së fundi</translation>
+<translation id="3006864083554020786">adresa e shtëpisë</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin "Tab" për të shfletuar veprimet e disponueshme dhe më pas tastin "Enter" për të ekzekutuar veprimin e zgjedhur.</translation>
 <translation id="3010991137650052245">Për ta përdorur "<ph name="PERMISSION" />" bë këtë sajt, jepi qasje <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Artikuj për shtëpinë</translation>
@@ -1439,7 +1440,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3422248202833853650">Provo të dalësh nga programet e tjera për të liruar memorien.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> nuk është i arritshëm aktualisht.</translation>
 <translation id="3423742043356668186">Specifikuar nga sistemi</translation>
-<translation id="3427092606871434483">Lejo (parazgjedhja)</translation>
 <translation id="3427342743765426898">&amp;Ribëj redaktimin</translation>
 <translation id="342781501876943858">Chromium rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="3428151540071562330">Një ose disa nga URI-të e shablloneve të serverit DnsOverHttpsTemplates janë të pavlefshme dhe nuk do të përdoren.</translation>
@@ -1828,6 +1828,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="404831776305217138">URL-ja e përditësimit për shtesën me ID "<ph name="EXTENSION_ID" />" është e pavlefshme ose përdor një skemë që nuk mbështetet. Skemat e mbështetura janë: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dhe <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Do të mund ta përdorësh atë nëpër produktet e Google</translation>
 <translation id="4050599136622776556">Chromium po përpiqet të modifikojë mënyrat e pagesës.</translation>
+<translation id="4052683751389375539">Modifiko, hapet në një dritare të re</translation>
 <translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Mëso më shumë rreth mbrojtjes së të dhënave delikate</translation>
@@ -2010,7 +2011,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4308567447483056043">Kjo politikë është shpërfillur sepse përdoruesi nuk është i lidhur. Që kjo politikë të zbatohet, shfletuesi dhe profili i Chrome duhet të menaxhohen nëpërmjet "Panelit të administratorit" nga e njëjta organizatë.</translation>
 <translation id="4310496734563057511">Nëse e ndan këtë pajisje me të tjerët, mund të aktivizosh Windows Hello për të verifikuar që je ti sa herë që përdor një fjalëkalim të ruajtur</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Blloko (parazgjedhja)</translation>
 <translation id="4314815835985389558">Menaxho sinkronizimin</translation>
 <translation id="4316057107946726368">Fut një mesazh justifikimi me maksimumi <ph name="MAX_CHAR_COUNT" /> karaktere. Janë përdorur <ph name="ACTUAL_CHAR_COUNT" /> nga <ph name="MAX_CHAR_COUNT" /> karaktere.</translation>
 <translation id="4318213823155573975">Mbulesa për kokën</translation>
@@ -3519,6 +3519,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6881240511396774766">Krijo shpejt një "Dokument të Google"</translation>
 <translation id="6882210908253838664">Nëse një sajt nuk funksionon, mund të provosh t'i japësh një leje të përkohshme për të përdorur kukit e palëve të treta. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Fleta e vërtetimit të sigurt të kredencialeve të pagesës është e mbyllur</translation>
+<translation id="6883745783646124431">adresa e punës</translation>
 <translation id="6884662655240309489">Madhësia 1</translation>
 <translation id="6886283082988906333">Arkiv ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4225,7 +4226,6 @@ Detaje shtesë:
 <translation id="8035152190676905274">Pena</translation>
 <translation id="8035264638816032066">Titujt e skedave dhe URL-të e faqeve që ti shton në tabelë dërgohen te Google</translation>
 <translation id="8037117624646282037">Kush e ka përdorur pajisjen së fundi</translation>
-<translation id="8037357227543935929">Pyet (parazgjedhja)</translation>
 <translation id="803771048473350947">Skedar</translation>
 <translation id="8038182528865038593">E kuqe 2</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>

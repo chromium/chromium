@@ -316,6 +316,7 @@
 <translation id="1521655867290435174">Google スプレッドシート</translation>
 <translation id="1524669537550112617">家具付き賃貸物件</translation>
 <translation id="1527263332363067270">接続を待機しています…</translation>
+<translation id="1527490370616010873">Google は自動入力プロバイダとして設定されていません。これらの設定を有効にして Google アカウントのお支払い情報を使用するには、<ph name="BEGIN_LINK" />自動入力サービスの設定<ph name="END_LINK" />にアクセスしてください。</translation>
 <translation id="1528311629279578926">公開ページでプライベート ネットワーク上のデバイスまたはサーバーへの接続が開始されたため、接続がブロックされています。接続を許可するには、このページを再読み込みしてください。</translation>
 <translation id="1529789484829130889">トレイ 8</translation>
 <translation id="1530707389502320859">アクセスしようとしたサイトは偽装サイトのようです。不正なユーザーが URL のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。</translation>
@@ -826,7 +827,6 @@
 <translation id="2353297238722298836">カメラとマイクを使用できます</translation>
 <translation id="2354001756790975382">その他のブックマーク</translation>
 <translation id="2355395290879513365">このサイトで目にする画像は、悪意のあるユーザーによって差し替えられたものである可能性があります。</translation>
-<translation id="2356070529366658676">確認する</translation>
 <translation id="2356941001189392209">アクセスしたページのうち、以前のテクノロジー イベントが発生しているページの URL リストのみ</translation>
 <translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
 <translation id="2359629602545592467">複数</translation>
@@ -1450,7 +1450,6 @@
 <translation id="3422248202833853650">メモリを解放するために、他のプログラムを終了してみてください。</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> は現在アクセスできません。</translation>
 <translation id="3423742043356668186">システムの指定</translation>
-<translation id="3427092606871434483">許可（デフォルト）</translation>
 <translation id="3427342743765426898">編集のやり直し（&amp;R）</translation>
 <translation id="342781501876943858">パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates サーバー テンプレートの一部の URI が無効なため、使用されません。</translation>
@@ -1767,6 +1766,7 @@
 <translation id="3927538228901078312">比較表はありません</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">拒否</translation>
+<translation id="3928806096717999469">編集、新しいウィンドウを開きます</translation>
 <translation id="3930260846839546333">ハンドバッグ、財布</translation>
 <translation id="3937834511546249636">軍需産業</translation>
 <translation id="3939773374150895049">CVC の代わりに WebAuthn を使用しますか？</translation>
@@ -2022,7 +2022,6 @@
 <translation id="4308567447483056043">ユーザーが関連付けられていないため、このポリシーは無視されます。このポリシーを適用するには、Chrome ブラウザとプロフィールが管理コンソールを介して同じ組織によって管理されている必要があります。</translation>
 <translation id="4310496734563057511">このデバイスを他のユーザーと共有している場合、Windows Hello を有効にすると、保存したパスワードを使用するたびに本人確認を行うことができます</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314815835985389558">同期を管理</translation>
 <translation id="4316057107946726368">理由を <ph name="MAX_CHAR_COUNT" /> 文字以内で入力してください。<ph name="MAX_CHAR_COUNT" /> 文字中 <ph name="ACTUAL_CHAR_COUNT" /> 文字を入力しました。</translation>
 <translation id="4318213823155573975">帽子類</translation>
@@ -4251,7 +4250,6 @@
 <translation id="8035152190676905274">ペン</translation>
 <translation id="8035264638816032066">表に追加したタブのタイトルとページの URL は Google に送信されます</translation>
 <translation id="8037117624646282037">最近デバイスを使用したユーザー</translation>
-<translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>
 <translation id="8038182528865038593">赤 2</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>

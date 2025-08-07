@@ -260,6 +260,7 @@
 <translation id="14222610277930434">നിങ്ങൾ പതിവായി സന്ദർശിക്കുന്നത്</translation>
 <translation id="1422795627423046860">തീയതി അസാധുവാണ്</translation>
 <translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
+<translation id="142559998533702194">അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="1427192966110103169">വീട്ടിലെ സ്വിമ്മിംഗ് പൂളുകൾ, സോനകൾ, സ്പാകൾ</translation>
 <translation id="1428146450423315676">സ്റ്റാക്കർ 7</translation>
@@ -315,6 +316,7 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">ഫർണിഷ് ചെയ്ത റെന്റലുകൾ</translation>
 <translation id="1527263332363067270">കണക്ഷനുവേണ്ടി കാക്കുന്നു…</translation>
+<translation id="1527490370616010873">Google നിങ്ങളുടെ സ്വയമേവ പൂരിപ്പിക്കൽ ദാതാവല്ല. ഈ ക്രമീകരണം പ്രവർത്തനക്ഷമമാക്കുന്നതിനും നിങ്ങളുടെ Google Account-ൽ നിന്നുള്ള പേയ്‌മെന്റ് വിവരങ്ങൾ ഉപയോഗിക്കുന്നതിനും, <ph name="BEGIN_LINK" />സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങളുടെ ക്രമീകരണം<ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
 <translation id="1528311629279578926">നിങ്ങളുടെ സ്വകാര്യ നെറ്റ്‌വർക്കിലെ ഉപകരണങ്ങളിലേക്കോ സെർവറുകളിലേക്കോ കണക്റ്റ് ചെയ്യാൻ ആരംഭിച്ചത് ഒരു പബ്ലിക് പേജിൽ നിന്നായതിനാൽ കണക്ഷൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു. കണക്ഷൻ അനുവദിക്കാൻ ഈ പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="1529789484829130889">ട്രേ 8</translation>
 <translation id="1530707389502320859">നിങ്ങൾ ഇപ്പോൾ സന്ദർശിക്കാൻ ശ്രമിച്ചത് വ്യാജ സൈറ്റാണെന്ന് തോന്നുന്നു. ചിലപ്പോൾ ചെറുതും കാണാൻ ബുദ്ധിമുട്ടുള്ളതുമായ മാറ്റങ്ങൾ URL-ൽ വരുത്തി ആക്രമണകാരികൾ സൈറ്റുകളുടെ അനുകരണ രൂപം സൃഷ്‌ടിക്കാറുണ്ട്.</translation>
@@ -361,6 +363,7 @@
 <translation id="159274626729231974">ചലച്ചിത്രോത്സവങ്ങൾ</translation>
 <translation id="1593359183944365958">270 ഡിഗ്രി</translation>
 <translation id="1594030484168838125">തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1595731774593926493">റിഡ്രെസ് നമ്പർ ഇല്ലാതാക്കുക</translation>
 <translation id="1597307423671074806">WebM വീഡിയോ</translation>
 <translation id="159800670740560023">Chrome നുറുങ്ങ് ലിങ്ക്, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> തുറക്കാൻ Enter അമർത്തുക</translation>
 <translation id="1599199147673445968">പുതിയ കാർഡാണോ? <ph name="BEGIN_LINK" />കാർഡ് വിശദാംശങ്ങൾ നൽകുക<ph name="END_LINK" /></translation>
@@ -720,6 +723,7 @@
 <translation id="2188375229972301266">താഴെ ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
 <translation id="218940509700321686">കോമയാൽ വേർതിരിച്ച മൂല്യങ്ങൾ</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
+<translation id="2198215508485017216">അപ്രതീക്ഷിതമായി എന്തോ സംഭവിച്ചു. <ph name="BEGIN_LINK" />Drive അപ്‌ലോഡുകളെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">തംബ്‌സ് ഡൗൺ ബട്ടൺ, നിങ്ങൾ ഈ നിർദ്ദേശം എന്തുകൊണ്ട് ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിശദമായ ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാനുള്ള ഫോം തുറക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2202627062836089804">നിങ്ങളുടെ കാർഡിന്റെ പുറകിൽ</translation>
 <translation id="2204482073374652408">അപ്‌ഡേറ്റ് ചെയ്യൽ പൂർത്തിയായി!</translation>
@@ -735,6 +739,7 @@
 <translation id="2215539479425228550">മലകയറ്റവും പർവ്വതാരോഹണവും</translation>
 <translation id="2215727959747642672">ഫയൽ എഡിറ്റ് ചെയ്യൽ</translation>
 <translation id="2215963164070968490">നായകൾ</translation>
+<translation id="2218089682233901164">'നോൺ ട്രാവലർ നമ്പർ' ചേർക്കുക</translation>
 <translation id="2219376942605837404">താരതമ്യ പട്ടികയിലേക്ക് ടാബ് ചേർക്കുക</translation>
 <translation id="2219658597883514593">ട്യൂട്ടോറിയൽ റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2219735899272417925">ഉപകരണ റീസെറ്റ് ആവശ്യമാണ്</translation>
@@ -751,6 +756,7 @@
 <translation id="2233745931693710080">കോംപാക്റ്റ് ഡിസ്‌ക്</translation>
 <translation id="2235344399760031203">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്‍തു</translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
+<translation id="224130779555573777">റിഡ്രെസ് നമ്പർ ചേർക്കുക</translation>
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
 <translation id="2242389809734574253">'IBAN സംരക്ഷിക്കുക' അടച്ചു.</translation>
 <translation id="2246264294482514010">10 x 12 ഇഞ്ച്</translation>
@@ -821,7 +827,6 @@
 <translation id="2353297238722298836">ക്യാമറയും മൈക്രോഫോണും അനുവദനീയം</translation>
 <translation id="2354001756790975382">മറ്റ് ബുക്‌മാര്‍ക്കുകള്‍</translation>
 <translation id="2355395290879513365">നിങ്ങൾ ഈ സൈറ്റിൽ തിരയുന്ന ചിത്രങ്ങൾ കാണാനും അവയിൽ മാറ്റം വരുത്തി നിങ്ങളെ കബളിപ്പിക്കാനും അക്രമകാരികൾക്ക് കഴിഞ്ഞേക്കാം.</translation>
-<translation id="2356070529366658676">ചോദിക്കുക</translation>
 <translation id="2356941001189392209">ലെഗസി ടെക്‌നോളജി ഇവന്റുകൾ നടക്കുന്ന, നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കളുടെ പരിമിതമായ ലിസ്‌റ്റ്</translation>
 <translation id="2357481397660644965">നിങ്ങളുടെ ഉപകരണം <ph name="DEVICE_MANAGER" />-ഉം അക്കൗണ്ട് <ph name="ACCOUNT_MANAGER" />-ഉം മാനേജ് ചെയ്യുന്നു.</translation>
 <translation id="2359629602545592467">ഒന്നിലധികം</translation>
@@ -855,6 +860,7 @@
 <translation id="239429038616798445">ഈ ഷിപ്പിംഗ് രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
 <translation id="2395840535409704129">വാട്ടർ സ്പോർട്‌സ്</translation>
 <translation id="2396249848217231973">&amp;ഇല്ലാതാക്കൽ പഴയപടിയാക്കുക</translation>
+<translation id="239708975263889666">'നോൺ ട്രാവലർ നമ്പർ' എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2399344929880464793">Google Account-ൽ ഈ IBAN സംരക്ഷിച്ചിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് അത് Google സേവനങ്ങളിലുടനീളം ഉപയോഗിക്കാനാകും.</translation>
 <translation id="2399868464369312507">പേയ്‌മെന്റ് രീതികൾ എഡിറ്റ് ചെയ്യാൻ Google Chrome ശ്രമിക്കുന്നു.</translation>
 <translation id="2400263725572336749">പാസ്‌പോർട്ട് ചേർക്കുക</translation>
@@ -883,6 +889,7 @@
 <translation id="2451201933352935301">നിങ്ങളുടെ എല്ലാ ഡിസ്‌പ്ലേകളിലും വിൻഡോകൾ മാനേജ് ചെയ്യണമെന്ന് <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="2451607499823206582">ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="2452098632681057184">പരിസ്ഥിതി ശാസ്ത്രവും പരിസ്ഥിതിയും</translation>
+<translation id="2452689005240417488">'നോൺ ട്രാവലർ നമ്പർ' സംരക്ഷിക്കണോ?</translation>
 <translation id="2452837234288608067">അതുമായി ബന്ധപ്പെട്ട് സഹായിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
 <translation id="2453045048779611513">നിങ്ങൾക്ക് സംരക്ഷിക്കാവുന്ന കാര്യങ്ങൾ നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു</translation>
 <translation id="2456755709261364512">നിങ്ങളുടെ ബാറ്ററിക്ക് <ph name="REQUIRED_BATTERY_PRECENT" />%-ന് മുകളിൽ ചാർജ് ഉണ്ടായിരിക്കണം</translation>
@@ -992,6 +999,7 @@
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> എന്നതിലുടനീളം തിരയാൻ @ എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2639739919103226564">നില:</translation>
+<translation id="2644219706149911059">Google Drive-ലേക്ക് അപ്‌ലോഡ് ചെയ്യുന്നു...</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ഫാബ്രിക് (സെമി ഗ്ലോസ്)</translation>
 <translation id="264810637653812429">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</translation>
@@ -1123,6 +1131,7 @@
 <translation id="2904180982022726666">നിങ്ങൾക്ക് പങ്കിടാവുന്ന കാര്യങ്ങൾ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു</translation>
 <translation id="2905107382358353958">പുതിയ പേയ്‌മെന്റ് ക്രമീകരണത്തെക്കുറിച്ചുള്ള മുന്നറിയിപ്പ്</translation>
 <translation id="2909946352844186028">ഒരു നെറ്റ്‌വർക്ക് മാറ്റം കണ്ടെത്തി.</translation>
+<translation id="2910062169995917863">സെഷൻ ടൈംഔട്ടായി</translation>
 <translation id="2911255567212929079">മെഷീൻ ലേണിംഗും ആർട്ടിഫിഷ്യൽ ഇന്റലിജൻസും</translation>
 <translation id="2911973620368911614">ജോബ് അക്കൗണ്ടിംഗ് ഉപയോക്തൃ ഐഡി</translation>
 <translation id="2913421697249863476">ബാർബിക്യുകളും ഗ്രില്ലുകളും</translation>
@@ -1194,6 +1203,7 @@
 <translation id="3002501248619246229">ഇൻപുട്ട് ട്രേ മീഡിയ പരിശോധിക്കുക</translation>
 <translation id="3005723025932146533">സംരക്ഷിച്ച പകർപ്പ് കാണിക്കുക</translation>
 <translation id="300580149047131921">അടുത്തിടെ ഉപയോഗിച്ചത്</translation>
+<translation id="3006864083554020786">വീട്ടുവിലാസം</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ലഭ്യമായ പ്രവർത്തനങ്ങൾ ബ്രൗസ് ചെയ്യാൻ ടാബ് അമർത്തുക, തുടർന്ന് തിരഞ്ഞെടുത്ത പ്രവർത്തനം നടപ്പിലാക്കാൻ Enter അമർത്തുക.</translation>
 <translation id="3010991137650052245">ഈ സൈറ്റിൽ നിങ്ങളുടെ <ph name="PERMISSION" /> ഉപയോഗിക്കാൻ <ph name="SHORT_PRODUCT_NAME" /> എന്നതിന് ആക്സസ് നൽകുക</translation>
 <translation id="3013711734159931232">വീട്ടാവശ്യങ്ങൾക്കുള്ള സാമഗ്രികൾ</translation>
@@ -1378,6 +1388,7 @@
 <translation id="33073482541490531">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. ഈ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ മാറ്റാൻ Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="3307649904964670439">'Chrome ഇഷ്‌ടാനുസൃതമാക്കുക ബട്ടൺ', നിങ്ങളുടെ ബ്രൗസറിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കാൻ സജീവമാക്കുക</translation>
 <translation id="3308006649705061278">ഓര്‍‌ഗനൈസേഷണല്‍‌ യൂണിറ്റ് (OU)</translation>
+<translation id="3312952471765023168">അപ്‌ലോഡ് ചെയ്‌തു</translation>
 <translation id="3318016344440038475">ടിവി കോമഡികൾ</translation>
 <translation id="3324687287337751929">4 x 6 ഇഞ്ച്</translation>
 <translation id="3324983252691184275">ക്രിംസൺ</translation>
@@ -1438,7 +1449,6 @@
 <translation id="3422248202833853650">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് പ്രോഗ്രാമുകളിൽ നിന്ന് പുറത്തുകടക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> നിലവിൽ ലഭ്യമല്ല.</translation>
 <translation id="3423742043356668186">സിസ്റ്റം വ്യക്തമാക്കിയത്</translation>
-<translation id="3427092606871434483">അനുവദിക്കുക (ഡിഫോൾട്ട്)</translation>
 <translation id="3427342743765426898">&amp;എഡിറ്റുചെയ്യുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="342781501876943858">മറ്റ് സൈറ്റുകളിൽ നിങ്ങളുടെ പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് റീസെറ്റ് ചെയ്യാൻ Chromium ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates സെർവർ ടെംപ്ലേറ്റ് URI-കളിൽ ഒന്നോ അതിലധികമോ അസാധുവാണ്, അവ ഉപയോഗിക്കില്ല.</translation>
@@ -1755,6 +1765,7 @@
 <translation id="3927538228901078312">താരതമ്യ ടേബിളുകളൊന്നുമില്ല</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">നിരസിക്കൂ</translation>
+<translation id="3928806096717999469">എഡിറ്റ് ചെയ്യുക, പുതിയ വിൻഡോയിൽ തുറക്കുന്നു</translation>
 <translation id="3930260846839546333">ഹാൻഡ്‌ബാഗുകളും പേഴ്‌സുകളും</translation>
 <translation id="3937834511546249636">പ്രതിരോധ വ്യവസായം</translation>
 <translation id="3939773374150895049">CVC-യ്ക്ക് പകരം WebAuthn ഉപയോഗിക്കണോ?</translation>
@@ -1827,6 +1838,7 @@
 <translation id="404831776305217138"><ph name="EXTENSION_ID" />എന്ന ഐഡിയുള്ള വിപുലീകരണത്തിന്റെ അപ്‌ഡേറ്റ് URL അസാധുവാണ് അല്ലെങ്കിൽ പിന്തുണയ്‌ക്കാത്ത ഒരു സ്‌കീം ഉപയോഗിക്കുന്നു. പിന്തുണയ്ക്കുന്ന സ്‌കീമുകൾ ഇവയാണ്: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, <ph name="FILE_SCHEME" /> എന്നിവ.</translation>
 <translation id="4050392779074832022">നിങ്ങൾക്ക് ഇത് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ കഴിയും</translation>
 <translation id="4050599136622776556">പേയ്‌മെന്റ് രീതികൾ എഡിറ്റ് ചെയ്യാൻ Chromium ശ്രമിക്കുന്നു.</translation>
+<translation id="4052683751389375539">എഡിറ്റ് ചെയ്യുക, പുതിയ വിൻഡോ തുറക്കുന്നു</translation>
 <translation id="405399507749852140">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="4056223980640387499">സിപിയ</translation>
 <translation id="4059523390906550209">സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഡാറ്റയുടെ പരിരക്ഷയെ കുറിച്ച് കൂടുതലറിയുക</translation>
@@ -2009,7 +2021,6 @@
 <translation id="4308567447483056043">അഫിലിയേറ്റ് ചെയ്യാത്ത ഉപയോക്താവായതിനാൽ, ഈ നയം അവഗണിച്ചു. ഈ നയം ബാധകമാക്കാൻ, Chrome ബ്രൗസറും പ്രൊഫൈലും ഒരേ സ്ഥാപനത്തിന്റെ അഡ്‌മിൻ കൺസോൾ വഴി മാനേജ് ചെയ്തിരിക്കണം.</translation>
 <translation id="4310496734563057511">നിങ്ങൾ ഈ ഉപകരണം മറ്റുള്ളവരുമായി പങ്കിടുകയാണെങ്കിൽ, സംരക്ഷിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുമ്പോഴെല്ലാം അത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കാൻ Windows Hello ഓണാക്കാൻ കഴിയും</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">ബ്ലോക്ക് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
 <translation id="4314815835985389558">സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="4316057107946726368">പരമാവധി <ph name="MAX_CHAR_COUNT" /> പ്രതീകങ്ങളുള്ള ന്യായീകരണ സന്ദേശം നൽകുക. <ph name="MAX_CHAR_COUNT" /> പ്രതീകങ്ങളിൽ <ph name="ACTUAL_CHAR_COUNT" /> എണ്ണം ഉപയോഗിച്ചു.</translation>
 <translation id="4318213823155573975">ഹെഡ്‌വെയർ</translation>
@@ -2186,6 +2197,7 @@
 <translation id="4652266463001779298">അനുവദനീയമല്ല</translation>
 <translation id="4652440160515225514">നയം ലംഘിക്കുന്നതിനാൽ നിങ്ങളുടെ ഓർഗനൈസേഷൻ ഈ സൈറ്റ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="4658638640878098064">മുകളിൽ ഇടതുവശത്ത് സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
+<translation id="4660592918803576381">Drive-ൽ തുറക്കുക</translation>
 <translation id="4661556981531699496">മൃഗങ്ങളും വളർത്തുമൃഗങ്ങളും</translation>
 <translation id="4661868874067696603">കൂടുതൽ വാങ്ങൽ ഓപ്ഷനുകൾ തിരയുക</translation>
 <translation id="4663373278480897665">ക്യാമറ അനുവദനീയം</translation>
@@ -2920,6 +2932,7 @@
 <translation id="5886961930368713749">താരതമ്യം ചെയ്യുന്നതിനായി ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="5887400589839399685">കാർഡ് സംരക്ഷിച്ചു</translation>
 <translation id="5887687176710214216">അവസാനം സന്ദർശിച്ചത് ഇന്നലെയാണ്</translation>
+<translation id="5890248301649767931">റിഡ്രെസ് നമ്പർ സംരക്ഷിക്കണോ?</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5895187275912066135">ഇനിപ്പറയുന്നദിവസം നല്‍‌കി</translation>
 <translation id="5898767305816764989">തംബ്‌സ് അപ്പ് ബട്ടൺ, നിങ്ങൾ <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാൻ Enter അമർത്തുക</translation>
@@ -3160,6 +3173,7 @@
 <translation id="6272088941196661550">നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാൻ ജേർണി പുനരാരംഭിക്കുക</translation>
 <translation id="6272383483618007430">Google അപ്ഡേറ്റ്</translation>
 <translation id="6278015583149890680">Google Drive, OneDrive</translation>
+<translation id="6279228081537458128">പിന്നീട് പേ ചെയ്യുക</translation>
 <translation id="6280223929691119688">ഈ വിലാസത്തിലേക്ക് ഡെലിവറി ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6284292079994426700">26 x 38 ഇഞ്ച്</translation>
 <translation id="6284449872909111707">ടെക്‌സ്‌റ്റ് ചെയ്യലും തൽക്ഷണ സന്ദേശമയയ്‌ക്കലും</translation>
@@ -3193,6 +3207,7 @@
 <translation id="6327065120806001832">പ്രാദേശിക നെറ്റ്‌വർക്ക് ആക്‌സസ്</translation>
 <translation id="6328639280570009161">നെറ്റ്‌വർക്ക് പ്രവചനം പ്രവർത്തനരഹിതമാക്കാൻ ശ്രമിക്കുക</translation>
 <translation id="6329815962353376655">&lt;ചോദ്യം ടൈപ്പ് ചെയ്യുക&gt;</translation>
+<translation id="633348045801643466">ചെക്ക്ഔട്ടിൽ <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />പിന്നീട് പേ ചെയ്യുക<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> ഓപ്ഷനുകൾ കാണിക്കുക</translation>
 <translation id="6335029926534404762">അത്‌ലെറ്റിക് ഷൂകൾ</translation>
 <translation id="6336948221660696475">VR അനുവദിച്ചിട്ടില്ല</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-യിൽ കുറഞ്ഞ ഡാറ്റ ലാഭിക്കുന്നു.അടുത്തതവണ നിങ്ങൾ സന്ദർശിക്കുമ്പോൾ ചില സൈറ്റുകൾ ഇതിനേക്കാൾ പതുക്കെ ലോഡാകാം.</translation>
@@ -3518,7 +3533,9 @@
 <translation id="6880941331070119097">ഉയർന്ന നിരക്കുള്ള ഓപ്ഷൻ</translation>
 <translation id="6881240511396774766">ഒരു പുതിയ Google ഡോക് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="6882210908253838664">ഒരു സൈറ്റ് പ്രവർത്തിക്കുന്നില്ലെങ്കിൽ, മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കാനുള്ള താൽക്കാലിക അനുമതി നൽകിക്കൊണ്ട് അത് പ്രവർത്തിപ്പിക്കാൻ ശ്രമിക്കാവുന്നതാണ്. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="6883120223439653449">'നോൺ ട്രാവലർ നമ്പർ' അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="6883221904761970440">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ പരിശോധിച്ചുറപ്പിക്കൽ ഷീറ്റ് അടച്ചു</translation>
+<translation id="6883745783646124431">ജോലിസ്ഥല വിലാസം</translation>
 <translation id="6884662655240309489">വലുപ്പം 1</translation>
 <translation id="6886283082988906333">ZIP ആർക്കൈവ്</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3537,6 +3554,7 @@
 <translation id="6905163627763043954">പരീക്ഷിക്കുക</translation>
 <translation id="6907458757809079309">ശാരീരികക്ഷമത</translation>
 <translation id="691024665142758461">ഒന്നിലധികം ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="691046363691324218">റിഡ്രെസ് നമ്പർ</translation>
 <translation id="6915804003454593391">ഉപയോക്താവ്:</translation>
 <translation id="6916193791494646625">ഡൗൺലോഡ് ചെയ്യുന്നതിനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
 <translation id="6917795328362592458">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ Google Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
@@ -3626,6 +3644,7 @@
 <translation id="7044081119134178347">ഇപ്പോൾ മാത്രം ക്യാമറ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="7048095965575426564">യൂറോപ്യൻ ഫാൻഫോൾഡ്</translation>
 <translation id="7050187094878475250">നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലെത്താൻ ശ്രമിച്ചു, എന്നാൽ തീരെ വിശ്വാസയോഗ്യമല്ലാത്ത ഒരു കാലാവധിയുള്ള സർട്ടിഫിക്കറ്റാണ് സെർവർ കാണിക്കുന്നത്.</translation>
+<translation id="7050877504983265321">'നോൺ ട്രാവലർ നമ്പർ'</translation>
 <translation id="7053983685419859001">തടയുക</translation>
 <translation id="7054717457611655239">ഇനി മുതൽ നിങ്ങളുടെ ഫയലുകൾ <ph name="CLOUD_PROVIDER" /> എന്നതിൽ സംരക്ഷിക്കുക.</translation>
 <translation id="7058163556978339998">ഈ വെബ്‌സൈറ്റിന്റെ സർട്ടിഫിക്കറ്റ് <ph name="ISSUER" /> നൽകിയതാണെന്ന് <ph name="BROWSER" /> പരിശോധിച്ചുറപ്പിച്ചു.</translation>
@@ -3894,6 +3913,7 @@
 <translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> നിങ്ങളുടെ യോഗ്യത പരിശോധിക്കും (ഇത് നിങ്ങളുടെ ക്രെഡിറ്റ് സ്‌കോറിനെ ബാധിക്കില്ല). അംഗീകാരം ലഭിച്ചാൽ, <ph name="BNPL_ISSUER_NAME" /> നിങ്ങൾക്ക് തിരഞ്ഞെടുക്കാനും നിങ്ങളുടെ വാങ്ങൽ പൂർത്തിയാക്കാനും പേയ്‌മെന്റ് പ്ലാനുകൾ നൽകും.</translation>
 <translation id="7489392576326061356">ഷാമ്പൂകളും കണ്ടീഷനറുകളും</translation>
+<translation id="7489919936111034362">നിങ്ങളുടെ Google Drive സ്റ്റോറേജ് നിറഞ്ഞു</translation>
 <translation id="7495528107193238112">ഈ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു. പ്രശ്‌നം പരിഹരിക്കാൻ സൈറ്റിന്റെ ഉടമയുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="749865518782565832">പ്ലംബിംഗ്</translation>
 <translation id="7499188644237027195">നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഓപ്ഷനുകളായി ഇ-വാലറ്റും Pix-ഉം കാണുക</translation>
@@ -3952,6 +3972,7 @@
 <translation id="7569983096843329377">കറുപ്പ്</translation>
 <translation id="7571813784389228510">Google AI മോഡ്</translation>
 <translation id="7574998639136359461">വിന്റർ സ്‌പോർട്‌സ് ഉപകരണം</translation>
+<translation id="7575130707299232096">'നോൺ ട്രാവലർ നമ്പർ' ഇല്ലാതാക്കുക</translation>
 <translation id="7575207903026901870">നിർദ്ദേശ ബട്ടൺ നീക്കം ചെയ്യുക, ഈ നിർദ്ദേശം നീക്കം ചെയ്യാൻ എന്റർ അമർത്തുക</translation>
 <translation id="7575800019233204241">"നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" അല്ലെങ്കിൽ "SSL സർട്ടിഫിക്കറ്റ് പിശക്"</translation>
 <translation id="7575887283389198269">മൊബൈൽ ഫോണുകൾ</translation>
@@ -3990,6 +4011,7 @@
 <translation id="7631072086707140121">URL, https ആയിരിക്കണം.</translation>
 <translation id="7631527008834753063">ടി വി ഗെയിം ഷോകൾ</translation>
 <translation id="7633909222644580952">പ്രകടന ഡാറ്റയും ക്രാഷ് റിപ്പോർട്ടുകളും</translation>
+<translation id="7634963626477752453">നിങ്ങളുടെ <ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് സംരക്ഷിച്ചു</translation>
 <translation id="7636346903338549690">മൂന്നാം-കക്ഷി കുക്കികൾ ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്ന സൈറ്റുകൾ</translation>
 <translation id="7637571805876720304">Chromium-ൽ നിന്ന് ക്രെഡിറ്റ് കാർഡ് നീക്കംചെയ്യണോ?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{ഒന്നുമില്ല}=1{നിങ്ങളുടെ അക്കൗണ്ടിലെ ഒരു പാസ്‌വേഡ് (<ph name="DOMAIN_LIST" /> എന്നതിനായി)}other{നിങ്ങളുടെ അക്കൗണ്ടിലെ # പാസ്‌വേഡുകൾ (<ph name="DOMAIN_LIST" /> എന്നതിനായി)}}</translation>
@@ -4224,7 +4246,6 @@
 <translation id="8035152190676905274">പേന</translation>
 <translation id="8035264638816032066">നിങ്ങൾ പട്ടികയിലേക്ക് ചേർക്കുന്ന ടാബ് പേരുകളും പേജുകളുടെ URL-കളും Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="8037117624646282037">അടുത്തിടെ ഉപകരണം ഉപയോഗിച്ചവർ</translation>
-<translation id="8037357227543935929">ചോദിക്കുക (ഡിഫോൾട്ട്)</translation>
 <translation id="803771048473350947">ഫയല്‍</translation>
 <translation id="8038182528865038593">ചുവപ്പ് 2</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
@@ -4477,6 +4498,7 @@
 <translation id="8457125768502047971">അനിശ്ചിതം</translation>
 <translation id="8458202188076138974">ലെറ്റർ എക്‌സ്‌ട്രാ</translation>
 <translation id="8460854335417802511">ഇത് ഓണാക്കുക</translation>
+<translation id="8461289985785035071">റിഡ്രെസ് നമ്പർ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="8461694314515752532">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച്, സമന്വയിപ്പിച്ച ഡാറ്റ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8461973047386722744">പാസ്‌വേഡുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="8467494337615822642">ക്രമീകരണത്തിലെ Chrome സുരക്ഷാ പരിശോധനാ പേജിലേക്ക് പോകുക</translation>
@@ -4784,6 +4806,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core പരീക്ഷിക്കൂ</translation>
 <translation id="9027531288681624875">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തിപ്പിടിക്കുക</translation>
+<translation id="9031426777610376427">റിഡ്രെസ് നമ്പർ അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="9035022520814077154">സുരക്ഷാ പിശക്</translation>
 <translation id="9035824888276246493">സുരക്ഷാ കോഡുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="9036306139374661733">മൈക്രോഫോൺ അനുമതി നൽകണോ?</translation>

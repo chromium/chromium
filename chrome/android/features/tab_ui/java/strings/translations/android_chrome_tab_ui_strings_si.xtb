@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">අක්‍රිය කොටසට යන්න</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{තෝරන ලද <ph name="TABS_COUNT_ONE" /> පටිත්තක් පිටුසන් කරන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් පිටුසන් කරන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් පිටුසන් කරන්න}}</translation>
 <translation id="2055057176188061528">පටිති සමූහය තෝරන්න හෝ නව පටිති සමූහය තනන්න</translation>
+<translation id="2074527029802029717">ටැබය පින් ඉවත් කරන්න</translation>
 <translation id="2118649612461486615">වෙළඳසැල් තොරතුරු</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක. ඔබේ අප්‍රකට පටිත්ත නොතිබෙනු ඇත.}one{ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}other{ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}}</translation>
 <translation id="2162620598375156287">දැන් <ph name="SOURCE_WEBSITE" /> හි <ph name="CURRENT_PRICE" /></translation>

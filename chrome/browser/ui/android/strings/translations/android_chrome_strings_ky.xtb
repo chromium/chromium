@@ -551,6 +551,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3619255692378312441">Кирүү мүмкүнчүлүгүн тескөө</translation>
 <translation id="3622349720008044802">Терезелерди башкаруу</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
+<translation id="3623464286911819905">Окугуч режими жеткиликсиз</translation>
 <translation id="3625870480639975468">Ченөлчөмдү баштапкы абалга келтирүү</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> менен бөлүшүлүүдө</translation>
 <translation id="363484704507524488">Уурудан коргоо парамтерлеринен Өздүгүн текшерүү функциясын тескей аласыз. <ph name="BEGIN_LINK" />Параметрлерге өтүү<ph name="END_LINK" /></translation>

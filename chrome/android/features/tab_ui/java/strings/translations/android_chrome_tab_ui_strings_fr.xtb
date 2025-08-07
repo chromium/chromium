@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">Déplacer vers la section des éléments inactifs</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné aux favoris}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné aux favoris}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés aux favoris}}</translation>
 <translation id="2055057176188061528">Sélectionner un groupe d'onglets ou en créer un</translation>
+<translation id="2074527029802029717">Retirer l'onglet</translation>
 <translation id="2118649612461486615">Infos sur le magasin</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". L'onglet de navigation privée ne sera pas disponible.}one{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglet de navigation privée ne sera pas disponible.}other{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglets de navigation privée ne seront pas disponibles.}}</translation>
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>

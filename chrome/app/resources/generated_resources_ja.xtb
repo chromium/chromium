@@ -642,6 +642,7 @@
 <translation id="1438630805136563416">アクション「<ph name="REMOVED_ACTION" />」を削除しました</translation>
 <translation id="1439671507542716852">長期サポート</translation>
 <translation id="1440090277117135316">教育機関の登録が完了しました</translation>
+<translation id="1441971243157709645">管理対象プリンタ</translation>
 <translation id="1442054921249164535">その他のデータ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> 個のアイテムを選択しました</translation>
 <translation id="1442851588227551435">有効な Kerberos チケットの設定</translation>
@@ -5046,6 +5047,10 @@
 <translation id="4501530680793980440">削除の確認</translation>
 <translation id="4502423230170890588">このデバイスから削除</translation>
 <translation id="4502477450742595012">タブを右クリックして、[タブを新しいグループに追加] を選択します</translation>
+<translation id="4503362512377701151">最近使用したタブグループが表示され、中断したところから簡単に再開できます。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューで設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="4503748371388753124">ご使用のパソコンには Trusted Platform Module（TPM）セキュリティ デバイスが組み込まれています。これは ChromeOS Flex の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=tpm）をご覧ください。</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookie が許可されています}=1{Cookie が許可されています（1 件の例外）}other{Cookie が許可されています（{COUNT} 件の例外）}}</translation>
 <translation id="4504940961672722399">この拡張機能を使用するには、このアイコンをクリックするか、<ph name="EXTENSION_SHORTCUT" /> を押します。</translation>

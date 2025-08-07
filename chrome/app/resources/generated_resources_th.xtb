@@ -642,6 +642,7 @@
 <translation id="1438630805136563416">นำการดำเนินการ <ph name="REMOVED_ACTION" /> ออกแล้ว</translation>
 <translation id="1439671507542716852">การสนับสนุนระยะยาว</translation>
 <translation id="1440090277117135316">ลงทะเบียนโรงเรียนเรียบร้อยแล้ว</translation>
+<translation id="1441971243157709645">เครื่องพิมพ์ที่มีการจัดการ</translation>
 <translation id="1442054921249164535">ข้อมูลอื่นๆ</translation>
 <translation id="144283815522798837">เลือกไว้ <ph name="NUMBER_OF_ITEMS_SELECTED" /> รายการ</translation>
 <translation id="1442851588227551435">ตั้งค่าตั๋ว Kerberos ที่ใช้งานอยู่</translation>
@@ -5055,6 +5056,10 @@
 <translation id="4501530680793980440">ยืนยันการนำออก</translation>
 <translation id="4502423230170890588">นำออกจากอุปกรณ์นี้</translation>
 <translation id="4502477450742595012">คลิกขวาที่แท็บแล้วเลือก "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
+<translation id="4503362512377701151">คุณจะเห็นกลุ่มแท็บที่ใช้ล่าสุดเพื่อช่วยให้คุณกลับมาดูต่อจากที่ค้างไว้ได้ง่ายๆ
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="4503748371388753124">คอมพิวเตอร์ของคุณมีอุปกรณ์รักษาความปลอดภัย Trusted Platform Module (TPM) ซึ่งใช้เพื่อนำฟีเจอร์การรักษาความปลอดภัยที่สำคัญจำนวนมากมาใช้ใน Chrome OS Flex โปรดดูข้อมูลเพิ่มเติมที่ศูนย์ช่วยเหลือของ Chromebook ซึ่งอยู่ที่ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{อนุญาตให้ใช้คุกกี้}=1{อนุญาตให้ใช้คุกกี้ ยกเว้น 1 รายการ}other{อนุญาตให้ใช้คุกกี้ ยกเว้น {COUNT} รายการ}}</translation>
 <translation id="4504940961672722399">ใช้ส่วนขยายนี้โดยคลิกที่ไอคอนนี้ หรือกด <ph name="EXTENSION_SHORTCUT" /></translation>
@@ -5907,6 +5912,7 @@
 <translation id="5109044022078737958">มีอา</translation>
 <translation id="5109816792918100764">นำภาษา<ph name="LANGUAGE_NAME" />ออก</translation>
 <translation id="5111326646107464148">เปิดกลุ่มในหน้าต่างใหม่</translation>
+<translation id="511147239888121455">สำรองข้อมูลไหม</translation>
 <translation id="5111646998522066203">ออกจากโหมดไม่ระบุตัวตน</translation>
 <translation id="5111692334209731439">&amp;ตัวจัดการบุ๊กมาร์ก</translation>
 <translation id="5111794652433847656">ไม่มีพาสคีย์สำหรับ <ph name="APP_NAME" /> บนอุปกรณ์นี้</translation>
@@ -8193,6 +8199,7 @@
     <ph name="BEGIN_PARAGRAPH3" />ดูรายละเอียดเพิ่มเติมเกี่ยวกับข้อมูลที่ <ph name="DEVICE_OS" /> อาจแชร์กับ Google และวิธีนำข้อมูลไปใช้ได้ที่ g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6771503742377376720">เป็นผู้ออกใบรับรอง</translation>
+<translation id="6772103682557559072">ตัวเลือกเพิ่มเติมสำหรับที่ทำงาน <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">เปิดและแก้ไข</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">เว็บไซต์ต้องการรหัสผ่านที่สามารถใช้งานได้เพียงครั้งเดียว</translation>
@@ -10020,6 +10027,7 @@
 <translation id="8025151549289123443">หน้าจอล็อกและการลงชื่อเข้าใช้</translation>
 <translation id="8025291188699172126">เกี่ยวกับการอัปเดต</translation>
 <translation id="8026471514777758216">อุปกรณ์ทั้งหมดของคุณ</translation>
+<translation id="8026700655446696031">ตัวเลือกเพิ่มเติมสำหรับที่อยู่บ้าน <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">บันทึกบุ๊กมาร์กและอื่นๆ ด้วยการซิงค์</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{เข้าชมเมื่อ 0 วันที่ผ่านมา}=1{เข้าชมเมื่อ 1 วันที่ผ่านมา}other{เข้าชมเมื่อ # วันที่ผ่านมา}}</translation>
 <translation id="8028060951694135607">การกู้คืนคีย์ของ Microsoft</translation>
@@ -10168,6 +10176,7 @@
 <translation id="8121537075864592453">ปิดใช้โหมดเต็มหน้าจอแล้ว</translation>
 <translation id="8121750884985440809">กำลังแคสต์หน้าจออยู่ในขณะนี้</translation>
 <translation id="8122898034710982882">ฮับโทรศัพท์ <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">สำรองข้อมูลรหัสผ่าน บุ๊กมาร์ก และอื่นๆ เพื่อให้คุณเข้าถึงข้อมูลเหล่านี้ได้ในอุปกรณ์ทุกเครื่องอย่างง่ายดาย</translation>
 <translation id="81238879832906896">ดอกไม้สีเหลืองแซมขาว</translation>
 <translation id="8123975449645947908">เลื่อนไปข้างหลัง</translation>
 <translation id="8124313775439841391">ONC ที่มีการจัดการ</translation>

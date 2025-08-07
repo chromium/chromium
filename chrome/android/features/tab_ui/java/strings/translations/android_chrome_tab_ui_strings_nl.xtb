@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">Naar gedeelte Inactief verplaatsen</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad bookmarken}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen bookmarken}}</translation>
 <translation id="2055057176188061528">Selecteer een tabbladgroep of maak een nieuwe tabbladgroep</translation>
+<translation id="2074527029802029717">Tabblad losmaken</translation>
 <translation id="2118649612461486615">Winkelinformatie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je incognitotabblad is niet beschikbaar.}other{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je # incognitotabbladen zijn niet beschikbaar.}}</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>

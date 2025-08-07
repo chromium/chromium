@@ -644,6 +644,7 @@
 <translation id="1438630805136563416">Радња <ph name="REMOVED_ACTION" /> је уклоњена</translation>
 <translation id="1439671507542716852">дугорочна подршка</translation>
 <translation id="1440090277117135316">Регистрација за школу је завршена</translation>
+<translation id="1441971243157709645">Управљани штампач</translation>
 <translation id="1442054921249164535">Други подаци</translation>
 <translation id="144283815522798837">Изабраних ставки: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Подесите активан Kerberos тикет</translation>
@@ -5055,6 +5056,10 @@
 <translation id="4501530680793980440">Потврда уклањања</translation>
 <translation id="4502423230170890588">Уклони са овог уређаја</translation>
 <translation id="4502477450742595012">Кликните десним тастером на картицу и изаберите Додај картицу у нову групу</translation>
+<translation id="4503362512377701151">Приказују вам се недавно коришћене групе картица да бисте лако наставили тамо где сте стали.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Можете да управљате подешавањима из менија картице или да видите још опција у менију Прилагодите Chrome.</translation>
 <translation id="4503748371388753124">Рачунар садржи безбедносни уређај са модулом поуздане платформе (TPM), који се користи за примену многих безбедносних функција од суштинске важности у Chrome OS Flex-у. Посетите Центар за помоћ за Chromebook да бисте сазнали више: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Колачићи су дозвољени}=1{Колачићи су дозвољени, 1 изузетак}one{Колачићи су дозвољени, {COUNT} изузетак}few{Колачићи су дозвољени, {COUNT} изузетка}other{Колачићи су дозвољени, {COUNT} изузетака}}</translation>
 <translation id="4504940961672722399">Користите овај додатак кликом на ову икону или притиском на <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -7550,7 +7555,7 @@
 <translation id="628726841779494414">Управљајте штампачима у подешавањима штампача</translation>
 <translation id="6287288864483377583">Увоз је подржан само за један сертификат</translation>
 <translation id="6287828400772161253">Android телефон (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Питајте режим Google вештачке интелигенције</translation>
+<translation id="6288559570252410796">Питајте Google AI режим</translation>
 <translation id="6290613030083731160">Нема доступних уређаја који деле у близини. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Враћање није успело због недостатка меморијског простора.</translation>
 <translation id="6291741848715722067">Кôд за потврду</translation>

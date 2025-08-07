@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">ആക്‌സസ് മാനേജ് ചെയ്യുക</translation>
 <translation id="3622349720008044802">വിൻഡോകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 സൈറ്റ്}other{+ # സൈറ്റുകൾ}}</translation>
+<translation id="3623464286911819905">റീഡർ മോഡ് ലഭ്യമല്ല</translation>
 <translation id="3625870480639975468">സൂം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് പങ്കിടുന്നു</translation>
 <translation id="363484704507524488">മോഷണം തടയൽ ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഐഡന്റിറ്റി പരിശോധന മാനേജ് ചെയ്യാം. <ph name="BEGIN_LINK" />ക്രമീകരണത്തിലേക്ക് പോകുക<ph name="END_LINK" /></translation>
@@ -768,6 +769,7 @@
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കി</translation>
 <translation id="4668279686271488041">നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ആഡ് മെഷർമെന്റ് ഡാറ്റ പതിവായി ഇല്ലാതാക്കുന്നു</translation>
 <translation id="4668347365065281350">കുക്കികളും പ്രാദേശികമായി സംഭരിച്ച മറ്റ് വിവരങ്ങളും ഉൾപ്പെടെ സൈറ്റുകൾ സംഭരിച്ച എല്ലാ ഡാറ്റയും</translation>
+<translation id="4673702426794876519">അദൃശ്യ വിൻഡോ</translation>
 <translation id="4678082183394354975">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീം Chrome-ൽ ഓണാണ്</translation>
 <translation id="4682306524980568490"><ph name="MAX_INSTANCE_COUNT" /> വിൻഡോകൾ മാത്രമേ കാണിക്കാൻ കഴിയൂ</translation>
 <translation id="4684427112815847243">എല്ലാം സമന്വയിപ്പിക്കുക</translation>

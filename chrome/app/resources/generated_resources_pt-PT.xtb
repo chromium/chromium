@@ -642,6 +642,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1438630805136563416">Ação <ph name="REMOVED_ACTION" /> removida</translation>
 <translation id="1439671507542716852">apoio técnico a longo prazo</translation>
 <translation id="1440090277117135316">Inscrição escolar concluída</translation>
+<translation id="1441971243157709645">Impressora gerida</translation>
 <translation id="1442054921249164535">Outros dados</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selecionados</translation>
 <translation id="1442851588227551435">Definir permissão Kerberos ativa</translation>
@@ -5058,6 +5059,10 @@ Quer pará-lo?</translation>
 <translation id="4501530680793980440">Confirmar Remoção</translation>
 <translation id="4502423230170890588">Remover deste dispositivo</translation>
 <translation id="4502477450742595012">Clique com o botão direito do rato num separador e selecione "Adicionar separador a novo grupo"</translation>
+<translation id="4503362512377701151">Está a ver os grupos de separadores usados recentemente para ajudar a retomar facilmente a partir do ponto em que ficou.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pode gerir as definições no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="4503748371388753124">O seu computador contém um dispositivo de segurança com TPM (Trusted Platform Module, Módulo de plataforma fidedigna), que é usado para implementar várias funcionalidades de segurança essenciais no ChromeOS Flex. Visite o Centro de Ajuda do Chromebook em https://support.google.com/chromebook/?p=tpm para saber mais</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Os cookies são permitidos.}=1{Os cookies são permitidos, com 1 exceção.}other{Os cookies são permitidos, com {COUNT} exceções.}}</translation>
 <translation id="4504940961672722399">Clique no ícone ou prima <ph name="EXTENSION_SHORTCUT" /> para utilizar esta extensão.</translation>

@@ -551,6 +551,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3619255692378312441">Xestionar o acceso</translation>
 <translation id="3622349720008044802">Xestionar as ventás</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e 1 sitio máis}other{e # sitios máis}}</translation>
+<translation id="3623464286911819905">O modo de lector non está dispoñible</translation>
 <translation id="3625870480639975468">Restablecer zoom</translation>
 <translation id="3631987586758005671">Compartindo co dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="363484704507524488">Podes xestionar Identity Check na configuración da protección antirroubo. <ph name="BEGIN_LINK" />Ir á configuración<ph name="END_LINK" /></translation>

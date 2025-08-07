@@ -5920,6 +5920,7 @@
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> काढून टाका</translation>
 <translation id="5111326646107464148">नवीन विंडोमध्ये गट उघडा</translation>
+<translation id="511147239888121455">तुमच्या आशयाचा बॅकअप घ्यायचा आहे का?</translation>
 <translation id="5111646998522066203">गुप्‍त मोडमधून बाहेर पडा</translation>
 <translation id="5111692334209731439">&amp;बुकमार्क व्यवस्थापक</translation>
 <translation id="5111794652433847656">या डिव्हाइसवर <ph name="APP_NAME" /> साठी कोणत्याही पासकी नाहीत</translation>
@@ -6055,6 +6056,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> साठी</translation>
 <translation id="5203035663139409780">तुमच्या डिव्हाइसवर फाइल किंवा फोल्डर संपादित करू शकते</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशन पाहण्यासाठी क्लिक करा}other{ही एक्सटेंशन पाहण्यासाठी क्लिक करा}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> साठी रिकव्‍हरी पासवर्ड</translation>
 <translation id="5204673965307125349">कृपया डिव्हाइस पॉवरवॉश करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5204967432542742771">पासवर्ड एंटर करा</translation>
 <translation id="5205484256512407285">ट्रान्सफर करण्यासाठी कधीही मोबाइल डेटा वापरू नका</translation>
@@ -8213,6 +8215,7 @@ I feel - विटांची इमारत</translation>
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> हे Google सोबत कदाचित शेअर करू शकते अशा डेटाबद्दल अधिक तपशिलांसाठी आणि तो कसा वापरला जातो याकरिता g.co/flex/HWDataCollection ला भेट द्या.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते</translation>
 <translation id="6771503742377376720">एक प्रमाणन अधिकृतता आहे</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> या घराच्या पत्त्यासाठीचे आणखी पर्याय</translation>
 <translation id="6772974422346500939">उघडा आणि संपादित करा</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">साइटसाठी वन-टाइम पासवर्ड आवश्यक आहे</translation>
@@ -10039,6 +10042,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8025151549289123443">लॉक स्‍क्रीन आणि साइन-इन</translation>
 <translation id="8025291188699172126">अपडेट यांविषयी</translation>
 <translation id="8026471514777758216">तुमची सर्व डिव्हाइस</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> या घराच्या पत्त्यासाठी आणखी पर्याय</translation>
 <translation id="8026784703228858744">सिंक वापरून तुमचे बुकमार्क आणि आणखी बऱ्याच गोष्टी सेव्ह करा</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{० दिवसापूर्वी भेट दिली}=1{१ दिवसापूर्वी भेट दिली}other{# दिवसांपूर्वी भेट दिली}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10187,6 +10191,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8121537075864592453">फुल स्क्रीन बंद केली आहे</translation>
 <translation id="8121750884985440809">तुम्ही सध्या तुमची स्क्रीन कास्ट करत आहात</translation>
 <translation id="8122898034710982882">फोन हब, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">तुमच्या सर्व डिव्हाइसवर पासवर्ड, बुकमार्क आणि आणखी बऱ्याच गोष्टी सहजपणे मिळवण्यासाठी त्यांचा बॅकअप घ्या</translation>
 <translation id="81238879832906896">पिवळे आणि पांढरे फूल</translation>
 <translation id="8123975449645947908">मागे स्क्रोल करा</translation>
 <translation id="8124313775439841391">व्यवस्‍थापित ONC</translation>
@@ -11563,6 +11568,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9057354806206861646">शेड्युल अपडेट करा</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{एका दिवशी एका सूचनेबद्दल}other{एका दिवशी {NUM_NOTIFICATION} सूचनांबद्दल}}</translation>
 <translation id="9058760336383947367">प्रिंटर PPD पहा</translation>
+<translation id="9061521313218438086">Chrome ला सार्वजनिक डेटा भंगामध्ये तुमचा एखादा पासवर्ड आढळला, तर तुम्ही साइन इन केले असल्यास Google Password Manager हे तुम्हाला तुमचा पासवर्ड बदलण्याची ऑफर देऊ शकते.</translation>
 <translation id="9061694916020926968">Chromebook (बीटा) साठी Steam वापरण्यासाठी तुम्हाला Google खाते मध्ये साइन इन करणे आवश्यक आहे. साइन इन करून पुन्हा प्रयत्न करा.</translation>
 <translation id="9062468308252555888">१४x</translation>
 <translation id="9063208415146866933">ओळ <ph name="ERROR_LINE_START" /> ते <ph name="ERROR_LINE_END" /> पर्यंत एरर</translation>

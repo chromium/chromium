@@ -388,6 +388,7 @@
 <translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Можете да скролујете улево да бисте прегледали у режиму без архивирања.</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} ставка историје}one{{count} ставка историје}few{{count} ставке историје}other{{count} ставки историје}}</translation>
 <translation id="2461070143328828326">Подешавања лозинке</translation>
 <translation id="2462736546165239215">Овде можете да пронађете сву историју прегледања.</translation>
 <translation id="2466518891828668184">Чувајте лозинке да бисте се лако пријављивали на сајтове и у апликације.</translation>
@@ -1515,6 +1516,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6791425686608802741">Додирните Додај картицу у нову групу</translation>
 <translation id="6794476726485507147">Одаберите датум и време да бисте добили обавештење о подсетнику да поново посетите ову страницу</translation>
 <translation id="6795481620482106033">Неважећи подаци</translation>
+<translation id="6797543908718012274">Укључите Режим читања</translation>
 <translation id="6807287147325542056">Лозинке у другим апликацијама</translation>
 <translation id="681368974849482173">Ставка је направљена</translation>
 <translation id="6825078212112407882">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{{count} обележивач је сачуван на Google налогу, {email}}few{{count} обележивача су сачувана на Google налогу, {email}}other{{count} обележивача је сачувано на Google налогу, {email}}}</translation>
@@ -1747,6 +1749,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7749790401023484470">Нисте изабрали никакав текст.</translation>
 <translation id="7757015014239760147">Нема корисничког имена ••••••</translation>
 <translation id="775755486779745798">Аутоматско попуните месец истека <ph name="MONTH" /></translation>
+<translation id="7759809451544302770">Опционално</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
 <translation id="7772948288262733182">Добро дошли назад</translation>

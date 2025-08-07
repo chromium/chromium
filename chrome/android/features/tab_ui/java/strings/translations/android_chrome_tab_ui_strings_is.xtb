@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">Færa yfir í óvirkan hluta</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bókamerkja <ph name="TABS_COUNT_ONE" /> valinn flipa}one{Bókamerkja <ph name="TABS_COUNT_MANY" /> valinn flipa}other{Bókamerkja <ph name="TABS_COUNT_MANY" /> valda flipa}}</translation>
 <translation id="2055057176188061528">Veldu flipahóp eða búðu til nýjan flipahóp</translation>
+<translation id="2074527029802029717">Losa flipa</translation>
 <translation id="2118649612461486615">Upplýsingar um verslun</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. Huliðsflipinn verður ekki sýnilegur.}one{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. # huliðsflipi verður ekki sýnilegur.}other{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. # huliðsflipar verða ekki sýnilegir.}}</translation>
 <translation id="2162620598375156287">Núna <ph name="CURRENT_PRICE" /> á <ph name="SOURCE_WEBSITE" /></translation>

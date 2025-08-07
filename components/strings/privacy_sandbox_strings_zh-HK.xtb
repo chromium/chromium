@@ -8,7 +8,6 @@
 <translation id="1281098210028343866">請說明你暫停追蹤保護功能的原因，協助我們改善 Chromium</translation>
 <translation id="1297285729613779935">網站建議廣告有助保護瀏覽記錄和身分，同時可讓網站向你顯示相關廣告。隨著你持續瀏覽，其他網站可以根據你的活動 (例如停留在網站的時間) 建議相關廣告。你可查看這些網站的清單，在設定中封鎖不想要的網站。</translation>
 <translation id="132963621759063786">Chromium 會在 30 天後刪除你與網站分享的任何活動資料。如果你再次瀏覽網站，該網站可能會再次在清單中顯示。進一步瞭解如何<ph name="BEGIN_LINK1" />在 Chromium 中管理廣告私隱權<ph name="LINK_END1" />。</translation>
-<translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1432306053064625042">喺一般嘅 Chrome 視窗度打開</translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />需要使用什麼資料：<ph name="END_BOLD" />系統會根據你最近的瀏覽記錄 (即在此裝置上使用 Chrome 瀏覽的網站清單) 顯示廣告主題。</translation>
 <translation id="1529201733207295376">已封鎖第三方 Cookie。無痕模式亦提供功能，限制網站嵌入內容供應商能取得的資料。如要管理無痕模式追蹤保護功能，請前往「<ph name="START_LINK" />設定<ph name="END_LINK" />」。</translation>
@@ -23,10 +22,8 @@
 <translation id="1953252525523274058">你瀏覽的網站可能會嵌入其他網站的內容 (例如圖片、廣告和文字)，這些內容可用來取得個人資料。進一步瞭解如何管理<ph name="START_LINK" />無痕模式追蹤保護功能<ph name="END_LINK" /></translation>
 <translation id="1954777269544683286">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。公司有責任向使用者告知資料的使用方式。<ph name="BEGIN_LINK" />參閱《私隱權政策》瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="2004697686368036666">部分網站的功能可能無法正常運作</translation>
-<translation id="2089118378428549994">你將會從這些網站登出</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />有關資料如何管理？<ph name="END_BOLD" />Chrome 會自動刪除超過 30 日的網站。再次瀏覽的網站可能會再度出現在清單中。你可隨時在 Chrome 設定中禁止根據特定網站建議廣告，亦可關閉網站建議廣告設定。</translation>
 <translation id="2090761099683423637">系統會暫停保護功能，直至所有無痕式視窗都關閉為止。</translation>
-<translation id="2096716221239095980">刪除所有資料</translation>
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="2213012319160025454">管理無痕模式追蹤保護功能</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
@@ -58,7 +55,6 @@
 <translation id="375406326367313995">在無痕模式下，Chrome 會封鎖第三方 Cookie，但你將此網站設定為例外情況。無痕模式亦提供功能，限制網站嵌入內容供應商能取得的資料。如要管理無痕模式追蹤保護功能，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
 <translation id="3763433740586298940">你可封鎖不想要的網站。Chrome 亦會從清單自動刪除超過 30 日的網站。</translation>
 <translation id="385051799172605136">返回</translation>
-<translation id="3873208162463987752">相關網站可以與彼此分享第三方 Cookie，幫助網站正常運作，例如讓你保持登入狀態或記住你的網站設定。網站有責任說明需要存取有關資料的原因。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="388873797593534859">限制存取裝置和瀏覽器資料。此設定已開啟。</translation>
 <translation id="390681677935721732">Chrome 會在 30 天後刪除你與網站分享的任何活動資料。如果你再次瀏覽網站，該網站可能會再次在清單中顯示。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chrome 中管理廣告私隱權<ph name="END_LINK" />。</translation>
 <translation id="3918378745482005425">部分功能可能無法正常運作。相關網站仍可使用第三方 Cookie。</translation>
@@ -66,11 +62,9 @@
 <translation id="3952955829113227810">在無痕模式下，Chromium 會封鎖第三方 Cookie，但你將此網站設定為例外情況。無痕模式亦提供功能，限制網站嵌入內容供應商能取得的資料。如要管理無痕模式追蹤保護功能，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
 <translation id="3973883340787276788">已封鎖第三方 Cookie。無痕模式亦提供功能，限制網站嵌入內容供應商能取得的資料。如要管理無痕模式追蹤保護功能，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
 <translation id="4009365983562022788">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，亦可能會將活動與應用程式中有關你的其他資料整合在一起。公司有責任向使用者告知資料的使用方式。請參閱《<ph name="BEGIN_LINK1" />私隱權政策<ph name="LINK_END1" />》瞭解詳情。</translation>
-<translation id="4053540477069125777">由 <ph name="RWS_OWNER" /> 定義的相關網站</translation>
 <translation id="408237597986622827">在無痕模式下，Chromium 會封鎖第三方 Cookie，但你將此網站設定為例外情況。無痕模式亦提供功能，限制網站嵌入內容供應商能取得的資料。</translation>
 <translation id="4115793614265434327">在無痕模式下，�Chromium 會封鎖第三方 Cookie，但管理員允許此網站使用第三方 Cookie。</translation>
 <translation id="4159125650195886935">在無痕模式下，�Chromium 會封鎖第三方 Cookie，但管理員允許此網站使用第三方 Cookie。無痕模式亦提供功能，限制網站嵌入內容供應商能取得的資料。</translation>
-<translation id="417625634260506724">所列網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="4200539465901914137">Chrome 會盡可能限制嵌入式網站存取裝置和瀏覽器資料 (例如時區或安裝的字型)，避免這些網站取得你的個人資料</translation>
 <translation id="4278390842282768270">已允許</translation>
@@ -79,7 +73,6 @@
 <translation id="4370439921477851706">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，網站也可能會儲存廣告主題多於 4 星期，並可能結合網站已知有關你的其他資料。公司有責任向使用者告知資料的使用方式。請參閱《<ph name="BEGIN_LINK1" />私隱權政策<ph name="LINK_END1" />》瞭解詳情。</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4456330419644848501">上網時是否看到個人化廣告取決於多項因素，包括此設定、<ph name="BEGIN_LINK_1" />網站建議廣告<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否顯示個人化廣告。</translation>
-<translation id="4497735604533667838">相關網站可以與彼此分享第三方 Cookie，幫助網站正常運作，例如讓你保持登入狀態或記住你的網站設定。網站有責任說明需要存取有關資料的原因。進一步瞭解<ph name="START_LINK" />相關網站和第三方 Cookie<ph name="END_LINK" /></translation>
 <translation id="4501357987281382712">請查看《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》，進一步瞭解 Google 如何保護你的資料。</translation>
 <translation id="4502954140581098658">上網時是否看到個人化廣告取決於多項因素，包括此設定、<ph name="BEGIN_LINK_1" />廣告主題<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否顯示個人化廣告。</translation>
 <translation id="453692855554576066">你可在 Chromium 設定中查看廣告主題，並封鎖不希望與網站分享的主題</translation>
@@ -92,7 +85,6 @@
 <translation id="4864452159627050077">管理網站可在無痕模式下取得的個人資料</translation>
 <translation id="4894490899128180322">如果網站無法正常運作，你可嘗試暫時允許所瀏覽的網站使用第三方 Cookie</translation>
 <translation id="4995684599009077956">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，網站也可能會儲存廣告主題多於 4 星期，並可能結合網站已知有關你的其他資料。公司有責任向使用者告知資料的使用方式。請<ph name="BEGIN_LINK" />參閱《私隱權政策》瞭解詳情<ph name="END_LINK" />。</translation>
-<translation id="4998299775934183130">有相關網站</translation>
 <translation id="5024297549595367599">已封鎖第三方 Cookie。無痕模式亦提供功能，限制網站嵌入內容供應商能取得的資料。</translation>
 <translation id="5055880590417889642">活動記錄是網站可用於建議廣告的其中一種資料。即使關閉網站建議廣告設定，網站仍可放送廣告，但廣告可能會較不相關。進一步瞭解</translation>
 <translation id="5117284457376555514">網站無法使用第三方 Cookie 提供個人化內容和廣告以及瞭解你在其他網站執行的操作，除非你允許相關網站存取這類 Cookie。部分網站的功能可能無法正常運作。</translation>
@@ -127,7 +119,6 @@
 <translation id="6904948821498934430">在無痕模式下，Chromium 會封鎖第三方 Cookie，但你將此網站設定為例外情況。</translation>
 <translation id="6968337645683500044">僅適用於從已登入 Chromium 上開啟的無痕式分頁</translation>
 <translation id="6984151429741932257">限制存取 IP 位址</translation>
-<translation id="7011445931908871535">要刪除資料嗎？</translation>
 <translation id="7084100010522077571">進一步瞭解廣告成效評估</translation>
 <translation id="721207178659484186">保護你的 IP 位址時，Google 的私隱伺服器可看到 IP 位址，但不會知道你瀏覽的網站</translation>
 <translation id="7315780377187123731">進一步了解 [封鎖第三方 Cookie] 選項</translation>
@@ -140,7 +131,6 @@
 <translation id="7475768947023614021">查看廣告主題設定</translation>
 <translation id="7538480403395139206">進一步了解「允許第三方 Cookie」選項</translation>
 <translation id="7590906321816761911">已暫停追蹤保護功能</translation>
-<translation id="7646143920832411335">顯示相關網站</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議廣告</translation>
 <translation id="7747003797915893222">你使用無痕模式瀏覽時，Chrome 不會儲存瀏覽記錄、Cookie 和網站資料，亦不會記錄你在表格中輸入的資料。無痕模式亦提供多項功能，限制嵌入式網站可取得的資料。</translation>
 <translation id="7766094116932490292">已啟用追蹤保護功能</translation>
@@ -158,7 +148,6 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8430082659493731737">僅適用於從已登入 Chrome 上開啟的無痕式分頁</translation>
 <translation id="8442977418416307640">喺一般嘅 Chromium 視窗度打開</translation>
-<translation id="8477178913400731244">刪除資料</translation>
 <translation id="8486457244881562857">系統會暫停保護功能，直至所有無痕式視窗都關閉為止。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">喺新分頁入面打開《私隱權政策》</translation>
 <translation id="8614239088739825290">你瀏覽的網站可能會嵌入其他網站的內容 (例如圖片、廣告和文字)，這些內容可用來取得個人資料。進一步瞭解如何管理<ph name="BEGIN_LINK" />無痕模式追蹤保護功能<ph name="END_LINK" /></translation>
@@ -170,7 +159,6 @@
 <translation id="8948536553485650118">無痕模式追蹤保護功能</translation>
 <translation id="8984005569201994395">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，亦可能會將活動與應用程式中有關你的其他資料整合在一起。公司有責任向使用者告知資料的使用方式。<ph name="BEGIN_LINK" />參閱《私隱權政策》瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">Chromium 在無痕模式下會禁止網站使用第三方 Cookie</translation>
-<translation id="9043239285457057403">這會刪除 <ph name="SITE_NAME" /> 和相關網站儲存的所有資料和 Cookie</translation>
 <translation id="9162335340010958530">網站無法使用第三方 Cookie 提供個人化內容和廣告以及瞭解你在其他網站執行的操作，除非你允許相關網站存取這類 Cookie</translation>
 <translation id="9168357768716791362">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，網站也可能會儲存廣告主題多於 4 星期，並可能結合網站已知有關你的其他資料。公司有責任向使用者告知資料的使用方式。請參閱《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》瞭解詳情。</translation>
 <translation id="9210228052057672287">在無痕模式下，Chrome 會封鎖第三方 Cookie，但管理員允許此網站使用第三方 Cookie。</translation>

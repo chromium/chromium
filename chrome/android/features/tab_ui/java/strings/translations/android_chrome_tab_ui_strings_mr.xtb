@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">इनॅक्टिव्ह विभागामध्ये हलवा</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बुकमार्क करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बुकमार्क करा}}</translation>
 <translation id="2055057176188061528">टॅब गट निवडा किंवा नवीन टॅब गट तयार करा</translation>
+<translation id="2074527029802029717">टॅब अनपिन करा</translation>
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचा गुप्त टॅब उपलब्ध नसेल.}other{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचे # गुप्त टॅब उपलब्ध नसतील.}}</translation>
 <translation id="2162620598375156287">आता <ph name="SOURCE_WEBSITE" /> वर <ph name="CURRENT_PRICE" /> मध्ये आहे</translation>

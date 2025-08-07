@@ -551,6 +551,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3619255692378312441">Quản lý quyền truy cập</translation>
 <translation id="3622349720008044802">Quản lý cửa sổ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 trang web}other{+ # trang web}}</translation>
+<translation id="3623464286911819905">Không thể chuyển sang chế độ đọc</translation>
 <translation id="3625870480639975468">Đặt lại thu phóng</translation>
 <translation id="3631987586758005671">Đang chia sẻ đến <ph name="DEVICE_NAME" /></translation>
 <translation id="363484704507524488">Bạn có thể quản lý tính năng Kiểm tra danh tính trong phần cài đặt bảo vệ chống trộm. <ph name="BEGIN_LINK" />Chuyển đến phần cài đặt<ph name="END_LINK" /></translation>
@@ -768,6 +769,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4663756553811254707">Đã xóa <ph name="NUMBER_OF_BOOKMARKS" /> dấu trang</translation>
 <translation id="4668279686271488041">Dữ liệu đo lường quảng cáo sẽ thường xuyên bị xoá khỏi thiết bị của bạn</translation>
 <translation id="4668347365065281350">Tất cả dữ liệu do các trang web lưu trữ, bao gồm cả cookie và dữ liệu khác lưu trữ trên máy</translation>
+<translation id="4673702426794876519">Cửa sổ ẩn danh</translation>
 <translation id="4678082183394354975">Đã bật giao diện tối cho các trang web trong Chrome</translation>
 <translation id="4682306524980568490">Chỉ có thể hiển thị <ph name="MAX_INSTANCE_COUNT" /> cửa sổ</translation>
 <translation id="4684427112815847243">Đồng bộ hoá mọi thứ</translation>

@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">წვდომის მართვა</translation>
 <translation id="3622349720008044802">მართეთ ფანჯრები</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 საიტი}other{+ # საიტი}}</translation>
+<translation id="3623464286911819905">წაკითხვის რეჟიმი მიუწვდომელია</translation>
 <translation id="3625870480639975468">მასშტაბის განულება</translation>
 <translation id="3631987586758005671">მიმდინარეობს გაზიარება <ph name="DEVICE_NAME" />-თან</translation>
 <translation id="363484704507524488">ვინაობის შემოწმების მართვა ქურდობისგან დაცვის პარამეტრებიდან შეგიძლიათ. <ph name="BEGIN_LINK" />პარამეტრებში გადასვლა<ph name="END_LINK" /></translation>

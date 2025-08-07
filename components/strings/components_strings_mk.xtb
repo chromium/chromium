@@ -315,6 +315,7 @@
 <translation id="1521655867290435174">Табели на Google</translation>
 <translation id="1524669537550112617">Опремени места за изнајмување</translation>
 <translation id="1527263332363067270">Се чека врска…</translation>
+<translation id="1527490370616010873">Google не е вашиот давател на услуги за автоматско пополнување. За да ги овозможите поставкиве и да ги користите податоците за плаќање од вашата сметка на Google, одете во <ph name="BEGIN_LINK" />Поставките за услугите за автоматско пополнување<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Поврзувањето е блокирано затоа што го започна јавна страница за да се поврзе на уредите или серверите во вашата приватна мрежа. Вчитајте ја страницава повторно за да го дозволите поврзувањето.</translation>
 <translation id="1529789484829130889">Фиока 8</translation>
 <translation id="1530707389502320859">Сајтот којшто се обидовте да го посетите изгледа лажно. Напаѓачите понекогаш имитираат сајтови, така што вршат мали, тешко забележливи промени во URL-адресата.</translation>
@@ -821,7 +822,6 @@
 <translation id="2353297238722298836">Камерата и микрофонот се дозволени</translation>
 <translation id="2354001756790975382">Други обележувачи</translation>
 <translation id="2355395290879513365">Напаѓачите можеби ќе можат да ги видат сликите што ги гледате на сајтов и да ве измамат со тоа што ќе ги модифицираат.</translation>
-<translation id="2356070529366658676">Прашај</translation>
 <translation id="2356941001189392209">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат настани со застарена технологија</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> управува со уредот, а <ph name="ACCOUNT_MANAGER" /> управува со сметката.</translation>
 <translation id="2359629602545592467">Повеќе</translation>
@@ -1194,6 +1194,7 @@
 <translation id="3002501248619246229">Провери ги содржините во влезната фиока</translation>
 <translation id="3005723025932146533">Прикажи зачувана копија</translation>
 <translation id="300580149047131921">Неодамна користено</translation>
+<translation id="3006864083554020786">домашна адреса</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете на Tab за прелистување на достапните дејства, а потоа притиснете на Enter за извршување на избраното дејство.</translation>
 <translation id="3010991137650052245">За да користите <ph name="PERMISSION" /> на сајтов, треба да му доделите пристап на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Производи за домаќинство</translation>
@@ -1439,7 +1440,6 @@
 <translation id="3422248202833853650">Обидете се да излезете од другите програми за да ослободите меморија.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> е моментално недостапен.</translation>
 <translation id="3423742043356668186">Одредено од системот</translation>
-<translation id="3427092606871434483">Дозволи (стандардно)</translation>
 <translation id="3427342743765426898">&amp;Повтори уредување</translation>
 <translation id="342781501876943858">Chromium препорачува ресетирање на лозинката ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="3428151540071562330">Една или повеќе од шаблонските URI на серверот DnsOverHttpsTemplates се неважечки и нема да се користат.</translation>
@@ -1828,6 +1828,7 @@
 <translation id="404831776305217138">URL-адресата за ажурирање екстензија со ID „<ph name="EXTENSION_ID" />“ е неважечка или користи неподдржана шема. Поддржани се следниве шеми: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ќе може да ја користите на производите на Google</translation>
 <translation id="4050599136622776556">Chromium се обидува да ги измени начините на плаќање.</translation>
+<translation id="4052683751389375539">Изменете, отвора нов прозорец</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Дознајте повеќе за заштитата на чувствителни податоци</translation>
@@ -2010,7 +2011,6 @@
 <translation id="4308567447483056043">Правилово се игнорира бидејќи корисникот е самостоен. За да се примени правилово, истата организација мора да управува со прелистувачот и профилот на Chrome преку администраторска конзола.</translation>
 <translation id="4310496734563057511">Ако го споделувате овој уред со други, може да вклучите Windows Hello за да потврдувате дека сте вие секогаш кога користите зачувана лозинка</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">Блокирај (стандардно)</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
 <translation id="4316057107946726368">Внесете порака за оправдување со најмногу <ph name="MAX_CHAR_COUNT" /> знаци. Искористивте <ph name="ACTUAL_CHAR_COUNT" /> од <ph name="MAX_CHAR_COUNT" /> знаци.</translation>
 <translation id="4318213823155573975">Капи</translation>
@@ -3520,6 +3520,7 @@
 <translation id="6881240511396774766">Создајте нов документ на Google брзо</translation>
 <translation id="6882210908253838664">Ако конкретен сајт не функционира, може да се обидете да му дадете привремена дозвола за користење колачиња од трети страни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Листот за проверка на акредитиви за безбедно плаќање е затворен</translation>
+<translation id="6883745783646124431">адреса на работа</translation>
 <translation id="6884662655240309489">Големина 1</translation>
 <translation id="6886283082988906333">ZIP-архива</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4226,7 +4227,6 @@
 <translation id="8035152190676905274">Пенкало</translation>
 <translation id="8035264638816032066">Насловите на картичките и URL-адресите на страниците што ги додавате во табелата се испраќаат до Google</translation>
 <translation id="8037117624646282037">Кој го користел уредот неодамна</translation>
-<translation id="8037357227543935929">Прашај (стандардно)</translation>
 <translation id="803771048473350947">Датотека</translation>
 <translation id="8038182528865038593">Црвена 2</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>

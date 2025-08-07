@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">Հասանելիության կառավարում</translation>
 <translation id="3622349720008044802">Կառավարել պատուհանները</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 կայք}one{+ # կայք}other{+ # կայք}}</translation>
+<translation id="3623464286911819905">Ընթերցման ռեժիմը հասանելի չէ</translation>
 <translation id="3625870480639975468">Վերակայել խոշորացումը</translation>
 <translation id="3631987586758005671">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="363484704507524488">Դուք կարող եք փոխել ինքնության ստուգման կարգավորումները գողությունից պաշտպանության կարգավորումներում։ <ph name="BEGIN_LINK" />Անցնել կարգավորումներ<ph name="END_LINK" /></translation>
@@ -707,7 +708,7 @@
 <translation id="4380055775103003110">Եթե խնդիրը չվերանա, փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="4384468725000734951">Օգտագործվում է Sogou որոնման համակարգը</translation>
 <translation id="4387647248986092471">Ստեղծել մեքենայի պրոֆիլի կողպում</translation>
-<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Ներդիրներն ու խմբերը չեն օգտագործվել 1 կամ ավելի օր}one{Ներդիրներն ու խմբերը չեն օգտագործվել # կամ ավելի օր}other{Ներդիրներն ու խմբերը չեն օգտագործվել # կամ ավելի օր}}</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Ներդիրներն ու խմբերը, որոնք չեն օգտագործվել 1 կամ ավելի օր}one{Ներդիրներն ու խմբերը, որոնք չեն օգտագործվել # կամ ավելի օր}other{Ներդիրներն ու խմբերը, որոնք չեն օգտագործվել # կամ ավելի օր}}</translation>
 <translation id="4402611456429872546">Ներբեռնվում է <ph name="LANG" /> լեզվի փաթեթը…</translation>
 <translation id="4404568932422911380">Էջանիշներ չկան</translation>
 <translation id="4405224443901389797">Տեղափոխել…</translation>

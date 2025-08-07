@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">移到閒置部分</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{將揀咗嘅 <ph name="TABS_COUNT_ONE" /> 個分頁加入書籤}other{將揀咗嘅 <ph name="TABS_COUNT_MANY" /> 個分頁加入書籤}}</translation>
 <translation id="2055057176188061528">選取分頁群組或建立新的分頁群組</translation>
+<translation id="2074527029802029717">取消固定分頁</translation>
 <translation id="2118649612461486615">商店資料</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。你將無法查看無痕式分頁。}other{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。你將無法查看 # 個無痕式分頁。}}</translation>
 <translation id="2162620598375156287">在 <ph name="SOURCE_WEBSITE" /> 上現售 <ph name="CURRENT_PRICE" /></translation>

@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">Przenieś do sekcji nieaktywnych</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Dodaj do zakładek <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="2055057176188061528">Wybierz grupę kart lub utwórz nową</translation>
+<translation id="2074527029802029717">Odepnij kartę</translation>
 <translation id="2118649612461486615">Informacje o sklepie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. Karta incognito nie będzie dostępna.}few{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będą dostępne.}many{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # kart incognito nie będzie dostępnych.}other{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będzie dostępne.}}</translation>
 <translation id="2162620598375156287">Teraz za <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>

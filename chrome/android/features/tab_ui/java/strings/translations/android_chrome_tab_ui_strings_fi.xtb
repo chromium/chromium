@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">Siirrä ei-aktiivisten osioon</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aseta <ph name="TABS_COUNT_ONE" /> valittu välilehti kirjanmerkiksi}other{Aseta <ph name="TABS_COUNT_MANY" /> valittua välilehteä kirjanmerkeiksi}}</translation>
 <translation id="2055057176188061528">Valitse välilehtiryhmä tai luo uusi</translation>
+<translation id="2074527029802029717">Irrota välilehti</translation>
 <translation id="2118649612461486615">Kaupan tiedot</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. Incognito-välilehti ei ole käytettävissä.}other{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. # incognito-välilehteä ei ole käytettävissä.}}</translation>
 <translation id="2162620598375156287">Nyt <ph name="CURRENT_PRICE" /> osoitteessa <ph name="SOURCE_WEBSITE" /></translation>

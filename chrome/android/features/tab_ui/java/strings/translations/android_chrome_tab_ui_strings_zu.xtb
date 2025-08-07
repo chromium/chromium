@@ -34,6 +34,7 @@
 <translation id="1982637982196732906">Hambisa esigabeni esingasebenzi</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Faka ibhukhimakhi kuthebhu engu-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
 <translation id="2055057176188061528">Khetha iqembu lethebhu noma vula iqembu lethebhu elisha</translation>
+<translation id="2074527029802029717">Ungaphini ithebhu</translation>
 <translation id="2118649612461486615">Ulwazi lwesitolo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu Akamuva kanye nesigaba Samaqembu amathebhu. Ithebhu yakho ye-Incognito ngeke itholakale.}one{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu. Amathebhu akho angu-# e-Incognito ngeke atholakale.}other{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu. Amathebhu akho angu-# e-Incognito ngeke atholakale.}}</translation>
 <translation id="2162620598375156287">Manje ngu-<ph name="CURRENT_PRICE" /> ku-<ph name="SOURCE_WEBSITE" /></translation>

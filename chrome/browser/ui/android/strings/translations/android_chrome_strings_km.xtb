@@ -551,6 +551,7 @@
 <translation id="3619255692378312441">គ្រប់គ្រង​សិទ្ធិចូលប្រើ</translation>
 <translation id="3622349720008044802">គ្រប់គ្រងវិនដូ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ គេហទំព័រ 1}other{+ គេហទំព័រ #}}</translation>
+<translation id="3623464286911819905">មិនអាចប្រើ​មុខងារ​អាន​បានទេ</translation>
 <translation id="3625870480639975468">កំណត់ការពង្រីកឡើងវិញ</translation>
 <translation id="3631987586758005671">កំពុងចែករំលែកទៅ <ph name="DEVICE_NAME" /></translation>
 <translation id="363484704507524488">អ្នកអាចគ្រប់គ្រង Identity Check នៅក្នុងការកំណត់ការការពារចោរលួច។ <ph name="BEGIN_LINK" />ចូលទៅកាន់ការកំណត់<ph name="END_LINK" /></translation>

@@ -5924,6 +5924,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5109044022078737958">미미</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> 삭제</translation>
 <translation id="5111326646107464148">새 창에서 그룹 열기</translation>
+<translation id="511147239888121455">데이터를 백업하시겠습니까?</translation>
 <translation id="5111646998522066203">시크릿 모드 종료</translation>
 <translation id="5111692334209731439">북마크 관리자(&amp;B)</translation>
 <translation id="5111794652433847656">이 기기에 <ph name="APP_NAME" />의 패스키가 없습니다.</translation>
@@ -6059,6 +6060,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">기기에 있는 파일 또는 폴더를 수정할 수 있음</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{확장 프로그램을 보려면 클릭하세요.}other{확장 프로그램을 보려면 클릭하세요.}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" />의 비밀번호 복구</translation>
 <translation id="5204673965307125349">기기를 파워워시한 후 다시 시도해 주세요.</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5205484256512407285">전송에 모바일 데이터를 사용하지 않음</translation>
@@ -8214,6 +8216,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />에서 Google과 공유할 수 있는 데이터와 데이터가 사용되는 방식에 관해 자세히 알아보려면 다음 페이지를 참고하세요. g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6771503742377376720">인증 기관임</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> 직장 주소 옵션 더보기</translation>
 <translation id="6772974422346500939">열어서 편집</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">사이트에 일회용 비밀번호가 필요합니다</translation>
@@ -10042,6 +10045,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8025151549289123443">잠금 화면 및 로그인</translation>
 <translation id="8025291188699172126">업데이트 정보</translation>
 <translation id="8026471514777758216">모든 기기</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> 집 주소 옵션 더보기</translation>
 <translation id="8026784703228858744">동기화를 통해 북마크 등을 저장하세요</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0일 전에 방문함}=1{1일 전에 방문함}other{#일 전에 방문함}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10190,6 +10194,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8121537075864592453">전체 화면 사용 중지됨</translation>
 <translation id="8121750884985440809">현재 화면을 전송하고 있습니다</translation>
 <translation id="8122898034710982882">휴대전화 허브, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">비밀번호, 북마크 등을 백업하여 모든 기기에서 간편하게 이용하세요.</translation>
 <translation id="81238879832906896">노란색과 흰색 꽃</translation>
 <translation id="8123975449645947908">뒤로 스크롤</translation>
 <translation id="8124313775439841391">관리되는 ONC</translation>
@@ -11565,6 +11570,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9057354806206861646">업데이트 일정</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{하루에 알림 약 1개}other{하루에 알림 약 {NUM_NOTIFICATION}개}}</translation>
 <translation id="9058760336383947367">프린터 PPD 보기</translation>
+<translation id="9061521313218438086">공개 정보 유출로 인해 노출된 비밀번호를 Chrome에서 발견하는 경우, Google 비밀번호 관리자는 사용자가 로그인 시 비밀번호를 변경할 수 있도록 제안합니다.</translation>
 <translation id="9061694916020926968">Chromebook용 Steam(베타)을 사용하려면 Google 계정에 로그인해야 합니다. 로그인한 후 다시 시도해 보세요.</translation>
 <translation id="9062468308252555888">14배</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />행부터 <ph name="ERROR_LINE_END" />행까지에 오류가 있음</translation>
