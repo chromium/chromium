@@ -82,9 +82,10 @@ android_apk("boundary_interface_example_apk") {
   android_manifest = "//build/android/AndroidManifest.xml"
 
   # This is to verify that the boundary interfaces compile and lint correctly
-  # against the minSdkVersion of the webkit support library module. As the
-  # minSdkVersion of the support library increases, so should this value. See
-  # http://crbug.com/828184 for more details.
+  # against the minSdkVersion of the webkit AndroidX module. This needs to be
+  # hardcoded to exactly match whatever AndroidX uses for their minSdkVersion,
+  # and we should update this number as AndroidX changes their minSdkVersion.
+  # See http://crbug.com/828184 for more details.
   lint_min_sdk_version = 23
 
   # Explicitly enable lint for this apk.
