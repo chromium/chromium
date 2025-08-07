@@ -438,32 +438,6 @@ def VerifyBundleManifest(bundle, manifest):
   filtered = lambda path: any(map(lambda pattern: pattern(path), patterns))
   manifest = set(path for path in manifest if not filtered(path))
 
-  # Create a set of all directories in the manifest. Used to avoid doing
-  # a linear scan of all files when a directory is found that may not be
-  # present in the bundle (as that would cause the script to have O(n^2)
-  # behaviour, since this check would happen for all directories).
-  #
-  # Note: since manifest only list files and maybe some directories that
-  # should be considered as files (see comments below when processing
-  # dirnames), it is required to iterate over all parent directories here.
-  #
-  # E.g if the manifest contains the following:
-  #   'Foo'
-  #   'data/test/files/file1'
-  #   'data/test/files/file2'
-  #   'data/test/files/file3'
-  #
-  # then manifest_directories should contain the following
-  #   'data'
-  #   'data/test'
-  #   'data/test/files'
-  manifest_directories = set()
-  for path in manifest:
-    dirname = os.path.dirname(path)
-    while dirname and dirname not in manifest_directories:
-      manifest_directories.add(dirname)
-      dirname = os.path.dirname(dirname)
-
   # The bundle may contain a set of icons which will not be listed in the
   # manifest (this is because they are conditionally based on the sources
   # passed to the build/toolchain/apple/compile_xcassets.py script). Skip
@@ -485,10 +459,6 @@ def VerifyBundleManifest(bundle, manifest):
       if subdirpath in manifest:
         dirnames_to_skip.append(dirname)
         manifest.remove(subdirpath)
-      elif subdirpath not in manifest_directories:
-        dirnames_to_skip.append(dirname)
-        print(f'warning: deleting old directory: {subdirpath}', file=sys.stderr)
-        shutil.rmtree(os.path.join(dirpath, dirname))
     if dirnames_to_skip:
       dirnames[:] = list(set(dirnames) - set(dirnames_to_skip))
 
