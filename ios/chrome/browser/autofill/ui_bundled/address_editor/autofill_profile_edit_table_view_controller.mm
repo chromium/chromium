@@ -163,7 +163,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)loadModel {
   TableViewModel* model = _controller.tableViewModel;
 
-  if (!_isHomeAndWorkProfile) {
+  if (!_isHomeAndWorkProfile || !_settingsView) {
     AutofillProfileDetailsSectionIdentifier nameSection =
         _dynamicallyLoadInputFieldsEnabled
             ? AutofillProfileDetailsSectionIdentifierName
@@ -196,7 +196,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
   [model addItem:[self countryItem] toSectionWithIdentifier:addressSection];
 
-  if (!_isHomeAndWorkProfile) {
+  if (!_isHomeAndWorkProfile || !_settingsView) {
     AutofillProfileDetailsSectionIdentifier phoneEmailSection =
         _dynamicallyLoadInputFieldsEnabled
             ? AutofillProfileDetailsSectionIdentifierPhoneEmail
@@ -296,7 +296,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (_dynamicallyLoadInputFieldsEnabled) {
-    if (_isHomeAndWorkProfile) {
+    if (_isHomeAndWorkProfile && _settingsView) {
       return sectionIdentifier ==
              AutofillProfileDetailsSectionIdentifierAddress;
     }
@@ -748,7 +748,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the footer message.
 - (NSString*)footerMessage {
   CHECK([_userEmail length] > 0);
-  if (_isHomeAndWorkProfile) {
+  if (_isHomeAndWorkProfile && _settingsView) {
     return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER,
                                    base::SysNSStringToUTF16(_userEmail));
   }
