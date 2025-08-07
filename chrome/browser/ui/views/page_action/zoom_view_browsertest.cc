@@ -25,8 +25,6 @@ views::View* GetZoomView(Browser* browser) {
 
 }  // namespace
 
-// https://crbug.com/900134: Zoom icons in inactive windows should not be
-// visible when zoom is reset back to default.
 IN_PROC_BROWSER_TEST_F(ZoomViewBrowserTest, SharedPageVisibility) {
   auto* zoom_icon = GetZoomView(browser());
   auto* second_zoom_icon = GetZoomView(CreateBrowser(browser()->profile()));
