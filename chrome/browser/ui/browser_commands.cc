@@ -577,8 +577,11 @@ bool SupportsCommand(Browser* browser, int command) {
   return browser->command_controller()->SupportsCommand(command);
 }
 
-bool ExecuteCommand(Browser* browser, int command, base::TimeTicks time_stamp) {
-  return browser->command_controller()->ExecuteCommand(command, time_stamp);
+bool ExecuteCommand(BrowserWindowInterface* bwi,
+                    int command,
+                    base::TimeTicks time_stamp) {
+  return bwi->GetFeatures().browser_command_controller()->ExecuteCommand(
+      command, time_stamp);
 }
 
 bool ExecuteCommandWithDisposition(Browser* browser,
@@ -2161,12 +2164,12 @@ void OpenTaskManager(BrowserWindowInterface* bwi,
 #endif
 }
 
-void OpenFeedbackDialog(Browser* browser,
+void OpenFeedbackDialog(BrowserWindowInterface* bwi,
                         feedback::FeedbackSource source,
                         const std::string& description_template,
                         const std::string& category_tag) {
   base::RecordAction(UserMetricsAction("Feedback"));
-  chrome::ShowFeedbackPage(browser, source, description_template,
+  chrome::ShowFeedbackPage(bwi, source, description_template,
                            std::string() /* description_placeholder_text */,
                            category_tag, std::string() /* extra_diagnostics */);
 }

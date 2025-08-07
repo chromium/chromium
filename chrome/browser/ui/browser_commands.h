@@ -48,7 +48,7 @@ namespace chrome {
 
 bool IsCommandEnabled(Browser* browser, int command);
 bool SupportsCommand(Browser* browser, int command);
-bool ExecuteCommand(Browser* browser,
+bool ExecuteCommand(BrowserWindowInterface* bwi,
                     int command,
                     base::TimeTicks time_stamp = base::TimeTicks::Now());
 bool ExecuteCommandWithDisposition(Browser* browser,
@@ -270,7 +270,7 @@ bool CanOpenTaskManager();
 void OpenTaskManager(
     BrowserWindowInterface* bwi,
     task_manager::StartAction start_action = task_manager::StartAction::kOther);
-void OpenFeedbackDialog(Browser* browser,
+void OpenFeedbackDialog(BrowserWindowInterface* bwi,
                         feedback::FeedbackSource source,
                         const std::string& description_template = std::string(),
                         const std::string& category_tag = std::string());

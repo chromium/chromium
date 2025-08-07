@@ -261,7 +261,7 @@ void SplitTabMenuModel::CloseTabAtIndex(int index) {
 }
 
 void SplitTabMenuModel::SendFeedback() {
-  const Browser* browser = GetBrowserWithTabStripModel(tab_strip_model_);
+  Browser* const browser = GetBrowserWithTabStripModel(tab_strip_model_);
   CHECK(browser);
   chrome::ShowFeedbackPage(browser, feedback::kFeedbackSourceSplitView, "", "",
                            "split_view", "");

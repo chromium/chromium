@@ -29,6 +29,9 @@ specific_include_rules = {
   "mahi_availability.cc": [
     "+chrome/browser/browser_process.h",
   ],
+  "mahi_manager_impl.cc" : [
+    "+chrome/browser/ui/browser.h",
+  ],
   "mahi_ui_browsertest.cc": [
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/views/mahi/mahi_menu_constants.h",

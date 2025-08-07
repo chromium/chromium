@@ -38,6 +38,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"

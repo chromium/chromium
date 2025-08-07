@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -49,10 +50,9 @@ GURL GetTargetTabUrl(SessionID session_id, int index) {
   return GURL();
 }
 
-Profile* GetFeedbackProfile(const Browser* browser) {
-  Profile* profile =
-      browser ? browser->profile()
-              : ProfileManager::GetLastUsedProfileAllowedByPolicy();
+Profile* GetFeedbackProfile(BrowserWindowInterface* bwi) {
+  Profile* profile = bwi ? bwi->GetProfile()
+                         : ProfileManager::GetLastUsedProfileAllowedByPolicy();
   if (!profile)
     return nullptr;
 
@@ -64,9 +64,9 @@ Profile* GetFeedbackProfile(const Browser* browser) {
   // Obtains the display profile ID on which the Feedback window should show.
   auto* const window_manager = MultiUserWindowManagerHelper::GetWindowManager();
   const AccountId display_account_id =
-      window_manager && browser ? window_manager->GetUserPresentingWindow(
-                                      browser->window()->GetNativeWindow())
-                                : EmptyAccountId();
+      window_manager && bwi ? window_manager->GetUserPresentingWindow(
+                                  bwi->GetWindow()->GetNativeWindow())
+                            : EmptyAccountId();
   if (display_account_id.is_valid())
     profile = multi_user_util::GetProfileFromAccountId(display_account_id);
 #endif

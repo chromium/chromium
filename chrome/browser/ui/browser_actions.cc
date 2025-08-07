@@ -195,7 +195,6 @@ std::u16string BrowserActions::GetCleanTitleAndTooltipText(
 void BrowserActions::InitializeBrowserActions() {
   Profile* const profile = base::to_address(profile_);
   TabStripModel* const tab_strip_model = bwi_->GetTabStripModel();
-  Browser* const browser = bwi_->GetBrowserForMigrationOnly();
   BrowserWindowInterface* const bwi = base::to_address(bwi_);
   const bool is_guest_session = profile_->IsGuestSession();
 
@@ -793,38 +792,39 @@ void BrowserActions::InitializeBrowserActions() {
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
     root_action_item_->AddChild(
-        ChromeMenuAction(base::BindRepeating(
-                             [](Browser* browser, actions::ActionItem* item,
-                                actions::ActionInvocationContext context) {
-                               chrome::OpenFeedbackDialog(
-                                   browser,
-                                   feedback::kFeedbackSourceDesktopTabGroups,
-                                   /*description_template=*/std::string(),
-                                   /*category_tag=*/"tab_group_share");
-                             },
-                             base::Unretained(browser)),
-                         kActionSendSharedTabGroupFeedback,
-                         IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
-                         IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
-                         vector_icons::kFeedbackIcon)
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::OpenFeedbackDialog(
+                      bwi, feedback::kFeedbackSourceDesktopTabGroups,
+                      /*description_template=*/std::string(),
+                      /*category_tag=*/"tab_group_share");
+                },
+                bwi),
+            kActionSendSharedTabGroupFeedback,
+            IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
+            IDS_DATA_SHARING_SHARED_GROUPS_FEEDBACK,
+            vector_icons::kFeedbackIcon)
             .Build());
   }
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* toolbar_button_provider =
-                    BrowserView::GetBrowserViewForBrowser(browser)
-                        ->toolbar_button_provider();
+                    bwi->GetBrowserForMigrationOnly()
+                        ->GetBrowserView()
+                        .toolbar_button_provider();
                 if (toolbar_button_provider) {
                   toolbar_button_provider->GetPinnedToolbarActionsContainer()
                       ->UpdatePinnedStateAndAnnounce(
                           context.GetProperty(kActionIdKey), true);
                 }
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionPinActionToToolbar)
           .SetImage(ui::ImageModel::FromVectorIcon(kKeepIcon, ui::kColorIcon))
           .SetText(BrowserActions::GetCleanTitleAndTooltipText(
@@ -835,18 +835,19 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* toolbar_button_provider =
-                    BrowserView::GetBrowserViewForBrowser(browser)
-                        ->toolbar_button_provider();
+                    bwi->GetBrowserForMigrationOnly()
+                        ->GetBrowserView()
+                        .toolbar_button_provider();
                 if (toolbar_button_provider) {
                   toolbar_button_provider->GetPinnedToolbarActionsContainer()
                       ->UpdatePinnedStateAndAnnounce(
                           context.GetProperty(kActionIdKey), false);
                 }
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionUnpinActionFromToolbar)
           .SetImage(
               ui::ImageModel::FromVectorIcon(kKeepOffIcon, ui::kColorIcon))
@@ -858,12 +859,11 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ExecuteCommand(browser,
-                                       IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
+                chrome::ExecuteCommand(bwi, IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionSidePanelShowCustomizeChromeToolbar)
           .SetImage(
               ui::ImageModel::FromVectorIcon(kSettingsMenuIcon, ui::kColorIcon))
@@ -874,11 +874,11 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                web_app::ShowPwaInstallDialog(browser);
+                web_app::ShowPwaInstallDialog(bwi);
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionInstallPwa)
           .SetImage(ui::ImageModel::FromVectorIcon(
               kInstallDesktopChromeRefreshIcon, ui::kColorIcon))
@@ -891,42 +891,43 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                browser->GetBrowserView().Cut();
+                bwi->GetBrowserForMigrationOnly()->GetBrowserView().Cut();
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(actions::kActionCut)
           .Build());
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                browser->GetBrowserView().Copy();
+                bwi->GetBrowserForMigrationOnly()->GetBrowserView().Copy();
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(actions::kActionCopy)
           .Build());
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                browser->GetBrowserView().Paste();
+                bwi->GetBrowserForMigrationOnly()->GetBrowserView().Paste();
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(actions::kActionPaste)
           .Build());
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](chrome::BrowserCommandController* browser_command_controller,
+                 actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                browser->command_controller()->ShowCustomizeChromeSidePanel(
+                browser_command_controller->ShowCustomizeChromeSidePanel(
                     CustomizeChromeSection::kFooter);
               },
-              base::Unretained(browser)))
+              bwi->GetFeatures().browser_command_controller()))
           .SetActionId(kActionSidePanelShowCustomizeChromeFooter)
           .Build());
 

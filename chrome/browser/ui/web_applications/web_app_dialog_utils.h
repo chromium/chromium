@@ -11,6 +11,7 @@
 #include "components/webapps/common/web_app_id.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -65,7 +66,7 @@ void CreateWebAppForBackgroundInstall(
 // Shows the PWA Install dialog for the active tab in the provided browser.
 // Records PWAInstallIcon user metric and closes the PWA install IPH
 // if it is showing.
-void ShowPwaInstallDialog(Browser* browser);
+void ShowPwaInstallDialog(BrowserWindowInterface* bwi);
 
 void SetInstalledCallbackForTesting(WebAppInstalledCallback callback);
 

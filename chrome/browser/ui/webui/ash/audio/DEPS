@@ -16,3 +16,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "audio_handler.cc" : [
+    "+chrome/browser/ui/browser.h",
+  ],
+}

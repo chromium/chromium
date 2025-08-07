@@ -7,7 +7,7 @@
 
 #include "components/sessions/core/session_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -23,7 +23,7 @@ enum class WebUIFeedbackSource { kConnectivityDiagnostics };
 GURL GetTargetTabUrl(SessionID session_id, int index);
 
 // Get the profile that should be used to open the feedback dialog.
-Profile* GetFeedbackProfile(const Browser* browser);
+Profile* GetFeedbackProfile(BrowserWindowInterface* bwi);
 
 // Show the feedback dialog from WebUI.
 void ShowFeedbackDialogForWebUI(WebUIFeedbackSource source,

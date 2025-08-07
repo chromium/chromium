@@ -11,6 +11,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
