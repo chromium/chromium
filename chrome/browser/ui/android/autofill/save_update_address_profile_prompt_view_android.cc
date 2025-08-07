@@ -106,12 +106,10 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
   if (is_update) {
     ScopedJavaLocalRef<jstring> subtitle =
         base::android::ConvertUTF16ToJavaString(env, controller->GetSubtitle());
-    std::pair<std::u16string, std::u16string> differences =
-        controller->GetDiffFromOldToNewProfile();
     ScopedJavaLocalRef<jstring> old_details =
-        base::android::ConvertUTF16ToJavaString(env, differences.first);
+        base::android::ConvertUTF16ToJavaString(env, controller->GetOldDiff());
     ScopedJavaLocalRef<jstring> new_details =
-        base::android::ConvertUTF16ToJavaString(env, differences.second);
+        base::android::ConvertUTF16ToJavaString(env, controller->GetNewDiff());
     Java_SaveUpdateAddressProfilePrompt_setUpdateDetails(
         env, java_object_, subtitle, old_details, new_details);
   } else {

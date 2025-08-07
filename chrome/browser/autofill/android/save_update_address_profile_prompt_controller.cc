@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
@@ -49,6 +49,12 @@ SaveUpdateAddressProfilePromptController::
       is_migration_to_account_(is_migration_to_account),
       decision_callback_(std::move(decision_callback)),
       dismissal_callback_(std::move(dismissal_callback)) {
+  if (original_profile_) {
+    const std::string& locale = g_browser_process->GetApplicationLocale();
+    differences_for_ui_ =
+        GetProfileDifferenceForUi(original_profile_.value(), profile_, locale);
+    std::tie(old_diff_, new_diff_) = GetDiffFromOldToNewProfile();
+  }
   DCHECK(prompt_view_);
   DCHECK(decision_callback_);
   DCHECK(dismissal_callback_);
@@ -74,19 +80,36 @@ void SaveUpdateAddressProfilePromptController::DisplayPrompt() {
     std::move(dismissal_callback_).Run();
 }
 
-std::u16string SaveUpdateAddressProfilePromptController::GetTitle() {
-  if (original_profile_) {
+std::u16string SaveUpdateAddressProfilePromptController::GetTitle() const {
+  if (!original_profile_) {
+    return l10n_util::GetStringUTF16(
+        is_migration_to_account_
+            ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
+            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHomeAndWork)) {
+    // A new profile is created when extending a Home & Work profile, so the
+    // title should reflect this.
+    if (original_profile_->IsHomeAndWorkProfile()) {
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE);
+    }
+    // If there are no old values to replace, inform user that a new data
+    // point is being added to the profile.
+    if (old_diff_.empty()) {
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
+    }
+    // If the an existing value from profile is changed, inform user that a
+    // profile will be updated.
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
   }
-
-  return l10n_util::GetStringUTF16(
-      is_migration_to_account_
-          ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
-          : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
-    signin::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager) const {
   if (!is_migration_to_account_ && !profile_.IsAccountProfile()) {
     return std::u16string();
   }
@@ -109,36 +132,69 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
         base::UTF8ToUTF16(account->email));
   }
 
-  // Notify user that their address has already been saved in their Google
-  // account and is only going to be updated there.
-  if (original_profile_) {
+  if (!original_profile_) {
+    // Notify the user that their address is going to be saved in their Google
+    // account if they accept the prompt.
     return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
+        IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
         base::UTF8ToUTF16(account->email));
   }
-
-  // Notify the user that their address is going to be saved in their Google
-  // account if they accept the prompt.
+  // Notify user that their address has already been saved in their Google
+  // account and is only going to be updated there.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHomeAndWork)) {
+    switch (original_profile_->record_type()) {
+      case AutofillProfile::RecordType::kAccountHome:
+        return l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
+            base::UTF8ToUTF16(account->email));
+      case AutofillProfile::RecordType::kAccountWork:
+        return l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE,
+            base::UTF8ToUTF16(account->email));
+      case AutofillProfile::RecordType::kAccount:
+        return l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
+            base::UTF8ToUTF16(account->email));
+      case AutofillProfile::RecordType::kAccountNameEmail:
+        NOTIMPLEMENTED();
+        break;
+      case AutofillProfile::RecordType::kLocalOrSyncable:
+        NOTREACHED();
+    }
+  }
   return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
+      IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
       base::UTF8ToUTF16(account->email));
 }
 
-std::u16string
-SaveUpdateAddressProfilePromptController::GetPositiveButtonText() {
-  if (original_profile_) {
+std::u16string SaveUpdateAddressProfilePromptController::GetPositiveButtonText()
+    const {
+  if (!original_profile_) {
+    return l10n_util::GetStringUTF16(
+        is_migration_to_account_
+            ? IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL
+            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHomeAndWork)) {
+    if (original_profile_->IsHomeAndWorkProfile()) {
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+    }
+    if (old_diff_.empty()) {
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL);
+    }
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   }
-
   return l10n_util::GetStringUTF16(
-      is_migration_to_account_
-          ? IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL
-          : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+      IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
 }
 
-std::u16string
-SaveUpdateAddressProfilePromptController::GetNegativeButtonText() {
+std::u16string SaveUpdateAddressProfilePromptController::GetNegativeButtonText()
+    const {
   if (is_migration_to_account_) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
@@ -148,7 +204,7 @@ SaveUpdateAddressProfilePromptController::GetNegativeButtonText() {
       IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
 }
 
-std::u16string SaveUpdateAddressProfilePromptController::GetAddress() {
+std::u16string SaveUpdateAddressProfilePromptController::GetAddress() const {
   if (is_migration_to_account_) {
     const std::u16string name =
         profile_.GetInfo(NAME_FULL, g_browser_process->GetApplicationLocale());
@@ -165,38 +221,42 @@ std::u16string SaveUpdateAddressProfilePromptController::GetAddress() {
   }
 }
 
-std::u16string SaveUpdateAddressProfilePromptController::GetEmail() {
+std::u16string SaveUpdateAddressProfilePromptController::GetEmail() const {
   return profile_.GetInfo(EMAIL_ADDRESS,
                           g_browser_process->GetApplicationLocale());
 }
 
-std::u16string SaveUpdateAddressProfilePromptController::GetPhoneNumber() {
+std::u16string SaveUpdateAddressProfilePromptController::GetPhoneNumber()
+    const {
   return profile_.GetInfo(PHONE_HOME_WHOLE_NUMBER,
                           g_browser_process->GetApplicationLocale());
 }
 
-std::u16string SaveUpdateAddressProfilePromptController::GetSubtitle() {
+std::u16string SaveUpdateAddressProfilePromptController::GetSubtitle() const {
   DCHECK(original_profile_);
   const std::string locale = g_browser_process->GetApplicationLocale();
-  std::vector<ProfileValueDifference> differences =
-      GetProfileDifferenceForUi(original_profile_.value(), profile_, locale);
-  bool address_updated = base::Contains(differences, ADDRESS_HOME_ADDRESS,
-                                        &ProfileValueDifference::type);
+  bool address_updated = base::Contains(
+      differences_for_ui_, ADDRESS_HOME_ADDRESS, &ProfileValueDifference::type);
   return GetProfileDescription(
       original_profile_.value(), locale,
       /*include_address_and_contacts=*/!address_updated);
 }
 
+std::u16string SaveUpdateAddressProfilePromptController::GetOldDiff() const {
+  return old_diff_;
+}
+
+std::u16string SaveUpdateAddressProfilePromptController::GetNewDiff() const {
+  return new_diff_;
+}
+
 std::pair<std::u16string, std::u16string>
-SaveUpdateAddressProfilePromptController::GetDiffFromOldToNewProfile() {
+SaveUpdateAddressProfilePromptController::GetDiffFromOldToNewProfile() const {
   DCHECK(original_profile_);
-  std::vector<ProfileValueDifference> differences =
-      GetProfileDifferenceForUi(original_profile_.value(), profile_,
-                                g_browser_process->GetApplicationLocale());
 
   std::u16string old_diff;
   std::u16string new_diff;
-  for (const auto& diff : differences) {
+  for (const ProfileValueDifference& diff : differences_for_ui_) {
     if (!diff.first_value.empty()) {
       old_diff += diff.first_value + u"\n";
       // Add an extra newline to separate address and the following contacts.

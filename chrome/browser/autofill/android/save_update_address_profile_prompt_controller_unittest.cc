@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
@@ -112,6 +114,10 @@ class SaveUpdateAddressProfilePromptControllerTest
   std::unique_ptr<SaveUpdateAddressProfilePromptController> controller_;
   raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   base::android::JavaParamRef<jobject> mock_caller_{nullptr};
+
+ private:
+  base::test::ScopedFeatureList feature_{
+      features::kAutofillEnableSupportForHomeAndWork};
 };
 
 void SaveUpdateAddressProfilePromptControllerTest::SigninUser() {
@@ -370,10 +376,8 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),
             controller_->GetTitle());
   EXPECT_EQ(u"John Doe, 666 Erebus St.", controller_->GetSubtitle());
-  std::pair<std::u16string, std::u16string> differences =
-      controller_->GetDiffFromOldToNewProfile();
-  EXPECT_EQ(u"John Doe", differences.first);
-  EXPECT_EQ(u"John H. Doe\n16502111111", differences.second);
+  EXPECT_EQ(u"John Doe", controller_->GetOldDiff());
+  EXPECT_EQ(u"John H. Doe\n16502111111", controller_->GetNewDiff());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
             controller_->GetPositiveButtonText());
@@ -388,16 +392,16 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
        ReturnsCorrectStringsToDisplayWhenUpdateAccountAddress) {
   SigninUser();
+  test_api(original_profile_)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
 
   SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE),
             controller_->GetTitle());
   EXPECT_EQ(u"John Doe, 666 Erebus St.", controller_->GetSubtitle());
-  std::pair<std::u16string, std::u16string> differences =
-      controller_->GetDiffFromOldToNewProfile();
-  EXPECT_EQ(u"John Doe", differences.first);
-  EXPECT_EQ(u"John H. Doe\n16502111111", differences.second);
+  EXPECT_EQ(u"John Doe", controller_->GetOldDiff());
+  EXPECT_EQ(u"John H. Doe\n16502111111", controller_->GetNewDiff());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
             controller_->GetPositiveButtonText());
@@ -421,18 +425,105 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   // Subtitle should contain the full name only.
   EXPECT_EQ(u"John H. Doe", controller_->GetSubtitle());
-  std::pair<std::u16string, std::u16string> differences =
-      controller_->GetDiffFromOldToNewProfile();
   // Differences should contain envelope style address.
   EXPECT_EQ(u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA \nUnited States",
-            differences.first);
+            controller_->GetOldDiff());
   // There should be an extra newline between address and contacts data.
   EXPECT_EQ(
       u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA 91111\nUnited "
       u"States\n\n16502111111",
-      differences.second);
+      controller_->GetNewDiff());
   EXPECT_EQ(u"", controller_->GetRecordTypeNotice(
                      identity_test_env_.identity_manager()));
+}
+
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
+       ReturnsCorrectStringsToDisplayWhenNewInfoIsAddedToAccount) {
+  SigninUser();
+  original_profile_ = test::GetFullProfile();
+  test_api(original_profile_)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  original_profile_.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
+
+  profile_ = test::GetFullProfile();
+  test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
+  profile_.SetInfo(EMAIL_ADDRESS, u"a@b.com", GetLocale());
+
+  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE),
+      controller_->GetTitle());
+  EXPECT_EQ(u"John H. Doe, 666 Erebus St.", controller_->GetSubtitle());
+  EXPECT_EQ(u"", controller_->GetOldDiff());
+  EXPECT_EQ(u"a@b.com", controller_->GetNewDiff());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL),
+      controller_->GetPositiveButtonText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
+          base::ASCIIToUTF16(kUserEmail)),
+      controller_->GetRecordTypeNotice(identity_test_env_.identity_manager()));
+}
+
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
+       ReturnsCorrectStringsToDisplayWhenNewInfoIsAddedToAccountHome) {
+  SigninUser();
+  original_profile_ = test::GetFullProfile();
+  test_api(original_profile_)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  original_profile_.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
+
+  profile_ = test::GetFullProfile();
+  test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
+  profile_.SetInfo(EMAIL_ADDRESS, u"a@b.com", GetLocale());
+
+  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE),
+            controller_->GetTitle());
+  EXPECT_EQ(u"John H. Doe, 666 Erebus St.", controller_->GetSubtitle());
+  EXPECT_EQ(u"", controller_->GetOldDiff());
+  EXPECT_EQ(u"a@b.com", controller_->GetNewDiff());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            controller_->GetPositiveButtonText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
+                                 base::ASCIIToUTF16(kUserEmail)),
+      controller_->GetRecordTypeNotice(identity_test_env_.identity_manager()));
+}
+
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
+       ReturnsCorrectStringsToDisplayWhenNewInfoIsAddedToAccountWork) {
+  SigninUser();
+  original_profile_ = test::GetFullProfile();
+  test_api(original_profile_)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  original_profile_.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
+
+  profile_ = test::GetFullProfile();
+  test_api(profile_).set_record_type(AutofillProfile::RecordType::kAccount);
+  profile_.SetInfo(EMAIL_ADDRESS, u"a@b.com", GetLocale());
+
+  SetUpController(/*is_update=*/true, /*is_migration_to_account=*/false);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE),
+            controller_->GetTitle());
+  EXPECT_EQ(u"John H. Doe, 666 Erebus St.", controller_->GetSubtitle());
+  EXPECT_EQ(u"", controller_->GetOldDiff());
+  EXPECT_EQ(u"a@b.com", controller_->GetNewDiff());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            controller_->GetPositiveButtonText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE,
+                                 base::ASCIIToUTF16(kUserEmail)),
+      controller_->GetRecordTypeNotice(identity_test_env_.identity_manager()));
 }
 
 }  // namespace
