@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/extensions/extensions_menu_core_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
@@ -150,8 +149,6 @@ class ExtensionsMenuViewController
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>
       permissions_manager_observation_{this};
-
-  ExtensionsMenuCoreController extensions_menu_core_controller_;
 
   // The current page visible in `bubble_contents_`.
   views::ViewTracker current_page_;

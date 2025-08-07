@@ -22,7 +22,6 @@ source_set("extensions") {
     sources += [
       "extension_install_ui.h",
       "extensions_dialogs.h",
-      "extensions_menu_core_controller.h",
     ]
 
     if (is_android) {
@@ -96,10 +95,7 @@ source_set("impl") {
   deps = [ ":extensions" ]
 
   if (enable_extensions_core) {
-    sources += [
-      "extension_install_ui.cc",
-      "extensions_menu_core_controller.cc",
-    ]
+    sources += [ "extension_install_ui.cc" ]
     deps += [ "//chrome/browser/profiles:profile" ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {
