@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindow_jni.h"
@@ -83,6 +84,11 @@ Profile* AndroidBrowserWindow::GetProfile() {
 
 const SessionID& AndroidBrowserWindow::GetSessionID() const {
   return session_id_;
+}
+
+BrowserWindowInterface::Type AndroidBrowserWindow::GetType() const {
+  NOTIMPLEMENTED();
+  return TYPE_NORMAL;
 }
 
 content::WebContents* AndroidBrowserWindow::OpenURL(

@@ -7,11 +7,12 @@ import("//chrome/common/features.gni")
 assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 
 source_set("internal") {
-  sources = []
+  sources = [ "create_browser_window.cc" ]
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//components/sessions:session_id",
     "//ui/base/unowned_user_data",
   ]
@@ -21,12 +22,14 @@ source_set("internal") {
       "android/android_base_window.cc",
       "android/android_browser_window.cc",
       "android/browser_window_interface_iterator_android.cc",
+      "android/create_browser_window_android.cc",
     ]
     deps += [ ":jni" ]
   } else {
     sources += [
       "browser_window_features.cc",
       "browser_window_interface_iterator_non_android.cc",
+      "create_browser_window_non_android.cc",
       "desktop_browser_window_capabilities.cc",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]

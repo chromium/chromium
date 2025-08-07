@@ -32,6 +32,15 @@ source_set("browser_window") {
   }
 }
 
+source_set("create_browser_window") {
+  sources = [ "public/create_browser_window.h" ]
+
+  public_deps = [
+    "//chrome/browser/ui/browser_window",
+    "//ui/base/mojom:ui_base_types",
+  ]
+}
+
 # Android targets need to be guarded by is_android because:
 # (1) Android GNI files may assert is_android, and
 # (2) The rest of this file can be included in non-Android builds.
@@ -60,10 +69,14 @@ if (is_android) {
 } else {
   source_set("browser_tests") {
     testonly = true
-    sources = [ "public/browser_window_interface_iterator_browsertest.cc" ]
+    sources = [
+      "internal/create_browser_window_browsertest.cc",
+      "public/browser_window_interface_iterator_browsertest.cc",
+    ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
       ":browser_window",
+      ":create_browser_window",
       "//base",
       "//base/test:test_support",
       "//chrome/browser/ui",

@@ -41,6 +41,7 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   ui::BaseWindow* GetWindow() override;
   Profile* GetProfile() override;
   const SessionID& GetSessionID() const override;
+  Type GetType() const override;
 
   // Implements |content::PageNavigator|, which is inherited by
   // |BrowserWindowInterface|.
