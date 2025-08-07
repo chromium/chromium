@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -21,7 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -266,8 +267,9 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 #endif
 
     browser_view()
-        ->toolbar()
-        ->pinned_toolbar_actions_container()
+        ->browser()
+        ->GetFeatures()
+        .pinned_toolbar_actions_controller()
         ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
 
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =

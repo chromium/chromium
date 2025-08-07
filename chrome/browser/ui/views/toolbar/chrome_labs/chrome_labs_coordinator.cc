@@ -11,11 +11,12 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -79,9 +80,8 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 
   flags_state_ = about_flags::GetCurrentFlagsState();
 
-  BrowserView::GetBrowserViewForBrowser(browser_)
-      ->toolbar()
-      ->pinned_toolbar_actions_container()
+  browser_->GetFeatures()
+      .pinned_toolbar_actions_controller()
       ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
 
   auto chrome_labs_bubble_view =
@@ -164,13 +164,12 @@ void ChromeLabsCoordinator::ShowOrHide() {
 }
 
 PinnedActionToolbarButton* ChromeLabsCoordinator::GetChromeLabsButton() {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  if (browser_view && browser_view->toolbar()) {
-    return browser_view->toolbar()
-        ->pinned_toolbar_actions_container()
-        ->GetButtonFor(kActionShowChromeLabs);
-  }
-  return nullptr;
+  PinnedToolbarActionsController* pinned_toolbar_actions_controller =
+      browser_->GetFeatures().pinned_toolbar_actions_controller();
+  return pinned_toolbar_actions_controller
+             ? pinned_toolbar_actions_controller->GetButtonFor(
+                   kActionShowChromeLabs)
+             : nullptr;
 }
 
 ChromeLabsBubbleView* ChromeLabsCoordinator::GetChromeLabsBubbleView() {
@@ -182,9 +181,8 @@ ChromeLabsBubbleView* ChromeLabsCoordinator::GetChromeLabsBubbleView() {
 void ChromeLabsCoordinator::OnChromeLabsBubbleClosing() {
   chrome_labs_action_item_->SetIsShowingBubble(false);
 
-  BrowserView::GetBrowserViewForBrowser(browser_)
-      ->toolbar()
-      ->pinned_toolbar_actions_container()
+  browser_->GetFeatures()
+      .pinned_toolbar_actions_controller()
       ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
 }
 
