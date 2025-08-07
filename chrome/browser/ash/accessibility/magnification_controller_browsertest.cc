@@ -71,7 +71,6 @@ class FullscreenMagnifierControllerTest
 
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(::features::kAccessibilityFaceGaze);
     if (GetParam() == ManifestVersion::kTwo) {
       disabled_features.push_back(
           ::features::kAccessibilityManifestV3AccessibilityCommon);

@@ -139,7 +139,6 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kOnDeviceSpeechRecognition,
                               ::features::kAccessibilityAccelerator,
-                              ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
                               ::features::kAccessibilityFlashScreenFeature},
         /*disabled_features=*/{});

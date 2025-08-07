@@ -500,8 +500,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys,
-         ::features::kAccessibilityFaceGaze},
+         ::features::kAccessibilityMouseKeys},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -1041,12 +1040,6 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
       delete;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AccessibilityManagerTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFaceGaze);
-  }
-
   void SetUpOnMainThread() override {
     AccessibilityManagerTest::SetUpOnMainThread();
     UninstallSodaForTesting();
@@ -1117,7 +1110,6 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that SODA download is initiated when Dictation is enabled.

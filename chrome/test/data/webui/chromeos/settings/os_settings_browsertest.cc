@@ -133,12 +133,6 @@ class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
       ::features::kAccessibilityMouseKeys};
 };
 
-class OSSettingsMochaTestFaceGazeEnabled : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityFaceGaze};
-};
-
 class OSSettingsMochaTestGraduationEnabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kGraduation};
@@ -878,22 +872,19 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
   RunSettingsTest("os_a11y_page/mouse_keys_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
-                       OsA11yPageFaceGazeSubpage) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageFaceGazeSubpage) {
   RunSettingsTest("os_a11y_page/facegaze_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
-                       OsA11yPageFaceGazeCursorCard) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageFaceGazeCursorCard) {
   RunSettingsTest("os_a11y_page/facegaze_cursor_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
-                       OsA11yPageFaceGazeActionsCard) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageFaceGazeActionsCard) {
   RunSettingsTest("os_a11y_page/facegaze_actions_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsA11yPageFaceGazeActionsAddDialog) {
   RunSettingsTest("os_a11y_page/facegaze_actions_add_dialog_test.js");
 }

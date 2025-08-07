@@ -60,9 +60,7 @@ class AccessibilityPrivateApiTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
     scoped_feature_list_.InitWithFeatures(
-        {// Required for the installFaceGazeAssets API to work.
-         ::features::kAccessibilityFaceGaze,
-         // Live Caption only works if on-device speech recognition is
+        {// Live Caption only works if on-device speech recognition is
          // available.
          ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});

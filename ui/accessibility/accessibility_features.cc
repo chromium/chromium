@@ -235,13 +235,6 @@ bool IsAccessibilityReducedAnimationsEnabled() {
       ::features::kAccessibilityReducedAnimations);
 }
 
-BASE_FEATURE(kAccessibilityFaceGaze,
-             "AccessibilityFaceGaze",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityFaceGazeEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityFaceGaze);
-}
-
 BASE_FEATURE(kAccessibilityReducedAnimationsInKiosk,
              "AccessibilityReducedAnimationsInKiosk",
              base::FEATURE_ENABLED_BY_DEFAULT);

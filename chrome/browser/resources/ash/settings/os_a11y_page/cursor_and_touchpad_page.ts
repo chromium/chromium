@@ -321,7 +321,6 @@ export class SettingsCursorAndTouchpadPageElement extends
   private showFaceGazeRow_: boolean;
   private showShelfNavigationButtonsSettings_: boolean;
   private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
-  private readonly isAccessibilityFaceGazeEnabled_: boolean;
   private readonly isAccessibilityMouseKeysEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
   private hasMouse_: boolean;
@@ -428,8 +427,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   }
 
   private computeShowFaceGazeRow_(): boolean {
-    return !this.isKioskModeActive_ &&
-        loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
+    return !this.isKioskModeActive_;
   }
 
   /**

@@ -559,53 +559,32 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         `Element should be focused for settingId=${setting}'`);
   });
 
-  test(
-      'face control feature does not show if the feature flag is disabled',
-      async () => {
-        loadTimeData.overrideValues({
-          isAccessibilityFaceGazeEnabled: false,
-        });
+  test('face control feature shows', async () => {
+    loadTimeData.overrideValues({isKioskModeActive: false});
 
-        await initPage();
-        const faceGazePageRow = getFaceGazePageRow();
-        assertEquals(null, faceGazePageRow);
-      });
+    await initPage();
+    const faceGazePageRow = getFaceGazePageRow();
+    assertTrue(!!faceGazePageRow);
+    assertTrue(isVisible(faceGazePageRow));
 
-  test(
-      'face control feature shows if the feature flag is enabled', async () => {
-        loadTimeData.overrideValues({
-          isKioskModeActive: false,
-          isAccessibilityFaceGazeEnabled: true,
-        });
+    assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
+  });
 
-        await initPage();
-        const faceGazePageRow = getFaceGazePageRow();
-        assertTrue(!!faceGazePageRow);
-        assertTrue(isVisible(faceGazePageRow));
+  test('can reach face control settings from row', async () => {
+    loadTimeData.overrideValues({isKioskModeActive: false});
 
-        assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
-      });
+    await initPage();
+    const faceGazePageRow = getFaceGazePageRow();
+    assertTrue(!!faceGazePageRow);
+    assertTrue(isVisible(faceGazePageRow));
 
-  test(
-      'can reach face control settings from row when feature flag is enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          isKioskModeActive: false,
-          isAccessibilityFaceGazeEnabled: true,
-        });
+    assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
 
-        await initPage();
-        const faceGazePageRow = getFaceGazePageRow();
-        assertTrue(!!faceGazePageRow);
-        assertTrue(isVisible(faceGazePageRow));
-
-        assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
-
-        // Clicking on it should update the route.
-        faceGazePageRow.click();
-        assertEquals(
-            routes.MANAGE_FACEGAZE_SETTINGS, Router.getInstance().currentRoute);
-      });
+    // Clicking on it should update the route.
+    faceGazePageRow.click();
+    assertEquals(
+        routes.MANAGE_FACEGAZE_SETTINGS, Router.getInstance().currentRoute);
+  });
 
   test('Mouse keys feature disabled.', async () => {
     loadTimeData.overrideValues({

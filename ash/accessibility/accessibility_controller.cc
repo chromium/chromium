@@ -1532,56 +1532,52 @@ void AccessibilityController::RegisterProfilePrefs(
       ColorVisionCorrectionType::kDeuteranomaly,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  if (::features::IsAccessibilityFaceGazeEnabled()) {
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityFaceGazeCursorSpeedUp, kDefaultFaceGazeCursorSpeed,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityFaceGazeCursorSpeedDown,
-        kDefaultFaceGazeCursorSpeed,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityFaceGazeCursorSpeedLeft,
-        kDefaultFaceGazeCursorSpeed,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityFaceGazeCursorSpeedRight,
-        kDefaultFaceGazeCursorSpeed,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityFaceGazeCursorUseAcceleration,
-        kDefaultFaceGazeCursorUseAcceleration,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterDictionaryPref(
-        prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterDictionaryPref(
-        prefs::kAccessibilityFaceGazeGesturesToMacros,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterDictionaryPref(
-        prefs::kAccessibilityFaceGazeGesturesToConfidence,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityFaceGazeCursorControlEnabled, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityFaceGazeActionsEnabled, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityFaceGazeAdjustSpeedSeparately, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityFaceGazeVelocityThreshold,
-        kDefaultFaceGazeVelocityThreshold,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityFaceGazePrecisionClick, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor,
-        kDefaultFaceGazePrecisionClickSpeedFactor,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityFaceGazeCursorSpeedUp, kDefaultFaceGazeCursorSpeed,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityFaceGazeCursorSpeedDown, kDefaultFaceGazeCursorSpeed,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityFaceGazeCursorSpeedLeft, kDefaultFaceGazeCursorSpeed,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityFaceGazeCursorSpeedRight,
+      kDefaultFaceGazeCursorSpeed,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityFaceGazeCursorUseAcceleration,
+      kDefaultFaceGazeCursorUseAcceleration,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kAccessibilityFaceGazeGesturesToMacros,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kAccessibilityFaceGazeGesturesToConfidence,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityFaceGazeCursorControlEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityFaceGazeActionsEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityFaceGazeAdjustSpeedSeparately, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityFaceGazeVelocityThreshold,
+      kDefaultFaceGazeVelocityThreshold,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityFaceGazePrecisionClick, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor,
+      kDefaultFaceGazePrecisionClickSpeedFactor,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   if (::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled()) {
     registry->RegisterBooleanPref(
@@ -2808,22 +2804,21 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateColorCorrectionFromPrefs();
   UpdateCaretBlinkIntervalFromPrefs();
 
-  if (::features::IsAccessibilityFaceGazeEnabled()) {
-    UpdateFaceGazeFromPrefs();
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel,
-        base::BindRepeating(
-            &AccessibilityController::OnFaceGazeSentinelChanged,
-            base::Unretained(this),
-            prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel,
-            prefs::kAccessibilityFaceGazeCursorControlEnabled));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityFaceGazeActionsEnabledSentinel,
-        base::BindRepeating(&AccessibilityController::OnFaceGazeSentinelChanged,
-                            base::Unretained(this),
-                            prefs::kAccessibilityFaceGazeActionsEnabledSentinel,
-                            prefs::kAccessibilityFaceGazeActionsEnabled));
-  }
+  UpdateFaceGazeFromPrefs();
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel,
+      base::BindRepeating(
+          &AccessibilityController::OnFaceGazeSentinelChanged,
+          base::Unretained(this),
+          prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel,
+          prefs::kAccessibilityFaceGazeCursorControlEnabled));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityFaceGazeActionsEnabledSentinel,
+      base::BindRepeating(&AccessibilityController::OnFaceGazeSentinelChanged,
+                          base::Unretained(this),
+                          prefs::kAccessibilityFaceGazeActionsEnabledSentinel,
+                          prefs::kAccessibilityFaceGazeActionsEnabled));
+
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     UpdateFlashNotificationsFromPrefs();
   }
@@ -3058,10 +3053,6 @@ void AccessibilityController::UpdateCursorColorFromPrefs(bool notify) {
 }
 
 void AccessibilityController::UpdateFaceGazeFromPrefs() {
-  if (!::features::IsAccessibilityFaceGazeEnabled()) {
-    return;
-  }
-
   const bool cursor_control_enabled = active_user_prefs_->GetBoolean(
       prefs::kAccessibilityFaceGazeCursorControlEnabled);
   const bool cursor_control_sentinel_enabled = active_user_prefs_->GetBoolean(
@@ -3987,7 +3978,7 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       UpdateColorCorrectionFromPrefs();
       break;
     case FeatureType::kFaceGaze:
-      if (enabled && ::features::IsAccessibilityFaceGazeEnabled()) {
+      if (enabled) {
         if (!facegaze_bubble_controller_) {
           facegaze_bubble_controller_ =
               std::make_unique<FaceGazeBubbleController>(base::BindRepeating(
@@ -4155,8 +4146,7 @@ void AccessibilityController::OnFaceGazeDisableDialogClosed(
 
 void AccessibilityController::UpdateFaceGazeBubble(const std::u16string& text,
                                                    bool is_warning) {
-  if (!facegaze_bubble_controller_ ||
-      !::features::IsAccessibilityFaceGazeEnabled()) {
+  if (!facegaze_bubble_controller_) {
     return;
   }
 

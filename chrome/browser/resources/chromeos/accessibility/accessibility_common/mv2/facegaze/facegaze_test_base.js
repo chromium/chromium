@@ -285,7 +285,6 @@ FaceGazeTestBase = class extends E2ETestBase {
   /** @override */
   get featureList() {
     return {
-      enabled: ['features::kAccessibilityFaceGaze'],
       disabled: ['features::kAccessibilityManifestV3AccessibilityCommon']
     };
   }
