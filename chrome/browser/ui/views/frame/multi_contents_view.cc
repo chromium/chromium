@@ -46,15 +46,8 @@ MultiContentsView::MultiContentsView(
       start_contents_view_inset_(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_right(0)),
       end_contents_view_inset_(
-          gfx::Insets(kSplitViewContentInset).set_top(0).set_left(0)) {
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_split_view_drag_and_drop) {
-    is_drag_and_drop_enabled_ = false;
-  }
-#endif
-
+          gfx::Insets(kSplitViewContentInset).set_top(0).set_left(0)),
+      is_drag_and_drop_enabled_(SupportsSplitViewDragAndDrop()) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
@@ -443,6 +436,26 @@ void MultiContentsView::UpdateContentsBorderAndOverlay() {
     contents_container_view->UpdateBorderAndOverlay(IsInSplitView(), is_active,
                                                     show_inactive_scrim_);
   }
+}
+
+bool MultiContentsView::SupportsSplitViewDragAndDrop() const {
+  // Split view drag and drop is only supported on normal browser types.
+  if (!browser_view_->GetIsNormalType()) {
+    return false;
+  }
+
+  // This is needed because drag and drop is broken on Wayland. Once that is
+  // resolved, this check should be deleted.
+  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return false;
+  }
+#endif
+
+  return true;
 }
 
 BEGIN_METADATA(MultiContentsView)

@@ -89,6 +89,29 @@ class MultiContentsViewBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       HandleDropTargetViewLinkDrop_IsSupported) {
+// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
+
+  EXPECT_TRUE(multi_contents_view().is_drag_and_drop_enabled());
+
+  Browser::CreateParams app_browser_params =
+      Browser::CreateParams::CreateForApp("AppName", true, gfx::Rect(),
+                                          browser()->profile(), false);
+  Browser* app_browser = Browser::Create(app_browser_params);
+
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(app_browser)
+                   ->multi_contents_view()
+                   ->is_drag_and_drop_enabled());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_EndDropTarget) {
 // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
 #if BUILDFLAG(IS_OZONE)
