@@ -35,7 +35,6 @@
 
 namespace blink {
 
-class DocumentStyleSheetCollector;
 class StyleEngine;
 class TreeScope;
 class MediaQueryEvaluator;
@@ -51,15 +50,14 @@ class DocumentStyleSheetCollection final
   void UpdateActiveStyleSheets(StyleEngine&, const MediaQueryEvaluator&);
   void CollectStyleSheets(StyleEngine&,
                           const MediaQueryEvaluator&,
-                          DocumentStyleSheetCollector&);
+                          StyleSheetCollection&);
 
   void Trace(Visitor* visitor) const override {
     TreeScopeStyleSheetCollection::Trace(visitor);
   }
 
  private:
-  void CollectStyleSheetsFromCandidates(StyleEngine&,
-                                        DocumentStyleSheetCollector&);
+  void CollectStyleSheetsFromCandidates(StyleEngine&, StyleSheetCollection&);
 };
 
 }  // namespace blink

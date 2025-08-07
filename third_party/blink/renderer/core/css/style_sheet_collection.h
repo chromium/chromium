@@ -50,9 +50,6 @@ class CORE_EXPORT StyleSheetCollection
     : public GarbageCollected<StyleSheetCollection>,
       public NameClient {
  public:
-  friend class ActiveDocumentStyleSheetCollector;
-  friend class ImportedDocumentStyleSheetCollector;
-
   StyleSheetCollection();
   StyleSheetCollection(const StyleSheetCollection&) = delete;
   StyleSheetCollection& operator=(const StyleSheetCollection&) = delete;

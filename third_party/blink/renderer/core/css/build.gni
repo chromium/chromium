@@ -467,8 +467,6 @@ blink_core_sources_css = [
   "document_style_environment_variables.h",
   "document_style_sheet_collection.cc",
   "document_style_sheet_collection.h",
-  "document_style_sheet_collector.cc",
-  "document_style_sheet_collector.h",
   "dom_window_css.cc",
   "dom_window_css.h",
   "fixed_size_cache.h",

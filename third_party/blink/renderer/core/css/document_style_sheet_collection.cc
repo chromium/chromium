@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
-#include "third_party/blink/renderer/core/css/document_style_sheet_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -51,7 +50,7 @@ DocumentStyleSheetCollection::DocumentStyleSheetCollection(
 
 void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     StyleEngine& engine,
-    DocumentStyleSheetCollector& collector) {
+    StyleSheetCollection& collection) {
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
 
@@ -65,14 +64,14 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
       continue;
     }
 
-    collector.AppendSheetForList(sheet);
+    collection.AppendSheetForList(sheet);
     if (!candidate.CanBeActivated(
             GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {
       continue;
     }
 
     CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
-    collector.AppendActiveStyleSheet(css_sheet);
+    collection.AppendActiveStyleSheet(css_sheet);
   }
 
   const TreeScope& tree_scope = GetTreeScope();
@@ -87,34 +86,32 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
       continue;
     }
     DCHECK_EQ(GetDocument(), sheet->ConstructorDocument());
-    collector.AppendSheetForList(sheet);
-    collector.AppendActiveStyleSheet(sheet);
+    collection.AppendSheetForList(sheet);
+    collection.AppendActiveStyleSheet(sheet);
   }
 }
 
 void DocumentStyleSheetCollection::CollectStyleSheets(
     StyleEngine& engine,
     const MediaQueryEvaluator& medium,
-    DocumentStyleSheetCollector& collector) {
+    StyleSheetCollection& collection) {
   for (auto& sheet :
        GetDocument().GetStyleEngine().InjectedAuthorStyleSheets()) {
-    collector.AppendActiveStyleSheet(sheet.second);
+    collection.AppendActiveStyleSheet(sheet.second);
   }
-  CollectStyleSheetsFromCandidates(engine, collector);
+  CollectStyleSheetsFromCandidates(engine, collection);
   for (CSSStyleSheet* inspector_sheet :
        GetDocument().GetStyleEngine().InspectorStyleSheets()) {
-    collector.AppendActiveStyleSheet(inspector_sheet);
+    collection.AppendActiveStyleSheet(inspector_sheet);
   }
-  collector.FinishCollectingStylesheets(engine, medium);
+  collection.CreateRuleSets(engine, medium);
 }
 
 void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
     StyleEngine& engine,
     const MediaQueryEvaluator& medium) {
-  // StyleSheetCollection is GarbageCollected<>, allocate it on the heap.
   auto* collection = MakeGarbageCollected<StyleSheetCollection>();
-  ActiveDocumentStyleSheetCollector collector(*collection);
-  CollectStyleSheets(engine, medium, collector);
+  CollectStyleSheets(engine, medium, *collection);
   ApplyActiveStyleSheetChanges(*collection);
 }
 
