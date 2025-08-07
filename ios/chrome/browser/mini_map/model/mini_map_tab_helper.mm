@@ -46,9 +46,7 @@ void MiniMapTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
                                           RequestInfo request_info,
                                           PolicyDecisionCallback callback) {
-  if (!ShouldInterceptRequest(
-          request.URL, request_info.transition_type,
-          static_cast<UserInitiated>(request_info.is_user_initiated))) {
+  if (!ShouldInterceptRequest(request.URL, request_info.transition_type)) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
@@ -63,8 +61,7 @@ void MiniMapTabHelper::WebStateDestroyed() {
 
 bool MiniMapTabHelper::ShouldInterceptRequest(
     NSURL* url,
-    ui::PageTransition page_transition,
-    UserInitiated user_initiated) {
+    ui::PageTransition page_transition) {
   if (!mini_map_service_->IsMiniMapEnabled()) {
     // Only intercept request when the feature is enabled.
     return false;
@@ -79,11 +76,6 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
   }
   if (!mini_map_service_->IsSignedIn()) {
     // Only intercept request when the user is signed in.
-    return false;
-  }
-
-  if (!user_initiated) {
-    // Only consider user initiated link clicks.
     return false;
   }
 

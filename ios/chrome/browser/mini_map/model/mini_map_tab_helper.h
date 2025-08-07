@@ -38,10 +38,7 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
 
  private:
   // Whether the navigation to `url` should be intercepted.
-  using UserInitiated = base::StrongAlias<class UserInitiatedTag, bool>;
-  bool ShouldInterceptRequest(NSURL* url,
-                              ui::PageTransition page_transition,
-                              UserInitiated user_initiated);
+  bool ShouldInterceptRequest(NSURL* url, ui::PageTransition page_transition);
 
   // Whether the web_state is currently on Google SRP.
   bool is_on_google_srp_ = false;
