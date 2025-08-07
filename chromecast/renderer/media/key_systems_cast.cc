@@ -71,6 +71,10 @@ SupportedCodecs GetCastEmeSupportedCodecs() {
   codecs |= ::media::EME_CODEC_MPEG_H_AUDIO;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  codecs |= ::media::EME_CODEC_AV1;
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+
   return codecs;
 }
 
