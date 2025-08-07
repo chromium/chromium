@@ -204,9 +204,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 
   // If the user navigates to the options page e.g. by typing in the url, it
   // should not override the currently-open tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), options_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(options_url);
   EXPECT_EQ(4, browser()->tab_strip_model()->count());
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
@@ -486,10 +484,7 @@ class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
   // Adds tab navigated to |url| in the given |browser|.
   tabs::TabInterface* AddTab(const GURL& url) {
     return browser()->tab_strip_model()->GetTabForWebContents(
-        content::WebContents::FromRenderFrameHost(
-            ui_test_utils::NavigateToURLWithDisposition(
-                browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)));
+        content::WebContents::FromRenderFrameHost(NavigateToURLInNewTab(url)));
   }
 
   tab_groups::TabGroupId CreateTabGroup() {

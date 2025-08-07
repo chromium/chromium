@@ -33,17 +33,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiFrameIdMapBrowserTest, ContextIdsAreUnique) {
 
   // Open three frames, two of which point to page1.html.
   content::RenderFrameHost* page1_a_host =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension->GetResourceURL("page1.html"),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      NavigateToURLInNewTab(extension->GetResourceURL("page1.html"));
   ASSERT_TRUE(page1_a_host);
 
   content::RenderFrameHost* page1_b_host =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension->GetResourceURL("page1.html"),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      NavigateToURLInNewTab(extension->GetResourceURL("page1.html"));
   ASSERT_TRUE(page1_b_host);
 
   content::RenderFrameHost* page2_host =

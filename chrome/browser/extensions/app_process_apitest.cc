@@ -93,10 +93,7 @@ class AppApiTest : public extensions::ExtensionApiTest {
     // navigating it.  Either way, app tabs should be considered extension
     // processes, but they have no elevated privileges and thus should not
     // have WebUI bindings.
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), base_url.Resolve("path1/empty.html"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    NavigateToURLInNewTab(base_url.Resolve("path1/empty.html"));
     LOG(INFO) << "Nav 1.";
     EXPECT_TRUE(process_map->Contains(browser()
                                           ->tab_strip_model()
@@ -174,10 +171,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
   // Test both opening a URL in a new tab, and opening a tab and then navigating
   // it.  Either way, app tabs should be considered extension processes, but
   // they have no elevated privileges and thus should not have WebUI bindings.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("path1/empty.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(base_url.Resolve("path1/empty.html"));
   EXPECT_TRUE(process_map->Contains(browser()
                                         ->tab_strip_model()
                                         ->GetWebContentsAt(1)

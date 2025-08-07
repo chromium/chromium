@@ -477,10 +477,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
 
   // Open a new tab. The extension overrides the NTP, so this is the extension's
   // page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://newtab/"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(NavigateToURLInNewTab(GURL("chrome://newtab/")));
 
   EXPECT_EQ("This is a page", content::EvalJs(GetActiveWebContents(),
                                               "document.body.innerText;"));
@@ -831,9 +828,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
     // an extension page will be closed later in the test when the extension
     // reloads, and we need to make sure there's at least one tab left in the
     // browser.
-    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    EXPECT_TRUE(NavigateToURLInNewTab(page_url));
     return result_queue.GetNextResult();
   };
 

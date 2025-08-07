@@ -451,10 +451,7 @@ class CertificateProviderApiMockedExtensionTest
   void SetInterstitialBypass() {
     // Navigate to the test server in a new tab (to not clobber the test
     // fixture setup.
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GetHttpsClientCertUrl(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    NavigateToURLInNewTab(GetHttpsClientCertUrl());
     auto* tab = GetActiveWebContents();
 
     // Proceed through the interstitial to set an SSL bypass for this host.
@@ -923,10 +920,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest,
 
   // Navigate again to the page with the client authentication. The extension
   // gets awakened and handles the request.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetHttpsClientCertUrl(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(GetHttpsClientCertUrl());
   EXPECT_EQ(test_certificate_provider_extension.certificate_request_count(), 2);
   EXPECT_EQ(GetPageTextContent(GetActiveWebContents()),
             "got client cert with fingerprint: " + client_cert_fingerprint);

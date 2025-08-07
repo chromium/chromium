@@ -281,9 +281,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
 
   GURL file_url_2 =
       net::FilePathToFileURL(extension->path().AppendASCII("background.js"));
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), file_url_2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(file_url_2);
   int active_tab_id = get_active_tab_id();
   EXPECT_NE(extension_misc::kUnknownTabId, active_tab_id);
 

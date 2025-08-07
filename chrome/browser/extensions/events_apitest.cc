@@ -528,9 +528,7 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to http://example.com/simple.html.
   const GURL url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  NavigateToURLInNewTab(url);
 
   // TODO(crbug.com/40365717): This should be:
   // EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
