@@ -424,11 +424,6 @@ public class ContentView extends FrameLayout
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
                 && Build.VERSION.SDK_INT <= 38
                 && DeviceInfo.isDesktop()) {
-            if (mPendingTwoFingerSwipeDownEvent != null) {
-                // We expect to receive a two finger swipe event after having received a down from
-                // two finger swipe.
-                assert (event.getClassification() == MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE);
-            }
             if (MotionEventUtils.isTrackpadEvent(event)
                     && event.getClassification() == MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE
                     && forwarder != null) {
