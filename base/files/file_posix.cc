@@ -81,8 +81,17 @@ std::atomic<MacFileFlushMechanism> g_mac_file_flush_mechanism{
 
 #if BUILDFLAG(IS_ANDROID)
 #define OffsetType off64_t
+// In case __USE_FILE_OFFSET64 is not used, the `File` methods in this file need
+// to call lseek64(), pread64() and pwrite64() instead of lseek(), pread() and
+// pwrite();
+#define LSeekFunc lseek64
+#define PReadFunc pread64
+#define PWriteFunc pwrite64
 #else
 #define OffsetType off_t
+#define LSeekFunc lseek
+#define PReadFunc pread
+#define PWriteFunc pwrite
 #endif
 
 static_assert(sizeof(int64_t) == sizeof(OffsetType));
@@ -292,14 +301,8 @@ int64_t File::Seek(Whence whence, int64_t offset) {
   DCHECK(IsValid());
 
   SCOPED_FILE_TRACE_WITH_SIZE("Seek", offset);
-
-#if BUILDFLAG(IS_ANDROID)
-  return lseek64(file_.get(), static_cast<off64_t>(offset),
-                 static_cast<int>(whence));
-#else
-  return lseek(file_.get(), static_cast<off_t>(offset),
-               static_cast<int>(whence));
-#endif
+  return LSeekFunc(file_.get(), static_cast<OffsetType>(offset),
+                   static_cast<int>(whence));
 }
 
 int File::Read(int64_t offset, char* data, int size) {
@@ -314,17 +317,9 @@ int File::Read(int64_t offset, char* data, int size) {
   int bytes_read = 0;
   long rv;
   do {
-#if BUILDFLAG(IS_ANDROID)
-    // In case __USE_FILE_OFFSET64 is not used, we need to call pread64()
-    // instead of pread().
-    rv = HANDLE_EINTR(pread64(file_.get(), data + bytes_read,
-                              static_cast<size_t>(size - bytes_read),
-                              static_cast<off64_t>(offset + bytes_read)));
-#else
-    rv = HANDLE_EINTR(pread(file_.get(), data + bytes_read,
-                            static_cast<size_t>(size - bytes_read),
-                            static_cast<off_t>(offset + bytes_read)));
-#endif
+    rv = HANDLE_EINTR(PReadFunc(file_.get(), data + bytes_read,
+                                static_cast<size_t>(size - bytes_read),
+                                static_cast<OffsetType>(offset + bytes_read)));
     if (rv <= 0) {
       break;
     }
@@ -401,17 +396,10 @@ int File::Write(int64_t offset, const char* data, int size) {
   int bytes_written = 0;
   long rv;
   do {
-#if BUILDFLAG(IS_ANDROID)
-    // In case __USE_FILE_OFFSET64 is not used, we need to call pwrite64()
-    // instead of pwrite().
-    rv = HANDLE_EINTR(pwrite64(file_.get(), data + bytes_written,
-                               static_cast<size_t>(size - bytes_written),
-                               static_cast<off64_t>(offset + bytes_written)));
-#else
-    rv = HANDLE_EINTR(pwrite(file_.get(), data + bytes_written,
-                             static_cast<size_t>(size - bytes_written),
-                             static_cast<off_t>(offset + bytes_written)));
-#endif
+    rv = HANDLE_EINTR(
+        PWriteFunc(file_.get(), data + bytes_written,
+                   static_cast<size_t>(size - bytes_written),
+                   static_cast<OffsetType>(offset + bytes_written)));
     if (rv <= 0) {
       break;
     }
