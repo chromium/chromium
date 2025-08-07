@@ -8,10 +8,7 @@ include_rules = [
   "+media/cdm",
   "+media/media_buildflags.h",
   "+media/mojo/mojom",
-  # safe_dial_device_description_parser_unittest.cc needs DataDecoderService.
-  "+services/data_decoder/data_decoder_service.h",
   "+services/data_decoder/public",
-  "+services/device/public/mojom",
 ]
 
 specific_include_rules = {
