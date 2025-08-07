@@ -40,7 +40,8 @@ class RegistrationRequestParam;
 class NET_EXPORT RegistrationFetcher {
  public:
   using RegistrationCompleteCallback =
-      base::OnceCallback<void(base::expected<SessionParams, SessionError>)>;
+      base::OnceCallback<void(RegistrationFetcher*,
+                              base::expected<SessionParams, SessionError>)>;
 
   using FetcherType =
       base::RepeatingCallback<base::expected<SessionParams, SessionError>()>;
@@ -51,35 +52,36 @@ class NET_EXPORT RegistrationFetcher {
     unexportable_keys::UnexportableKeyId key_id;
   };
 
+  // Creates a fetcher that can be used to do registration or refresh.
+  static std::unique_ptr<RegistrationFetcher> CreateFetcher(
+      RegistrationRequestParam& request_params,
+      unexportable_keys::UnexportableKeyService& key_service,
+      const URLRequestContext* context,
+      const IsolationInfo& isolation_info,
+      std::optional<NetLogSource> net_log_source,
+      const std::optional<url::Origin>& original_request_initiator);
+
   // Creates an unexportable key from the key service, creates a registration
   // JWT and signs it with the new key. Starts the network request to the DBSC
   // registration endpoint with the signed JWT in the header. `callback`
   // is called with the fetch results upon completion.
   // This can fail during key creation, signing and during the network request,
   // and if so it the callback with be called with a std::nullopt.
-  static void StartCreateTokenAndFetch(
-      RegistrationFetcherParam registration_params,
-      unexportable_keys::UnexportableKeyService& key_service,
-      const URLRequestContext* context,
-      const IsolationInfo& isolation_info,
-      std::optional<NetLogSource> net_log_source,
-      const std::optional<url::Origin>& original_request_initiator,
-      RegistrationCompleteCallback callback);
+  virtual void StartCreateTokenAndFetch(
+      RegistrationRequestParam& registration_params,
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          supported_algos,
+      RegistrationCompleteCallback callback) = 0;
 
   // Starts the network request to the DBSC refresh endpoint with existing key
   // id. `callback` is called with the fetch results upon completion. This can
   // fail during signing and during the network request, and if so the callback
   // will be called with a std::nullopt.
-  static void StartFetchWithExistingKey(
-      RegistrationRequestParam request_params,
-      unexportable_keys::UnexportableKeyService& key_service,
-      const URLRequestContext* context,
-      const IsolationInfo& isolation_info,
-      std::optional<net::NetLogSource> net_log_source,
-      const std::optional<url::Origin>& original_request_initiator,
-      RegistrationCompleteCallback callback,
+  virtual void StartFetchWithExistingKey(
+      RegistrationRequestParam& request_params,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          key_id);
+          key_id,
+      RegistrationCompleteCallback callback) = 0;
 
   // Helper function for generating a new binding key and a registration token
   // to bind the key on the server. unexportable_key_service must outlive the
@@ -95,6 +97,8 @@ class NET_EXPORT RegistrationFetcher {
           callback);
 
   static void SetFetcherForTesting(FetcherType* fetcher);
+
+  virtual ~RegistrationFetcher() = default;
 };
 
 }  // namespace net::device_bound_sessions

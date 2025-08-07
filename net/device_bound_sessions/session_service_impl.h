@@ -133,10 +133,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void OnRegistrationComplete(
       OnAccessCallback on_access_callback,
+      RegistrationFetcher* fetcher,
       base::expected<SessionParams, SessionError> params_or_error);
   void OnRefreshRequestCompletion(
       OnAccessCallback on_access_callback,
       SessionKey session_key,
+      RegistrationFetcher* fetcher,
       base::expected<SessionParams, SessionError> params_or_error);
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
@@ -171,12 +173,14 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Helper function encapsulating the processing of registration
   SessionError::ErrorType OnRegistrationCompleteInternal(
       OnAccessCallback on_access_callback,
+      RegistrationFetcher* fetcher,
       base::expected<SessionParams, SessionError> params_or_error);
 
   // Helper function encapsulating the processing of refresh
   SessionError::ErrorType OnRefreshRequestCompletionInternal(
       OnAccessCallback on_access_callback,
       const SessionKey& session_key,
+      RegistrationFetcher* fetcher,
       base::expected<SessionParams, SessionError> params_or_error);
 
   // Callback after unwrapping a session key. `on_access_callback` is
@@ -199,6 +203,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Add a header to `request` indicating which sessions should have
   // applied, but did not due to error conditions.
   void AddDebugHeader(URLRequest* request);
+
+  // Removes `fetcher` from the set of active fetchers. If `fetcher` is
+  // null, does nothing.
+  void RemoveFetcher(RegistrationFetcher* fetcher);
 
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;
@@ -227,6 +235,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Per-site session refresh quota. In order to be robust across
   // session parameter changes, we enforce refresh quota for a site.
   std::map<net::SchemefulSite, std::vector<base::TimeTicks>> refresh_times_;
+
+  // Holds all currently live registration fetchers.
+  std::set<std::unique_ptr<RegistrationFetcher>, base::UniquePtrComparator>
+      registration_fetchers_;
 
   base::WeakPtrFactory<SessionServiceImpl> weak_factory_{this};
 };
