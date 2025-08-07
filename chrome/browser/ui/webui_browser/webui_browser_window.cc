@@ -734,18 +734,15 @@ gfx::Rect WebUIBrowserWindow::GetBounds() const {
 }
 
 bool WebUIBrowserWindow::IsMaximized() const {
-  NOTIMPLEMENTED();
-  return false;
+  return widget_->IsMaximized();
 }
 
 bool WebUIBrowserWindow::IsMinimized() const {
-  NOTIMPLEMENTED();
-  return false;
+  return widget_->IsMinimized();
 }
 
 bool WebUIBrowserWindow::IsFullscreen() const {
-  NOTIMPLEMENTED();
-  return false;
+  return widget_->IsFullscreen();
 }
 
 gfx::Rect WebUIBrowserWindow::GetRestoredBounds() const {
@@ -759,15 +756,15 @@ ui::mojom::WindowShowState WebUIBrowserWindow::GetRestoredState() const {
 }
 
 void WebUIBrowserWindow::Maximize() {
-  NOTIMPLEMENTED();
+  widget_->Maximize();
 }
 
 void WebUIBrowserWindow::Minimize() {
-  NOTIMPLEMENTED();
+  widget_->Minimize();
 }
 
 void WebUIBrowserWindow::Restore() {
-  NOTIMPLEMENTED();
+  widget_->Restore();
 }
 
 void WebUIBrowserWindow::DestroyBrowser() {
