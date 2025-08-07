@@ -6,13 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_LAYOUT_MASONRY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-class GridLayoutData;
 
 class CORE_EXPORT LayoutMasonry : public LayoutBlock {
  public:
@@ -29,6 +28,16 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
       GridTrackSizingDirection track_direction) const;
   LayoutUnit GridGap(GridTrackSizingDirection track_direction) const;
   LayoutUnit MasonryItemOffset(GridTrackSizingDirection track_direction) const;
+  const GridPlacementData& CachedPlacementData() const;
+  void SetCachedPlacementData(GridPlacementData&& placement_data);
+
+  // Helper methods for DevTools inspector highlighting.
+  wtf_size_t AutoRepeatCountForDirection(
+      GridTrackSizingDirection direction) const;
+  wtf_size_t ExplicitGridStartForDirection(
+      GridTrackSizingDirection direction) const;
+  wtf_size_t ExplicitGridEndForDirection(
+      GridTrackSizingDirection direction) const;
 
   const GridLayoutData* LayoutData() const;
 
@@ -37,6 +46,10 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
     NOT_DESTROYED();
     return true;
   }
+
+  // Caches masonry placement data for DevTools inspector highlighting.
+  // This avoids recomputing during inspector queries.
+  std::optional<GridPlacementData> cached_placement_data_;
 
   // TODO(almaher): There are a bunch of helpers we are missing that are in
   // LayoutGrid. Do we need those, too, or should we be based on LayoutGrid

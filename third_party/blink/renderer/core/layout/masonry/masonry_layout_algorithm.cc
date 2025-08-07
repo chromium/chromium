@@ -7,12 +7,14 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_baseline_accumulator.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_masonry.h"
 #include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 
 namespace blink {
@@ -754,6 +756,18 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
       line_resolver, masonry_items, needs_intrinsic_track_size,
       sizing_constraint, line_resolver.AutoRepetitions(grid_axis_direction),
       start_offset);
+
+  // Cache data for DevTools inspector highlighting.
+  if (!needs_intrinsic_track_size) {
+    GridPlacementData placement_data(line_resolver);
+    if (grid_axis_direction == kForColumns) {
+      placement_data.column_start_offset = start_offset;
+    } else {
+      placement_data.row_start_offset = start_offset;
+    }
+    To<LayoutMasonry>(Node().GetLayoutBox())
+        ->SetCachedPlacementData(std::move(placement_data));
+  }
 
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(
