@@ -33,7 +33,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     private ObservableSupplier<Profile> mProfileSupplier;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
-    private ExtensionsMenuButtonCoordinator mExtensionsMenuButtonCoordinator;
+    private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
     private @Nullable Profile mCurrentProfile;
 
@@ -58,8 +58,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         windowAndroid,
                         profileSupplier,
                         currentTabSupplier);
-        mExtensionsMenuButtonCoordinator =
-                new ExtensionsMenuButtonCoordinator(
+        mExtensionsMenuCoordinator =
+                new ExtensionsMenuCoordinator(
                         context,
                         container.findViewById(R.id.extensions_menu_button),
                         container.findViewById(R.id.extensions_divider),
@@ -71,7 +71,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     @Override
     public void destroy() {
-        mExtensionsMenuButtonCoordinator.destroy();
+        mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
         mProfileSupplier.removeObserver(mProfileUpdatedCallback);
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
@@ -107,6 +107,6 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     @Override
     public void updateMenuButtonBackground(int backgroundResource) {
-        mExtensionsMenuButtonCoordinator.updateButtonBackground(backgroundResource);
+        mExtensionsMenuCoordinator.updateButtonBackground(backgroundResource);
     }
 }

@@ -246,7 +246,6 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopup.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsUpdateHelper.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarCoordinatorImpl.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuItemProperties.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuItemViewBinder.java",
@@ -513,7 +512,6 @@ robolectric_library("junit") {
     sources += [
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediatorTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsUpdateHelperTest.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinatorTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinatorTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuMediatorTest.java",
     ]
