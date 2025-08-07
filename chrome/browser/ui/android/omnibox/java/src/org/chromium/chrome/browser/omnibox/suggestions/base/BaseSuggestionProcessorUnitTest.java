@@ -38,17 +38,21 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.List;
 import java.util.Optional;
 
 /** Tests for {@link BaseSuggestionViewProcessor}. */
@@ -126,6 +130,18 @@ public class BaseSuggestionProcessorUnitTest {
                         .setIsSearch(isSearch)
                         .setUrl(url)
                         .setHasTabMatch(hasTabMatch)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+    }
+
+    private void createSuggestionWithActions(
+            int type, boolean isSearch, GURL url, List<OmniboxAction> actions) {
+        mSuggestion =
+                new AutocompleteMatchBuilder(type)
+                        .setIsSearch(isSearch)
+                        .setUrl(url)
+                        .setActions(actions)
                         .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
@@ -354,6 +370,79 @@ public class BaseSuggestionProcessorUnitTest {
 
             var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
             Assert.assertEquals(null, actions);
+        }
+    }
+
+    @Test
+    public void addActionButtonIfAvailable() {
+        // No action button.
+        {
+            createSuggestion(
+                    OmniboxSuggestionType.OPEN_TAB,
+                    /* isSearch= */ false,
+                    /* hasTabMatch= */ false,
+                    TEST_URL);
+            var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+            Assert.assertEquals(null, actions);
+        }
+
+        // No action button.
+        {
+            createSuggestionWithActions(
+                    OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED,
+                    /* isSearch= */ true,
+                    TEST_URL,
+                    List.of(
+                            new OmniboxActionInSuggest(
+                                    0,
+                                    "hint",
+                                    "accessibility",
+                                    SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                    "https://google.com",
+                                    /* showAsActionButton= */ false)));
+
+            var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+            Assert.assertEquals(null, actions);
+        }
+
+        // One action button is added.
+        {
+            createSuggestionWithActions(
+                    OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED,
+                    /* isSearch= */ true,
+                    TEST_URL,
+                    List.of(
+                            new OmniboxActionInSuggest(
+                                    0,
+                                    "hint",
+                                    "accessibility",
+                                    SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                    "https://google.com",
+                                    /* showAsActionButton= */ false),
+                            new OmniboxActionInSuggest(
+                                    0,
+                                    "hint2",
+                                    "accessibility2",
+                                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                                    "https://google.com",
+                                    /* showAsActionButton= */ true),
+                            new OmniboxActionInSuggest(
+                                    0,
+                                    "hint3",
+                                    "accessibility3",
+                                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                                    "https://google.com",
+                                    /* showAsActionButton= */ true)));
+
+            var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+            Assert.assertEquals(1, actions.size());
+
+            var action = actions.get(0);
+
+            Assert.assertEquals("accessibility2", action.accessibilityDescription);
+            Assert.assertEquals(
+                    R.drawable.search_spark_black_24dp,
+                    shadowOf(action.icon.drawable).getCreatedFromResId());
         }
     }
 }

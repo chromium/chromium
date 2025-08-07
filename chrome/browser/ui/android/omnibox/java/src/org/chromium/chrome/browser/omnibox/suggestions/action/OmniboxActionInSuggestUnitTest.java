@@ -29,6 +29,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -47,7 +48,8 @@ public class OmniboxActionInSuggestUnitTest {
             List.of(
                     SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                     SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE,
-                    SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE);
+                    SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE);
     private static final SuggestTemplateInfo.TemplateAction EMPTY_INFO =
             SuggestTemplateInfo.TemplateAction.getDefaultInstance();
 
@@ -60,7 +62,13 @@ public class OmniboxActionInSuggestUnitTest {
     public void creation_usesCustomIconForKnownActionTypes() {
         for (var kesemActionType : sKnownActionTypes) {
             var action =
-                    new OmniboxActionInSuggest(0, "hint", "accessibility", kesemActionType, "");
+                    new OmniboxActionInSuggest(
+                            0,
+                            "hint",
+                            "accessibility",
+                            kesemActionType,
+                            "",
+                            /* showAsActionButton= */ false);
             assertNotEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
@@ -71,7 +79,12 @@ public class OmniboxActionInSuggestUnitTest {
             if (sKnownActionTypes.contains(kesemActionType.getNumber())) continue;
             var action =
                     new OmniboxActionInSuggest(
-                            0, "hint", "accessibility", kesemActionType.getNumber(), "");
+                            0,
+                            "hint",
+                            "accessibility",
+                            kesemActionType.getNumber(),
+                            "",
+                            /* showAsActionButton= */ false);
             assertEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
@@ -82,7 +95,12 @@ public class OmniboxActionInSuggestUnitTest {
                 AssertionError.class,
                 () ->
                         new OmniboxActionInSuggest(
-                                0, null, "", SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE, ""));
+                                0,
+                                null,
+                                "",
+                                SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
+                                "",
+                                /* showAsActionButton= */ false));
     }
 
     @Test
@@ -91,7 +109,12 @@ public class OmniboxActionInSuggestUnitTest {
                 AssertionError.class,
                 () ->
                         new OmniboxActionInSuggest(
-                                0, "", "", SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE, ""));
+                                0,
+                                "",
+                                "",
+                                SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
+                                "",
+                                /* showAsActionButton= */ false));
     }
 
     @Test
@@ -111,7 +134,8 @@ public class OmniboxActionInSuggestUnitTest {
                                         "hint",
                                         "accessibility",
                                         null,
-                                        R.style.TextAppearance_ChipText) {
+                                        R.style.TextAppearance_ChipText,
+                                        /* showAsActionButton= */ false) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));
@@ -126,14 +150,16 @@ public class OmniboxActionInSuggestUnitTest {
                                 "hint",
                                 "accessibility",
                                 SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
-                                ""));
+                                "",
+                                /* showAsActionButton= */ false));
     }
 
     /** Create Action in Suggest with a supplied definition. */
     private OmniboxAction buildActionInSuggest(
             SuggestTemplateInfo.TemplateAction.ActionType type, Intent intent) {
         var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
-        return new OmniboxActionInSuggest(0, "wink", "accessibility", type.getNumber(), uri);
+        return new OmniboxActionInSuggest(
+                0, "wink", "accessibility", type.getNumber(), uri, /* showAsActionButton= */ false);
     }
 
     @Test
@@ -279,6 +305,31 @@ public class OmniboxActionInSuggestUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
+
+        verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
+
+        var url = mUrlCaptor.getValue();
+        assertNotNull(url);
+        assertEquals(UrlConstants.CHROME_DINO_URL, url);
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void executeActionInSuggest_executeAim() {
+        var intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS);
+
+        buildActionInSuggest(SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM, intent)
+                .execute(mDelegate);
+
+        verify(mDelegate, times(1)).isIncognito();
+
+        histogramWatcher.assertExpected();
 
         verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
 

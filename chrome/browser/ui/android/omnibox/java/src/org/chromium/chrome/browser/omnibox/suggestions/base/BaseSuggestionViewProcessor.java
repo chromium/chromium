@@ -256,6 +256,29 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         if (suggestion.isSearchSuggestion()) {
             fetchImage(model, suggestion.getImageUrl());
         }
+
+        addActionButtonIfAvailable(suggestion, model, position);
+    }
+
+    private void addActionButtonIfAvailable(
+            AutocompleteMatch suggestion, PropertyModel model, int position) {
+        for (var action : suggestion.getActions()) {
+            if (!action.showAsActionButton) {
+                continue;
+            }
+            setActionButtons(
+                    model,
+                    List.of(
+                            new Action(
+                                    OmniboxDrawableState.forSmallIcon(
+                                            mContext, action.icon.iconRes, true),
+                                    action.accessibilityHint,
+                                    () -> {
+                                        mSuggestionHost.onOmniboxActionClicked(action, position);
+                                    })));
+            // Only one action button is supported.
+            return;
+        }
     }
 
     @Override

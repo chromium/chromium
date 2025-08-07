@@ -72,7 +72,8 @@ public class ActionChipsProcessorUnitTest {
                 "hint",
                 "accessibility hint",
                 OmniboxAction.DEFAULT_ICON,
-                textAppearance) {
+                textAppearance,
+                /* showAsActionButton= */ false) {
             @Override
             public void execute(OmniboxActionDelegate delegate) {}
         };

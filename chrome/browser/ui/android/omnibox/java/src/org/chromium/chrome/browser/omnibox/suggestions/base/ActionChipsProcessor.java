@@ -67,25 +67,35 @@ public class ActionChipsProcessor {
             return;
         }
 
-        var actionChipList = suggestion.getActions();
+        var actions = suggestion.getActions();
         var modelList = new ModelList();
 
-        for (OmniboxAction chip : actionChipList) {
+        for (OmniboxAction action : actions) {
+            // Skip the action that is shown as button, instead of chip.
+            if (action.showAsActionButton) {
+                continue;
+            }
+
             final var chipModel =
                     new PropertyModel.Builder(ChipProperties.ALL_KEYS)
-                            .with(ChipProperties.TEXT, chip.hint)
-                            .with(ChipProperties.CONTENT_DESCRIPTION, chip.accessibilityHint)
+                            .with(ChipProperties.TEXT, action.hint)
+                            .with(ChipProperties.CONTENT_DESCRIPTION, action.accessibilityHint)
                             .with(ChipProperties.ENABLED, true)
-                            .with(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position))
-                            .with(ChipProperties.ICON, chip.icon.iconRes)
-                            .with(ChipProperties.APPLY_ICON_TINT, chip.icon.tintWithTextColor)
+                            .with(
+                                    ChipProperties.CLICK_HANDLER,
+                                    m -> executeAction(action, position))
+                            .with(ChipProperties.ICON, action.icon.iconRes)
+                            .with(ChipProperties.APPLY_ICON_TINT, action.icon.tintWithTextColor)
                             .with(
                                     ChipProperties.PRIMARY_TEXT_APPEARANCE,
-                                    chip.primaryTextAppearance)
+                                    action.primaryTextAppearance)
                             .build();
 
             modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
-            mVisibleActions.put(chip, position);
+            mVisibleActions.put(action, position);
+        }
+        if (modelList.size() == 0) {
+            return;
         }
 
         model.set(ActionChipsProperties.ACTION_CHIPS, modelList);

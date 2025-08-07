@@ -157,7 +157,9 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
     int enter_starter_pack_id_;
   };
 
-  OmniboxAction(LabelStrings strings, GURL url);
+  OmniboxAction(LabelStrings strings,
+                GURL url,
+                bool show_as_action_button = false);
 
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
@@ -214,6 +216,9 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
 
   // For navigation Actions, this holds the destination URL. Otherwise, empty.
   GURL url_;
+
+  // Whether to show as action button.
+  bool show_as_action_button_;
 
 #if BUILDFLAG(IS_ANDROID)
   mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
