@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 
 /** Helper for recording metrics related to the share sheet link toggle feature. */
+@NullMarked
 final class ShareSheetLinkToggleMetricsHelper {
     static final class LinkToggleMetricsDetails {
         @LinkToggleState int mLinkToggleState;

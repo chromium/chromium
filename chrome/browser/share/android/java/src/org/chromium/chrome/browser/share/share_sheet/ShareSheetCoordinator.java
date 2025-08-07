@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.share.share_sheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
@@ -20,6 +21,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -61,7 +63,7 @@ public class ShareSheetCoordinator
                 ConfigurationChangedObserver,
                 View.OnLayoutChangeListener {
     private final BottomSheetController mBottomSheetController;
-    private final Supplier<Tab> mTabProvider;
+    private final Supplier<@Nullable Tab> mTabProvider;
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
     private final Callback<Tab> mPrintTabCallback;
     private final boolean mIsIncognito;
@@ -75,11 +77,11 @@ public class ShareSheetCoordinator
     private boolean mIsMultiWindow;
     private Set<Integer> mContentTypes;
     private Activity mActivity;
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private ShareParams mShareParams;
     private ShareSheetBottomSheetContent mBottomSheet;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
     private ChromeShareExtras mChromeShareExtras;
     private LinkToTextCoordinator mLinkToTextCoordinator;
     private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
@@ -104,7 +106,7 @@ public class ShareSheetCoordinator
     public ShareSheetCoordinator(
             BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            Supplier<Tab> tabProvider,
+            Supplier<@Nullable Tab> tabProvider,
             Callback<Tab> printTab,
             LargeIconBridge iconBridge,
             boolean isIncognito,
@@ -120,7 +122,7 @@ public class ShareSheetCoordinator
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
                     @Override
-                    public void onSheetContentChanged(BottomSheetContent bottomSheet) {
+                    public void onSheetContentChanged(@Nullable BottomSheetContent bottomSheet) {
                         super.onSheetContentChanged(bottomSheet);
                         if (mBottomSheet == null) {
                             return;
@@ -234,7 +236,7 @@ public class ShareSheetCoordinator
     }
 
     @VisibleForTesting
-    void updateShareSheet(boolean saveLastUsed, Runnable onUpdateFinished) {
+    void updateShareSheet(boolean saveLastUsed, @Nullable Runnable onUpdateFinished) {
         List<PropertyModel> firstPartyApps =
                 createFirstPartyPropertyModels(
                         mActivity, mShareParams, mChromeShareExtras, mContentTypes);
@@ -300,7 +302,7 @@ public class ShareSheetCoordinator
             }
             mLinkToTextCoordinator =
                     new LinkToTextCoordinator(
-                            mTabProvider.get(),
+                            assumeNonNull(mTabProvider.get()),
                             this,
                             chromeShareExtras,
                             shareStartTime,

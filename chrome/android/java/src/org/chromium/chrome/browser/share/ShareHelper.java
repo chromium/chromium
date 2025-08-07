@@ -140,7 +140,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * Convenience method to create an Intent to retrieve all the apps that support sharing {@code
      * fileContentType}.
      */
-    public static List<ResolveInfo> getCompatibleAppsForSharingFiles(String fileContentType) {
+    public static List<ResolveInfo> getCompatibleAppsForSharingFiles(
+            @Nullable String fileContentType) {
         return PackageManagerUtils.queryIntentActivities(
                 getShareFileAppCompatibilityIntent(fileContentType),
                 PackageManager.MATCH_DEFAULT_ONLY | PackageManager.GET_RESOLVED_FILTER);
@@ -266,7 +267,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * Convenience method to create an Intent to retrieve all the apps that support sharing {@code
      * fileContentType}.
      */
-    private static Intent getShareFileAppCompatibilityIntent(String fileContentType) {
+    private static Intent getShareFileAppCompatibilityIntent(@Nullable String fileContentType) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         intent.setType(fileContentType);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.android_share_sheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -253,7 +255,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                         chromeShareExtras,
                         SystemClock.elapsedRealtime(),
                         params.getUrl(),
-                        params.getText(),
+                        assumeNonNull(params.getText()),
                         /* includeOriginInTitle= */ true);
         mLinkToTextCoordinator.shareLinkToText();
         return true;

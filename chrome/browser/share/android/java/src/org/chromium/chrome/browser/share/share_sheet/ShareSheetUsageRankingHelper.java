@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
@@ -75,7 +76,7 @@ public class ShareSheetUsageRankingHelper {
 
     // Variables used for testing
     private boolean mDisableBridgeForTesting;
-    private List<String> mTargetsForTesting;
+    private @Nullable List<String> mTargetsForTesting;
 
     /**
      * Constructs a new ShareSheetUsageRankingHelper.
@@ -84,10 +85,10 @@ public class ShareSheetUsageRankingHelper {
      * @param bottomSheet The bottomSheet for the current activity.
      * @param shareStartTime The start time of the current share.
      * @param linkGenerationStatusForMetrics User action of sharing text from failed link-to-text
-     *         generation, sharing text from successful link-to-text generation, or sharing
-     *         link-to-text.
+     *     generation, sharing text from successful link-to-text generation, or sharing
+     *     link-to-text.
      * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} to record link toggle
-     *         metrics, and contains the {@link LinkToggleState} to update to.
+     *     metrics, and contains the {@link LinkToggleState} to update to.
      * @param propertyModelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param profile The current profile of the User.
      */
@@ -248,7 +249,7 @@ public class ShareSheetUsageRankingHelper {
             Activity activity,
             ShareParams params,
             boolean saveLastUsed,
-            List<String> targets) {
+            @Nullable List<String> targets) {
         // Build PropertyModels for all the ResolveInfos that correspond to
         // actual targets, in the order that we're going to show them.
         List<PropertyModel> models = new ArrayList<>();

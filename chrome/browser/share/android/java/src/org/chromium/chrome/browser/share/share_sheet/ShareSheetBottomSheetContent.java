@@ -25,8 +25,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -86,7 +85,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private ScrollView mContentScrollableView;
     private @LinkGeneration int mLinkGenerationState;
     private @LinkToggleState Integer mLinkToggleState;
-    private Toast mToast;
+    private @Nullable Toast mToast;
 
     /**
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
@@ -152,7 +151,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             List<PropertyModel> firstPartyModels,
             List<PropertyModel> thirdPartyModels,
             Set<Integer> contentTypes,
-            String fileContentType,
+            @Nullable String fileContentType,
             @DetailedContentType int detailedContentType,
             ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator) {
         createPreview(
@@ -265,7 +264,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
     private void createPreview(
             Set<Integer> contentTypes,
-            String fileContentType,
+            @Nullable String fileContentType,
             @DetailedContentType int detailedContentType,
             ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator) {
         // Default preview is to show title + url.
@@ -326,7 +325,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                 mActivity, imageUri, this::setImageForPreviewFromBitmap);
     }
 
-    private void setImageForPreviewFromBitmap(Bitmap bitmap) {
+    private void setImageForPreviewFromBitmap(@Nullable Bitmap bitmap) {
         // If no image preview available, don't show a preview.
         if (bitmap == null) return;
 
@@ -341,7 +340,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         titleView.setTextAppearance(resId);
     }
 
-    private void setTextForPreview(String title, String subtitle) {
+    private void setTextForPreview(@Nullable String title, @Nullable String subtitle) {
         TextView titleView = this.getContentView().findViewById(R.id.title_preview);
         titleView.setText(title);
         TextView subtitleView = this.getContentView().findViewById(R.id.subtitle_preview);
@@ -574,7 +573,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         centerIcon(imageView);
     }
 
-    private String getFileType(String mimeType) {
+    private String getFileType(@Nullable String mimeType) {
         if (!mimeType.contains("/")) {
             return "";
         }
@@ -635,7 +634,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -676,7 +675,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.sharing_hub_content_description);
     }
 
