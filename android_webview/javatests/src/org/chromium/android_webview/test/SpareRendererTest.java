@@ -20,6 +20,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
@@ -96,6 +97,9 @@ public class SpareRendererTest extends AwParameterizedTest {
     @MediumTest
     @OnlyRunIn(MULTI_PROCESS)
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        "enable-features=SpareRendererProcessPriority:not-perceptible-binding/true"
+    })
     public void testProcessBindingState() throws Throwable {
         mRule.startBrowserProcess();
         assertEquals(0, RenderProcessHostUtils.getCurrentRenderProcessCount());
@@ -110,11 +114,12 @@ public class SpareRendererTest extends AwParameterizedTest {
         // ready to check the binding state.
         AwActivityTestRule.pollInstrumentationThread(
                 () -> RenderProcessHostUtils.isSpareRenderReady());
-        assertEquals(
-                ChildBindingState.VISIBLE, RenderProcessHostUtils.getSpareRenderBindingState());
 
-        // The spare renderer binding is reduced to waived if not used in one second.
+        // The binding state is recalculated multiple times after the renderer is launched. Wait
+        // for one second for the binding state to settle down.
         Thread.sleep(1100);
-        assertEquals(ChildBindingState.WAIVED, RenderProcessHostUtils.getSpareRenderBindingState());
+        assertEquals(
+                ChildBindingState.NOT_PERCEPTIBLE,
+                RenderProcessHostUtils.getSpareRenderBindingState());
     }
 }
