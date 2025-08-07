@@ -2495,6 +2495,29 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
   EXPECT_TRUE(bucket->decommitted_slot_spans_head);
 }
 
+TEST_P(PartitionAllocTest, CheckMetadataIntegrityPass) {
+  char* const small_ptr =
+      static_cast<char*>(allocator.root()->Alloc(kTestAllocSize));
+  ASSERT_TRUE(small_ptr);
+
+  // Should not crash.
+  PartitionRoot::CheckMetadataIntegrity(small_ptr);
+  PartitionRoot::CheckMetadataIntegrity(small_ptr + kTestAllocSize - 1);
+
+  allocator.root()->Free(small_ptr);
+
+  constexpr size_t kDirectMapSize = BucketIndexLookup::kMaxBucketSize + 1;
+  char* const large_ptr =
+      static_cast<char*>(allocator.root()->Alloc(kDirectMapSize));
+  ASSERT_TRUE(large_ptr);
+
+  // Should not crash.
+  PartitionRoot::CheckMetadataIntegrity(large_ptr);
+  PartitionRoot::CheckMetadataIntegrity(large_ptr + kDirectMapSize - 1);
+
+  allocator.root()->Free(large_ptr);
+}
+
 #if PA_USE_DEATH_TESTS()
 
 // Unit tests that check if an allocation fails in "return null" mode,
