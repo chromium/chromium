@@ -36,7 +36,7 @@ class TabModelObserver {
 
   // Called right before all |tabs| are destroyed.
   virtual void OnFinishingMultipleTabClosure(
-      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs,
+      const std::vector<TabAndroid*>& tabs,
       bool canRestore);
 
   // Called before a |tab| is added to the TabModel.
@@ -56,8 +56,7 @@ class TabModelObserver {
                                  TabModel::TabClosingSource source);
 
   // Called when all |tabs| closure is undone.
-  virtual void OnTabCloseUndone(
-      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
+  virtual void OnTabCloseUndone(const std::vector<TabAndroid*>& tabs);
 
   // Called when a |tab| closure is undone.
   virtual void TabClosureUndone(TabAndroid* tab);

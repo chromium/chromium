@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 
+class TabAndroid;
 class TabModel;
 class TabAndroid;
 
@@ -39,53 +40,35 @@ class TabModelObserverJniBridge {
 
   // The following functions are called by JNI.
 
-  void DidSelectTab(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jtab,
-                    int type,
-                    int last_id);
+  void DidSelectTab(JNIEnv* env, TabAndroid* tab, int type, int last_id);
 
-  void WillCloseTab(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jtab);
+  void WillCloseTab(JNIEnv* env, TabAndroid* tab);
 
-  void OnFinishingTabClosure(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& jtab,
-                             int source);
+  void OnFinishingTabClosure(JNIEnv* env, TabAndroid* tab, int source);
 
-  void OnFinishingMultipleTabClosure(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& jtabs,
-      bool canRestore);
+  void OnFinishingMultipleTabClosure(JNIEnv* env,
+                                     const std::vector<TabAndroid*>& tabs,
+                                     bool can_restore);
 
-  void WillAddTab(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jtab,
-                  int type);
+  void WillAddTab(JNIEnv* env, TabAndroid* tab, int type);
 
-  void DidAddTab(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& jtab,
-                 int type);
+  void DidAddTab(JNIEnv* env, TabAndroid* tab, int type);
 
-  void DidMoveTab(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jtab,
-                  int new_index,
-                  int cur_index);
+  void DidMoveTab(JNIEnv* env, TabAndroid* tab, int new_index, int cur_index);
 
   void OnTabClosePending(JNIEnv* env,
                          const std::vector<TabAndroid*>& tabs,
                          int source);
 
-  void TabClosureUndone(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jtab);
+  void TabClosureUndone(JNIEnv* env, TabAndroid* tab);
 
-  void OnTabCloseUndone(JNIEnv* env,
-                        const base::android::JavaParamRef<jobjectArray>& jtabs);
+  void OnTabCloseUndone(JNIEnv* env, const std::vector<TabAndroid*>& tabs);
 
-  void TabClosureCommitted(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& jtab);
+  void TabClosureCommitted(JNIEnv* env, TabAndroid* tab);
 
   void AllTabsClosureCommitted(JNIEnv* env);
 
-  void TabRemoved(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jtab);
+  void TabRemoved(JNIEnv* env, TabAndroid* tab);
 
   void AddObserver(TabModelObserver* observer);
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer);

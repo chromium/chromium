@@ -21,7 +21,7 @@ void TabModelObserver::OnFinishingTabClosure(
     TabModel::TabClosingSource source) {}
 
 void TabModelObserver::OnFinishingMultipleTabClosure(
-    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs,
+    const std::vector<TabAndroid*>& tabs,
     bool canRestore) {}
 
 void TabModelObserver::WillAddTab(TabAndroid* tab,
@@ -39,8 +39,7 @@ void TabModelObserver::OnTabClosePending(const std::vector<TabAndroid*>& tabs,
 
 void TabModelObserver::TabClosureUndone(TabAndroid* tab) {}
 
-void TabModelObserver::OnTabCloseUndone(
-    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs) {}
+void TabModelObserver::OnTabCloseUndone(const std::vector<TabAndroid*>& tabs) {}
 
 void TabModelObserver::TabClosureCommitted(TabAndroid* tab) {}
 
