@@ -316,6 +316,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                             AuthenticatorConstants.CAPABILITY_CONDITIONAL_CREATE, false));
             capabilities.add(
                     createWebAuthnClientCapability(AuthenticatorConstants.CAPABILITY_UVPAA, false));
+            capabilities.add(
+                    createWebAuthnClientCapability(
+                            AuthenticatorConstants.CAPABILITY_IMMEDIATE_GET, false));
             callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
             return;
         }
@@ -339,6 +342,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_CONDITIONAL_CREATE,
                                             isUvpaa && conditionalCreateEnabled));
+                            capabilities.add(
+                                    createWebAuthnClientCapability(
+                                            AuthenticatorConstants.CAPABILITY_IMMEDIATE_GET,
+                                            DeviceFeatureMap.isEnabled(
+                                                            DeviceFeatureList
+                                                                    .WEBAUTHN_IMMEDIATE_GET)
+                                                    && isUvpaa));
                             callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
                         });
     }

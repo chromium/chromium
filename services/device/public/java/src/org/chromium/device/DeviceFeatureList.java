@@ -28,6 +28,7 @@ public abstract class DeviceFeatureList {
             "BatteryStatusManagerBroadcastReceiverInBackground";
     public static final String WEBAUTHN_PASSKEY_UPGRADE = "WebAuthenticationPasskeyUpgrade";
     public static final String BLUETOOTH_RFCOMM_ANDROID = "BluetoothRfcommAndroid";
+    public static final String WEBAUTHN_IMMEDIATE_GET = "WebAuthenticationImmediateGet";
 
     public static final MutableFlagWithSafeDefault sGmsCoreLocationRequestParamOverride =
             newMutableFlagWithSafeDefault("GmsCoreLocationRequestParamOverride", false);
