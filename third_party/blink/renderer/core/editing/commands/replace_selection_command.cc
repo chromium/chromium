@@ -1509,45 +1509,21 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   bool plain_text_fragment = IsPlainTextMarkup(inserted_nodes.RefNode());
 
-  if (RuntimeEnabledFeatures::EditingFastRichReplaceEnabled()) {
-    for (Node* plain_node = node; plain_text_fragment && plain_node;
-         plain_node = plain_node->nextSibling()) {
-      plain_text_fragment = IsPlainTextMarkup(plain_node);
+  for (Node* plain_node = node; plain_text_fragment && plain_node;
+       plain_node = plain_node->nextSibling()) {
+    plain_text_fragment = IsPlainTextMarkup(plain_node);
+  }
+  Node* ref_node = inserted_nodes.RefNode();
+  if (Node* last_node = fragment.LastChild()) {
+    DCHECK(node);
+    InsertNodeListAfter(*node, *ref_node, editing_state);
+    if (editing_state->IsAborted()) {
+      return;
     }
-    Node* ref_node = inserted_nodes.RefNode();
-    if (Node* last_node = fragment.LastChild()) {
-      DCHECK(node);
-      InsertNodeListAfter(*node, *ref_node, editing_state);
-      if (editing_state->IsAborted()) {
-        return;
-      }
-      DCHECK(!fragment.FirstChild()) << fragment.FirstChild();
-      inserted_nodes.RespondToNodeInsertion(*node);
-      inserted_nodes.RespondToNodeInsertion(*last_node);
-      inserted_nodes.SetRefNode(last_node);
-    }
-  } else {
-    while (node) {
-      Node* next = node->nextSibling();
-      fragment.RemoveNode(node);
-      InsertNodeAfter(node, inserted_nodes.RefNode(), editing_state);
-      if (editing_state->IsAborted()) {
-        return;
-      }
-      inserted_nodes.RespondToNodeInsertion(*node);
-
-      // Synchronous events (bug 22634) may have already removed the inserted
-      // content
-      if (!node->isConnected()) {
-        return;
-      }
-
-      inserted_nodes.SetRefNode(node);
-      if (node && plain_text_fragment) {
-        plain_text_fragment = IsPlainTextMarkup(node);
-      }
-      node = next;
-    }
+    DCHECK(!fragment.FirstChild()) << fragment.FirstChild();
+    inserted_nodes.RespondToNodeInsertion(*node);
+    inserted_nodes.RespondToNodeInsertion(*last_node);
+    inserted_nodes.SetRefNode(last_node);
   }
 
   if (IsRichlyEditablePosition(insertion_pos)) {

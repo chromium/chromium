@@ -1968,11 +1968,6 @@
       status: "stable",
     },
     {
-      // crbug.com/341564372
-      name: "EditingFastRichReplace",
-      status: "stable",
-    },
-    {
       name: "ElementCapture",
       status: {"Android": "", "default": "stable"},
     },
@@ -4858,7 +4853,6 @@
       // crbug.com/414858401
       name: "TextareaLineEndingsAsBr",
       status: "stable",
-      depends_on: ["EditingFastRichReplace"],
     },
     {
       // crbug.com/414858401
