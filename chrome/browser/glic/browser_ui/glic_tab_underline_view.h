@@ -87,7 +87,6 @@ class GlicTabUnderlineView : public views::View,
   // TODO(crbug.com/433828219): Ideally we shouldn't expose these internals for
   // testing.
   float opacity_for_testing() const { return opacity_; }
-  float emphasis_for_testing() const { return emphasis_; }
   float progress_for_testing() const { return progress_; }
   float GetEffectTimeForTesting() const;
 
@@ -99,7 +98,7 @@ class GlicTabUnderlineView : public views::View,
     virtual base::TimeTicks GetTestTimestamp() = 0;
     virtual base::TimeTicks GetTestCreationTime() = 0;
     virtual void AnimationStarted() = 0;
-    virtual void EmphasisRestarted() = 0;
+    virtual void AnimationReset() = 0;
     virtual void RampDownStarted() = 0;
   };
   Tester* tester() const { return tester_.get(); }
@@ -113,11 +112,8 @@ class GlicTabUnderlineView : public views::View,
   void Show();
   void StopShowing();
 
-  // A value from 0 to 1 indicating how much the underline is to be emphasized.
-  float GetEmphasis(base::TimeDelta delta) const;
-
   // Only valid to call after the animation has started.
-  void ResetEmphasisAndReplay();
+  void ResetAnimationCycle();
 
   // A value from 0 to 1 indicating the opacity of the underline.
   float GetOpacity(base::TimeTicks timestamp);
@@ -152,16 +148,15 @@ class GlicTabUnderlineView : public views::View,
   // is false, it animates the underline first.
   // TODO(crbug.com/433136761): Implement a simplified underline with clearer
   // difference in motion.
-  bool skip_emphasis_animation_ = false;
+  bool skip_animation_cycle_ = false;
 
   float opacity_ = 0.f;
-  float emphasis_ = 0.f;
   float progress_ = 0.f;
 
   const base::TimeTicks creation_time_;
   base::TimeTicks first_frame_time_;
-  base::TimeTicks first_emphasis_frame_;
-  base::TimeTicks last_emphasis_frame_;
+  base::TimeTicks first_cycle_frame_;
+  base::TimeTicks last_cycle_frame_;
   base::TimeTicks last_animation_step_time_;
   base::TimeDelta total_steady_time_;
 

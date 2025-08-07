@@ -51,30 +51,11 @@ constexpr static base::TimeDelta kFastOpacityRampUpDuration =
 // The amount of time for the opacity to go from 1 to 0.
 constexpr static base::TimeDelta kOpacityRampDownDuration =
     base::Milliseconds(200);
-// The amount of time for the underline emphasis to go from 0 the max.
-constexpr static base::TimeDelta kEmphasisRampUpDuration =
-    base::Milliseconds(500);
-// The amount of time for the underline emphasis to go from max to 0.
-constexpr static base::TimeDelta kEmphasisRampDownDuration =
-    base::Milliseconds(1000);
-// The amount of time for the underline to stay emphasized.
-constexpr static base::TimeDelta kEmphasisDuration = base::Milliseconds(1500);
+// The total duration of the underline's animation cycle.
+constexpr static base::TimeDelta kCycleDuration = base::Milliseconds(3000);
 // Time since creation will roll over after this time to prevent growing
 // indefinitely.
 constexpr static base::TimeDelta kMaxTime = base::Hours(1);
-
-float ClampAndInterpolate(gfx::Tween::Type type,
-                          float t,
-                          float low,
-                          float high) {
-  float clamp_lo = std::min(low, high);
-  float clamp_hi = std::max(low, high);
-  float clamped = std::clamp(t, clamp_lo, clamp_hi);
-  // Interpolate `clamped` within [low, high], using the function `type`.
-  double calculated = gfx::Tween::CalculateValue(type, clamped);
-  // Linear project `calculated` onto [low, high].
-  return gfx::Tween::FloatValueBetween(calculated, low, high);
-}
 
 int64_t TimeTicksToMicroseconds(base::TimeTicks tick) {
   return (tick - base::TimeTicks()).InMicroseconds();
@@ -483,7 +464,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   }
 
   // Replay the animation without hiding and re-showing the view.
-  void AnimateUnderline() { underline_view_->ResetEmphasisAndReplay(); }
+  void AnimateUnderline() { underline_view_->ResetAnimationCycle(); }
 
   void ShowOrAnimatePinnedUnderline() {
     // Pinned underlines should never be visible if the glic window is closed.
@@ -623,12 +604,9 @@ void GlicTabUnderlineView::OnPaint(gfx::Canvas* canvas) {
     corner_radius = 12.0f;
   }
 #endif
-  // TODO(crbug.com/433136181): shader logic is borrowed from GlicBorderView,
-  // but emphasis can be fixed to 0 for the underline and related handling can
-  // be removed entirely.
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
       {.name = SkString("u_time"), .value = GetEffectTime()},
-      {.name = SkString("u_emphasis"), .value = emphasis_},
+      {.name = SkString("u_emphasis"), .value = 0},
       {.name = SkString("u_corner_radius"), .value = corner_radius},
       {.name = SkString("u_insets"),
        .value = static_cast<float>(uniform_insets.left())},
@@ -692,28 +670,24 @@ void GlicTabUnderlineView::OnAnimationStep(base::TimeTicks timestamp) {
   if (first_frame_time_.is_null()) {
     first_frame_time_ = timestamp;
   }
-  if (first_emphasis_frame_.is_null()) {
-    first_emphasis_frame_ = timestamp;
+  if (first_cycle_frame_.is_null()) {
+    first_cycle_frame_ = timestamp;
 
     // The time gaps when the underline is in steady state cause discontinuous
     // underline states when switching tabs. By keeping track of the total
     // steady time, we can have a continuous effect time. Each steady time
     // interval is added to the total at the very beginning of an upcoming
-    // emphasis animation. Note: the opacity ramp up / down is not part of the
-    // shader animation.
-    if (!last_emphasis_frame_.is_null()) {
-      total_steady_time_ += timestamp - last_emphasis_frame_;
-      last_emphasis_frame_ = base::TimeTicks{};
+    // animation. Note: the opacity ramp up / down is not part of the shader
+    // animation.
+    if (!last_cycle_frame_.is_null()) {
+      total_steady_time_ += timestamp - last_cycle_frame_;
+      last_cycle_frame_ = base::TimeTicks{};
     }
   }
   if (record_first_ramp_down_frame_) {
     record_first_ramp_down_frame_ = false;
     first_ramp_down_frame_ = timestamp;
   }
-
-  base::TimeDelta emphasis_since_first_frame =
-      timestamp - first_emphasis_frame_;
-  emphasis_ = GetEmphasis(emphasis_since_first_frame);
   base::TimeDelta opacity_since_first_frame = timestamp - first_frame_time_;
   opacity_ = GetOpacity(timestamp);
   progress_ = GetEffectProgress(timestamp);
@@ -726,19 +700,18 @@ void GlicTabUnderlineView::OnAnimationStep(base::TimeTicks timestamp) {
   // Don't animate if the animations have exhausted and we haven't started
   // ramping down. We shouldn't be an observer for more than 60 seconds
   // (CompositorAnimationObserver::NotifyFailure()).
-  bool emphasis_done =
-      emphasis_ == 0.f && !emphasis_since_first_frame.is_zero();
+  bool cycle_done = progress_ == 1.f;
   bool opacity_ramp_up_done =
       opacity_ == 1.f && !opacity_since_first_frame.is_zero();
   bool show_steady_state =
-      emphasis_done && opacity_ramp_up_done && first_ramp_down_frame_.is_null();
+      cycle_done && opacity_ramp_up_done && first_ramp_down_frame_.is_null();
 
   if (show_steady_state) {
     // If skipping the animation the class does not need to be an animation
     // observer.
     compositor_->RemoveAnimationObserver(this);
-    if (last_emphasis_frame_.is_null()) {
-      last_emphasis_frame_ = timestamp;
+    if (last_cycle_frame_.is_null()) {
+      last_cycle_frame_ = timestamp;
     }
     return;
   }
@@ -799,7 +772,7 @@ void GlicTabUnderlineView::Show() {
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(true);
 
-  skip_emphasis_animation_ =
+  skip_animation_cycle_ =
       gfx::Animation::PrefersReducedMotion() || ForceSimplifiedShader();
 
   ui::Compositor* compositor = layer()->GetCompositor();
@@ -826,13 +799,12 @@ void GlicTabUnderlineView::StopShowing() {
   compositor_animation_observation_.Reset();
   compositor_ = nullptr;
   first_frame_time_ = base::TimeTicks{};
-  first_emphasis_frame_ = base::TimeTicks{};
-  last_emphasis_frame_ = base::TimeTicks{};
+  first_cycle_frame_ = base::TimeTicks{};
+  last_cycle_frame_ = base::TimeTicks{};
   first_ramp_down_frame_ = base::TimeTicks{};
   record_first_ramp_down_frame_ = false;
   total_steady_time_ = base::Milliseconds(0);
   opacity_ = 0.f;
-  emphasis_ = 0.f;
 
   // `DestroyLayer()` schedules another paint to repaint the affected area by
   // the destroyed layer.
@@ -840,33 +812,18 @@ void GlicTabUnderlineView::StopShowing() {
   SetVisible(false);
 }
 
-float GlicTabUnderlineView::GetEmphasis(base::TimeDelta delta) const {
-  if (skip_emphasis_animation_) {
-    return 0.f;
-  }
-  static constexpr base::TimeDelta kRampUpAndSteady =
-      kEmphasisRampUpDuration + kEmphasisDuration;
-  if (delta < kRampUpAndSteady) {
-    auto target = static_cast<float>(delta / kEmphasisRampUpDuration);
-    return ClampAndInterpolate(gfx::Tween::Type::EASE_OUT, target, 0, 1);
-  }
-  auto target = static_cast<float>((delta - kRampUpAndSteady) /
-                                   kEmphasisRampDownDuration);
-  return ClampAndInterpolate(gfx::Tween::Type::EASE_IN_OUT_2, target, 1, 0);
-}
-
-void GlicTabUnderlineView::ResetEmphasisAndReplay() {
+void GlicTabUnderlineView::ResetAnimationCycle() {
   // TOOD(crbug.com/398319435): Remove once we know why this is called before
   // `Show()`.
   if (!compositor_) {
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "opacity", opacity_);
-    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "emphasis", emphasis_);
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "emphasis", 0);
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "creation",
                             TimeTicksToMicroseconds(creation_time_));
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "first_frame",
                             TimeTicksToMicroseconds(first_frame_time_));
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "first_emphasis",
-                            TimeTicksToMicroseconds(first_emphasis_frame_));
+                            TimeTicksToMicroseconds(first_cycle_frame_));
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "last_step",
                             TimeTicksToMicroseconds(last_animation_step_time_));
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "first_rampdown",
@@ -884,17 +841,17 @@ void GlicTabUnderlineView::ResetEmphasisAndReplay() {
   if (!compositor_->HasAnimationObserver(this)) {
     compositor_->AddAnimationObserver(this);
   }
-  first_emphasis_frame_ = base::TimeTicks{};
+  first_cycle_frame_ = base::TimeTicks{};
   SchedulePaint();
 
   if (tester_) [[unlikely]] {
-    tester_->EmphasisRestarted();
+    tester_->AnimationReset();
   }
 }
 
 float GlicTabUnderlineView::GetOpacity(base::TimeTicks timestamp) {
-  auto ramp_up_duration = skip_emphasis_animation_ ? kFastOpacityRampUpDuration
-                                                   : kOpacityRampUpDuration;
+  auto ramp_up_duration = skip_animation_cycle_ ? kFastOpacityRampUpDuration
+                                                : kOpacityRampUpDuration;
   if (!first_ramp_down_frame_.is_null()) {
     // The ramp up opacity could be any value between 0-1 during the ramp up
     // time. Thus, the ramping down opacity must be deducted from the value of
@@ -945,7 +902,7 @@ float GlicTabUnderlineView::GetEffectTime() const {
 
   // Returns a constant duration so the underline states don't jump around when
   // switching tabs.
-  if (skip_emphasis_animation_) {
+  if (skip_animation_cycle_) {
     auto time_since_creation =
         (first_frame_time_ - GetCreationTime()) % kMaxTime;
     return time_since_creation.InSecondsF();
@@ -958,15 +915,13 @@ float GlicTabUnderlineView::GetEffectTime() const {
 }
 
 float GlicTabUnderlineView::GetEffectProgress(base::TimeTicks timestamp) const {
-  if (skip_emphasis_animation_) {
+  if (skip_animation_cycle_) {
     return 0.0;
   }
-  base::TimeDelta time_since_first_frame = timestamp - first_emphasis_frame_;
-  base::TimeDelta total_duration =
-      kEmphasisRampUpDuration + kEmphasisRampDownDuration + kEmphasisDuration;
+  base::TimeDelta time_since_first_frame = timestamp - first_cycle_frame_;
   return std::clamp(
       static_cast<float>(time_since_first_frame.InMillisecondsF() /
-                         total_duration.InMillisecondsF()),
+                         kCycleDuration.InMillisecondsF()),
       0.0f, 1.0f);
 }
 
