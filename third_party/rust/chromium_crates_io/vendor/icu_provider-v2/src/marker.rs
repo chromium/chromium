@@ -440,6 +440,9 @@ pub struct DataMarkerInfo {
     /// attributes during provider export.
     #[cfg(feature = "export")]
     pub attributes_domain: &'static str,
+    /// Whether to create constants for each data struct in baked data.
+    #[cfg(feature = "export")]
+    pub expose_baked_consts: bool,
 }
 
 impl PartialOrd for DataMarkerInfo {
@@ -470,6 +473,8 @@ impl DataMarkerInfo {
             has_checksum: false,
             #[cfg(feature = "export")]
             attributes_domain: "",
+            #[cfg(feature = "export")]
+            expose_baked_consts: false,
         }
     }
 

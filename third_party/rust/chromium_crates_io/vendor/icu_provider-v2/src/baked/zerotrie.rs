@@ -107,6 +107,52 @@ impl<M: DataMarker> super::DataStore<M> for Data<M> {
     }
 }
 
+/// Regular baked data: a trie for lookups and a slice of values
+#[derive(Debug)]
+pub struct DataRef<M: DataMarker> {
+    // Unsafe invariant: actual values contained MUST be valid indices into `values`
+    trie: ZeroTrieSimpleAscii<&'static [u8]>,
+    values: &'static [&'static M::DataStruct],
+}
+
+impl<M: DataMarker> DataRef<M> {
+    /// Construct from a trie and references to values
+    ///
+    /// # Safety
+    /// The actual values contained in the trie must be valid indices into `values`
+    pub const unsafe fn from_trie_and_refs_unchecked(
+        trie: ZeroTrieSimpleAscii<&'static [u8]>,
+        values: &'static [&'static M::DataStruct],
+    ) -> Self {
+        Self { trie, values }
+    }
+}
+
+impl<M: DataMarker> super::private::Sealed for DataRef<M> {}
+impl<M: DataMarker> super::DataStore<M> for DataRef<M> {
+    fn get(
+        &self,
+        id: DataIdentifierBorrowed,
+        attributes_prefix_match: bool,
+    ) -> Option<DataPayload<M>> {
+        get_index(self.trie, id, attributes_prefix_match)
+            // Safety: Allowed since `i` came from the trie and the field safety invariant
+            .map(|i| unsafe { self.values.get_unchecked(i) })
+            .copied()
+            .map(DataPayload::from_static_ref)
+    }
+
+    #[cfg(feature = "alloc")]
+    type IterReturn = core::iter::FilterMap<
+        zerotrie::ZeroTrieStringIterator<'static>,
+        fn((alloc::string::String, usize)) -> Option<DataIdentifierCow<'static>>,
+    >;
+    #[cfg(feature = "alloc")]
+    fn iter(&'static self) -> Self::IterReturn {
+        iter(&self.trie)
+    }
+}
+
 /// Optimized data stored as a single VarZeroSlice to reduce token count
 #[allow(missing_debug_implementations)] // Debug on this will not be too useful
 pub struct DataForVarULEs<M: DataMarker>
