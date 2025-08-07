@@ -151,7 +151,7 @@ BASE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative,
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSyncTrustedVaultInfobarImprovements,
              "SyncTrustedVaultInfobarImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
