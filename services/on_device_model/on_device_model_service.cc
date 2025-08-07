@@ -40,12 +40,12 @@ const base::FeatureParam<base::TimeDelta> kModelIdleTimeout{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_active_session_idle_timeout", kDefaultModelIdleTimeout};
 
-class ModelWrapper;
+class OnDeviceModelMojomImpl;
 class AsrStreamWrapper;
 
 class SessionWrapper final : public mojom::Session {
  public:
-  SessionWrapper(base::WeakPtr<ModelWrapper> model,
+  SessionWrapper(base::WeakPtr<OnDeviceModelMojomImpl> model,
                  mojo::PendingReceiver<mojom::Session> receiver,
                  std::unique_ptr<BackendSession> session,
                  mojom::Priority priority)
@@ -127,7 +127,7 @@ class SessionWrapper final : public mojom::Session {
       mojo::PendingRemote<mojom::AsrStreamResponder> response,
       base::OnceClosure on_complete);
 
-  base::WeakPtr<ModelWrapper> model_;
+  base::WeakPtr<OnDeviceModelMojomImpl> model_;
   mojo::Receiver<mojom::Session> receiver_;
   std::unique_ptr<BackendSession> session_;
   mojom::Priority priority_;
@@ -135,30 +135,31 @@ class SessionWrapper final : public mojom::Session {
   base::WeakPtrFactory<SessionWrapper> weak_ptr_factory_{this};
 };
 
-class ModelWrapper final : public mojom::OnDeviceModel {
+class OnDeviceModelMojomImpl final : public mojom::OnDeviceModel {
  public:
-  explicit ModelWrapper(
+  explicit OnDeviceModelMojomImpl(
       std::unique_ptr<BackendModel> model,
       mojo::PendingReceiver<mojom::OnDeviceModel> receiver,
       base::OnceCallback<void(base::WeakPtr<mojom::OnDeviceModel>)> on_delete)
       : model_(std::move(model)), on_delete_(std::move(on_delete)) {
     receivers_.Add(this, std::move(receiver),
                    std::unique_ptr<BackendModel::ScopedAdaptation>());
-    receivers_.set_disconnect_handler(base::BindRepeating(
-        &ModelWrapper::ModelDisconnected, weak_ptr_factory_.GetWeakPtr()));
+    receivers_.set_disconnect_handler(
+        base::BindRepeating(&OnDeviceModelMojomImpl::ModelDisconnected,
+                            weak_ptr_factory_.GetWeakPtr()));
     RestartIdleTimer();
   }
-  ~ModelWrapper() override = default;
+  ~OnDeviceModelMojomImpl() override = default;
 
-  ModelWrapper(const ModelWrapper&) = delete;
-  ModelWrapper& operator=(const ModelWrapper&) = delete;
+  OnDeviceModelMojomImpl(const OnDeviceModelMojomImpl&) = delete;
+  OnDeviceModelMojomImpl& operator=(const OnDeviceModelMojomImpl&) = delete;
 
   void AddAndRunPendingTask(
       base::OnceCallback<void(base::OnceClosure finish_callback)> task,
       base::WeakPtr<SessionWrapper> session) {
-    base::ScopedClosureRunner task_finished(
-        base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &ModelWrapper::TaskFinished, weak_ptr_factory_.GetWeakPtr())));
+    base::ScopedClosureRunner task_finished(base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&OnDeviceModelMojomImpl::TaskFinished,
+                       weak_ptr_factory_.GetWeakPtr())));
     pending_tasks_.push_back(PendingTask{
         .session = session,
         .task = base::BindOnce(std::move(task),
@@ -193,9 +194,10 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   void LoadAdaptation(mojom::LoadAdaptationParamsPtr params,
                       mojo::PendingReceiver<mojom::OnDeviceModel> model,
                       LoadAdaptationCallback callback) override {
-    auto load_adaptation = base::BindOnce(
-        &ModelWrapper::LoadAdaptationInternal, weak_ptr_factory_.GetWeakPtr(),
-        std::move(params), std::move(model), std::move(callback));
+    auto load_adaptation =
+        base::BindOnce(&OnDeviceModelMojomImpl::LoadAdaptationInternal,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(params),
+                       std::move(model), std::move(callback));
     AddAndRunPendingTask(
         base::IgnoreArgs<base::OnceClosure>(std::move(load_adaptation)),
         /*session=*/nullptr);
@@ -210,7 +212,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
     SessionWrapper* current_session_ptr = current_session.get();
     sessions_.insert(std::move(current_session));
     current_session_ptr->receiver().set_disconnect_handler(
-        base::BindOnce(&ModelWrapper::SessionDisconnected,
+        base::BindOnce(&OnDeviceModelMojomImpl::SessionDisconnected,
                        base::Unretained(this), current_session_ptr));
   }
 
@@ -294,9 +296,9 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 
   void RestartIdleTimer() {
     idle_timer_.emplace();
-    idle_timer_->Start(
-        FROM_HERE, kModelIdleTimeout.Get(),
-        base::BindOnce(&ModelWrapper::OnIdleTimeout, base::Unretained(this)));
+    idle_timer_->Start(FROM_HERE, kModelIdleTimeout.Get(),
+                       base::BindOnce(&OnDeviceModelMojomImpl::OnIdleTimeout,
+                                      base::Unretained(this)));
   }
 
   void OnIdleTimeout() {
@@ -327,7 +329,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   // the model remote will be reset.
   std::optional<base::OneShotTimer> idle_timer_;
 
-  base::WeakPtrFactory<ModelWrapper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OnDeviceModelMojomImpl> weak_ptr_factory_{this};
 };
 
 class AsrStreamWrapper final : public mojom::AsrStreamInput {
@@ -524,18 +526,18 @@ void OnDeviceModelService::LoadModel(
   }
   auto start = base::TimeTicks::Now();
   auto model_impl = backend_->CreateWithResult(
-      std::move(params),
-      base::BindOnce(
-          [](base::TimeTicks start) {
-            base::UmaHistogramMediumTimes("OnDeviceModel.LoadModelDuration",
-                                          base::TimeTicks::Now() - start);
-          },
-          start));
+      std::move(params), base::BindOnce(
+                             [](base::TimeTicks start) {
+                               base::UmaHistogramMediumTimes(
+                                   "OnDeviceModel.LoadModelDuration",
+                                   base::TimeTicks::Now() - start);
+                             },
+                             start));
   if (!model_impl.has_value()) {
     std::move(callback).Run(model_impl.error());
     return;
   }
-  models_.insert(std::make_unique<ModelWrapper>(
+  models_.insert(std::make_unique<OnDeviceModelMojomImpl>(
       std::move(model_impl.value()), std::move(model),
       base::BindOnce(&OnDeviceModelService::DeleteModel,
                      base::Unretained(this))));
@@ -554,7 +556,8 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
   // so skip the benchmark and return a fixed performance profile.
   auto perf_info = on_device_model::mojom::DevicePerformanceInfo::New();
   // Fix the performance to 'High', which should allow all Nano models to run.
-  perf_info->performance_class = on_device_model::mojom::PerformanceClass::kHigh;
+  perf_info->performance_class =
+      on_device_model::mojom::PerformanceClass::kHigh;
   // Chromebook+ devices have 8GB RAM+, so half of that can be VRAM.
   perf_info->vram_mb = 4096;
   std::move(callback).Run(std::move(perf_info));
@@ -592,7 +595,7 @@ void OnDeviceModelService::LoadTextSafetyModel(
 
 void OnDeviceModelService::SetForceQueueingForTesting(bool force_queueing) {
   for (auto& model : models_) {
-    static_cast<ModelWrapper*>(model.get())
+    static_cast<OnDeviceModelMojomImpl*>(model.get())
         ->SetForceQueueingForTesting(force_queueing);  // IN-TEST
   }
 }
