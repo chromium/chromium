@@ -320,8 +320,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertEquals(FOOTER, itemList.get(4).type);
     }
 
-    // TODO(crbug.com/433880876): Remove assertions for continue button with maybeShowContinueButton
-    // changes.
     @Test
     @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testEwalletAndPaymentAppsShown() {
@@ -331,14 +329,13 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         // Verify the screen contents set in the model when 2 payment apps exist.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(7));
+        assertThat(itemList.size(), is(6));
         assertEquals(HEADER, itemList.get(0).type);
         assertEquals(EWALLET, itemList.get(1).type);
         assertEquals(PAYMENT_APP, itemList.get(2).type);
         assertEquals(PAYMENT_APP, itemList.get(3).type);
         assertEquals(ADDITIONAL_INFO, itemList.get(4).type);
-        assertEquals(CONTINUE_BUTTON, itemList.get(5).type);
-        assertEquals(FOOTER, itemList.get(6).type);
+        assertEquals(FOOTER, itemList.get(5).type);
     }
 
     @Test
@@ -371,8 +368,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertEquals(FOOTER, itemList.get(4).type);
     }
 
-    // TODO(crbug.com/433880876): Add assertions for continue button with maybeShowContinueButton
-    // changes.
     @Test
     @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testSinglePaymentAppShown() {
@@ -381,11 +376,12 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         // Verify the screen contents set in the model when only 1 payment app exists.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(4));
+        assertThat(itemList.size(), is(5));
         assertEquals(HEADER, itemList.get(0).type);
         assertEquals(PAYMENT_APP, itemList.get(1).type);
         assertEquals(ADDITIONAL_INFO, itemList.get(2).type);
-        assertEquals(FOOTER, itemList.get(3).type);
+        assertEquals(CONTINUE_BUTTON, itemList.get(3).type);
+        assertEquals(FOOTER, itemList.get(4).type);
     }
 
     @Test

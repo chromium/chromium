@@ -93,6 +93,12 @@
   <message name="IDS_EWALLET_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's eWallet accounts linked to their GPay wallet. The bottom sheet is shown to prompt the user to pay directly on Chrome when an eWallet payment page is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
     Your saved auto-pay method may be used for this payment. To turn off eWallets in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
   </message>
+  <message name="IDS_PAYMENT_APP_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's supported payment apps. The bottom sheet is shown to prompt the user to pay by app redirection when an A2A payment link is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
+    To turn off payment app in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  </message>
+  <message name="IDS_EWALLET_AND_PAYMENT_APP_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's eWallet accounts linked to their GPay wallet and user's supported payment apps. The bottom sheet is shown to prompt the user to pay directly on Chrome or by app redirection when a payment link is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
+    Your saved auto-pay method may be used for this payment. To turn off eWallets or payment app in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  </message>
   <message name="IDS_PIX_PAYMENT_PRODUCT_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for the Google Pay + Pix product icon." formatter_data="android_java">
     Google Pay, Pix
   </message>

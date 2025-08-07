@@ -351,6 +351,30 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(getPaymentAppNameAt(1).getText(), is(PAYMENT_APP_2_NAME));
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testEwalletAndPaymentAppShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(new ListItem(EWALLET, createEwalletModel(EWALLET_1)));
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(new ListItem(PAYMENT_APP, createPaymentAppModel(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(2));
+        assertThat(getEwalletNameAt(0).getText(), is("eWalletName1"));
+        assertThat(getAccountDisplayNameAt(0).getText(), is("account display name 1"));
+        assertThat(getPaymentAppNameAt(1).getText(), is(PAYMENT_APP_1_NAME));
+    }
+
     // This test checks that the header security image and header description are not shown and
     // header product icon is present to user when eWallet and payment app both are available.
     @Test
@@ -412,6 +436,32 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(headerProductIcon.getContentDescription(), nullValue());
         assertThat(headerSecurityCheckImage.getVisibility(), is(View.GONE));
         assertThat(headerDescription.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void
+            testPaymentAppHeaderProductIconContentDescriptionWhenEwalletAndPaymentAppAvailable() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildPaymentLinkHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(EWALLET_1),
+                                            List.of(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+
+        assertThat(headerProductIcon.getContentDescription(), is("Google Pay"));
     }
 
     @Test
@@ -572,6 +622,59 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                         containsString(
                                 "Your saved auto-pay method may be used for this payment. To turn"
                                         + " off eWallets in Chrome, go to your payment settings")));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testEwalletAndPaymentAppDescriptionLine() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildPaymentLinkAdditionalInfo(
+                                            List.of(EWALLET_1), List.of(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line);
+        assertThat(
+                descriptionLine1.getText(),
+                hasToString(
+                        containsString(
+                                "Your saved auto-pay method may be used for this payment. To turn"
+                                    + " off eWallets or payment app in Chrome, go to your payment"
+                                    + " settings")));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testPaymentAppDescriptionLineShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildPaymentLinkAdditionalInfo(
+                                            List.of(), List.of(PAYMENT_APP_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line);
+
+        assertThat(
+                descriptionLine1.getText(),
+                hasToString(
+                        containsString(
+                                "To turn off payment app in Chrome, go to your payment settings")));
     }
 
     @Test
