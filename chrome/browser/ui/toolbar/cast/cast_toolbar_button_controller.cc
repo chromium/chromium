@@ -14,10 +14,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/media_router/browser/media_router.h"
@@ -191,13 +191,10 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
     // Update the toolbar button's visibility.
     // WebUIBrowser does not have a BrowserView.
     // TODO(webium): make an pinned toolbar actions container for WebUIBrowser.
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    if (browser_view) {
-      if (auto* container =
-              browser_view->toolbar()->pinned_toolbar_actions_container()) {
-        container->ShowActionEphemerallyInToolbar(kActionRouteMedia,
-                                                  ShouldEnableAction());
-      }
+    if (auto* controller =
+            browser->GetFeatures().pinned_toolbar_actions_controller()) {
+      controller->ShowActionEphemerallyInToolbar(kActionRouteMedia,
+                                                 ShouldEnableAction());
     }
   }
 }
