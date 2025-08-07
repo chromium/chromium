@@ -70,7 +70,7 @@ std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(
     int buffer_size = kWidth * kHeight * kBytesPerPixel;
     frame = std::make_unique<webrtc::SharedMemoryDesktopFrame>(
         webrtc::DesktopSize(kWidth, kHeight), kWidth * kBytesPerPixel,
-        shared_memory_factory->CreateSharedMemory(buffer_size).release());
+        shared_memory_factory->CreateSharedMemory(buffer_size));
   } else {
     frame = std::make_unique<webrtc::BasicDesktopFrame>(
         webrtc::DesktopSize(kWidth, kHeight));
