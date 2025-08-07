@@ -809,7 +809,7 @@ TextOffsetRange HighlightPainter::GetFragmentDOMOffsets(const Text& text,
   const OffsetMapping* mapping = OffsetMapping::GetFor(text.GetLayoutObject());
   unsigned last_from = mapping->GetLastPosition(from).OffsetInContainerNode();
   unsigned first_to = mapping->GetFirstPosition(to).OffsetInContainerNode();
-  return {last_from, first_to};
+  return {last_from, std::max(last_from, first_to)};
 }
 
 const PhysicalRect HighlightPainter::ComputeBackgroundRect(
