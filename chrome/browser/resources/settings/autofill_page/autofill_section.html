@@ -16,10 +16,6 @@
       overflow: hidden;
     }
 
-    .dropdown-item.row-item {
-      padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
-    }
-
     #addressSummary {
       display: flex;
       flex: 1;
@@ -106,6 +102,7 @@
       <template is="dom-if" if="[[isHomeOrWorkAddress]]" restamp>
         <cr-link-row
             id="menuEditAddress"
+            class="dropdown-item"
             label="$i18n{edit}"
             on-click="onMenuEditAddressClick_"
             role-description="$i18n{homeWorkAddressAccessiblityLabel}"
@@ -113,7 +110,7 @@
         </cr-link-row>
 
         <button id="menuRemoveAddress"
-            class="dropdown-item row-item"
+            class="dropdown-item"
             on-click="onMenuRemoveAddressClick_">
           [[getMenuRemoveAddressLabel_(activeAddress)]]
         </button>
