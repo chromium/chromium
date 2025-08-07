@@ -163,6 +163,8 @@ public class HubToolbarMediatorUnitTest {
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
 
+        when(mTabGroupsPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
+
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
         mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(mDisplayButtonData);
 
@@ -630,6 +632,9 @@ public class HubToolbarMediatorUnitTest {
                         .expectIntRecord(
                                 "Android.HubSearch.SearchBoxEntrypointV2",
                                 HubSearchEntrypoint.INCOGNITO_SEARCHBOX)
+                        .expectIntRecord(
+                                "Android.HubSearch.SearchBoxEntrypointV2",
+                                HubSearchEntrypoint.TAB_GROUPS_SEARCHBOX)
                         .build();
 
         // Fake clicks on the search box.
@@ -640,6 +645,12 @@ public class HubToolbarMediatorUnitTest {
         // Toggle to incognito pane
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient, times(2)).requestOmniboxForResult(any());
+
+        // Toggle to tab groups pane
+        mFocusedPaneSupplier.set(mTabGroupsPane);
+        mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
         histograms.assertExpected();
     }
 
@@ -668,6 +679,9 @@ public class HubToolbarMediatorUnitTest {
                         .expectIntRecord(
                                 "Android.HubSearch.SearchBoxEntrypointV2",
                                 HubSearchEntrypoint.INCOGNITO_LOUPE)
+                        .expectIntRecord(
+                                "Android.HubSearch.SearchBoxEntrypointV2",
+                                HubSearchEntrypoint.TAB_GROUPS_LOUPE)
                         .build();
 
         // Fake clicks on the search box.
@@ -678,6 +692,12 @@ public class HubToolbarMediatorUnitTest {
         // Toggle to incognito pane
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient, times(2)).requestOmniboxForResult(any());
+
+        // Toggle to tab groups pane
+        mFocusedPaneSupplier.set(mTabGroupsPane);
+        mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
         histograms.assertExpected();
     }
 
