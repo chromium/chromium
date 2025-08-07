@@ -149,7 +149,12 @@ def _PrintMain(args):
 
 
 def _ListMain(args):
-  pak = data_pack.ReadDataPack(args.pak_file)
+  try:
+    pak = data_pack.ReadDataPack(args.pak_file)
+  except data_pack.WrongFileVersion:
+    sys.stderr.write('Invalid .pak file. Maybe it is compressed?\n')
+    sys.exit(1)
+
   if args.textual_id or args.path:
     info_dict = data_pack.ReadGrdInfo(args.pak_file)
     fmt = ''.join([
