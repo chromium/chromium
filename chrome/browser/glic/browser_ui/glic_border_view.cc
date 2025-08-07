@@ -8,6 +8,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -153,6 +154,15 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
       : border_view_(border_view), contents_web_view_(contents_web_view) {
     auto* glic_service = border_view->GetGlicService();
 
+    // Subscribe to glow updates from the actor border controller.
+    if (features::kGlicActorUiBorderGlow.Get()) {
+      actor_border_view_controller_subscription_ =
+          ActorBorderViewController::From(border_view_->browser_)
+              ->AddOnActorBorderGlowUpdatedCallback(base::BindRepeating(
+                  &GlicBorderView::BorderViewUpdater::OnActorBorderGlowUpdated,
+                  base::Unretained(this)));
+    }
+
     // Observe the contents web view for when it is deleting.
     contents_web_view_observation_.Observe(contents_web_view_);
 
@@ -195,11 +205,44 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
         previous_focus && !glic_focused_contents_in_current_view_;
 
     if (tab_switch) {
-      UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_NoFocusChange);
+      MaybeRunBorderViewUpdate(
+          UpdateBorderReason::kFocusedTabChanged_NoFocusChange);
     } else if (window_gained_focus) {
-      UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_GainFocus);
+      MaybeRunBorderViewUpdate(
+          UpdateBorderReason::kFocusedTabChanged_GainFocus);
     } else if (window_lost_focus) {
-      UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_LostFocus);
+      MaybeRunBorderViewUpdate(
+          UpdateBorderReason::kFocusedTabChanged_LostFocus);
+    }
+  }
+
+  // Called when the actor component changes the border glow status.
+  void OnActorBorderGlowUpdated(tabs::TabInterface* tab, bool enabled) {
+    if (!IsTabInCurrentView(tab->GetContents())) {
+      return;
+    }
+
+    if (actor_border_glow_enabled_ == enabled) {
+      return;
+    }
+    actor_border_glow_enabled_ = enabled;
+
+    if (actor_border_glow_enabled_) {
+      // Force the border to show, regardless of other states. This gives the
+      // actor priority over other signals.
+      border_view_->StopShowing();
+      border_view_->Show();
+    } else {
+      // Revert to the last known state based on other signals like tab focus
+      // or context access.
+      if (last_mutating_update_reason_.has_value()) {
+        UpdateBorderView(*last_mutating_update_reason_);
+      } else {
+        // No known state from before. We just ramp down.
+        if (border_view_->IsShowing()) {
+          border_view_->StartRampingDown();
+        }
+      }
     }
   }
 
@@ -209,9 +252,10 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
       return;
     }
     context_access_indicator_enabled_ = enabled;
-    UpdateBorderView(context_access_indicator_enabled_
-                         ? UpdateBorderReason::kContextAccessIndicatorOn
-                         : UpdateBorderReason::kContextAccessIndicatorOff);
+    MaybeRunBorderViewUpdate(
+        context_access_indicator_enabled_
+            ? UpdateBorderReason::kContextAccessIndicatorOn
+            : UpdateBorderReason::kContextAccessIndicatorOff);
   }
 
   // ViewObserver:
@@ -219,6 +263,7 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
     contents_web_view_observation_.Reset();
     indicator_change_subscription_ = {};
     focus_change_subscription_ = {};
+    actor_border_view_controller_subscription_ = {};
     contents_web_view_ = nullptr;
   }
 
@@ -236,6 +281,22 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
     kFocusedTabChanged_GainFocus,
     kFocusedTabChanged_LostFocus,
   };
+
+  // This function is a gateway for all non actor border updates. It respects
+  // the actor_border_glow_enabled_ flag, which can suppress or override regular
+  // updates. It also keeps track of the last reason for an update.
+  void MaybeRunBorderViewUpdate(UpdateBorderReason reason) {
+    // We only want to override the latest reason if it's one that would result
+    // in showing vs hiding the border. `kFocusedTabChanged_NoFocusChange` only
+    // replays an animation, it does not change the state.
+    if (reason != UpdateBorderReason::kFocusedTabChanged_NoFocusChange) {
+      last_mutating_update_reason_ = reason;
+    }
+
+    if (!actor_border_glow_enabled_) {
+      UpdateBorderView(reason);
+    }
+  }
 
   void UpdateBorderView(UpdateBorderReason reason) {
     AddReasonForDebugging(reason);
@@ -351,8 +412,19 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
   bool context_access_indicator_enabled_ = false;
   base::CallbackListSubscription indicator_change_subscription_;
 
+  // When true, the actor framework has requested the border to glow. This
+  // overrides other signals.
+  bool actor_border_glow_enabled_ = false;
+
+  // Subscription to the actor border controller for glow updates.
+  base::CallbackListSubscription actor_border_view_controller_subscription_;
+
   static constexpr size_t kNumReasonsToKeep = 10u;
   std::list<std::string> border_update_reasons_;
+
+  // Stores the last mutating reason for a border update, so the state can be
+  // restored when the actor glow is disabled.
+  std::optional<UpdateBorderReason> last_mutating_update_reason_;
 };
 
 GlicBorderView::GlicBorderView(Browser* browser,

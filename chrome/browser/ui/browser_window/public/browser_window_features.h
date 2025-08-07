@@ -23,6 +23,7 @@ namespace actor::ui {
 class ActorOverlayWindowController;
 }  // namespace actor::ui
 
+class ActorBorderViewController;
 class BookmarkBarController;
 class BookmarksSidePanelCoordinator;
 class BreadcrumbManagerBrowserAgent;
@@ -115,7 +116,7 @@ class ProductSpecificationsEntryPointController;
 namespace tabs {
 class GlicNudgeController;
 class GlicActorTaskIconController;
-}
+}  // namespace tabs
 
 namespace tab_groups {
 class DeletionDialogController;
@@ -336,7 +337,6 @@ class BrowserWindowFeatures {
     return tab_group_deletion_dialog_controller_.get();
   }
 
-
   SigninViewController* signin_view_controller() {
     return signin_view_controller_.get();
   }
@@ -522,6 +522,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<actor::ui::ActorOverlayWindowController>
       actor_overlay_window_controller_;
+
+  std::unique_ptr<ActorBorderViewController> actor_border_view_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 

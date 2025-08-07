@@ -19,6 +19,7 @@ source_set("browser_ui") {
     "theme_util.h",
   ]
   deps = [
+    "//chrome/browser/actor/ui",
     "//chrome/browser/themes",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/user_education",
@@ -62,6 +63,9 @@ source_set("interactive_ui_tests") {
   deps = [
     ":browser_ui",
     "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/actor/ui",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",

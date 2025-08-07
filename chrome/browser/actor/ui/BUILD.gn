@@ -18,6 +18,8 @@ mojom("mojo_bindings") {
 
 source_set("ui") {
   sources = [
+    "actor_border_view_controller.cc",
+    "actor_border_view_controller.h",
     "actor_overlay_ui.cc",
     "actor_overlay_ui.h",
     "actor_overlay_view_controller.cc",
@@ -51,6 +53,7 @@ source_set("ui") {
     "//chrome/common",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",
+    "//ui/base/unowned_user_data",
     "//ui/views",
     "//ui/views/controls/webview",
     "//ui/webui",
@@ -164,6 +167,7 @@ source_set("ui_event_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_border_view_controller_unittest.cc",
     "actor_overlay_view_controller_unittest.cc",
     "actor_ui_state_manager_unittest.cc",
     "actor_ui_tab_controller_unittest.cc",
@@ -189,6 +193,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/unowned_user_data",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

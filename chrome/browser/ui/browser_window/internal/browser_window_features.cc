@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
@@ -311,6 +312,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       tab_strip_model_,
       browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
 #endif  // defined(USE_AURA)
+
+  if (features::kGlicActorUiBorderGlow.Get()) {
+    actor_border_view_controller_ =
+        std::make_unique<ActorBorderViewController>(browser);
+  }
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
@@ -577,6 +583,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   profile_menu_coordinator_.reset();
   toast_service_.reset();
   extension_window_controller_.reset();
+  actor_border_view_controller_.reset();
   actor_overlay_window_controller_.reset();
   glic_actor_task_icon_controller_.reset();
 

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -163,12 +164,26 @@ void ActorUiTabController::UpdateState(UiResultCallback callback) {
     SetActorTabIndicatorVisibility(current_ui_tab_state_.tab_indicator_visible);
   }
 
+  // Notify the TabGlow controllers.
+  if (features::kGlicActorUiBorderGlow.Get()) {
+    SetBorderGlowVisibility();
+  }
+
   // TODO(crbug.com/425952887): Change this once ui components are implemented,
   // for now always return true.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 
   OnUpdateFinished();
+}
+
+void ActorUiTabController::SetBorderGlowVisibility() {
+  if (auto* controller =
+          ActorBorderViewController::From(tab_->GetBrowserWindowInterface())) {
+    controller->SetGlowEnabled(base::to_address(tab_),
+                               current_ui_tab_state_.border_glow_visible &&
+                                   current_tab_active_status_);
+  }
 }
 
 bool ActorUiTabController::ComputeActorOverlayVisibility() {

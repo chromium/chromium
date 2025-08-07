@@ -21,6 +21,7 @@ struct UiTabState {
   ActorOverlayState actor_overlay;
   HandoffButtonState handoff_button;
   bool tab_indicator_visible = false;
+  bool border_glow_visible = false;
 };
 
 inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
@@ -29,6 +30,7 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "  handoff_button: " << state.handoff_button << "\n"
             << "  tab_indicator_visible: " << state.tab_indicator_visible
             << "\n"
+            << "  border_glow_visible: " << state.border_glow_visible << "\n"
             << "}";
 }
 

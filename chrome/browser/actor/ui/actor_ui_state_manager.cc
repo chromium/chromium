@@ -41,6 +41,7 @@ const UiTabState& GetActorControlledUiTabState() {
       .actor_overlay = ActorOverlayState(/*is_active=*/true),
       .handoff_button = {.is_active = true, .controller = kActor},
       .tab_indicator_visible = true,
+      .border_glow_visible = true,
   };
   return kActorState;
 }
@@ -50,6 +51,7 @@ const UiTabState& GetPausedUiTabState() {
       .actor_overlay = ActorOverlayState(/*is_active=*/false),
       .handoff_button = {.is_active = true, .controller = kClient},
       .tab_indicator_visible = false,
+      .border_glow_visible = false,
   };
   return kPausedState;
 }
@@ -59,6 +61,7 @@ const UiTabState& GetCompletedUiTabState() {
       .actor_overlay = ActorOverlayState(/*is_active=*/false),
       .handoff_button = {.is_active = false, .controller = kClient},
       .tab_indicator_visible = false,
+      .border_glow_visible = false,
   };
   return kCompletedState;
 }

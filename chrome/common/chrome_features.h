@@ -216,6 +216,10 @@ extern const char kGlicActorUiToastName[];
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiHandoffButtonName[];
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiTabIndicatorName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiBorderGlowName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiCompletedTaskExpiryDelaySecondsName[];
 
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -230,6 +234,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiHandoffButton);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiTabIndicator);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiBorderGlow);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int>(
     kGlicActorUiCompletedTaskExpiryDelaySeconds);

@@ -5,13 +5,20 @@
 #include <math.h>
 
 #include "base/numerics/ranges.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "cc/test/pixel_test_utils.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/ui/actor_border_view_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_border_view.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -22,6 +29,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -873,6 +882,54 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
   // crbug.com/395075424: The effect time is continuous after switching to a
   // different tab.
   EXPECT_EQ(effect_time_before_tab_switching, effect_time_after_tab_switching);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
+                       ActorGlowShowsBorderWhenIndicatorIsOff) {
+  auto* border = browser()
+                     ->window()
+                     ->AsBrowserView()
+                     ->GetActiveContentsContainerView()
+                     ->GetGlicBorderView();
+  ASSERT_TRUE(border);
+  EXPECT_FALSE(border->GetVisible());
+  TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
+
+  // Ensure the border is not showing initially.
+  EXPECT_FALSE(border->IsShowing());
+
+  // Get the actor keyed service.
+  auto* actor_keyed_service =
+      actor::ActorKeyedService::Get(browser()->profile());
+  ASSERT_TRUE(actor_keyed_service);
+
+  // Create a new task.
+  const actor::TaskId task_id = actor_keyed_service->CreateTask();
+  actor_keyed_service->GetTask(task_id)->AddTab(
+      browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
+
+  // Perform an action to trigger the glow.
+  base::test::TestFuture<actor::mojom::ActionResultCode, std::optional<size_t>>
+      result_future;
+  std::vector<std::unique_ptr<actor::ToolRequest>> actions;
+  actions.push_back(actor::MakeWaitRequest());
+  actor_keyed_service->PerformActions(task_id, std::move(actions),
+                                      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get<0>(), actor::mojom::ActionResultCode::kOk);
+
+  // Wait for the animation to start and verify the border is showing.
+  tester->WaitForAnimationStart();
+  EXPECT_TRUE(border->IsShowing());
+  EXPECT_TRUE(border->GetVisible());
+
+  // Stop the task.
+  actor_keyed_service->StopTask(task_id, /*success*/ true);
+
+  // Poll until the border is no longer showing.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !border->IsShowing(); }));
+
+  EXPECT_FALSE(border->IsShowing());
+  EXPECT_FALSE(border->GetVisible());
 }
 
 namespace {

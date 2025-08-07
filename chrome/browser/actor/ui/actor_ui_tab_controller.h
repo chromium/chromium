@@ -85,6 +85,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Sets the Tab Indicator visibility.
   void SetActorTabIndicatorVisibility(bool should_show_tab_indicator);
 
+  // Sets the Border Glow visibility.
+  void SetBorderGlowVisibility();
+
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
       .actor_overlay = ActorOverlayState(),
