@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_page_action_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
@@ -253,15 +252,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
       collaboration_messaging_tab_data_ =
           std::make_unique<tab_groups::CollaborationMessagingTabData>(profile);
-    }
-
-    if (IsPageActionMigrated(PageActionIconType::kCollaborationMessaging) &&
-        tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
-      collaboration_messaging_page_action_controller_ =
-          GetUserDataFactory()
-              .CreateInstance<CollaborationMessagingPageActionController>(
-                  tab, tab, *page_action_controller_,
-                  *collaboration_messaging_tab_data_);
     }
 
 #if BUILDFLAG(ENABLE_GLIC)

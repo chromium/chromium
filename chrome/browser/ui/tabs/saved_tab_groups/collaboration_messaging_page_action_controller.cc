@@ -11,7 +11,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 
 namespace {
@@ -30,31 +29,20 @@ const std::u16string GetLabelText(
       NOTREACHED();
   }
 }
-
 }  // namespace
-
-DEFINE_USER_DATA(CollaborationMessagingPageActionController);
 
 CollaborationMessagingPageActionController::
     CollaborationMessagingPageActionController(
-        tabs::TabInterface& tab,
         page_actions::PageActionController& page_action_controller,
         tab_groups::CollaborationMessagingTabData&
             collaboration_messaging_tab_data)
     : page_actions_controller_(page_action_controller),
-      collaboration_messaging_tab_data_(collaboration_messaging_tab_data),
-      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+      collaboration_messaging_tab_data_(collaboration_messaging_tab_data) {
   CHECK(IsPageActionMigrated(PageActionIconType::kCollaborationMessaging));
 }
 
 CollaborationMessagingPageActionController::
     ~CollaborationMessagingPageActionController() = default;
-
-// static
-CollaborationMessagingPageActionController*
-CollaborationMessagingPageActionController::From(tabs::TabInterface* tab) {
-  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
-}
 
 void CollaborationMessagingPageActionController::HandleUpdate(
     tabs::TabInterface* tab) {

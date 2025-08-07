@@ -64,7 +64,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -75,7 +74,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/collaboration/public/messaging/activity_log.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/lens/lens_features.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
@@ -95,7 +93,6 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
-#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -816,61 +813,6 @@ void BrowserActions::InitializeBrowserActions() {
       actions::ActionItem::Builder(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                BrowserView* browser_view =
-                    BrowserView::GetBrowserViewForBrowser(browser);
-                CHECK(browser_view);
-
-                ToolbarButtonProvider* toolbar_button_provider =
-                    browser_view->toolbar_button_provider();
-                CHECK(toolbar_button_provider);
-
-                views::View* page_action_view =
-                    toolbar_button_provider->GetPageActionView(
-                        kActionShowCollaborationRecentActivity);
-                CHECK(page_action_view);
-
-                tabs::TabInterface* tab = browser->GetActiveTabInterface();
-                CHECK(tab);
-
-                Profile* profile = browser->GetProfile();
-                CHECK(profile);
-
-                RecentActivityBubbleCoordinator* bubble_coordinator =
-                    RecentActivityBubbleCoordinator::From(browser);
-                CHECK(bubble_coordinator);
-
-                const std::optional<tab_groups::TabGroupId> group =
-                    tab->GetGroup();
-                CHECK(group.has_value());
-
-                const tab_groups::TabGroupId group_id = group.value();
-                int32_t tab_id = tab->GetHandle().raw_value();
-                auto* web_contents = tab->GetContents();
-
-                const std::vector<collaboration::messaging::ActivityLogItem>
-                    tab_activity_log =
-                        tab_groups::SavedTabGroupUtils::GetRecentActivity(
-                            profile, group_id, tab_id);
-                const std::vector<collaboration::messaging::ActivityLogItem>
-                    group_activity_log =
-                        tab_groups::SavedTabGroupUtils::GetRecentActivity(
-                            profile, group_id);
-
-                bubble_coordinator->ShowForCurrentTab(
-                    page_action_view, web_contents, tab_activity_log,
-                    group_activity_log, profile);
-              },
-              base::Unretained(browser)))
-          .SetActionId(kActionShowCollaborationRecentActivity)
-          .SetImage(ui::ImageModel().FromVectorIcon(
-              kPersonFilledPaddedSmallIcon, ui::kColorIcon))
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* toolbar_button_provider =
                     bwi->GetBrowserForMigrationOnly()
