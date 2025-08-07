@@ -2187,7 +2187,7 @@
     "owners": [ "fergal@chromium.org", "bfcache-dev@chromium.org"],
     // The schedule for unload events being fully removed is unknown. We expect
     // it to take several years. This milestone is a placeholder and may be revisted.
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
     "name": "deprecated-external-picker-function",
