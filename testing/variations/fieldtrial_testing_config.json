@@ -807,21 +807,6 @@
             ]
         }
     ],
-    "AndroidProgressBarVisualUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidProgressBarVisualUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidRaiseDisplayCriticalThreadPriority": [
         {
             "platforms": [
@@ -1047,21 +1032,6 @@
             ]
         }
     ],
-    "AndroidTabGroupsColorUpdateGm3": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidTabGroupsColorUpdateGM3"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidThemeModule": [
         {
             "platforms": [
@@ -1071,6 +1041,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AndroidProgressBarVisualUpdate",
+                        "AndroidTabGroupsColorUpdateGM3",
                         "AndroidThemeModule",
                         "CpaSpecUpdate",
                         "GridTabSwitcherSurfaceColorUpdate",
@@ -1079,7 +1051,18 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Gts",
+                    "name": "Enabled_M139",
+                    "enable_features": [
+                        "AndroidProgressBarVisualUpdate",
+                        "AndroidTabGroupsColorUpdateGM3",
+                        "AndroidThemeModule",
+                        "CpaSpecUpdate",
+                        "GridTabSwitcherUpdate",
+                        "TabletTabStripAnimation"
+                    ]
+                },
+                {
+                    "name": "Enabled_GtsOnly",
                     "enable_features": [
                         "AndroidThemeModule",
                         "GridTabSwitcherSurfaceColorUpdate",
