@@ -2319,8 +2319,14 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 }
 
 // Verify that UKM metrics are recorded correctly.
+// TODO(crbug.com/436944391): test is failing on Windows bots.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RecordedUKMMetrics DISABLED_RecordedUKMMetrics
+#else
+#define MAYBE_RecordedUKMMetrics RecordedUKMMetrics
+#endif
 IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       RecordedUKMMetrics) {
+                       MAYBE_RecordedUKMMetrics) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ASSERT_TRUE(embedded_test_server()->Start());
