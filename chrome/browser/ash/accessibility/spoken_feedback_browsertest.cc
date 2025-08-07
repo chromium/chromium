@@ -2821,12 +2821,15 @@ class SpokenFeedbackWithCandidateWindowTest
   raw_ptr<ui::ime::CandidateWindowView> candidate_window_view_;
 };
 
-// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
-// complete.
 INSTANTIATE_TEST_SUITE_P(
     ManifestV2,
     SpokenFeedbackWithCandidateWindowTest,
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3,
+    SpokenFeedbackWithCandidateWindowTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree)));
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithCandidateWindowTest,
                        SpeakSelectedItem) {
