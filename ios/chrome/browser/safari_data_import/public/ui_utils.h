@@ -12,7 +12,9 @@
 UIFontTextStyle GetSafariDataImportTitleLabelFontTextStyle(
     UITraitCollection* traitCollection);
 
-/// Get separator inset for table views in the workflow.
-UIEdgeInsets GetSafariDataImportSeparatorInset();
+/// Get separator inset for table views in the workflow based on whether they
+/// are in multi-selection mode (radio-button in the leading edge), which does
+/// not change for Safai data import cells.
+UIEdgeInsets GetSafariDataImportSeparatorInset(BOOL multiSelectionMode);
 
 #endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_UI_UTILS_H_
