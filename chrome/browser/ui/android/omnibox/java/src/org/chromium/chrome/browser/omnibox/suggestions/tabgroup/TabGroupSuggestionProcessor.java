@@ -76,9 +76,9 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
                         /* allowTint= */ true);
         model.set(BaseSuggestionViewProperties.ICON, state);
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, getTitleSpannable(suggestion));
-        model.set(
-                SuggestionViewProperties.TEXT_LINE_2_TEXT,
-                new SuggestionSpannable(suggestion.getDescription()));
+        SuggestionSpannable descriptionText = new SuggestionSpannable(suggestion.getDescription());
+        applyHighlightToMatchRegions(descriptionText, suggestion.getDescriptionClassifications());
+        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, descriptionText);
         model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, getContentDescription(suggestion));
     }
 
