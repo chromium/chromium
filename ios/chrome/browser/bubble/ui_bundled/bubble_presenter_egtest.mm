@@ -471,6 +471,9 @@ void ReloadFromOmnibox() {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_tap()];
+  // This is needed because of a race condition with animating the closure of
+  // the tab grid.
+  WaitForTabGridDisappearance();
   AssertGestureIPHVisibleWithDismissAction(
       @"Toolbar swipe IPH should be visible when the user switches to an "
       @"adjacent tab.",

@@ -24239,6 +24239,21 @@
             ]
         }
     ],
+    "TabGridNewTransitions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGridNewTransitions"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGroupParityAndroidV2": [
         {
             "platforms": [

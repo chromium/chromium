@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 
 @protocol ApplicationCommands;
 @class ChromeAppBarPrototype;
@@ -99,7 +98,6 @@ enum class TabGridPageConfiguration {
                         TabGridConsumer,
                         TabGridIdleStatusHandler,
                         TabGridToolbarsMainTabGridDelegate,
-                        TabGridTransitionLayoutProviding,
                         UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;

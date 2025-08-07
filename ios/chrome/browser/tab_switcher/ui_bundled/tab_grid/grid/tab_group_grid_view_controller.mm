@@ -75,8 +75,8 @@
 
 #pragma mark - Parent's functions
 
-- (LegacyGridTransitionLayout*)transitionLayout {
-  LegacyGridTransitionLayout* transitionLayout = [super transitionLayout];
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
+  LegacyGridTransitionLayout* transitionLayout = [super legacyTransitionLayout];
   if (IsContainedTabGroupEnabled()) {
     // When the user is entering the TabGrid from a Tab in a group, the
     // non-selected tabs should not animate otherwise they will be

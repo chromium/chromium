@@ -135,6 +135,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_handler.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -184,6 +185,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   SnackbarCoordinatorDelegate,
                                   TabContextMenuDelegate,
                                   TabGridCommands,
+                                  TabGridTransitionLayoutProviding,
                                   TabGridViewControllerDelegate,
                                   TabGroupPositioner,
                                   TabPresentationDelegate> {
@@ -748,14 +750,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   BOOL isRegularBrowserNTP = !isIncognito && activeWebState &&
                              IsUrlNtp(activeWebState->GetVisibleURL());
 
+  if (!activeWebState) {
+    transitionType = TabGridTransitionType::kAnimationDisabled;
+  }
+
   self.transitionHandler = [[TabGridTransitionHandler alloc]
-          initWithTransitionType:transitionType
-                       direction:direction
-           tabGridViewController:self.baseViewController
-      bvcContainerViewController:self.bvcContainer
-               layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
-             isRegularBrowserNTP:isRegularBrowserNTP
-                     isIncognito:isIncognito];
+               initWithTransitionType:transitionType
+                            direction:direction
+      tabGridTransitionLayoutProvider:self
+                tabGridViewController:self.baseViewController
+           bvcContainerViewController:self.bvcContainer
+                    layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
+                  isRegularBrowserNTP:isRegularBrowserNTP
+                          isIncognito:isIncognito];
   [self.transitionHandler performTransitionWithCompletion:completionHandler];
 }
 
@@ -1239,6 +1246,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.delegate tabGrid:self
       shouldActivateBrowser:activeBrowser
                focusOmnibox:focusOmnibox];
+}
+
+#pragma mark - TabGridTransitionLayoutProviding
+
+- (TabGridTransitionLayout*)transitionLayoutForIsIncognito:(BOOL)isIncognito {
+  if (isIncognito) {
+    return [_incognitoGridCoordinator transitionLayout];
+  } else {
+    return [_regularGridCoordinator transitionLayout];
+  }
 }
 
 #pragma mark - GridMediatorDelegate
@@ -1944,9 +1961,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (LegacyGridTransitionLayout*)transitionLayoutForPage:(TabGridPage)page {
   switch (page) {
     case TabGridPageIncognitoTabs:
-      return [_incognitoGridCoordinator transitionLayout];
+      return [_incognitoGridCoordinator legacyTransitionLayout];
     case TabGridPageRegularTabs:
-      return [_regularGridCoordinator transitionLayout];
+      return [_regularGridCoordinator legacyTransitionLayout];
     case TabGridPageTabGroups:
       return nil;
   }

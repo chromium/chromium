@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item_snapshot_and_favicon_data_source.h"
@@ -208,7 +209,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self dragSessionEnabled:NO];
 }
 
-- (LegacyGridTransitionLayout*)transitionLayout {
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
   [self.collectionView layoutIfNeeded];
 
   LegacyGridTransitionActiveItem* activeItem;
@@ -249,6 +250,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [LegacyGridTransitionLayout layoutWithInactiveItems:@[]
                                                   activeItem:activeItem
                                                selectionItem:selectionItem];
+}
+
+- (TabGridTransitionLayout*)transitionLayout {
+  return [TabGridTransitionLayout
+      layoutWithActiveCell:self.transitionItemForActiveCell
+                activeGrid:self];
 }
 
 - (TabGridTransitionItem*)transitionItemForActiveCell {

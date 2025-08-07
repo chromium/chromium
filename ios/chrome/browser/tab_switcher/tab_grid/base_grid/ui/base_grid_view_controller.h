@@ -20,6 +20,7 @@
 @protocol GridViewControllerMutator;
 @class LayoutGuideCenter;
 @class LegacyGridTransitionLayout;
+@class TabGridTransitionLayout;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
 @protocol TabContextMenuProvider;
@@ -167,8 +168,11 @@ class WebStateID;
 @property(nonatomic, weak) id<TabSwitcherItemSnapShotAndFaviconDataSource>
     snapshotAndfaviconDataSource;
 
+// Returns the legacy layout of the grid for use in an animated transition.
+- (LegacyGridTransitionLayout*)legacyTransitionLayout;
+
 // Returns the layout of the grid for use in an animated transition.
-- (LegacyGridTransitionLayout*)transitionLayout;
+- (TabGridTransitionLayout*)transitionLayout;
 
 // Returns TabGridTransitionItem for the active cell.
 - (TabGridTransitionItem*)transitionItemForActiveCell;

@@ -15,6 +15,7 @@ class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
 @class LegacyGridTransitionLayout;
+@class TabGridTransitionLayout;
 @protocol TabContextMenuDelegate;
 @class TabGridModeHolder;
 @protocol TabGroupPositioner;
@@ -60,8 +61,11 @@ class Browser;
 - (BOOL)bringTabGroupIntoViewIfPresent:(const TabGroup*)tabGroup
                               animated:(BOOL)animated;
 
+// Returns the legacy transition layout for this grid.
+- (LegacyGridTransitionLayout*)legacyTransitionLayout;
+
 // Returns the transition layout for this grid.
-- (LegacyGridTransitionLayout*)transitionLayout;
+- (TabGridTransitionLayout*)transitionLayout;
 
 // Returns whether the selected cell is visible.
 - (BOOL)isSelectedCellVisible;

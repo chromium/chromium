@@ -82,24 +82,38 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
 #pragma mark - Superclass overrides
 
-- (LegacyGridTransitionLayout*)transitionLayout {
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
   if (self.tabGroupCoordinator) {
     return [self.tabGroupCoordinator.viewController
-                .gridViewController transitionLayout];
+                .gridViewController legacyTransitionLayout];
   }
 
   LegacyGridTransitionLayout* transitionLayout =
-      [_gridViewController transitionLayout];
+      [_gridViewController legacyTransitionLayout];
 
   if (IsPinnedTabsEnabled()) {
     LegacyGridTransitionLayout* pinnedTabsTransitionLayout =
-        [self.pinnedTabsViewController transitionLayout];
+        [self.pinnedTabsViewController legacyTransitionLayout];
 
     return [self combineTransitionLayout:transitionLayout
                     withTransitionLayout:pinnedTabsTransitionLayout];
   }
 
   return transitionLayout;
+}
+
+- (TabGridTransitionLayout*)transitionLayout {
+  if (self.tabGroupCoordinator) {
+    return [self.tabGroupCoordinator.viewController
+                .gridViewController transitionLayout];
+  }
+
+  if (IsPinnedTabsEnabled() &&
+      [self.pinnedTabsViewController hasSelectedCell]) {
+    return [self.pinnedTabsViewController transitionLayout];
+  }
+
+  return [self.gridViewController transitionLayout];
 }
 
 - (BOOL)isSelectedCellVisible {

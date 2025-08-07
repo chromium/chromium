@@ -100,7 +100,15 @@
 
 #pragma mark - Superclass overrides
 
-- (LegacyGridTransitionLayout*)transitionLayout {
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
+  if (self.tabGroupCoordinator) {
+    return [self.tabGroupCoordinator.viewController
+                .gridViewController legacyTransitionLayout];
+  }
+  return [self.gridViewController legacyTransitionLayout];
+}
+
+- (TabGridTransitionLayout*)transitionLayout {
   if (self.tabGroupCoordinator) {
     return [self.tabGroupCoordinator.viewController
                 .gridViewController transitionLayout];

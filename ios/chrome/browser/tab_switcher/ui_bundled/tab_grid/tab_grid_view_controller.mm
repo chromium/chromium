@@ -356,18 +356,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return l10n_util::GetNSString(stringID);
 }
 
-#pragma mark - TabGridTransitionLayoutProviding
-
-- (TabGridTransitionLayout*)transitionLayout {
-  TabGridPage activePage = self.activePage;
-  BaseGridViewController* activeGrid =
-      [self gridViewControllerForPage:activePage];
-  TabGridTransitionItem* activeCell =
-      [self transitionItemForActiveCellWithActivePage:activePage];
-  return [TabGridTransitionLayout layoutWithActiveCell:activeCell
-                                            activeGrid:activeGrid];
-}
-
 #pragma mark - Public Methods
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
@@ -559,19 +547,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self calculateInsetsForRegularGridView];
   self.tabGroupsPanelViewController.contentInsets =
       [self calculateInsetsForGridView];
-}
-
-// Returns the corresponding BaseGridViewController for `page`. Returns `nil` if
-// page does not have a corresponding BaseGridViewController.
-- (BaseGridViewController*)gridViewControllerForPage:(TabGridPage)page {
-  switch (page) {
-    case TabGridPageIncognitoTabs:
-      return self.incognitoTabsViewController;
-    case TabGridPageRegularTabs:
-      return self.regularTabsViewController;
-    case TabGridPageTabGroups:
-      return nil;
-  }
 }
 
 - (void)setActivePage:(TabGridPage)activePage {
@@ -1206,19 +1181,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
               !self.pinnedTabsViewController.isCollectionEmpty);
     case TabGridPageTabGroups:
       return NO;
-  }
-}
-
-// Returns transition layout for the provided `page`.
-- (TabGridTransitionItem*)transitionItemForActiveCellWithActivePage:
-    (TabGridPage)activePage {
-  switch (activePage) {
-    case TabGridPageIncognitoTabs:
-      return [self.incognitoTabsViewController transitionItemForActiveCell];
-    case TabGridPageRegularTabs:
-      return [self transitionItemForRegularActiveCell];
-    case TabGridPageTabGroups:
-      return nil;
   }
 }
 

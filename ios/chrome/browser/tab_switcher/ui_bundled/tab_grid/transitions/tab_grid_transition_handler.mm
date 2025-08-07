@@ -22,8 +22,11 @@
   TabGridTransitionType _transitionType;
   TabGridTransitionDirection _direction;
 
-  UIViewController<TabGridTransitionLayoutProviding>* _tabGridViewController;
+  UIViewController* _tabGridViewController;
   UIViewController* _BVCContainerViewController;
+
+  // Transition layout provider for the tab grid.
+  id<TabGridTransitionLayoutProviding> _tabGridTransitionLayoutProvider;
 
   // Transition item for the selected cell in tab grid.
   TabGridTransitionItem* _tabGridCellItem;
@@ -48,9 +51,9 @@
 
 - (instancetype)initWithTransitionType:(TabGridTransitionType)transitionType
                              direction:(TabGridTransitionDirection)direction
-                 tabGridViewController:
-                     (UIViewController<TabGridTransitionLayoutProviding>*)
-                         tabGridViewController
+       tabGridTransitionLayoutProvider:
+           (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
+                 tabGridViewController:(UIViewController*)tabGridViewController
             bvcContainerViewController:
                 (UIViewController*)bvcContainerViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
@@ -58,14 +61,15 @@
                            isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
-    CHECK(tabGridViewController.transitionLayout);
-
+    TabGridTransitionLayout* transitionLayout = [tabGridTransitionLayoutProvider
+        transitionLayoutForIsIncognito:isIncognito];
     _transitionType = transitionType;
     _direction = direction;
+    _tabGridTransitionLayoutProvider = tabGridTransitionLayoutProvider;
     _tabGridViewController = tabGridViewController;
     _BVCContainerViewController = bvcContainerViewController;
-    _tabGridCellItem = tabGridViewController.transitionLayout.activeCell;
-    _activeGrid = tabGridViewController.transitionLayout.activeGrid;
+    _tabGridCellItem = transitionLayout.activeCell;
+    _activeGrid = transitionLayout.activeGrid;
     _layoutGuideCenter = layoutGuideCenter;
     _isRegularBrowserNTP = isRegularBrowserNTP;
     _isIncognito = isIncognito;
@@ -216,8 +220,16 @@
           ? _BVCContainerViewController.view.frame
           : _tabGridCellItem.originalFrame;
 
-  switch (_transitionType) {
+  // The animation is ugly or crashes when the selected cell is not visible.
+  TabGridTransitionType transitionType = _transitionType;
+  if (!_tabGridTransitionLayoutProvider.isSelectedCellVisible) {
+    transitionType = TabGridTransitionType::kReducedMotion;
+  }
+
+  switch (transitionType) {
     case TabGridTransitionType::kNormal:
+      CHECK(_tabGridCellItem);
+
       return [[TabGridAnimationParameters alloc]
            initWithDestinationFrame:destinationFrame
                         originFrame:originFrame

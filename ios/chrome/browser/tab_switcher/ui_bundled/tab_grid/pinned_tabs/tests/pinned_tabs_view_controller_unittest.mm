@@ -31,7 +31,7 @@ TEST_F(PinnedTabsViewControllerTest, NoSelection_NoTransitionLayout) {
   ];
   [view_controller populateItems:items selectedItemID:web::WebStateID()];
 
-  EXPECT_NSEQ(view_controller.transitionLayout, nil);
+  EXPECT_NSEQ(view_controller.legacyTransitionLayout, nil);
 }
 
 // Tests that when there is a selected item, there is a transition layout
@@ -52,7 +52,7 @@ TEST_F(PinnedTabsViewControllerTest, Selection_TransitionLayout) {
   ];
   [view_controller populateItems:items selectedItemID:identifier_a];
 
-  EXPECT_NSNE(view_controller.transitionLayout, nil);
+  EXPECT_NSNE(view_controller.legacyTransitionLayout, nil);
 }
 
 // Tests that when the selected item is unselected, there is no transition
@@ -76,5 +76,5 @@ TEST_F(PinnedTabsViewControllerTest, Unselection_NoTransitionLayout) {
   // Unselect.
   [view_controller selectItemWithID:web::WebStateID()];
 
-  EXPECT_NSEQ(view_controller.transitionLayout, nil);
+  EXPECT_NSEQ(view_controller.legacyTransitionLayout, nil);
 }

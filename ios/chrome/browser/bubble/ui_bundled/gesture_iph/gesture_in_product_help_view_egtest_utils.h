@@ -41,6 +41,10 @@ void AssertGestureIPHVisibleWithDismissAction(NSString* description,
 // time.
 void AssertGestureIPHInvisible(NSString* description);
 
+// Waits for an adequate amount of time to allow the Tab Grid disappearance
+// animation to complete.
+void WaitForTabGridDisappearance();
+
 // Taps "Dismiss" button with animation running.
 void TapDismissButton();
 

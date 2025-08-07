@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
@@ -413,6 +414,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self updateSuggestedActionsSection];
 }
 
+// TODO(crbug.com/427543764): Rename this method now that it checks for
+// something different.
 - (BOOL)isSelectedCellVisible {
   // The collection view's selected item may not have updated yet, so use the
   // selected index.
@@ -421,8 +424,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return NO;
   }
   NSIndexPath* selectedIndexPath = [self indexPathForTabIndex:selectedIndex];
+
+  GridItemIdentifier* gridItem =
+      [self.diffableDataSource itemIdentifierForIndexPath:selectedIndexPath];
+
   return [self.collectionView.indexPathsForVisibleItems
-      containsObject:selectedIndexPath];
+             containsObject:selectedIndexPath] &&
+         gridItem.type == GridItemType::kTab;
 }
 
 - (void)setContentInsets:(UIEdgeInsets)contentInsets {
@@ -438,7 +446,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   _contentInsets = contentInsets;
 }
 
-- (LegacyGridTransitionLayout*)transitionLayout {
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
   [self.collectionView layoutIfNeeded];
   NSMutableArray<LegacyGridTransitionItem*>* items =
       [[NSMutableArray alloc] init];
@@ -489,6 +497,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   return [LegacyGridTransitionLayout layoutWithInactiveItems:items
                                                   activeItem:activeItem
                                                selectionItem:selectionItem];
+}
+
+- (TabGridTransitionLayout*)transitionLayout {
+  return [TabGridTransitionLayout
+      layoutWithActiveCell:self.transitionItemForActiveCell
+                activeGrid:self];
 }
 
 - (TabGridTransitionItem*)transitionItemForActiveCell {
