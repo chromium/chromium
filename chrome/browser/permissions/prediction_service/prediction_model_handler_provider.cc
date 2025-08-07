@@ -168,10 +168,8 @@ void PredictionModelHandlerProvider::set_passage_embedder_for_testing(
 
 bool PredictionModelHandlerProvider::IsAiv4ModelAvailable() {
   return base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4);
-  // TODO(crbug.com/382447738) Add check for language as the text embeddings
-  // model required for preparing the text input of AIv4 only works on english
-  // text for now.
 }
+
 passage_embeddings::Embedder*
 PredictionModelHandlerProvider::GetPassageEmbedder() {
   if (passage_embedder_for_testing.has_value()) {

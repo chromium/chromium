@@ -178,6 +178,10 @@ constexpr char kAiv4TryCancelPreviousEmbeddingsModelExecutionHistogram[] =
     "Permissions.AIv4.TryCancelPreviousEmbeddingsModelExecution";
 constexpr char kAiv4FinishedPassageEmbeddingsTaskOutdatedHistogram[] =
     "Permissions.AIv4.FinishedPassageEmbeddingsTaskOutdated";
+constexpr char kAiv4ComputeEmbeddingsStatusHistogram[] =
+    "Permissions.AIv4.ComputeEmbeddingsStatus";
+constexpr char kAiv4ComputeEmbeddingsDurationHistogram[] =
+    "Permissions.AIv4.ComputeEmbeddingsDuration";
 
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
@@ -1495,6 +1499,14 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
       kAiv4FinishedPassageEmbeddingsTaskOutdatedHistogram,
       /*sample=*/0,
       /*expected_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      kAiv4ComputeEmbeddingsStatusHistogram,
+      /*sample=*/ComputeEmbeddingsStatus::kSuccess,
+      /*expected_count=*/1);
+
+  histogram_tester().ExpectTotalCount(kAiv4ComputeEmbeddingsDurationHistogram,
+                                      /*expected_count=*/1);
 
   histogram_tester().ExpectBucketCount(
       request_type() == RequestType::kNotifications
