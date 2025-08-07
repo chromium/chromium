@@ -23,14 +23,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 
 #include <memory>
+
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -431,8 +428,8 @@ TEST_F(DeferredImageDecoderTest, data) {
   EXPECT_EQ(original_buffer->size(), new_buffer->size());
   const Vector<char> original_data = original_buffer->CopyAs<Vector<char>>();
   const Vector<char> new_data = new_buffer->CopyAs<Vector<char>>();
-  EXPECT_EQ(0, std::memcmp(original_data.data(), new_data.data(),
-                           new_buffer->size()));
+  UNSAFE_TODO(EXPECT_EQ(0, std::memcmp(original_data.data(), new_data.data(),
+                                       new_buffer->size())));
 }
 
 class MultiFrameDeferredImageDecoderTest : public DeferredImageDecoderTest {

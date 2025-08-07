@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 
 #include <queue>
 
 #include "base/atomic_ref_count.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/sequence_checker.h"
 #include "third_party/webrtc/api/video/encoded_image.h"
@@ -82,7 +78,8 @@ class VideoEncoderStateObserverImpl::EncoderState {
     if (codec.codecType == webrtc::VideoCodecType::kVideoCodecVP9 &&
         codec.VP9().numberOfSpatialLayers > 0) {
       for (int i = 0; i < codec.VP9().numberOfSpatialLayers; ++i) {
-        const webrtc::SpatialLayer& stream = codec.spatialLayers[i];
+        const webrtc::SpatialLayer& stream =
+            UNSAFE_TODO(codec.spatialLayers[i]);
         int pixel_rate =
             (active_vec_size >= i + 1 && codec_config_.active_spatial_layers[i]
                  ? 1
@@ -96,7 +93,8 @@ class VideoEncoderStateObserverImpl::EncoderState {
       }
     } else {
       for (int i = 0; i < codec.numberOfSimulcastStreams; ++i) {
-        const webrtc::SimulcastStream& stream = codec.simulcastStream[i];
+        const webrtc::SimulcastStream& stream =
+            UNSAFE_TODO(codec.simulcastStream[i]);
         int pixel_rate =
             (active_vec_size >= i + 1 && codec_config_.active_spatial_layers[i]
                  ? 1

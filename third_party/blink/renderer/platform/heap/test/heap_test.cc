@@ -28,13 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -2177,8 +2173,8 @@ TEST_F(HeapTest, CollectionNesting) {
   Persistent<GCedHeapHashMap<void*, Member<IntDeque>>> keep_alive2(map2);
 
   for (int i = 0; i < 100; i++) {
-    map->insert(key + 1 + i, MakeGarbageCollected<IntVector>());
-    map2->insert(key + 1 + i, MakeGarbageCollected<IntDeque>());
+    map->insert(UNSAFE_TODO(key + 1 + i), MakeGarbageCollected<IntVector>());
+    map2->insert(UNSAFE_TODO(key + 1 + i), MakeGarbageCollected<IntDeque>());
   }
 
   PreciselyCollectGarbage();

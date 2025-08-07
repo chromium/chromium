@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,8 +38,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA4444toRGBA8) {
   uint8_t destination_data[36];
   UnpackPixels(source_data, WebGLImageConversion::kDataFormatRGBA4444, 9,
                destination_data);
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, ConvertRGBA5551toRGBA8) {
@@ -56,8 +52,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA5551toRGBA8) {
   uint8_t destination_data[36];
   UnpackPixels(source_data, WebGLImageConversion::kDataFormatRGBA5551, 9,
                destination_data);
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, ConvertRGBA8toRA8) {
@@ -72,8 +68,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA8toRA8) {
   uint8_t destination_data[20];
   PackPixels(source_data, WebGLImageConversion::kDataFormatRA8, 10,
              destination_data);
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, convertBGRA8toRGBA8) {
@@ -93,8 +89,8 @@ TEST_F(WebGLImageConversionTest, convertBGRA8toRGBA8) {
   UnpackPixels(reinterpret_cast<uint16_t*>(&source_data[0]),
                WebGLImageConversion::kDataFormatBGRA8, 9,
                reinterpret_cast<uint8_t*>(&destination_data[0]));
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, ConvertRGBA8toR8) {
@@ -108,8 +104,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA8toR8) {
   uint8_t destination_data[10];
   PackPixels(source_data, WebGLImageConversion::kDataFormatR8, 10,
              destination_data);
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, ConvertRGBA8toRGBA8) {
@@ -126,8 +122,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA8toRGBA8) {
   uint8_t destination_data[40];
   PackPixels(source_data, WebGLImageConversion::kDataFormatRGBA8, 10,
              destination_data);
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, ConvertRGBA8ToUnsignedShort4444) {
@@ -141,8 +137,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA8ToUnsignedShort4444) {
   uint16_t destination_data[10];
   PackPixels(source_data, WebGLImageConversion::kDataFormatRGBA4444, 10,
              reinterpret_cast<uint8_t*>(&destination_data[0]));
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, ConvertRGBA8ToRGBA5551) {
@@ -156,8 +152,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA8ToRGBA5551) {
   uint16_t destination_data[10];
   PackPixels(source_data, WebGLImageConversion::kDataFormatRGBA5551, 10,
              reinterpret_cast<uint8_t*>(&destination_data[0]));
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 TEST_F(WebGLImageConversionTest, ConvertRGBA8ToRGB565) {
@@ -171,8 +167,8 @@ TEST_F(WebGLImageConversionTest, ConvertRGBA8ToRGB565) {
   uint16_t destination_data[10];
   PackPixels(source_data, WebGLImageConversion::kDataFormatRGB565, 10,
              reinterpret_cast<uint8_t*>(&destination_data[0]));
-  EXPECT_EQ(0,
-            memcmp(expected_data, destination_data, sizeof(destination_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(expected_data, destination_data, sizeof(destination_data))));
 }
 
 }  // namespace blink

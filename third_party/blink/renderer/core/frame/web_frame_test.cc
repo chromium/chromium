@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/public/web/web_frame.h"
 
 #include <algorithm>
@@ -43,6 +38,7 @@
 #include <optional>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -9098,8 +9094,8 @@ static void NodeImageTestValidation(const gfx::Size& reference_bitmap_size,
   EXPECT_EQ(reference_bitmap_size.width(), drag_image->Size().width());
   EXPECT_EQ(reference_bitmap_size.height(), drag_image->Size().height());
   const SkBitmap& drag_bitmap = drag_image->Bitmap();
-  EXPECT_EQ(0, memcmp(bitmap.getPixels(), drag_bitmap.getPixels(),
-                      bitmap.computeByteSize()));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(bitmap.getPixels(), drag_bitmap.getPixels(),
+                                  bitmap.computeByteSize())));
 }
 
 TEST_F(WebFrameTest, NodeImageTestCSSTransformDescendant) {

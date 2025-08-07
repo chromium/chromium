@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 
 #include "base/compiler_specific.h"
@@ -139,7 +134,8 @@ MATCHER_P(DOMArrayBufferEqualTo, vector, "") {
     return false;
   }
   uint8_t* data = (uint8_t*)arg->Data();
-  return std::equal(data, data + arg->ByteLength(), std::begin(vector));
+  return std::equal(data, UNSAFE_TODO(data + arg->ByteLength()),
+                    std::begin(vector));
 }
 
 MATCHER_P(UnionDOMArrayBufferOrViewEqualTo, vector, "") {
@@ -150,7 +146,8 @@ MATCHER_P(UnionDOMArrayBufferOrViewEqualTo, vector, "") {
     return false;
   }
   uint8_t* data = (uint8_t*)buffer->Data();
-  return std::equal(data, data + buffer->ByteLength(), std::begin(vector));
+  return std::equal(data, UNSAFE_TODO(data + buffer->ByteLength()),
+                    std::begin(vector));
 }
 
 TEST(CredentialManagerTypeConvertersTest,
@@ -617,7 +614,7 @@ static blink::V8UnionArrayBufferOrArrayBufferView* arrayBufferOrView(
 
 static Vector<uint8_t> vectorOf(const uint8_t* data, size_t size) {
   Vector<uint8_t> vector;
-  std::copy(data, data + size, std::back_insert_iterator(vector));
+  std::copy(data, UNSAFE_TODO(data + size), std::back_insert_iterator(vector));
   return vector;
 }
 

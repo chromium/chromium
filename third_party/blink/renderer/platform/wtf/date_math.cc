@@ -69,11 +69,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 #include <limits.h>
@@ -87,6 +82,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -246,7 +242,7 @@ int DayInMonthFromDayInYear(int day_in_year, bool leap_year) {
 }
 
 int DayInYear(int year, int month, int day) {
-  return kFirstDayOfMonth[IsLeapYear(year)][month] + day - 1;
+  return UNSAFE_TODO(kFirstDayOfMonth[IsLeapYear(year)][month]) + day - 1;
 }
 
 double DateToDaysFrom1970(int year, int month, int day) {
@@ -302,7 +298,7 @@ inline static void SkipSpacesAndComments(const char*& s) {
       else if (nesting == 0)
         break;
     }
-    s++;
+    UNSAFE_TODO(s++);
   }
 }
 
@@ -313,11 +309,12 @@ static int FindMonth(const char* month_str) {
   for (int i = 0; i < 3; ++i) {
     if (!*month_str)
       return -1;
-    needle[i] = static_cast<char>(ToASCIILower(*month_str++));
+    UNSAFE_TODO(needle[i]) =
+        static_cast<char>(ToASCIILower(*UNSAFE_TODO(month_str++)));
   }
   needle[3] = '\0';
   const char* haystack = "janfebmaraprmayjunjulaugsepoctnovdec";
-  const char* str = strstr(haystack, needle);
+  const char* str = UNSAFE_TODO(strstr(haystack, needle));
   if (str) {
     int position = static_cast<int>(str - haystack);
     if (position % 3 == 0)
@@ -330,7 +327,7 @@ static bool ParseInt(const char* string,
                      char** stop_position,
                      int base,
                      int* result) {
-  int64_t int64_result = strtol(string, stop_position, base);
+  int64_t int64_result = UNSAFE_TODO(strtol(string, stop_position, base));
   // Avoid the use of errno as it is not available on Windows CE
   if (string == *stop_position ||
       int64_result <= std::numeric_limits<int>::min() ||
@@ -344,7 +341,7 @@ static bool ParseInt64(const char* string,
                        char** stop_position,
                        int base,
                        int64_t* result) {
-  int64_t int64_result = strtoll(string, stop_position, base);
+  int64_t int64_result = UNSAFE_TODO(strtoll(string, stop_position, base));
   // Avoid the use of errno as it is not available on Windows CE
   if (string == *stop_position ||
       int64_result == std::numeric_limits<int64_t>::min() ||
@@ -388,7 +385,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
       SkipSpacesAndComments(date_string);
       word_start = date_string;
     } else {
-      date_string++;
+      UNSAFE_TODO(date_string++);
     }
   }
 
@@ -420,8 +417,9 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
     if (*date_string != '/')
       return std::numeric_limits<double>::quiet_NaN();
     // looks like a YYYY/MM/DD date
-    if (!*++date_string)
+    if (!*UNSAFE_TODO(++date_string)) {
       return std::numeric_limits<double>::quiet_NaN();
+    }
     if (day <= std::numeric_limits<int>::min() ||
         day >= std::numeric_limits<int>::max())
       return std::numeric_limits<double>::quiet_NaN();
@@ -430,13 +428,14 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
       return std::numeric_limits<double>::quiet_NaN();
     --month;
     date_string = new_pos_str;
-    if (*date_string++ != '/' || !*date_string)
+    if (*UNSAFE_TODO(date_string++) != '/' || !*date_string) {
       return std::numeric_limits<double>::quiet_NaN();
+    }
     if (!ParseInt64(date_string, &new_pos_str, 10, &day))
       return std::numeric_limits<double>::quiet_NaN();
     date_string = new_pos_str;
   } else if (*date_string == '/' && month == -1) {
-    date_string++;
+    UNSAFE_TODO(date_string++);
     // This looks like a MM/DD/YYYY date, not an RFC date.
     month = day - 1;  // 0-based
     if (!ParseInt64(date_string, &new_pos_str, 10, &day))
@@ -445,17 +444,17 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
       return std::numeric_limits<double>::quiet_NaN();
     date_string = new_pos_str;
     if (*date_string == '/')
-      date_string++;
+      UNSAFE_TODO(date_string++);
     if (!*date_string)
       return std::numeric_limits<double>::quiet_NaN();
   } else {
     if (*date_string == '-')
-      date_string++;
+      UNSAFE_TODO(date_string++);
 
     SkipSpacesAndComments(date_string);
 
     if (*date_string == ',')
-      date_string++;
+      UNSAFE_TODO(date_string++);
 
     if (month == -1) {  // not found yet
       month = FindMonth(date_string);
@@ -464,7 +463,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
 
       while (*date_string && *date_string != '-' && *date_string != ',' &&
              !IsASCIISpace(*date_string))
-        date_string++;
+        UNSAFE_TODO(date_string++);
 
       if (!*date_string)
         return std::numeric_limits<double>::quiet_NaN();
@@ -473,7 +472,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
       if (*date_string != '-' && *date_string != '/' && *date_string != ',' &&
           !IsASCIISpace(*date_string))
         return std::numeric_limits<double>::quiet_NaN();
-      date_string++;
+      UNSAFE_TODO(date_string++);
     }
   }
 
@@ -501,7 +500,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
       year = -1;
     } else {
       // in the normal case (we parsed the year), advance to the next number
-      date_string = ++new_pos_str;
+      date_string = UNSAFE_TODO(++new_pos_str);
       SkipSpacesAndComments(date_string);
     }
 
@@ -521,8 +520,9 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
         return std::numeric_limits<double>::quiet_NaN();
 
       // ':12:40 GMT'
-      if (*date_string++ != ':')
+      if (*UNSAFE_TODO(date_string++) != ':') {
         return std::numeric_limits<double>::quiet_NaN();
+      }
 
       if (!ParseInt64(date_string, &new_pos_str, 10, &minute))
         return std::numeric_limits<double>::quiet_NaN();
@@ -537,7 +537,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
 
       // seconds are optional in rfc822 + rfc2822
       if (*date_string == ':') {
-        date_string++;
+        UNSAFE_TODO(date_string++);
 
         if (!ParseInt64(date_string, &new_pos_str, 10, &second))
           return std::numeric_limits<double>::quiet_NaN();
@@ -555,14 +555,14 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
           return std::numeric_limits<double>::quiet_NaN();
         if (hour == 12)
           hour = 0;
-        date_string += 2;
+        UNSAFE_TODO(date_string += 2);
         SkipSpacesAndComments(date_string);
       } else if (date_wtf_string.StartsWithIgnoringASCIICase("PM")) {
         if (hour > 12)
           return std::numeric_limits<double>::quiet_NaN();
         if (hour != 12)
           hour += 12;
-        date_string += 2;
+        UNSAFE_TODO(date_string += 2);
         SkipSpacesAndComments(date_string);
       }
     }
@@ -582,7 +582,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
     String date_wtf_string(date_string);
     if (date_wtf_string.StartsWithIgnoringASCIICase("GMT") ||
         date_wtf_string.StartsWithIgnoringASCIICase("UTC")) {
-      date_string += 3;
+      UNSAFE_TODO(date_string += 3);
       have_tz = true;
     }
 
@@ -603,7 +603,7 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
         else
           offset = o * 60 * sgn;
       } else {         // GMT+05:00
-        ++date_string;  // skip the ':'
+        UNSAFE_TODO(++date_string);  // skip the ':'
         int o2;
         if (!ParseInt(date_string, &new_pos_str, 10, &o2))
           return std::numeric_limits<double>::quiet_NaN();
@@ -615,9 +615,9 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
       date_wtf_string = String(date_string);
       for (size_t i = 0; i < std::size(known_zones); ++i) {
         if (date_wtf_string.StartsWithIgnoringASCIICase(
-                known_zones[i].tz_name)) {
-          offset = known_zones[i].tz_offset;
-          date_string += strlen(known_zones[i].tz_name);
+                UNSAFE_TODO(known_zones[i]).tz_name)) {
+          offset = UNSAFE_TODO(known_zones[i]).tz_offset;
+          UNSAFE_TODO(date_string += strlen(known_zones[i].tz_name));
           have_tz = true;
           break;
         }

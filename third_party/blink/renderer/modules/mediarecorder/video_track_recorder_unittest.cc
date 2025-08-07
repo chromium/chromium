@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 
 #include <array>
 #include <sstream>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -41,6 +36,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediarecorder/fake_encoded_video_frame.h"
+#include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -439,10 +435,10 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
     // Fade to black.
     const uint8_t kBlackY = 0x00;
     const uint8_t kBlackUV = 0x80;
-    memset(video_frame2->writable_data(0), kBlackY,
-           video_frame2->stride(0) * frame_size.height());
-    memset(video_frame2->writable_data(1), kBlackUV,
-           video_frame2->stride(1) * (frame_size.height() / 2));
+    UNSAFE_TODO(memset(video_frame2->writable_data(0), kBlackY,
+                       video_frame2->stride(0) * frame_size.height()));
+    UNSAFE_TODO(memset(video_frame2->writable_data(1), kBlackUV,
+                       video_frame2->stride(1) * (frame_size.height() / 2)));
     if (frame_type == TestFrameType::kNv12GpuMemoryBuffer) {
       return video_frame;
     }

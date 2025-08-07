@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -716,8 +712,9 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
                        first_source_cache_pos_ < first_source_cache_.size();
          b += sizeof(first_source_cache_[0]), ++first_source_cache_pos_) {
       float sample;
-      memcpy(&sample, (*encoded_data).subspan(b, kSampleSize).data(),
-             kSampleSize);
+      UNSAFE_TODO(memcpy(&sample,
+                         (*encoded_data).subspan(b, kSampleSize).data(),
+                         kSampleSize));
       ASSERT_FLOAT_EQ(sample, first_source_cache_[first_source_cache_pos_])
           << "(Sample " << first_source_cache_pos_ << ")";
     }

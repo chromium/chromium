@@ -23,17 +23,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -90,8 +86,9 @@ v8::Local<v8::ArrayBuffer> CreateArrayBuffer(
     base::span<const uint8_t> array_buffer_bytes) {
   v8::Local<v8::ArrayBuffer> array_buffer =
       v8::ArrayBuffer::New(isolate, array_buffer_bytes.size());
-  std::memcpy(array_buffer->GetBackingStore()->Data(),
-              array_buffer_bytes.data(), array_buffer_bytes.size());
+  UNSAFE_TODO(std::memcpy(array_buffer->GetBackingStore()->Data(),
+                          array_buffer_bytes.data(),
+                          array_buffer_bytes.size()));
   return array_buffer;
 }
 

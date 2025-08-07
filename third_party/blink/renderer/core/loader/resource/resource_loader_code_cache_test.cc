@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
@@ -109,8 +105,8 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
         reinterpret_cast<CachedMetadataHeader*>(&serialized_data[0]);
     header->marker = CachedMetadataHandler::kSingleEntryWithTag;
     header->type = 0;
-    memcpy(&serialized_data[sizeof(CachedMetadataHeader)], data.data(),
-           data.size());
+    UNSAFE_TODO(memcpy(&serialized_data[sizeof(CachedMetadataHeader)],
+                       data.data(), data.size()));
     return serialized_data;
   }
 
@@ -130,17 +126,17 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
           ParkableStringImpl::HashString(source_text->Impl());
       CHECK_EQ(hash->size(),
                ScriptCachedMetadataHandlerWithHashing::kSha256Bytes);
-      memcpy(outer_header->hash, hash->data(),
-             ScriptCachedMetadataHandlerWithHashing::kSha256Bytes);
+      UNSAFE_TODO(memcpy(outer_header->hash, hash->data(),
+                         ScriptCachedMetadataHandlerWithHashing::kSha256Bytes));
     }
     CachedMetadataHeader* inner_header =
         reinterpret_cast<CachedMetadataHeader*>(
             &serialized_data[sizeof(CachedMetadataHeaderWithHash)]);
     inner_header->marker = CachedMetadataHandler::kSingleEntryWithTag;
     inner_header->type = 0;
-    memcpy(&serialized_data[sizeof(CachedMetadataHeaderWithHash) +
-                            sizeof(CachedMetadataHeader)],
-           data.data(), data.size());
+    UNSAFE_TODO(memcpy(&serialized_data[sizeof(CachedMetadataHeaderWithHash) +
+                                        sizeof(CachedMetadataHeader)],
+                       data.data(), data.size()));
     return serialized_data;
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
 #include <dawn/dawn_proc.h>
@@ -15,6 +10,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
@@ -69,18 +65,21 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
     most_recent_generated_token =
         gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                        gpu::CommandBufferId(), ++token_id_);
-    memcpy(sync_token, &most_recent_generated_token, sizeof(gpu::SyncToken));
+    UNSAFE_TODO(memcpy(sync_token, &most_recent_generated_token,
+                       sizeof(gpu::SyncToken)));
   }
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override {
     most_recent_generated_token =
         gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                        gpu::CommandBufferId(), ++token_id_);
     most_recent_generated_token.SetVerifyFlush();
-    memcpy(sync_token, &most_recent_generated_token, sizeof(gpu::SyncToken));
+    UNSAFE_TODO(memcpy(sync_token, &most_recent_generated_token,
+                       sizeof(gpu::SyncToken)));
   }
 
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token_data) override {
-    memcpy(&most_recent_waited_token, sync_token_data, sizeof(gpu::SyncToken));
+    UNSAFE_TODO(memcpy(&most_recent_waited_token, sync_token_data,
+                       sizeof(gpu::SyncToken)));
   }
 
   gpu::SyncToken most_recent_generated_token;

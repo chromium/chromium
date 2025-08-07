@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -121,9 +117,9 @@ void TestSizeByteByByte(const char* png_file,
 
 void WriteUint32(uint32_t val, png_byte* data) {
   data[0] = val >> 24;
-  data[1] = val >> 16;
-  data[2] = val >> 8;
-  data[3] = val;
+  UNSAFE_TODO(data[1]) = val >> 16;
+  UNSAFE_TODO(data[2]) = val >> 8;
+  UNSAFE_TODO(data[3]) = val;
 }
 
 void TestRepetitionCount(const char* png_file, int expected_repetition_count) {
@@ -353,7 +349,8 @@ TEST_P(AnimatedPNGTests, MetaDataTest) {
   auto decoder = CreatePNGDecoderWithPngData(png_file);
   ASSERT_EQ(kExpectedFrameCount, decoder->FrameCount());
   for (size_t i = 0; i < kExpectedFrameCount; i++) {
-    CompareFrameWithExpectation(g_png_animated_frame_info[i], decoder.get(), i);
+    CompareFrameWithExpectation(UNSAFE_TODO(g_png_animated_frame_info[i]),
+                                decoder.get(), i);
   }
 }
 
@@ -417,7 +414,7 @@ TEST_P(AnimatedPNGTests, ByteByByteMetaData) {
     partial_data->Append(single_byte);
     decoder->SetData(partial_data.get(), false);
     EXPECT_FALSE(decoder->Failed());
-    if (length < frame_offsets[frames_parsed]) {
+    if (length < UNSAFE_TODO(frame_offsets[frames_parsed])) {
       EXPECT_EQ(frames_parsed, decoder->FrameCount());
     } else {
       if (skia::IsRustyPngEnabled() && frames_parsed > 0) {
@@ -429,8 +426,9 @@ TEST_P(AnimatedPNGTests, ByteByByteMetaData) {
       }
 
       ASSERT_EQ(frames_parsed + 1, decoder->FrameCount());
-      CompareFrameWithExpectation(g_png_animated_frame_info[frames_parsed],
-                                  decoder.get(), frames_parsed);
+      CompareFrameWithExpectation(
+          UNSAFE_TODO(g_png_animated_frame_info[frames_parsed]), decoder.get(),
+          frames_parsed);
       frames_parsed++;
     }
   }
@@ -517,7 +515,7 @@ TEST_P(AnimatedPNGTests, ActlErrors) {
 
   // Store the acTL for more tests.
   char ac_tl[kAcTLSize];
-  memcpy(ac_tl, data.data() + kOffsetActl, kAcTLSize);
+  UNSAFE_TODO(memcpy(ac_tl, data.data() + kOffsetActl, kAcTLSize));
 
   // Insert an extra acTL at a couple of different offsets.
   // Prior to the IDAT, this should result in a static image. After, this
@@ -664,12 +662,12 @@ TEST_P(AnimatedPNGTests, FrameOverflowX) {
       SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
+  UNSAFE_TODO(memcpy(fctl, data.data() + kFctlOffset, kFctlSize));
 
   // Set the x_offset to a value that will overflow
-  WriteUint32(4294967295, fctl + 20);
+  WriteUint32(4294967295, UNSAFE_TODO(fctl + 20));
   // Correct the crc
-  WriteUint32(689600712, fctl + 34);
+  WriteUint32(689600712, UNSAFE_TODO(fctl + 34));
   modified_data->Append(base::span(fctl).first(kFctlSize));
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
   modified_data->Append(base::span(data).subspan(kAfterFctl));
@@ -705,12 +703,12 @@ TEST_P(AnimatedPNGTests, FrameOverflowY) {
       SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
+  UNSAFE_TODO(memcpy(fctl, data.data() + kFctlOffset, kFctlSize));
 
   // Set the y_offset to a value that will overflow
-  WriteUint32(4294967295, fctl + 24);
+  WriteUint32(4294967295, UNSAFE_TODO(fctl + 24));
   // Correct the crc
-  WriteUint32(2094185741, fctl + 34);
+  WriteUint32(2094185741, UNSAFE_TODO(fctl + 34));
   modified_data->Append(base::span(fctl).first(kFctlSize));
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
   modified_data->Append(base::span(data).subspan(kAfterFctl));
@@ -745,11 +743,11 @@ TEST_P(AnimatedPNGTests, IdatSizeMismatch) {
       SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
+  UNSAFE_TODO(memcpy(fctl, data.data() + kFctlOffset, kFctlSize));
   // Set the height to a smaller value, so it does not fill the image.
-  WriteUint32(3, fctl + 16);
+  WriteUint32(3, UNSAFE_TODO(fctl + 16));
   // Correct the crc
-  WriteUint32(3210324191, fctl + 34);
+  WriteUint32(3210324191, UNSAFE_TODO(fctl + 34));
   modified_data->Append(base::span(fctl).first(kFctlSize));
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
   modified_data->Append(base::span(data).subspan(kAfterFctl));
@@ -829,11 +827,11 @@ TEST_P(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
       SharedBuffer::Create(base::span(data).first(kOffsetThirdFctl));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data.data() + kOffsetThirdFctl, kFctlSize);
+  UNSAFE_TODO(memcpy(fctl, data.data() + kOffsetThirdFctl, kFctlSize));
   // Modify offset and crc.
-  WriteUint32(4, fctl + 20u);
-  WriteUint32(4, fctl + 24u);
-  WriteUint32(3700322018, fctl + 34u);
+  WriteUint32(4, UNSAFE_TODO(fctl + 20u));
+  WriteUint32(4, UNSAFE_TODO(fctl + 24u));
+  WriteUint32(3700322018, UNSAFE_TODO(fctl + 34u));
 
   modified_data->Append(fctl);
   modified_data->Append(base::span(data).subspan(kOffsetThirdFctl + kFctlSize));
@@ -1027,9 +1025,10 @@ TEST_P(AnimatedPNGTests, MixedDataChunks) {
   const size_t kFcTLSize = 38u;
   const size_t kFdATSize = 31u;
   png_byte fdat[kFdATSize];
-  memcpy(fdat, full_data.data() + kPostIDAT + kFcTLSize, kFdATSize);
+  UNSAFE_TODO(
+      memcpy(fdat, full_data.data() + kPostIDAT + kFcTLSize, kFdATSize));
   // Modify the sequence number
-  WriteUint32(1u, fdat + 8);
+  WriteUint32(1u, UNSAFE_TODO(fdat + 8));
   data->Append(fdat);
   const size_t kIENDOffset = 422u;
   data->Append(base::span(full_data).subspan(kIENDOffset));
@@ -1092,7 +1091,7 @@ TEST_P(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
   png_byte disposal_and_blending[6u];
   disposal_and_blending[0] = 7;
   disposal_and_blending[1] = 9;
-  WriteUint32(2408835439u, disposal_and_blending + 2u);
+  WriteUint32(2408835439u, UNSAFE_TODO(disposal_and_blending + 2u));
   data->Append(disposal_and_blending);
   data->Append(base::span(full_data).subspan(kOffsetDisposalOp + 6u));
 
@@ -1230,11 +1229,11 @@ TEST_P(AnimatedPNGTests, SubsetFromIHDR) {
 
   const size_t kFcTLSize = 38u;
   png_byte fc_tl[kFcTLSize];
-  memcpy(fc_tl, original_data.data() + kFcTLOffset, kFcTLSize);
+  UNSAFE_TODO(memcpy(fc_tl, original_data.data() + kFcTLOffset, kFcTLSize));
   // Modify to have a subset frame (yOffset 1, height 34 out of 35).
-  WriteUint32(34, fc_tl + 16u);
-  WriteUint32(1, fc_tl + 24u);
-  WriteUint32(3972842751, fc_tl + 34u);
+  WriteUint32(34, UNSAFE_TODO(fc_tl + 16u));
+  WriteUint32(1, UNSAFE_TODO(fc_tl + 24u));
+  WriteUint32(3972842751, UNSAFE_TODO(fc_tl + 34u));
   data->Append(fc_tl);
 
   // Append the rest of the data.
@@ -1492,11 +1491,11 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
   Vector<float> expected_pixels = png_sample.expected_pixels;
   const float decoding_tolerance = 0.001;
   for (int i = 0; i < 16; i++) {
-    if (fabs(decoded_pixels_float_32[i] - expected_pixels[i]) >
+    if (fabs(UNSAFE_TODO(decoded_pixels_float_32[i]) - expected_pixels[i]) >
         decoding_tolerance) {
       FAIL() << "Pixel comparison failed. File: " << png_sample.filename
              << ", component index: " << i
-             << ", actual: " << decoded_pixels_float_32[i]
+             << ", actual: " << UNSAFE_TODO(decoded_pixels_float_32[i])
              << ", expected: " << expected_pixels[i]
              << ", tolerance: " << decoding_tolerance;
     }

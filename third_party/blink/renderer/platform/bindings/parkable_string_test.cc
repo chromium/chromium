@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <cstring>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -836,9 +832,9 @@ TEST_P(ParkableStringTest, ShouldPark) {
 
 TEST_P(ParkableStringTest, AsanPoisoningTest) {
   ParkableString parkable(MakeLargeString().ReleaseImpl());
-  const LChar* data = parkable.ToString().Characters8();
+  const LChar* data = UNSAFE_TODO(parkable.ToString().Characters8());
   EXPECT_TRUE(ParkAndWait(parkable));
-  EXPECT_ASAN_DEATH(EXPECT_NE(0, data[10]), "");
+  UNSAFE_TODO(EXPECT_ASAN_DEATH(EXPECT_NE(0, data[10]), ""));
 }
 
 // Non-regression test for crbug.com/905137.
