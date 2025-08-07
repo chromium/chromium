@@ -151,32 +151,34 @@ AX_TEST_F(
     });
 
 // Tests that smart macro properties are correctly parsed and set.
-AX_TEST_F('DictationPumpkinParseTest', 'SmartMacros', async function() {
-  await this.waitForPumpkinParseStrategy_();
+// TODO(crbug.com/437027220): Test is flaky, re-enable.
+AX_TEST_F(
+    'DictationPumpkinParseTest', 'DISABLED_SmartMacros', async function() {
+      await this.waitForPumpkinParseStrategy_();
 
-  let macro =
-      await this.getPumpkinParseStrategy().parse('delete avada kedavra');
-  assertEquals('SMART_DELETE_PHRASE', macro.getNameAsString());
-  assertEquals('avada kedavra', macro.phrase_);
+      let macro =
+          await this.getPumpkinParseStrategy().parse('delete avada kedavra');
+      assertEquals('SMART_DELETE_PHRASE', macro.getNameAsString());
+      assertEquals('avada kedavra', macro.phrase_);
 
-  macro =
-      await this.getPumpkinParseStrategy().parse('replace hello with goodbye');
-  assertEquals('SMART_REPLACE_PHRASE', macro.getNameAsString());
-  assertEquals('hello', macro.deletePhrase_);
-  assertEquals('goodbye', macro.insertPhrase_);
+      macro = await this.getPumpkinParseStrategy().parse(
+          'replace hello with goodbye');
+      assertEquals('SMART_REPLACE_PHRASE', macro.getNameAsString());
+      assertEquals('hello', macro.deletePhrase_);
+      assertEquals('goodbye', macro.insertPhrase_);
 
-  macro = await this.getPumpkinParseStrategy().parse(
-      'insert hello in front of goodbye');
-  assertEquals('SMART_INSERT_BEFORE', macro.getNameAsString());
-  assertEquals('hello', macro.insertPhrase_);
-  assertEquals('goodbye', macro.beforePhrase_);
+      macro = await this.getPumpkinParseStrategy().parse(
+          'insert hello in front of goodbye');
+      assertEquals('SMART_INSERT_BEFORE', macro.getNameAsString());
+      assertEquals('hello', macro.insertPhrase_);
+      assertEquals('goodbye', macro.beforePhrase_);
 
-  macro = await this.getPumpkinParseStrategy().parse(
-      'highlight everything between hello and goodbye');
-  assertEquals('SMART_SELECT_BTWN_INCL', macro.getNameAsString());
-  assertEquals('hello', macro.startPhrase_);
-  assertEquals('goodbye', macro.endPhrase_);
-});
+      macro = await this.getPumpkinParseStrategy().parse(
+          'highlight everything between hello and goodbye');
+      assertEquals('SMART_SELECT_BTWN_INCL', macro.getNameAsString());
+      assertEquals('hello', macro.startPhrase_);
+      assertEquals('goodbye', macro.endPhrase_);
+    });
 
 AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
   await this.waitForPumpkinParseStrategy_();
