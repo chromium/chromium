@@ -62,10 +62,11 @@ std::unique_ptr<KeyedService>
 IpProtectionCoreHostFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<IpProtectionCoreHost>(
-      IdentityManagerFactory::GetForProfile(profile),
-      TrackingProtectionSettingsFactory::GetForProfile(profile),
-      profile->GetPrefs(), profile);
+  std::unique_ptr<IpProtectionCoreHost> service =
+      std::make_unique<IpProtectionCoreHost>(
+          TrackingProtectionSettingsFactory::GetForProfile(profile),
+          profile->GetPrefs(), profile);
+  return service;
 }
 
 bool IpProtectionCoreHostFactory::ServiceIsCreatedWithBrowserContext() const {

@@ -89,6 +89,16 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
   DependsOn(SCTReportingServiceFactory::GetInstance());
   DependsOn(IpProtectionCoreHostFactory::GetInstance());
+
+  // Note: As explained in crbug.com/436208345, on Android
+  // `ProfileNetworkContextService` service objects are created very early in
+  // the profile creation flow which violates the invariant that IdentityManager
+  // must not be created before the call to
+  // `BrowserContextDependencyManager::CreateBrowserContextServices()`.
+  //
+  // New dependencies of the `ProfileNetworkContextService` must ensure they
+  // register with the IdentityManager during `ProfileImpl::DoFinalInit()`
+  // if they use the IdentityManager (see crrev.com/c/6818466 for an example).
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =
