@@ -849,10 +849,6 @@ public final class ProductionSupportedFlagList {
                 "While scrolling, attempts to wait for late arriving input events before"
                         + " rendering."),
         Flag.baseFeature(
-                CcFeatures.EVICTION_THROTTLES_DRAW,
-                "Enables Renderers to not draw and submit frames when they've been evicted by the"
-                        + " GPU process."),
-        Flag.baseFeature(
                 CcFeatures.DONT_ALWAYS_PUSH_PICTURE_LAYER_IMPLS,
                 "Stop always pushing PictureLayerImpl properties on tree Activation."),
         Flag.baseFeature(CcFeatures.CC_SLIMMING, "Reduce unnecessary work in CC frame updates."),

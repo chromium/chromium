@@ -1027,8 +1027,7 @@ bool LayerTreeHostImpl::CanDraw() const {
 
   // Do not draw while evicted. Await the activation of a tree containing a
   // newer viz::Surface
-  if (base::FeatureList::IsEnabled(features::kEvictionThrottlesDraw) &&
-      evicted_local_surface_id_.is_valid()) {
+  if (evicted_local_surface_id_.is_valid()) {
     TRACE_EVENT_INSTANT0(
         "cc",
         "LayerTreeHostImpl::CanDraw viz::Surface evicted and not recreated",

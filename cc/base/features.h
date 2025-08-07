@@ -48,11 +48,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<int> kInterestAreaSizeInPixels;
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimOldPrepaintTiles);
 CC_BASE_EXPORT extern const base::FeatureParam<int> kReclaimDelayInSeconds;
 
-// When enabled, we will not schedule drawing for viz::Surfaces that have been
-// evicted. Instead waiting for an ActiveTree that is defining a newer
-// viz::Surface.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEvictionThrottlesDraw);
-
 // When a LayerTreeHostImpl is not visible, clear its transferable resources
 // that haven't been imported into viz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
