@@ -125,6 +125,20 @@ std::string SyntheticTrialGroupForPerformanceClass(
   }
 }
 
+std::string SyntheticTrialGroupForPerformanceHint(
+    proto::OnDeviceModelPerformanceHint performance_hint) {
+  switch (performance_hint) {
+    case proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED:
+      return "Unspecified";
+    case proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY:
+      return "HighestQuality";
+    case proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE:
+      return "FastestInference";
+    case proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU:
+      return "Cpu";
+  }
+}
+
 bool IsPerformanceClassCompatible(
     std::string perf_classes_string,
     OnDeviceModelPerformanceClass performance_class) {

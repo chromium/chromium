@@ -37,6 +37,10 @@ bool IsPerformanceClassCompatible(
 std::string SyntheticTrialGroupForPerformanceClass(
     OnDeviceModelPerformanceClass performance_class);
 
+// Get the name of the synthetic trial group for this performance hint.
+std::string SyntheticTrialGroupForPerformanceHint(
+    proto::OnDeviceModelPerformanceHint performance_hint);
+
 // Computes performance class at most once, and allows observation of it's
 // availability.
 class PerformanceClassifier final {

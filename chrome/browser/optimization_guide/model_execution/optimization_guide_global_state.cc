@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -23,6 +24,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -106,6 +108,41 @@ class ChromeOnDeviceModelServiceController final {
           variations::SyntheticTrialAnnotationMode::kCurrentLog);
     }
   }
+
+  static void RegisterPerformanceHintSyntheticTrial(
+      proto::OnDeviceModelPerformanceHint performance_hint) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "SyntheticOnDeviceModelPerformanceHint",
+        SyntheticTrialGroupForPerformanceHint(performance_hint),
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
+};
+
+// Registers a field trial once the model is ready.
+class ChromeModelComponentStateManagerObserver final
+    : public OnDeviceModelComponentStateManager::Observer {
+ public:
+  explicit ChromeModelComponentStateManagerObserver(
+      base::WeakPtr<OnDeviceModelComponentStateManager> state_manager) {
+    if (!state_manager) {
+      return;
+    }
+    observation_.Observe(state_manager.get());
+  }
+
+  // OnDeviceModelComponentStateManager::Observer:
+  void StateChanged(const OnDeviceModelComponentState* state) override {
+    if (state) {
+      ChromeOnDeviceModelServiceController::
+          RegisterPerformanceHintSyntheticTrial(
+              state->GetBaseModelSpec().selected_performance_hint);
+    }
+  }
+
+ private:
+  base::ScopedObservation<OnDeviceModelComponentStateManager,
+                          OnDeviceModelComponentStateManager::Observer>
+      observation_{this};
 };
 
 OptimizationGuideGlobalState::OptimizationGuideGlobalState()
@@ -113,6 +150,12 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           g_browser_process->local_state(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
           base::BindRepeating(&LaunchService)) {
+  // Register an observer on the component state manager after it is created but
+  // before it has start up.
+  component_state_manager_observer_ =
+      std::make_unique<ChromeModelComponentStateManagerObserver>(
+          component_state_manager().GetWeakPtr());
+
   model_broker_state_.Init();
   model_broker_state_.performance_classifier()
       .ListenForPerformanceClassAvailable(
