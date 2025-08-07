@@ -240,6 +240,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/login:test_support",
+    "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:constants",
