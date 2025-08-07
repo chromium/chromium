@@ -163,7 +163,7 @@ def _generate_swarming_values(formatter, swarming):
     if swarming.service_account:
         formatter.add_line("'service_account': '{}',".format(swarming.service_account))
 
-def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
+def _generate_mixin_values(formatter, mixin):
     """Generate the pyl definitions for mixin fields.
 
     Mixin fields are fields that are common to mixins, variants and test
@@ -172,10 +172,6 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
     Args:
         formatter: The formatter object used for generating indented output.
         mixin: Dict containing the mixin values to output.
-        generate_skylab_container: Whether or not to generate the skylab key to
-            contain the fields of the skylab value. Mixins and the generated
-            test have those fields at top-level, but variants have them under a
-            skylab key.
     """
     if "description" in mixin:
         formatter.add_line("'description': '{}',".format(mixin["description"]))
@@ -230,8 +226,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
 
     if "skylab" in mixin:
         skylab = mixin["skylab"]
-        if generate_skylab_container:
-            formatter.open_scope("'skylab': {")
+        formatter.open_scope("'skylab': {")
         if skylab.tast_expr:
             formatter.add_line("'tast_expr': '{}',".format(skylab.tast_expr))
         if skylab.test_level_retries:
@@ -262,10 +257,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.add_line("'public_builder_bucket': '{}',".format(skylab.public_builder_bucket))
         if skylab.shards:
             formatter.add_line("'shards': {},".format(skylab.shards))
-        if skylab.args:
-            formatter.add_line("'args': {},".format(skylab.args))
-        if generate_skylab_container:
-            formatter.close_scope("},")
+        formatter.close_scope("},")
 
     if "resultdb" in mixin:
         resultdb = mixin["resultdb"]
@@ -328,7 +320,7 @@ def _generate_variants_pyl(ctx):
         if not n.props.enabled:
             formatter.add_line("'enabled': {},".format(n.props.enabled))
 
-        _generate_mixin_values(formatter, mixin, generate_skylab_container = True)
+        _generate_mixin_values(formatter, mixin)
 
         mixins = []
 

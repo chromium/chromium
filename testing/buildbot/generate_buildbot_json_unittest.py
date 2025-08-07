@@ -4441,7 +4441,6 @@ SKYLAB_VARIANTS = """\
     'skylab': {
       'cros_board': 'octopus',
       'cros_model': 'casta',
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-release/R89-13655.0.0',
     },
     'enabled': True,
@@ -4449,7 +4448,6 @@ SKYLAB_VARIANTS = """\
   },
   'octopus-89-with-autotest-name': {
     'skylab': {
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-release/R89-13655.0.0',
       'autotest_name': 'unique_autotest_name',
     },
@@ -4458,7 +4456,6 @@ SKYLAB_VARIANTS = """\
   },
   'octopus-88': {
     'skylab': {
-      'cros_chrome_version': '88.0.2324.0',
       'cros_img': 'octopus-release/R88-13597.23.0',
     },
     'enabled': True,
@@ -4473,7 +4470,6 @@ SKYLAB_VARIANTS_WITH_BUILD_VARIANT = """\
     'skylab': {
       'cros_board': 'octopus',
       'cros_model': 'casta',
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-arc-t-release/R89-13655.0.0',
     },
     'enabled': True,
@@ -4481,7 +4477,6 @@ SKYLAB_VARIANTS_WITH_BUILD_VARIANT = """\
   },
   'octopus-89-with-autotest-name': {
     'skylab': {
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-arc-t-release/R89-13655.0.0',
       'autotest_name': 'unique_autotest_name',
     },
@@ -4490,7 +4485,6 @@ SKYLAB_VARIANTS_WITH_BUILD_VARIANT = """\
   },
   'octopus-88': {
     'skylab': {
-      'cros_chrome_version': '88.0.2324.0',
       'cros_img': 'octopus-arc-t-release/R88-13597.23.0',
     },
     'enabled': True,
@@ -4504,13 +4498,17 @@ ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF = """\
   'basic_suites': {
     'cros_skylab_basic': {
       'tast.basic': {
-        'tast_expr': 'dummy expr',
+        'skylab': {
+          'tast_expr': 'dummy expr',
+          'shard_level_retries_on_ctp': 2,
+        },
         'suite': 'tast.basic',
-        'shard_level_retries_on_ctp': 2,
         'timeout': 3600,
       },
       'tast.foo': {
-        'tast_expr': 'dummy expr',
+        'skylab': {
+          'tast_expr': 'dummy expr',
+        },
         'suite': 'tast.foo',
         'timeout': 3600,
       },
@@ -4535,7 +4533,6 @@ ENABLED_AND_DISABLED_VARIANTS = """\
   'enabled': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-release/R89-13655.0.0',
     },
     'enabled': True,
@@ -4544,7 +4541,6 @@ ENABLED_AND_DISABLED_VARIANTS = """\
   'disabled': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '88.0.2324.0',
       'cros_img': 'octopus-release/R88-13597.23.0',
     },
     'enabled': False,

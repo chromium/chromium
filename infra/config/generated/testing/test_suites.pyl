@@ -175,20 +175,24 @@
 
     'chromeos_chrome_all_tast_tests': {
       'chrome_all_tast_tests': {
-        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
-        'test_level_retries': 2,
-        'timeout_sec': 14400,
-        'shards': 15,
+        'skylab': {
+          'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
+          'test_level_retries': 2,
+          'timeout_sec': 14400,
+          'shards': 15,
+        },
       },
     },
 
     'chromeos_chrome_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
         'ci_only': True,
-        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
-        'test_level_retries': 2,
-        'timeout_sec': 14400,
-        'shards': 3,
+        'skylab': {
+          'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
+          'test_level_retries': 2,
+          'timeout_sec': 14400,
+          'shards': 3,
+        },
         'experiment_percentage': 100,
       },
     },
@@ -196,10 +200,12 @@
     'chromeos_chrome_disabled_tast_tests': {
       'chrome_disabled_tast_tests': {
         'ci_only': True,
-        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
-        'test_level_retries': 1,
-        'timeout_sec': 14400,
-        'shards': 2,
+        'skylab': {
+          'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
+          'test_level_retries': 1,
+          'timeout_sec': 14400,
+          'shards': 2,
+        },
         'experiment_percentage': 100,
       },
     },

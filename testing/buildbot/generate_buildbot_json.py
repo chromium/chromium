@@ -678,6 +678,24 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           and not dimensions.get('device_os_type')):
         dimensions['device_os_type'] = 'userdebug'
 
+    if 'skylab' in test:
+      skylab = test.pop('skylab')
+      for k, v in skylab.items():
+        test[k] = v
+      # For skylab, we need to pop the correct `autotest_name`. This field
+      # defines what wrapper we use in OS infra. e.g. for gtest it's
+      # https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/server/site_tests/chromium/chromium.py
+      if 'autotest_name' not in test:
+        if 'tast_expr' in test:
+          if 'lacros' in test['name']:
+            test['autotest_name'] = 'tast.lacros-from-gcs'
+          else:
+            test['autotest_name'] = 'tast.chrome-from-gcs'
+        elif 'benchmark' in test:
+          test['autotest_name'] = 'chromium_Telemetry'
+        else:
+          test['autotest_name'] = 'chromium'
+
     # Apply any replacements specified for the test for the builder
     self.replace_test_args(test, test_name, builder_name)
 
@@ -839,29 +857,19 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result = copy.deepcopy(test_config)
     result.setdefault('test', test_name)
 
-    if 'cros_board' in result or 'cros_board' in tester_config:
-      result['cros_board'] = tester_config.get('cros_board') or result.get(
-          'cros_board')
-    else:
-      raise BBGenErr('skylab tests must specify cros_board.')
-    if 'cros_model' in result or 'cros_model' in tester_config:
-      result['cros_model'] = tester_config.get('cros_model') or result.get(
-          'cros_model')
-    if 'dut_pool' in result or 'cros_dut_pool' in tester_config:
-      result['dut_pool'] = tester_config.get('cros_dut_pool') or result.get(
-          'dut_pool')
-    if 'cros_build_target' in result or 'cros_build_target' in tester_config:
-      result['cros_build_target'] = tester_config.get(
-          'cros_build_target') or result.get('cros_build_target')
+    skylab = result.setdefault('skylab', {})
+    if result.get('experiment_percentage') != 100:
+      skylab.setdefault('shard_level_retries_on_ctp', 1)
 
-    # Skylab tests enable the shard-level-retry by default.
-    if ('shard_level_retries_on_ctp' in result
-        or 'shard_level_retries_on_ctp' in tester_config):
-      result['shard_level_retries_on_ctp'] = (
-          tester_config.get('shard_level_retries_on_ctp')
-          or result.get('shard_level_retries_on_ctp'))
-    elif result.get('experiment_percentage') != 100:
-      result['shard_level_retries_on_ctp'] = 1
+    for src, dst in (
+        ('cros_board', 'cros_board'),
+        ('cros_model', 'cros_model'),
+        ('cros_dut_pool', 'dut_pool'),
+        ('cros_build_target', 'cros_build_target'),
+        ('shard_level_retries_on_ctp', 'shard_level_retries_on_ctp'),
+    ):
+      if src in tester_config:
+        skylab[dst] = tester_config[src]
 
     result = self.apply_common_transformations(waterfall,
                                                tester_name,
@@ -869,6 +877,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                                result,
                                                test_name,
                                                swarmable=False)
+
+    if 'cros_board' not in result:
+      raise BBGenErr('skylab tests must specify cros_board.')
+
     return result
 
   def substitute_gpu_args(self, tester_config, test, args):
@@ -1150,7 +1162,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       variant.pop('enabled', None)
       identifier = variant.pop('identifier')
       variant_mixins = variant.pop('mixins', [])
-      variant_skylab = variant.pop('skylab', {})
 
       for test_name, test_config in basic_test_definition.items():
         new_test = copy.copy(test_config)
@@ -1170,30 +1181,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # apply things
         new_test['*variant*'] = variant
         new_test['*variant_mixins*'] = variant_mixins + mixins
-
-        # TODO: crbug.com/40258588 - When skylab support is implemented in
-        # starlark, these fields should be incorporated into mixins and handled
-        # consistently with other fields
-        for k, v in variant_skylab.items():
-          # cros_chrome_version is the ash chrome version in the cros img in the
-          # variant of cros_board. We don't want to include it in the final json
-          # files; so remove it.
-          if k != 'cros_chrome_version':
-            new_test[k] = v
-
-        # For skylab, we need to pop the correct `autotest_name`. This field
-        # defines what wrapper we use in OS infra. e.g. for gtest it's
-        # https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/server/site_tests/chromium/chromium.py
-        if variant_skylab and 'autotest_name' not in new_test:
-          if 'tast_expr' in test_config:
-            if 'lacros' in test_config['name']:
-              new_test['autotest_name'] = 'tast.lacros-from-gcs'
-            else:
-              new_test['autotest_name'] = 'tast.chrome-from-gcs'
-          elif 'benchmark' in test_config:
-            new_test['autotest_name'] = 'chromium_Telemetry'
-          else:
-            new_test['autotest_name'] = 'chromium'
 
         test_suite.setdefault(test_name, []).append(new_test)
 
@@ -1392,6 +1379,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if 'swarming' in mixin:
       self.merge_swarming(new_test.setdefault('swarming', {}),
                           mixin.pop('swarming'))
+
+    if 'skylab' in mixin:
+      new_test.setdefault('skylab', {}).update(mixin.pop('skylab'))
 
     for a in ('args', 'precommit_args', 'non_precommit_args'):
       if (value := mixin.pop(a, None)) is None:
