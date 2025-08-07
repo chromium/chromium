@@ -37,7 +37,8 @@ class ChangePasswordFormWaiter
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       PasswordFormFoundCallback callback,
-      base::TimeDelta timeout = kChangePasswordFormWaitingTimeout);
+      base::TimeDelta timeout = kChangePasswordFormWaitingTimeout,
+      const std::vector<autofill::FieldRendererId>& fields_to_ignore = {});
 
   ~ChangePasswordFormWaiter() override;
 
@@ -56,6 +57,11 @@ class ChangePasswordFormWaiter
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<password_manager::PasswordManagerClient> client_;
   PasswordFormFoundCallback callback_;
+
+  // new_password_element_renderer_ids which ChangePasswordFormWaiter should
+  // ignore. This helps avoid detecting the same change password form over and
+  // over again.
+  std::vector<autofill::FieldRendererId> fields_to_ignore_;
 
   base::WeakPtrFactory<ChangePasswordFormWaiter> weak_ptr_factory_{this};
 };

@@ -63,30 +63,45 @@ bool IsLikelyChangePasswordForm(
   return true;
 }
 
+password_manager::PasswordFormManager* GetExistingChangePasswordForm(
+    PasswordFormCache* cache,
+    base::span<autofill::FieldRendererId> fields_to_ignore) {
+  for (const auto& manager : cache->GetFormManagers()) {
+    if (manager->GetParsedObservedForm() &&
+        IsLikelyChangePasswordForm(manager->GetParsedObservedForm())) {
+      if (std::ranges::count(fields_to_ignore,
+                             manager->GetParsedObservedForm()
+                                 ->new_password_element_renderer_id)) {
+        continue;
+      }
+
+      return manager.get();
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
     PasswordFormFoundCallback callback,
-    base::TimeDelta timeout)
+    base::TimeDelta timeout,
+    const std::vector<autofill::FieldRendererId>& fields_to_ignore)
     : timeout_(timeout),
       web_contents_(web_contents),
       client_(client),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      fields_to_ignore_(fields_to_ignore) {
   if (PasswordFormCache* cache = GetFormCache(client_)) {
-    auto managers = cache->GetFormManagers();
-    // Check form managers in reversed order to process newly added managers
-    // first.
-    for (const auto& manager : base::Reversed(managers)) {
-      if (manager->GetParsedObservedForm() &&
-          IsLikelyChangePasswordForm(manager->GetParsedObservedForm())) {
-        // Change password form is already present on a page. Simply post a
-        // callback with result.
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback_), manager.get()));
-        return;
-      }
+    if (auto* manager =
+            GetExistingChangePasswordForm(cache, fields_to_ignore_)) {
+      // Change password form is already present on a page. Simply post a
+      // callback with result.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback_), manager));
+      return;
     }
     cache->AddObserver(this);
   }
@@ -110,9 +125,14 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
   CHECK(form_manager);
 
   if (IsLikelyChangePasswordForm(form_manager->GetParsedObservedForm())) {
-    // Do not invoke anything after calling the `callback_` as object might be
-    // destroyed immediately after.
-    std::move(callback_).Run(form_manager);
+    if (!std::ranges::count(fields_to_ignore_,
+                            form_manager->GetParsedObservedForm()
+                                ->new_password_element_renderer_id)) {
+      // Do not invoke anything after calling the `callback_` as object might be
+      // destroyed immediately after.
+      std::move(callback_).Run(form_manager);
+      return;
+    }
   }
 }
 

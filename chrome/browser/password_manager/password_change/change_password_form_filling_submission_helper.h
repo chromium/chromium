@@ -156,6 +156,10 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   std::unique_ptr<ButtonClickHelper> click_helper_;
 
+  // new_password_element_renderer_ids for the forms which `this` tried to fill.
+  // Used to avoid attempting to fill the same form over and over again.
+  std::vector<autofill::FieldRendererId> observed_fields_;
+
   // Helper object which finds for a new PasswordFormManager when filling of an
   // old form failed.
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;

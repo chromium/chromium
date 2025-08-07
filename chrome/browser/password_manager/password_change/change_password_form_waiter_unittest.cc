@@ -189,28 +189,51 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormIdentified) {
       ->OnPasswordFormParsed(form_manager.get());
 }
 
-TEST_F(ChangePasswordFormWaiterTest, LoginForm) {
+TEST_F(ChangePasswordFormWaiterTest, IgnoredChangePasswordForm) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
 
   std::vector<autofill::FormFieldData> fields;
   fields.push_back(CreateTestFormField(
-      /*label=*/"Username:", /*name=*/"username",
-      /*value=*/"", autofill::FormControlType::kInputEmail));
-  fields.push_back(CreateTestFormField(
       /*label=*/"Password:", /*name=*/"password",
       /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password confirmation:", /*name=*/"new_password_2",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(3));
   autofill::FormData form;
   form.set_url(GURL("https://www.foo.com"));
   form.set_fields(std::move(fields));
   auto form_manager = CreateFormManager(form);
 
-  ChangePasswordFormWaiter waiter(web_contents(), client(),
-                                  completion_callback.Get());
+  const auto* parsed_form = form_manager->GetParsedObservedForm();
+  ASSERT_TRUE(parsed_form);
+  autofill::FieldRendererId new_password_renderer_id =
+      parsed_form->new_password_element_renderer_id;
+  ASSERT_EQ(new_password_renderer_id, autofill::FieldRendererId(2));
 
+  ChangePasswordFormWaiter waiter(
+      web_contents(), client(), completion_callback.Get(),
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout,
+      {new_password_renderer_id});
+
+  // The form is ignored because its new password field is in
+  // `fields_to_ignore`.
   EXPECT_CALL(completion_callback, Run).Times(0);
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
       ->OnPasswordFormParsed(form_manager.get());
+  testing::Mock::VerifyAndClearExpectations(&completion_callback);
+
+  static_cast<content::WebContentsObserver*>(&waiter)
+      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  EXPECT_CALL(completion_callback, Run(nullptr));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 }
 
 TEST_F(ChangePasswordFormWaiterTest, SignUpForm) {
