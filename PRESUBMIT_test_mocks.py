@@ -314,6 +314,10 @@ class MockFile(object):
     def OldContents(self):
         return self._old_contents
 
+    def Extension(self):
+        _, ext = os.path.splitext(self._local_path)
+        return ext
+
     def rfind(self, p):
         """Required when os.path.basename() is called on MockFile."""
         return self._local_path.rfind(p)
