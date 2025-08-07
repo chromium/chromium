@@ -1,0 +1,129 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+
+import type {ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+function createBubbleElement(): ViewerSaveToDriveBubbleElement {
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  const element = document.createElement('viewer-save-to-drive-bubble');
+  document.body.appendChild(element);
+  return element;
+}
+
+const tests = [
+  async function testShowAndHide() {
+    const element = createBubbleElement();
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+
+    element.showAt(anchor);
+    await microtasksFinished();
+    chrome.test.assertTrue(element.$.dialog.open);
+
+    const closeButton =
+        element.shadowRoot.querySelector<HTMLButtonElement>('#close')!;
+    closeButton.click();
+    await microtasksFinished();
+    chrome.test.assertFalse(element.$.dialog.open);
+
+    chrome.test.succeed();
+  },
+
+  async function testHideWhenFocusoutOfDialog() {
+    const element = createBubbleElement();
+    const anchor = document.createElement('div');
+    anchor.style.position = 'fixed';
+    anchor.style.top = `400px`;
+    anchor.style.left = `400px`;
+    document.body.appendChild(anchor);
+    element.showAt(anchor);
+
+    // Focusout from elements within dialog should do nothing.
+    const header = element.shadowRoot.querySelector('#header')!;
+    header.dispatchEvent(new CustomEvent('focusout', {
+      composed: true,
+      bubbles: true,
+    }));
+    await microtasksFinished();
+    chrome.test.assertTrue(element.$.dialog.open);
+
+    // Focusout from the dialog itself should close the dialog.
+    element.$.dialog.dispatchEvent(
+        new CustomEvent('focusout', {composed: true, bubbles: true}));
+    await microtasksFinished();
+    chrome.test.assertFalse(element.$.dialog.open);
+
+    chrome.test.succeed();
+  },
+
+  async function testPositionsCorrectly() {
+    const windowHeight = 1000;
+    const dialogWidth = 100;
+    const dialogHeight = 200;
+    const anchorWidth = 50;
+    const anchorHeight = 25;
+    const anchorTop = 300;
+    const anchorLeft = 400;
+
+    const element = createBubbleElement();
+    const anchor = document.createElement('div');
+    anchor.style.position = 'fixed';
+    anchor.style.top = `${anchorTop}px`;
+    anchor.style.height = `${anchorHeight}px`;
+    anchor.style.left = `${anchorLeft}px`;
+    anchor.style.width = `${anchorWidth}px`;
+    element.$.dialog.style.width = `${dialogWidth}px`;
+    element.$.dialog.style.height = `${dialogHeight}px`;
+    window.innerHeight = windowHeight;
+    document.body.appendChild(anchor);
+    element.showAt(anchor);
+    await microtasksFinished();
+
+    chrome.test.assertEq(
+        `${anchorTop + anchorHeight}px`, element.$.dialog.style.top);
+    chrome.test.assertEq(
+        `${anchorLeft + anchorWidth - dialogWidth}px`,
+        element.$.dialog.style.left);
+
+    // Test that the top position changes if anchor is near bottom of window.
+    const newAnchorTop = windowHeight;
+    anchor.style.top = `${newAnchorTop}px`;
+    element.showAt(anchor);
+    await microtasksFinished();
+    chrome.test.assertEq(
+        `${newAnchorTop - dialogHeight}px`, element.$.dialog.style.top);
+
+    // Test that the left position changes if window resizes.
+    const newWindowWidth = 1000;
+    anchor.style.left = `${newWindowWidth}px`;
+    await microtasksFinished();
+    // Dialog left should still be at the old position.
+    chrome.test.assertEq(
+        `${anchorLeft + anchorWidth - dialogWidth}px`,
+        element.$.dialog.style.left);
+    // Dialog left should be changed if window resizes.
+    window.dispatchEvent(new Event('resize'));
+    await microtasksFinished();
+    chrome.test.assertEq(
+        `${newWindowWidth + anchorWidth - dialogWidth}px`,
+        element.$.dialog.style.left);
+
+    // Test the position in RTL.
+    anchor.style.left = `${anchorLeft}px`;
+    document.documentElement.dir = 'rtl';
+    element.showAt(anchor);
+    await microtasksFinished();
+    const anchorLeftRtl = anchor.getBoundingClientRect().left;
+    chrome.test.assertEq(
+        `${window.innerWidth - anchorLeftRtl - dialogWidth}px`,
+        element.$.dialog.style.right);
+
+    chrome.test.succeed();
+  },
+];
+
+chrome.test.runTests(tests);

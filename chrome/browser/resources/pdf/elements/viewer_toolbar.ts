@@ -632,6 +632,14 @@ export class ViewerToolbarElement extends CrLitElement {
     return !this.embeddedViewer;
     // </if>
   }
+
+  // <if expr="enable_pdf_save_to_drive">
+  getSaveToDriveBubbleAnchor(): HTMLElement {
+    const anchor = this.shadowRoot.querySelector<HTMLElement>('#save-to-drive');
+    assert(anchor);
+    return anchor;
+  }
+  // </if> enable_pdf_save_to_drive
 }
 
 declare global {

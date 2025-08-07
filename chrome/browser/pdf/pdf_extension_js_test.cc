@@ -219,6 +219,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, CircularProgressRing) {
   RunTestsInJsModule("circular_progress_ring_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, SaveToDriveBubble) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("save_to_drive_bubble_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, SaveToDriveControls) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.

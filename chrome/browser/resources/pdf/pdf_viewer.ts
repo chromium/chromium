@@ -21,6 +21,9 @@ import './elements/viewer_text_side_panel.js';
 // </if>
 import './elements/viewer_pdf_sidenav.js';
 import './elements/viewer_properties_dialog.js';
+// <if expr="enable_pdf_save_to_drive">
+import './elements/viewer_save_to_drive_bubble.js';
+// </if> enable_pdf_save_to_drive
 import './elements/viewer_toolbar.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -58,6 +61,9 @@ import type {ViewerPasswordDialogElement} from './elements/viewer_password_dialo
 // <if expr="enable_ink">
 import type {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
 //</if>
+// <if expr="enable_pdf_save_to_drive">
+import type {ViewerSaveToDriveBubbleElement} from './elements/viewer_save_to_drive_bubble.js';
+// </if> enable_pdf_save_to_drive
 // <if expr="enable_pdf_ink2">
 import type {Ink2ThumbnailData} from './elements/viewer_thumbnail_bar.js';
 //</if>
@@ -1378,6 +1384,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_save_to_drive">
   protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
     PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
+    // TODO(crbug.com/427449996): Implement the save PDF to drive logics. This
+    // includes initiating the upload, showing the bubble if upload in progress,
+    // cancel upload, open Drive, manage storage, and retry if error.
+    const bubble =
+        this.shadowRoot.querySelector<ViewerSaveToDriveBubbleElement>(
+            'viewer-save-to-drive-bubble');
+    assert(bubble);
+    bubble.showAt(this.$.toolbar.getSaveToDriveBubbleAnchor());
   }
   // </if> enable_pdf_save_to_drive
 

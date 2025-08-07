@@ -94,6 +94,7 @@ build_webui_tests("build") {
   if (enable_pdf_save_to_drive) {
     files += [
       "circular_progress_ring_test.ts",
+      "save_to_drive_bubble_test.ts",
       "save_to_drive_controls_test.ts",
     ]
   }

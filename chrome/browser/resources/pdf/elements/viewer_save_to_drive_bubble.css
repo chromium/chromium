@@ -1,0 +1,46 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+dialog {
+  background: var(--color-theme-color-picker-hue-slider-dialog-background,
+      var(--cr-fallback-color-surface));
+  border: 0;
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+  box-sizing: border-box;
+  color: var(--color-theme-color-picker-hue-slider-dialog-foreground,
+      var(--cr-fallback-color-on-surface));
+  overflow: hidden;
+  margin: 0;
+  padding: 20px;
+  width: 320px;
+  isolation: isolate;
+  position: absolute;
+  z-index: 999;
+}
+
+@media (forced-colors: active) {
+  dialog {
+    border: solid 1px Highlight;
+  }
+}
+
+#header {
+  display: flex;
+  min-height: 24px;
+  gap: 8px;
+}
+
+h2 {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+}

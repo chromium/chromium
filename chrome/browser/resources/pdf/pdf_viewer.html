@@ -135,3 +135,9 @@ ${this.showPropertiesDialog_ ? html`<viewer-properties-dialog
     .strings="${this.strings}"
     @close="${this.onPropertiesDialogClose_}">
 </viewer-properties-dialog>` : ''}
+
+<if expr="enable_pdf_save_to_drive">
+${this.pdfSaveToDriveEnabled_ ? html`<viewer-save-to-drive-bubble
+    .fileName="${this.fileName_}">
+</viewer-save-to-drive-bubble>` : ''}
+</if>

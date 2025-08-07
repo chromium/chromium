@@ -146,6 +146,8 @@ build_webui("build") {
     ts_files += [
       "elements/circular_progress_ring.html.ts",
       "elements/circular_progress_ring.ts",
+      "elements/viewer_save_to_drive_bubble.html.ts",
+      "elements/viewer_save_to_drive_bubble.ts",
       "elements/viewer_save_to_drive_controls.html.ts",
       "elements/viewer_save_to_drive_controls.ts",
     ]
@@ -198,6 +200,7 @@ build_webui("build") {
   if (enable_pdf_save_to_drive) {
     css_files += [
       "elements/circular_progress_ring.css",
+      "elements/viewer_save_to_drive_bubble.css",
       "elements/viewer_save_to_drive_controls.css",
     ]
   }
