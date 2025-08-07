@@ -467,10 +467,6 @@ template("proto_library") {
     inputs = [
       # System protoc is not used so it's necessary to build a chromium one.
       _protoc_path,
-
-      # Add this here as there are some protos which import descriptor.proto
-      # directly or indirectly.
-      "//third_party/protobuf/src/google/protobuf/descriptor.proto",
     ]
     outputs = []
     if (_generate_cc || _generate_with_plugin) {
@@ -623,10 +619,22 @@ template("proto_library") {
       ]
     }
 
+    # Some protos import descriptor.proto directly or indirectly. This is
+    # required for the creation of FieldOptions and MessageOptions for
+    # consumption by protoc plugins. To facilitate this, the descriptor must
+    # both be an input and have it be accessible on the include path for the
+    # proto_library target using it AND every library that transitively includes
+    # it. To prevent having massive side-effects to build files on changes, this
+    # simply adds the input and import_dir for descriptor.proto to all targets.
+    # The import_dirs modification can be removed if http://crbug.com/691451 is
+    # fixed.
+    inputs += [ "//third_party/protobuf/src/google/protobuf/descriptor.proto" ]
+    _import_dirs = [ "//third_party/protobuf/src" ]
     if (defined(invoker.import_dirs)) {
-      foreach(_path, invoker.import_dirs) {
-        args += [ "--import-dir=" + rebase_path(_path, root_build_dir) ]
-      }
+      _import_dirs += invoker.import_dirs
+    }
+    foreach(_path, _import_dirs) {
+      args += [ "--import-dir=" + rebase_path(_path, root_build_dir) ]
     }
   }
 
