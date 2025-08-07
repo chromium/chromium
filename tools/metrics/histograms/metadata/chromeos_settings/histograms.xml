@@ -828,7 +828,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.RevenEnableHwDataUsage"
-    enum="BooleanToggled" expires_after="2025-09-03">
+    enum="BooleanToggled" expires_after="2026-09-03">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
