@@ -1,6 +1,6 @@
 {
-  "browser": "Chrome",
-  "channel": "Dev",
-  "platform": "Windows",
+  "browser": "chrome",
+  "channel": "dev",
+  "platform": "windows",
   "version": "140.0.7327.6"
 }

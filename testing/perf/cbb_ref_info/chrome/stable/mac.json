@@ -1,6 +1,6 @@
 {
-  "browser": "Chrome",
-  "channel": "Stable",
-  "platform": "Mac",
+  "browser": "chrome",
+  "channel": "stable",
+  "platform": "mac",
   "version": "139.0.7258.67"
 }
