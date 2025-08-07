@@ -37,6 +37,7 @@ class SourceWindowObserver : public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     source_window_alive_ = false;
+    scoped_observation_.Reset();
   }
 
   bool source_window_alive() { return source_window_alive_; }
