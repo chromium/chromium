@@ -865,7 +865,10 @@ TEST_F(SafariDataImporterTest, ImportSingleBookmark) {
 
   EXPECT_CALL(client_, OnBookmarksImported(1u));
   EXPECT_CALL(client_, OnHistoryImported(0));
-  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0u));
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
 
   CompleteImport({});
 
@@ -890,6 +893,9 @@ TEST_F(SafariDataImporterTest, ImportsMultipleBookmarks) {
   EXPECT_CALL(client_, OnBookmarksImported(2u));
   EXPECT_CALL(client_, OnHistoryImported(0));
   EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
   CompleteImport({});
 
   const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
@@ -921,6 +927,9 @@ TEST_F(SafariDataImporterTest, ImportsNestedBookmark) {
   EXPECT_CALL(client_, OnBookmarksImported(1u));
   EXPECT_CALL(client_, OnHistoryImported(0));
   EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
   CompleteImport({});
 
   const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
@@ -949,6 +958,9 @@ TEST_F(SafariDataImporterTest, ImportsEmptyFolder) {
   EXPECT_CALL(client_, OnBookmarksImported(0u));
   EXPECT_CALL(client_, OnHistoryImported(0));
   EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
   CompleteImport({});
 
   const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
@@ -978,6 +990,9 @@ TEST_F(SafariDataImporterTest, ImportsMultipleReadingListItems) {
   EXPECT_CALL(client_, OnBookmarksImported(3u));
   EXPECT_CALL(client_, OnHistoryImported(0));
   EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
   CompleteImport({});
 
   const ReadingListModel* model = GetReadingListModel();
@@ -1039,6 +1054,9 @@ TEST_F(SafariDataImporterTest, DuplicateBookmarkFolders) {
 
   EXPECT_CALL(client_, OnHistoryImported(0));
   EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
   CompleteImport({});
 
   const bookmarks::BookmarkNode* import_folder =
