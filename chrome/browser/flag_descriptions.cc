@@ -7992,11 +7992,6 @@ const char kWaylandSessionManagementName[] = "Wayland session management";
 const char kWaylandSessionManagementDescription[] =
     "Enable Wayland's xx/xdg-session-management-v1 experimental support.";
 
-const char kWaylandUiScalingName[] = "Wayland UI scaling";
-const char kWaylandUiScalingDescription[] =
-    "Enable experimental support for text scaling in the Wayland backend "
-    "backed by full UI scaling. Requires #wayland-per-window-scaling to be "
-    "enabled too.";
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Random platform combinations -----------------------------------------------

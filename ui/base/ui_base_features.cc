@@ -125,12 +125,6 @@ BASE_FEATURE(kWaylandTextInputV3,
              "WaylandTextInputV3",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether support for "Large Text" accessibility setting via UI
-// scaling is enabled.
-BASE_FEATURE(kWaylandUiScale,
-             "WaylandUiScale",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether Wayland session management protocol is enabled.
 BASE_FEATURE(kWaylandSessionManagement,
              "WaylandSessionManagement",

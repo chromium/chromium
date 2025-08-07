@@ -4893,7 +4893,6 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UsePreferredSurfaceScale) {
 }
 
 TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandleFontScaleChange) {
-  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Required for emulating mouse events.
@@ -5017,7 +5016,6 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandleFontScaleChange) {
 
 TEST_P(PerSurfaceScaleWaylandWindowTest,
        UiScale_HandleServerTriggeredBoundsChange) {
-  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Initialize surface preferred scale.
@@ -5069,7 +5067,6 @@ TEST_P(PerSurfaceScaleWaylandWindowTest,
 }
 
 TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
-  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Set font scale to 1.25.
@@ -5170,7 +5167,6 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
 }
 
 TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
-  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Required for emulating mouse events.
@@ -5291,7 +5287,6 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
 }
 
 TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_SanitizeFontScale) {
-  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   auto test_font_scale = [&](float requested_font_scale,

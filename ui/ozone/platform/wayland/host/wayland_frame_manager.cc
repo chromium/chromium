@@ -404,8 +404,8 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
   // Besides the actual wayland surface scale, `config.surface_scale_factor`
   // also contains chromium's ui scale, which is irrelevant to the wayland
   // compositor, thus it must be factored out here. This assumes that:
-  // - window's ui_scale will always be set to 1 when neither per-surface
-  // scaling nor kWaylandUiScale feature is enabled.
+  // - window's ui_scale will always be set to 1 when per-surface scaling is not
+  //   enabled.
   // - frame's window state has already been latched, which is usually done in
   // `MaybeProcessSubmittedFrames`, before calling into this function.
   const float surface_buffer_scale =

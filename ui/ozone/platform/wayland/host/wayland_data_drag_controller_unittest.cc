@@ -1494,7 +1494,6 @@ class PerSurfaceScaleWaylandDataDragControllerTest
 
 TEST_P(PerSurfaceScaleWaylandDataDragControllerTest,
        ScaleEnterAndMotionEventsLocation) {
-  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Set font scale to 1.25.

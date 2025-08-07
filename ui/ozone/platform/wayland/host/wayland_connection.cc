@@ -528,8 +528,7 @@ bool WaylandConnection::UsePerSurfaceScaling() const {
 }
 
 bool WaylandConnection::IsUiScaleEnabled() const {
-  return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
-         UsePerSurfaceScaling();
+  return UsePerSurfaceScaling();
 }
 
 bool WaylandConnection::SupportsSessionManagement() const {

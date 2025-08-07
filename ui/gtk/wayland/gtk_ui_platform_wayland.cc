@@ -83,9 +83,8 @@ GtkUiPlatformWayland::CreateInputMethodContext(
 }
 
 bool GtkUiPlatformWayland::IncludeFontScaleInDeviceScale() const {
-  // Assume font scaling will be handled by Ozone/Wayland when WaylandUiScale
-  // feature is enabled.
-  return base::FeatureList::IsEnabled(features::kWaylandUiScale);
+  // Assume font scaling will be handled by Ozone/Wayland.
+  return true;
 }
 
 bool GtkUiPlatformWayland::IncludeScaleInCursorSize() const {
