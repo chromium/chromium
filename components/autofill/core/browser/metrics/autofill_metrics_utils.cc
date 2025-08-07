@@ -20,7 +20,7 @@ constexpr DenseSet<FormType> kCreditCardFormTypes = {
     FormType::kCreditCardForm, FormType::kStandaloneCvcForm};
 constexpr DenseSet<FormType> kLoyaltyCardFormTypes = {
     FormType::kLoyaltyCardForm};
-constexpr DenseSet<FieldType> kFieldTypesOfATypicalStoreLocatorForm = {
+constexpr FieldTypeSet kFieldTypesOfATypicalStoreLocatorForm = {
     ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP};
 
 bool IsCvcOnlyForm(const FormStructure& form) {

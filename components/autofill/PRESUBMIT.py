@@ -54,7 +54,7 @@ Add "// nocheck" to the end of the line to suppress this error."""
   errors = []
   file_filter = lambda f: (
     f.LocalPath().startswith('components/autofill/')
-    and f.LocalPath().endswith(('.h', '.cc'))
+    and f.LocalPath().endswith(('.h', '.cc', '.mm'))
   )
   # There may be a line break in the cast, so we test multiple patterns.
   pattern_full = input_api.re.compile(r'_cast<\s*FieldType\b')
@@ -86,13 +86,50 @@ Add "// nocheck" to the end of the line to suppress this error."""
         )
   return errors
 
-  if len(files):
-    return [ output_api.PresubmitPromptWarning(
-        'Do not cast raw integers to FieldType to prevent values that ' +
-        'have no corresponding enum constant or are deprecated. Use '+
-        'ToSafeFieldType() instead.',
-        files) ]
-  return []
+def CheckFieldTypeSets(input_api, output_api):
+  """Produces errors if the changed code contains DenseSet<FieldType> instead
+of FieldType, and similarly for FieldTypeGroupSet and HtmlFieldTypeSet."""
+  bad_patterns = [
+      (
+          input_api.re.compile(r'\bDenseSet<FieldType>'),
+          'Use FieldTypeSet instead of DenseSet<FieldType>',
+      ),
+      (
+          input_api.re.compile(r'\bDenseSet<FieldTypeGroup>'),
+          'Use FieldTypeGroupSet instead of DenseSet<FieldTypeGroup>',
+      ),
+      (
+          input_api.re.compile(r'\bDenseSet<HtmlFieldType>'),
+          'Use HtmlFieldTypeSet instead of DenseSet<HtmlFieldType>',
+      ),
+      (
+          input_api.re.compile(r'\bFieldTypeSet::all()'),
+          'Use kAllFieldTypes instead of FieldTypeSet::all()',
+      ),
+      (
+          input_api.re.compile(r'\bHtmlFieldTypeSet::all()'),
+          'Use kAllHtmlFieldTypes instead of HtmlFieldTypeSet::all()',
+      ),
+  ]
+  warnings = []
+  file_filter = lambda f: (
+    f.LocalPath().startswith('components/autofill/')
+    and f.LocalPath().endswith(('.h', '.cc', '.mm'))
+  )
+  for file in input_api.AffectedSourceFiles(file_filter):
+    for line_num, line in file.ChangedContents():
+      if line.endswith("// nocheck"):
+        continue
+      line = line.split('//')[0]
+      for regex, explanation in bad_patterns:
+        if regex.search(line):
+          warnings.append(
+              output_api.PresubmitError(
+                  f'{file.LocalPath()}:{line_num}: {explanation}. Add '
+                  '"// nocheck" to the end of the line to suppress this error.'
+              )
+          )
+  return warnings
 
 def CheckFeatureNames(input_api, output_api):
   """Checks that no features are enabled."""

@@ -38,7 +38,7 @@ constexpr std::string_view kGarbageHadPredictionVariant =
 // Field types whose associated values typically are small numbers (< 100). When
 // determining the possible types of a submitted field, the small numbers have a
 // high chance of causing false positive matches.
-constexpr DenseSet<FieldType> kFieldTypesRepresentingSmallNumbers = {
+constexpr FieldTypeSet kFieldTypesRepresentingSmallNumbers = {
     CREDIT_CARD_EXP_MONTH,     CREDIT_CARD_EXP_2_DIGIT_YEAR,
     PHONE_HOME_COUNTRY_CODE,   PHONE_HOME_NUMBER_PREFIX,
     ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
@@ -106,7 +106,7 @@ void LogDataUtilization(const FormStructure& form) {
       continue;
     }
     // Determine fillable possible types.
-    DenseSet<FieldType> fillable_possible_types;
+    FieldTypeSet fillable_possible_types;
     for (FieldType possible_type : field->possible_types()) {
       if (IsFillableFieldType(possible_type)) {
         fillable_possible_types.insert(possible_type);

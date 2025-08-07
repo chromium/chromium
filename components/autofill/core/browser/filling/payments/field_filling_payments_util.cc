@@ -508,7 +508,7 @@ bool WillFillCreditCardNumberOrCvc(
   if (fields.size() != autofill_fields.size()) {
     return false;
   }
-  DenseSet<FieldType> fillable_field_types({CREDIT_CARD_NUMBER});
+  FieldTypeSet fillable_field_types({CREDIT_CARD_NUMBER});
   // Add CVC field types to `fillable_field_types` if CVC storage is enabled and
   // the card to be filled has a CVC saved.
   if (card_has_cvc && base::FeatureList::IsEnabled(

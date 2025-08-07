@@ -21,7 +21,7 @@ namespace {
 using ::testing::ContainerEq;
 
 std::unique_ptr<FormStructure> CreateFormStructure(
-    const DenseSet<FieldType>& field_types) {
+    const FieldTypeSet& field_types) {
   test::FormDescription form_description;
   for (FieldType field_type : field_types) {
     form_description.fields.emplace_back(
@@ -42,7 +42,7 @@ class AutofillMetricsUtilsTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-using IsCertainFormTypeTestData = std::tuple<DenseSet<FieldType>, bool>;
+using IsCertainFormTypeTestData = std::tuple<FieldTypeSet, bool>;
 
 // Test fixture for testing `internal::IsEmailOnlyForm()`.
 class IsEmailOnlyFormTest
@@ -118,11 +118,11 @@ INSTANTIATE_TEST_SUITE_P(
                                    ADDRESS_HOME_CITY},
                                   true)));
 
-// Given a form consisting of fields of types `DenseSet<FieldType>`, expect
+// Given a form consisting of fields of types `FieldTypeSet`, expect
 // `DenseSet<FormTypeNameForLogging>` to be returned from `Get{Address,
 // CreditCard}FormTypesForLogging()`.
 using FormTypesForLoggingTestData =
-    std::tuple<DenseSet<FieldType>, DenseSet<FormTypeNameForLogging>>;
+    std::tuple<FieldTypeSet, DenseSet<FormTypeNameForLogging>>;
 
 // Test fixture for testing `GetAddressFormTypesForLogging()`.
 class AddressFormTypesForLoggingTest

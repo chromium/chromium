@@ -463,8 +463,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     const {
   // An attribute's field type must never be UNKNOWN_TYPE - otherwise we will
   // discard its value here.
-  static_assert(!DenseSet<FieldType>(DenseSet<AttributeType>::all(),
-                                     &AttributeType::field_type_with_tag_types)
+  static_assert(!FieldTypeSet(DenseSet<AttributeType>::all(),
+                              &AttributeType::field_type_with_tag_types)
                      .contains(UNKNOWN_TYPE));
 
   std::optional<EntityType> entity_type =

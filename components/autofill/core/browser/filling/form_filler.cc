@@ -111,7 +111,7 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
     }
     case FillingProduct::kAutofillAi: {
       static constexpr auto kFieldTypes = []() {
-        DenseSet<FieldType> result;
+        FieldTypeSet result;
         for (AttributeType type : DenseSet<AttributeType>::all()) {
           result.insert_all(type.field_subtypes());
         }
