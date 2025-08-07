@@ -90,6 +90,16 @@ struct AutofillSaveCardUiInfo {
       bool is_google_pay_branding_enabled);
 };
 
+#if BUILDFLAG(IS_IOS)
+// Returns true if the bottom sheet UI should be shown for saving a credit card.
+// This is the case if the bottom sheet feature is enabled, there are no strikes
+// against the card, and no fix flows are required.
+bool ShouldShowSaveCardBottomSheet(
+    int num_strikes,
+    bool should_request_name_from_user,
+    bool should_request_expiration_date_from_user);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_SAVE_CARD_UI_INFO_H_

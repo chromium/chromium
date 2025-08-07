@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -1630,12 +1631,10 @@ bool CreditCardSaveManager::ShouldRequestCvcInclusiveLegalMessage() const {
 
   int num_strikes = GetCreditCardSaveStrikeDatabase()->GetStrikes(
       base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
-  bool will_show_bottom_sheet =
-      num_strikes == 0 && !should_request_name_from_user_ &&
-      !should_request_expiration_date_from_user_ &&
-      base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
-
-  return !will_show_bottom_sheet;
+  return !autofill::ShouldShowSaveCardBottomSheet(
+             num_strikes, should_request_name_from_user_,
+             should_request_expiration_date_from_user_) ||
+         !base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
 #else
   // For other platforms, we only request the CVC-inclusive message if a CVC
   // was present in the form.
