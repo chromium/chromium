@@ -575,6 +575,26 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINChangeEnclaveRequest(
   return requests;
 }
 
+// Build an enclave request for recovery_key_store/wrap_pin_and_secret, which
+// wraps a PIN with the security domain secret, and creates Vault parameters for
+// the PIN, wrapping the security domain secret.
+cbor::Value BuildPINAndSecurityDomainSecretWrappingEnclaveRequest(
+    base::span<const uint8_t> hashed_pin,
+    base::span<const uint8_t, 32> claim_key,
+    std::string cert_xml,
+    std::string sig_xml,
+    base::span<const uint8_t> wrapped_secret) {
+  cbor::Value::MapValue request;
+  request.emplace(enclave::kRequestCommandKey,
+                  enclave::kRecoveryKeyStoreWrapPinAndSecretCommandName);
+  request.emplace(enclave::kRecoveryKeyStorePinHash, hashed_pin);
+  request.emplace(enclave::kClaimKey, claim_key);
+  request.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
+  request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
+  request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
+  return cbor::Value(request);
+}
+
 // Build an enclave request to renew a PIN.
 cbor::Value BuildPINRenewalRequest(std::string cert_xml,
                                    std::string sig_xml,
@@ -1159,7 +1179,11 @@ class EnclaveManager::StateMachine {
 #if BUILDFLAG(IS_MAC)
     kJoiningICloudKeychainToDomain,
 #endif  // BUILDFLAG(IS_MAC)
+    // Setting the PIN using `recovery_key_store/wrap_as_member` and
+    // `passkeys/wrap_pin`.
     kSettingPIN,
+    // Setting the PIN using `recovery_key_store/wrap_pin_and_secret`.
+    kSettingPINWithSingleCommand,
     kRenewingPIN,
     kWaitingForEnclaveTokenForUnregister,
     kUnregistering,
@@ -1281,6 +1305,10 @@ class EnclaveManager::StateMachine {
         DoSettingPIN(std::move(event));
         break;
 
+      case State::kSettingPINWithSingleCommand:
+        DoSettingPINWithSingleCommand(std::move(event));
+        break;
+
       case State::kJoiningUpdatedPINToDomain:
         DoJoiningUpdatedPINToDomain(std::move(event));
         break;
@@ -1371,6 +1399,8 @@ class EnclaveManager::StateMachine {
         return "JoiningPINToDomain";
       case State::kSettingPIN:
         return "SettingPIN";
+      case State::kSettingPINWithSingleCommand:
+        return "SettingPINWithSingleCommand";
       case State::kJoiningUpdatedPINToDomain:
         return "JoiningUpdatedPINToDomain";
       case State::kRenewingPIN:
@@ -2144,6 +2174,10 @@ class EnclaveManager::StateMachine {
   }
 
   void SendPINSetRequest(std::string token) {
+    if (base::FeatureList::IsEnabled(device::kWebAuthnWrapCohortData)) {
+      SendPINAndSecurityDomainSecretWrappingRequest(std::move(token));
+      return;
+    }
     uint8_t counter_id[enclave::kCounterIDLen];
     crypto::RandBytes(counter_id);
     uint8_t vault_handle_without_type[enclave::kVaultHandleLen - 1];
@@ -2170,6 +2204,22 @@ class EnclaveManager::StateMachine {
                 hashed_pin_->hashed, std::move(*cert_xml_),
                 std::move(*sig_xml_), counter_id, vault_handle_without_type,
                 wrapped_secret)),
+        manager_->IdentityKeySigningCallback(),
+        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void SendPINAndSecurityDomainSecretWrappingRequest(std::string token) {
+    state_ = State::kSettingPINWithSingleCommand;
+    std::vector<uint8_t> wrapped_secret =
+        GetCurrentWrappedSecretForUser(user_).second;
+    enclave::Transact(
+        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
+        std::move(token), std::move(rapt_),
+        BuildPINAndSecurityDomainSecretWrappingEnclaveRequest(
+            hashed_pin_->hashed,
+            ToSizedSpan<32>(wrapped_pin_proto_->claim_key()),
+            std::move(*cert_xml_), std::move(*sig_xml_), wrapped_secret),
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -2416,6 +2466,45 @@ class EnclaveManager::StateMachine {
 
     UploadVaultAndMemberFromResponse(hashed_pin_->metadata,
                                      response.GetArray()[1]);
+  }
+
+  void DoSettingPINWithSingleCommand(Event event) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    state_ = State::kStop;
+    if (std::holds_alternative<Failure>(event)) {
+      return;
+    }
+
+    cbor::Value response =
+        std::move(std::get_if<EnclaveResponse>(&event)->value());
+    if (!IsAllOk(response, 1)) {
+      FIDO_LOG(ERROR) << "PIN change resulted in error response: "
+                      << cbor::DiagnosticWriter::Write(response);
+      return;
+    }
+
+    const cbor::Value::MapValue& response_map = response.GetArray()[0].GetMap();
+    const cbor::Value& ok_response =
+        response_map.find(cbor::Value(enclave::kResponseSuccessKey))->second;
+    if (!ok_response.is_map()) {
+      FIDO_LOG(ERROR) << "PIN change response is not a map: "
+                      << cbor::DiagnosticWriter::Write(response);
+      return;
+    }
+    const cbor::Value::MapValue& ok_response_map = ok_response.GetMap();
+    const auto wrapped_pin_value =
+        ok_response_map.find(cbor::Value(enclave::kWrappedPinKey));
+    if (wrapped_pin_value == ok_response_map.end() ||
+        !wrapped_pin_value->second.is_bytestring()) {
+      FIDO_LOG(ERROR) << "Wrapped PIN was not a bytestring";
+      return;
+    }
+    wrapped_pin_proto_->set_wrapped_pin(
+        VecToString(wrapped_pin_value->second.GetBytestring()));
+
+    UploadVaultAndMemberFromResponse(hashed_pin_->metadata,
+                                     response.GetArray()[0]);
   }
 
   void DoRenewingPIN(Event event) {

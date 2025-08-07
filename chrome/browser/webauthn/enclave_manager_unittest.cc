@@ -945,7 +945,23 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccountWithPreviouslyInvalidPIN) {
   }
 }
 
-TEST_F(EnclaveManagerTest, ChangePIN) {
+class EnclaveManagerChangePINTest : public EnclaveManagerTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(device::kWebAuthnWrapCohortData,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         EnclaveManagerChangePINTest,
+                         testing::Values(false, true));
+
+TEST_P(EnclaveManagerChangePINTest, ChangePIN) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";
   const std::string new_pin = "newpin";
@@ -988,7 +1004,7 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
               GetAssertionResponseExpectation());
 }
 
-TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
+TEST_P(EnclaveManagerChangePINTest, AddPINToExistingAccount) {
   security_domain_service_->pretend_there_are_members();
   const std::string new_pin = "newpin";
 
@@ -1027,7 +1043,8 @@ TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
               GetAssertionResponseExpectation());
 }
 
-TEST_F(EnclaveManagerTest, AddPINToExistingAccountButTheresAlreadyOne) {
+TEST_P(EnclaveManagerChangePINTest,
+       AddPINToExistingAccountButTheresAlreadyOne) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";
   const std::string new_pin = "newpin";
@@ -1054,7 +1071,7 @@ TEST_F(EnclaveManagerTest, AddPINToExistingAccountButTheresAlreadyOne) {
   ASSERT_FALSE(set_pin_future.Get());
 }
 
-TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
+TEST_P(EnclaveManagerChangePINTest, ChangePINWithTwoDevices) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";
   const std::string intermediate_pin = "intermediate_pin";
@@ -1074,7 +1091,6 @@ TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
   second_manager.StoreKeys(gaia_id_, {key},
                            /*last_key_version=*/kSecretVersion);
 
-  LOG(INFO) << "Adding first manager";
   {
     BoolFuture add_future;
     manager_.AddDeviceAndPINToAccount(pin,
@@ -1086,14 +1102,12 @@ TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
   const std::vector<uint8_t> security_domain_secret =
       std::move(manager_.TakeSecret()->second);
 
-  LOG(INFO) << "Adding second manager";
   {
     BoolFuture add_future;
     second_manager.AddDeviceToAccount(std::nullopt, add_future.GetCallback());
     EXPECT_TRUE(add_future.Wait());
   }
 
-  LOG(INFO) << "First PIN change";
   {
     BoolFuture change_future;
     // `second_manager` must fetch PIN information from the security domain in
@@ -1104,7 +1118,6 @@ TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
     ASSERT_TRUE(change_future.Get());
   }
 
-  LOG(INFO) << "Second PIN change";
   {
     BoolFuture change_future;
     manager_.ChangePIN(new_pin, "rapt", change_future.GetCallback());

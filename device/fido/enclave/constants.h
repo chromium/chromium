@@ -88,6 +88,8 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPasskeysWrapPinCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreWrapAsMemberCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreWrapPinAndSecretCommandName[];
+COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreRewrapCommandName[];
 
 // Register request keys
@@ -109,6 +111,7 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingKeyToWrap[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPinHash[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGeneration[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kClaimKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappedPinKey[];
 
 // Wrapping response keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingResponsePublicKey[];

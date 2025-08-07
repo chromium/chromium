@@ -100,6 +100,8 @@ const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";
 const char kPasskeysWrapPinCommandName[] = "passkeys/wrap_pin";
 const char kRecoveryKeyStoreWrapAsMemberCommandName[] =
     "recovery_key_store/wrap_as_member";
+const char kRecoveryKeyStoreWrapPinAndSecretCommandName[] =
+    "recovery_key_store/wrap_pin_and_secret";
 const char kRecoveryKeyStoreRewrapCommandName[] = "recovery_key_store/rewrap";
 
 const char kRegisterPubKeysKey[] = "pub_keys";
@@ -117,6 +119,7 @@ const char kWrappingKeyToWrap[] = "key";
 const char kPinHash[] = "pin_hash";
 const char kGeneration[] = "pin_generation";
 const char kClaimKey[] = "pin_claim_key";
+const char kWrappedPinKey[] = "wrapped_pin";
 
 const char kWrappingResponsePublicKey[] = "pub_key";
 const char kWrappingResponseWrappedPrivateKey[] = "priv_key";
