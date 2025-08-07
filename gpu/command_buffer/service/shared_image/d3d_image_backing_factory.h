@@ -40,7 +40,8 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager,
       const GLFormatCaps& gl_format_caps,
-      const GpuDriverBugWorkarounds& workarounds = GpuDriverBugWorkarounds());
+      const GpuDriverBugWorkarounds& workarounds = GpuDriverBugWorkarounds(),
+      bool enable_webnn_only_d3d_factory = false);
 
   D3DImageBackingFactory(const D3DImageBackingFactory&) = delete;
   D3DImageBackingFactory& operator=(const D3DImageBackingFactory&) = delete;
@@ -180,6 +181,9 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
 
   // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
   const bool use_update_subresource1_;
+
+  // Allow D3D factory for WebNN even if support is disabled.
+  const bool enable_webnn_only_d3d_factory_ = false;
 };
 
 }  // namespace gpu

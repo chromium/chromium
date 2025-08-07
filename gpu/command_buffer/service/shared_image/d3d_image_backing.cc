@@ -1515,6 +1515,39 @@ void D3DImageBacking::EndDCompTextureAccess() {
       /*d3d11_signal_device=*/nullptr, std::move(d3d11_fence), fence_value);
 }
 
+std::optional<scoped_refptr<gfx::D3DSharedFence>>
+D3DImageBacking::BeginAccessWebNN() {
+  AutoLock auto_lock(this);
+
+  // WebNNTensors only support exclusive read-write access.
+  if (!ValidateBeginAccess(true)) {
+    return std::nullopt;
+  }
+
+  scoped_refptr<gfx::D3DSharedFence> write_fence;
+  if (!write_fences_.empty()) {
+    // WebNNTensors expect to wait on 1 fence that originates from Dawn.
+    // If there was WebGPU work, this will be Dawn's submission fence.
+    // Otherwise, it will return WebNN's submission fence that was previously
+    // passed to BeginAccessDawn.
+    CHECK_EQ(write_fences_.size(), 1u);
+    write_fence = *write_fences_.begin();
+  }
+
+  BeginAccessCommon(true);
+  return write_fence;
+}
+
+void D3DImageBacking::EndAccessWebNN(
+    scoped_refptr<gfx::D3DSharedFence> signaled_fence) {
+  AutoLock auto_lock(this);
+  if (!signaled_fence) {
+    EndAccessCommon(/*signaled_fences=*/{});
+    return;
+  }
+  EndAccessCommon({signaled_fence});
+}
+
 std::unique_ptr<DawnBufferRepresentation> D3DImageBacking::ProduceDawnBuffer(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -1666,7 +1699,15 @@ std::unique_ptr<WebNNTensorRepresentation> D3DImageBacking::ProduceWebNNTensor(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   CHECK(usage() & SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR);
-  return std::make_unique<WebNND3DTensorRepresentation>(manager, this, tracker);
+  DCHECK(d3d12_resource_.Get() != nullptr);
+
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
+  HRESULT hr = d3d12_resource_->GetDevice(IID_PPV_ARGS(&d3d12_device));
+  CHECK_EQ(hr, S_OK) << ", GetDevice failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  return std::make_unique<WebNND3DTensorRepresentation>(
+      manager, this, tracker, std::move(d3d12_device));
 }
 
 void D3DImageBacking::BeginAccessCommon(bool write_access) {

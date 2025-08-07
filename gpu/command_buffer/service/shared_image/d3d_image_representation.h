@@ -89,13 +89,23 @@ class DawnD3DBufferRepresentation : public DawnBufferRepresentation {
 // Representation of a D3DImageBacking as a tensor.
 class WebNND3DTensorRepresentation : public WebNNTensorRepresentation {
  public:
-  WebNND3DTensorRepresentation(SharedImageManager* manager,
-                               SharedImageBacking* backing,
-                               MemoryTypeTracker* tracker);
+  WebNND3DTensorRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device);
   ~WebNND3DTensorRepresentation() override;
 
  private:
+  bool BeginAccess() override;
+  void EndAccess() override;
+
   Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const override;
+  void ConsumeWebNNTensor(
+      base::WeakPtr<webnn::native::d3d12::WebNNTensor> webnn_tensor) override;
+
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
+  base::WeakPtr<webnn::native::d3d12::WebNNTensor> webnn_tensor_;
 };
 
 // Representation of a D3DImageBacking as an overlay.

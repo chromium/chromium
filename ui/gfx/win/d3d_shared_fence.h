@@ -7,6 +7,7 @@
 
 #include <d3d11.h>
 #include <d3d11_4.h>
+#include <d3d12.h>
 #include <wrl/client.h>
 
 #include "base/component_export.h"
@@ -52,6 +53,12 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
   // created on Wait or Signal for the device provided to those calls.
   static scoped_refptr<D3DSharedFence> CreateFromUnownedHandle(
       HANDLE shared_handle);
+
+  // Create from an existing ID3D12Fence to wait on.
+  // |fence_value| is the initial value this fence will wait on.
+  static scoped_refptr<D3DSharedFence> CreateFromD3D12Fence(
+      Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence,
+      uint64_t fence_value);
 
   // Returns true if fences are supported i.e. if ID3D11Device5 is supported.
   static bool IsSupported(ID3D11Device* d3d11_device);
@@ -116,6 +123,10 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
   // If present, this is the D3D11 fence object this fence was created with and
   // used for signaling.
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_signal_fence_;
+
+  // If present, this is the D3D12 fence object this fence was created with and
+  // used for signaling.
+  Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_signal_fence_;
 
   // Map of D3D11 device to D3D11 fence objects used by WaitD3D11().
   base::LRUCache<Microsoft::WRL::ComPtr<ID3D11Device>,

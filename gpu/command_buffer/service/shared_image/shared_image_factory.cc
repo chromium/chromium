@@ -222,11 +222,20 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(
         std::make_unique<DCompImageBackingFactory>(context_state_));
   }
-  if (IsD3DSharedImageSupported()) {
+  // WebNN requires use of shared images for WebGPUInterop.
+  const bool is_webnn_feature_enabled =
+      (gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] ==
+       kGpuFeatureStatusEnabled);
+
+  const bool enable_webnn_only_d3d_factory =
+      is_webnn_feature_enabled && !IsD3DSharedImageSupported();
+
+  if (IsD3DSharedImageSupported() || enable_webnn_only_d3d_factory) {
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         context_state_->GetD3D11Device(),
         shared_image_manager_->dxgi_shared_handle_manager(),
-        context_state_->GetGLFormatCaps(), workarounds_);
+        context_state_->GetGLFormatCaps(), workarounds_,
+        enable_webnn_only_d3d_factory);
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }

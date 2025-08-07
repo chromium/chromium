@@ -808,9 +808,32 @@ std::string SkiaGraphiteImageRepresentation::WrappedTextureDebugLabel(
 ///////////////////////////////////////////////////////////////////////////////
 // WebNNTensorRepresentation
 
+WebNNTensorRepresentation::ScopedAccess::ScopedAccess(
+    base::PassKey<WebNNTensorRepresentation> /* pass_key */,
+    WebNNTensorRepresentation* representation,
+    AccessMode access_mode)
+    : ScopedAccessBase(representation, access_mode) {}
+
+WebNNTensorRepresentation::ScopedAccess::~ScopedAccess() {
+  representation()->EndAccess();
+}
+
+std::unique_ptr<WebNNTensorRepresentation::ScopedAccess>
+WebNNTensorRepresentation::BeginScopedAccess() {
+  if (!BeginAccess()) {
+    return nullptr;
+  }
+  return std::make_unique<ScopedAccess>(
+      base::PassKey<WebNNTensorRepresentation>(), this, AccessMode::kWrite);
+}
+
 #if BUILDFLAG(IS_WIN)
 Microsoft::WRL::ComPtr<ID3D12Resource>
 WebNNTensorRepresentation::GetD3D12Buffer() const {
+  NOTREACHED();
+}
+void WebNNTensorRepresentation::ConsumeWebNNTensor(
+    base::WeakPtr<webnn::native::d3d12::WebNNTensor> webnn_tensor) {
   NOTREACHED();
 }
 #endif

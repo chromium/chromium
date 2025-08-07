@@ -43,6 +43,7 @@ class VulkanImplementation;
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "services/webnn/d3d12_backend.h"  // nogncheck
 #include "ui/gl/dc_layer_overlay_image.h"
 #endif
 
@@ -923,9 +924,26 @@ class GPU_GLES2_EXPORT WebNNTensorRepresentation
                             SharedImageBacking* backing,
                             MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
+
+  class GPU_GLES2_EXPORT ScopedAccess
+      : public ScopedAccessBase<WebNNTensorRepresentation> {
+   public:
+    ScopedAccess(base::PassKey<WebNNTensorRepresentation> pass_key,
+                 WebNNTensorRepresentation* representation,
+                 AccessMode access_mode);
+    ~ScopedAccess();
+  };
+
+  std::unique_ptr<ScopedAccess> BeginScopedAccess();
+
 #if BUILDFLAG(IS_WIN)
   virtual Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const;
+  virtual void ConsumeWebNNTensor(
+      base::WeakPtr<webnn::native::d3d12::WebNNTensor> webnn_tensor);
 #endif  // BUILDFLAG(IS_WIN)
+ protected:
+  virtual bool BeginAccess() = 0;
+  virtual void EndAccess() = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
