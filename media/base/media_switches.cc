@@ -460,8 +460,7 @@ BASE_FEATURE(kContextMenuCopyVideoFrame,
 );
 
 // Enables the "Save Video Frame As" context menu item.
-BASE_FEATURE(kContextMenuSaveVideoFrameAs,
-             "ContextMenuSaveVideoFrameAs",
+BASE_FEATURE(ContextMenuSaveVideoFrameAs,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else

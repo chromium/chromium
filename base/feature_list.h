@@ -69,13 +69,38 @@ enum FeatureState {
 
 // Provides a definition for `kFeature` with `name` and `default_state`, e.g.
 //
-//   BASE_FEATURE(kMyFeature, "MyFeature", base::FEATURE_DISABLED_BY_DEFAULT);
+// This macro can be used in two ways:
+//
+// 1. With two arguments, to define a feature whose C++ identifier is derived
+//    from its name. This form is preferred, as it avoids repeating the feature
+//    name and helps prevent typos.
+//
+//      BASE_FEATURE(MyFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+//
+//    This is equivalent to:
+//
+//      BASE_FEATURE(kMyFeature, "MyFeature",
+//                   base::FEATURE_DISABLED_BY_DEFAULT);
+//
+// 2. With three arguments, to explicitly specify the C++ identifier and the
+//    name of the feature. This form should be used only if the feature needs
+//    to have a C++ identifier that does not match the feature name, which
+//    should be rare.
+//
+//      BASE_FEATURE(kMyFeature, "MyFeatureName",
+//                   base::FEATURE_DISABLED_BY_DEFAULT);
 //
 // Features should *not* be defined in header files; do not use this macro in
 // header files.
-#define BASE_FEATURE(feature, name, default_state) \
-  constinit const base::Feature feature(           \
+#define BASE_FEATURE_INTERNAL_3_ARGS(feature, name, default_state) \
+  constinit const base::Feature feature(                           \
       name, default_state, base::internal::FeatureMacroHandshake::kSecret)
+#define BASE_FEATURE_INTERNAL_2_ARGS(name, default_state) \
+  BASE_FEATURE_INTERNAL_3_ARGS(k##name, #name, default_state)
+#define GET_BASE_FEATURE_MACRO(_1, _2, _3, NAME, ...) NAME
+#define BASE_FEATURE(...)                                            \
+  GET_BASE_FEATURE_MACRO(__VA_ARGS__, BASE_FEATURE_INTERNAL_3_ARGS,  \
+                         BASE_FEATURE_INTERNAL_2_ARGS)(__VA_ARGS__)
 
 // Provides a forward declaration for `feature_object_name` in a header file,
 // e.g.

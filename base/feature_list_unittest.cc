@@ -42,6 +42,10 @@ BASE_FEATURE(kFeatureOffByDefault,
              kFeatureOffByDefaultName,
              FEATURE_DISABLED_BY_DEFAULT);
 
+// For testing the 2-argument BASE_FEATURE macro.
+BASE_FEATURE(Feature2ArgsOn, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(Feature2ArgsOff, FEATURE_DISABLED_BY_DEFAULT);
+
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
@@ -68,6 +72,14 @@ class FeatureListTest : public testing::Test {
 TEST_F(FeatureListTest, DefaultStates) {
   EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOnByDefault));
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
+}
+
+// Testing the 2-argument BASE_FEATURE macro.
+TEST_F(FeatureListTest, TwoArgMacro) {
+  EXPECT_TRUE(FeatureList::IsEnabled(kFeature2ArgsOn));
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeature2ArgsOff));
+  EXPECT_STREQ("Feature2ArgsOn", kFeature2ArgsOn.name);
+  EXPECT_STREQ("Feature2ArgsOff", kFeature2ArgsOff.name);
 }
 
 TEST_F(FeatureListTest, InitFromCommandLine) {
