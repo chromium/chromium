@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package com.android.webview.chromium;
+package org.chromium.android_webview.common;
 
 import static java.lang.annotation.ElementType.TYPE_USE;
 
@@ -11,8 +11,6 @@ import android.content.SharedPreferences;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.android_webview.common.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -85,6 +83,8 @@ public class WebViewCachedFlags {
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
                                     DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
+                                    DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_USE_BACKGROUND_THREAD_FOR_GMS,
                                     DefaultState.DISABLED));
         }
     }

@@ -805,6 +805,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/common/SafeModeActionIds.java",
       "java/src/org/chromium/android_webview/common/SafeModeController.java",
       "java/src/org/chromium/android_webview/common/VariationsFastFetchModeUtils.java",
+      "java/src/org/chromium/android_webview/common/WebViewCachedFlags.java",
       "java/src/org/chromium/android_webview/common/services/ServiceConnectionDelayRecorder.java",
       "java/src/org/chromium/android_webview/common/services/ServiceHelper.java",
       "java/src/org/chromium/android_webview/common/services/ServiceNames.java",

@@ -1116,6 +1116,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_RENDERING_HEURISTIC,
                 "Apply smoothing Skia options when WebView detects it's running on a TV device."),
+        Flag.commandLine(
+                AwSwitches.WEBVIEW_USE_BACKGROUND_THREAD_FOR_GMS,
+                "Tells the Google Service, GMS, to use a background thread for its Service bind and"
+                        + " connection calls."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

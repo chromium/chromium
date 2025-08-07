@@ -332,4 +332,10 @@ BASE_FEATURE(kAndroidMetricsAsyncMetricLogging,
              "AndroidMetricsAsyncMetricLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Tells the Google Service, GMS, to use a background thread for its
+// Service bind and connection calls.
+BASE_FEATURE(kWebViewUseBackgroundThreadForGms,
+             "WebViewUseBackgroundThreadForGms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

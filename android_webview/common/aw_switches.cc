@@ -124,4 +124,7 @@ const char kWebViewUseStartupTasksLogicP2[] =
 // WebViewUseStartupTasksLogicP2, with minor additions.
 const char kWebViewStartupTasksYieldToNative[] =
     "webview-startup-tasks-yield-to-native";
+
+const char kWebViewUseBackgroundThreadForGms[] =
+    "webview-use-background-thread-for-gms";
 }  // namespace switches
