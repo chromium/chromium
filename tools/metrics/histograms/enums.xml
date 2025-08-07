@@ -4589,7 +4589,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="8" label="kRequestCancelledByRenderer"/>
   <int value="9" label="kRequestCancelledAfterTimeLimit"/>
   <int value="10" label="kBrowserShutdown"/>
-  <int value="11" label="kLoaderComplated"/>
+  <int value="11" label="kLoaderCompleted"/>
+  <int value="12" label="kRequestRetried"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/keep_alive_request_tracker.h:RequestStageType) -->

@@ -105,6 +105,7 @@ class KeepAliveRequestUkmMatcher {
     KeepAliveRequestTracker::RequestType request_type;
     size_t category_id;
     size_t num_redirects;
+    size_t num_retries;
     bool is_context_detached;
     KeepAliveRequestTracker::RequestStageType end_stage;
     std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage =
@@ -114,11 +115,14 @@ class KeepAliveRequestUkmMatcher {
     std::optional<int64_t> failed_extended_error_code = std::nullopt;
     std::optional<int64_t> completed_error_code = std::nullopt;
     std::optional<int64_t> completed_extended_error_code = std::nullopt;
+    std::optional<int64_t> retried_error_code = std::nullopt;
+    std::optional<int64_t> retried_extended_error_code = std::nullopt;
 
     CommonUkm(
         KeepAliveRequestTracker::RequestType request_type,
         size_t category_id,
         size_t num_redirects,
+        size_t num_retries,
         bool is_context_detached,
         KeepAliveRequestTracker::RequestStageType end_stage,
         std::optional<KeepAliveRequestTracker::RequestStageType>
@@ -128,7 +132,9 @@ class KeepAliveRequestUkmMatcher {
         std::optional<int64_t> failed_error_code = std::nullopt,
         std::optional<int64_t> failed_extended_error_code = std::nullopt,
         std::optional<int64_t> completed_error_code = std::nullopt,
-        std::optional<int64_t> completed_extended_error_code = std::nullopt);
+        std::optional<int64_t> completed_extended_error_code = std::nullopt,
+        std::optional<int64_t> retried_error_code = std::nullopt,
+        std::optional<int64_t> retried_extended_error_code = std::nullopt);
     CommonUkm(const CommonUkm& other);
   };
 
@@ -140,6 +146,7 @@ class KeepAliveRequestUkmMatcher {
       KeepAliveRequestTracker::RequestType request_type,
       size_t category_id,
       size_t num_redirects,
+      size_t num_retries,
       bool is_context_detached,
       KeepAliveRequestTracker::RequestStageType end_stage,
       std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage =
@@ -149,7 +156,9 @@ class KeepAliveRequestUkmMatcher {
       std::optional<int64_t> failed_error_code = std::nullopt,
       std::optional<int64_t> failed_extended_error_code = std::nullopt,
       std::optional<int64_t> completed_error_code = std::nullopt,
-      std::optional<int64_t> completed_extended_error_code = std::nullopt);
+      std::optional<int64_t> completed_extended_error_code = std::nullopt,
+      std::optional<int64_t> retried_error_code = std::nullopt,
+      std::optional<int64_t> retried_extended_error_code = std::nullopt);
   void ExpectCommonUkms(const std::vector<CommonUkm>& ukms);
 
   // Verifies that UKM TimeDelta.* listed in `time_sorted_metric_names` are all
@@ -169,6 +178,7 @@ class KeepAliveRequestUkmMatcher {
       KeepAliveRequestTracker::RequestType request_type,
       size_t category_id,
       size_t num_redirects,
+      size_t num_retries,
       bool is_context_detached,
       KeepAliveRequestTracker::RequestStageType end_stage,
       std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage =
@@ -178,7 +188,9 @@ class KeepAliveRequestUkmMatcher {
       std::optional<int64_t> failed_error_code = std::nullopt,
       std::optional<int64_t> failed_extended_error_code = std::nullopt,
       std::optional<int64_t> completed_error_code = std::nullopt,
-      std::optional<int64_t> completed_extended_error_code = std::nullopt);
+      std::optional<int64_t> completed_extended_error_code = std::nullopt,
+      std::optional<int64_t> retried_error_code = std::nullopt,
+      std::optional<int64_t> retried_extended_error_code = std::nullopt);
 };
 
 // `NavigationKeepAliveRequestUkmMatcher` provides common matchers and

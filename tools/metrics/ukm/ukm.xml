@@ -9336,6 +9336,14 @@ be describing additional metrics about the same event.
       https://fetch.spec.whatwg.org/#http-redirect-fetch.
     </summary>
   </metric>
+  <metric name="NumRetries">
+    <summary>
+      The number of retries a fetch keepalive request loader has experienced so
+      far when the event is logged.
+
+      Note that the maximum value is 10.
+    </summary>
+  </metric>
   <metric name="PreviousStage" enum="FetchKeepAliveRequestStage">
     <summary>
       An enum representing the previous stage of the fetch keepalive request
@@ -9356,6 +9364,20 @@ be describing additional metrics about the same event.
     <summary>
       An integer representing the extended error code of the request when it
       reaches the kRequestFailed stage. This comes from
+      network::URLLoaderCompletionStatus.extended_error_code.
+    </summary>
+  </metric>
+  <metric name="RequestRetried.ErrorCode">
+    <summary>
+      An integer representing the error code of the request when it reaches the
+      kRequestRetried stage. This comes from
+      network::URLLoaderCompletionStatus.error_code.
+    </summary>
+  </metric>
+  <metric name="RequestRetried.ExtendedErrorCode">
+    <summary>
+      An integer representing the extended error code of the request when it
+      reaches the kRequestRetried stage. This comes from
       network::URLLoaderCompletionStatus.extended_error_code.
     </summary>
   </metric>
@@ -9428,6 +9450,14 @@ be describing additional metrics about the same event.
     <summary>
       The time difference (in milliseconds) between the
       &quot;RequestFailed&quot; stage and the &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.RequestRetried">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;RequestRetried&quot; stage and the &quot;LoaderCreated&quot; stage.
 
       Only set when the stage is reached.
     </summary>
