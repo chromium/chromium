@@ -1426,22 +1426,11 @@ const char kImageDescriptionsAlternateRoutingDescription[] =
     "When adding automatic captions to images, use a different route to "
     "acquire descriptions.";
 
-const char kEnterpriseProfileBadgingForAvatarName[] =
-    "Enable enterprise profile badging on the avatar";
-const char kEnterpriseProfileBadgingForAvatarDescription[] =
-    "Enable enterprise profile badging on the toolbar avatar";
-
 const char kEnterpriseBadgingForNtpFooterName[] =
     "Enable enterprise badging on the New Tab Page";
 const char kEnterpriseBadgingForNtpFooterDescription[] =
     "Enable enterprise profile badging in the footer on the New Tab Page. This "
     "includes showing the enterprise logo and the management disclaimer";
-
-const char kManagedProfileRequiredInterstitialName[] =
-    "Enable the managed profile required interstitial";
-const char kManagedProfileRequiredInterstitialDescription[] =
-    "Enable the interstitial shown when a managed profile creation is "
-    "required.";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kEnterpriseSecurityEventReportingOnAndroidName[] =
@@ -8224,15 +8213,6 @@ const char kThirdPartyDisableChromeAutofillSettingsScreenDescription[] =
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-const char kThirdPartyProfileManagementName[] =
-    "Third party profile management";
-const char kThirdPartyProfileManagementDescription[] =
-    "Enables profile management triggered by third-party sign-ins.";
-
-const char kOidcAuthProfileManagementName[] = "OIDC profile management";
-const char kOidcAuthProfileManagementDescription[] =
-    "Enables profile management triggered by OIDC authentications.";
-
 const char kGlicName[] = "Glic";
 const char kGlicDescription[] = "Enables glic";
 

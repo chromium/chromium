@@ -3324,16 +3324,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "enable-enterprise-profile-badging-for-avatar",
-    "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 139
-  },
-  {
-    "name": "enable-enterprise-profile-required-interstitial",
-    "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
      "name": "enable-enterprise-url-filtering",
      "owners": [ "eic@google.com", "bling-enterprise@google.com" ],
      "expiry_milestone": 141
@@ -6614,11 +6604,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "managed-profile-creation-updated-screen",
-    "owners": ["ydago@chromium.org", "chrome-signin-team@google.com", "cbe-magic@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "management-promotion-banner-flag",
     "owners": ["austinzzr@google.com"],
     "expiry_milestone": 141
@@ -7234,11 +7219,6 @@
     "name": "offline-pages-live-page-sharing",
     "owners": [ "sclittle@chromium.org", "srsudar@chromium.org", "offline-dev@chromium.org" ],
     "expiry_milestone": 86
-  },
-  {
-    "name": "oidc-auth-profile-management",
-    "owners": [ "xzonghan@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
-    "expiry_milestone": 137
   },
   {
     "name": "omaha-min-sdk-version-android",
@@ -9685,11 +9665,6 @@
       "izuzic@google.com",
       "anki-team@google.com" ],
     "expiry_milestone": 141
-  },
-  {
-    "name": "third-party-profile-management",
-    "owners": [ "igorruvinov@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
-    "expiry_milestone": 135
   },
   {
     "name": "three-button-password-save-dialog",

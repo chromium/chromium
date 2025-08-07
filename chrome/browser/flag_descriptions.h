@@ -813,14 +813,8 @@ extern const char kDebugShortcutsDescription[];
 extern const char kDisallowDocWrittenScriptsUiName[];
 extern const char kDisallowDocWrittenScriptsUiDescription[];
 
-extern const char kEnterpriseProfileBadgingForAvatarName[];
-extern const char kEnterpriseProfileBadgingForAvatarDescription[];
-
 extern const char kEnterpriseBadgingForNtpFooterName[];
 extern const char kEnterpriseBadgingForNtpFooterDescription[];
-
-extern const char kManagedProfileRequiredInterstitialName[];
-extern const char kManagedProfileRequiredInterstitialDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kEnterpriseSecurityEventReportingOnAndroidName[];
@@ -4758,12 +4752,6 @@ extern const char kThirdPartyDisableChromeAutofillSettingsScreenDescription[];
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-extern const char kThirdPartyProfileManagementName[];
-extern const char kThirdPartyProfileManagementDescription[];
-
-extern const char kOidcAuthProfileManagementName[];
-extern const char kOidcAuthProfileManagementDescription[];
-
 extern const char kGlicName[];
 extern const char kGlicDescription[];
 
