@@ -280,3 +280,19 @@ source_set("browser_tests") {
     deps += [ "//chrome/browser/glic" ]
   }
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":actor",
+    ":impl",
+    ":test_support",
+    ":tools_test_support",
+    "//testing/gtest",
+  ]
+  if (enable_glic) {
+    sources = [ "tools/select_tool_interactive_ui_test.cc" ]
+    deps += [ "//chrome/browser/glic" ]
+  }
+}
