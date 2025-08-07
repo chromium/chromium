@@ -33,6 +33,13 @@ An Android developer would use:
 @agents/prompts/templates/android.md
 ```
 
+An iOS developer would use:
+
+```src/GEMINI.md
+@agents/prompts/common.md
+@agents/prompts/templates/ios.md
+```
+
 You can confirm that prompts were successfully imported by running the `/memory
 show` command in gemini-cli.
 
