@@ -28,13 +28,38 @@ namespace user_data_importer {
 
 namespace {
 
+// HTML tags and attributes used in bookmark files.
+constexpr std::string_view kDtTag = "<DT>";
+constexpr std::string_view kHrTag = "<HR>";
+constexpr std::string_view kFolderOpen = "<H3";
+constexpr std::string_view kFolderClose = "</H3>";
+constexpr std::string_view kItemOpen = "<A";
+constexpr std::string_view kItemClose = "</A>";
+constexpr std::string_view kItemCloseMinimum = "</";
+constexpr std::string_view kMetaOpen = "<META";
+
+constexpr std::string_view kAddDateAttribute = "ADD_DATE";
+constexpr std::string_view kCharsetAttribute = "charset=";
+constexpr std::string_view kContentAttribute = "CONTENT=\"";
+constexpr std::string_view kContentAttributeLower = "content=\"";
+constexpr std::string_view kFeedURLAttribute = "FEEDURL";
+constexpr std::string_view kHrefAttributeUpper = "HREF";
+constexpr std::string_view kHrefAttributeLower = "href";
+constexpr std::string_view kIconAttribute = "ICON";
+constexpr std::string_view kLastVisitAttribute = "LAST_VISIT";
+constexpr std::string_view kPersonalToolbarFolderAttribute =
+    "PERSONAL_TOOLBAR_FOLDER";
+constexpr std::string_view kPostDataAttribute = "POST_DATA";
+constexpr std::string_view kShortcutURLAttribute = "SHORTCUTURL";
+constexpr std::string_view kSyncedAttribute = "SYNCED";
+constexpr std::string_view kUuidAttribute = "UUID";
+
 std::string_view StripDt(std::string_view line) {
   // Remove "<DT>" if the line starts with "<DT>".  This may not occur if
   // "<DT>" was on the previous line.  Liberally accept entries that do not
   // have an opening "<DT>" at all.
-  static constexpr char kDtTag[] = "<DT>";
   if (base::StartsWith(line, kDtTag, base::CompareCase::INSENSITIVE_ASCII)) {
-    line.remove_prefix(std::size(kDtTag) - 1);
+    line.remove_prefix(kDtTag.size());
     line = base::TrimWhitespaceASCII(line, base::TRIM_LEADING);
   }
   return line;
@@ -42,20 +67,19 @@ std::string_view StripDt(std::string_view line) {
 
 // Fetches the given `attribute` value from the `attribute_list`. Returns the
 // value if successful.
-std::optional<std::string> GetAttribute(const std::string& attribute_list,
-                                        const std::string& attribute) {
-  const char kQuote[] = "\"";
-
-  size_t begin = attribute_list.find(attribute + "=" + kQuote);
+std::optional<std::string> GetAttribute(std::string_view attribute_list,
+                                        std::string_view attribute) {
+  std::string lookup_str = std::string(attribute).append("=\"");
+  size_t begin = attribute_list.find(lookup_str);
   if (begin == std::string::npos) {
     return std::nullopt;  // Can't find the attribute.
   }
 
-  begin += attribute.size() + 2;
-  size_t end = begin + 1;
-
+  begin += lookup_str.size();
+  size_t end = begin;
   while (end < attribute_list.size()) {
-    if (attribute_list[end] == '"' && attribute_list[end - 1] != '\\') {
+    if (attribute_list[end] == '"' &&
+        (end == begin || attribute_list[end - 1] != '\\')) {
       break;
     }
     end++;
@@ -65,13 +89,13 @@ std::optional<std::string> GetAttribute(const std::string& attribute_list,
     return std::nullopt;  // The value is not quoted.
   }
 
-  return attribute_list.substr(begin, end - begin);
+  return std::string(attribute_list.substr(begin, end - begin));
 }
 
 // Fetches a time attribute from the `attribute_list` and returns it as a
 // base::Time.
-std::optional<base::Time> GetTimeAttribute(const std::string& attribute_list,
-                                           const std::string& attribute) {
+std::optional<base::Time> GetTimeAttribute(std::string_view attribute_list,
+                                           std::string_view attribute) {
   std::string value;
   std::optional<std::string> value_str =
       GetAttribute(attribute_list, attribute);
@@ -86,8 +110,8 @@ std::optional<base::Time> GetTimeAttribute(const std::string& attribute_list,
 
 // Fetches a UUID attribute from the `attribute_list` and returns it as a
 // base::Uuid.
-std::optional<base::Uuid> GetUuidAttribute(const std::string& attribute_list,
-                                           const std::string& attribute) {
+std::optional<base::Uuid> GetUuidAttribute(std::string_view attribute_list,
+                                           std::string_view attribute) {
   std::optional<std::string> value = GetAttribute(attribute_list, attribute);
   if (value) {
     base::Uuid uuid = base::Uuid::ParseCaseInsensitive(*value);
@@ -98,8 +122,8 @@ std::optional<base::Uuid> GetUuidAttribute(const std::string& attribute_list,
 
 // Fetches a boolean attribute from the `attribute_list` and returns it as a
 // bool.
-std::optional<bool> GetBoolAttribute(const std::string& attribute_list,
-                                     const std::string& attribute) {
+std::optional<bool> GetBoolAttribute(std::string_view attribute_list,
+                                     std::string_view attribute) {
   std::optional<std::string> bool_value =
       GetAttribute(attribute_list, attribute);
   if (bool_value) {
@@ -148,41 +172,34 @@ void DataURLToFaviconUsage(const GURL& link_url,
   favicons->push_back(std::move(usage));
 }
 
-std::optional<std::string> ParseCharsetFromLine(const std::string& line) {
-  if (!base::StartsWith(line, "<META", base::CompareCase::INSENSITIVE_ASCII) ||
-      (line.find("CONTENT=\"") == std::string::npos &&
-       line.find("content=\"") == std::string::npos)) {
+std::optional<std::string> ParseCharsetFromLine(std::string_view line) {
+  if (!base::StartsWith(line, kMetaOpen,
+                        base::CompareCase::INSENSITIVE_ASCII) ||
+      (line.find(kContentAttribute) == std::string::npos &&
+       line.find(kContentAttributeLower) == std::string::npos)) {
     return std::nullopt;
   }
 
-  const char kCharset[] = "charset=";
-  size_t begin = line.find(kCharset);
+  size_t begin = line.find(kCharsetAttribute);
   if (begin == std::string::npos) {
     return std::nullopt;
   }
-  begin += sizeof(kCharset) - 1;
+  begin += kCharsetAttribute.size();
   size_t end = line.find_first_of('\"', begin);
   if (end == std::string::npos) {
     return std::nullopt;
   }
-  return line.substr(begin, end - begin);
+  return std::string(line.substr(begin, end - begin));
 }
 
-bool ParseFolderNameFromLine(const std::string& lineDt,
-                             const std::string& charset,
+bool ParseFolderNameFromLine(std::string_view line_dt,
+                             std::string_view charset,
                              std::u16string* folder_name,
                              bool* is_toolbar_folder,
                              base::Time* add_date,
                              std::optional<base::Uuid>* uuid,
                              std::optional<bool>* synced) {
-  const char kFolderOpen[] = "<H3";
-  const char kFolderClose[] = "</H3>";
-  const char kToolbarFolderAttribute[] = "PERSONAL_TOOLBAR_FOLDER";
-  const char kAddDateAttribute[] = "ADD_DATE";
-  const char kUuidAttribute[] = "UUID";
-  const char kSyncedAttribute[] = "SYNCED";
-
-  std::string_view line = StripDt(lineDt);
+  std::string_view line = StripDt(line_dt);
 
   if (!base::StartsWith(line, kFolderOpen, base::CompareCase::SENSITIVE)) {
     return false;
@@ -191,17 +208,17 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   size_t end = line.find(kFolderClose);
   size_t tag_end = line.rfind('>', end) + 1;
   // If no end tag or start tag is broken, we skip to find the folder name.
-  if (end == std::string::npos || tag_end < std::size(kFolderOpen)) {
+  if (end == std::string::npos || tag_end < kFolderOpen.size()) {
     return false;
   }
 
-  base::CodepageToUTF16(line.substr(tag_end, end - tag_end), charset.c_str(),
+  base::CodepageToUTF16(line.substr(tag_end, end - tag_end),
+                        std::string(charset).c_str(),
                         base::OnStringConversionError::SKIP, folder_name);
   *folder_name = base::UnescapeForHTML(*folder_name);
 
-  // TODO(crbug.com/436476129): Refactor `attribute_list` to a string_view.
-  std::string attribute_list = std::string(line.substr(
-      std::size(kFolderOpen), tag_end - std::size(kFolderOpen) - 1));
+  std::string attribute_list = std::string(
+      line.substr(kFolderOpen.size(), tag_end - kFolderOpen.size() - 1));
   // Add date
   *add_date = GetTimeAttribute(attribute_list, kAddDateAttribute)
                   .value_or(base::Time::Now());
@@ -213,7 +230,7 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   *synced = GetBoolAttribute(attribute_list, kSyncedAttribute);
 
   std::optional<std::string> toolbar_attribute_value =
-      GetAttribute(attribute_list, kToolbarFolderAttribute);
+      GetAttribute(attribute_list, kPersonalToolbarFolderAttribute);
   if (toolbar_attribute_value &&
       base::EqualsCaseInsensitiveASCII(*toolbar_attribute_value, "true")) {
     *is_toolbar_folder = true;
@@ -224,8 +241,8 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   return true;
 }
 
-bool ParseBookmarkFromLine(const std::string& lineDt,
-                           const std::string& charset,
+bool ParseBookmarkFromLine(std::string_view line_dt,
+                           std::string_view charset,
                            std::u16string* title,
                            GURL* url,
                            GURL* favicon,
@@ -235,19 +252,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
                            std::u16string* post_data,
                            std::optional<base::Uuid>* uuid,
                            std::optional<bool>* synced) {
-  const char kItemOpen[] = "<A";
-  const char kItemClose[] = "</A>";
-  const char kFeedURLAttribute[] = "FEEDURL";
-  const char kHrefAttribute[] = "HREF";
-  const char kIconAttribute[] = "ICON";
-  const char kShortcutURLAttribute[] = "SHORTCUTURL";
-  const char kAddDateAttribute[] = "ADD_DATE";
-  const char kLastVisitAttribute[] = "LAST_VISIT";
-  const char kPostDataAttribute[] = "POST_DATA";
-  const char kUuidAttribute[] = "UUID";
-  const char kSyncedAttribute[] = "SYNCED";
-
-  std::string_view line = StripDt(lineDt);
+  std::string_view line = StripDt(line_dt);
   title->clear();
   *url = GURL();
   *favicon = GURL();
@@ -264,12 +269,11 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
 
   size_t end = line.find(kItemClose);
   size_t tag_end = line.rfind('>', end) + 1;
-  if (end == std::string::npos || tag_end < std::size(kItemOpen)) {
+  if (end == std::string::npos || tag_end < kItemOpen.size()) {
     return false;  // No end tag or start tag is broken.
   }
-
   std::string attribute_list = std::string(
-      line.substr(std::size(kItemOpen), tag_end - std::size(kItemOpen) - 1));
+      line.substr(kItemOpen.size(), tag_end - kItemOpen.size() - 1));
 
   // We don't import Live Bookmark folders, which is Firefox's RSS reading
   // feature, since the user never necessarily bookmarked them and we don't
@@ -278,19 +282,21 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
     return false;
   }
 
-  // Title
-  base::CodepageToUTF16(line.substr(tag_end, end - tag_end), charset.c_str(),
+  const std::string charset_str(charset);
+  // Title.
+  base::CodepageToUTF16(line.substr(tag_end, end - tag_end),
+                        charset_str.c_str(),
                         base::OnStringConversionError::SKIP, title);
   *title = base::UnescapeForHTML(*title);
   // URL is mandatory.
   std::optional<std::string> url_value =
-      GetAttribute(attribute_list, kHrefAttribute);
+      GetAttribute(attribute_list, kHrefAttributeUpper);
   if (!url_value) {
     return false;
   }
 
   std::u16string url16;
-  base::CodepageToUTF16(*url_value, charset.c_str(),
+  base::CodepageToUTF16(*url_value, charset_str.c_str(),
                         base::OnStringConversionError::SKIP, &url16);
   url16 = base::UnescapeForHTML(url16);
   *url = GURL(url16);
@@ -304,7 +310,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   // Keyword
   if (std::optional<std::string> shortcut_url =
           GetAttribute(attribute_list, kShortcutURLAttribute)) {
-    base::CodepageToUTF16(*shortcut_url, charset.c_str(),
+    base::CodepageToUTF16(*shortcut_url, charset_str.c_str(),
                           base::OnStringConversionError::SKIP, shortcut);
     *shortcut = base::UnescapeForHTML(*shortcut);
   }
@@ -319,7 +325,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   // Post data.
   if (std::optional<std::string> post_data_str =
           GetAttribute(attribute_list, kPostDataAttribute)) {
-    base::CodepageToUTF16(*post_data_str, charset.c_str(),
+    base::CodepageToUTF16(*post_data_str, charset_str.c_str(),
                           base::OnStringConversionError::SKIP, post_data);
     *post_data = base::UnescapeForHTML(*post_data);
   }
@@ -333,15 +339,10 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   return true;
 }
 
-bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
+bool ParseMinimumBookmarkFromLine(std::string_view lineDt,
                                   const std::string& charset,
                                   std::u16string* title,
                                   GURL* url) {
-  const char kItemOpen[] = "<A";
-  const char kItemClose[] = "</";
-  const char kHrefAttributeUpper[] = "HREF";
-  const char kHrefAttributeLower[] = "href";
-
   std::string_view line = StripDt(lineDt);
   title->clear();
   *url = GURL();
@@ -353,9 +354,9 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
   }
 
   // Find any close tag.
-  size_t end = line.find(kItemClose);
+  size_t end = line.find(kItemCloseMinimum);
   size_t tag_end = line.rfind('>', end) + 1;
-  if (end == std::string::npos || tag_end < std::size(kItemOpen)) {
+  if (end == std::string::npos || tag_end < kItemOpen.size()) {
     return false;  // No end tag or start tag is broken.
   }
 
@@ -412,10 +413,9 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
     // separator in Firefox that Chrome does not support. Note that there can
     // be multiple "<HR>" tags at the beginning of a single line. See
     // http://crbug.com/257474.
-    static const char kHrTag[] = "<HR>";
     while (
         base::StartsWith(line, kHrTag, base::CompareCase::INSENSITIVE_ASCII)) {
-      line.erase(0, std::size(kHrTag) - 1);
+      line.erase(0, kHrTag.size());
       base::TrimString(line, " ", &line);
     }
 
@@ -444,11 +444,10 @@ BookmarkParser::ParsedBookmarks ParseBookmarksUnsafe(
     std::optional<bool> synced;
     bool is_bookmark;
     // TODO(crbug.com/40304654): We do not support POST based keywords yet.
-    is_bookmark =
-        ParseBookmarkFromLine(line, charset, &title, &url, &favicon, &shortcut,
-                              &add_date, &last_visit_date, &post_data, &uuid,
-                              &synced) ||
-        ParseMinimumBookmarkFromLine(line, charset, &title, &url);
+    is_bookmark = ParseBookmarkFromLine(line, charset, &title, &url, &favicon,
+                                        &shortcut, &add_date, &last_visit_date,
+                                        &post_data, &uuid, &synced) ||
+                  ParseMinimumBookmarkFromLine(line, charset, &title, &url);
 
     // If bookmark contains a valid replaceable url and a keyword then import
     // it as search engine.
