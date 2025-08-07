@@ -95,6 +95,10 @@
   }
 }
 
+- (NSString*)filename {
+  return _currentSecurityScopedURL.lastPathComponent;
+}
+
 - (NSArray<PasswordImportItem*>*)conflictingPasswords {
   return
       [self passwordItemsWithFaviconDataSource:_importClient
@@ -104,6 +108,14 @@
 - (NSArray<PasswordImportItem*>*)invalidPasswords {
   return [self
       passwordItemsWithFaviconDataSource:_importClient->GetInvalidPasswords()];
+}
+
+- (NSError*)deleteFile {
+  NSError* error = nil;
+  [[NSFileManager defaultManager] removeItemAtURL:_currentSecurityScopedURL
+                                            error:&error];
+  [self reset];
+  return error;
 }
 
 - (void)disconnect {

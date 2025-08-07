@@ -66,6 +66,10 @@ class ReadingListModel;
 /// Resets the mediator to the state before any file is selected or processed.
 - (void)reset;
 
+/// Name of the ZIP file containing Safari data. `Nil` until the file is
+/// selected.
+- (NSString*)filename;
+
 /// List of password conflicts with the information retrieved from the source
 /// of import. Only available when passwords are ready.
 - (NSArray<PasswordImportItem*>*)conflictingPasswords;
@@ -73,6 +77,10 @@ class ReadingListModel;
 /// List of passwords failed to be imported. Only available when passwords are
 /// imported.
 - (NSArray<PasswordImportItem*>*)invalidPasswords;
+
+/// Delete the imported ZIP file. Returns an error if deletion could not be
+/// performed, otherwise return `nil`.
+- (NSError*)deleteFile;
 
 /// Disconnect mediator dependencies; needs to be invoked before deallocating
 /// the coordinator.

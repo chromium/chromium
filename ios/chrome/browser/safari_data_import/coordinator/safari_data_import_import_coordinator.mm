@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -16,6 +17,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
@@ -58,7 +60,11 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
 
 /// Alert screen being displayed when the last selected file could not be
 /// processed or contains no valid items.
-@property(nonatomic, readonly) UIAlertController* alert;
+@property(nonatomic, readonly) UIAlertController* errorAlert;
+
+/// Alert screen being displayed when the last selected file could not be
+/// processed or contains no valid items.
+@property(nonatomic, readonly) UIAlertController* fileDeletionAlert;
 
 @end
 
@@ -73,7 +79,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
 }
 
 @synthesize mediator = _mediator;
-@synthesize alert = _alert;
+@synthesize errorAlert = _errorAlert;
+@synthesize fileDeletionAlert = _fileDeletionAlert;
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
@@ -152,8 +159,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
   return _mediator;
 }
 
-- (UIAlertController*)alert {
-  if (!_alert) {
+- (UIAlertController*)errorAlert {
+  if (!_errorAlert) {
     NSString* title = l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE);
     NSString* description = l10n_util::GetNSString(
@@ -165,16 +172,49 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
         actionWithTitle:buttonText
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction* action) {
-                  [weakSelf.alert dismissViewControllerAnimated:YES
-                                                     completion:nil];
+                  [weakSelf.errorAlert dismissViewControllerAnimated:YES
+                                                          completion:nil];
                 }];
-    _alert = [UIAlertController
+    _errorAlert = [UIAlertController
         alertControllerWithTitle:title
                          message:description
                   preferredStyle:UIAlertControllerStyleAlert];
-    [_alert addAction:dismiss];
+    [_errorAlert addAction:dismiss];
   }
-  return _alert;
+  return _errorAlert;
+}
+
+- (UIAlertController*)fileDeletionAlert {
+  if (!_fileDeletionAlert) {
+    NSString* title = l10n_util::GetNSStringF(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_FILE_DELETION_ALERT_TITLE,
+        base::SysNSStringToUTF16(self.mediator.filename));
+    NSString* description = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_FILE_DELETION_ALERT_DESCRIPTION);
+    NSString* buttonTextDelete = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_FILE_DELETION_ALERT_ACTION_DELETE);
+    NSString* buttonTextCancel = l10n_util::GetNSString(IDS_CANCEL);
+    __weak __typeof(self) weakSelf = self;
+    UIAlertAction* deleteAction =
+        [UIAlertAction actionWithTitle:buttonTextDelete
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction* action) {
+                                 [weakSelf didRespondToFileDeletionAlert:YES];
+                               }];
+    UIAlertAction* dismissAction =
+        [UIAlertAction actionWithTitle:buttonTextCancel
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction* action) {
+                                 [weakSelf didRespondToFileDeletionAlert:NO];
+                               }];
+    _fileDeletionAlert = [UIAlertController
+        alertControllerWithTitle:title
+                         message:description
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [_fileDeletionAlert addAction:deleteAction];
+    [_fileDeletionAlert addAction:dismissAction];
+  }
+  return _fileDeletionAlert;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
@@ -194,7 +234,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
     case SafariDataImportStage::kImporting:
       NOTREACHED() << "button should be disabled";
     case SafariDataImportStage::kImported:
-      [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
+      [self presentViewController:self.fileDeletionAlert];
       break;
     default:
       break;
@@ -225,7 +265,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
   /// If the user has not explicitly canceled the import, alert the user that
   /// they selected the wrong file.
   if (!userInitiated) {
-    BOOL success = [self presentViewController:self.alert];
+    BOOL success = [self presentViewController:self.errorAlert];
     base::UmaHistogramBoolean(kDisplayAlertHistogram, success);
   }
   [self.mediator reset];
@@ -291,6 +331,35 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
       initWithRootViewController:conflictResolutionViewController];
   wrapper.toolbarHidden = NO;
   [self presentViewController:wrapper];
+}
+
+/// Handler for actions in `self.fileDeletionAlert`.
+- (void)didRespondToFileDeletionAlert:(BOOL)willDelete {
+  NSError* error = nil;
+  if (willDelete) {
+    error = [_mediator deleteFile];
+  }
+  if (error) {
+    __weak __typeof(self) weakSelf = self;
+    NSString* buttonText = l10n_util::GetNSString(IDS_OK);
+    UIAlertAction* dismiss = [UIAlertAction
+        actionWithTitle:buttonText
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction* action) {
+                  [weakSelf.delegate
+                      safariDataImportCoordinatorWillDismissWorkflow:weakSelf];
+                }];
+    UIAlertController* failToDeleteAlert = [UIAlertController
+        alertControllerWithTitle:error.localizedDescription
+                         message:nil
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [failToDeleteAlert addAction:dismiss];
+    if ([self presentViewController:failToDeleteAlert]) {
+      /// Dismiss the workflow when user responds to `failToDeleteAlert`.
+      return;
+    }
+  }
+  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
 }
 
 /// Presents `viewController` and returns `YES` if no other view controller is
