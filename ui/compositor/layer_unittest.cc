@@ -430,7 +430,9 @@ class TestCompositorObserver : public CompositorObserver {
     started_ = true;
   }
 
-  void OnCompositingAckDeprecated(Compositor* compositor) override {
+  void OnDidPresentCompositorFrame(
+      uint32_t frame_token,
+      const gfx::PresentationFeedback& feedback) override {
     ended_ = true;
   }
 
