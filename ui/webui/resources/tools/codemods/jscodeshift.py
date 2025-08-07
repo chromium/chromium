@@ -22,7 +22,7 @@ import node
 
 {
   "dependencies": {
-    "jscodeshift": "^0.15.1"
+    "jscodeshift": "17.3.0"
   }
 }
 
