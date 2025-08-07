@@ -958,6 +958,8 @@ select:-internal-list-box {
       overflow-block: -internal-auto-base(scroll, auto);
       vertical-align: -internal-auto-base(text-bottom, initial);
       white-space: -internal-auto-base(nowrap, inherit);
+      field-sizing: -internal-auto-base(initial, content);
+      border: -internal-auto-base(1px solid light-dark(#767676, #858585), none);
     }
     @supports not blink-feature(CustomizableSelectInPage) {
       border-radius: 2px;
@@ -2048,7 +2050,6 @@ dialog:where(:modal) {
     text-autospace: -internal-auto-base(no-autospace !important, inherit);
     color: -internal-auto-base(FieldText, inherit);
     background-color: -internal-auto-base(Field, transparent);
-    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
     /* See notes about min-inline-size/min-block-size in CustomizableSelect feature block. */
     min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
     min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));

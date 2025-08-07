@@ -1353,17 +1353,16 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize(
     return kIndefiniteSize;
   }
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (!select->UsesMenuList()) {
-      if (!children_have_geometry) {
-        return kIndefiniteSize;
+    if (effective_appearance != AppearanceValue::kBaseSelect) {
+      if (!select->UsesMenuList()) {
+        if (!children_have_geometry) {
+          return kIndefiniteSize;
+        }
+        return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
+               ComputeLogicalScrollbars().BlockSum();
+      } else {
+        return MenuListIntrinsicBlockSize(*select, *this);
       }
-      // TODO(crbug.com/357649033): Consider not doing this when in base
-      // appearance mode by using a presentational style for the size attribute
-      // instead.
-      return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
-             ComputeLogicalScrollbars().BlockSum();
-    } else if (effective_appearance != AppearanceValue::kBaseSelect) {
-      return MenuListIntrinsicBlockSize(*select, *this);
     }
   }
   if (IsTextField()) {
