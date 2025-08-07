@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace password_manager {
@@ -28,7 +29,7 @@ struct OtpFetchReply;
 // A class in charge of handling individual OTP forms, one instance per form.
 class OtpFormManager {
  public:
-  OtpFormManager(autofill::FormGlobalId form_id,
+  OtpFormManager(const autofill::FormData& form_data,
                  const std::vector<autofill::FieldGlobalId>& otp_field_ids,
                  PasswordManagerClient* client);
 
@@ -62,6 +63,8 @@ class OtpFormManager {
     return otp_field_ids_;
   }
 
+  const autofill::FormData& form_data() const { return form_data_; }
+
 #if defined(UNIT_TEST)
   OtpSource otp_source() const { return otp_source_; }
 #endif  // defined(UNIT_TEST)
@@ -73,7 +76,7 @@ class OtpFormManager {
   // Called when the OTP fetching request is complete.
   void OnOtpRetrievalComplete(const OtpFetchReply& reply);
 
-  autofill::FormGlobalId form_id_;
+  const autofill::FormData form_data_;
 
   std::vector<autofill::FieldGlobalId> otp_field_ids_;
 

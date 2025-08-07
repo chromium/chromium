@@ -79,7 +79,7 @@ void OtpManager::ProcessClassificationModelPredictions(
   OtpFormManager* form_manager = GetManagerForForm(form_id);
   if (!form_manager) {
     form_managers_.emplace(form_id, std::make_unique<OtpFormManager>(
-                                        form_id, fillable_otp_fields, client_));
+                                        form, fillable_otp_fields, client_));
     for (Observer& observer : observers_) {
       observer.OnOtpFieldDetected(GetManagerForForm(form_id));
     }
@@ -107,9 +107,8 @@ void OtpManager::ProcessServerPredictions(
     }
     // Create a new form manager if the form was predicted to be an OTP form by
     // the server.
-    form_managers_.emplace(form.global_id(),
-                           std::make_unique<OtpFormManager>(
-                               form.global_id(), otp_overrides, client_));
+    form_managers_.emplace(form.global_id(), std::make_unique<OtpFormManager>(
+                                                 form, otp_overrides, client_));
     for (Observer& observer : observers_) {
       observer.OnOtpFieldDetected(GetManagerForForm(form.global_id()));
     }

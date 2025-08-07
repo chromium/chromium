@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -42,6 +44,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
+#include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -365,6 +368,17 @@ void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
 
 void PasswordChangeDelegateImpl::OnOtpFieldDetected(
     password_manager::OtpFormManager* form_manager) {
+  CHECK(form_manager);
+
+  if (std::ranges::none_of(form_manager->otp_field_ids(),
+                           [&form_manager](const auto& field_id) {
+                             return form_manager->form_data()
+                                 .FindFieldByGlobalId(field_id)
+                                 ->is_focusable();
+                           })) {
+    return;
+  }
+
   if (auto logger = GetLoggerIfAvailable(executor_.get())) {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
                            STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DETECTED);
