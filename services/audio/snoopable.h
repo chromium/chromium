@@ -6,11 +6,8 @@
 #define SERVICES_AUDIO_SNOOPABLE_H_
 
 #include "base/time/time.h"
-
-namespace media {
-class AudioBus;
-class AudioParameters;
-}  // namespace media
+#include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
 
 namespace audio {
 class Snoopable {

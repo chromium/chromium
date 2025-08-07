@@ -31,7 +31,6 @@
 #include "services/audio/input_controller.h"
 #include "services/audio/input_sync_writer.h"
 #include "services/audio/loopback_coordinator.h"
-#include "services/audio/loopback_group_member.h"
 #include "services/audio/snooper_node.h"
 
 namespace base {
@@ -55,8 +54,7 @@ namespace audio {
 // source OutputStream and format-convert it. 3) A "flow network" that runs via
 // a different task runner, to take all the audio collected in the SnooperNodes
 // and mix it into a single data stream.
-class LoopbackStream final : public media::mojom::AudioInputStream,
-                             public LoopbackCoordinator::Observer {
+class LoopbackStream final : public media::mojom::AudioInputStream {
  public:
   using CreatedCallback =
       base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>;
@@ -85,12 +83,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   void Record() final;
   void SetVolume(double volume) final;
 
-  // LoopbackCoordinator::Observer implementation. When a member joins
-  // a group, a SnooperNode is created for it, and a loopback flow from
-  // LoopbackGroupMember → SnooperNode → FlowNetwork is built-up.
-  void OnMemberJoinedGroup(LoopbackGroupMember* member) final;
-  void OnMemberLeftGroup(LoopbackGroupMember* member) final;
-
   // Overrides for unit testing. These must be called before Record().
   void set_clock_for_testing(const base::TickClock* clock) {
     network_->set_clock_for_testing(clock);
@@ -106,6 +98,9 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   static constexpr double kMaxVolume = 2.0;
 
  private:
+  void AddLoopbackSource(LoopbackSource* source);
+  void RemoveLoopbackSource(LoopbackSource* source);
+
   // Drives all audio flows, re-mixing the audio from multiple SnooperNodes into
   // a single audio stream. This class mainly operates on a separate task runner
   // from LoopbackStream and can only be destroyed by scheduling it to occur on
@@ -229,12 +224,14 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   mojo::Remote<media::mojom::AudioInputStreamObserver> observer_;
 
   // Used for identifying group members and snooping on their audio data flow.
-  const raw_ptr<LoopbackCoordinator> coordinator_;
-  const base::UnguessableToken group_id_;
+  // When a member belonging to a group we are interested in joins, a
+  // SnooperNode is created for it, and a loopback flow from LoopbackSource →
+  // SnooperNode → FlowNetwork is built-up.
+  LoopbackGroupObserver loopback_group_observer_;
 
   // The snoopers associated with each group member. This is not a flat_map
   // because SnooperNodes cannot move around in memory while in operation.
-  std::map<LoopbackGroupMember*, SnooperNode> snoopers_;
+  std::map<LoopbackSource*, SnooperNode> snoopers_;
 
   // The flow network that generates the single loopback result stream. It is
   // owned by LoopbackStream, but it's destruction must be carried out by the

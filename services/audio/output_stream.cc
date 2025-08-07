@@ -219,7 +219,7 @@ OutputStream::OutputStream(
   if (log_)
     log_->OnCreated(params, output_device_id);
 
-  coordinator_->RegisterMember(loopback_group_id_, &controller_);
+  coordinator_->AddMember(loopback_group_id_, &controller_);
   if (!reader_.IsValid() || !controller_.CreateStream()) {
     // Either SyncReader initialization failed or the controller failed to
     // create the stream. In the latter case, the controller will have called
@@ -246,7 +246,7 @@ OutputStream::~OutputStream() {
   }
 
   controller_.Close();
-  coordinator_->UnregisterMember(loopback_group_id_, &controller_);
+  coordinator_->RemoveMember(&controller_);
 
   if (audibility_helper_->IsAudible()) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Audible", this);

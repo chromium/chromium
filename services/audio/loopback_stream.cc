@@ -48,11 +48,16 @@ LoopbackStream::LoopbackStream(
       receiver_(this, std::move(receiver)),
       client_(std::move(client)),
       observer_(std::move(observer)),
-      coordinator_(coordinator),
-      group_id_(group_id),
+      loopback_group_observer_(
+          coordinator,
+          group_id,
+          /*on_source_added=*/
+          base::BindRepeating(&LoopbackStream::AddLoopbackSource,
+                              base::Unretained(this)),
+          /*on_source_removed=*/
+          base::BindRepeating(&LoopbackStream::RemoveLoopbackSource,
+                              base::Unretained(this))),
       network_(nullptr, base::OnTaskRunnerDeleter(flow_task_runner)) {
-  DCHECK(coordinator_);
-
   TRACE_EVENT1("audio", "LoopbackStream::LoopbackStream", "params",
                params.AsHumanReadableString());
 
@@ -102,9 +107,9 @@ LoopbackStream::~LoopbackStream() {
 
   if (network_) {
     if (network_->is_started()) {
-      coordinator_->RemoveObserver(group_id_, this);
+      loopback_group_observer_.StopObserving();
       while (!snoopers_.empty()) {
-        OnMemberLeftGroup(snoopers_.begin()->first);
+        RemoveLoopbackSource(snoopers_.begin()->first);
       }
     }
     DCHECK(snoopers_.empty());
@@ -123,10 +128,9 @@ void LoopbackStream::Record() {
   // Begin snooping on all group members. This will set up the mixer network
   // and begin accumulating audio data in the Snoopers' buffers.
   DCHECK(snoopers_.empty());
-  coordinator_->ForEachMemberInGroup(
-      group_id_, base::BindRepeating(&LoopbackStream::OnMemberJoinedGroup,
-                                     base::Unretained(this)));
-  coordinator_->AddObserver(group_id_, this);
+  loopback_group_observer_.ForEachMember(
+      loopback_group_observer_.on_source_added());
+  loopback_group_observer_.StartObserving();
 
   // Start the data flow.
   network_->Start();
@@ -153,7 +157,7 @@ void LoopbackStream::SetVolume(double volume) {
   }
 }
 
-void LoopbackStream::OnMemberJoinedGroup(LoopbackGroupMember* member) {
+void LoopbackStream::AddLoopbackSource(LoopbackSource* source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!network_) {
@@ -165,43 +169,43 @@ void LoopbackStream::OnMemberJoinedGroup(LoopbackGroupMember* member) {
     // to produce high-resolution timestamps. Since the buffer management logic
     // (to mitigate overruns/underruns) depends on them to function correctly,
     // simply return early (i.e., never start snooping on the |member|).
-    TRACE_EVENT_INSTANT0("audio",
-                         "LoopbackStream::OnMemberJoinedGroup Rejected",
+    TRACE_EVENT_INSTANT0("audio", "LoopbackStream::AddLoopbackSource Rejected",
                          TRACE_EVENT_SCOPE_THREAD);
     return;
   }
 
-  TRACE_EVENT1("audio", "LoopbackStream::OnMemberJoinedGroup", "member",
-               static_cast<void*>(member));
+  TRACE_EVENT1("audio", "LoopbackStream::AddLoopbackSource", "source",
+               static_cast<void*>(source));
 
-  const media::AudioParameters& input_params = member->GetAudioParameters();
+  const media::AudioParameters& input_params = source->GetAudioParameters();
   const auto emplace_result = snoopers_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(member),
+      std::piecewise_construct, std::forward_as_tuple(source),
       std::forward_as_tuple(input_params, network_->output_params()));
   DCHECK(emplace_result.second);  // There was no pre-existing map entry.
   SnooperNode* const snooper = &(emplace_result.first->second);
-  member->StartSnooping(snooper);
+  source->StartSnooping(snooper);
   network_->AddInput(snooper);
 }
 
-void LoopbackStream::OnMemberLeftGroup(LoopbackGroupMember* member) {
+void LoopbackStream::RemoveLoopbackSource(LoopbackSource* source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!network_) {
     return;
   }
 
-  const auto snoop_it = snoopers_.find(member);
+  const auto snoop_it = snoopers_.find(source);
   if (snoop_it == snoopers_.end()) {
-    // See comments about "high-resolution timestamps" in OnMemberJoinedGroup().
+    // See comments about "high-resolution timestamps" in
+    // RemoveLoopbackSource().
     return;
   }
 
-  TRACE_EVENT1("audio", "LoopbackStream::OnMemberLeftGroup", "member",
-               static_cast<void*>(member));
+  TRACE_EVENT1("audio", "LoopbackStream::RemoveLoopbackSource", "source",
+               static_cast<void*>(source));
 
   SnooperNode* const snooper = &(snoop_it->second);
-  member->StopSnooping(snooper);
+  source->StopSnooping(snooper);
   network_->RemoveInput(snooper);
   snoopers_.erase(snoop_it);
 }

@@ -17,13 +17,10 @@
 
 namespace audio {
 
-class LoopbackGroupMember;
-
 // Mutes a group of streams, from construction time until destruction time. In
 // between, LocalMuter ensures new group members are also muted. Holds all
 // media::mojom::LocalMuter bindings.
-class LocalMuter final : public media::mojom::LocalMuter,
-                         public LoopbackCoordinator::Observer {
+class LocalMuter final : public media::mojom::LocalMuter {
  public:
   LocalMuter(LoopbackCoordinator* coordinator,
              const base::UnguessableToken& group_id);
@@ -33,17 +30,15 @@ class LocalMuter final : public media::mojom::LocalMuter,
 
   ~LocalMuter() final;
 
-  const base::UnguessableToken& group_id() const { return group_id_; }
+  const base::UnguessableToken& group_id() const {
+    return loopback_group_observer_.group_id();
+  }
 
   // SetAllBindingsLostCallback() must be called before the first call to
   // AddBinding().
   void SetAllBindingsLostCallback(base::RepeatingClosure callback);
   void AddReceiver(
       mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver);
-
-  // LoopbackCoordinator::Observer implementation.
-  void OnMemberJoinedGroup(LoopbackGroupMember* member) final;
-  void OnMemberLeftGroup(LoopbackGroupMember* member) final;
 
   bool HasReceivers() { return !receivers_.empty(); }
 
@@ -53,8 +48,7 @@ class LocalMuter final : public media::mojom::LocalMuter,
   // Runs the |all_bindings_lost_callback_| when |bindings_| becomes empty.
   void OnBindingLost();
 
-  const raw_ptr<LoopbackCoordinator> coordinator_;
-  const base::UnguessableToken group_id_;
+  LoopbackGroupObserver loopback_group_observer_;
 
   mojo::AssociatedReceiverSet<media::mojom::LocalMuter> receivers_;
   base::RepeatingClosure all_bindings_lost_callback_;
