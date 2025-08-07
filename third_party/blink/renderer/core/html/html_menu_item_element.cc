@@ -201,7 +201,8 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
     setChecked(!checked());
 
     // Menuitems with a commandfor will dispatch a CommandEvent on the
-    // invoker, and run HandleCommandInternal to perform default logic.
+    // target of the invoker, and run HandleCommandInternal to perform default
+    // logic.
     if (auto* command_target = commandForElement()) {
       auto action =
           GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));

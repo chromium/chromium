@@ -1918,7 +1918,7 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
       DCHECK_EQ(upstream_invoker->InterestForElement(), this);
       DCHECK_NE(upstream_invoker->GetInvokerData()->GetInterestState(),
                 InterestState::kNoInterest);
-      upstream_invoker->LoseInterestNow(this);
+      upstream_invoker->LoseInterestNow();
     }
 
     // The 'loseinterest' event handler could have changed this popover, e.g. by

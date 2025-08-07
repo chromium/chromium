@@ -7725,11 +7725,12 @@ void Element::ShowInterestNow() {
   GainOrLoseInterest(this, target, InterestState::kFullInterest);
 }
 
-void Element::LoseInterestNow(Element* target) {
+void Element::LoseInterestNow() {
   DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DCHECK_EQ(InterestForElement(), target);
+  Element* target = InterestForElement();
   DCHECK_EQ(GetInvokerData()->ActiveInterestTarget(), target);
+  DCHECK_EQ(GetInterestState(), InterestState::kFullInterest);
   GainOrLoseInterest(this, target, InterestState::kNoInterest);
 }
 

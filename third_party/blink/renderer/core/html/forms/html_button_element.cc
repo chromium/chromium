@@ -365,7 +365,8 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     }
 
     // Buttons with a commandfor will dispatch a CommandEvent on the
-    // invoker, and run `HandleCommandInternal` to perform default logic.
+    // target of the invoker, and run `HandleCommandInternal` to perform default
+    // logic.
     if (Element* command_target = commandForElement()) {
       // commandfor & popovertarget shouldn't be combined, so warn.
       if (FastHasAttribute(html_names::kPopovertargetAttr)) {
