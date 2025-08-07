@@ -9,8 +9,11 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::declarative_net_request {
 namespace {

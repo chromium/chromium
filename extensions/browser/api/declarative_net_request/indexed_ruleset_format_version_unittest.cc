@@ -11,7 +11,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::declarative_net_request {
 namespace {
