@@ -28,17 +28,9 @@ class Widget;
 }  // namespace views
 
 // Tracks the number of times the DICe migration dialog has been shown.
-// IMPORTANT(!): The dialog is considered shown only if the user interacts with
-// it, i.e. the user accepts or dismisses the dialog. This is better than just
-// tracking when the dialog was actually shown, since the user might have
-// dismissed the dialog unknowingly, for example, by closing the browser.
 extern const char kDiceMigrationDialogShownCount[];
 
 // Tracks the last time the DICe migration dialog was shown.
-// IMPORTANT(!): The dialog is considered shown only if the user interacts with
-// it, i.e. the user accepts or dismisses the dialog. This is better than just
-// tracking when the dialog was actually shown, since the user might have
-// dismissed the dialog unknowingly, for example, by closing the browser.
 extern const char kDiceMigrationDialogLastShownTime[];
 
 // Tracks whether the user has been migrated to explicitly signed-in state

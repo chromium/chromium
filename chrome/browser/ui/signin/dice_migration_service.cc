@@ -403,6 +403,15 @@ DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   browser_ = browser->AsWeakPtr();
   dialog_widget_->Show();
 
+  // Update the dialog shown count and time. Note that the user may not interact
+  // with the dialog at all, for example, if they close the browser. Or, the
+  // dialog may be shown on a browser that is minimized. These cases still count
+  // as showing the dialog. This is better than the alternate of updating the
+  // shown count and time only when the user interacts with the dialog, which
+  // might cause the dialog to be show on every browser startup if the user
+  // never interacts with it.
+  UpdateDialogShownCountAndTime();
+
   // Close the dialog when the avatar pill is clicked.
   avatar_button_observer_ =
       std::make_unique<AvatarButtonObserver>(avatar_button, this);
@@ -423,8 +432,6 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
   avatar_button_observer_.reset();
   dialog_widget_observation_.Reset();
   dialog_widget_ = nullptr;
-  Browser* browser = browser_.get();
-  browser_.reset();
   switch (widget->closed_reason()) {
     // Losing focus should not close the dialog.
     case views::Widget::ClosedReason::kLostFocus:
@@ -432,35 +439,31 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
     case views::Widget::ClosedReason::kUnspecified:
       LogDialogCloseReason(
           dialog_close_reason_.value_or(DialogCloseReason::kUnspecified));
-      return;
+      break;
     case views::Widget::ClosedReason::kAcceptButtonClicked: {
       LogDialogCloseReason(DialogCloseReason::kAccepted);
       const bool migrated = MaybeMigrateUser(profile_);
       base::UmaHistogramBoolean(kUserMigratedHistogram, migrated);
       if (migrated) {
-        const bool toast_triggered = browser && MaybeShowToast(browser);
+        const bool toast_triggered = browser_ && MaybeShowToast(browser_.get());
         base::UmaHistogramBoolean(kToastTriggeredHistogram, toast_triggered);
       }
     } break;
     case views::Widget::ClosedReason::kCancelButtonClicked:
       // Cancel button is only available in the non-"final" variant.
-      CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount - 1);
+      CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
       LogDialogCloseReason(DialogCloseReason::kCancelled);
       break;
     case views::Widget::ClosedReason::kCloseButtonClicked:
       // Close button is only available in the "final" variant.
-      CHECK_EQ(GetDialogShownCount(), kMaxDialogShownCount - 1);
+      CHECK_EQ(GetDialogShownCount(), kMaxDialogShownCount);
       LogDialogCloseReason(DialogCloseReason::kClosed);
       break;
     case views::Widget::ClosedReason::kEscKeyPressed:
       LogDialogCloseReason(DialogCloseReason::kEscKeyPressed);
       break;
   }
-  // The dialog is considered shown if the user interacts with it, i.e. the user
-  // accepts or dismisses the dialog. This is better than just tracking when the
-  // dialog was actually shown, since the user might have dismissed the dialog
-  // unknowingly, for example, by closing the browser.
-  UpdateDialogShownCountAndTime();
+  browser_.reset();
 }
 
 void DiceMigrationService::OnPrimaryAccountChanged(

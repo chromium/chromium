@@ -343,47 +343,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetDiceMigrationService()->GetDialogWidgetForTesting();
   ASSERT_TRUE(widget);
 
-  // The dialog shown count is not incremented yet.
-  EXPECT_EQ(GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 1);
-
-  views::test::WidgetDestroyedWaiter waiter(widget);
-  // Simulate closing the dialog.
-  GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
-      views::Widget::ClosedReason::kCancelButtonClicked);
-  waiter.Wait();
-
   // The dialog shown count is now incremented.
   EXPECT_EQ(GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 2);
-}
-
-DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
-                      DoNotIncrementDialogShownCountIfNotInteractedWith) {
-  // The user is implicitly signed in.
-  ASSERT_TRUE(IsImplicitlySignedIn());
-
-  // Set the current dialog shown count to 1.
-  GetPrefs()->SetInteger(kDiceMigrationDialogShownCount, 1);
-
-  // Show the migration bubble.
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
-
-  views::Widget* widget =
-      GetDiceMigrationService()->GetDialogWidgetForTesting();
-  ASSERT_TRUE(widget);
-
-  // The dialog shown count is not incremented yet.
-  EXPECT_EQ(GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 1);
-
-  views::test::WidgetDestroyedWaiter waiter(widget);
-  // Simulate the dialog being closed without any user interaction.
-  signin::ClearPrimaryAccount(GetIdentityManager());
-  waiter.Wait();
-
-  // The dialog shown count is not incremented.
-  EXPECT_EQ(GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -400,21 +361,47 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   // Show the migration bubble.
   FireDialogTriggerTimer();
 
+  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  // The dialog last shown time is now updated.
+  EXPECT_GE(GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime), time_now);
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      DoNotUpdateDialogShownCountAndTimeUponInteraction) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(IsImplicitlySignedIn());
+
+  // Set the current dialog shown count to 1.
+  GetPrefs()->SetInteger(kDiceMigrationDialogShownCount, 1);
+
+  base::Time time_now = base::Time::Now();
+  ASSERT_LT(GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime), time_now);
+
+  // Show the migration bubble.
+  base::OneShotTimer& timer =
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+  ASSERT_TRUE(timer.IsRunning());
+  timer.FireNow();
+
   views::Widget* widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
   ASSERT_TRUE(widget);
 
-  // The dialog last shown time is not updated yet.
-  EXPECT_LT(GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime), time_now);
+  // The dialog shown count is incremented.
+  ASSERT_EQ(GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 2);
+  // The dialog last shown time is updated.
+  ASSERT_GE(GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime), time_now);
+  time_now = GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime);
 
-  // Simulate closing the dialog.
   views::test::WidgetDestroyedWaiter waiter(widget);
-  GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
-      views::Widget::ClosedReason::kCancelButtonClicked);
+  // Simulate clicking on accept button.
+  widget->CloseWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
   waiter.Wait();
 
-  // The dialog last shown time is now updated.
-  EXPECT_GE(GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime), time_now);
+  // The dialog shown count and time are not updated anymore.
+  EXPECT_EQ(GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 2);
+  EXPECT_EQ(GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime), time_now);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
