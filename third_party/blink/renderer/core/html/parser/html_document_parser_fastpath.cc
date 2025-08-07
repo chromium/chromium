@@ -1055,12 +1055,14 @@ class HTMLFastPathParser {
     return {result, USpan{}};
   }
 
-  // Slow path for scanning an attribute value. Used for special cases such
-  // as '&' and '\r'.
+  // Slow path for scanning an attribute value. Only used if the attribute value
+  // contains '&' or '\r'.
   USpan ScanEscapedAttrValue() {
     SkipWhitespace();
     uchar_buffer_.clear();
     if (Char quote_char = GetNext(); quote_char == '"' || quote_char == '\'') {
+      // Move pos_ past the quote character.
+      ++pos_;
       while (pos_ != end_ && GetNext() != quote_char) {
         if (failed_) {
           return USpan{};
