@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_resolution_view_controller.h"
 
 #import "base/check_op.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
@@ -234,8 +235,7 @@ const CGFloat kLabelSpacing = 4;
                            target:self
                            action:@selector(didTapCancelButton)];
   /// Navigation bar: continue button.
-  NSString* continueButtonTitle = l10n_util::GetNSString(
-      IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_CONTINUE);
+  NSString* continueButtonTitle = l10n_util::GetNSString(IDS_CONTINUE);
   UIBarButtonItem* continueButton =
       [self newButtonWithTitle:continueButtonTitle
                         action:@selector(didTapContinueButton)];

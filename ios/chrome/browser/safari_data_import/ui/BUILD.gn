@@ -27,6 +27,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/safari_data_import/public",

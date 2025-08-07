@@ -165,8 +165,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
         IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE);
     NSString* description = l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION);
-    NSString* buttonText = l10n_util::GetNSString(
-        IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_OK_BUTTON);
+    NSString* buttonText = l10n_util::GetNSString(IDS_OK);
     __weak __typeof(self) weakSelf = self;
     UIAlertAction* dismiss = [UIAlertAction
         actionWithTitle:buttonText

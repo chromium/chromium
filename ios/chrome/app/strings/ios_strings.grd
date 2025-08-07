@@ -5476,9 +5476,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION" desc="Description in the alert message informing the user that the currently selected file could not be imported to Chrome. [iOS only]">
         This file can't be imported
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_OK_BUTTON" desc="Button at the bottom of the alert message to dismiss it. The alert informs the user that the currently selected file could not be imported to Chrome. [iOS only]">
-        OK
-      </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE" desc="Title of the alert message informing the user that the currently selected file could not be imported to Chrome. [iOS only]">
         Something went wrong
       </message>
@@ -5596,9 +5593,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_UNKNOWN" desc="Message is shown on the dialog for importing passwords if no passwords were imported and we don't know the cause of error. Probably error in the backend or in our systems.">
         Your password wasn't imported
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_CONTINUE" desc="Bar button to import selected passwords from Safari to override those on Google Password Manager. It shows up on the top-right (or top-left in RTL) of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
-        Continue
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_DESELECT_ALL" desc="Bar button to automatically deselect all passwords displayed on the screen . It shows up at the bottom of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
         Deselect all
@@ -5798,7 +5792,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Turn off
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_MESSAGE" desc="Message for Safe Browsing no protection confirmation dialog.">
-        Safe Browsing protects you against attackers who may trick you into doing something dangerous like installing malicious software or revealing personal information like passwords, phone numbers, or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.        </message>
+        Safe Browsing protects you against attackers who may trick you into doing something dangerous like installing malicious software or revealing personal information like passwords, phone numbers, or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_TITLE" desc="Title for Safe Browsing no protection confirmation dialog.">
         Turn off Safe Browsing?
       </message>
