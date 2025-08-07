@@ -5,7 +5,7 @@
 // clang-format off
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SearchManager} from 'chrome://settings/settings.js';
-import {BaseMixin, getSearchManager, getTrustedHTML as getTrustedStaticHtml} from 'chrome://settings/settings.js';
+import {BaseMixin, getSearchManager, getTrustedHTML as getTrustedStaticHtml, showBubble} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
@@ -325,6 +325,23 @@ suite('SearchSettingsTest', function() {
     assertEquals(2, bubbles.length);
     assertEquals('4 results', bubbles[1]!.textContent);
     assertEquals('1 result', bubbles[0]!.textContent);
+  });
+
+  test('showBubble() result count', () => {
+    function assertResults(results: number) {
+      const bubble = document.body.querySelector<HTMLElement>('.search-bubble');
+      assertTrue(!!bubble);
+      assertEquals(results, Number(bubble.dataset['results']));
+      assertEquals(`${results} results`, bubble.textContent);
+    }
+
+    const element = document.createElement('div');
+    document.body.appendChild(element);
+
+    showBubble(element, 10, new Set(), false);
+    assertResults(10);
+    showBubble(element, 20, new Set(), false);
+    assertResults(30);
   });
 
   test('diacritics', async () => {

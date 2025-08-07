@@ -176,7 +176,7 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): number {
  * @param bubbles A map of bubbles created so far.
  */
 function revealParentSection(
-    node: Node, numResults: number, bubbles: Map<Node, number>) {
+    node: Node, numResults: number, bubbles: Set<HTMLElement>) {
   let associatedControl: HTMLElement|null = null;
   let subpageTitle: string = '';
 
@@ -225,14 +225,16 @@ function revealParentSection(
 }
 
 export function showBubble(
-    control: Node, numResults: number, bubbles: Map<Node, number>,
+    control: Node, newResults: number, bubbles: Set<Node>,
     horizontallyCenter: boolean) {
   const bubble = createEmptySearchBubble(control, horizontallyCenter);
-  const numHits = numResults + (bubbles.get(bubble) || 0);
-  bubbles.set(bubble, numHits);
+  const totalResults = (Number(bubble.dataset['results']) || 0) + newResults;
+  bubble.dataset['results'] = String(totalResults);
+  bubbles.add(bubble);
   const msgName =
-      numHits === 1 ? 'searchResultBubbleText' : 'searchResultsBubbleText';
-  bubble.firstChild!.textContent = loadTimeData.getStringF(msgName, numHits);
+      totalResults === 1 ? 'searchResultBubbleText' : 'searchResultsBubbleText';
+  bubble.firstChild!.textContent =
+      loadTimeData.getStringF(msgName, totalResults);
 }
 
 abstract class Task {
@@ -405,7 +407,7 @@ export class SearchRequest {
   queue: TaskQueue;
   private textObservers_: Set<MutationObserver>;
   private highlights_: HTMLElement[];
-  bubbles: Map<HTMLElement, number>;
+  bubbles: Set<HTMLElement>;
 
   constructor(rawQuery: string, root: Element) {
     this.rawQuery_ = rawQuery;
@@ -424,7 +426,7 @@ export class SearchRequest {
 
     this.textObservers_ = new Set();
     this.highlights_ = [];
-    this.bubbles = new Map();
+    this.bubbles = new Set();
   }
 
   /** @param highlights The highlight wrappers to add */
@@ -441,8 +443,10 @@ export class SearchRequest {
 
   removeAllHighlightsAndBubbles() {
     removeHighlights(this.highlights_);
-    this.bubbles.forEach((_count, bubble) => bubble.remove());
     this.highlights_ = [];
+    for (const bubble of this.bubbles) {
+      bubble.remove();
+    }
     this.bubbles.clear();
   }
 
