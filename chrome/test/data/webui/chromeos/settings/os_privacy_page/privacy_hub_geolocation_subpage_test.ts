@@ -10,10 +10,11 @@ import type {appPermissionHandlerMojom, ControlledButtonElement, ControlledRadio
 import {GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, ScheduleType, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertLT, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertLT, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -134,9 +135,9 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
       case privacyHubGeolocationSubpage.i18n(
           'geolocationAccessLevelOnlyAllowedForSystem'):
         return GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM;
+      default:
+        assertNotReached('Invalid GeolocationAccessLevel value detected');
     }
-
-    assertNotReached('Invalid GeolocationAccessLevel value detected');
   }
 
   function getNoAppHasAccessTextSection(): HTMLElement|null {
@@ -187,12 +188,14 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
             expectedDescriptions['blockedText'],
             getSystemServicePermissionText(systemService));
         break;
+      // Falls through to ONLY_ALLOWED_FOR_SYSTEM
       case GeolocationAccessLevel.ALLOWED:
-        // Falls through to ONLY_ALLOWED_FOR_SYSTEM
       case GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM:
         assertEquals(
             expectedDescriptions['allowedText'],
             getSystemServicePermissionText(systemService));
+        break;
+      default:
         break;
     }
   }

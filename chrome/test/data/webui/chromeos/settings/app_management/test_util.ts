@@ -7,6 +7,7 @@ import {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from 'chr
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PageCallbackRouter, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -136,6 +137,8 @@ export async function addFakeSensor(
     case PermissionType.kPrinting:
     case PermissionType.kFileHandling:
       assertNotReached();
+    default:
+      assertNotReachedCase(PermissionType[permissionType]);
   }
   await flushTasks();
 }

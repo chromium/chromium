@@ -61,6 +61,8 @@ suite('<os-settings-input-page>', () => {
                   'browser.enable_spellchecking', false, '');
             }
             break;
+          default:
+            break;
         }
       }
     }

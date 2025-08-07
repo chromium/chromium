@@ -9,7 +9,7 @@ import {DisableTouchpadMode} from 'chrome://os-settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {createRouterForTesting, CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -489,6 +489,8 @@ suite('<settings-cursor-and-touchpad-page>', () => {
           controlElement.value = String(alternateValue);
           controlElement.dispatchEvent(new CustomEvent('change'));
           break;
+        default:
+          assertNotReachedCase(type);
       }
 
       // Ensure pref is set to the alternate value.
