@@ -131,10 +131,7 @@ void DataSharingPageHandler::RequestAccessToken() {
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      account_id, /*oauth_consumer_name=*/"data_sharing", /*scopes=*/
-      {GaiaConstants::kPeopleApiReadWriteOAuth2Scope,
-       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
-       GaiaConstants::kClearCutOAuth2Scope},
+      account_id, signin::OAuthConsumerId::kDataSharing,
       base::BindOnce(&DataSharingPageHandler::OnAccessTokenFetched,
                      base::Unretained(this)),
       signin::AccessTokenFetcher::Mode::kImmediate);

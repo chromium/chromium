@@ -29,16 +29,6 @@ signin::IdentityManager* GetIdentityManager() {
   return ash::ProjectorAppClient::Get()->GetIdentityManager();
 }
 
-OAuth2AccessTokenManager::ScopeSet GetScopeSet() {
-  if (ash::features::IsProjectorUseDVSPlaybackEndpointEnabled()) {
-    return OAuth2AccessTokenManager::ScopeSet{
-        GaiaConstants::kDriveOAuth2Scope,
-        GaiaConstants::kDriveReadOnlyOAuth2Scope};
-  }
-
-  return OAuth2AccessTokenManager::ScopeSet{GaiaConstants::kDriveOAuth2Scope};
-}
-
 }  // namespace
 
 namespace ash {
@@ -103,7 +93,7 @@ void ProjectorOAuthTokenFetcher::InvalidateToken(const std::string& token) {
   });
   GetIdentityManager()->RemoveAccessTokenFromCache(
       GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      GetScopeSet(), token);
+      signin::OAuthConsumerId::kProjectorTokenFetcher, token);
 }
 
 bool ProjectorOAuthTokenFetcher::HasCachedTokenForTest(
@@ -133,7 +123,7 @@ void ProjectorOAuthTokenFetcher::InitiateAccessTokenFetchFor(
       identity_manager->CreateAccessTokenFetcherForAccount(
           identity_manager->FindExtendedAccountInfoByEmailAddress(email)
               .account_id,
-          /*oauth_consumer_name=*/"ProjectorOAuthTokenFetcher", GetScopeSet(),
+          signin::OAuthConsumerId::kProjectorTokenFetcher,
           base::BindOnce(
               &ProjectorOAuthTokenFetcher::OnAccessTokenRequestCompleted,
               // It is safe to use base::Unretained as |this| owns

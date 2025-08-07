@@ -711,6 +711,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Sanitized image source"/>
   <int value="5" label="Optimization Guide (get hints)"/>
   <int value="6" label="Optimization Guide (model execution)"/>
+  <int value="7" label="Nearby Sharing"/>
+  <int value="8" label="Projector token fetcher"/>
+  <int value="9" label="Add Supervision"/>
+  <int value="10" label="Parent Access"/>
+  <int value="11" label="Data Sharing"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

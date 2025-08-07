@@ -18,6 +18,11 @@ constexpr char kOptimizationGuideGetHintsName[] =
     "optimization_guide_get_hints";
 constexpr char kOptimizationGuideModelExecutionName[] =
     "optimization_guide_model_execution";
+constexpr char kNearbySharingName[] = "nearby_sharing";
+constexpr char kProjectorTokenFetcherName[] = "projector_token_fetcher";
+constexpr char kAddSupervisionName[] = "add_supervision";
+constexpr char kParentAccessName[] = "parent_access";
+constexpr char kDataSharingName[] = "data_sharing";
 }
 
 namespace signin {
@@ -70,6 +75,34 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
           /*name=*/kOptimizationGuideModelExecutionName,
           /*scopes=*/{GaiaConstants::
                           kOptimizationGuideServiceModelExecutionOAuth2Scope});
+    case OAuthConsumerId::kNearbySharing:
+      return OAuthConsumer(
+          /*name=*/kNearbySharingName,
+          /*scopes=*/{GaiaConstants::kTachyonOAuthScope});
+    case OAuthConsumerId::kProjectorTokenFetcher:
+      return OAuthConsumer(
+          /*name=*/kProjectorTokenFetcherName,
+          /*scopes=*/{GaiaConstants::kDriveOAuth2Scope,
+                      GaiaConstants::kDriveReadOnlyOAuth2Scope});
+    case OAuthConsumerId::kAddSupervision:
+      return OAuthConsumer(
+          /*name=*/kAddSupervisionName,
+          /*scopes=*/{GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope,
+                      GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
+                      GaiaConstants::kAccountsReauthOAuth2Scope,
+                      GaiaConstants::kAuditRecordingOAuth2Scope,
+                      GaiaConstants::kClearCutOAuth2Scope});
+    case OAuthConsumerId::kParentAccess:
+      return OAuthConsumer(
+          /*name=*/kParentAccessName,
+          /*scopes=*/{GaiaConstants::kParentApprovalOAuth2Scope,
+                      GaiaConstants::kProgrammaticChallengeOAuth2Scope});
+    case OAuthConsumerId::kDataSharing:
+      return OAuthConsumer(
+          /*name=*/kDataSharingName,
+          /*scopes=*/{GaiaConstants::kPeopleApiReadWriteOAuth2Scope,
+                      GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
+                      GaiaConstants::kClearCutOAuth2Scope});
   }
   NOTREACHED();
 }

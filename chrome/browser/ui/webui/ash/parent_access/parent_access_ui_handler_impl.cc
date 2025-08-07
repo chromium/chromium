@@ -91,9 +91,6 @@ ParentAccessUiHandlerImpl::ParentAccessUiHandlerImpl(
 ParentAccessUiHandlerImpl::~ParentAccessUiHandlerImpl() = default;
 
 void ParentAccessUiHandlerImpl::GetOauthToken(GetOauthTokenCallback callback) {
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kParentApprovalOAuth2Scope);
-  scopes.insert(GaiaConstants::kProgrammaticChallengeOAuth2Scope);
 
   if (oauth2_access_token_fetcher_) {
     // Only one GetOauthToken call can happen at a time.
@@ -105,7 +102,7 @@ void ParentAccessUiHandlerImpl::GetOauthToken(GetOauthTokenCallback callback) {
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-          "parent_access", scopes,
+          signin::OAuthConsumerId::kParentAccess,
           base::BindOnce(&ParentAccessUiHandlerImpl::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
           signin::AccessTokenFetcher::Mode::kImmediate);
