@@ -14,9 +14,6 @@
 
 namespace media {
 
-MEDIA_EXPORT std::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
-    gfx::BufferFormat format);
-
 MEDIA_EXPORT std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
     VideoPixelFormat pixel_format);
 

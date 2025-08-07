@@ -423,9 +423,8 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     return nullptr;
   }
 
-  std::optional<gfx::BufferFormat> buffer_format =
-      VideoPixelFormatToGfxBufferFormat(frame->format());
-  if (!buffer_format) {
+  auto si_format = VideoPixelFormatToSharedImageFormat(frame->format());
+  if (!si_format) {
     LOG(ERROR) << "Unexpected format: " << frame->format();
     return nullptr;
   }
@@ -433,10 +432,9 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   // Setting some default usage in order to get a mappable shared image.
   const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  auto si_format = viz::GetSharedImageFormat(*buffer_format);
   // Create a mappable shared image.
   auto shared_image = test_sii->CreateSharedImage(
-      {si_format, frame->coded_size(), gfx::ColorSpace(),
+      {*si_format, frame->coded_size(), gfx::ColorSpace(),
        gpu::SharedImageUsageSet(si_usage), "VideoFrameTestHelpers"},
       gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
   if (!shared_image) {

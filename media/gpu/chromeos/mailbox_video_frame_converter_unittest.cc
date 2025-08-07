@@ -59,9 +59,9 @@ base::ScopedFD GetDummyFD() {
 }
 
 gfx::GpuMemoryBufferHandle CreatePixmapHandle(const gfx::Size& size,
-                                              gfx::BufferFormat format) {
+                                              viz::SharedImageFormat format) {
   std::optional<VideoPixelFormat> video_pixel_format =
-      GfxBufferFormatToVideoPixelFormat(format);
+      SharedImageFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
 
   auto data = std::vector<uint8_t>(
@@ -322,7 +322,7 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   // correctly.
   for (size_t i = 0; i < std::size(mappable_frames); i++) {
     auto gmb_handle =
-        CreatePixmapHandle(kCodedSize, gfx::BufferFormat::YUV_420_BIPLANAR);
+        CreatePixmapHandle(kCodedSize, viz::MultiPlaneFormat::kNV12);
     // Setting some default usage in order to get a mappable shared image.
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;

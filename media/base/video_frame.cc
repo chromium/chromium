@@ -451,9 +451,8 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
     base::TimeDelta timestamp) {
   CHECK(gpu_memory_buffer);
 
-  const gfx::BufferFormat buffer_format = gpu_memory_buffer->GetFormat();
-  const std::optional<VideoPixelFormat> format =
-      GfxBufferFormatToVideoPixelFormat(buffer_format);
+  auto si_format = viz::GetSharedImageFormat(gpu_memory_buffer->GetFormat());
+  auto format = SharedImageFormatToVideoPixelFormat(si_format);
   if (!format) {
     return nullptr;
   }
@@ -467,7 +466,7 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
     return nullptr;
   }
 
-  const size_t num_planes = NumberOfPlanesForLinearBufferFormat(buffer_format);
+  const size_t num_planes = si_format.NumberOfPlanes();
   std::vector<ColorPlaneLayout> planes(num_planes);
   for (size_t plane = 0; plane < num_planes; ++plane) {
     planes[plane].stride = gpu_memory_buffer->stride(plane);

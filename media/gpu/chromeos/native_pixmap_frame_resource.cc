@@ -16,6 +16,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -158,20 +159,18 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  const auto& buffer_format = pixmap->GetBufferFormat();
-  auto pixel_format = GfxBufferFormatToVideoPixelFormat(buffer_format);
+  auto si_format = viz::GetSharedImageFormat(pixmap->GetBufferFormat());
+  auto pixel_format = SharedImageFormatToVideoPixelFormat(si_format);
   if (!pixel_format) {
-    DLOGF(ERROR) << " Unable to convert buffer format "
-                 << gfx::BufferFormatToString(buffer_format)
-                 << " to PixelFormat";
+    DLOGF(ERROR) << " Unable to convert shared image format "
+                 << si_format.ToString() << " to PixelFormat";
     return nullptr;
   }
 
   // Checks that the number of planes matches the expectation for the buffer
   // format.
   const size_t num_planes = pixmap->GetNumberOfPlanes();
-  const size_t expected_number_of_planes =
-      NumberOfPlanesForLinearBufferFormat(buffer_format);
+  const size_t expected_number_of_planes = si_format.NumberOfPlanes();
   if (num_planes != expected_number_of_planes) {
     DLOGF(ERROR) << "Invalid number of planes=" << num_planes
                  << ", expected number of planes=" << expected_number_of_planes;
