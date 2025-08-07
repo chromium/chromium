@@ -434,7 +434,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
  public:
   NetworkServiceTestImpl() : test_host_resolver_(new TestHostResolver()) {
     memory_pressure_listener_.emplace(
-        FROM_HERE, base::DoNothing(),
         base::BindRepeating(
             &NetworkServiceTestHelper::NetworkServiceTestImpl::OnMemoryPressure,
             weak_factory_.GetWeakPtr()));
@@ -841,7 +840,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
-  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::SyncMemoryPressureListener> memory_pressure_listener_;
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;

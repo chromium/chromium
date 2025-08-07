@@ -85,8 +85,8 @@ TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
         FAIL() << "Async callback should not be called.";
       }));
 
-  auto deleter_listener = std::make_unique<MemoryPressureListener>(
-      FROM_HERE, DoNothing(), BindLambdaForTesting([&](MemoryPressureLevel) {
+  auto deleter_listener = std::make_unique<SyncMemoryPressureListener>(
+      BindLambdaForTesting([&](MemoryPressureLevel) {
         // This should not deadlock.
         listener_to_be_deleted.reset();
       }));

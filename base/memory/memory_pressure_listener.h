@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_level.h"
+#include "base/threading/thread_checker.h"
 
 namespace base {
 
@@ -25,7 +26,7 @@ namespace base {
 //
 // Note that even on the same thread, the MemoryPressureCallback will not be
 // called within the system memory pressure broadcast. If synchronous
-// invocation is desired, a SyncMemoryPressureCallback can be provided.
+// invocation is desired, then SyncMemoryPressureListener must be used.
 // However, deleting a listener with a synchronous callback from within a
 // synchronous callback is not supported and will deadlock.
 //
@@ -64,10 +65,6 @@ class BASE_EXPORT MemoryPressureListener {
   MemoryPressureListener(
       const base::Location& creation_location,
       const MemoryPressureCallback& memory_pressure_callback);
-  MemoryPressureListener(
-      const base::Location& creation_location,
-      const MemoryPressureCallback& memory_pressure_callback,
-      const SyncMemoryPressureCallback& sync_memory_pressure_callback);
 
   MemoryPressureListener(const MemoryPressureListener&) = delete;
   MemoryPressureListener& operator=(const MemoryPressureListener&) = delete;
@@ -97,10 +94,40 @@ class BASE_EXPORT MemoryPressureListener {
   }
 
  private:
+  friend class SyncMemoryPressureListener;
+
+  MemoryPressureListener(
+      const base::Location& creation_location,
+      const MemoryPressureCallback& memory_pressure_callback,
+      const SyncMemoryPressureCallback& sync_memory_pressure_callback);
+
   const MemoryPressureCallback callback_;
   const SyncMemoryPressureCallback sync_memory_pressure_callback_;
 
   const base::Location creation_location_;
+};
+
+class BASE_EXPORT SyncMemoryPressureListener {
+ public:
+  using SyncMemoryPressureCallback =
+      RepeatingCallback<void(MemoryPressureLevel)>;
+
+  explicit SyncMemoryPressureListener(SyncMemoryPressureCallback callback);
+
+  SyncMemoryPressureListener(const SyncMemoryPressureListener&) = delete;
+  SyncMemoryPressureListener& operator=(const SyncMemoryPressureListener&) =
+      delete;
+
+  ~SyncMemoryPressureListener();
+
+ private:
+  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level);
+
+  SyncMemoryPressureCallback callback_;
+
+  MemoryPressureListener memory_pressure_listener_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace base

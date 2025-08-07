@@ -13,6 +13,8 @@
 
 namespace base {
 
+// MemoryPressureListener ------------------------------------------------------
+
 MemoryPressureListener::MemoryPressureListener(
     const base::Location& creation_location,
     const MemoryPressureListener::MemoryPressureCallback& callback)
@@ -78,6 +80,26 @@ void MemoryPressureListener::SimulatePressureNotification(
     MemoryPressureLevel memory_pressure_level) {
   MemoryPressureListenerRegistry::SimulatePressureNotification(
       memory_pressure_level);
+}
+
+// SyncMemoryPressureListener --------------------------------------------------
+
+SyncMemoryPressureListener::SyncMemoryPressureListener(
+    SyncMemoryPressureCallback callback)
+    : callback_(std::move(callback)),
+      memory_pressure_listener_(
+          FROM_HERE,
+          DoNothing(),
+          BindRepeating(&SyncMemoryPressureListener::OnMemoryPressure,
+                        Unretained(this))) {}
+
+SyncMemoryPressureListener::~SyncMemoryPressureListener() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void SyncMemoryPressureListener::OnMemoryPressure(
+    MemoryPressureLevel memory_pressure_level) {
+  callback_.Run(memory_pressure_level);
 }
 
 }  // namespace base

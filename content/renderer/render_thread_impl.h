@@ -529,6 +529,8 @@ class CONTENT_EXPORT RenderThreadImpl
   HistogramCustomizer histogram_customizer_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::SyncMemoryPressureListener>
+      sync_memory_pressure_listener_;
 
   std::unique_ptr<viz::Gpu> gpu_;
 

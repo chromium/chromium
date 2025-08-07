@@ -634,9 +634,10 @@ void RenderThreadImpl::Init() {
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE,
       base::BindRepeating(&RenderThreadImpl::OnMemoryPressure,
-                          base::Unretained(this)),
-      base::BindRepeating(&RenderThreadImpl::OnSyncMemoryPressure,
                           base::Unretained(this)));
+  sync_memory_pressure_listener_ =
+      std::make_unique<base::SyncMemoryPressureListener>(base::BindRepeating(
+          &RenderThreadImpl::OnSyncMemoryPressure, base::Unretained(this)));
 
   discardable_memory_allocator_ = CreateDiscardableMemoryAllocator();
 

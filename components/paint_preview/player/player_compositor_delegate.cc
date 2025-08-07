@@ -192,8 +192,7 @@ void PlayerCompositorDelegate::InitializeInternal(
       base::BindOnce(&PlayerCompositorDelegate::OnCompositorClientDisconnected,
                      weak_factory_.GetWeakPtr()));
 
-  memory_pressure_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::DoNothing(),
+  memory_pressure_ = std::make_unique<base::SyncMemoryPressureListener>(
       base::BindRepeating(&PlayerCompositorDelegate::OnMemoryPressure,
                           weak_factory_.GetWeakPtr()));
   if (!timeout_duration.is_inf() && !timeout_duration.is_zero()) {
