@@ -6223,7 +6223,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Proceed with caution
       </message>
       <message name="IDS_EXTENSION_PROMPT_INSTALL_FRICTION_WARNING_TEXT" desc="The warning text displayed in the install friction dialog">
-        This extension is not trusted by Enhanced Safe Browsing.
+        This extension is not trusted by Enhanced Safe Browsing. <ph name="LEARN_MORE_LINK">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_EXTENSION_INSTALL_PROMPT_ACCEPT_BUTTON_EXTENSION" desc="Text for the install button on the extension install prompt, for an extension (i.e. not app or theme).">
         Add extension
