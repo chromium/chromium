@@ -85,8 +85,6 @@ class CORE_EXPORT StyleSheetCollection
     return "StyleSheetCollection";
   }
 
-  void Dispose();
-
  protected:
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
   ActiveStyleSheetVector active_style_sheets_;

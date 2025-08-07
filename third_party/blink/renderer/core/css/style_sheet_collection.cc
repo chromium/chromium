@@ -38,11 +38,6 @@ namespace blink {
 
 StyleSheetCollection::StyleSheetCollection() = default;
 
-void StyleSheetCollection::Dispose() {
-  style_sheets_for_style_sheet_list_.clear();
-  active_style_sheets_.clear();
-}
-
 void StyleSheetCollection::Swap(StyleSheetCollection& other) {
   swap(style_sheets_for_style_sheet_list_,
        other.style_sheets_for_style_sheet_list_);
