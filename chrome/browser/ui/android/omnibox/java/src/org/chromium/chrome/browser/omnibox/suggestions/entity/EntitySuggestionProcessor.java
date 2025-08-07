@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
 
@@ -12,11 +11,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -26,18 +23,14 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
-
 /** A class that handles model and view creation for the Entity suggestions. */
 @NullMarked
 public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
-    public EntitySuggestionProcessor(
-            Context context,
-            SuggestionHost suggestionHost,
-            UrlBarEditingTextStateProvider editingTextProvider,
-            Optional<OmniboxImageSupplier> imageSupplier,
-            BookmarkState bookmarkState) {
-        super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
+    /**
+     * @param uiContext Context object containing common UI dependencies.
+     */
+    public EntitySuggestionProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext);
     }
 
     @Override

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.tabgroup;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.text.Spannable;
@@ -18,9 +17,8 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
@@ -34,8 +32,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
-
 /**
  * A class that handles model and view creation for the tab group omnibox suggestion backed by a
  * {@link SavedTabGroup} object.
@@ -43,15 +39,10 @@ import java.util.Optional;
 @NullMarked
 public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
     /**
-     * @param context An Android context.
-     * @param suggestionHost A handle to the object using the suggestions.
-     * @param imageSupplier Supplier of suggestion images.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public TabGroupSuggestionProcessor(
-            Context context,
-            SuggestionHost suggestionHost,
-            Optional<OmniboxImageSupplier> imageSupplier) {
-        super(context, suggestionHost, imageSupplier);
+    public TabGroupSuggestionProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext);
     }
 
     @Override

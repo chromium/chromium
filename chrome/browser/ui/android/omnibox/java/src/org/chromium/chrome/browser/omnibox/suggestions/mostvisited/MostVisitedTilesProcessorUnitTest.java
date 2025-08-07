@@ -38,13 +38,19 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -83,6 +89,10 @@ public final class MostVisitedTilesProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock AutocompleteInput mInput;
+    private @Mock UrlBarEditingTextStateProvider mTextProvider;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock BookmarkState mBookmarkState;
 
     static class TileData {
         public final String title;
@@ -111,9 +121,16 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .when(mImageSupplier)
                 .generateFavicon(any(), mGenIconCallbackCaptor.capture());
 
-        mProcessor =
-                new MostVisitedTilesProcessor(
-                        mContext, mSuggestionHost, Optional.of(mImageSupplier));
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mTextProvider,
+                        Optional.of(mImageSupplier),
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier);
+        mProcessor = new MostVisitedTilesProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }
 
@@ -189,9 +206,16 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void populateModel_navTileIcon_fallbackIcon() {
-        mProcessor =
-                new MostVisitedTilesProcessor(
-                        mContext, mSuggestionHost, /* imageSupplier= */ Optional.empty());
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mTextProvider,
+                        /* imageSupplier= */ Optional.empty(),
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier);
+        mProcessor = new MostVisitedTilesProcessor(uiContext);
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
 

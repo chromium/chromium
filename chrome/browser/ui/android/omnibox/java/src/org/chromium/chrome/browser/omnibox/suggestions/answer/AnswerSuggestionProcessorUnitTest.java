@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -33,10 +34,14 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.Image;
@@ -81,6 +86,9 @@ public class AnswerSuggestionProcessorUnitTest {
     private @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock AutocompleteInput mInput;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock BookmarkState mBookmarkState;
 
     private AnswerSuggestionProcessor mProcessor;
     private Locale mDefaultLocale;
@@ -205,9 +213,16 @@ public class AnswerSuggestionProcessorUnitTest {
         mDefaultLocale = Locale.getDefault();
         mContext = Robolectric.buildActivity(Activity.class).setup().get();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mProcessor =
-                new AnswerSuggestionProcessor(
-                        mContext, mSuggestionHost, mUrlStateProvider, Optional.of(mImageSupplier));
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mUrlStateProvider,
+                        Optional.of(mImageSupplier),
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier);
+        mProcessor = new AnswerSuggestionProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }
 

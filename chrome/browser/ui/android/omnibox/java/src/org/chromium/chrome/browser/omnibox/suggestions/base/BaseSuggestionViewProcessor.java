@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
@@ -41,6 +42,7 @@ import java.util.Optional;
 /** A class that handles base properties and model for most suggestions. */
 @NullMarked
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
+
     protected final Context mContext;
     protected final SuggestionHost mSuggestionHost;
     private final ActionChipsProcessor mActionChipsProcessor;
@@ -50,15 +52,12 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     private final int mSuggestionSizePx;
 
     /**
-     * @param context Current context.
-     * @param host A handle to the object using the suggestions.
-     * @param imageSupplier A mechanism to use to retrieve favicons.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public BaseSuggestionViewProcessor(
-            Context context, SuggestionHost host, Optional<OmniboxImageSupplier> imageSupplier) {
-        mContext = context;
-        mSuggestionHost = host;
-        mImageSupplier = imageSupplier;
+    public BaseSuggestionViewProcessor(AutocompleteUIContext uiContext) {
+        mContext = uiContext.context;
+        mSuggestionHost = uiContext.host;
+        mImageSupplier = uiContext.imageSupplier;
         mDesiredFaviconWidthPx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
@@ -68,7 +67,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mSuggestionSizePx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
-        mActionChipsProcessor = new ActionChipsProcessor(host);
+        mActionChipsProcessor = new ActionChipsProcessor(uiContext.host);
     }
 
     /**

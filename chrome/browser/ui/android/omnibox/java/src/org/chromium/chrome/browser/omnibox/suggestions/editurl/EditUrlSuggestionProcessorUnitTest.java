@@ -39,9 +39,12 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -108,6 +111,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
     private @Mock WebContents mWebContents;
     private @Mock Supplier<Tab> mTabSupplier;
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock UrlBarEditingTextStateProvider mTextProvider;
+    private @Mock BookmarkState mBookmarkState;
     private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     private @Mock AutocompleteInput mInput;
     private @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
@@ -145,13 +150,16 @@ public final class EditUrlSuggestionProcessorUnitTest {
                         .setUrl(CHROME_DISTILLER_URL)
                         .build();
 
-        mProcessor =
-                new EditUrlSuggestionProcessor(
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
                         mContext,
                         mSuggestionHost,
+                        mTextProvider,
                         Optional.of(mImageSupplier),
+                        mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier);
+        mProcessor = new EditUrlSuggestionProcessor(uiContext);
         mModel = mProcessor.createModel();
 
         doReturn(mTab).when(mTabSupplier).get();

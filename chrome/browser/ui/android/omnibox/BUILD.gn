@@ -67,6 +67,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteCoordinator.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteDelegate.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteMediator.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteUIContext.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/CachedZeroSuggestionsManager.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownCommonProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemProcessor.java",

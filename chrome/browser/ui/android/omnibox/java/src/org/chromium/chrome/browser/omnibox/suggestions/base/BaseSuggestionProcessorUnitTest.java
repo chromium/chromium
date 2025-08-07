@@ -27,6 +27,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -34,11 +35,16 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -65,12 +71,9 @@ public class BaseSuggestionProcessorUnitTest {
         @SuppressWarnings("HidingField")
         private final Context mContext;
 
-        public TestBaseSuggestionProcessor(
-                Context context,
-                SuggestionHost suggestionHost,
-                Optional<OmniboxImageSupplier> imageSupplier) {
-            super(context, suggestionHost, imageSupplier);
-            mContext = context;
+        public TestBaseSuggestionProcessor(AutocompleteUIContext uiContext) {
+            super(uiContext);
+            mContext = uiContext.context;
         }
 
         @Override
@@ -105,6 +108,10 @@ public class BaseSuggestionProcessorUnitTest {
 
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
+    private @Mock UrlBarEditingTextStateProvider mTextProvider;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock BookmarkState mBookmarkState;
     private @Mock Bitmap mBitmap;
 
     private Context mContext;
@@ -116,9 +123,16 @@ public class BaseSuggestionProcessorUnitTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
-        mProcessor =
-                new TestBaseSuggestionProcessor(
-                        mContext, mSuggestionHost, Optional.of(mImageSupplier));
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mTextProvider,
+                        Optional.of(mImageSupplier),
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier);
+        mProcessor = new TestBaseSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);

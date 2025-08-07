@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
-import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -17,6 +16,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.DynamicSpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
@@ -47,27 +47,27 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @Px int mElementSpacing;
 
     /**
-     * Constructor.
-     *
-     * @param context An Android context.
-     * @param host SuggestionHost receiving notifications about user actions.
-     * @param imageSupplier Class retrieving favicons for the MV Tiles.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public MostVisitedTilesProcessor(
-            Context context, SuggestionHost host, Optional<OmniboxImageSupplier> imageSupplier) {
-        super(context);
-        mSuggestionHost = host;
-        mImageSupplier = imageSupplier;
+    public MostVisitedTilesProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext.context);
+        mSuggestionHost = uiContext.host;
+        mImageSupplier = uiContext.imageSupplier;
         mCarouselItemViewWidth =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_width);
         mCarouselItemViewHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
 
         mInitialSpacing =
-                OmniboxResourceProvider.getHeaderStartPadding(context)
-                        - context.getResources().getDimensionPixelSize(R.dimen.tile_view_padding);
+                OmniboxResourceProvider.getHeaderStartPadding(uiContext.context)
+                        - uiContext
+                                .context
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tile_view_padding);
         mElementSpacing =
-                context.getResources()
+                uiContext
+                        .context
+                        .getResources()
                         .getDimensionPixelSize(
                                 R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
     }

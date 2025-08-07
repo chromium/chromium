@@ -61,6 +61,26 @@ class DropdownItemViewInfoListBuilder {
     }
 
     /**
+     * Creates a UI context object containing common dependencies for suggestion processors.
+     *
+     * @param context Current context
+     * @param host Component creating suggestion view delegates and responding to suggestion events
+     * @param textProvider Provider of querying/editing the Omnibox
+     * @return AutocompleteUIContext with all necessary dependencies
+     */
+    private AutocompleteUIContext createUIContext(
+            Context context, SuggestionHost host, UrlBarEditingTextStateProvider textProvider) {
+        return new AutocompleteUIContext(
+                context,
+                host,
+                textProvider,
+                mImageSupplier,
+                mBookmarkState,
+                mActivityTabSupplier,
+                mShareDelegateSupplier);
+    }
+
+    /**
      * Initialize the Builder with default set of suggestion processors.
      *
      * @param context Current context.
@@ -77,31 +97,20 @@ class DropdownItemViewInfoListBuilder {
                         ? Optional.empty()
                         : Optional.of(new OmniboxImageSupplier(context));
 
-        mGroupSeparatorProcessor = new GroupSeparatorProcessor(context);
-        mHeaderProcessor = new HeaderProcessor(context);
-        registerSuggestionProcessor(
-                new EditUrlSuggestionProcessor(
-                        context,
-                        host,
-                        mImageSupplier,
-                        mActivityTabSupplier,
-                        mShareDelegateSupplier));
-        registerSuggestionProcessor(
-                new AnswerSuggestionProcessor(context, host, textProvider, mImageSupplier));
-        registerSuggestionProcessor(
-                new ClipboardSuggestionProcessor(context, host, mImageSupplier));
-        registerSuggestionProcessor(
-                new EntitySuggestionProcessor(
-                        context, host, textProvider, mImageSupplier, mBookmarkState));
-        registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
-        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mImageSupplier));
+        AutocompleteUIContext uiContext = createUIContext(context, host, textProvider);
+
+        mGroupSeparatorProcessor = new GroupSeparatorProcessor(uiContext.context);
+        mHeaderProcessor = new HeaderProcessor(uiContext.context);
+        registerSuggestionProcessor(new EditUrlSuggestionProcessor(uiContext));
+        registerSuggestionProcessor(new AnswerSuggestionProcessor(uiContext));
+        registerSuggestionProcessor(new ClipboardSuggestionProcessor(uiContext));
+        registerSuggestionProcessor(new EntitySuggestionProcessor(uiContext));
+        registerSuggestionProcessor(new TailSuggestionProcessor(uiContext));
+        registerSuggestionProcessor(new MostVisitedTilesProcessor(uiContext));
         if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()) {
-            registerSuggestionProcessor(
-                    new TabGroupSuggestionProcessor(context, host, mImageSupplier));
+            registerSuggestionProcessor(new TabGroupSuggestionProcessor(uiContext));
         }
-        registerSuggestionProcessor(
-                new BasicSuggestionProcessor(
-                        context, host, textProvider, mImageSupplier, mBookmarkState));
+        registerSuggestionProcessor(new BasicSuggestionProcessor(uiContext));
     }
 
     void destroy() {

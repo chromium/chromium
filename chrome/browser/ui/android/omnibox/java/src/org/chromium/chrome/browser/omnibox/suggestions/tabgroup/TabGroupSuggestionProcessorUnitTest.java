@@ -24,13 +24,19 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -58,6 +64,10 @@ public class TabGroupSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock Bitmap mBitmap;
     private @Mock OmniboxImageSupplier mImageSupplier;
+    private @Mock UrlBarEditingTextStateProvider mTextProvider;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock BookmarkState mBookmarkState;
 
     private Context mContext;
     private TabGroupSuggestionProcessor mProcessor;
@@ -70,9 +80,16 @@ public class TabGroupSuggestionProcessorUnitTest {
         mContext = ContextUtils.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        mProcessor =
-                new TabGroupSuggestionProcessor(
-                        mContext, mSuggestionHost, Optional.of(mImageSupplier));
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mTextProvider,
+                        Optional.of(mImageSupplier),
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier);
+        mProcessor = new TabGroupSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();
     }

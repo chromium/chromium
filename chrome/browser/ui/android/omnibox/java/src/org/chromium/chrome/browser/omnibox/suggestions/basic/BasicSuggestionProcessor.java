@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
@@ -17,9 +16,8 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -31,7 +29,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /** A class that handles model and view creation for the basic omnibox suggestions. */
@@ -50,22 +47,12 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final BookmarkState mBookmarkState;
 
     /**
-     * @param context An Android context.
-     * @param suggestionHost A handle to the object using the suggestions.
-     * @param editingTextProvider A means of accessing the text in the omnibox.
-     * @param imageSupplier Supplier of suggestion images.
-     * @param bookmarkState Provider of information about whether a given url is bookmarked.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public BasicSuggestionProcessor(
-            Context context,
-            SuggestionHost suggestionHost,
-            UrlBarEditingTextStateProvider editingTextProvider,
-            Optional<OmniboxImageSupplier> imageSupplier,
-            BookmarkState bookmarkState) {
-        super(context, suggestionHost, imageSupplier);
-
-        mUrlBarEditingTextProvider = editingTextProvider;
-        mBookmarkState = bookmarkState;
+    public BasicSuggestionProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext);
+        mUrlBarEditingTextProvider = uiContext.textProvider;
+        mBookmarkState = uiContext.bookmarkState;
     }
 
     @Override
