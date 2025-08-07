@@ -23,6 +23,8 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -1063,8 +1065,19 @@ INSTANTIATE_TEST_SUITE_P(TestAffiliation,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class EnterpriseReportDataMaskingEventTest
-    : public EnterpriseReportingPrivateApiTest {
+    : public EnterpriseReportingPrivateApiTest,
+      public testing::WithParamInterface<bool> {
  public:
+  EnterpriseReportDataMaskingEventTest() {
+    if (use_proto_format()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    }
+  }
+
   static constexpr char kTestJS[] = R"(
     chrome.test.assertEq(
       'function',
@@ -1103,12 +1116,15 @@ class EnterpriseReportDataMaskingEventTest
     EnterpriseReportingPrivateApiTest::TearDownOnMainThread();
   }
 
+  bool use_proto_format() { return GetParam(); }
+
  protected:
   std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
       event_report_validator_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
+IN_PROC_BROWSER_TEST_P(EnterpriseReportDataMaskingEventTest,
                        ReportingPolicyDisabled) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
@@ -1118,29 +1134,54 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
   RunTest(kTestJS);
 }
 
-IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
+IN_PROC_BROWSER_TEST_P(EnterpriseReportDataMaskingEventTest,
                        ReportingPolicyEnabled) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
-
-  api::enterprise_reporting_private::TriggeredRuleInfo rule_info;
-  rule_info.rule_id = "1234";
-  rule_info.rule_name = "Data Masking rule";
-  rule_info.matched_detectors.push_back({});
-  rule_info.matched_detectors[0].detector_id = "5678";
-  rule_info.matched_detectors[0].display_name = "Credit card matcher";
-  rule_info.matched_detectors[0].detector_type =
-      api::enterprise_reporting_private::DetectorType::kPredefinedDlp;
-
-  api::enterprise_reporting_private::DataMaskingEvent event;
-  event.event_result =
-      api::enterprise_reporting_private::EventResult::kEventResultDataMasked;
-  event.url = "https://foo.com";
-  event.triggered_rule_info.push_back(std::move(rule_info));
   base::RunLoop run_loop;
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  event_validator.ExpectDataMaskingEvent("test-user@chromium.org",
-                                         profile()->GetPath().AsUTF8Unsafe(),
-                                         std::move(event));
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::MatchedDetector detector;
+    detector.set_detector_id("5678");
+    detector.set_display_name("Credit card matcher");
+    detector.set_detector_type(
+        chrome::cros::reporting::proto::MatchedDetector::PREDEFINED_DLP);
+
+    chrome::cros::reporting::proto::TriggeredRuleInfo info;
+    info.set_rule_id(1234);
+    info.set_rule_name("Data Masking rule");
+    *info.mutable_matched_detectors()->Add() = detector;
+
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EVENT_RESULT_DATA_MASKED);
+    expected_event.set_url("https://foo.com");
+    expected_event.set_tab_url("https://foo.com");
+    expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name("test-user@chromium.org");
+    *expected_event.mutable_triggered_rule_info()->Add() = info;
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    api::enterprise_reporting_private::TriggeredRuleInfo rule_info;
+    rule_info.rule_id = "1234";
+    rule_info.rule_name = "Data Masking rule";
+    rule_info.matched_detectors.push_back({});
+    rule_info.matched_detectors[0].detector_id = "5678";
+    rule_info.matched_detectors[0].display_name = "Credit card matcher";
+    rule_info.matched_detectors[0].detector_type =
+        api::enterprise_reporting_private::DetectorType::kPredefinedDlp;
+
+    api::enterprise_reporting_private::DataMaskingEvent event;
+    event.event_result =
+        api::enterprise_reporting_private::EventResult::kEventResultDataMasked;
+    event.url = "https://foo.com";
+    event.triggered_rule_info.push_back(std::move(rule_info));
+
+    event_validator.ExpectDataMaskingEvent("test-user@chromium.org",
+                                           profile()->GetPath().AsUTF8Unsafe(),
+                                           std::move(event));
+  }
 
   // Explicitly only enable sensitive data events only to avoid having to handle
   // assertions for extension install events.
@@ -1150,6 +1191,10 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
   RunTest(kTestJS);
   run_loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         EnterpriseReportDataMaskingEventTest,
+                         testing::Bool());
 
 class EnterpriseOnDataMaskingRulesTriggeredTest
     : public EnterpriseReportingPrivateApiTest {

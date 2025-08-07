@@ -38,11 +38,19 @@ using safe_browsing::BinaryUploadService;
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace enterprise_connectors {
 
 namespace {
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using TriggeredRuleInfo = ::chrome::cros::reporting::proto::TriggeredRuleInfo;
+using MatchedDetector = ::chrome::cros::reporting::proto::MatchedDetector;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 // URL chain limit for nested iFrames.
@@ -81,6 +89,72 @@ std::string DetectorTypeToString(
   }
   return ToString(detector_type);
 }
+
+MatchedDetector::DetectorType ConvertToDetectorTypeProto(
+    extensions::api::enterprise_reporting_private::DetectorType detector_type) {
+  if (detector_type ==
+      extensions::api::enterprise_reporting_private::DetectorType::kNone) {
+    return MatchedDetector::DETECTOR_TYPE_UNSPECIFIED;
+  }
+  if (detector_type == extensions::api::enterprise_reporting_private::
+                           DetectorType::kPredefinedDlp) {
+    return MatchedDetector::PREDEFINED_DLP;
+  }
+  if (detector_type == extensions::api::enterprise_reporting_private::
+                           DetectorType::kUserDefined) {
+    return MatchedDetector::USER_DEFINED;
+  }
+  NOTREACHED();
+}
+
+chrome::cros::reporting::proto::EventResult ConvertToEventResultProto(
+    extensions::api::enterprise_reporting_private::EventResult event_result) {
+  if (event_result ==
+      extensions::api::enterprise_reporting_private::EventResult::kNone) {
+    return chrome::cros::reporting::proto::EVENT_RESULT_UNSPECIFIED;
+  }
+  if (event_result == extensions::api::enterprise_reporting_private::
+                          EventResult::kEventResultDataMasked) {
+    return chrome::cros::reporting::proto::EVENT_RESULT_DATA_MASKED;
+  }
+  if (event_result == extensions::api::enterprise_reporting_private::
+                          EventResult::kEventResultDataUnmasked) {
+    return chrome::cros::reporting::proto::EVENT_RESULT_DATA_UNMASKED;
+  }
+  NOTREACHED();
+}
+
+google::protobuf::RepeatedPtrField<TriggeredRuleInfo> GetTriggeredRuleInfo(
+    const std::vector<
+        extensions::api::enterprise_reporting_private::TriggeredRuleInfo>&
+        rules) {
+  google::protobuf::RepeatedPtrField<TriggeredRuleInfo> triggered_rules;
+  for (auto& rule : rules) {
+    TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_name(rule.rule_name);
+
+    int rule_id_int = 0;
+    if (base::StringToInt(rule.rule_id, &rule_id_int)) {
+      triggered_rule.set_rule_id(rule_id_int);
+    }
+
+    google::protobuf::RepeatedPtrField<MatchedDetector> matched_detectors;
+    for (auto& detector : rule.matched_detectors) {
+      MatchedDetector matched_detector;
+      matched_detector.set_display_name(detector.display_name);
+      matched_detector.set_detector_type(
+          ConvertToDetectorTypeProto(detector.detector_type));
+      matched_detector.set_detector_id(detector.detector_id);
+
+      *matched_detectors.Add() = matched_detector;
+    }
+    *triggered_rule.mutable_matched_detectors() = matched_detectors;
+    *triggered_rules.Add() = triggered_rule;
+  }
+
+  return triggered_rules;
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
@@ -447,44 +521,65 @@ void ReportDataMaskingEvent(
     return;
   }
 
-  base::Value::Dict event;
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyUrl,
-            data_masking_event.url);
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTabUrl,
-            std::move(data_masking_event.url));
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyEventResult,
-            EventResultToString(data_masking_event.event_result));
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent sensitive_data_event;
+    sensitive_data_event.set_url(data_masking_event.url);
+    sensitive_data_event.set_tab_url(data_masking_event.url);
+    sensitive_data_event.set_event_result(
+        ConvertToEventResultProto(data_masking_event.event_result));
+    *sensitive_data_event.mutable_triggered_rule_info() =
+        GetTriggeredRuleInfo(data_masking_event.triggered_rule_info);
+    sensitive_data_event.set_profile_identifier(
+        reporting_client->GetProfileIdentifier());
+    sensitive_data_event.set_profile_user_name(
+        reporting_client->GetProfileUserName());
 
-  base::Value::List triggered_rule_info;
-  triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
-  for (auto& rule : data_masking_event.triggered_rule_info) {
-    base::Value::Dict triggered_rule;
-    triggered_rule.Set(
-        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-        std::move(rule.rule_id));
-    triggered_rule.Set(
-        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-        std::move(rule.rule_name));
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_sensitive_data_event() = sensitive_data_event;
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    base::Value::List matched_detectors;
-    for (auto& detector : rule.matched_detectors) {
-      base::Value::Dict detector_value;
-      detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
-      detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
-      detector_value.Set(kKeyDetectorType,
-                         DetectorTypeToString(detector.detector_type));
-      matched_detectors.Append(std::move(detector_value));
+    reporting_client->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyUrl,
+              data_masking_event.url);
+    event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTabUrl,
+              std::move(data_masking_event.url));
+    event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyEventResult,
+              EventResultToString(data_masking_event.event_result));
+
+    base::Value::List triggered_rule_info;
+    triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
+    for (auto& rule : data_masking_event.triggered_rule_info) {
+      base::Value::Dict triggered_rule;
+      triggered_rule.Set(
+          extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+          std::move(rule.rule_id));
+      triggered_rule.Set(
+          extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
+          std::move(rule.rule_name));
+
+      base::Value::List matched_detectors;
+      for (auto& detector : rule.matched_detectors) {
+        base::Value::Dict detector_value;
+        detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
+        detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
+        detector_value.Set(kKeyDetectorType,
+                           DetectorTypeToString(detector.detector_type));
+        matched_detectors.Append(std::move(detector_value));
+      }
+      triggered_rule.Set(kKeyMatchedDetectors, std::move(matched_detectors));
+
+      triggered_rule_info.Append(std::move(triggered_rule));
     }
-    triggered_rule.Set(kKeyMatchedDetectors, std::move(matched_detectors));
+    event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
+              std::move(triggered_rule_info));
 
-    triggered_rule_info.Append(std::move(triggered_rule));
+    reporting_client->ReportRealtimeEvent(
+        enterprise_connectors::kKeySensitiveDataEvent,
+        std::move(settings.value()), std::move(event));
   }
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
-            std::move(triggered_rule_info));
-
-  reporting_client->ReportRealtimeEvent(
-      enterprise_connectors::kKeySensitiveDataEvent,
-      std::move(settings.value()), std::move(event));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

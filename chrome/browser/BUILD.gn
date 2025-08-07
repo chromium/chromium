@@ -6823,6 +6823,8 @@ static_library("browser") {
       "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core",
     ]
+    public_deps +=
+        [ "//components/enterprise/common/proto:browser_events_proto" ]
   }
 
   if (enterprise_cloud_content_analysis) {
