@@ -150,43 +150,21 @@ IsolatedWebAppThrottle::WillProcessResponse() {
       ThrottleAction::BLOCK_RESPONSE);
 }
 
-bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
+void IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
   ui::PageTransition transition =
       navigation_handle()->GetRedirectChain().size() > 1
           ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
           : ui::PageTransition::PAGE_TRANSITION_LINK;
-#if BUILDFLAG(IS_CHROMEOS)
   // The default browser can't be changed in ChromeOS, so just open the URL
   // directly.
   // TODO(crbug.com/40830234): Should we set the referrer?
+  // TODO(crbug.com/429618748): Rethink the default browser behavior on WML.
   OpenURLParams params(url, Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB, transition,
                        /*is_renderer_initiated=*/false);
   GetContentClient()->browser()->OpenURL(
       navigation_handle()->GetStartingSiteInstance(), params,
       base::DoNothing());
-  return true;
-#else
-  NavigationRequest* navigation_request =
-      NavigationRequest::From(navigation_handle());
-  const FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
-  return GetContentClient()->browser()->HandleExternalProtocol(
-      url,
-      base::BindRepeating(
-          [](const FrameTreeNodeId frame_tree_node_id) {
-            return WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-          },
-          frame_tree_node->frame_tree_node_id()),
-      frame_tree_node->frame_tree_node_id(),
-      navigation_request->GetNavigationUIData(),
-      /*is_primary_main_frame=*/true, /*is_in_fenced_frame_tree=*/false,
-      network::mojom::WebSandboxFlags::kNone, transition,
-      navigation_request->HasUserGesture(),
-      /*initiating_origin=*/std::nullopt,
-      /*initiator_document=*/nullptr, navigation_request->GetIsolationInfo(),
-      &loader_factory);
-#endif
 }
 
 NavigationThrottle::ThrottleCheckResult

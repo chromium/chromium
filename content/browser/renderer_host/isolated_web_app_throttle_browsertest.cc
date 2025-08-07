@@ -227,4 +227,42 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
   EXPECT_EQ(net::OK, navigation_observer->last_net_error_code());
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
+                       ExternalLinkClickOpensInNewTab) {
+  GURL app_url = GetAppURL("/cross-origin-isolated.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
+  ASSERT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+
+  GURL external_url("https://www.example.com/");
+  EXPECT_TRUE(ExecJs(main_rfh(), JsReplace(R"(
+        const link = document.createElement('a');
+        link.href = $1;
+        link.id = 'external_link';
+        link.target = '_self';
+        link.rel = 'noopener';
+        link.textContent = 'External Link';
+        document.body.appendChild(link);
+      )",
+                                           external_url)));
+
+  content::WebContentsAddedObserver web_contents_added_observer;
+
+  // Simulate clicking the link, which should create a new tab.
+  EXPECT_TRUE(
+      ExecJs(main_rfh(), "document.getElementById('external_link').click();"));
+
+  // Despite target="_self", navigations from an IWA to a different origin
+  // should always open in a new tab in the main browser.
+  content::WebContents* new_web_contents =
+      web_contents_added_observer.GetWebContents();
+  ASSERT_NE(nullptr, new_web_contents)
+      << "New tab was not opened for external link.";
+
+  content::TestNavigationObserver nav_observer(new_web_contents);
+  nav_observer.Wait();
+
+  EXPECT_EQ(external_url, nav_observer.last_navigation_url());
+  EXPECT_EQ(app_url, web_contents()->GetLastCommittedURL());
+}
+
 }  // namespace content

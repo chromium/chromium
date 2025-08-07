@@ -228,8 +228,9 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
     auto start_result = simulator->GetLastThrottleCheckResult();
     CHECK_EQ(NavigationThrottle::PROCEED, start_result.action());
 
-    if (response_headers)
+    if (response_headers) {
       simulator->SetResponseHeaders(response_headers);
+    }
     simulator->Commit();
 
     RenderFrameHost* rfh = FrameTreeNode::GloballyFindByID(frame_tree_node_id)
@@ -286,11 +287,7 @@ TEST_F(IsolatedWebAppThrottleTest, CancelCrossOriginNavigation) {
 
   auto start_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, start_result.action());
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(1u, GetBrowserClient().GetOpenUrlCallCount());
-#else
-  EXPECT_EQ(1u, GetBrowserClient().GetExternalProtocolCallCount());
-#endif
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       GetBrowserClient().GetLastPageTransition(),
       ui::PageTransition::PAGE_TRANSITION_LINK));
@@ -298,11 +295,7 @@ TEST_F(IsolatedWebAppThrottleTest, CancelCrossOriginNavigation) {
   simulator = StartRendererInitiatedNavigation(main_frame_id(), kNonAppUrl2);
   start_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, start_result.action());
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(2u, GetBrowserClient().GetOpenUrlCallCount());
-#else
-  EXPECT_EQ(2u, GetBrowserClient().GetExternalProtocolCallCount());
-#endif
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       GetBrowserClient().GetLastPageTransition(),
       ui::PageTransition::PAGE_TRANSITION_LINK));
@@ -322,11 +315,7 @@ TEST_F(IsolatedWebAppThrottleTest, BlockRedirectOutOfIsolatedWebApp) {
 
   auto redirect_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, redirect_result.action());
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(1u, GetBrowserClient().GetOpenUrlCallCount());
-#else
-  EXPECT_EQ(1u, GetBrowserClient().GetExternalProtocolCallCount());
-#endif
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       GetBrowserClient().GetLastPageTransition(),
       ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT));

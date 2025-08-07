@@ -58,7 +58,7 @@ class CONTENT_EXPORT IsolatedWebAppThrottle : public NavigationThrottle {
       ThrottleAction block_action);
 
   // Opens a url in the systems' default application for the given url.
-  bool OpenUrlExternal(const GURL& url);
+  void OpenUrlExternal(const GURL& url);
 
   // These two fields store the starting and destination origins of the most
   // recent step in the navigation's redirect chain, including the initial

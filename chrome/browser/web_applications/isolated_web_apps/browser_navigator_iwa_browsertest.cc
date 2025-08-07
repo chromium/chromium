@@ -60,45 +60,6 @@ GURL GetGoogleURL() {
   return GURL("http://www.google.com/");
 }
 
-class ExternalProtocolHandlerDelegate
-    : public ExternalProtocolHandler::Delegate {
- public:
-  ExternalProtocolHandlerDelegate() {
-    ExternalProtocolHandler::SetDelegateForTesting(this);
-  }
-  ~ExternalProtocolHandlerDelegate() override {
-    ExternalProtocolHandler::SetDelegateForTesting(nullptr);
-  }
-
-  // ExternalProtocolHandler::Delegate:
-  ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
-                                                    Profile* profile) override {
-    return ExternalProtocolHandler::BLOCK;
-  }
-  void BlockRequest() override { future.SetValue(); }
-  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
-      const GURL& url) override {
-    NOTREACHED();
-  }
-  void RunExternalProtocolDialog(
-      const GURL& url,
-      content::WebContents* web_contents,
-      ui::PageTransition page_transition,
-      bool has_user_gesture,
-      const std::optional<url::Origin>& initiating_origin,
-      const std::u16string& program_name) override {
-    NOTREACHED();
-  }
-  void LaunchUrlWithoutSecurityCheck(
-      const GURL& url,
-      content::WebContents* web_contents) override {
-    NOTREACHED();
-  }
-  void FinishedProcessingCheck() override { NOTREACHED(); }
-
-  base::test::TestFuture<void> future;
-};
-
 class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
  public:
   BrowserNavigatorIwaTest() {
@@ -224,13 +185,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
       new_iwa_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // 4. When navigating a tab from an isolated-app: to an http: origin, then,
-  //    - On ChromeOS, the navigation should be intercepted and instead be
-  //      opened in a new tab in a non-IWA browser window.
-  //    - On other platforms, the navigation should be intercepted and instead
-  //      be opened in the default browser (as in, e.g., Firefox).
-
-  auto protocol_handler_delegate =
-      std::make_unique<ExternalProtocolHandlerDelegate>();
+  //    the navigation should be intercepted and instead be opened in the
+  //    default browser.
 
   NavigateParams params4 = MakeNavigateParams(iwa_browser);
   params4.url = GetGoogleURL();
@@ -251,7 +207,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
       url_info1_->origin().GetURL().Resolve("/other-page.html"),
       iwa_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // A new tab should have been opened in the non-app browser.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_TRUE(browser()
@@ -261,15 +216,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
                   .IsAboutBlank());
   EXPECT_EQ(GetGoogleURL(),
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
-#else
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()
-                  ->tab_strip_model()
-                  ->GetWebContentsAt(0)
-                  ->GetURL()
-                  .IsAboutBlank());
-  EXPECT_TRUE(protocol_handler_delegate->future.Wait());
-#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
