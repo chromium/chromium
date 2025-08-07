@@ -6262,6 +6262,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5628" label="LocalNetworkAccessWithinDedicatedWorker"/>
   <int value="5629" label="CSSPseudoParentInScope"/>
   <int value="5630" label="InterestHintPseudoElement"/>
+  <int value="5631" label="CookieStoreEmptyPath"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -311,6 +313,71 @@ TEST_F(CookieStoreTest, SetWithHostPrefixAndDomain) {
             exception_state.Message());
   EXPECT_TRUE(promise_tester.IsRejected());
   EXPECT_THAT(GetAllCookies(), IsEmpty());
+}
+
+TEST_F(CookieStoreTest, EmptyPathUseCounter_EmptyPath) {
+  V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
+  CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  ASSERT_TRUE(script_state);
+  DummyExceptionStateForTesting exception_state;
+
+  CookieInit* set_options = CookieInit::Create();
+  set_options->setName("cookie-name");
+  set_options->setValue("cookie-value");
+  set_options->setPath("");
+  ScriptPromise<IDLUndefined> promise =
+      cookie_store->set(script_state, set_options, exception_state);
+  ScriptPromiseTester promise_tester(script_state, promise, &exception_state);
+  promise_tester.WaitUntilSettled();
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+
+  EXPECT_TRUE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreEmptyPath));
+}
+
+TEST_F(CookieStoreTest, EmptyPathUseCounter_NoPath) {
+  V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
+  CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  ASSERT_TRUE(script_state);
+  DummyExceptionStateForTesting exception_state;
+
+  CookieInit* set_options = CookieInit::Create();
+  set_options->setName("cookie-name");
+  set_options->setValue("cookie-value");
+  ScriptPromise<IDLUndefined> promise =
+      cookie_store->set(script_state, set_options, exception_state);
+  ScriptPromiseTester promise_tester(script_state, promise, &exception_state);
+  promise_tester.WaitUntilSettled();
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+
+  EXPECT_FALSE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreEmptyPath));
+}
+
+TEST_F(CookieStoreTest, EmptyPathUseCounter_NonEmptyPath) {
+  V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
+  CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  ASSERT_TRUE(script_state);
+  DummyExceptionStateForTesting exception_state;
+
+  CookieInit* set_options = CookieInit::Create();
+  set_options->setName("cookie-name");
+  set_options->setValue("cookie-value");
+  set_options->setPath("/cookie-path");
+  ScriptPromise<IDLUndefined> promise =
+      cookie_store->set(script_state, set_options, exception_state);
+  ScriptPromiseTester promise_tester(script_state, promise, &exception_state);
+  promise_tester.WaitUntilSettled();
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+
+  EXPECT_FALSE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreEmptyPath));
 }
 
 }  // namespace
