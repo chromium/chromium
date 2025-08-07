@@ -5212,13 +5212,6 @@
       status: "stable",
     },
     {
-      // For invalidation set tracking, we build a map from style rules to
-      // their containing sheets. When this flag is enabled, we use that same
-      // map for the Selector Stats feature.
-      name: "UseStyleRuleMapForSelectorStats",
-      status: "stable",
-    },
-    {
       name: "UseUndoStepElementDispatchBeforeInput",
       status: "stable",
     },

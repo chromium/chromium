@@ -163,41 +163,30 @@ CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
     const Document& document,
     const StyleRule* rule) {
   const StyleEngine& style_engine = document.GetStyleEngine();
-  if (RuntimeEnabledFeatures::UseStyleRuleMapForSelectorStatsEnabled()) {
-    const CSSStyleSheet* result = nullptr;
-    InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
-        (tree_scope_containing_rule != nullptr) ? *tree_scope_containing_rule
-                                                : document,
-        style_engine);
-    const StyleSheetContents* contents =
-        InvalidationSetToSelectorMap::LookupStyleSheetContentsForRule(rule);
-    if (contents != nullptr) {
-      if (tree_scope_containing_rule != nullptr) {
-        result = contents->ClientInTreeScope(*tree_scope_containing_rule);
-      } else {
-        for (const auto& [sheet, rule_set] :
-             style_engine.ActiveUserStyleSheets()) {
-          if (sheet->Contents() == contents) {
-            result = sheet.Get();
-            break;
-          }
+  const CSSStyleSheet* result = nullptr;
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+      (tree_scope_containing_rule != nullptr) ? *tree_scope_containing_rule
+                                              : document,
+      style_engine);
+  const StyleSheetContents* contents =
+      InvalidationSetToSelectorMap::LookupStyleSheetContentsForRule(rule);
+  if (contents != nullptr) {
+    if (tree_scope_containing_rule != nullptr) {
+      result = contents->ClientInTreeScope(*tree_scope_containing_rule);
+    } else {
+      for (const auto& [sheet, rule_set] :
+            style_engine.ActiveUserStyleSheets()) {
+        if (sheet->Contents() == contents) {
+          result = sheet.Get();
+          break;
         }
       }
-#if EXPENSIVE_DCHECKS_ARE_ON()
-      DCHECK_EQ(result, SlowFindStyleSheet(tree_scope_containing_rule,
-                                           style_engine, rule));
-#endif
-    } else {
-      result =
-          SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
     }
-    TRACE_EVENT_INSTANT("blink.debug.invalidation_tracking",
-                        "UseStyleRuleMapForSelectorStats", "Sheet",
-                        ToHexString(result), "CacheHit", contents != nullptr);
-    return result;
+  } else {
+    result =
+        SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
   }
-
-  return SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
+  return result;
 }
 
 namespace {

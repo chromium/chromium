@@ -732,8 +732,7 @@ CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
     const Document& document,
     const StyleRule* rule);
 
-TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheEnabled) {
-  ScopedUseStyleRuleMapForSelectorStatsForTest scoped_feature_for_test(true);
+TEST_F(ElementRuleCollectorTest, FindStyleSheet) {
   trace_analyzer::Start(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"));
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
@@ -773,39 +772,6 @@ TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheEnabled) {
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
       GetDocument(), GetDocument().GetStyleEngine());
   EXPECT_FALSE(InvalidationSetToSelectorMap::IsTracking());
-}
-
-TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheDisabled) {
-  ScopedUseStyleRuleMapForSelectorStatsForTest scoped_feature_for_test(false);
-
-  SetBodyInnerHTML(R"HTML(
-    <style id=target>
-      .a .b { color: red; }
-    </style>
-  )HTML");
-
-  const CSSStyleSheet* author_sheet =
-      To<HTMLStyleElement>(GetElementById("target"))->sheet();
-  const StyleRule* author_rule =
-      To<StyleRule>(author_sheet->Contents()->ChildRules()[0].Get());
-  EXPECT_EQ(FindStyleSheet(&GetDocument(), GetDocument(), author_rule),
-            author_sheet);
-
-  StyleSheetContents* user_contents = MakeGarbageCollected<StyleSheetContents>(
-      MakeGarbageCollected<CSSParserContext>(GetDocument()));
-  user_contents->ParseString(".c .d { color: green; }");
-  StyleSheetKey user_key("user");
-  GetDocument().GetStyleEngine().InjectSheet(user_key, user_contents,
-                                             WebCssOrigin::kUser);
-  UpdateAllLifecyclePhasesForTest();
-  const StyleRule* user_rule =
-      To<StyleRule>(user_contents->ChildRules()[0].Get());
-  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), user_rule)->Contents(),
-            user_contents);
-
-  const StyleRule* rule_not_in_sheet = To<StyleRule>(
-      css_test_helpers::ParseRule(GetDocument(), ".e .f { color: blue; }"));
-  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), rule_not_in_sheet), nullptr);
 }
 
 // https://crbug.com/416699692

@@ -52,9 +52,7 @@ void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
     const StyleEngine& style_engine) {
   Persistent<InvalidationSetToSelectorMap>& instance = GetInstanceReference();
   const bool is_tracing_enabled =
-      InvalidationTracingFlag::IsEnabled() ||
-      (SelectorStatisticsFlag::IsEnabled() &&
-       RuntimeEnabledFeatures::UseStyleRuleMapForSelectorStatsEnabled());
+      InvalidationTracingFlag::IsEnabled() || SelectorStatisticsFlag::IsEnabled();
   if (is_tracing_enabled) [[unlikely]] {
     if (instance == nullptr) {
       instance = MakeGarbageCollected<InvalidationSetToSelectorMap>();
