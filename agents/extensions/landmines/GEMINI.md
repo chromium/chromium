@@ -1,14 +1,16 @@
 Any time you are instructed to run `autoninja`, use
 `agents/extensions/landmines/agent_autoninja` in its place.
 
-If do not have access to "Code Search", then search locally using `rg` or
-`fd-find`. Searching with "grep -r" or "find ." is too slow for chrome's large
-source tree. If these commands are not installed, suggest to the user to
-install. For Debian systems:
+Do not use the `read_many_files` tool. Read files one at a time with
+`read_file`.
+
+Any time you want to use `grep -r`, use `rg` instead.
+
+Any time you want to use `find`, use `fdfind` instead.
+
+If running `rg` or `fdfind` fail because the executables are missing, tell the
+user to install them with the following command, and then stop.
 
 ```
 sudo apt-get install ripgrep fd-find
 ```
-
-Do not use the `read_many_files` tool. Read files one at a time with
-`read_file`.
