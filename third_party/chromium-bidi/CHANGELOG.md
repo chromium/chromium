@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.0...chromium-bidi-v7.3.1) (2025-08-07)
+
+
+### Bug Fixes
+
+* do not override context config with undefined ([#3633](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3633)) ([edff136](https://github.com/GoogleChromeLabs/chromium-bidi/commit/edff13666effe34e863cdf32fdd95ad0ed6393c7))
+
 ## [7.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.2.0...chromium-bidi-v7.3.0) (2025-08-07)
 
 
