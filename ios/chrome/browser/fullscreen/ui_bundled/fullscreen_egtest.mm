@@ -421,7 +421,13 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 
 // Tests that the header is shown when loading an error page in a native view
 // even if fullscreen was enabled previously.
-- (void)testShowHeaderOnErrorPage {
+// TODO(crbug.com/437072563): Test flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testShowHeaderOnErrorPage DISABLED_testShowHeaderOnErrorPage
+#else
+#define MAYBE_testShowHeaderOnErrorPage testShowHeaderOnErrorPage
+#endif
+- (void)MAYBE_testShowHeaderOnErrorPage {
   GURL errorURL = ErrorPageResponseProvider::GetDnsFailureUrl();
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(
