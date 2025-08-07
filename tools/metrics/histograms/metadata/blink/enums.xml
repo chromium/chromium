@@ -6413,6 +6413,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="138" label="OnDeviceSpeechRecognition"/>
   <int value="139" label="LanguageModel"/>
   <int value="140" label="AriaNotify"/>
+  <int value="141" label="DigitalCredentialsCreate"/>
 </enum>
 
 <enum name="FedCmAccountChooserResult">

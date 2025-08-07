@@ -242,6 +242,16 @@ void CreateDigitalIdentityCredentialInExternalSource(
     return;
   }
 
+    if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kDigitalCredentialsCreate)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "The 'digital-credentials-create' feature is not enabled in this "
+        "document. Permissions Policy may be used to delegate digital "
+        "credential API capabilities to cross-origin child frames."));
+    return;
+  }
+
   std::unique_ptr<WebV8ValueConverter> converter =
       Platform::Current()->CreateWebV8ValueConverter();
 

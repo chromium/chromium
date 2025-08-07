@@ -291,6 +291,11 @@
       depends_on: ["DeviceAttributes"],
     },
     {
+      name: "DigitalCredentialsCreate",
+      permissions_policy_name: "digital-credentials-create",
+      depends_on: ["WebIdentityDigitalCredentialsCreation"],
+    },
+    {
       name: "DigitalCredentialsGet",
       permissions_policy_name: "digital-credentials-get",
       depends_on: ["WebIdentityDigitalCredentials"],

@@ -252,7 +252,7 @@ enum PermissionsPolicyFeature {
   // https://github.com/WICG/pending-beacon/blob/main/docs/fetch-later-api.md
   kDeferredFetch = 119,
 
-  // Digital Credentials (https://wicg.github.io/digital-credentials/)
+  // Digital Credentials (https://w3c-fedid.github.io/digital-credentials/)
   kDigitalCredentialsGet = 120,
 
   kMediaPlaybackWhileNotVisible = 121,
@@ -337,6 +337,9 @@ enum PermissionsPolicyFeature {
 
   // Controls use of ARIA notify for accessibility notifications in iframes.
   kAriaNotify = 140,
+
+  // Digital Credentials (https://w3c-fedid.github.io/digital-credentials/)
+  kDigitalCredentialsCreate = 141,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

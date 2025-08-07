@@ -8689,6 +8689,7 @@ domain Page
       deferred-fetch
       deferred-fetch-minimal
       device-attributes
+      digital-credentials-create
       digital-credentials-get
       direct-sockets
       direct-sockets-private

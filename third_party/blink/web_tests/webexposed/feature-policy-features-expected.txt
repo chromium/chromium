@@ -40,6 +40,7 @@ cross-origin-isolated
 deferred-fetch
 deferred-fetch-minimal
 device-attributes
+digital-credentials-create
 digital-credentials-get
 display-capture
 encrypted-media
