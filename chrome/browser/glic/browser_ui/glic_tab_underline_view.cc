@@ -486,7 +486,8 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   void AnimateUnderline() { underline_view_->ResetEmphasisAndReplay(); }
 
   void ShowOrAnimatePinnedUnderline() {
-    if (!IsUnderlineTabPinned()) {
+    // Pinned underlines should never be visible if the glic window is closed.
+    if (!IsUnderlineTabPinned() || !IsGlicWindowShowing()) {
       return;
     }
     if (underline_view_->IsShowing()) {
