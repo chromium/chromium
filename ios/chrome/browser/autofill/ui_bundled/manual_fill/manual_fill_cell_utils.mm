@@ -581,6 +581,7 @@ UIButton* CreateAutofillFormButton() {
   SetConfigurationTitle(
       button, l10n_util::GetNSString(
                   IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE));
+  button.titleLabel.textAlignment = NSTextAlignmentCenter;
 
   return button;
 }
