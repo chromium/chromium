@@ -50,15 +50,18 @@ class OnDeviceModelBridge {
      *
      * @param feature The feature id requested this downloader. This is a proto enum
      *     ModelExecutionFeature.
-     * @return The AiCoreModelDownloader instance.
+     * @return The AiCoreModelDownloaderWrapper instance.
      */
     @CalledByNative
-    private static AiCoreModelDownloader createModelDownloader(int feature) {
+    private static AiCoreModelDownloaderWrapper createModelDownloader(int feature) {
         ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
         AiCoreFactory factory = ServiceLoaderUtil.maybeCreate(AiCoreFactory.class);
+        AiCoreModelDownloaderBackend backend;
         if (factory == null) {
-            return new AiCoreModelDownloaderUpstreamImpl();
+            backend = new AiCoreModelDownloaderBackendUpstreamImpl();
+        } else {
+            backend = factory.createModelDownloader(modelExecutionFeatureId);
         }
-        return factory.createModelDownloader(modelExecutionFeatureId);
+        return new AiCoreModelDownloaderWrapper(backend);
     }
 }

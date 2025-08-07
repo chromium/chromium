@@ -9,13 +9,13 @@ import org.chromium.components.optimization_guide.proto.ModelExecutionProto.Mode
 import org.chromium.on_device_model.mojom.SessionParams;
 
 /**
- * A factory to create AiCoreSessionBackend and AiCoreModelDownloader. This is null when the AiCore
- * API is not available. Downstream code may provide a different factory via the @ServiceImpl
+ * A factory to create AiCoreSessionBackend and AiCoreModelDownloaderBackend. This is null when the
+ * AiCore API is not available. Downstream code may provide a different factory via the @ServiceImpl
  * annotation.
  */
 @NullMarked
 public interface AiCoreFactory {
     AiCoreSessionBackend createSessionBackend(ModelExecutionFeature feature, SessionParams params);
 
-    AiCoreModelDownloader createModelDownloader(ModelExecutionFeature feature);
+    AiCoreModelDownloaderBackend createModelDownloader(ModelExecutionFeature feature);
 }

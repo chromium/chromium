@@ -8,7 +8,7 @@
 #include "services/on_device_model/android/on_device_model_bridge.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "services/on_device_model/android/jni_headers/AiCoreModelDownloader_jni.h"
+#include "services/on_device_model/android/jni_headers/AiCoreModelDownloaderWrapper_jni.h"
 
 namespace on_device_model {
 
@@ -18,7 +18,7 @@ ModelDownloaderAndroid::ModelDownloaderAndroid(
 
 ModelDownloaderAndroid::~ModelDownloaderAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AiCoreModelDownloader_onNativeDestroyed(env, java_downloader_);
+  Java_AiCoreModelDownloaderWrapper_onNativeDestroyed(env, java_downloader_);
 }
 
 void ModelDownloaderAndroid::StartDownload(
@@ -27,8 +27,8 @@ void ModelDownloaderAndroid::StartDownload(
       << "StartDownload() can only be called once.";
   on_download_complete_callback_ = std::move(on_download_complete_callback);
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AiCoreModelDownloader_startDownload(env, java_downloader_,
-                                           reinterpret_cast<intptr_t>(this));
+  Java_AiCoreModelDownloaderWrapper_startDownload(
+      env, java_downloader_, reinterpret_cast<intptr_t>(this));
 }
 
 void ModelDownloaderAndroid::OnAvailable() {
@@ -39,14 +39,16 @@ void ModelDownloaderAndroid::OnUnavailable() {
   std::move(on_download_complete_callback_).Run(false);
 }
 
-void JNI_AiCoreModelDownloader_OnAvailable(JNIEnv* env,
-                                           jlong model_downloader_android) {
+void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
+    JNIEnv* env,
+    jlong model_downloader_android) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
       ->OnAvailable();
 }
 
-void JNI_AiCoreModelDownloader_OnUnavailable(JNIEnv* env,
-                                             jlong model_downloader_android) {
+void JNI_AiCoreModelDownloaderWrapper_OnUnavailable(
+    JNIEnv* env,
+    jlong model_downloader_android) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
       ->OnUnavailable();
 }

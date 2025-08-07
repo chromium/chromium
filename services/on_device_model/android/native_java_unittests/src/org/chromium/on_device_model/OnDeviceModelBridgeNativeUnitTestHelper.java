@@ -95,31 +95,32 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     }
 
     /**
-     * A mock implementation of AiCoreModelDownloader. Call onAvailable() or onUnavailable() to
-     * simulate the download status change.
+     * A mock implementation of AiCoreModelDownloaderBackend. Call onAvailable() or onUnavailable()
+     * to simulate the download status change.
      */
-    public static class MockAiCoreModelDownloader implements AiCoreModelDownloader {
-        private long mNativeModelDownloaderAndroid;
+    public static class MockAiCoreModelDownloader implements AiCoreModelDownloaderBackend {
+        private DownloaderResponder mResponder;
+        private boolean mNativeDestroyed;
 
         @Override
-        public void startDownload(long nativeModelDownloaderAndroid) {
-            mNativeModelDownloaderAndroid = nativeModelDownloaderAndroid;
+        public void startDownload(DownloaderResponder responder) {
+            mResponder = responder;
         }
 
         @Override
         public void onNativeDestroyed() {
-            mNativeModelDownloaderAndroid = 0;
+            mNativeDestroyed = true;
         }
 
         public void onAvailable() {
-            if (mNativeModelDownloaderAndroid != 0) {
-                AiCoreModelDownloaderJni.get().onAvailable(mNativeModelDownloaderAndroid);
+            if (!mNativeDestroyed) {
+                mResponder.onAvailable();
             }
         }
 
         public void onUnavailable() {
-            if (mNativeModelDownloaderAndroid != 0) {
-                AiCoreModelDownloaderJni.get().onUnavailable(mNativeModelDownloaderAndroid);
+            if (!mNativeDestroyed) {
+                mResponder.onUnavailable();
             }
         }
     }
@@ -139,7 +140,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         }
 
         @Override
-        public AiCoreModelDownloader createModelDownloader(ModelExecutionFeature feature) {
+        public AiCoreModelDownloaderBackend createModelDownloader(ModelExecutionFeature feature) {
             mDownloader = new MockAiCoreModelDownloader();
             return mDownloader;
         }

@@ -6,12 +6,12 @@ package org.chromium.on_device_model;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** A dummy implementation of AiCoreModelDownloader. Used when AiCore is not available. */
+/** A dummy implementation of AiCoreModelDownloaderBackend. Used when AiCore is not available. */
 @NullMarked
-class AiCoreModelDownloaderUpstreamImpl implements AiCoreModelDownloader {
+class AiCoreModelDownloaderBackendUpstreamImpl implements AiCoreModelDownloaderBackend {
     @Override
-    public void startDownload(long nativeModelDownloaderAndroid) {
-        AiCoreModelDownloaderJni.get().onUnavailable(nativeModelDownloaderAndroid);
+    public void startDownload(DownloaderResponder responder) {
+        responder.onUnavailable();
     }
 
     @Override
