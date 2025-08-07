@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android,
-       "ImmersiveModeController and ToolbarButtonProvider are Desktop only.")
+assert(!is_android)
 
 source_set("immersive_mode_controller") {
   sources = [ "immersive_mode_controller.h" ]
@@ -18,4 +17,16 @@ source_set("toolbar_button_provider") {
     "//chrome/browser/ui/page_action:icon_type",
     "//ui/actions:actions_headers",
   ]
+}
+
+source_set("frame") {
+  sources = [ "tab_strip_view_interface.h" ]
+
+  deps = [
+    "//chrome/browser/ui/views",
+    "//components/tab_groups",
+    "//ui/views",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
