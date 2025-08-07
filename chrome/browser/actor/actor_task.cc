@@ -53,15 +53,19 @@ void ActorTask::SetState(State state) {
   VLOG(1) << "ActorTask state change: " << state_ << " -> " << state;
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>>
-      allowed_transitions(base::StateTransitions<State>({
-          {kCreated,
-           {kActing, kReflecting, kPausedByActor, kPausedByUser, kFinished}},
-          {kActing, {kReflecting, kPausedByActor, kPausedByUser, kFinished}},
-          {kReflecting, {kActing, kPausedByActor, kPausedByUser, kFinished}},
-          {kPausedByActor, {kActing, kReflecting, kFinished}},
-          {kPausedByUser, {kActing, kReflecting, kFinished}},
-          {kFinished, {}},
-      }));
+      allowed_transitions(base::StateTransitions<State>(
+          {{kCreated,
+            {kActing, kReflecting, kPausedByActor, kPausedByUser, kCancelled,
+             kFinished}},
+           {kActing,
+            {kReflecting, kPausedByActor, kPausedByUser, kCancelled,
+             kFinished}},
+           {kReflecting,
+            {kActing, kPausedByActor, kPausedByUser, kCancelled, kFinished}},
+           {kPausedByActor, {kActing, kReflecting, kCancelled, kFinished}},
+           {kPausedByUser, {kActing, kReflecting, kCancelled, kFinished}},
+           {kCancelled, {}},
+           {kFinished, {}}}));
   if (state != state_) {
     DCHECK_STATE_TRANSITION(allowed_transitions,
                             /*old_state=*/state_,
@@ -83,7 +87,7 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                             std::nullopt);
     return;
   }
-  if (state_ == State::kFinished) {
+  if (IsStopped()) {
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway),
                             std::nullopt);
     return;
@@ -106,7 +110,7 @@ void ActorTask::OnFinishedAct(ActCallback callback,
   std::move(callback).Run(std::move(result), std::nullopt);
 }
 
-void ActorTask::Stop() {
+void ActorTask::Stop(bool success) {
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskWentAway);
@@ -117,7 +121,11 @@ void ActorTask::Stop() {
   for (auto& tab : tabs_to_remove) {
     RemoveTab(tab);
   }
-  SetState(State::kFinished);
+  if (success) {
+    SetState(State::kFinished);
+  } else {
+    SetState(State::kCancelled);
+  }
 }
 
 void ActorTask::Pause(bool from_actor) {
@@ -136,7 +144,7 @@ void ActorTask::Pause(bool from_actor) {
 }
 
 void ActorTask::Resume() {
-  if (GetState() != State::kFinished) {
+  if (GetState() != State::kFinished || GetState() != State::kCancelled) {
     SetState(State::kReflecting);
   }
 }
@@ -144,6 +152,10 @@ void ActorTask::Resume() {
 bool ActorTask::IsPaused() const {
   return (GetState() == State::kPausedByActor) ||
          (GetState() == State::kPausedByUser);
+}
+
+bool ActorTask::IsStopped() const {
+  return (GetState() == State::kFinished) || (GetState() == State::kCancelled);
 }
 
 base::Time ActorTask::GetEndTime() const {
@@ -222,6 +234,8 @@ std::string ToString(const ActorTask::State& state) {
       return "PausedByActor";
     case kPausedByUser:
       return "PausedByUser";
+    case kCancelled:
+      return "Cancelled";
     case kFinished:
       return "Finished";
   }

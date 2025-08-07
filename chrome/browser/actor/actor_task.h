@@ -50,14 +50,14 @@ class ActorTask {
   void SetIdForTesting(int id);
 
   // Once state leaves kCreated it should never go back. One state enters
-  // kFinished it should never change. We may want to add a kCancelled in the
-  // future, TBD.
+  // kFinished or kCancelled it should never change.
   enum class State {
     kCreated,
     kActing,
     kReflecting,
     kPausedByActor,
     kPausedByUser,
+    kCancelled,
     kFinished
   };
 
@@ -69,8 +69,9 @@ class ActorTask {
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 
-  // Sets State to kFinished and cancels any pending actions.
-  void Stop();
+  // Sets State to kFinished if `success` is true or to kCancelled if
+  // `success` is false and cancels any pending actions.
+  void Stop(bool success);
 
   // Pause() is called to indicate that either the actor or user is pausing
   // server-driven actuation determined by the `from_actor` flag. This will
@@ -82,6 +83,8 @@ class ActorTask {
   void Resume();
 
   bool IsPaused() const;
+
+  bool IsStopped() const;
 
   ExecutionEngine* GetExecutionEngine() const;
 

@@ -50,7 +50,8 @@ void GlicActorController::StopTask(actor::TaskId task_id) {
   if (!task) {
     return;
   }
-  actor::ActorKeyedService::Get(profile_.get())->StopTask(task->id());
+  actor::ActorKeyedService::Get(profile_.get())
+      ->StopTask(task->id(), /*success=*/true);
 }
 
 void GlicActorController::PauseTask(actor::TaskId task_id,

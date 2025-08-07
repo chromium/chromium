@@ -84,8 +84,9 @@ class ActorKeyedService : public KeyedService {
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
 
-  // Stops a task by its ID.
-  void StopTask(TaskId task_id);
+  // Stops a task by its ID, `success` determines if the task was finished
+  // successfully or ended early.
+  void StopTask(TaskId task_id, bool success);
 
   // Returns the task with the given ID. Returns nullptr if the task does not
   // exist.

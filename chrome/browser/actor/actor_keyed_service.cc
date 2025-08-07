@@ -84,7 +84,7 @@ const std::map<TaskId, const ActorTask*> ActorKeyedService::GetActiveTasks()
     const {
   std::map<TaskId, const ActorTask*> active_tasks;
   for (const auto& [id, task] : active_tasks_) {
-    CHECK_NE(task->GetState(), actor::ActorTask::State::kFinished);
+    CHECK_NE(task->IsStopped(), true);
     active_tasks[id] = task.get();
   }
   return active_tasks;
@@ -101,7 +101,7 @@ const std::map<TaskId, const ActorTask*> ActorKeyedService::GetInactiveTasks()
 
 void ActorKeyedService::ResetForTesting() {
   for (auto it = active_tasks_.begin(); it != active_tasks_.end();) {
-    StopTask((it++)->first);
+    StopTask((it++)->first, /*success=*/true);
   }
   active_tasks_.clear();
   inactive_tasks_.clear();
@@ -284,7 +284,7 @@ void ActorKeyedService::OnActionsFinished(
                           index_of_failed_action));
 }
 
-void ActorKeyedService::StopTask(TaskId task_id) {
+void ActorKeyedService::StopTask(TaskId task_id, bool success) {
   if (task_id == last_created_task_id_) {
     last_created_task_id_ = TaskId();
   }
@@ -292,7 +292,7 @@ void ActorKeyedService::StopTask(TaskId task_id) {
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
     auto ret = inactive_tasks_.insert(std::move(task));
-    ret.position->second->Stop();
+    ret.position->second->Stop(success);
   }
 }
 

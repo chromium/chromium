@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest, StartStopTask) {
   actor::TaskId task_id = actor_service().CreateTask();
   EXPECT_EQ(task_id.value(), id);
 
-  actor_service().StopTask(task_id);
+  actor_service().StopTask(task_id, /*success=*/true);
 
   id++;
   task_id = actor_service().CreateTask();
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   run_loop->Run();
   EXPECT_EQ(web_contents()->GetURL(), GURL("https://www.google.com"));
 
-  actor_service().StopTask(actor::TaskId(id));
+  actor_service().StopTask(actor::TaskId(id), /*success=*/true);
 
   id++;
   task_id = actor_service().CreateTask();

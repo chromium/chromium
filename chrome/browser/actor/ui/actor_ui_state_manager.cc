@@ -138,6 +138,9 @@ void ActorUiStateManager::OnActorTaskStateChange(
     case ActorTask::State::kPausedByActor:
       ui_tab_state = GetPausedUiTabState();
       break;
+    case ActorTask::State::kCancelled:
+      ui_tab_state = GetCompletedUiTabState();
+      break;
     case ActorTask::State::kFinished:
       ui_tab_state = GetCompletedUiTabState();
       completed_tasks_expiry_timer_.Start(

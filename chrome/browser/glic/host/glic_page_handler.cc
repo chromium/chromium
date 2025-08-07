@@ -1456,6 +1456,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         case actor::ActorTask::State::kPausedByActor:
         case actor::ActorTask::State::kPausedByUser:
           return mojom::ActorTaskState::kPaused;
+        case actor::ActorTask::State::kCancelled:
         case actor::ActorTask::State::kFinished:
           return mojom::ActorTaskState::kStopped;
       }
