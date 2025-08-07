@@ -560,11 +560,14 @@ void NoStatePrefetchContents::DestroyWhenUsingTooManyResources() {
     return;
   }
 
-  memory_instrumentation::MemoryInstrumentation::GetInstance()
-      ->RequestPrivateMemoryFootprint(
-          process_pid_,
-          base::BindOnce(&NoStatePrefetchContents::DidGetMemoryUsage,
-                         weak_factory_.GetWeakPtr()));
+  auto* memory_instrumentation =
+      memory_instrumentation::MemoryInstrumentation::GetInstance();
+  if (memory_instrumentation) {
+    memory_instrumentation->RequestPrivateMemoryFootprint(
+        process_pid_,
+        base::BindOnce(&NoStatePrefetchContents::DidGetMemoryUsage,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void NoStatePrefetchContents::DidGetMemoryUsage(
