@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 
 #include <memory>
+#include <ostream>
 #include <vector>
 
 #include "base/containers/to_vector.h"
@@ -23,7 +24,7 @@
 
 namespace autofill {
 
-void PrintTo(const AutofillFieldWithAttributeType& f, ::std::ostream* os) {
+void PrintTo(const AutofillFieldWithAttributeType& f, std::ostream* os) {
   *os << f.field->global_id() << " -> " << f.type.name_as_string();
 }
 
@@ -458,6 +459,62 @@ TEST_F(DetermineAttributeTypesTest, DistinguishesBetweenSections) {
           Pair(vehicle_section, ElementsAre(Pair(kVehicle, vehicle_matcher))),
           Pair(drivers_license_section,
                ElementsAre(Pair(kDriversLicense, drivers_license_matcher)))));
+}
+
+// Tests that even with union types, for each AutofillField and EntityType,
+// there is at most at most one AttributeType.
+//
+// This is not enforced before DetermineAttributeTypes() during the construction
+// of AutofillField::Type(). We test it here nonetheless because it is an
+// important property of DetermineAttributeTypes().
+TEST_F(DetermineAttributeTypesTest, AtMostOneAttributePerFieldPerEntity) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAutofillAiNoTagTypes,
+                                 features::kAutofillUnionTypesForAutofillAi},
+                                {});
+  using enum AttributeTypeName;
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {// AutofillType::MakeAutofillType() truncates this to NAME_FULL because
+       // both NAME_FULL and PASSPORT_ISSUING_COUNTRY are belong to `kPassport`.
+       {NAME_FULL, PASSPORT_ISSUING_COUNTRY},
+       // AutofillType::MakeAutofillType() keeps both because they belong to
+       // destinct EntityTypes.
+       {DRIVERS_LICENSE_NUMBER, PASSPORT_NUMBER},
+       // AutofillType::MakeAutofillType() ignores `NAME_FULL` because it does
+       // not belong to the FieldTypeGroup::kAutofillAi and keeps both remaining
+       // types because they belong to destinct EntityTypes.
+       {PASSPORT_ISSUE_DATE, NAME_FULL, DRIVERS_LICENSE_ISSUE_DATE}});
+
+  auto drivers_license_matcher = ElementsAre(
+      FieldAndType(fields[0], AttributeType(kDriversLicenseName)),
+      FieldAndType(fields[1], AttributeType(kDriversLicenseNumber)),
+      FieldAndType(fields[2], AttributeType(kDriversLicenseIssueDate)));
+  auto passport_matcher =
+      ElementsAre(FieldAndType(fields[0], AttributeType(kPassportName)),
+                  FieldAndType(fields[1], AttributeType(kPassportNumber)),
+                  FieldAndType(fields[2], AttributeType(kPassportIssueDate)));
+  const Section section = fields.front()->section();
+
+  // DetermineAttributeTypes() overload with Section and AttributeType.
+  EXPECT_THAT(DetermineAttributeTypes(fields, section, kPassport, kPassKey),
+              passport_matcher);
+  EXPECT_THAT(
+      DetermineAttributeTypes(fields, section, kDriversLicense, kPassKey),
+      drivers_license_matcher);
+
+  // DetermineAttributeTypes() overload with Section, without EntityType.
+  EXPECT_THAT(
+      DetermineAttributeTypes(fields, section, kPassKey),
+      UnorderedElementsAre(Pair(kDriversLicense, drivers_license_matcher),
+                           Pair(kPassport, passport_matcher)));
+
+  // DetermineAttributeTypes() overload without Section and AttributeType.
+  EXPECT_THAT(DetermineAttributeTypes(fields, kPassKey),
+              UnorderedElementsAre(Pair(
+                  section, UnorderedElementsAre(
+                               Pair(kDriversLicense, drivers_license_matcher),
+                               Pair(kPassport, passport_matcher)))));
 }
 
 // Tests for that the overloads behave equivalently:
