@@ -308,6 +308,9 @@ bool ExternalConstantsBuilder::Modify() {
   if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat)) {
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
   }
+  if (!overrides_.contains(kDevOverrideKeyCrxPublicKeyHash)) {
+    SetCrxPublicKeyHash(verifier->CrxPublicKeyHash());
+  }
   if (!overrides_.contains(kDevOverrideKeyDictPolicies)) {
     SetDictPolicies(verifier->DictPolicies());
   }
