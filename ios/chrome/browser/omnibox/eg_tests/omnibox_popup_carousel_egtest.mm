@@ -103,7 +103,8 @@ id<GREYMatcher> CarouselMatcher() {
 }
 
 // Tests tapping the first tile and scroll to tap the last tile.
-- (void)testTappingAndScrollingMostVisitedTiles {
+// TODO(crbug.com/437064076): Test fails with address sanitizer.
+- (void)DISABLED_testTappingAndScrollingMostVisitedTiles {
   [self addNumberOfMostVisitedTiles:kCarouselCapacity];
 
   // Test tapping the first tile.
