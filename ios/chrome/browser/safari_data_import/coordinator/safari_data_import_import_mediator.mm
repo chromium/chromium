@@ -42,11 +42,10 @@
   /// to be kept alive in the duration of the importer.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       _savedPasswordsPresenter;
-  /// Whether we should allow the user to select a file. Workaround for file
-  /// picker latencies.
-  BOOL _disableFileSelection;
   /// Whether the mediator is disconnected.
   BOOL _disconnected;
+  /// The URL of the file being imported, which requires security-scoped access.
+  NSURL* _currentSecurityScopedURL;
 }
 
 - (instancetype)
@@ -90,7 +89,10 @@
 }
 
 - (void)reset {
-  _disableFileSelection = NO;
+  if (_currentSecurityScopedURL) {
+    [_currentSecurityScopedURL stopAccessingSecurityScopedResource];
+    _currentSecurityScopedURL = nil;
+  }
 }
 
 - (NSArray<PasswordImportItem*>*)conflictingPasswords {
@@ -141,16 +143,21 @@
 
 - (void)documentPicker:(UIDocumentPickerViewController*)controller
     didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls {
-  if (_disableFileSelection) {
+  // Early exit. Workaround for file picker latencies.
+  if (_currentSecurityScopedURL) {
     return;
   }
-  NSURL* file = urls.firstObject;
-  if (!file) {
+  _currentSecurityScopedURL = urls.firstObject;
+  if (!_currentSecurityScopedURL) {
     return;
   }
-  _disableFileSelection = YES;
+  if (![_currentSecurityScopedURL startAccessingSecurityScopedResource]) {
+    _currentSecurityScopedURL = nil;
+    return;
+  }
   [self setUpImportClient];
-  _importer->PrepareImport(base::apple::NSURLToFilePath(file));
+  _importer->PrepareImport(
+      base::apple::NSURLToFilePath(_currentSecurityScopedURL));
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller {
