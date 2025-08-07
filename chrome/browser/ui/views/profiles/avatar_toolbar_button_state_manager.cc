@@ -877,7 +877,10 @@ class HistorySyncOptinCoordinator
       &kHistorySyncOptinCoordinatorKey;
 
   explicit HistorySyncOptinCoordinator(Profile& profile)
-      : profile_(profile), sync_promo_identity_pill_manager_(profile) {
+      : profile_(profile),
+        sync_promo_identity_pill_manager_(
+            IdentityManagerFactory::GetForProfile(&profile),
+            profile.GetPrefs()) {
     UserEducationService* user_education_service =
         UserEducationServiceFactory::GetForBrowserContext(&profile_.get());
     CHECK(user_education_service);

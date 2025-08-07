@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_promo_util.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -419,22 +420,32 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
   }
 }
 
-SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(Profile& profile)
+SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service)
     : SyncPromoIdentityPillManager(
-          profile,
+          identity_manager,
+          pref_service,
           user_education::features::GetNewBadgeShowCount(),
           user_education::features::GetNewBadgeFeatureUsedCount()) {}
 
-SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(Profile& profile,
-                                                           int max_shown_count,
-                                                           int max_used_count)
-    : profile_(profile),
+SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
+    int max_shown_count,
+    int max_used_count)
+    : identity_manager_(identity_manager),
+      pref_service_(CHECK_DEREF(pref_service)),
       max_shown_count_(max_shown_count),
-      max_used_count_(max_used_count) {}
+      max_used_count_(max_used_count) {
+  CHECK(identity_manager_);
+  identity_manager_scoped_observation_.Observe(identity_manager_);
+}
+
+SyncPromoIdentityPillManager::~SyncPromoIdentityPillManager() = default;
 
 bool SyncPromoIdentityPillManager::ShouldShowPromo() const {
-  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(&profile_.get()));
+  const AccountInfo account = GetSignedInAccountInfo();
   if (account.gaia.empty()) {
     // If there is no account available, the promo should not be shown (the sync
     // promo should be shown only for signed in users).
@@ -444,7 +455,7 @@ bool SyncPromoIdentityPillManager::ShouldShowPromo() const {
     return false;
   }
 
-  SigninPrefs signin_prefs(*profile_->GetPrefs());
+  SigninPrefs signin_prefs(pref_service_.get());
   const int show_count =
       switches::IsAvatarSyncPromoFeatureEnabled()
           ? signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia)
@@ -458,15 +469,14 @@ bool SyncPromoIdentityPillManager::ShouldShowPromo() const {
 }
 
 void SyncPromoIdentityPillManager::RecordPromoShown() {
-  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(&profile_.get()));
+  const AccountInfo account = GetSignedInAccountInfo();
   if (account.gaia.empty()) {
     // If there is no account available, there is nothing to record (the sync
     // promo should be shown only for signed in users).
     return;
   }
 
-  SigninPrefs signin_prefs(*profile_->GetPrefs());
+  SigninPrefs signin_prefs(pref_service_.get());
   switches::IsAvatarSyncPromoFeatureEnabled()
       ? signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia)
       : signin_prefs.IncrementHistorySyncPromoIdentityPillShownCount(
@@ -474,14 +484,13 @@ void SyncPromoIdentityPillManager::RecordPromoShown() {
 }
 
 void SyncPromoIdentityPillManager::RecordPromoUsed() {
-  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(&profile_.get()));
+  const AccountInfo account = GetSignedInAccountInfo();
   if (account.gaia.empty()) {
     // If there is no account available, there is nothing to record (the sync
     // promo should be shown only for signed in users).
     return;
   }
-  SigninPrefs signin_prefs(*profile_->GetPrefs());
+  SigninPrefs signin_prefs(pref_service_.get());
   switches::IsAvatarSyncPromoFeatureEnabled()
       ? signin_prefs.IncrementSyncPromoIdentityPillUsedCount(account.gaia)
       : signin_prefs.IncrementHistorySyncPromoIdentityPillUsedCount(
@@ -491,6 +500,24 @@ void SyncPromoIdentityPillManager::RecordPromoUsed() {
 bool SyncPromoIdentityPillManager::ArePromotionsEnabled() const {
   PrefService* local_state = g_browser_process->local_state();
   return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
+
+void SyncPromoIdentityPillManager::OnIdentityManagerShutdown(
+    IdentityManager* identity_manager) {
+  CHECK_EQ(identity_manager, identity_manager_.get());
+  identity_manager_ = nullptr;
+  identity_manager_scoped_observation_.Reset();
+}
+
+AccountInfo SyncPromoIdentityPillManager::GetSignedInAccountInfo() const {
+  CHECK(identity_manager_->AreRefreshTokensLoaded());
+  // Checks for accounts in error as well.
+  if (signin_util::GetSignedInState(identity_manager_.get()) !=
+      signin_util::SignedInState::kSignedIn) {
+    return AccountInfo();
+  }
+  return identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

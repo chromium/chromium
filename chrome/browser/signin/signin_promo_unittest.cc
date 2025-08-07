@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_promo.h"
 
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
@@ -27,6 +28,7 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
@@ -758,54 +760,34 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 class SyncPromoIdentityPillManagerTest : public testing::Test {
  public:
   SyncPromoIdentityPillManagerTest() {
-    // Environment setup for adding an account with cookies to store the
-    // per-account prefs.
-    TestingProfile::Builder builder;
-    builder.AddTestingFactories(
-        IdentityTestEnvironmentProfileAdaptor::
-            GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-                {TestingProfile::TestingFactory{
-                    ChromeSigninClientFactory::GetInstance(),
-                    base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                        &url_loader_factory_)}}));
-    profile_ = builder.Build();
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    identity_test_env_adaptor_->identity_test_env()->SetTestURLLoaderFactory(
-        &url_loader_factory_);
+    SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
-  AccountInfo MakeAccountAvailable(std::string_view email) {
-    return identity_test_env_adaptor_->identity_test_env()
-        ->MakeAccountAvailable(
-            identity_test_env_adaptor_->identity_test_env()
-                ->CreateAccountAvailabilityOptionsBuilder()
-                .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
-                .WithCookie(true)
-                .Build(email));
+  AccountInfo Signin(const std::string& email) {
+    return signin::MakePrimaryAccountAvailable(identity_manager(), email,
+                                               signin::ConsentLevel::kSignin);
   }
 
-  Profile& profile() { return *profile_.get(); }
-
-  PrefService& local_state() {
-    return *TestingBrowserProcess::GetGlobal()->local_state();
+  signin::IdentityManager* identity_manager() {
+    return identity_test_environment_.identity_manager();
   }
+  PrefService& pref_service() { return pref_service_; }
 
  private:
-  network::TestURLLoaderFactory url_loader_factory_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
+  signin::IdentityTestEnvironment identity_test_environment_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(SyncPromoIdentityPillManagerTest, MaxShownCount) {
-  MakeAccountAvailable("test@email.com");
+  Signin("test@email.com");
   const int max_shown_count = 10;
-  SyncPromoIdentityPillManager manager(profile(), max_shown_count,
+  SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
+                                       max_shown_count,
                                        /*max_used_count=*/1);
 
   for (int i = 0; i < max_shown_count; ++i) {
+    SCOPED_TRACE("Iteration: " + base::ToString(i));
     // The promo should be shown if the shown count is below the max.
     EXPECT_TRUE(manager.ShouldShowPromo());
     manager.RecordPromoShown();
@@ -816,12 +798,13 @@ TEST_F(SyncPromoIdentityPillManagerTest, MaxShownCount) {
 }
 
 TEST_F(SyncPromoIdentityPillManagerTest, MaxUsedCount) {
-  MakeAccountAvailable("test@email.com");
+  Signin("test@email.com");
   const int max_used_count = 5;
-  SyncPromoIdentityPillManager manager(profile(), /*max_shown_count=*/10,
-                                       max_used_count);
+  SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
+                                       /*max_shown_count=*/10, max_used_count);
 
   for (int i = 0; i < max_used_count; ++i) {
+    SCOPED_TRACE("Iteration: " + base::ToString(i));
     // The promo should be shown if the used count is below the max.
     EXPECT_TRUE(manager.ShouldShowPromo());
     manager.RecordPromoUsed();
@@ -831,17 +814,29 @@ TEST_F(SyncPromoIdentityPillManagerTest, MaxUsedCount) {
   EXPECT_FALSE(manager.ShouldShowPromo());
 }
 
-TEST_F(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfNoAccount) {
-  SyncPromoIdentityPillManager manager(profile(), /*max_shown_count=*/10,
+TEST_F(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfSignedOut) {
+  SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
+                                       /*max_shown_count=*/10,
+                                       /*max_used_count=*/2);
+  EXPECT_FALSE(manager.ShouldShowPromo());
+}
+
+TEST_F(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfSigninPending) {
+  Signin("test@email.com");
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+  SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
+                                       /*max_shown_count=*/10,
                                        /*max_used_count=*/2);
   EXPECT_FALSE(manager.ShouldShowPromo());
 }
 
 TEST_F(SyncPromoIdentityPillManagerTest,
        ShouldNotShowPromoIfPromotionsDisabled) {
-  local_state().SetBoolean(prefs::kPromotionsEnabled, false);
-  MakeAccountAvailable("test@email.com");
-  SyncPromoIdentityPillManager manager(profile(), /*max_shown_count=*/10,
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      prefs::kPromotionsEnabled, false);
+  Signin("test@email.com");
+  SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
+                                       /*max_shown_count=*/10,
                                        /*max_used_count=*/2);
   EXPECT_FALSE(manager.ShouldShowPromo());
 }
