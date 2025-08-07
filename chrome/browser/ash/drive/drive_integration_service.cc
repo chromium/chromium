@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -67,6 +66,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "crypto/obsolete/md5.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -432,6 +432,11 @@ std::optional<PersistedMessage> ConvertSyncErrorToMessage(
 
 }  // namespace
 
+// Deliberately not in namespace{} so it can be friended by crypto/obsolete/md5.
+crypto::obsolete::Md5 MakeMd5HasherForDriveFsAccount() {
+  return {};
+}
+
 // Observes changes in Drive's Preferences and network connections.
 void DriveIntegrationService::RegisterPrefs() {
   registrar_.Init(GetPrefs());
@@ -514,8 +519,12 @@ class DriveIntegrationService::DriveFsHolder
     if (!GetAccountId().HasAccountIdKey()) {
       return "";
     }
-    return base::MD5String(GetProfileSalt() + "-" +
-                           GetAccountId().GetAccountIdKey());
+
+    crypto::obsolete::Md5 hasher = MakeMd5HasherForDriveFsAccount();
+    hasher.Update(GetProfileSalt());
+    hasher.Update("-");
+    hasher.Update(GetAccountId().GetAccountIdKey());
+    return base::ToLowerASCII(base::HexEncode(hasher.Finish()));
   }
 
   bool IsMetricsCollectionEnabled() override {
