@@ -24,61 +24,6 @@ DOCUMENT_MANIFEST = {
       "subdir": "gn",
       "description": "Style guide for writing clean and maintainable BUILD.gn files."
     },
-    # Likely not needed:
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/README.md",
-    #   "cached_path": "README.md",
-    #   "subdir": "gn",
-    #   "description": "Introduction to GN, the meta-build system."
-    # },
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/docs/quick_start.md",
-    #   "cached_path": "quick_start.md",
-    #   "subdir": "gn",
-    #   "description": "Quick start guide for using GN."
-    # },
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/docs/reference.md",
-    #   "cached_path": "reference.md",
-    #   "subdir": "gn",
-    #   "description": "Comprehensive reference for GN language, functions, and variables."
-    # },
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/docs/language.md",
-    #   "cached_path": "language.md",
-    #   "subdir": "gn",
-    #   "description": "Formal definition of the GN language syntax."
-    # },
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/docs/faq.md",
-    #   "cached_path": "faq.md",
-    #   "subdir": "gn",
-    #   "description": "Frequently asked questions about GN."
-    # },
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/docs/standalone.md",
-    #   "cached_path": "standalone.md",
-    #   "subdir": "gn",
-    #   "description": "Guide on using GN in standalone projects outside of Chromium."
-    # },
-    # {
-    #   "source_url": "https://chromium.googlesource.com/website/+/main/site/developers/gn-build-configuration/index.md",
-    #   "cached_path": "chromium_gn_build_config.md",
-    #   "subdir": "gn",
-    #   "description": "Chromium-specific guide on GN build configurations and flags."
-    # },
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/docs/cross_compiles.md",
-    #   "cached_path": "cross_compiles.md",
-    #   "subdir": "gn",
-    #   "description": "Guide for cross-compiling with GN."
-    # },
-    # {
-    #   "source_url": "https://gn.googlesource.com/gn/+/main/docs/mingw.md",
-    #   "cached_path": "mingw.md",
-    #   "subdir": "gn",
-    #   "description": "Notes on using GN with MinGW."
-    # }
   ]
 }
 
