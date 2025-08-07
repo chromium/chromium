@@ -203,31 +203,6 @@ def CheckModificationOfFormAutofillUtil(input_api, output_api):
 
   return []
 
-# Checks that UniqueRendererForm(Control)Id() is not used and suggests to use
-# form_util::Get(Form|Field)RendererId() instead.
-def CheckNoUsageOfUniqueRendererId(
-        input_api, output_api):
-  autofill_files_pattern = re.compile(
-      r'(autofill|password_manager).*\.(mm|cc|h)')
-  special_file = re.compile(r'form_autofill_util.cc')
-  concerned_files = [(f, input_api.ReadFile(f))
-                     for f in input_api.AffectedFiles(include_deletes=False)
-                     if autofill_files_pattern.search(f.LocalPath())]
-
-  warning_files = []
-  renderer_id_call = re.compile(
-      r'\.UniqueRendererForm(Control)?Id', re.MULTILINE)
-  for autofill_file, file_content in concerned_files:
-    allowed_matches = 2 if special_file.search(autofill_file.LocalPath()) else 0
-    matches = re.finditer(renderer_id_call, file_content)
-    if (len(list(matches)) > allowed_matches):
-      warning_files.append(autofill_file)
-
-  return [output_api.PresubmitError(
-      'Do not use (Form|Field)RendererId(*.UniqueRendererForm(Control)?Id()). '
-      'Consider using form_util::Get(Form|Field)RendererId(*) instead.',
-      warning_files)] if len(warning_files) else []
-
 # Checks that whenever the regex transpiler is modified, the golden test files
 # are updated to match the new output. This serves as a testing mechanism for
 # the transpiler.
