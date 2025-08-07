@@ -44,6 +44,12 @@ BASE_FEATURE(kAAudioPerStreamDeviceSelection,
              "AAudioPerStreamDeviceSelection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for
+// optimal output frame size.
+BASE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer,
+             "AlwaysUseAudioManagerOutputFramesPerBuffer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the AudioDeviceListener, which listens for changes to the list of
 // audio devices exposed by the OS.
 BASE_FEATURE(kAndroidAudioDeviceListener,

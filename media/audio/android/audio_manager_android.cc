@@ -62,10 +62,14 @@ namespace media {
 namespace {
 
 // Maximum number of output streams that can be open simultaneously.
-const int kMaxOutputStreams = 10;
+constexpr int kMaxOutputStreams = 10;
 
-const int kDefaultInputBufferSize = 1024;
-const int kDefaultOutputBufferSize = 2048;
+constexpr int kDefaultInputBufferSize = 1024;
+constexpr int kDefaultOutputBufferSize = 2048;
+// Randomly picked up frame size which is close to return value on N4.
+// Return this value when getProperty(PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
+// fails.
+constexpr int kDefaultLowLatencyOutputBufferSize = 256;
 
 class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
  public:
@@ -986,10 +990,28 @@ AudioManagerAndroid::JniDelegate& AudioManagerAndroid::GetJniDelegate() {
 
 int AudioManagerAndroid::GetOptimalOutputFrameSize(int sample_rate,
                                                    int channels) {
-  if (GetJniDelegate().IsAudioLowLatencySupported()) {
-    return GetJniDelegate().GetAudioLowLatencyOutputFrameSize();
+  if (base::FeatureList::IsEnabled(
+          features::kAlwaysUseAudioManagerOutputFramesPerBuffer)) {
+    int buffer_size = GetJniDelegate().GetAudioLowLatencyOutputFrameSize();
+    // Use AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER value if Android
+    // supports it.
+    if (buffer_size) {
+      return buffer_size;
+    }
+    // Use small buffer size for low latency audio devices as a fallback.
+    if (GetJniDelegate().IsAudioLowLatencySupported()) {
+      return kDefaultLowLatencyOutputBufferSize;
+    }
+  } else if (GetJniDelegate().IsAudioLowLatencySupported()) {
+    int buffer_size = GetJniDelegate().GetAudioLowLatencyOutputFrameSize();
+    if (buffer_size == 0) {
+      buffer_size = kDefaultLowLatencyOutputBufferSize;
+    }
+    return buffer_size;
   }
 
+  // Use 2048 frames or bigger buffer size for non-low latency audio devices to
+  // be conservative.
   return std::max(
       kDefaultOutputBufferSize,
       GetJniDelegate().GetMinOutputFrameSize(sample_rate, channels));

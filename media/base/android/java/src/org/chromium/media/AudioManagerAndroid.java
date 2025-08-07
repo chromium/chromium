@@ -101,10 +101,6 @@ class AudioManagerAndroid {
 
     // Use 44.1kHz as the default sampling rate.
     private static final int DEFAULT_SAMPLING_RATE = 44100;
-    // Randomly picked up frame size which is close to return value on N4.
-    // Return this value when getProperty(PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
-    // fails.
-    private static final int DEFAULT_FRAME_PER_BUFFER = 256;
 
     private final AudioManager mAudioManager;
     private final long mNativeAudioManagerAndroid;
@@ -448,9 +444,7 @@ class AudioManagerAndroid {
     private int getAudioLowLatencyOutputFrameSize() {
         String framesPerBuffer =
                 mAudioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-        return framesPerBuffer == null
-                ? DEFAULT_FRAME_PER_BUFFER
-                : Integer.parseInt(framesPerBuffer);
+        return framesPerBuffer == null ? 0 : Integer.parseInt(framesPerBuffer);
     }
 
     @CalledByNative
