@@ -691,8 +691,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     /**
      * A permission can be managed by an app. For example, with a Chrome SiteSettingsDelegate,
-     * Notifications could be controlled by PWA, however for a Weblayer variant, Location could be
-     * controlled by the DSE.
+     * Notifications could be controlled by PWA.
      */
     @RequiresNonNull({"mSite"})
     private boolean setupAppDelegatePreference(
