@@ -9,7 +9,6 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "build/branding_buildflags.h"
-#import "components/grit/components_scaled_resources.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
@@ -41,15 +40,6 @@ int GetResourceIdFromTemplateURL(const TemplateURL& template_url) {
   // engine that was selected from a country outside of EEA countries.
   if (resource_it != std::end(kSearchEnginesScaledResources)) {
     return resource_it->id;
-  }
-
-  if (resource_name == "IDR_SEARCH_ENGINE_GOOGLE_IMAGE") {
-    // Unlike the other logos which are in `kSearchEnginesScaledResources`,
-    // the Google logo is included via
-    // `components/resources/search_engine_choice_scaled_resources.grdp`
-    // TODO(crbug.com/422992330): Fix this discrepancy now that all OSE assets
-    // are restricted to branded builds.
-    return IDR_SEARCH_ENGINE_GOOGLE_IMAGE;
   }
 #endif
 
