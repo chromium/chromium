@@ -228,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, IframeAcceptPermission) {
   EXPECT_TRUE(nav_manager.was_successful());
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, WorkerDenyPermission) {
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       DedicatedWorkerDenyPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
 
@@ -242,9 +243,12 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, WorkerDenyPermission) {
   EXPECT_EQ("TypeError: Failed to fetch",
             content::EvalJs(web_contents(),
                             content::JsReplace(script_template, fetch_url)));
+  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWithinDedicatedWorker, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, WorkerAcceptPermission) {
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       DedicatedWorkerAcceptPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
 
@@ -258,6 +262,9 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, WorkerAcceptPermission) {
   EXPECT_EQ("Access-Control-Allow-Origin: *",
             content::EvalJs(web_contents(),
                             content::JsReplace(script_template, fetch_url)));
+
+  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWithinDedicatedWorker, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
