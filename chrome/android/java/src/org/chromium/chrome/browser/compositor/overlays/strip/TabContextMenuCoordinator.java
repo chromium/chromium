@@ -69,7 +69,9 @@ import java.util.List;
  */
 @NullMarked
 public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Integer> {
+    @SuppressWarnings("HidingField")
     private final Supplier<TabModel> mTabModelSupplier;
+
     private final MultiInstanceManager mMultiInstanceManager;
     private final WindowAndroid mWindowAndroid;
 

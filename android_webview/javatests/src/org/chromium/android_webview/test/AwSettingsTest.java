@@ -1571,6 +1571,8 @@ public class AwSettingsTest {
         private static final String BAD_SCHEME_URL = "htt://nonsense";
         private static final String PREV_TITLE = "cuencpobgjhfdmdovhmfdkjf";
         private static final int MAX_TIME_LOADING_ERROR_PAGE = 1000;
+
+        @SuppressWarnings("HidingField")
         private final AwContents mAwContents;
 
         AwSettingsWillSuppressErrorPageTestHelper(
@@ -1677,7 +1679,10 @@ public class AwSettingsTest {
 
         private final TestAwContentsClient mContentClient;
         private final AwTestContainerView mTestContainerView;
+
+        @SuppressWarnings("HidingField")
         private final AwContents mAwContents;
+
         private final AwSettings mAwSettings;
 
         public final String mContentMainUrl;

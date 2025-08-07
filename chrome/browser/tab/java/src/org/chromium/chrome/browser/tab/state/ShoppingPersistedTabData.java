@@ -87,6 +87,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private final Map<String, CurrencyFormatter> mCurrencyFormatterMap = new HashMap<>();
 
     @VisibleForTesting
+    @SuppressWarnings("HidingField")
     protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
             new ObservableSupplierImpl<>();
 

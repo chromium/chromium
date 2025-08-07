@@ -62,6 +62,7 @@ import java.util.Optional;
         shadows = {ShadowLog.class})
 public class BaseSuggestionProcessorUnitTest {
     private static class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
+        @SuppressWarnings("HidingField")
         private final Context mContext;
 
         public TestBaseSuggestionProcessor(

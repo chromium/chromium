@@ -45,7 +45,9 @@ import java.util.List;
 @Config(qualifiers = "sw600dp")
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabReorderStrategyTest extends ReorderStrategyTestBase {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    @SuppressWarnings("HidingField")
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     // Constants
     private static final float DELTA = 0.f;

@@ -256,14 +256,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private final Callback<Tab> mSendToBackground;
     private final LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
+
+    @SuppressWarnings("HidingField")
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+
     private Callback<Integer> mOnTabStripHeightChangedCallback;
     private final MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
+
+    @SuppressWarnings("HidingField")
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+
     private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;

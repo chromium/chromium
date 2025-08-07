@@ -53,7 +53,9 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
     private boolean mNativeInitialized;
     private boolean mTriggerAcceptAfterNativeInit;
 
+    @SuppressWarnings("HidingField")
     private @Nullable Handler mHandler;
+
     private @Nullable Runnable mExitFreRunnable;
 
     public static final String EXTRA_ASSOCIATED_APP_NAME =

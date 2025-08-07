@@ -21,7 +21,9 @@ import org.chromium.ui.widget.Toast;
 /** Handles the long screenshot action in the Sharing Hub and launches the screenshot editor. */
 @NullMarked
 public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
+    @SuppressWarnings("HidingField")
     private final Activity mActivity;
+
     private final EntryManager mEntryManager;
     private final Tab mTab;
     private @MonotonicNonNull LongScreenshotsMediator mMediator;

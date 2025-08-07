@@ -78,7 +78,7 @@ public class StaticLayout extends Layout {
 
     private boolean mIsShowing;
 
-
+    @SuppressWarnings("HidingField")
     private final float mPxToDp;
 
     /**

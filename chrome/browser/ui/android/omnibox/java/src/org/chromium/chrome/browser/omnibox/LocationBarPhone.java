@@ -22,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 class LocationBarPhone extends LocationBarLayout {
     private static final int ACTION_BUTTON_TOUCH_OVERFLOW_LEFT = 15;
 
+    @SuppressWarnings("HidingField")
     private View mUrlBar;
 
     /** Constructor used to inflate from XML. */

@@ -56,7 +56,9 @@ import org.chromium.ui.widget.RectProvider;
  */
 @NullMarked
 public class ClickableTextBubble extends TextBubble {
+    @SuppressWarnings("HidingField")
     private final Context mContext;
+
     private final LoadingView mLoadingView;
 
     /**

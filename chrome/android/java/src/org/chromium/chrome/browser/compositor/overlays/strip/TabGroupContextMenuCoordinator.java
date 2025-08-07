@@ -94,7 +94,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private boolean mIsPresetTitleUsed;
     private final WindowAndroid mWindowAndroid;
     private final KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+
+    @SuppressWarnings("HidingField")
     protected CollaborationService mCollaborationService;
+
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
                 @Override
