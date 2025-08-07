@@ -5346,21 +5346,6 @@ shown properly on the user-facing crash UI.
   <int value="15" label="CHALLENGE_RESPONSE_REQUIRED"/>
 </enum>
 
-<enum name="GpuBlockedReason">
-  <int value="0" label="GPU config error"/>
-  <int value="1" label="Blocklisted"/>
-  <int value="2" label="Blocklisted for CPU adapter"/>
-  <int value="3" label="Not blocked"/>
-</enum>
-
-<enum name="GpuErrorReason">
-  <int value="0" label="Other"/>
-  <int value="1" label="DXGI_ERROR_DEVICE_HUNG"/>
-  <int value="2" label="DXGI_ERROR_DEVICE_REMOVED or VK_ERROR_DEVICE_LOST"/>
-  <int value="3" label="Failed to create device."/>
-  <int value="4" label="VK_ERROR_OUT_OF_DEVICE_MEMORY"/>
-</enum>
-
 <enum name="GpuImageUsageState">
   <int value="0" label="Wasted, once"/>
   <int value="1" label="Used, once"/>
@@ -26079,12 +26064,6 @@ Called by update_net_error_codes.py.-->
   <int value="503" label="503: Service Unavailable"/>
   <int value="504" label="504: Gateway Timeout"/>
   <int value="505" label="505: HTTP Version Not Supported"/>
-</enum>
-
-<enum name="VeryLowPerformanceReason">
-  <int value="0" label="Low RAM"/>
-  <int value="1" label="Slow output"/>
-  <int value="2" label="Slow input"/>
 </enum>
 
 <!-- LINT.IfChange(VideoCodec) -->

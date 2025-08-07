@@ -47,53 +47,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
 
-<enum name="EmbeddingModelLoadDlcStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kInvalidUuid"/>
-  <int value="2" label="kReadJsonFailed"/>
-  <int value="3" label="kParseJsonFailed"/>
-  <int value="4" label="kNoModelType"/>
-  <int value="5" label="kNoModelVersion"/>
-  <int value="6" label="kNoTfliteInfo"/>
-  <int value="7" label="kUnknownModelType"/>
-  <int value="8" label="kNoTflitePath"/>
-  <int value="9" label="kNoBuiltinSpm"/>
-  <int value="10" label="kNoSpmPath"/>
-  <int value="11" label="kNoDelegate"/>
-  <int value="12" label="kInstallFailed"/>
-</enum>
-
-<enum name="EmbeddingModelLoadEmbeddingStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kRetryBlocked"/>
-  <int value="2" label="kBuildRunnerFailed"/>
-  <int value="3" label="kRunnerLoadFailed"/>
-</enum>
-
-<enum name="EmbeddingModelTfliteRunnerLoadStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kUnsupportedDelegate"/>
-  <int value="2" label="kNoOdmlShim"/>
-  <int value="3" label="kFailedToLoadTokenizer"/>
-  <int value="4" label="kFailedToLoadFlatBufferModel"/>
-  <int value="5" label="kCantResolveModelOps"/>
-  <int value="6" label="kNoGpuOpenClDelegate"/>
-  <int value="7" label="kGpuOpenClDelegateModifyFailed"/>
-  <int value="8" label="kCantAllocateTensors"/>
-  <int value="9" label="kIncorrectInputSize"/>
-  <int value="10" label="kIncorrectOutputSize"/>
-</enum>
-
-<enum name="EmbeddingModelTfliteRunnerRunStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kNotLoaded"/>
-  <int value="2" label="kNoFormatFunctionInShim"/>
-  <int value="3" label="kFormatFailed"/>
-  <int value="4" label="kTokenizeFailed"/>
-  <int value="5" label="kTooLong"/>
-  <int value="6" label="kInvokeFailed"/>
-</enum>
-
 <enum name="EncryptionPrefixVersion">
   <int value="0" label="No prefix found"/>
   <int value="1" label="Version v10"/>
@@ -195,12 +148,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Succeeded on first attempt"/>
   <int value="1" label="Succeeded after retries"/>
   <int value="2" label="Failed after retry limit"/>
-</enum>
-
-<enum name="OnDeviceModelAndroidGenerateResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="UnknownError"/>
-  <int value="2" label="ApiNotAvailable"/>
 </enum>
 
 <enum name="RedactionToolCaller">

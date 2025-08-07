@@ -171,6 +171,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/offline/histograms.xml",
   "//tools/metrics/histograms/metadata/omnibox/enums.xml",
   "//tools/metrics/histograms/metadata/omnibox/histograms.xml",
+  "//tools/metrics/histograms/metadata/on_device_model/enums.xml",
+  "//tools/metrics/histograms/metadata/on_device_model/histograms.xml",
   "//tools/metrics/histograms/metadata/oobe/enums.xml",
   "//tools/metrics/histograms/metadata/oobe/histograms.xml",
   "//tools/metrics/histograms/metadata/optimization/enums.xml",
