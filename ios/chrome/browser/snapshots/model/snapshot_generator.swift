@@ -243,7 +243,11 @@ import UIKit
 
       for overlay in overlays {
         cgContextRef.saveGState()
-        let frameInWindow = baseView.convert(overlay.frame, to: nil)
+        let superview = overlay.superview ?? baseView
+        // The following is only correct if `superview` is indeed `overlay.superview`, since `frame`
+        // is defined as "the view’s location and size in its superview’s coordinate system".
+        // However it appears that some overlays do not have any superviews.
+        let frameInWindow = superview.convert(overlay.frame, to: nil)
         // This shifts the context so that drawing starts at the overlay's offset.
         cgContextRef.translateBy(x: frameInWindow.origin.x, y: frameInWindow.origin.y)
         overlay.layer.render(in: cgContextRef)
