@@ -105,6 +105,9 @@ void ChangePasswordFormFinder::OnInitialFormWaitingResult(
 
   form_waiter_.reset();
   if (form_manager) {
+    if (auto logger = GetLoggerIfAvailable(client_)) {
+      logger->LogMessage(Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_FOUND);
+    }
     logs_uploader_->MarkStepSkipped(kOpenFormFlowStep);
     std::move(callback_).Run(form_manager);
     return;
@@ -120,6 +123,12 @@ void ChangePasswordFormFinder::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
   CHECK(web_contents_);
   CHECK(callback_);
+
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogBoolean(
+        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED,
+        content.has_value());
+  }
 
   if (!content) {
     LogPageContentCaptureFailure(
@@ -195,6 +204,11 @@ void ChangePasswordFormFinder::OnButtonClicked(bool result) {
   CHECK(web_contents_);
   CHECK(callback_);
 
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogBoolean(
+        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_ON_BUTTON_CLICKED, result);
+  }
+
   click_helper_.reset();
 
   if (!result) {
@@ -224,6 +238,9 @@ void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
 }
 
 void ChangePasswordFormFinder::OnFormNotFound() {
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_NOT_FOUND);
+  }
   CHECK(callback_);
   std::move(callback_).Run(nullptr);
 }
