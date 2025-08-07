@@ -184,6 +184,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionPredictionSource) -->
 
+<!-- LINT.IfChange(PermissionPredictionSupportedType) -->
+
+<enum name="PermissionPredictionSupportedType">
+  <int value="0" label="Notifications"/>
+  <int value="1" label="Geolocation"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionPredictionSupportedType) -->
+
 <!-- LINT.IfChange(PermissionPromptDismissMethod) -->
 
 <enum name="PermissionPromptDismissMethod">

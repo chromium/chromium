@@ -1452,6 +1452,19 @@ void PermissionUmaUtil::RecordDSEEffectiveSetting(
 }
 
 // static
+void PermissionUmaUtil::RecordPermissionPredictionConcurrentRequests(
+    RequestType request_type) {
+  permissions::PermissionPredictionSupportedType prediction_supported_type =
+      request_type == permissions::RequestType::kNotifications
+          ? permissions::PermissionPredictionSupportedType::kNotifications
+          : permissions::PermissionPredictionSupportedType::kGeolocation;
+
+  base::UmaHistogramEnumeration(
+      "Permissions.PredictionService.ConcurrentRequests",
+      prediction_supported_type);
+}
+
+// static
 void PermissionUmaUtil::RecordPermissionPredictionSource(
     PermissionPredictionSource prediction_source,
     RequestType request_type) {

@@ -169,7 +169,27 @@ TEST_P(PredictionBasedPermissionUiDecisionTest,
   EXPECT_EQ(GetParam().expected_decision.warning_reason,
             decision.warning_reason);
 }
+TEST_F(PredictionBasedPermissionUiSelectorTest, ConcurrentRequestsTest) {
+  base::HistogramTester histogram_tester;
+  PredictionBasedPermissionUiSelector prediction_selector(profile());
 
+  // Imitate that there is a still running model execution and the callback
+  // has not been called yet.
+  prediction_selector.set_callback_for_testing(
+      base::BindLambdaForTesting([&](const Decision& decision) {}));
+
+  permissions::MockPermissionRequest request(
+      permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE);
+
+  prediction_selector.SelectUiToUse(
+      /*web_contents=*/nullptr, &request,
+      base::BindLambdaForTesting([&](const Decision& decision) {}));
+
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.ConcurrentRequests",
+      permissions::PermissionPredictionSupportedType::kNotifications, 1);
+}
 TEST_F(PredictionBasedPermissionUiSelectorTest, RequestsWithFewPromptsAreSent) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

@@ -77,8 +77,23 @@ enum class PredictionModelType {
   kOnDeviceAiV1Model = 3,
   kOnDeviceAiV3Model = 4,
   kOnDeviceAiV4Model = 5,
+
+  // Always keep at the end.
+  kMaxValue = kOnDeviceAiV4Model,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PredictionModels)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PermissionPredictionSupportedType)
+enum class PermissionPredictionSupportedType {
+  kNotifications = 0,
+  kGeolocation = 1,
+
+  // Always keep at the end.
+  kMaxValue = kGeolocation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionPredictionSupportedType)
 
 }  // namespace permissions
 

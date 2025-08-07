@@ -746,6 +746,9 @@ class PermissionUmaUtil {
   static void RecordDSEEffectiveSetting(ContentSettingsType permission_type,
                                         ContentSetting setting);
 
+  static void RecordPermissionPredictionConcurrentRequests(
+      RequestType request_type);
+
   static void RecordPermissionPredictionSource(
       PermissionPredictionSource prediction_source,
       RequestType request_type);
