@@ -32,7 +32,6 @@ public class ClipDrawableProgressBar extends ImageView {
         public final Rect progressBarRect = new Rect();
         public final Rect progressBarBackgroundRect = new Rect();
         public final Rect progressBarStaticBackgroundRect = new Rect();
-        public final Rect progressBarEndIndicator = new Rect();
 
         public int progressBarColor;
         public int progressBarBackgroundColor;
@@ -62,7 +61,6 @@ public class ClipDrawableProgressBar extends ImageView {
     @Nullable private ColorDrawable mForegroundColorDrawable;
     @Nullable private GradientDrawable mForegroundGradientDrawable;
     @Nullable private GradientDrawable mBackgroundGradientDrawable;
-    @Nullable private GradientDrawable mEndCapCircleDrawable;
     private int mForegroundColor;
     private int mBackgroundColor;
     private int mStaticBackgroundColor;
@@ -89,7 +87,6 @@ public class ClipDrawableProgressBar extends ImageView {
     public ClipDrawableProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setScaleType(ScaleType.FIT_XY); // Ensure the drawable fills the ImageView
         mDesiredVisibility = getVisibility();
 
         mForegroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
@@ -127,19 +124,11 @@ public class ClipDrawableProgressBar extends ImageView {
             // Background will be fully visible initially.
             backgroundScaleDrawable.setLevel(DRAWABLE_MAX_LEVEL);
 
-            // Create the end circular stop indicator
-            mEndCapCircleDrawable = createGradientDrawable(mForegroundColor, GradientDrawable.OVAL);
-            mEndCapCircleDrawable.setSize(mProgressBarHeight, mProgressBarHeight);
-
-            // A LayerDrawable with the 2 moving components, foreground and background, and the
-            // end stop indicator. Layers are drawn in the order they are added to the array,
+            // A LayerDrawable with the 2 moving components, foreground and background. Layers
+            // are drawn in the order they are added to the array,
             // with the last one appearing on top.
-            Drawable[] layers =
-                    {foregroundScaleDrawable, backgroundScaleDrawable, mEndCapCircleDrawable};
+            Drawable[] layers = {foregroundScaleDrawable, backgroundScaleDrawable};
             LayerDrawable layerDrawable = new LayerDrawable(layers);
-
-            // The circle (layer 2) will be drawn at the right end of the progress bar.
-            layerDrawable.setLayerGravity(2, Gravity.END | Gravity.CENTER_VERTICAL);
 
             setImageDrawable(layerDrawable);
         } else {
@@ -282,7 +271,6 @@ public class ClipDrawableProgressBar extends ImageView {
             }
         }
 
-        int endIndicatorSize = getBottom() - getTop();
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getLeft(), getTop(), getRight(), getBottom());
@@ -304,11 +292,6 @@ public class ClipDrawableProgressBar extends ImageView {
                         getRight(),
                         getBottom());
             }
-            drawingInfoOut.progressBarEndIndicator.set(
-                    getRight() - endIndicatorSize,
-                    getTop(),
-                    getRight(),
-                    getBottom());
         } else {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getRight(), getTop(), getLeft(), getBottom());
@@ -330,11 +313,6 @@ public class ClipDrawableProgressBar extends ImageView {
                         drawingInfoOut.progressBarRect.left,
                         getBottom());
             }
-            drawingInfoOut.progressBarEndIndicator.set(
-                    getLeft(),
-                    getTop(),
-                    getLeft() + endIndicatorSize,
-                    getBottom());
         }
     }
 
@@ -397,9 +375,7 @@ public class ClipDrawableProgressBar extends ImageView {
     public void setForegroundColor(int color) {
         if (useGradientDrawable()) {
             assert mForegroundGradientDrawable != null;
-            assert mEndCapCircleDrawable != null;
             mForegroundGradientDrawable.setColor(color);
-            mEndCapCircleDrawable.setColor(color);
         } else {
             assert mForegroundColorDrawable != null;
             mForegroundColorDrawable.setColor(color);

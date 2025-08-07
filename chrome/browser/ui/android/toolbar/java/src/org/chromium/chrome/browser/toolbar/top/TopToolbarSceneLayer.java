@@ -79,10 +79,6 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                         progressInfo.progressBarStaticBackgroundRect.left,
                         progressInfo.progressBarStaticBackgroundRect.width(),
                         progressInfo.progressBarStaticBackgroundColor,
-                        progressInfo.progressBarEndIndicator.left,
-                        progressInfo.progressBarEndIndicator.top,
-                        progressInfo.progressBarEndIndicator.width(),
-                        progressInfo.progressBarEndIndicator.height(),
                         progressInfo.cornerRadius,
                         progressInfo.progressBarVisualUpdateAvailable);
     }
@@ -147,10 +143,6 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                 int progressBarStaticBackgroundX,
                 int progressBarStaticBackgroundWidth,
                 int progressBarStaticBackgroundColor,
-                int progressBarEndIndicatorX,
-                int progressBarEndIndicatorY,
-                int progressBarEndIndicatorWidth,
-                int progressBarEndIndicatorHeight,
                 float cornerRadius,
                 boolean progressBarVisualUpdateAvailable);
     }
