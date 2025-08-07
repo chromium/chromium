@@ -404,8 +404,10 @@ PossibleTypes GetPossibleTypes(
     card.GetMatchingTypes(value_u16, app_locale, &pt.types);
   }
 
+  // Do not issue loyalty card votes on values matching the email format.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling)) {
+          features::kAutofillEnableLoyaltyCardsFilling) &&
+      !IsValidEmailAddress(value_u16)) {
     const std::string value_u8 = base::UTF16ToUTF8(value_u16);
     for (const LoyaltyCard& card : loyalty_cards) {
       if (value_u8 == card.loyalty_card_number()) {

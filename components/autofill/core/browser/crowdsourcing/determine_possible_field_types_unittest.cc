@@ -685,6 +685,40 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceLoyaltyCardField) {
                                                LOYALTY_MEMBERSHIP_ID);
 }
 
+// Tests that a loyalty card number that is also a valid email address is not
+// considered a loyalty card.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceLoyaltyCardField_NotAnEmail) {
+  constexpr char loyalty_card_number_as_email[] = "test@example.com";
+
+  FormData form;
+  form.set_fields({CreateTestFormField("loyalty_number", "loyalty_number",
+                                       loyalty_card_number_as_email,
+                                       FormControlType::kInputText)});
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  loyalty_card.set_loyalty_card_number(loyalty_card_number_as_email);
+
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&profile, "John", "", "Doe",
+                       loyalty_card_number_as_email, "", "", "", "", "", "", "",
+                       "");
+
+  std::vector<PossibleTypes> possible_types =
+      DeterminePossibleFieldTypesForUpload(
+          {profile}, std::vector<CreditCard>(), std::vector<EntityInstance>(),
+          {loyalty_card},
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", "en-us",
+          form_structure->fields());
+
+  // No loyalty card votes.
+  EXPECT_THAT(possible_types[0].types, UnorderedElementsAre(EMAIL_ADDRESS));
+}
+
 // Tests if the Autofill AI field types are crowdsourced.
 TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
   FormData form;
