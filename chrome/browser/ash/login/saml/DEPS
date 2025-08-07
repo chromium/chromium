@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/certificate_provider",
   "+chrome/browser/content_settings",
   "+chrome/browser/enterprise/connectors/device_trust/common",
-  "+chrome/browser/extensions/extension_browsertest.h",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",

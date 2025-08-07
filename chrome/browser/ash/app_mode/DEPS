@@ -68,7 +68,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
-  "+chrome/common/extensions",
   "+chrome/common/initialize_extensions_client.h",
   "+chrome/common/pref_names.h",
   "+chrome/grit",

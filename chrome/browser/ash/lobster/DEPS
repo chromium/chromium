@@ -16,15 +16,15 @@ include_rules = [
   "+chrome/browser/feedback",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
+  "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/ui/webui/ash/lobster",
   "+chrome/browser/ui/webui/ash/mako",
   "+chrome/common",
   "+chrome/grit/generated_resources.h",
-
-  "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/test/base/chrome_ash_test_base.h",
   "+chrome/test/base/testing_browser_process.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
+
   "+content/public/test/test_browser_context.h",
 ]
