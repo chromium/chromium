@@ -661,8 +661,7 @@ std::string FindMatchedDomainForHardCodedComboSquatting(
     const DomainInfo& navigated_domain) {
   DomainInfo suggested_matched_domain =
       GetDomainInfo(brand_name + '.' + GetRegistry(navigated_domain));
-  if (url_formatter::IsDomainAndRegistryATopDomain(
-          suggested_matched_domain.domain_and_registry)) {
+  if (IsTopDomain(suggested_matched_domain)) {
     return suggested_matched_domain.hostname;
   } else {
     return brand_name + ".com";
@@ -985,6 +984,20 @@ bool IsLikelyCharacterSwapFalsePositive(const DomainInfo& navigated_domain,
   // exclude matches like google.sr and google.rs.
   return navigated_domain.domain_without_registry ==
          matched_domain.domain_without_registry;
+}
+
+bool IsTopDomain(const DomainInfo& domain_info) {
+  // Top domains are only accessible through their skeletons, so query the top
+  // domains trie for each skeleton of this domain.
+  for (const std::string& skeleton : domain_info.skeletons) {
+    const url_formatter::TopDomainEntry top_domain =
+        url_formatter::LookupSkeletonInTopDomains(
+            skeleton, url_formatter::SkeletonType::kFull);
+    if (domain_info.domain_and_registry == top_domain.domain) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool GetMatchingDomain(
