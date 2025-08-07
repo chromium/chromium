@@ -373,8 +373,9 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   suggestion_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
-          match_.IsToolbelt() ? views::MinimumFlexSizeRule::kPreferredSnapToZero
-                              : views::MinimumFlexSizeRule::kScaleToZero,
+          match_.IsToolbelt() ?
+              views::MinimumFlexSizeRule::kPreferredSnapToMinimum :
+              views::MinimumFlexSizeRule::kScaleToMinimum,
           views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(2));
 

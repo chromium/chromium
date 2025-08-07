@@ -61,7 +61,7 @@ static constexpr int kUniformRowHeightIconSize = 28;
 static constexpr int kIphTextIndent = 14;
 
 // The extra space added to the left-side inset of the toolbelt suggestion.
-static constexpr int kToolbeltTextInsetLeft = 14;
+static constexpr int kToolbeltTextInsetLeft = 12;
 
 // The right-side inset of the toolbelt suggestion.
 static constexpr int kToolbeltTextInsetRight = 8;
@@ -597,6 +597,10 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
   }
 
   return gfx::Size(width, height);
+}
+
+gfx::Size OmniboxMatchCellView::GetMinimumSize() const {
+  return gfx::Size(GetTextIndent(), GetPreferredSize().height());
 }
 
 int OmniboxMatchCellView::GetImageIndent() const {

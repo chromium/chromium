@@ -101,6 +101,7 @@ class OmniboxMatchCellView : public views::View {
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  gfx::Size GetMinimumSize() const override;
 
  private:
   enum class LayoutStyle {
