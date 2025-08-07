@@ -50,7 +50,7 @@ void PersistentCacheCollection::ReduceFootPrint() {
   persistent_caches_.Clear();
 
   int64_t adjusted_target =
-      target_footprint_ / 100 * kFootPrintReductionHeadroomPercent;
+      target_footprint_ * (100 - kFootPrintReductionHeadroomPercent) / 100;
   int64_t current_footprint =
       backend_params_manager_->BringDownTotalFootprintOfFiles(adjusted_target)
           .current_footprint;
