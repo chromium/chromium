@@ -1023,15 +1023,36 @@ void ViewTransition::OnRenderingPausedTimeout() {
 }
 
 bool ViewTransition::UnsupportedCapture() {
-  // TODO(crbug.com/429763389): image masks are not currently supported on the
-  // scoped element. This restriction may be resolved by making the
-  // view-transition's layout object a sibling of the scoped element's
-  // layout object.For now, skip the transition.
   if (scope_ && scope_ != scope_->GetDocument().documentElement() &&
-      scope_->GetComputedStyle() && scope_->GetComputedStyle()->HasMask()) {
-    LogMessageToConsole(
-        "scoped view-transitions do not currently support mask-image");
-    return true;
+      scope_->GetComputedStyle()) {
+    // TODO(crbug.com/429763389): image masks are not currently supported on the
+    // scoped element. This restriction may be resolved by making the
+    // view-transition's layout object a sibling of the scoped element's
+    // layout object.For now, skip the transition.
+    const ComputedStyle* style = scope_->GetComputedStyle();
+    if (style->HasMask()) {
+      LogMessageToConsole(
+          "Scoped view-transitions do not currently support mask-image.");
+      return true;
+    }
+    // TODO(crbug.com/434891109): Various inline display types are not supported
+    // for scoped view transitions. The display type inline-block is an
+    // exception since having block characteristics in addition to inline.
+    // Depending on spec resolution, we may need to revisit the handling of
+    // inline elements.
+    if (style->IsDisplayInlineType() && !style->IsDisplayBlockContainer()) {
+      LogMessageToConsole(
+          "Scoped view-transitions do not currently support inline display "
+          "types.");
+      return true;
+    }
+
+    // TODO(crbug.com/436804019): These elements do not create a layout box.
+    if (style->InlinifiesChildren()) {
+      LogMessageToConsole(
+          "Scoped view-transitions do not currently support elements that "
+          "inline their children.");
+    }
   }
 
   return false;
