@@ -8160,9 +8160,6 @@ crbug.com/1518453 inspector-protocol/input/dispatchTouchEvent.js [ Failure Pass 
 # May fail due to test framework issue. Disabling while this is being resolved.
 crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
 
-# Fix the duplicated reporting on Mac12.
-crbug.com/1505556 [ Mac ] http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-details-captured.js [ Failure Pass Timeout ]
-
 # Flaky test
 crbug.com/1521140 [ Mac ] inspector-protocol/timeline/render-blocking-style.js [ Failure Pass ]
 
