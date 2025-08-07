@@ -1317,7 +1317,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
-        browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
+
+        // Disallow top browser controls from scrolling off on large tablets by setting min height
+        // equal to overall height.
+        // TODO(https://crbug.com/436900619): Converge on and implement long-term solution.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS)) {
+            int minHeight =
+                    DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(mActivity)
+                            ? topControlsNewHeight
+                            : mStatusIndicatorHeight;
+            browserControlsSizer.setTopControlsHeight(topControlsNewHeight, minHeight);
+        } else {
+            browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
+        }
         if (animate) browserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
     }
 

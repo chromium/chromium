@@ -1525,6 +1525,11 @@ extern const char kLensSearchSidePanelNewFeedbackDescription[];
 extern const char kLinkedServicesSettingName[];
 extern const char kLinkedServicesSettingDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kLockTopControlsOnLargeTabletsName[];
+extern const char kLockTopControlsOnLargeTabletsDescription[];
+#endif
+
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 

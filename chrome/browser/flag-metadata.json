@@ -6566,6 +6566,14 @@
     ],
     "expiry_milestone": 144
   },
+    {
+    "name": "lock-controls-on-tablets",
+    "owners": [
+      "twellington@chromium.org",
+      "skavuluru@google.com"
+    ],
+    "expiry_milestone": 150
+  },
   {
     "name": "mac-address-randomization",
     "owners": [ "chadduffin@chromium.org", "cros-device-enablement@google.com"],

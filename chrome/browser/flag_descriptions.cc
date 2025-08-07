@@ -2620,6 +2620,13 @@ const char kLinkedServicesSettingName[] = "Linked Services Setting";
 const char kLinkedServicesSettingDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kLockTopControlsOnLargeTabletsName[] =
+    "Lock top controls on tablets";
+const char kLockTopControlsOnLargeTabletsDescription[] =
+    "Disalllow scrolling off the top browser controls on large tablets";
+#endif
+
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =

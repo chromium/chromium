@@ -336,6 +336,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHubSlideAnimation,
     &kLegacyTabStateDeprecation,
     &kLockBackPressHandlerAtStart,
+    &kLockTopControlsOnLargeTablets,
     &kIncognitoScreenshot,
     &kInstanceSwitcherV2,
     &kKeyboardEscBackNavigation,
@@ -1074,6 +1075,10 @@ BASE_FEATURE(kLegacyTabStateDeprecation,
 BASE_FEATURE(kLockBackPressHandlerAtStart,
              "LockBackPressHandlerAtStart",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLockTopControlsOnLargeTablets,
+             "LockTopControlsOnLargeTablets",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIncognitoScreenshot,
              "IncognitoScreenshot",

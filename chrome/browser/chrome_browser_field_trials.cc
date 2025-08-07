@@ -176,6 +176,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(
       autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty);
+  // TODO(crbug.com/436900619): Remove when the long term solution is
+  // implemented.
+  feature_overrides.EnableFeature(
+      chrome::android::kLockTopControlsOnLargeTablets);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
