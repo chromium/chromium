@@ -319,6 +319,7 @@
 <translation id="1521655867290435174">Google Աղյուսակներ</translation>
 <translation id="1524669537550112617">Կահավորված վարձով տներ</translation>
 <translation id="1527263332363067270">Կապի վերականգնում...</translation>
+<translation id="1527490370616010873">Google-ը ընտրված չէ որպես ինքնալրացման ծառայություն։ Այս կարգավորումները միացնելու և ձեր Google հաշվի վճարային տեղեկություններն օգտագործելու համար անցեք <ph name="BEGIN_LINK" />Ինքնալրացման ծառայությունների կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="1528311629279578926">Միացումն արգելափակված է, քանի որ այն նախաձեռնվել է հրապարակային էջից՝ ձեր մասնավոր ցանցի սարքերին կամ սերվերներին միանալու համար։ Վերաբեռնեք այս էջը՝ միացումը թույլատրելու համար։</translation>
 <translation id="1529789484829130889">Դարակ 8</translation>
 <translation id="1530707389502320859">Կայքը, որը փորձում եք անցնել, նման է կեղծ կայքի։ Հաքերները երբեմն ստեղծում են կայքերի կրկնօրինակներ՝ փոքր-ինչ փոփոխելով դրանց URL-ը, ինչը հնարավոր չէ միանգամից նկատել։</translation>
@@ -1200,6 +1201,7 @@
 <translation id="3002501248619246229">Ստուգել մուտքային դարակի տվյալները</translation>
 <translation id="3005723025932146533">Ցուցադրել պահված պատճենը</translation>
 <translation id="300580149047131921">Վերջերս օգտագործված</translation>
+<translation id="3006864083554020786">տան հասցե</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab՝ հասանելի գործողությունները դիտելու համար, ապա սեղմեք Enter՝ ընտրված գործողությունը կատարելու համար։</translation>
 <translation id="3010991137650052245">Այս կայքում <ph name="PERMISSION" />ն օգտագործելու համար պետք է այն հասանելի դարձնեք <ph name="SHORT_PRODUCT_NAME" />-ում</translation>
 <translation id="3013711734159931232">Կենցաղային ապրանքներ</translation>
@@ -1834,6 +1836,7 @@
 <translation id="404831776305217138">«<ph name="EXTENSION_ID" />» ID-ով ընդլայնումների թարմացման URL-ն անվավեր է կամ դրա սխեման չի աջակցվում։ Աջակցվող սխեմաներն են՝ <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> և <ph name="FILE_SCHEME" />։</translation>
 <translation id="4050392779074832022">Դուք կկարողանաք օգտագործել այն Google-ի արտադրանքներում</translation>
 <translation id="4050599136622776556">Chromium-ը փորձում է փոփոխել վճարման եղանակները։</translation>
+<translation id="4052683751389375539">Փոփոխել, բացվում է նոր պատուհանում</translation>
 <translation id="405399507749852140">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
 <translation id="4059523390906550209">Իմանալ ավելին Զգայուն տվյալների պաշտպանության մասին</translation>
@@ -3529,6 +3532,7 @@
 <translation id="6881240511396774766">Արագ ստեղծեք նոր Google փաստաթուղթ</translation>
 <translation id="6882210908253838664">Եթե կայքը չի աշխատում, փորձեք ժամանակավորապես թույլատրել դրան օգտագործել երրորդ կողմի քուքիները։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Պաշտպանված վճարումների մուտքային տվյալների նույնականացման էկրանը փակված է</translation>
+<translation id="6883745783646124431">աշխատավայրի հասցե</translation>
 <translation id="6884662655240309489">Չափ 1</translation>
 <translation id="6886283082988906333">ZIP արխիվ</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

@@ -1003,6 +1003,7 @@
 <translation id="1668804837842452164">儲存至 <ph name="EMAIL" /> 的 <ph name="BRAND" /></translation>
 <translation id="1668979692599483141">瞭解建議功能</translation>
 <translation id="1670399744444387456">基本</translation>
+<translation id="1671749176392751693">已允許受保護內容的 ID</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 要求查看安全金鑰的製造商和型號</translation>
 <translation id="1674073353928166410">在無痕視窗中開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
 <translation id="1674142805528405174">Google 密碼管理工具可以提高帳戶密碼的強度，並儲存到帳戶 <ph name="EMAIL" /> 中。</translation>
@@ -1800,6 +1801,7 @@
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2236949375853147973">我的活動</translation>
+<translation id="2236963250883149540">要從 Chrome 自動填入功能中移除公司地址嗎？</translation>
 <translation id="2238379619048995541">頻率狀態資料</translation>
 <translation id="2240582393605484605">只儲存在這部裝置上的資料會保留在現有設定檔</translation>
 <translation id="2241053333139545397">讀取及變更你在多個網站上的資料</translation>
@@ -2386,6 +2388,7 @@
 <translation id="2624142942574147739">這個網頁正在存取你的攝影機和麥克風。</translation>
 <translation id="2626799779920242286">請稍後再試。</translation>
 <translation id="2627424346328942291">無法分享</translation>
+<translation id="2628258844236035475">要從 Chrome 自動填入功能中移除住家地址嗎？</translation>
 <translation id="2628770867680720336">如要啟用 ADB 偵錯，必須將這部 Chromebook 恢復原廠設定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
 <translation id="2629437048544561682">清除畫布</translation>
@@ -3844,6 +3847,7 @@
 <translation id="3665100783276035932">大多數網站應該都能正常運作</translation>
 <translation id="3665301845536101715">在側邊面板中開啟</translation>
 <translation id="3665589677786828986">Chrome 偵測到另一個程式竄改了部分瀏覽器設定，現已將這些設定重設為原始預設值。</translation>
+<translation id="3665918214153961651">正在上傳檔案</translation>
 <translation id="3665919494326051362">目前的版本是 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 偵錯 dump</translation>
 <translation id="3666971425390608309">已暫停下載「<ph name="FILE_NAME" />」。</translation>
@@ -4237,6 +4241,7 @@
 <translation id="3913689539406883376">在電腦電源拔除時開啟</translation>
 <translation id="3914173277599553213">必要</translation>
 <translation id="3914568430265141791">開啟「<ph name="FOLDER_TITLE" />」資料夾</translation>
+<translation id="3914894336972817683">無法上傳。檔案似乎沒有任何內容。</translation>
 <translation id="3915280005470252504">語音搜尋</translation>
 <translation id="3916445069167113093">這種類型的檔案可能會損害你的電腦，你要保留 <ph name="FILE_NAME" /> 這個檔案嗎？</translation>
 <translation id="3917184139185490151">你的電腦含有安全性模組，可用於實作 Chrome OS 中許多重要的安全性功能。如要瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
@@ -4312,6 +4317,7 @@
 <translation id="3959969108528118741">擁有者</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可對<ph name="IBAN_DESCRIPTION" /> 執行的其他動作</translation>
+<translation id="3961823084595287812">一律允許 <ph name="HOST" /> 使用 ID 播放受保護的內容</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
 <translation id="3965467402665811906">網站可以要求使用與你相關的既有資訊</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
@@ -5967,6 +5973,7 @@
 <translation id="5154108062446123722">「<ph name="PRINTING_DESTINATION" />」進階設定</translation>
 <translation id="5154702632169343078">主體</translation>
 <translation id="5154917547274118687">記憶體</translation>
+<translation id="5155299520372681119">檔案上傳作業已過期並移除。</translation>
 <translation id="5155327081870541046">在網址列中針對想搜尋的網站輸入搜尋捷徑 (例如「@bookmarks」)，然後按下你慣用的鍵盤快速鍵並輸入搜尋字詞。</translation>
 <translation id="5156638757840305347">游標會在出現或移動時醒目顯示</translation>
 <translation id="5157250307065481244">查看網站詳細資料</translation>
@@ -6245,6 +6252,7 @@
 <translation id="536278396489099088">ChromeOS 系統狀態和報告</translation>
 <translation id="5362916924854054326">不要顯示 SharePoint 和 OneDrive 檔案</translation>
 <translation id="5363109466694494651">執行 Powerwash 並恢復原廠設定</translation>
+<translation id="5365858324977454035">發生未預期的錯誤，檔案上傳作業失敗。</translation>
 <translation id="5365881113273618889">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="536638840841140142">無</translation>
 <translation id="5368246151595623328">透過 <ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
@@ -6273,6 +6281,7 @@
 <translation id="538822246583124912">企業政策已變更，已將 [實驗性功能] 按鈕新增至工具列。按一下這個按鈕即可開啟對話方塊並啟用實驗性功能。</translation>
 <translation id="5388436023007579456">系統服務和具有攝影機權限的應用程式與網站可使用攝影機。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
+<translation id="5388719243178419614">無法上傳。無法處理圖片檔。</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5389224261615877010">彩虹</translation>
 <translation id="5389794555912875905">前往不安全的網站前發出警告 (建議)</translation>
@@ -6315,6 +6324,7 @@
 <translation id="5414836363063783498">驗證中…</translation>
 <translation id="5415328625985164836">這是 Beta 版計畫，你現在可以在 Chromebook 上使用 Steam 玩遊戲。</translation>
 <translation id="5415497281076257439">詞組</translation>
+<translation id="5417293056300086453">這個網站可以使用 ID 播放受保護的內容。</translation>
 <translation id="5417312524372586921">瀏覽器主題</translation>
 <translation id="541737483547792035">放大畫面</translation>
 <translation id="541822678830750798">正在要求讀取及變更這個網站</translation>
@@ -6848,6 +6858,7 @@
 <translation id="5804259315582798390">無法啟用本機資料復原功能</translation>
 <translation id="5805268472388605531">按住鍵盤按鍵即可查看重音符號和特殊字元</translation>
 <translation id="5805697420284793859">視窗管理員</translation>
+<translation id="5806322307130093061"><ph name="FILE_NAME" />，按下 Enter 鍵即可刪除檔案</translation>
 <translation id="5806447147478173900">以下網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (預設)</translation>
 <translation id="5807774529265708172">顯示或隱藏螢幕小鍵盤</translation>
@@ -6987,6 +6998,7 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5902892210366342391">在無痕模式下前往不安全的網站前發出警告</translation>
 <translation id="5904614460720589786">配置作業發生問題，因此無法設定「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
+<translation id="5906457147959147328">繼續允許這個網站使用 ID 播放受保護的內容</translation>
 <translation id="5906655207909574370">即將更新為最新版本！重新啟動您的裝置即可完成更新程序。</translation>
 <translation id="5906732635754427568">與這個應用程式相關聯的資料會從這個裝置上移除。</translation>
 <translation id="5906974869830879618">請輸入 PIN 碼</translation>
@@ -7831,6 +7843,7 @@
 <translation id="6521214596282732365">網站通常會使用你的字型，方便你透過線上的設計及圖像工具建立具有高度一致性的內容</translation>
 <translation id="6523574494641144162">Google 密碼管理工具無法將這些密碼儲存在你的 Google 帳戶中，你可以改為儲存至這部裝置。</translation>
 <translation id="652492607360843641">你已連上<ph name="NETWORK_TYPE" />網路。</translation>
+<translation id="6525594601091660913">&gt; 檔案上傳完成</translation>
 <translation id="6525767484449074555">按一下「安裝」</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6527574156657772563">沒有可用的裝置。請在手機上登入 Google 帳戶，即可與這台 <ph name="DEVICE_TYPE" /> 連結。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -8962,8 +8975,10 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {BOOKMARK_COUNT} 個書籤只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
 <translation id="7328867076235380839">按鍵組合無效</translation>
+<translation id="7329009627557479564">無法上傳。檔案超過支援大小上限。</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />在裝置上的<ph name="FEATURE_NAME" />設定，透過 <ph name="USER_EMAIL" /> 帳戶分享。</translation>
+<translation id="733058866272972585">已禁止這個網站使用 ID 播放受保護的內容。</translation>
 <translation id="7331646370422660166">alt + 向下鍵</translation>
 <translation id="7332053360324989309">專有 Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">重複的分頁</translation>
@@ -9213,6 +9228,7 @@
 <translation id="7490683549040131791">檢查其餘密碼</translation>
 <translation id="7491962110804786152">分頁</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 個 Cookie}other{{NUM_COOKIES} 個 Cookie}}</translation>
+<translation id="7493355200491857618">已拒絕受保護內容的 ID</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 擴充功能可能會收集您輸入的所有文字，包括密碼和信用卡號碼等個人資料。您要使用這個擴充功能嗎？</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android 應用程式</translation>
@@ -10207,6 +10223,7 @@
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
 <translation id="8163152278172770963">不允許網站自動進入子母畫面</translation>
 <translation id="8163708146810922598">由舊到新</translation>
+<translation id="8164842729077473463">繼續禁止這個網站使用 ID 播放受保護的內容</translation>
 <translation id="8165997195302308593">Crostini 連接埠轉送</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 組電話號碼}other{# 組電話號碼}}</translation>
 <translation id="8168435359814927499">內容</translation>
@@ -10956,6 +10973,7 @@
 <translation id="8686142379631285985">目前登入的帳戶：<ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">設定 PIN 碼</translation>
+<translation id="8687774873995698516">一律禁止 <ph name="HOST" /> 使用 ID 播放受保護的內容</translation>
 <translation id="8688672835843460752">可用空間</translation>
 <translation id="8689811383248488428">拒絕並關閉設定檔</translation>
 <translation id="8689998525144040851">100</translation>
@@ -11301,12 +11319,14 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安裝應用程式...</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>
+<translation id="8919468987486771003">無法上傳。檔案上傳作業未通過驗證檢查。</translation>
 <translation id="8920133120839850939">選取「更多手勢」分頁，然後開啟「滑動瀏覽頁面」，即可瀏覽上一個或下一個頁面</translation>
 <translation id="8921369299636221117">無法提供 Concierge 服務。</translation>
 <translation id="8922348435910470639">重複預約</translation>
 <translation id="8922624386829239660">在滑鼠輕觸畫面邊緣時移動畫面</translation>
 <translation id="8923880975836399332">深藍綠色</translation>
 <translation id="8925124370124776087">已隱藏標題列</translation>
+<translation id="8925308599005372373">上傳 PDF</translation>
 <translation id="8925458182817574960">設定(&amp;S)</translation>
 <translation id="8926389886865778422">不再詢問這個問題</translation>
 <translation id="8926555406617248399">已隱藏分頁</translation>

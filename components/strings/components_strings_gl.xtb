@@ -315,6 +315,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alugueiro de mobiliario</translation>
 <translation id="1527263332363067270">Agardando pola conexión…</translation>
+<translation id="1527490370616010873">Google non é o teu provedor de autocompletado. Para activar estas opcións e usar a información de pago da túa Conta de Google, visita a <ph name="BEGIN_LINK" />configuración dos servizos de autocompletar<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Bloqueouse a conexión porque a iniciou unha páxina pública para conectarse a dispositivos ou servidores da túa rede privada. Volve cargar esta páxina para permitir a conexión.</translation>
 <translation id="1529789484829130889">Bandexa 8</translation>
 <translation id="1530707389502320859">O sitio que acabas de tentar visitar parece falso. Ás veces, os atacantes crean copias de sitios introducindo nos URL cambios pequenos e difíciles de ver.</translation>
@@ -1194,6 +1195,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3002501248619246229">Comproba o soporte da bandexa de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia gardada</translation>
 <translation id="300580149047131921">Usada recentemente</translation>
+<translation id="3006864083554020786">enderezo da casa</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme o tabulador para explorar as accións dispoñibles e despois Introducir para executar a acción seleccionada.</translation>
 <translation id="3010991137650052245">Concédelle permiso de <ph name="PERMISSION" /> a <ph name="SHORT_PRODUCT_NAME" /> para que poida usar ese recurso neste sitio</translation>
 <translation id="3013711734159931232">Produtos do fogar</translation>
@@ -1828,6 +1830,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="404831776305217138">O URL de actualización da extensión co código <ph name="EXTENSION_ID" /> non é válido ou usa un esquema non compatible. Os esquemas compatibles son: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Poderás usalo nos diferentes produtos de Google</translation>
 <translation id="4050599136622776556">Chromium está tentando editar os métodos de pago.</translation>
+<translation id="4052683751389375539">Ao editar, ábrese unha nova ventá</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Máis información sobre a protección de datos confidenciais</translation>
@@ -3520,6 +3523,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6881240511396774766">Crear rapidamente un novo documento de Google</translation>
 <translation id="6882210908253838664">Se un sitio non funciona, proba a concederlle permiso temporal para usar as cookies de terceiros. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">A folla de autenticación da credencial de pagos seguros está pechada</translation>
+<translation id="6883745783646124431">enderezo do traballo</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886283082988906333">Arquivo ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

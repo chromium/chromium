@@ -3,8 +3,10 @@
 <translationbundle lang="sl">
 <translation id="1045545926731898784">To spletno mesto pripada skupini spletnih mest, kot jo določa <ph name="SET_OWNER" /> in ki lahko deli vašo dejavnost v skupini, da bi spletna mesta delovala, kot je predvideno.</translation>
 <translation id="1055273091707420432">Chromium samodejno izbriše teme oglasov, starejše od štirih tednov.</translation>
+<translation id="1145223915439299117">Chrome blokira piškotke tretjih oseb v anonimnem načinu, vendar je razširitev dovolila piškotke tretjih oseb za to spletno mesto.</translation>
 <translation id="1184166532603925201">V anonimnem načinu Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb</translation>
 <translation id="1205053266843535401">Omejitev dostopa do podatkov o napravi in brskalniku</translation>
+<translation id="1281098210028343866">Pomagajte nam izboljšati Chromium, tako da nam poveste, zakaj ste začasno zaustavili zaščite pred sledenjem</translation>
 <translation id="1297285729613779935">Oglasi, ki jih predlaga spletno mesto, pomagajo zaščititi zgodovino brskanja in identiteto ter hkrati omogočajo spletnim mestom, da vam prikazujejo ustrezne oglase. Na podlagi vaše dejavnosti, na primer tega, kako preživljate čas na spletnih mestih, ki jih obiščete, vam lahko druga spletna mesta med nadaljevanjem brskanja predlagajo sorodne oglase. Ogledate si lahko seznam teh spletnih mest in v nastavitvah blokirate tista, ki jih ne želite.</translation>
 <translation id="132963621759063786">Chromium po 30 dneh izbriše vse podatke o dejavnosti, ki ste jih delili s spletnimi mesti. Če znova obiščete spletno mesto, se morda znova prikaže na seznamu. Preberite več o <ph name="BEGIN_LINK1" />upravljanju zasebnosti pri oglaševanju v Chromiumu<ph name="LINK_END1" />.</translation>
 <translation id="1355088139103479645">Želite izbrisati vse podatke?</translation>
@@ -14,6 +16,7 @@
 <translation id="1559726735555610004">Google od podjetij zahteva, da javno izjavijo, da teh podatkov ne bodo uporabljala za sledenje uporabnikov po spletnih mestih. Nekatera spletna mesta morda uporabljajo vašo dejavnost, da izkušnjo osebno prilagodijo za več kot samo oglase. To lahko združijo z drugimi podatki, ki jih že imajo o vas. Podjetja so odgovorna za obveščanje o tem, kako uporabljajo vaše podatke. Več o tem, kako Google varuje vaše podatke, lahko preberete v <ph name="BEGIN_LINK" />pravilniku o zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">V anonimnem načinu spletna mesta ne morejo uporabljati piškotkov tretjih oseb. Če spletno mesto, ki temelji na teh piškotkih, ne deluje, lahko <ph name="BEGIN_LINK" />poskusite temu spletnemu mestu omogočiti začasni dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />Kako spletna mesta uporabljajo te podatke?<ph name="END_BOLD" /> Chrome med brskanjem beleži teme, ki vas zanimajo. Oznake tem so vnaprej določene in vključujejo stvari, kot so umetnost in zabava, nakupovanje in šport. Pozneje lahko spletno mesto, ki ga obiščete, od Chroma zahteva dostop do nekaterih tem zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
+<translation id="172522356264798673">Nadaljuj zaščite pred sledenjem</translation>
 <translation id="1732764153129912782">Spremembe lahko izvedete v nastavitvah zasebnosti pri oglaševanju</translation>
 <translation id="1780659583673667574">Če na primer obiščete spletno mesto, da bi poiskali recept za večerjo, se lahko spletno mesto odloči, da vas zanima kuhanje. Pozneje vam lahko drugo spletno mesto prikaže povezan oglas za storitev dostave živil, ki ga predlaga prvo spletno mesto.</translation>
 <translation id="1818866261309406359">Upravljanje podatkov povezanih spletnih mest na novem zavihku</translation>
@@ -24,6 +27,7 @@
 <translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="2089118378428549994">Odjavljeni boste s teh spletnih mest</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Kako lahko upravljate te podatke?<ph name="END_BOLD" /> Chrome samodejno izbriše spletna mesta, starejša od 30 dni. Spletno mesto, ki ga znova obiščete, se morda znova prikaže na seznamu. Če ne želite, da vam spletno mesto predlaga oglase, lahko to možnost kadar koli izklopite v nastavitvah Chroma.</translation>
+<translation id="2090761099683423637">Zaščite so začasno zaustavljene, dokler niso zaprta vsa anonimna okna.</translation>
 <translation id="2096716221239095980">Izbriši vse podatke</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2213012319160025454">Upravljanje zaščit pred sledenjem v anonimnem načinu</translation>
@@ -36,6 +40,8 @@
 <translation id="2578376035831129583">Velja za vdelana spletna mesta, ne pa za spletno mesto, ki ga neposredno obiščete</translation>
 <translation id="259163387153470272">Spletna mesta in njihovi oglaševalski partnerji lahko za osebno prilagajanje oglasov uporabljajo vašo dejavnost, na primer podatke o tem, kako preživljate čas na spletnih mestih, ki jih obiščete</translation>
 <translation id="2669351694216016687">Google od podjetij zahteva, da javno izjavijo, da teh podatkov ne bodo uporabljala za sledenje uporabnikov po spletnih mestih. Nekatera spletna mesta morda uporabljajo vašo dejavnost, da izkušnjo osebno prilagodijo za več kot samo oglase. To lahko združijo z drugimi podatki, ki jih že imajo o vas. Podjetja so odgovorna za obveščanje o tem, kako uporabljajo vaše podatke. <ph name="BEGIN_LINK1" />Preberite več o tem v pravilniku o zasebnosti<ph name="LINK_END1" />.</translation>
+<translation id="2672038477572666782">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste začasno zaustavili zaščite pred sledenjem</translation>
+<translation id="2818622030603911133">Zaščite pred sledenjem so začasno zaustavljene na tem spletnem mestu</translation>
 <translation id="2842751064192268730">Teme oglasov omejujejo, katere podatke lahko spletna mesta in njihovi oglaševalski partnerji dobijo o vas, da vam lahko prikazujejo osebno prilagojene oglase. Chrome lahko beleži teme zanimanja na podlagi nedavne zgodovine brskanja. Pozneje lahko spletno mesto, ki ga obiščete, od Chroma zahteva ustrezne teme zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
 <translation id="2937236926373704734">Spletna mesta, ki jih ne želite, lahko blokirate. Chromium prav tako s seznama samodejno izbriše spletna mesta, starejša od 30 dni.</translation>
 <translation id="2979365474350987274">Piškotki tretjih oseb so omejeni</translation>
@@ -64,6 +70,7 @@
 <translation id="4009365983562022788">Google od podjetij zahteva, da javno izjavijo, da teh podatkov ne bodo uporabljala za sledenje uporabnikov po spletnih mestih. Nekatera spletna mesta morda uporabljajo vašo dejavnost, da izkušnjo osebno prilagodijo za več kot samo oglase. To lahko združijo z drugimi podatki, ki jih že imajo o vas. Podjetja so odgovorna za obveščanje o tem, kako uporabljajo vaše podatke. Preberite več o tem v <ph name="BEGIN_LINK1" />pravilniku o zasebnosti<ph name="LINK_END1" />.</translation>
 <translation id="4053540477069125777">Sorodna spletna mesta, ki jih definira <ph name="RWS_OWNER" /></translation>
 <translation id="408237597986622827">Chromium blokira piškotke tretjih oseb v anonimnem načinu, vendar ste za to spletno mesto ustvarili izjemo. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete.</translation>
+<translation id="4115793614265434327">Chromium blokira piškotke tretjih oseb v anonimnem načinu, vendar je skrbnik dovolil piškotke tretjih oseb za to spletno mesto.</translation>
 <translation id="4159125650195886935">Chromium blokira piškotke tretjih oseb v anonimnem načinu, vendar je skrbnik dovolil piškotke tretjih oseb za to spletno mesto. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete.</translation>
 <translation id="417625634260506724">Skupna shramba, ki jo uporabljajo spletna mesta na seznamu: <ph name="TOTAL_USAGE" /></translation>
 <translation id="4177501066905053472">Teme oglasov</translation>
@@ -92,13 +99,16 @@
 <translation id="5055880590417889642">Vaša dejavnost je ena od številnih stvari, ki jih lahko spletno mesto uporablja pri predlaganju oglasov. Ko so oglasi, ki jih predlaga spletno mesto, izklopljeni, vam spletna mesta lahko še vedno prikazujejo oglase, vendar bodo morda manj osebno prilagojeni. Preberite več o</translation>
 <translation id="5117284457376555514">Spletna mesta ne morejo uporabljati piškotkov tretjih oseb za osebno prilagajanje vsebine in oglasov ter za pridobivanje podatkov o dejanjih, ki jih izvajate na drugih spletnih mestih, razen če sorodnim spletnim mestom omogočite dostop do njih. Nekatere funkcije spletnega mesta morda ne bodo delovale po pričakovanjih.</translation>
 <translation id="5165490319523240316">Spletna mesta in njihovi oglaševalski partnerji lahko za osebno prilagajanje oglasov na drugih spletnih mestih uporabljajo vašo dejavnost, na primer podatke o tem, kako preživljate čas na spletnih mestih, ki jih obiščete. Če na primer obiščete spletno mesto, da bi poiskali recept za večerjo, se lahko spletno mesto odloči, da vas zanima kuhanje. Pozneje vam lahko drugo spletno mesto prikaže povezan oglas za storitev dostave živil, ki ga predlaga prvo spletno mesto.</translation>
+<translation id="5362892126200493757">Povejte nam, zakaj ste na tem spletnem mestu začasno zaustavili zaščite pred sledenjem</translation>
 <translation id="544199055391706031">Vaša dejavnost je ena od številnih stvari, ki jih lahko spletno mesto uporablja pri predlaganju oglasov. Ko so oglasi, ki jih predlaga spletno mesto, izklopljeni, vam spletna mesta lahko še vedno prikazujejo oglase, vendar bodo morda manj osebno prilagojeni. Preberite več o <ph name="BEGIN_LINK" />oglasih, ki jih predlaga spletno mesto<ph name="END_LINK" />.</translation>
 <translation id="5495405805627942351">Upravljanje podatkov povezanih spletnih mest</translation>
 <translation id="5535388436012824806">Chrome v anonimnem načinu blokira piškotke tretjih oseb, vendar ste za to spletno mesto ustvarili izjemo. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete.</translation>
 <translation id="5574580428711706114">Google od podjetij zahteva, da javno izjavijo, da teh podatkov ne bodo uporabljala za sledenje vam po spletnih mestih. Podjetja so odgovorna za obveščanje o tem, kako uporabljajo vaše podatke. <ph name="BEGIN_LINK1" />Preberite več o tem v pravilniku o zasebnosti<ph name="LINK_END1" />.</translation>
+<translation id="565589626121534692">Začasno ustavi zaščite pred sledenjem</translation>
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5759648952769618186">Teme temeljijo na nedavni zgodovini brskanja in pomagajo omejiti, katere podatke lahko spletna mesta in njihovi oglaševalski partnerji dobijo o vas, da vam lahko prikazujejo osebno prilagojene oglase.</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />Kako spletna mesta uporabljajo te podatke?<ph name="END_BOLD" /> Spletna mesta, ki jih obiščete, lahko od Chroma zahtevajo podatke zaradi merjenja uspešnosti oglasov. Chrome ščiti vašo zasebnost tako, da omejuje podatke, ki jih lahko spletna mesta medsebojno delijo.</translation>
+<translation id="5841014997407214978">Poskusite začasno zaustaviti zaščite pred sledenjem na tem spletnem mestu, da bodo funkcije spletnega mesta delovale po pričakovanjih.</translation>
 <translation id="5861490386119603604">Chrome v anonimnem načinu blokira piškotke tretjih oseb, vendar je skrbnik za to spletno mesto dovolil piškotke tretjih oseb. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete.</translation>
 <translation id="5915946252696843290">Zasebnost in podatki spletnih mest</translation>
 <translation id="5985520262499095091">Chrome blokira piškotke tretjih oseb v anonimnem načinu, vendar je razširitev dovolila piškotke tretjih oseb za to spletno mesto. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete.</translation>
@@ -108,6 +118,7 @@
 <translation id="6205593033237791753">Omejite dostop do naslova IP. Ta nastavitev je vklopljena.</translation>
 <translation id="6272892028045906139">Nastavitve za zaščito pred sledenjem v anonimnem načinu</translation>
 <translation id="6282129116202535093">Oglasi, ki jih predlaga spletno mesto, pomagajo zaščititi zgodovino brskanja in identiteto ter hkrati omogočajo spletnim mestom, da vam prikazujejo ustrezne oglase. Na podlagi vaše dejavnosti lahko druga spletna mesta med nadaljevanjem brskanja predlagajo sorodne oglase. Ogledate si lahko seznam teh spletnih mest in v nastavitvah blokirate tista, ki jih ne želite.</translation>
+<translation id="6291177244430967858">Zaščite pred sledenjem so znova omogočene</translation>
 <translation id="6308169245546905162">Spletna mesta lahko uporabljajo piškotke tretjih oseb, da pridobijo podatke o dejanjih, ki jih izvajate na drugih spletnih mestih</translation>
 <translation id="6388287739339671750">Blokiranje skriptov za sledenje</translation>
 <translation id="6398358690696005758">Več o tem, kako Google varuje vaše podatke, lahko preberete v <ph name="BEGIN_LINK1" />pravilniku o zasebnosti<ph name="LINK_END1" />.</translation>
@@ -116,6 +127,7 @@
 <translation id="6710025070089118043">Spletna mesta ne morejo uporabljati piškotkov tretjih oseb za osebno prilagajanje vsebine in oglasov ter za pridobivanje podatkov o dejanjih, ki jih izvajate na drugih spletnih mestih, razen če sorodnim spletnim mestom omogočite dostop do njih</translation>
 <translation id="6774168155917940386">Google od podjetij zahteva, da javno izjavijo, da teh podatkov ne bodo uporabljala za sledenje uporabnikov po spletnih mestih. Nekatera spletna mesta morda uporabljajo vašo dejavnost, da izkušnjo osebno prilagodijo za več kot samo oglase. To lahko združijo z drugimi podatki, ki jih že imajo o vas. Podjetja so odgovorna za obveščanje o tem, kako uporabljajo vaše podatke. Preberite več o tem v <ph name="BEGIN_LINK" />pravilniku o zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">Ali je oglas, ki je prikazan, osebno prilagojen, je lahko odvisno od več dejavnikov, vključno s to nastavitvijo, <ph name="BEGIN_LINK1" />temami oglasov<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />nastavitvami piškotkov<ph name="LINK_END2" /> in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase.</translation>
+<translation id="6904948821498934430">Chromium blokira piškotke tretjih oseb v anonimnem načinu, vendar ste za to spletno mesto ustvarili izjemo.</translation>
 <translation id="6968337645683500044">Na voljo samo, če je anonimni način odprt na zavihku Chromiuma, v katerega ste prijavljeni</translation>
 <translation id="6984151429741932257">Omejitev dostopa do naslova IP</translation>
 <translation id="7011445931908871535">Želite izbrisati podatke?</translation>
@@ -130,15 +142,20 @@
 <translation id="7453144832830554937">Funkcije spletnega mesta, ki temeljijo na piškotkih tretjih oseb, morda ne bodo delovale</translation>
 <translation id="7475768947023614021">Pregled nastavitve tem oglasov</translation>
 <translation id="7538480403395139206">Več o možnosti »Omogoči piškotke tretjih oseb«</translation>
+<translation id="7590906321816761911">Zaščite pred sledenjem so začasno zaustavljene</translation>
 <translation id="7646143920832411335">Pokaži sorodna spletna mesta</translation>
 <translation id="7686086654630106285">Več o oglasih, ki jih predlaga spletno mesto</translation>
 <translation id="7747003797915893222">Ko brskate v anonimnem načinu, Chrome ne shrani zgodovine brskanja, piškotkov in podatkov spletnih mest ter podatkov, ki jih vnesete v obrazce. Anonimni način prav tako ponuja funkcije, ki lahko omejijo podatke, ki so na voljo vdelanim spletnim mestom.</translation>
+<translation id="7766094116932490292">Zaščite pred sledenjem so omogočene</translation>
 <translation id="7778504454105164347">Chromium bo poskušal zaščititi vaš naslov IP pred vdelanimi spletnimi mesti, ki morda poskušajo pridobiti podatke o vas</translation>
 <translation id="7789658094395162849">Omejite dostop do naslova IP. Ta nastavitev je izklopljena.</translation>
 <translation id="795219618398555200">Chromium spletnim mestom onemogoči uporabo piškotkov tretjih oseb v anonimnem načinu</translation>
 <translation id="8080808348468200193">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb v anonimnem načinu</translation>
+<translation id="8086115837395871435">Vnovično nalaganje spletnega mesta</translation>
 <translation id="8096996737013848963">Zaščitite naslov IP</translation>
+<translation id="8180936577740217261">Chrome v anonimnem načinu blokira piškotke tretjih oseb, vendar ste za to spletno mesto ustvarili izjemo.</translation>
 <translation id="8200078544056087897">Funkcije spletnega mesta, ki temeljijo na piškotkih tretjih oseb, bi morale delovati po pričakovanjih</translation>
+<translation id="8257935463851606210">Chromium blokira piškotke tretjih oseb v anonimnem načinu, vendar je razširitev dovolila piškotke tretjih oseb za to spletno mesto.</translation>
 <translation id="8365690958942020052">Spletno mesto, ki ga obiščete, lahko zahteva te podatke – teme oglasa ali oglase, ki jih predlagajo spletna mesta, ki ste jih obiskali.</translation>
 <translation id="839994149685752920">Spletna mesta lahko uporabljajo piškotke tretjih oseb za osebno prilagajanje vsebine in oglasov</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
@@ -159,6 +176,7 @@
 <translation id="9043239285457057403">To dejanje bo izbrisalo vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="SITE_NAME" /> in sorodna spletna mesta</translation>
 <translation id="9162335340010958530">Spletna mesta ne morejo uporabljati piškotkov tretjih oseb za osebno prilagajanje vsebine in oglasov ter za pridobivanje podatkov o dejanjih, ki jih izvajate na drugih spletnih mestih, razen če sorodnim spletnim mestom omogočite dostop do njih</translation>
 <translation id="9168357768716791362">Google od podjetij zahteva, da javno izjavijo, da teh podatkov ne bodo uporabljala za sledenje uporabnikov po spletnih mestih. Nekatera spletna mesta morda uporabljajo vašo dejavnost, da izkušnjo osebno prilagodijo za več kot samo oglase. Teme oglasov morda shranjujejo tudi dlje kot štiri tedne in jih združijo z drugimi podatki, ki jih že imajo o vas. Podjetja so odgovorna za obveščanje o tem, kako uporabljajo vaše podatke. Preberite več o tem v <ph name="BEGIN_LINK" />pravilniku o zasebnosti<ph name="END_LINK" />.</translation>
+<translation id="9210228052057672287">Chrome v anonimnem načinu blokira piškotke tretjih oseb, vendar je skrbnik za to spletno mesto dovolil piškotke tretjih oseb.</translation>
 <translation id="931910205193418957">Chrome v anonimnem načinu blokira piškotke tretjih oseb, vendar je skrbnik za to spletno mesto dovolil piškotke tretjih oseb. Anonimni način ponuja tudi funkcije, ki lahko omejijo informacije, ki so na voljo podjetjem, katerih vsebina je vdelana na spletnem mestu, ki ga obiščete. Zaščite pred sledenjem v anonimnem načinu lahko upravljate v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="989939163029143304">Spletna mesta in njihovi oglaševalski partnerji lahko za osebno prilagajanje vsebine uporabljajo teme oglasov. V primerjavi s piškotki tretjih oseb teme oglasov pomagajo omejiti, katere podatke lahko spletna mesta pridobijo o vas med brskanjem.</translation>
 </translationbundle>

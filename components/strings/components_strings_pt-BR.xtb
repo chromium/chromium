@@ -315,6 +315,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1521655867290435174">Planilhas Google</translation>
 <translation id="1524669537550112617">Aluguel de imóveis mobiliados</translation>
 <translation id="1527263332363067270">Aguardando conexão...</translation>
+<translation id="1527490370616010873">O Google não é seu provedor de preenchimento automático. Para ativar essas configurações e usar as informações de pagamento da sua Conta do Google, acesse as <ph name="BEGIN_LINK" />configurações de preenchimentos automáticos<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">A conexão está bloqueada porque foi iniciada por uma página pública para se conectar a dispositivos ou servidores na sua rede particular. Atualize esta página para permitir a conexão.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">O site que você tentou acessar parece falso. Os invasores às vezes imitam sites fazendo pequenas alterações quase imperceptíveis no URL.</translation>
@@ -1194,6 +1195,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3002501248619246229">Verificar mídia de bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar cópia salva</translation>
 <translation id="300580149047131921">Usado recentemente</translation>
+<translation id="3006864083554020786">endereço de casa</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab para procurar as ações disponíveis e Enter para executar a selecionada.</translation>
 <translation id="3010991137650052245">Para usar a permissão <ph name="PERMISSION" /> neste site, autorize o acesso do<ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Suprimentos domésticos</translation>
@@ -1611,7 +1613,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3677008721441257057">Você quis dizer &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Não foi possível assinar a solicitação</translation>
 <translation id="3678529606614285348">Abrir página em uma nova janela anônima (Ctrl-Shift-N)</translation>
-<translation id="3678914302246317895">Insira o código de verificação de <ph name="OTP_LENGTH" /> dígitos</translation>
+<translation id="3678914302246317895">Insira o código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3681421644246505351">O Chrome registra temas do seu interesse com base no seu histórico de navegação recente.</translation>
 <translation id="3681841880472207951">Vídeo QuickTime</translation>
@@ -1828,6 +1830,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="404831776305217138">O URL de atualização da extensão com o ID "<ph name="EXTENSION_ID" />" é inválido ou usa um esquema sem suporte. Os esquemas com suporte são: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ele poderá ser usado em todos os produtos do Google</translation>
 <translation id="4050599136622776556">O Chromium está tentando editar formas de pagamento.</translation>
+<translation id="4052683751389375539">Editar, abre uma nova janela</translation>
 <translation id="405399507749852140">Receba alertas se houver uma redução no preço em algum site</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4059523390906550209">Saiba mais sobre a Proteção de Dados Sensíveis</translation>
@@ -3520,6 +3523,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6881240511396774766">Criar um novo arquivo do Documentos Google rapidamente</translation>
 <translation id="6882210908253838664">Se um site não estiver funcionando, tente conceder uma permissão temporária para usar cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">A página de autenticação de credenciais para pagamento seguro está fechada</translation>
+<translation id="6883745783646124431">endereço de trabalho</translation>
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886283082988906333">Arquivo ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

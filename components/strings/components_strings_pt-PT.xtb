@@ -316,6 +316,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Arrendamentos com mobiliário</translation>
 <translation id="1527263332363067270">A aguardar ligação…</translation>
+<translation id="1527490370616010873">A Google não é o seu fornecedor de preenchimento automático. Para ativar estas definições e usar as informações de pagamento da sua Conta Google, visite as <ph name="BEGIN_LINK" />definições dos serviços de preenchimento automático<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">A ligação está bloqueada porque foi iniciada por uma página pública para estabelecer ligação a dispositivos ou servidores na sua rede privada. Atualize esta página para permitir a ligação.</translation>
 <translation id="1529789484829130889">Tabuleiro 8</translation>
 <translation id="1530707389502320859">O site que acabou de tentar visitar parece falso. Por vezes, os atacantes imitam sites ao efetuarem pequenas alterações difíceis de detetar no URL.</translation>
@@ -1767,6 +1768,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3927538228901078312">Sem tabelas de comparação</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Recusar</translation>
+<translation id="3928806096717999469">Editar, abre uma nova janela</translation>
 <translation id="3930260846839546333">Bolsas de mão e carteiras</translation>
 <translation id="3937834511546249636">Indústria de defesa</translation>
 <translation id="3939773374150895049">Quer utilizar o WebAuthn em vez do CVC?</translation>

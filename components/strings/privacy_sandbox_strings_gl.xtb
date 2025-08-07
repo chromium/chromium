@@ -3,8 +3,10 @@
 <translationbundle lang="gl">
 <translation id="1045545926731898784">Este sitio forma parte dun grupo definido por <ph name="SET_OWNER" />. A túa actividade pode compartirse entre os sitios do grupo para axudar a que funcionen segundo o previsto.</translation>
 <translation id="1055273091707420432">Chromium elimina automaticamente os temas dos anuncios que teñan máis de 4 semanas de antigüidade</translation>
+<translation id="1145223915439299117">Chrome bloquea as cookies de terceiros no modo de incógnito, pero unha extensión permitiunas neste sitio.</translation>
 <translation id="1184166532603925201">Cando navegas no modo de incógnito, Chrome impide que os sitios usen cookies de terceiros</translation>
 <translation id="1205053266843535401">Limita o acceso aos datos do navegador e do dispositivo</translation>
+<translation id="1281098210028343866">Para axudarnos a mellorar Chromium, cóntanos por que puxeches en pausa as proteccións contra o seguimento</translation>
 <translation id="1297285729613779935">Os anuncios suxeridos polos sitios axudan a protexer o teu historial de navegación e a túa identidade, e permiten que os sitios che mostren anuncios relevantes. A partir da túa actividade (por exemplo, información sobre como empregas o tempo nos sitios que visitas), outros sitios poden suxerir anuncios relacionados mentres continúas navegando. Na configuración podes ver unha lista destes sitios e bloquear os que non queiras.</translation>
 <translation id="132963621759063786">Chromium elimina todos os datos de actividade que compartises cos sitios ao cabo de 30 días. Se volves acceder a un sitio, pode que apareza de novo na lista. Consulta máis información sobre como <ph name="BEGIN_LINK1" />xestionar a privacidade nos anuncios en Chromium<ph name="LINK_END1" />.</translation>
 <translation id="1355088139103479645">Queres eliminar todos os datos?</translation>
@@ -14,6 +16,7 @@
 <translation id="1559726735555610004">Google require que as empresas declaren publicamente que non usarán estes datos para facerche ningún seguimento polos sitios que visites. Algúns sitios poden usar a túa actividade para personalizar non só os anuncios, senón tamén a experiencia que che ofrecen. Tamén poden combinar eses datos con outra información acerca de ti que xa coñezan. As empresas teñen a responsabilidade de informarte de como usan os teus datos. Consulta a nosa <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> para obter máis información sobre como protexe Google os teus datos.</translation>
 <translation id="1569440020357229235">Cando navegas no modo de incógnito, os sitios non poden usar as cookies de terceiros. Se algún sitio que emprega estas cookies non funciona, podes <ph name="BEGIN_LINK" />probar a permitirlle o acceso temporal ás cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />Como usan os sitios estes datos?<ph name="END_BOLD" /> Chrome rexistra temas de interese a medida que navegas. As etiquetas dos temas están predefinidas e inclúen categorías como Arte e entretemento, Compras ou Deportes. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre algúns dos teus temas para personalizar os anuncios que se che mostren.</translation>
+<translation id="172522356264798673">Retomar proteccións contra o seguimento</translation>
 <translation id="1732764153129912782">Podes facer cambios na configuración de privacidade nos anuncios</translation>
 <translation id="1780659583673667574">Por exemplo, se visitas un sitio a fin de buscar receitas para a cea, ese sitio pode determinar que che interesa a cociña. Máis tarde, pode que se che mostre noutro sitio un anuncio relacionado cun servizo de alimentos a domicilio suxerido polo primeiro sitio.</translation>
 <translation id="1818866261309406359">Xestionar os datos sobre os sitios relacionados nunha pestana nova</translation>
@@ -24,6 +27,7 @@
 <translation id="2004697686368036666">As funcións dalgúns sitios poden non estar operativas</translation>
 <translation id="2089118378428549994">Pecharase a túa sesión en todos eses sitios</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Como podes xestionar estes datos?<ph name="END_BOLD" /> Chrome elimina automaticamente os sitios que teñan máis de 30 días de antigüidade. Se volves visitar un sitio, é posible que apareza na lista outra vez. Tamén podes impedir que un sitio suxira anuncios que mostrarche e desactivar os anuncios suxeridos polos sitios cando queiras desde a configuración de Chrome.</translation>
+<translation id="2090761099683423637">As proteccións estarán en pausa ata que se pechen todas as ventás do modo de incógnito.</translation>
 <translation id="2096716221239095980">Eliminar todos os datos</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2213012319160025454">Xestiona as proteccións contra o seguimento do modo de incógnito</translation>
@@ -36,6 +40,8 @@
 <translation id="2578376035831129583">Aplicarase aos sitios inseridos, non aos sitios nos que esteas directamente</translation>
 <translation id="259163387153470272">Os sitios web e os seus socios publicitarios poden usar a túa actividade (por exemplo, información sobre como empregas o tempo nos sitios que visitas) para personalizar os anuncios que se che mostran</translation>
 <translation id="2669351694216016687">Google require que as empresas declaren publicamente que non usarán estes datos para facerche ningún seguimento polos sitios que visites. Algúns sitios poden usar a túa actividade para personalizar non só os anuncios, senón tamén a experiencia que che ofrecen. Tamén poden combinar eses datos con outra información acerca de ti que xa coñezan. As empresas teñen a responsabilidade de informarte de como usan os teus datos. <ph name="BEGIN_LINK1" />Máis información na nosa Política de privacidade<ph name="LINK_END1" /></translation>
+<translation id="2672038477572666782">Para axudarnos a mellorar Chrome, cóntanos por que puxeches en pausa as proteccións contra o seguimento</translation>
+<translation id="2818622030603911133">As proteccións contra o seguimento están en pausa neste sitio</translation>
 <translation id="2842751064192268730">Os temas dos anuncios limitan a información que os sitios e os seus socios publicitarios poden obter sobre ti co fin de mostrarche anuncios personalizados. Chrome pode tomar nota dos temas de interese en función do teu historial de navegación recente. Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre os temas relevantes para personalizar os anuncios que se che mostren.</translation>
 <translation id="2937236926373704734">Podes bloquear os sitios que non che interesen. Chromium tamén elimina automaticamente da lista os sitios que leven máis de 30 días nela.</translation>
 <translation id="2979365474350987274">As cookies de terceiros están limitadas</translation>
@@ -64,6 +70,7 @@
 <translation id="4009365983562022788">Google require que as empresas declaren publicamente que non usarán estes datos para facerche ningún seguimento polos sitios que visites. Algúns sitios poden usar a túa actividade para personalizar non só os anuncios, senón tamén a experiencia que che ofrecen. Tamén poden combinar eses datos con outra información acerca de ti que xa coñezan. As empresas teñen a responsabilidade de informarte de como usan os teus datos. Consulta máis información na nosa <ph name="BEGIN_LINK1" />Política de privacidade<ph name="LINK_END1" />.</translation>
 <translation id="4053540477069125777">Sitios relacionados definidos por <ph name="RWS_OWNER" /></translation>
 <translation id="408237597986622827">Chromium bloquea as cookies de terceiros no modo de incógnito, pero fixeches unha excepción para este sitio. O modo de incógnito tamén ofrece funcións que poden limitar a información dispoñible para as empresas cuxo contido estea inserido nun sitio que visites.</translation>
+<translation id="4115793614265434327">Chromium bloquea as cookies de terceiros no modo de incógnito, pero quen che administra a conta permitiunas neste sitio.</translation>
 <translation id="4159125650195886935">Chromium bloquea as cookies de terceiros no modo de incógnito, pero quen che administra a conta permitiunas neste sitio. O modo de incógnito tamén ofrece funcións que poden limitar a información dispoñible para as empresas cuxo contido estea inserido nun sitio que visites.</translation>
 <translation id="417625634260506724">Almacenamento total usado polos sitios da lista: <ph name="TOTAL_USAGE" /></translation>
 <translation id="4177501066905053472">Temas dos anuncios</translation>
@@ -92,13 +99,16 @@
 <translation id="5055880590417889642">Os datos sobre a túa actividade son parte da información que pode usar un sitio para suxerir anuncios. Cando os anuncios suxeridos polos sitios están desactivados, podes seguir vendo anuncios nos sitios aos que accedas, pero é posible que sexan menos personalizados. Consulta máis información sobre os</translation>
 <translation id="5117284457376555514">Os sitios non poden usar as cookies de terceiros para personalizar o contido nin os anuncios, nin tampouco para obter información sobre o que fas noutras webs, a non ser que lles permitas aos sitios relacionados acceder a eses datos. É posible que algunhas das súas funcións non se poidan usar segundo o previsto.</translation>
 <translation id="5165490319523240316">Os sitios e os seus socios publicitarios poden usar a túa actividade (por exemplo, información sobre como empregas o tempo nos sitios que visitas) para personalizar os anuncios noutros sitios. Por exemplo, se visitas un sitio a fin de buscar receitas para a cea, ese sitio pode determinar que che interesa a cociña. Máis tarde, pode que se che mostre noutro sitio un anuncio relacionado cun servizo de alimentos a domicilio suxerido polo primeiro sitio.</translation>
+<translation id="5362892126200493757">Dinos por que puxeches en pausa as proteccións contra o seguimento neste sitio</translation>
 <translation id="544199055391706031">Os datos sobre a túa actividade son parte da información que pode usar un sitio para suxerir anuncios. Cando os anuncios suxeridos polos sitios están desactivados, podes seguir vendo anuncios nos sitios aos que accedas, pero é posible que sexan menos personalizados. Consulta máis información sobre os <ph name="BEGIN_LINK" />anuncios suxeridos polos sitios<ph name="END_LINK" />.</translation>
 <translation id="5495405805627942351">Xestionar datos dos sitios relacionados</translation>
 <translation id="5535388436012824806">Chrome bloquea as cookies de terceiros no modo de incógnito, pero fixeches unha excepción para este sitio. O modo de incógnito tamén ofrece funcións que poden limitar a información dispoñible para as empresas cuxo contido estea inserido nun sitio que visites.</translation>
 <translation id="5574580428711706114">Google require que as empresas declaren publicamente que non usarán estes datos para facer ningún seguimento da túa actividade en diferentes sitios. As empresas teñen a responsabilidade de informarte de como usan os teus datos. Consulta máis información na nosa <ph name="BEGIN_LINK1" />Política de privacidade<ph name="LINK_END1" />.</translation>
+<translation id="565589626121534692">Pór en pausa proteccións contra o seguimento</translation>
 <translation id="5677928146339483299">Bloqueadas</translation>
 <translation id="5759648952769618186">Os temas baséanse no teu historial de navegación recente e permiten limitar a información que os sitios e os seus socios publicitarios poden obter sobre ti co fin de mostrarche anuncios personalizados</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />Como usan os sitios estes datos?<ph name="END_BOLD" /> Os sitios que visitas poden solicitarlle información a Chrome para axudarlles a medir o rendemento dos seus anuncios. Co obxectivo de protexer a túa privacidade, Chrome limita a información que os sitios poden compartir entre si.</translation>
+<translation id="5841014997407214978">Proba a pór en pausa as proteccións contra o seguimento neste sitio; é posible que así as funcións do sitio vaian segundo o previsto.</translation>
 <translation id="5861490386119603604">Chrome bloquea as cookies de terceiros no modo de incógnito, pero quen che administra a conta permitiunas neste sitio. O modo de incógnito tamén ofrece funcións que poden limitar a información dispoñible para as empresas cuxo contido estea inserido nun sitio que visites.</translation>
 <translation id="5915946252696843290">Privacidade e datos dos sitios</translation>
 <translation id="5985520262499095091">Chrome bloquea as cookies de terceiros no modo de incógnito, pero unha extensión permitiunas neste sitio. O modo de incógnito tamén ofrece funcións que poden limitar a información dispoñible para as empresas cuxo contido estea inserido nun sitio que visites.</translation>
@@ -108,6 +118,7 @@
 <translation id="6205593033237791753">Limita o acceso ao teu enderezo IP. Esta opción de configuración está activada.</translation>
 <translation id="6272892028045906139">Configuración das proteccións contra o seguimento do modo de incógnito</translation>
 <translation id="6282129116202535093">Os anuncios suxeridos polos sitios axudan a protexer o teu historial de navegación e a túa identidade, e permiten que os sitios che mostren anuncios relevantes. A partir da túa actividade, outros sitios poden suxerir anuncios relacionados a medida que navegas. Na configuración podes ver unha lista destes sitios e bloquear os que non queiras.</translation>
+<translation id="6291177244430967858">Proteccións contra o seguimento retomadas</translation>
 <translation id="6308169245546905162">Os sitios poden usar as cookies de terceiros para obter información sobre o que fas noutras webs</translation>
 <translation id="6388287739339671750">Bloquear scripts de seguimento</translation>
 <translation id="6398358690696005758">Consulta a nosa <ph name="BEGIN_LINK1" />Política de privacidade<ph name="LINK_END1" /> para obter máis información sobre como protexe Google os teus datos.</translation>
@@ -116,6 +127,7 @@
 <translation id="6710025070089118043">Os sitios non poden usar as cookies de terceiros para personalizar o contido nin os anuncios, nin tampouco para obter información sobre o que fas noutras webs, a non ser que lles deas aos sitios relacionados acceso a eses datos</translation>
 <translation id="6774168155917940386">Google require que as empresas declaren publicamente que non usarán estes datos para facerche ningún seguimento polos sitios que visites. Algúns sitios poden usar a túa actividade para personalizar non só os anuncios, senón tamén a experiencia que che ofrecen. Tamén poden combinar eses datos con outra información acerca de ti que xa coñezan. As empresas teñen a responsabilidade de informarte de como usan os teus datos. Consulta máis información na nosa <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">A personalización dos anuncios que se che mostran depende de moitos factores, como, por exemplo, desta opción de configuración, dos <ph name="BEGIN_LINK1" />temas dos anuncios<ph name="LINK_END1" />, da <ph name="BEGIN_LINK2" />configuración de cookies<ph name="LINK_END2" /> ou de se o sitio que estás vendo personaliza ou non os anuncios.</translation>
+<translation id="6904948821498934430">Chromium bloquea as cookies de terceiros no modo de incógnito, pero fixeches unha excepción para este sitio.</translation>
 <translation id="6968337645683500044">Só estará dispoñible cando o modo de incógnito se abra desde unha pestana de Chromium na que estea a sesión iniciada</translation>
 <translation id="6984151429741932257">Limita o acceso ao teu enderezo IP</translation>
 <translation id="7011445931908871535">Queres eliminar os datos?</translation>
@@ -130,15 +142,20 @@
 <translation id="7453144832830554937">É posible que non se poidan usar as funcións dos sitios que usan cookies de terceiros</translation>
 <translation id="7475768947023614021">Revisa a configuración dos temas dos anuncios</translation>
 <translation id="7538480403395139206">Máis información sobre a opción Permitir cookies de terceiros</translation>
+<translation id="7590906321816761911">Proteccións contra o seguimento en pausa</translation>
 <translation id="7646143920832411335">Mostrar sitios relacionados</translation>
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
 <translation id="7747003797915893222">Cando consultes páxinas no modo de incógnito, Chrome non gardará o teu historial de navegación, as cookies, os datos dos sitios nin a información que poñas en formularios. O modo de incógnito tamén ofrece funcións que poden limitar a información dispoñible para os sitios inseridos.</translation>
+<translation id="7766094116932490292">Proteccións contra o seguimento activadas</translation>
 <translation id="7778504454105164347">Chromium tentará protexer o teu enderezo IP dos sitios inseridos que poidan tratar de obter información sobre ti</translation>
 <translation id="7789658094395162849">Limita o acceso ao teu enderezo IP. Esta opción de configuración está desactivada.</translation>
 <translation id="795219618398555200">Chromium impide que os sitios usen cookies de terceiros no modo de incógnito</translation>
 <translation id="8080808348468200193">Chrome impide que os sitios usen cookies de terceiros no modo de incógnito</translation>
+<translation id="8086115837395871435">Volvendo cargar sitio</translation>
 <translation id="8096996737013848963">Protexer o teu enderezo IP</translation>
+<translation id="8180936577740217261">Chrome bloquea as cookies de terceiros no modo de incógnito, pero fixeches unha excepción para este sitio.</translation>
 <translation id="8200078544056087897">As funcións dos sitios que usan cookies de terceiros deberían funcionar de xeito normal</translation>
+<translation id="8257935463851606210">Chromium bloquea as cookies de terceiros no modo de incógnito, pero unha extensión permitiunas neste sitio.</translation>
 <translation id="8365690958942020052">Os sitios que visites poderán solicitar esta información, ben sexa sobre os temas dos anuncios ou acerca dos anuncios suxeridos polos sitios aos que accedeses anteriormente.</translation>
 <translation id="839994149685752920">Os sitios usan as cookies de terceiros para personalizar o contido e os anuncios</translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -159,6 +176,7 @@
 <translation id="9043239285457057403">Con esta acción, eliminaranse todos os datos e cookies que almacenasen <ph name="SITE_NAME" /> e os sitios relacionados</translation>
 <translation id="9162335340010958530">Os sitios non poden usar as cookies de terceiros para personalizar o contido nin os anuncios, nin tampouco para obter información sobre o que fas noutras webs, a non ser que lles permitas aos sitios relacionados acceder a eses datos</translation>
 <translation id="9168357768716791362">Google require que as empresas declaren publicamente que non usarán estes datos para facerche ningún seguimento polos sitios que visites. Algúns sitios poden usar a túa actividade para personalizar non só os anuncios, senón tamén a experiencia que che ofrecen. Tamén poden almacenar os temas dos anuncios durante máis de 4 semanas e combinar eses datos con outra información que xa teñan sobre ti. As empresas teñen a responsabilidade de informarte de como usan os teus datos. Consulta máis información na nosa <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" />.</translation>
+<translation id="9210228052057672287">Chrome bloquea as cookies de terceiros no modo de incógnito, pero quen che administra a conta permitiunas neste sitio.</translation>
 <translation id="931910205193418957">Chrome bloquea as cookies de terceiros no modo de incógnito, pero quen che administra a conta permitiunas neste sitio. O modo de incógnito tamén ofrece funcións que poden limitar a información dispoñible para as empresas cuxo contido estea inserido nun sitio que visites. Xestiona as proteccións contra o seguimento do modo de incógnito en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="989939163029143304">Os sitios web e os seus socios publicitarios poden usar os temas dos anuncios para personalizar o contido que se che mostra. En comparación coas cookies de terceiros, os temas de anuncios axudan a limitar a cantidade de información que os sitios poden obter sobre ti mentres navegas</translation>
 </translationbundle>

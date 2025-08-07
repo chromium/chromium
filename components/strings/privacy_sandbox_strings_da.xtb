@@ -3,8 +3,10 @@
 <translationbundle lang="da">
 <translation id="1045545926731898784">Dette website tilhører en gruppe af websites, der er defineret af <ph name="SET_OWNER" />, som kan dele din aktivitet i gruppen for at hjælpe websites med at fungere som forventet.</translation>
 <translation id="1055273091707420432">Chromium sletter automatisk annonceemner, der er mere end 4 uger gamle</translation>
+<translation id="1145223915439299117">Chrome blokerer tredjepartscookies i inkognito, men en udvidelse har tilladt tredjepartscookies for dette website.</translation>
 <translation id="1184166532603925201">Når du er i inkognitotilstand, blokerer Chrome websites, så de ikke kan bruge tredjepartscookies</translation>
 <translation id="1205053266843535401">Begræns adgangen til enheds- og browserdata</translation>
+<translation id="1281098210028343866">Hjælp os med at forbedre Chromium ved at fortælle os, hvorfor du har sat sporingsbeskyttelse på pause</translation>
 <translation id="1297285729613779935">Foreslåede annoncer fra websites hjælper med at beskytte din browserhistorik og identitet og giver websites tilladelse til at vise dig relevante annoncer. Ved hjælp af din aktivitet, f.eks. hvordan du bruger din tid på de websites, du besøger, kan andre websites foreslå relaterede annoncer, når du fortsætter med at browse. Du kan se en liste over disse websites og blokere dem, du ikke er interesseret i, ved at gå til indstillingerne.</translation>
 <translation id="132963621759063786">Chromium sletter alle aktivitetsdata, som du har delt med websites, efter 30 dage. Hvis du besøger et website igen, kan det dukke op på listen igen. Få flere oplysninger om <ph name="BEGIN_LINK1" />administration af privatliv vedrørende annoncering i Chromium<ph name="LINK_END1" />.</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
@@ -14,6 +16,7 @@
 <translation id="1559726735555610004">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Nogle websites bruger muligvis din aktivitet til at foretage personlig tilpasning af din brugeroplevelse i forbindelse med andet end annoncer. De kan også kombinere din aktivitet med andre oplysninger, som de allerede har om dig. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. Få flere oplysninger om, hvordan Google beskytter dine data, i vores <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Når du er i inkognitotilstand, kan websites ikke bruge tredjepartscookies. Hvis et website, der er afhængigt af disse cookies, ikke fungerer, kan du <ph name="BEGIN_LINK" />prøve at give det pågældende website midlertidig adgang til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />Hvordan bruger websites disse data?<ph name="END_BOLD" /> Chrome registrerer emner, du kan være interesseret i, mens du browser. Emneetiketter er foruddefinerede og omfatter ting som Kunst og underholdning, Shopping og Sport. Senere, når du besøger et website, kan websitet anmode Chrome om nogle relevante emner for at tilpasse de annoncer, du får vist, til dig personligt.</translation>
+<translation id="172522356264798673">Genoptag sporingsbeskyttelse</translation>
 <translation id="1732764153129912782">Du kan foretage ændringer i indstillingerne for privatliv vedrørende annoncering</translation>
 <translation id="1780659583673667574">Hvis du f.eks. besøger et website for at finde opskrifter til aftensmaden, kan websitet vurdere, at du er interesseret i madlavning. Senere kan et andet website vise dig en relateret annonce for en leveringstjeneste til dagligvarer, som det første website har foreslået.</translation>
 <translation id="1818866261309406359">Administrer data for relaterede websites på en ny fane</translation>
@@ -24,6 +27,7 @@
 <translation id="2004697686368036666">Funktionerne på visse websites fungerer muligvis ikke</translation>
 <translation id="2089118378428549994">Du bliver logget ud af disse websites</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Hvordan kan du administrere disse data?<ph name="END_BOLD" /> Chrome sletter automatisk websites, der er mere end 30 dage gamle. Et website, du besøger igen, kan komme tilbage på listen. Du kan også til enhver tid blokere et website, så det ikke foreslår annoncer til dig, og deaktivere foreslåede annoncer fra websites i Chrome-indstillingerne.</translation>
+<translation id="2090761099683423637">Beskyttelse er sat på pause, indtil alle inkognitovinduer er lukket.</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2213012319160025454">Administrer sporingsbeskyttelse i inkognito</translation>
@@ -36,6 +40,8 @@
 <translation id="2578376035831129583">Gælder for indlejrede websites, ikke det website, du besøger direkte</translation>
 <translation id="259163387153470272">Websites og deres annonceringspartnere kan bruge din aktivitet, f.eks. hvordan du bruger din tid på de websites, du besøger, til at tilpasse annoncer til dig personligt</translation>
 <translation id="2669351694216016687">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Nogle websites bruger muligvis din aktivitet til at foretage personlig tilpasning af din brugeroplevelse i forbindelse med andet end annoncer. De kan også kombinere din aktivitet med andre oplysninger, som de allerede har om dig. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. <ph name="BEGIN_LINK1" />Få flere oplysninger i vores privatlivspolitik<ph name="LINK_END1" /></translation>
+<translation id="2672038477572666782">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har sat sporingsbeskyttelse på pause</translation>
+<translation id="2818622030603911133">Sporingsbeskyttelse er sat på pause på dette website</translation>
 <translation id="2842751064192268730">Annonceemner begrænser, hvilke oplysninger websites og deres annonceringspartnere kan tilgå om dig, når de viser dig personligt tilpassede annoncer. Chrome kan registrere emner, du muligvis er interesseret i, baseret på din seneste browserhistorik. Senere, når du besøger et website, kan websitet anmode Chrome om nogle relevante emner for at tilpasse de annoncer, du får vist, til dig personligt.</translation>
 <translation id="2937236926373704734">Du kan blokere websites, du ikke er interesseret i. Chromium sletter også automatisk websites fra listen, som er mere end 30 dage gamle.</translation>
 <translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
@@ -64,6 +70,7 @@
 <translation id="4009365983562022788">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Nogle websites bruger muligvis din aktivitet til at foretage personlig tilpasning af din brugeroplevelse i forbindelse med andet end annoncer. De kan også kombinere din aktivitet med andre oplysninger, som de allerede har om dig. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. Få flere oplysninger i vores <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="LINK_END1" />.</translation>
 <translation id="4053540477069125777">Relaterede websites, der er defineret af <ph name="RWS_OWNER" /></translation>
 <translation id="408237597986622827">Chromium blokerer tredjepartscookies i inkognito, men du har gjort en undtagelse for dette website. Inkognito leverer også funktioner, der kan begrænse de oplysninger, som er tilgængelige for virksomheder, hvis indhold er indlejret på et website, du besøger.</translation>
+<translation id="4115793614265434327">Chromium blokerer tredjepartscookies i inkognito, men din administrator har tilladt tredjepartscookies for dette website.</translation>
 <translation id="4159125650195886935">Chromium blokerer tredjepartscookies i inkognito, men din administrator har tilladt tredjepartscookies for dette website. Inkognito leverer også funktioner, der kan begrænse de oplysninger, som er tilgængelige for virksomheder, hvis indhold er indlejret på et website, du besøger.</translation>
 <translation id="417625634260506724">Samlet lagerplads, der anvendes af websites på listen: <ph name="TOTAL_USAGE" /></translation>
 <translation id="4177501066905053472">Annonceemner</translation>
@@ -92,13 +99,16 @@
 <translation id="5055880590417889642">Din aktivitet er en af mange ting, som et website kan bruge til at foreslå annoncer. Når foreslåede annoncer fra websites deaktiveres, kan websites stadig vise dig annoncer, men de er muligvis i mindre grad personligt tilpassede. Få flere oplysninger om</translation>
 <translation id="5117284457376555514">Websites kan hverken bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer eller indhente oplysninger om de handlinger, du foretager på andre websites, medmindre du giver relaterede websites adgang til dem. Nogle websitefunktioner fungerer muligvis ikke som forventet.</translation>
 <translation id="5165490319523240316">Websites og deres annonceringspartnere kan bruge din aktivitet, f.eks. hvor meget tid du bruger på de websites, du besøger, til at tilpasse annoncer på andre websites. Hvis du f.eks. besøger et website for at finde opskrifter til aftensmaden, kan websitet vurdere, at du er interesseret i madlavning. Senere kan et andet website vise dig en relateret annonce for en leveringstjeneste til dagligvarer, som det første website har foreslået.</translation>
+<translation id="5362892126200493757">Fortæl os, hvorfor du har sat sporingsbeskyttelse på pause på dette website</translation>
 <translation id="544199055391706031">Din aktivitet er en af mange ting, som et website kan bruge til at foreslå annoncer. Når foreslåede annoncer fra websites deaktiveres, kan websites stadig vise dig annoncer, men de er muligvis i mindre grad personligt tilpassede. Få flere oplysninger om <ph name="BEGIN_LINK" />foreslåede annoncer fra websites<ph name="END_LINK" />.</translation>
 <translation id="5495405805627942351">Administrer data for relaterede websites</translation>
 <translation id="5535388436012824806">Chrome blokerer tredjepartscookies i inkognito, men du har gjort en undtagelse for dette website. Inkognito leverer også funktioner, der kan begrænse de oplysninger, som er tilgængelige for virksomheder, hvis indhold er indlejret på et website, du besøger.</translation>
 <translation id="5574580428711706114">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. <ph name="BEGIN_LINK1" />Få flere oplysninger i vores privatlivspolitik<ph name="LINK_END1" />.</translation>
+<translation id="565589626121534692">Sæt sporingsbeskyttelse på pause</translation>
 <translation id="5677928146339483299">Blokeret</translation>
 <translation id="5759648952769618186">Emner er baseret på din seneste browserhistorik og hjælper med at begrænse, hvilke oplysninger websites og deres annonceringspartnere kan tilgå om dig, når de viser dig personligt tilpassede annoncer</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />Hvordan bruger websites disse data?<ph name="END_BOLD" /> De websites, du besøger, kan anmode Chrome om oplysninger for at hjælpe dem med at måle effektiviteten af deres annoncer. Chrome beskytter dit privatliv ved at begrænse de oplysninger, som websites kan dele med hinanden.</translation>
+<translation id="5841014997407214978">Prøv at sætte sporingsbeskyttelse på pause på dette website. Det kan gøre, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="5861490386119603604">Chrome blokerer tredjepartscookies i inkognito, men din administrator har tilladt tredjepartscookies for dette website. Inkognito leverer også funktioner, der kan begrænse de oplysninger, som er tilgængelige for virksomheder, hvis indhold er indlejret på et website, du besøger.</translation>
 <translation id="5915946252696843290">Privatliv og websitedata</translation>
 <translation id="5985520262499095091">Chrome blokerer tredjepartscookies i inkognito, men en udvidelse har tilladt tredjepartscookies for dette website. Inkognito leverer også funktioner, der kan begrænse de oplysninger, som er tilgængelige for virksomheder, hvis indhold er indlejret på et website, du besøger.</translation>
@@ -108,6 +118,7 @@
 <translation id="6205593033237791753">Begræns adgangen til din IP-adresse. Denne indstilling er aktiveret.</translation>
 <translation id="6272892028045906139">Indstillinger for sporingsbeskyttelse i inkognito</translation>
 <translation id="6282129116202535093">Foreslåede annoncer fra websites hjælper med at beskytte din browserhistorik og identitet og giver websites tilladelse til at vise dig relevante annoncer. Baseret på din aktivitet kan andre websites foreslå relaterede annoncer, når du fortsætter med at browse. Du kan se en liste over disse websites og blokere dem, du ikke er interesseret i, ved at gå til indstillingerne.</translation>
+<translation id="6291177244430967858">Sporingsbeskyttelse er genoptaget</translation>
 <translation id="6308169245546905162">Websites kan bruge tredjepartscookies til at indhente oplysninger om de handlinger, du foretager på andre websites</translation>
 <translation id="6388287739339671750">Bloker sporingsscripts</translation>
 <translation id="6398358690696005758">Få flere oplysninger om, hvordan Google beskytter dine data, i vores <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="LINK_END1" />.</translation>
@@ -116,6 +127,7 @@
 <translation id="6710025070089118043">Websites kan hverken bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer eller indhente oplysninger om de handlinger, du foretager på andre websites, medmindre du giver relaterede websites adgang til dem</translation>
 <translation id="6774168155917940386">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Nogle websites bruger muligvis din aktivitet til at foretage personlig tilpasning af din brugeroplevelse i forbindelse med andet end annoncer. De kan også kombinere din aktivitet med andre oplysninger, som de allerede har om dig. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. Få flere oplysninger i vores <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">Om en annonce, du ser, er personligt tilpasset, kan afhænge af mange ting, herunder denne indstilling, <ph name="BEGIN_LINK1" />annonceemner<ph name="LINK_END1" />, dine <ph name="BEGIN_LINK2" />cookieindstillinger<ph name="LINK_END2" />, og om det website, du besøger, foretager personlig tilpasning af annoncer.</translation>
+<translation id="6904948821498934430">Chromium blokerer tredjepartscookies i inkognito, men du har gjort en undtagelse for dette website.</translation>
 <translation id="6968337645683500044">Kun tilgængelig, når inkognito åbnes fra en Chromium-fane, hvor du er logget ind</translation>
 <translation id="6984151429741932257">Begræns adgangen til din IP-adresse</translation>
 <translation id="7011445931908871535">Vil du slette dataene?</translation>
@@ -130,15 +142,20 @@
 <translation id="7453144832830554937">Websitefunktioner, der er afhængige af tredjepartscookies, fungerer muligvis ikke</translation>
 <translation id="7475768947023614021">Gennemgå din indstilling for annonceemner</translation>
 <translation id="7538480403395139206">Flere oplysninger om indstillingen Tillad tredjepartscookies</translation>
+<translation id="7590906321816761911">Sporingsbeskyttelse er sat på pause</translation>
 <translation id="7646143920832411335">Vis relaterede websites</translation>
 <translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
 <translation id="7747003797915893222">Når du browser i inkognito, gemmer Chrome ikke din browserhistorik, dine cookies, dine websitedata eller de oplysninger, du angiver i formularer. Inkognito leverer også funktioner, der kan begrænse de oplysninger, som er tilgængelige for indlejrede websites.</translation>
+<translation id="7766094116932490292">Sporingsbeskyttelse er aktiveret</translation>
 <translation id="7778504454105164347">Chromium forsøger at beskytte din IP-adresse mod indlejrede websites, der muligvis forsøger at få oplysninger om dig</translation>
 <translation id="7789658094395162849">Begræns adgangen til din IP-adresse. Denne indstilling er deaktiveret.</translation>
 <translation id="795219618398555200">Chromium blokerer websites, så de ikke kan bruge tredjepartscookies i inkognito</translation>
 <translation id="8080808348468200193">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies i inkognito</translation>
+<translation id="8086115837395871435">Genindlæser website</translation>
 <translation id="8096996737013848963">Beskyt din IP-adresse</translation>
+<translation id="8180936577740217261">Chrome blokerer tredjepartscookies i inkognito, men du har gjort en undtagelse for dette website.</translation>
 <translation id="8200078544056087897">Websitefunktioner, der er afhængige af tredjepartscookies, fungerer som forventet</translation>
+<translation id="8257935463851606210">Chromium blokerer tredjepartscookies i inkognito, men en udvidelse har tilladt tredjepartscookies for dette website.</translation>
 <translation id="8365690958942020052">Et website, du besøger, kan bede om disse oplysninger – enten dine annonceemner eller annoncer, der er foreslået af de websites, du har besøgt.</translation>
 <translation id="839994149685752920">Websites kan bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
@@ -159,6 +176,7 @@
 <translation id="9043239285457057403">Denne handling sletter alle data og cookies, som er gemt af <ph name="SITE_NAME" /> og relaterede websites</translation>
 <translation id="9162335340010958530">Websites kan hverken bruge tredjepartscookies til at foretage personlig tilpasning af indhold og annoncer eller indhente oplysninger om de handlinger, du foretager på andre websites, medmindre du giver relaterede websites adgang til dem</translation>
 <translation id="9168357768716791362">Google kræver, at virksomheder offentligt erklærer, at de ikke vil bruge disse data til at spore dig på tværs af websites. Nogle websites bruger muligvis din aktivitet til at foretage personlig tilpasning af din brugeroplevelse i forbindelse med andet end annoncer. De gemmer muligvis også annonceemner i mere end 4 uger og kombinerer dem med andre oplysninger, som de allerede har om dig. Virksomheder er ansvarlige for at oplyse dig om, hvordan de bruger dine data. Få flere oplysninger i vores <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
+<translation id="9210228052057672287">Chrome blokerer tredjepartscookies i inkognito, men din administrator har tilladt tredjepartscookies for dette website.</translation>
 <translation id="931910205193418957">Chrome blokerer tredjepartscookies i inkognito, men din administrator har tilladt tredjepartscookies for dette website. Inkognito leverer også funktioner, der kan begrænse de oplysninger, som er tilgængelige for virksomheder, hvis indhold er indlejret på et website, du besøger. Administrer sporingsbeskyttelse i inkognito under <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="989939163029143304">Websites og deres annonceringspartnere kan bruge annonceemner til at tilpasse indhold personligt til dig. I modsætning til tredjepartscookies hjælper annonceemner med at begrænse, hvad websites kan lære om dig, når du browser</translation>
 </translationbundle>

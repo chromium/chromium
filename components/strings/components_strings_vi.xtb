@@ -316,6 +316,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1521655867290435174">Google Trang tính</translation>
 <translation id="1524669537550112617">Nhà cho thuê có sẵn đồ đạc</translation>
 <translation id="1527263332363067270">Đang chờ kết nối…</translation>
+<translation id="1527490370616010873">Google không phải là nhà cung cấp dịch vụ tự động điền của bạn. Để bật các chế độ cài đặt này và sử dụng thông tin thanh toán trong Tài khoản Google của bạn, hãy truy cập vào phần <ph name="BEGIN_LINK" />Cài đặt dịch vụ tự động điền<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Kết nối bị chặn vì do một trang công khai khởi tạo để kết nối với các thiết bị hoặc máy chủ trên mạng riêng của bạn. Hãy tải lại trang này để cho phép kết nối.</translation>
 <translation id="1529789484829130889">Khay 8</translation>
 <translation id="1530707389502320859">Có vẻ như trang web bạn vừa cố truy cập là giả mạo. Kẻ tấn công đôi khi bắt chước các trang web bằng cách thực hiện các thay đổi nhỏ, khó phát hiện đối với URL.</translation>
@@ -362,6 +363,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="159274626729231974">Liên hoan phim</translation>
 <translation id="1593359183944365958">270 độ</translation>
 <translation id="1594030484168838125">Chọn</translation>
+<translation id="1595731774593926493">Xoá mã số xác nhận trùng tên</translation>
 <translation id="1597307423671074806">Video WebM</translation>
 <translation id="159800670740560023">Đường liên kết đến Mẹo dùng Chrome, hãy nhấn phím Enter để mở <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Bạn sử dụng thẻ mới? <ph name="BEGIN_LINK" />Nhập chi tiết thẻ<ph name="END_LINK" /></translation>
@@ -754,6 +756,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2233745931693710080">Đĩa nén</translation>
 <translation id="2235344399760031203">Đã chặn các cookie bên thứ ba</translation>
 <translation id="2239100178324503013">Gửi bây giờ</translation>
+<translation id="224130779555573777">Thêm mã số xác nhận trùng tên</translation>
 <translation id="2241693394036365668">Tải tệp xuống</translation>
 <translation id="2242389809734574253">Lưu IBAN đã đóng.</translation>
 <translation id="2246264294482514010">10 x 12 inch</translation>
@@ -1765,6 +1768,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3927538228901078312">Không có bảng so sánh</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Từ chối</translation>
+<translation id="3928806096717999469">Chỉnh sửa, mở một cửa sổ mới</translation>
 <translation id="3930260846839546333">Túi xách và ví</translation>
 <translation id="3937834511546249636">Ngành công nghiệp quốc phòng</translation>
 <translation id="3939773374150895049">Sử dụng WebAuthn thay cho CVC?</translation>
@@ -2932,6 +2936,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5886961930368713749">Gửi ý kiến phản hồi về tính năng So sánh</translation>
 <translation id="5887400589839399685">Đã lưu thẻ</translation>
 <translation id="5887687176710214216">Lần truy cập gần đây nhất: hôm qua</translation>
+<translation id="5890248301649767931">Lưu mã số xác nhận trùng tên?</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5895187275912066135">Cấp vào</translation>
 <translation id="5898767305816764989">Nút Thích, nhấn phím Enter để gửi phản hồi cho biết bạn thích, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3553,6 +3558,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6905163627763043954">Dùng thử</translation>
 <translation id="6907458757809079309">Thể dục</translation>
 <translation id="691024665142758461">Tải xuống nhiều tệp</translation>
+<translation id="691046363691324218">Mã số xác nhận trùng tên</translation>
 <translation id="6915804003454593391">Người dùng:</translation>
 <translation id="6916193791494646625">Cung cấp lý do tải tệp xuống (bắt buộc)</translation>
 <translation id="6917795328362592458">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản của bạn, Trình quản lý mật khẩu khuyên bạn nên kiểm tra các mật khẩu đã lưu.</translation>
@@ -4499,6 +4505,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8457125768502047971">Vô thời hạn</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Bật</translation>
+<translation id="8461289985785035071">Chỉnh sửa mã số xác nhận trùng tên</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8461973047386722744">Không tìm thấy mật khẩu nào</translation>
 <translation id="8467494337615822642">Chuyển đến trang kiểm tra an toàn trên Chrome trong phần cài đặt</translation>
@@ -4807,6 +4814,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Hãy dùng thử Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Để thoát khỏi chế độ toàn màn hình, hãy nhấn và giữ |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">Cập nhật mã số xác nhận trùng tên?</translation>
 <translation id="9035022520814077154">Lỗi bảo mật</translation>
 <translation id="9035824888276246493">Lưu mã bảo mật</translation>
 <translation id="9036306139374661733">Cho phép dùng micrô?</translation>

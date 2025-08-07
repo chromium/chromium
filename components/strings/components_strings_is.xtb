@@ -315,6 +315,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1521655867290435174">Google töflureiknar</translation>
 <translation id="1524669537550112617">Leiguhúsnæði með húsgögnum</translation>
 <translation id="1527263332363067270">Bíður tengingar...</translation>
+<translation id="1527490370616010873">Google er ekki sjálfvirka útfyllingarþjónustan þín. Til að kveikja á þessum stillingum og nota greiðsluupplýsingar frá Google-reikningnum þínum skaltu fara í <ph name="BEGIN_LINK" />stilllingar sjálfvirkrar útfyllingarþjónustu<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Lokað er á tenginguna vegna þess að hún var hafin af opinberri síðu til að tengjast tækjum eða þjónum í einkanetinu þínu. Endurnýjaðu þessa síðu til að leyfa tenginguna.</translation>
 <translation id="1529789484829130889">Bakki 8</translation>
 <translation id="1530707389502320859">Vefsvæðið sem þú varst að reyna að opna virðist vera falskt. Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera litlar og illgreinanlegar breytingar á vefslóðinni.</translation>
@@ -1194,6 +1195,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3002501248619246229">Athuga miðil í innbakka</translation>
 <translation id="3005723025932146533">Sýna vistað afrit</translation>
 <translation id="300580149047131921">Notað nýlega</translation>
+<translation id="3006864083554020786">heimilisfang</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn til að skoða hvaða aðgerðir eru í boði og síðan á Enter til að framkvæma valda aðgerð.</translation>
 <translation id="3010991137650052245">Til að nota <ph name="PERMISSION" /> á þessu vefsvæði þarftu að veita <ph name="SHORT_PRODUCT_NAME" /> aðgang</translation>
 <translation id="3013711734159931232">Rekstrarvörur fyrir heimili</translation>
@@ -1828,6 +1830,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="404831776305217138">Uppfærsluvefslóð fyrir viðbót með kennið „<ph name="EXTENSION_ID" />“ er ógild eða notar óstutt skema. Studd skemu eru: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> og <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Þú getur notað það í Google-vörum.</translation>
 <translation id="4050599136622776556">Chromium er að reyna að breyta greiðslumátum.</translation>
+<translation id="4052683751389375539">Breyta, opnar nýjan glugga</translation>
 <translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
 <translation id="4059523390906550209">Nánar um vernd viðkvæmra upplýsinga</translation>
@@ -3520,6 +3523,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6881240511396774766">Búðu til nýtt Google skjal í skyndi</translation>
 <translation id="6882210908253838664">Ef vefsvæði virkar ekki geturðu prófað að veita því tímabundna heimild til að nota fótspor þriðju aðila. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Sannvottunarsíðu fyrir skilríki öruggrar greiðslu var lokað</translation>
+<translation id="6883745783646124431">heimilisfang vinnustaðar</translation>
 <translation id="6884662655240309489">Stærð 1</translation>
 <translation id="6886283082988906333">ZIP-geymsla</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

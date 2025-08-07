@@ -316,6 +316,7 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">יחידות דיור מרוהטות להשכרה</translation>
 <translation id="1527263332363067270">תיכף נתחבר…</translation>
+<translation id="1527490370616010873">‏‫Google לא מוגדרת כספק המילוי האוטומטי שלך. כדי להפעיל את ההגדרות האלה ולהשתמש בפרטי התשלום מחשבון Google, צריך לעבור אל <ph name="BEGIN_LINK" />הגדרות שירותי המילוי האוטומטי<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">החיבור נחסם כי הוא הופעל על ידי דף ציבורי כדי להתחבר למכשירים או לשרתים ברשת הפרטית שלך. כדי לאשר את החיבור, צריך לטעון מחדש את הדף הזה.</translation>
 <translation id="1529789484829130889">מגש 8</translation>
 <translation id="1530707389502320859">‏האתר שניסית לבקר בו נראה כמו אתר מזויף. תוקפים שמחקים אתרים לפעמים משתמשים בכתובת ה-URL של האתר המקורי ועושים בה שינויים קלים ביותר כדי שיהיה קשה להבחין בהבדל.</translation>
@@ -1765,6 +1766,7 @@
 <translation id="3927538228901078312">אין טבלאות השוואה</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">דחייה</translation>
+<translation id="3928806096717999469">עריכה, נפתח בחלון חדש</translation>
 <translation id="3930260846839546333">תיקי יד וארנקים</translation>
 <translation id="3937834511546249636">תעשיות הנשק</translation>
 <translation id="3939773374150895049">‏האם להשתמש ב-WebAuthn במקום ב-CVC?</translation>

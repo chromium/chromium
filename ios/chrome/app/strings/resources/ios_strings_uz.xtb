@@ -388,6 +388,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2434405374328098816"><ph name="WEBSITE" /> saytidagi <ph name="USERNAME" /> paroli allaqachon saqlangan</translation>
 <translation id="2434918313224755415">Inkognito rejimiga oʻtish uchun chapga aylantiring.</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} ta tarix obyekti}other{{count} ta tarix obyekti}}</translation>
 <translation id="2461070143328828326">Parol sozlamalari</translation>
 <translation id="2462736546165239215">Brauzerning butun tarixi shu yerda chiqadi.</translation>
 <translation id="2466518891828668184">Parollarni saqlab, sayt va ilovalarga oson kiring.</translation>

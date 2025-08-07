@@ -5906,6 +5906,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> verwijderen</translation>
 <translation id="5111326646107464148">Groep openen in nieuw venster</translation>
+<translation id="511147239888121455">Back-up maken?</translation>
 <translation id="5111646998522066203">Incognitomodus sluiten</translation>
 <translation id="5111692334209731439">&amp;Bookmarkmanager</translation>
 <translation id="5111794652433847656">Er zijn geen toegangscodes voor <ph name="APP_NAME" /> op dit apparaat</translation>
@@ -8192,6 +8193,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
     <ph name="BEGIN_PARAGRAPH3" />Ga naar g.co/flex/HWDataCollection voor meer informatie over de gegevens die <ph name="DEVICE_OS" /> kan delen met Google en hoe deze worden gebruikt.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Verbetert de beveiliging voor jou en alle andere internetgebruikers</translation>
 <translation id="6771503742377376720">Is een certificeringsinstantie</translation>
+<translation id="6772103682557559072">Meer opties voor het werkadres van <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Openen en bewerken</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">De site heeft een eenmalig wachtwoord nodig</translation>
@@ -10018,6 +10020,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8025151549289123443">Vergrendelscherm en inloggen</translation>
 <translation id="8025291188699172126">Over updates</translation>
 <translation id="8026471514777758216">Al je apparaten</translation>
+<translation id="8026700655446696031">Meer opties voor het woonadres van <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Sla onder andere je bookmarks op met synchronisatie</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 dagen geleden bezocht}=1{1 dag geleden bezocht}other{# dagen geleden bezocht}}</translation>
 <translation id="8028060951694135607">Microsoft-sleutelherstel</translation>
@@ -10166,6 +10169,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8121537075864592453">Volledig scherm uitgezet</translation>
 <translation id="8121750884985440809">Je cast nu je scherm</translation>
 <translation id="8122898034710982882">Telefoonhub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Maak een back-up van onder andere je wachtwoorden en bookmarks, zodat je ze makkelijk op al je apparaten kunt gebruiken</translation>
 <translation id="81238879832906896">Geel-witte bloem</translation>
 <translation id="8123975449645947908">Terugscrollen</translation>
 <translation id="8124313775439841391">Beheerde ONC</translation>

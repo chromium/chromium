@@ -5920,6 +5920,7 @@
 <translation id="5109044022078737958">ورزشکار</translation>
 <translation id="5109816792918100764">حذف <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">باز کردن گروه در پنجره جدید</translation>
+<translation id="511147239888121455">از اطلاعات شما پشتیبان‌گیری شود؟</translation>
 <translation id="5111646998522066203">خروج از حالت ناشناس</translation>
 <translation id="5111692334209731439">مدیر &amp;نشانک</translation>
 <translation id="5111794652433847656">هیچ گذرکلیدی برای <ph name="APP_NAME" /> در این دستگاه وجود ندارد</translation>
@@ -6055,6 +6056,7 @@
 <translation id="5201945335223486172">برای <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">می‌تواند فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کند</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{برای دیدن این افزونه، کلیک کنید}one{برای دیدن این افزونه‌ها، کلیک کنید}other{برای دیدن این افزونه‌ها، کلیک کنید}}</translation>
+<translation id="5204282224596194174">گذرواژه بازیابی <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">لطفاً دستگاه را پاورواش کنید و دوباره امتحان کنید.</translation>
 <translation id="5204967432542742771">گذرواژه را وارد کنید</translation>
 <translation id="5205484256512407285">برای انتقال هرگز از داده تلفن همراه استفاده نمی‌شود</translation>
@@ -8212,6 +8214,7 @@
     <ph name="BEGIN_PARAGRAPH3" />برای دریافت جزئیات بیشتر درباره داده‌هایی که <ph name="DEVICE_OS" /> ممکن است با Google هم‌رسانی کند و نحوه استفاده از این داده‌ها، از g.co/flex/HWDataCollection بازدید کنید.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد</translation>
 <translation id="6771503742377376720">یک ارائه دهنده مجوز است</translation>
+<translation id="6772103682557559072">گزینه‌های بیشتر برای نشانی محل کار <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">باز کردن و ویرایش</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">سایت به گذرواژه یک‌بارمصرف نیاز دارد</translation>
@@ -10039,6 +10042,7 @@
 <translation id="8025151549289123443">صفحه قفل و ورود به سیستم</translation>
 <translation id="8025291188699172126">درباره به‌روزرسانی‌ها</translation>
 <translation id="8026471514777758216">همه دستگاه‌ها</translation>
+<translation id="8026700655446696031">گزینه‌های بیشتر برای نشانی خانه <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">با همگام‌سازی، نشانک‌ها و اطلاعات دیگر را ذخیره کنید</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{‫۰ روز قبل بازدید کردید}=1{‫۱ روز قبل بازدید کردید}one{‫# روز قبل بازدید کردید}other{‫# روز قبل بازدید کردید}}</translation>
 <translation id="8028060951694135607">‏بازیابی کلید Microsot</translation>
@@ -10187,6 +10191,7 @@
 <translation id="8121537075864592453">تمام‌صفحه غیرفعال شد</translation>
 <translation id="8121750884985440809">اکنون درحال پخش محتوای صفحه‌نمایش خود هستید</translation>
 <translation id="8122898034710982882">مرکز کنترل تلفن، <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">از گذرواژه‌ها، نشانک‌ها، و اطلاعات دیگر خود پشتیبان‌گیری کنید تا آن‌ها را به‌راحتی در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="81238879832906896">گل زرد و سفید</translation>
 <translation id="8123975449645947908">پیمایش به‌عقب</translation>
 <translation id="8124313775439841391">‏ONC مدیریت شده</translation>
@@ -11563,6 +11568,7 @@
 <translation id="9057354806206861646">زمان‌بندی به‌روزرسانی</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{حدود یک اعلان در روز}one{حدود {NUM_NOTIFICATION} اعلان در روز}other{حدود {NUM_NOTIFICATION} اعلان در روز}}</translation>
 <translation id="9058760336383947367">‏مشاهده PPD چاپگر</translation>
+<translation id="9061521313218438086">‏اگر Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه عمومی پیدا کند، «مدیر گذرواژه Google» می‌تواند درصورتی‌که به سیستم وارد شده باشید پیشنهاد دهد گذرواژه را برای شما تغییر دهد.</translation>
 <translation id="9061694916020926968">‏برای استفاده از «Steam ویژه Chromebook» (بتا) باید به سیستم «حساب Google» وارد شوید. به سیستم وارد شوید و دوباره امتحان کنید.</translation>
 <translation id="9062468308252555888">۱۴ برابر</translation>
 <translation id="9063208415146866933">خطا از خط <ph name="ERROR_LINE_START" /> تا <ph name="ERROR_LINE_END" /></translation>

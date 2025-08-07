@@ -6056,6 +6056,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> కోసం</translation>
 <translation id="5203035663139409780">మీ పరికరంలో ఫైళ్లు లేదా ఫోల్డర్‌లను ఎడిట్ చేయవచ్చు</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ఎక్స్‌టెన్షన్‌ను చూడటానికి క్లిక్ చేయండి}other{ఈ ఎక్స్‌టెన్షన్‌లను చూడటానికి క్లిక్ చేయండి}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" />‌కు సంబంధించిన రికవరీ పాస్‌వర్డ్</translation>
 <translation id="5204673965307125349">దయచేసి పరికరాన్ని పవర్‌వాష్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5204967432542742771">పాస్‌వర్డ్‌ని నమోదు చేయండి</translation>
 <translation id="5205484256512407285">బదిలీ చేయడానికి మొబైల్ డేటాను ఎప్పుడూ ఉపయోగించవద్దు</translation>
@@ -11557,6 +11558,7 @@
 <translation id="9057354806206861646">షెడ్యూల్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ఒక రోజులో సుమారు 1 నోటిఫికేషన్}other{ఒక రోజులో సుమారు {NUM_NOTIFICATION} నోటిఫికేషన్‌లు}}</translation>
 <translation id="9058760336383947367">ప్రింటర్ PPDని చూడండి</translation>
+<translation id="9061521313218438086">Chrome మీ పాస్‌వర్డ్‌లలో ఒక దానిని పబ్లిక్ డేటా ఉల్లంఘనలో కనుగొంటే, Google Password Manager, మీరు సైన్ ఇన్ చేసి ఉన్నట్లయితే, మీ పాస్‌వర్డ్‌ను మార్చుకునే అవకాశాన్ని ఇవ్వగలదు.</translation>
 <translation id="9061694916020926968">'Steam for Chromebook' (బీటా)ను ఉపయోగించడానికి మీరు ఒక Google ఖాతాకు సైన్ ఇన్ చేయాలి. సైన్ ఇన్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">పంక్తి <ph name="ERROR_LINE_START" /> నుండి <ph name="ERROR_LINE_END" /> వరకు ఎర్రర్</translation>

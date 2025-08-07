@@ -316,6 +316,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1521655867290435174">Google tabele</translation>
 <translation id="1524669537550112617">Iznajmljivanje opremljenih nekretnina</translation>
 <translation id="1527263332363067270">Čeka se veza…</translation>
+<translation id="1527490370616010873">Google nije dobavljač automatskog popunjavanja. Da biste omogućili ova podešavanja i koristili informacije o plaćanju sa Google naloga, posetite <ph name="BEGIN_LINK" />podešavanja usluga automatskog popunjavanja<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Veza je blokirana zato što ju je pokrenula javna stranica za povezivanje sa uređajima ili serverima na privatnoj mreži. Ponovo učitajte ovu stranicu da biste dozvolili povezivanje.</translation>
 <translation id="1529789484829130889">8. fioka</translation>
 <translation id="1530707389502320859">Sajt koji ste upravo probali da posetite deluje lažno. Napadači ponekad imitiraju sajtove tako što neznatno i skoro neprimetno izmene URL.</translation>
@@ -1767,6 +1768,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3927538228901078312">Nema tabela za poređenje</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Odbij</translation>
+<translation id="3928806096717999469">Izmenite, otvara novi prozor</translation>
 <translation id="3930260846839546333">Ženske tašne i torbe</translation>
 <translation id="3937834511546249636">Vojna industrija</translation>
 <translation id="3939773374150895049">Želite li da koristite WebAuthn umesto CVC-a?</translation>
@@ -3180,7 +3182,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6284449872909111707">Razmena tekstualnih i trenutnih poruka</translation>
 <translation id="6284517535531159884">Tip početne vrednosti varijacija</translation>
 <translation id="6287197303017372967">Dobijajte uputstva do odredišta pomoću detaljnih uputstava uz funkciju za navigaciju.</translation>
-<translation id="6288559570252410796">Pitajte režim Google veštačke inteligencije</translation>
+<translation id="6288559570252410796">Pitajte Google AI režim</translation>
 <translation id="628877850550444614">Pronađen je popust</translation>
 <translation id="6289939620939689042">Boja stranice</translation>
 <translation id="6292819926564202163">Vaš pretraživač u Chrome-u</translation>
@@ -4418,7 +4420,7 @@ Dodatni detalji:
 <translation id="831997045666694187">Uveče</translation>
 <translation id="8321448084834652864">Možete da promenite pretraživač u svakom trenutku u podešavanjima Chromium-a.</translation>
 <translation id="8321476692217554900">obaveštenja</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Enter da biste pitali režim Google veštačke inteligencije</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Enter da biste pitali Google AI režim</translation>
 <translation id="8322402665880479974">Kreveti i uzglavlja</translation>
 <translation id="8323505966575306467">Dodajte još zaštite lozinkama</translation>
 <translation id="832547548543012337">Izbrišite pasoš</translation>
@@ -4964,7 +4966,7 @@ Dodatni detalji:
 <translation id="950926967802086924">Pristupni ključ • Google menadžer lozinki</translation>
 <translation id="955429569736351433">VR je dozvoljen</translation>
 <translation id="955627189349169688">Ove smernice možete da onemogućite u <ph name="BEGIN_LINK" />podešavanjima Chrome sinhronizacije<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Dugme za režim veštačke inteligencije, aktivirajte da biste pitali režim Google veštačke inteligencije</translation>
+<translation id="95676157383774931">Dugme za režim veštačke inteligencije, aktivirajte da biste pitali Google AI režim</translation>
 <translation id="95721182352849470">Žuta 2</translation>
 <translation id="961663415146723894">Povez na dnu</translation>
 <translation id="961856697154696964">Izbriši podatke pregledanja</translation>

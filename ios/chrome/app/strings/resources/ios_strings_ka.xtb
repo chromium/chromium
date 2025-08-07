@@ -388,6 +388,7 @@
 <translation id="2434405374328098816"><ph name="WEBSITE" />-დან „<ph name="USERNAME" />“-ის პაროლი უკვე შეინახეთ</translation>
 <translation id="2434918313224755415">ვების ინკოგნიტო რეჟიმში დასათვალიერებლად გადაფურცლეთ მარცხნივ.</translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} ერთეული ისტორიიდან}other{{count} ერთეული ისტორიიდან}}</translation>
 <translation id="2461070143328828326">პაროლების პარამეტრები</translation>
 <translation id="2462736546165239215">აქ იპოვით თქვენს დათვალიერების მთელ ისტორიას.</translation>
 <translation id="2466518891828668184">შეინახეთ პაროლები, რომ მარტივად შეხვიდეთ საიტებსა და აპებში.</translation>

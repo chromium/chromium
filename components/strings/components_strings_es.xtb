@@ -315,6 +315,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alquiler de viviendas amuebladas</translation>
 <translation id="1527263332363067270">Esperando conexión…</translation>
+<translation id="1527490370616010873">Google no es tu proveedor de autocompletado. Si quieres habilitar estos ajustes y usar la información para pagos de tu cuenta de Google, ve a <ph name="BEGIN_LINK" />Configuración de los servicios de autocompletado<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La conexión está bloqueada porque la ha iniciado una página pública para conectarse a dispositivos o servidores de tu red privada. Vuelve a cargar esta página para permitir la conexión.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">El sitio web al que estás intentando acceder parece falso. Los atacantes suelen imitar los sitios haciendo pequeños cambios en la URL que son difíciles de ver.</translation>
@@ -1196,6 +1197,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3002501248619246229">Comprobar medios de bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
 <translation id="300580149047131921">Se ha usado recientemente</translation>
+<translation id="3006864083554020786">dirección de casa</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador para consultar las acciones disponibles y, después, Intro para ejecutar la acción seleccionada.</translation>
 <translation id="3010991137650052245">Para usar tu <ph name="PERMISSION" /> en este sitio, da acceso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Productos del hogar</translation>
@@ -1236,7 +1238,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3086579638707268289">Se está vigilando tu actividad en la Web</translation>
 <translation id="3087734570205094154">Abajo</translation>
 <translation id="3090667236485488075">Cristal</translation>
-<translation id="3094051226187213523">Abrir el modo IA con esta sugerencia.</translation>
+<translation id="3094051226187213523">Abrir Modo IA con esta sugerencia.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Se ignora porque la lista inhabilitada contiene un patrón igual a "*", lo que equivale a inhabilitar la política.</translation>
 <translation id="3098944373717628099">Tus archivos locales se eliminarán dentro de 1 hora</translation>
@@ -1613,7 +1615,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3677008721441257057">Quizás quisiste decir: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;</translation>
 <translation id="3678029195006412963">No se ha podido firmar la solicitud</translation>
 <translation id="3678529606614285348">Abre una página en una nueva ventana de Incógnito (Ctrl + Mayús + N).</translation>
-<translation id="3678914302246317895">Introduce el código de verificación de <ph name="OTP_LENGTH" /> dígitos</translation>
+<translation id="3678914302246317895">Introduce el código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Datos del certificado</translation>
 <translation id="3681421644246505351">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente.</translation>
 <translation id="3681841880472207951">Vídeo Quicktime</translation>
@@ -1830,6 +1832,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="404831776305217138">La URL de actualización de la extensión con el ID "<ph name="EXTENSION_ID" />" no es válida o usa un esquema no admitido. Los esquemas compatibles son: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> y <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Podrás usarla en los productos de Google</translation>
 <translation id="4050599136622776556">Chromium está intentando editar los métodos de pago.</translation>
+<translation id="4052683751389375539">Editar (se abre en una ventana nueva)</translation>
 <translation id="405399507749852140">Recibe alertas si el precio baja en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Más información sobre la protección de datos sensibles</translation>
@@ -3169,7 +3172,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6284449872909111707">Mensajería instantánea y de texto</translation>
 <translation id="6284517535531159884">Tipo de origen de las variaciones</translation>
 <translation id="6287197303017372967">Obtén indicaciones para llegar a tu destino con guías detalladas usando la función de navegación.</translation>
-<translation id="6288559570252410796">Preguntar al Modo IA de Google</translation>
+<translation id="6288559570252410796">Preguntar a Modo IA de Google</translation>
 <translation id="628877850550444614">Descuento encontrado</translation>
 <translation id="6289939620939689042">Color de la página</translation>
 <translation id="6292819926564202163">Tu buscador en Chrome</translation>
@@ -3424,7 +3427,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6695428916538794739">Películas de acción y aventuras</translation>
 <translation id="6696424331653607346">Guías y diarios de viaje</translation>
 <translation id="6696575039575740785">Instalación de aplicaciones web no permitida</translation>
-<translation id="6698097747703777657">¿No has recibido tu código? <ph name="BEGIN_LINK" />Obtener nuevo código<ph name="END_LINK" /></translation>
+<translation id="6698097747703777657">¿No has recibido tu código? <ph name="BEGIN_LINK" />Obtén uno nuevo<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="6698769547327354196">Para desactivar Pix en Chrome, ve a tu <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" />.</translation>
 <translation id="67007264085648978">Control deslizante de tiempo</translation>
@@ -3523,6 +3526,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6881240511396774766">Crea un documento de Google rápidamente</translation>
 <translation id="6882210908253838664">Si un sitio no funciona, puedes probar a darle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">La hoja de autenticación de credenciales de pago seguras está cerrada</translation>
+<translation id="6883745783646124431">dirección de trabajo</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886283082988906333">Archivo ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4400,7 +4404,7 @@ Más información:
 <translation id="831997045666694187">Tarde</translation>
 <translation id="8321448084834652864">Puedes cambiar tu buscador cuando quieras en la configuración de Chromium.</translation>
 <translation id="8321476692217554900">notificaciones</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Intro para preguntar al Modo IA de Google</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Intro para preguntar a Modo IA de Google</translation>
 <translation id="8322402665880479974">Camas y cabeceros</translation>
 <translation id="8323505966575306467">Añade más protección a tus contraseñas</translation>
 <translation id="832547548543012337">Eliminar pasaporte</translation>
@@ -4945,7 +4949,7 @@ Más información:
 <translation id="950926967802086924">Llave de acceso • Gestor de contraseñas de Google</translation>
 <translation id="955429569736351433">Realidad virtual permitida</translation>
 <translation id="955627189349169688">Puedes inhabilitar esta política en la <ph name="BEGIN_LINK" />configuración de Sincronización de Chrome<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Botón del Modo IA, activar para preguntar al Modo IA de Google</translation>
+<translation id="95676157383774931">Botón de Modo IA, activar para preguntar a Modo IA de Google</translation>
 <translation id="95721182352849470">Amarillo 2</translation>
 <translation id="961663415146723894">Encuadernar por la parte inferior</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>

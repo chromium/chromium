@@ -3,8 +3,10 @@
 <translationbundle lang="ro">
 <translation id="1045545926731898784">Acest site face parte dintr-un grup de site-uri, definit de <ph name="SET_OWNER" />, care îți poate afișa activitatea în grup pentru ca site-urile să funcționeze conform așteptărilor.</translation>
 <translation id="1055273091707420432">Chromium șterge automat subiectele anunțurilor mai vechi de patru săptămâni</translation>
+<translation id="1145223915439299117">Chrome blochează cookie-urile terță parte în modul incognito, dar o extensie a permis cookie-urile terță parte pentru acest site.</translation>
 <translation id="1184166532603925201">Când ești în modul incognito, Chrome împiedică site-urile să folosească cookie-uri terță parte</translation>
 <translation id="1205053266843535401">Limitează accesul la datele despre dispozitiv și browser</translation>
+<translation id="1281098210028343866">Ajută-ne să îmbunătățim Chromium spunându-ne de ce ai întrerupt protecțiile împotriva urmăririi</translation>
 <translation id="1297285729613779935">Anunțurile sugerate de site-uri contribuie la protejarea istoricului de navigare și a identității tale și le dă site-urilor posibilitatea să îți afișeze anunțuri relevante. Folosind activitatea, cum ar fi modul în care îți petreci timpul pe site-urile pe care le accesezi, alte site-uri pot sugera anunțuri similare în timp ce navighezi. În setări, poți să vezi o listă a acestor site-uri și să le blochezi pe cele care nu dorești să apară.</translation>
 <translation id="132963621759063786">După 30 de zile, Chromium șterge datele privind activitatea la care ai permis accesul site-urilor. Dacă accesezi din nou un site, acesta poate să reapară în listă. Află mai multe despre <ph name="BEGIN_LINK1" />gestionarea confidențialității anunțurilor în Chromium<ph name="LINK_END1" />.</translation>
 <translation id="1355088139103479645">Ștergi toate datele?</translation>
@@ -14,6 +16,7 @@
 <translation id="1559726735555610004">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Unele site-uri îți pot folosi activitatea pentru a-ți personaliza experiența, nu doar pentru anunțuri. În plus, ele pot combina aceste date cu alte informații pe care le dețin deja despre tine. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. Află mai multe despre modul în care Google îți protejează datele, în <ph name="BEGIN_LINK" />Politica de confidențialitate<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">În modul incognito, site-urile nu pot folosi cookie-uri terță parte. Dacă un site care se bazează pe aceste cookie-uri nu funcționează, poți <ph name="BEGIN_LINK" />încerca să-i acorzi acces temporar la cookie-urile terță parte<ph name="END_LINK" />.</translation>
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />Cum folosesc site-urile aceste date?<ph name="END_BOLD" /> Chrome reține subiectele de interes în timp ce navighezi. Etichetele subiectelor sunt predefinite și printre acestea se numără Artă și divertisment, Cumpărături și Sport. Ulterior, un site pe care îl accesezi poate solicita browserului Chrome câteva subiecte, pentru a personaliza anunțurile pe care le vezi.</translation>
+<translation id="172522356264798673">Reia protecțiile împotriva urmăririi</translation>
 <translation id="1732764153129912782">Poți face modificări în setările de confidențialitate a anunțurilor</translation>
 <translation id="1780659583673667574">De exemplu, dacă accesezi un site pentru a găsi rețete pentru cină, site-ul poate deduce că te interesează gătitul. Mai târziu, alt site îți poate afișa un anunț similar pentru un serviciu de livrare a alimentelor, pe baza sugestiei de pe primul site.</translation>
 <translation id="1818866261309406359">Gestionează datele despre site-urile conexe într-o filă nouă</translation>
@@ -24,6 +27,7 @@
 <translation id="2004697686368036666">Este posibil ca funcțiile de pe anumite site-uri să nu ruleze</translation>
 <translation id="2089118378428549994">Te vei deconecta de la aceste site-uri</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Cum poți gestiona aceste date?<ph name="END_BOLD" /> Chrome șterge automat site-urile mai vechi de 30 de zile. Un site pe care îl accesezi din nou poate să reapară în listă. Poți să nu permiți unui site să îți sugereze anunțuri și să dezactivezi oricând anunțurile sugerate de site-uri din setările Chrome.</translation>
+<translation id="2090761099683423637">Protecțiile sunt întrerupte până la închiderea tuturor ferestrelor incognito.</translation>
 <translation id="2096716221239095980">Șterge toate datele</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2213012319160025454">Gestionează protecțiile împotriva urmăririi în modul incognito</translation>
@@ -36,6 +40,8 @@
 <translation id="2578376035831129583">Se aplică site-urilor încorporate, nu site-ului pe care îl accesezi direct</translation>
 <translation id="259163387153470272">Site-urile și partenerii lor publicitari îți pot folosi activitatea, cum ar fi modul în care îți petreci timpul pe site-urile pe care le accesezi, ca să personalizeze anunțurile pentru tine.</translation>
 <translation id="2669351694216016687">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Unele site-uri îți pot folosi activitatea pentru a-ți personaliza experiența, nu doar pentru anunțuri. În plus, ele pot combina aceste date cu alte informații pe care le dețin deja despre tine. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. <ph name="BEGIN_LINK1" />Află mai multe din Politica de confidențialitate<ph name="LINK_END1" /></translation>
+<translation id="2672038477572666782">Ajută-ne să îmbunătățim Chrome spunându-ne de ce ai întrerupt protecțiile împotriva urmăririi</translation>
+<translation id="2818622030603911133">Protecțiile împotriva urmăririi sunt întrerupte pe acest site</translation>
 <translation id="2842751064192268730">Subiectele anunțurilor limitează informațiile pe care site-urile și partenerii lor publicitari le pot afla despre tine pentru a-ți afișa anunțuri personalizate. Chrome poate reține subiectele de interes pe baza istoricului tău de navigare recent. Ulterior, un site pe care îl accesezi poate solicita browserului Chrome subiecte relevante, pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="2937236926373704734">Poți să blochezi site-urile pe care nu le dorești. În plus, Chromium șterge automat site-urile din listă mai vechi de 30 de zile.</translation>
 <translation id="2979365474350987274">Cookie-urile terță parte sunt limitate</translation>
@@ -64,6 +70,7 @@
 <translation id="4009365983562022788">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Unele site-uri îți pot folosi activitatea pentru a-ți personaliza experiența, nu doar pentru anunțuri. În plus, ele pot combina aceste date cu alte informații pe care le dețin deja despre tine. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. Află mai multe din <ph name="BEGIN_LINK1" />Politica de confidențialitate<ph name="LINK_END1" />.</translation>
 <translation id="4053540477069125777">Site-uri conexe definite de <ph name="RWS_OWNER" /></translation>
 <translation id="408237597986622827">Chromium blochează cookie-urile terță parte în modul incognito, dar ai făcut o excepție pentru acest site. Modul incognito oferă și funcții care pot limita informațiile disponibile pentru companiile al căror conținut este încorporat pe un site pe care îl accesezi.</translation>
+<translation id="4115793614265434327">Chromium blochează cookie-urile terță parte în modul incognito, dar administratorul a permis cookie-urile terță parte pentru acest site.</translation>
 <translation id="4159125650195886935">Chromium blochează cookie-urile terță parte în modul incognito, dar administratorul a permis cookie-urile terță parte pentru acest site. Modul incognito oferă și funcții care pot limita informațiile disponibile pentru companiile al căror conținut este încorporat pe un site pe care îl accesezi.</translation>
 <translation id="417625634260506724">Spațiul total de stocare folosit de site-urile din listă: <ph name="TOTAL_USAGE" /></translation>
 <translation id="4177501066905053472">Subiectele anunțurilor</translation>
@@ -92,13 +99,16 @@
 <translation id="5055880590417889642">Activitatea ta este unul dintre numeroasele tipuri de date pe care un site le poate folosi pentru a sugera anunțuri. Când anunțurile sugerate de site-uri sunt dezactivate, site-urile pot afișa în continuare anunțuri, dar ele pot fi mai puțin personalizate. Află mai multe despre</translation>
 <translation id="5117284457376555514">Site-urile nu pot folosi cookie-uri terță parte pentru a personaliza conținutul și anunțurile și pentru a afla despre acțiunile pe care le faci pe alte site-uri, cu excepția cazului în care le permiți site-urilor conexe să le acceseze. Este posibil ca unele funcții ale site-urilor să nu ruleze conform așteptărilor.</translation>
 <translation id="5165490319523240316">Site-urile și partenerii lor publicitari îți pot folosi activitatea, cum ar fi modul în care îți petreci timpul pe site-urile pe care le accesezi, pentru a personaliza anunțurile pe alte site-uri. De exemplu, dacă accesezi un site pentru a găsi rețete pentru cină, site-ul poate deduce că te interesează gătitul. Mai târziu, alt site îți poate afișa un anunț similar pentru un serviciu de livrare a alimentelor, pe baza sugestiei de pe primul site.</translation>
+<translation id="5362892126200493757">Spune-ne de ce ai întrerupt protecțiile împotriva urmăririi pe acest site</translation>
 <translation id="544199055391706031">Activitatea ta este unul dintre numeroasele tipuri de date pe care un site le poate folosi pentru a sugera anunțuri. Când anunțurile sugerate de site-uri sunt dezactivate, site-urile pot afișa în continuare anunțuri, dar ele pot fi mai puțin personalizate. Află mai multe despre <ph name="BEGIN_LINK" />anunțurile sugerate de site-uri<ph name="END_LINK" />.</translation>
 <translation id="5495405805627942351">Gestionează datele despre site-urile conexe</translation>
 <translation id="5535388436012824806">Chrome blochează cookie-urile terță parte în modul incognito, dar ai făcut o excepție pentru acest site. Modul incognito oferă și funcții care pot limita informațiile disponibile pentru companiile al căror conținut este încorporat pe un site pe care îl accesezi.</translation>
 <translation id="5574580428711706114">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. <ph name="BEGIN_LINK1" />Află mai multe din Politica de confidențialitate<ph name="LINK_END1" />.</translation>
+<translation id="565589626121534692">Întrerupe protecțiile împotriva urmăririi</translation>
 <translation id="5677928146339483299">Blocat</translation>
 <translation id="5759648952769618186">Subiectele se bazează pe istoricul tău de navigare recent și contribuie la limitarea informațiilor pe care site-urile și partenerii lor publicitari le pot afla despre tine pentru a-ți afișa anunțuri personalizate</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />Cum folosesc site-urile aceste date?<ph name="END_BOLD" /> Site-urile pe care le accesezi pot solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor lor. Chrome îți protejează confidențialitatea limitând informațiile pe care site-urile și le pot trimite.</translation>
+<translation id="5841014997407214978">Încearcă să întrerupi protecțiile împotriva urmăririi pe acest site, ceea ce poate ajuta funcțiile site-ului să funcționeze conform așteptărilor.</translation>
 <translation id="5861490386119603604">Chrome blochează cookie-urile terță parte în modul incognito, dar administratorul a permis cookie-urile terță parte pentru acest site. Modul incognito oferă și funcții care pot limita informațiile disponibile pentru companiile al căror conținut este încorporat pe un site pe care îl accesezi.</translation>
 <translation id="5915946252696843290">Confidențialitatea și datele privind site-urile</translation>
 <translation id="5985520262499095091">Chrome blochează cookie-urile terță parte în modul incognito, dar o extensie a permis cookie-urile terță parte pentru acest site. Modul incognito oferă și funcții care pot limita informațiile disponibile pentru companiile al căror conținut este încorporat pe un site pe care îl accesezi.</translation>
@@ -108,6 +118,7 @@
 <translation id="6205593033237791753">Limitează accesul la adresa ta IP. Setarea este activată.</translation>
 <translation id="6272892028045906139">Setări pentru protecțiile împotriva urmăririi în modul incognito</translation>
 <translation id="6282129116202535093">Anunțurile sugerate de site-uri contribuie la protejarea istoricului de navigare și a identității tale și le dă site-urilor posibilitatea să îți afișeze anunțuri relevante. Folosind activitatea ta, alte site-uri pot sugera anunțuri similare în timp ce navighezi. În setări, poți să vezi o listă a acestor site-uri și să le blochezi pe cele care nu dorești să apară.</translation>
+<translation id="6291177244430967858">Protecțiile împotriva urmăririi au fost reluate</translation>
 <translation id="6308169245546905162">Site-urile pot folosi cookie-uri terță parte pentru a afla despre acțiunile pe care le faci pe alte site-uri</translation>
 <translation id="6388287739339671750">Blochează scripturile de urmărire</translation>
 <translation id="6398358690696005758">Află mai multe despre modul în care Google îți protejează datele, în <ph name="BEGIN_LINK1" />Politica de confidențialitate<ph name="LINK_END1" />.</translation>
@@ -116,6 +127,7 @@
 <translation id="6710025070089118043">Site-urile nu pot folosi cookie-uri terță parte pentru a personaliza conținutul și anunțurile și pentru a afla despre acțiunile pe care le faci pe alte site-uri, cu excepția cazului în care le permiți accesul site-urilor conexe la acestea</translation>
 <translation id="6774168155917940386">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Unele site-uri îți pot folosi activitatea pentru a-ți personaliza experiența, nu doar pentru anunțuri. În plus, ele pot combina aceste date cu alte informații pe care le dețin deja despre tine. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. Află mai multe din <ph name="BEGIN_LINK" />Politica de confidențialitate<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">Personalizarea unui anunț afișat poate depinde de mai multe aspecte, printre care această setare, <ph name="BEGIN_LINK1" />subiectele anunțurilor<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />setările pentru cookie-uri<ph name="LINK_END2" /> și capacitatea site-ului accesat de a personaliza anunțurile.</translation>
+<translation id="6904948821498934430">Chromium blochează cookie-urile terță parte în modul incognito, dar ai făcut o excepție pentru acest site.</translation>
 <translation id="6968337645683500044">Opțiune disponibilă numai când modul incognito este deschis dintr-o filă Chromium în care te-ai conectat</translation>
 <translation id="6984151429741932257">Limitează accesul la adresa ta IP</translation>
 <translation id="7011445931908871535">Ștergi datele?</translation>
@@ -130,15 +142,20 @@
 <translation id="7453144832830554937">Este posibil ca funcțiile site-urilor care se bazează pe cookie-uri terță parte să nu ruleze</translation>
 <translation id="7475768947023614021">Examinează setarea pentru subiectele anunțurilor</translation>
 <translation id="7538480403395139206">Mai multe despre opțiunea Permite cookie-urile terță parte</translation>
+<translation id="7590906321816761911">Protecțiile împotriva urmăririi au fost întrerupte</translation>
 <translation id="7646143920832411335">Afișează site-uri conexe</translation>
 <translation id="7686086654630106285">Mai multe despre anunțurile sugerate de site-uri</translation>
 <translation id="7747003797915893222">Când navighezi în modul incognito, Chrome nu va salva istoricul de navigare, cookie-urile și datele privind site-urile și informațiile pe care le introduci în formulare. Modul incognito oferă și funcții care pot limita informațiile disponibile pentru site-urile încorporate.</translation>
+<translation id="7766094116932490292">Protecțiile împotriva urmăririi sunt activate</translation>
 <translation id="7778504454105164347">Chromium va încerca să-ți protejeze adresa IP de site-urile încorporate care ar putea încerca să afle informații despre tine</translation>
 <translation id="7789658094395162849">Limitează accesul la adresa ta IP. Setarea este dezactivată.</translation>
 <translation id="795219618398555200">Chromium împiedică site-urile să folosească cookie-uri terță parte în modul incognito</translation>
 <translation id="8080808348468200193">Chrome împiedică site-urile să folosească cookie-uri terță parte în modul incognito</translation>
+<translation id="8086115837395871435">Se reîncarcă site-ul</translation>
 <translation id="8096996737013848963">Protejează-ți adresa IP</translation>
+<translation id="8180936577740217261">Chrome blochează cookie-urile terță parte în modul incognito, dar ai făcut o excepție pentru acest site.</translation>
 <translation id="8200078544056087897">Funcțiile site-urilor care se bazează pe cookie-uri terță parte ar trebui să funcționeze conform așteptărilor</translation>
+<translation id="8257935463851606210">Chromium blochează cookie-urile terță parte în modul incognito, dar o extensie a permis cookie-urile terță parte pentru acest site.</translation>
 <translation id="8365690958942020052">Un site pe care îl accesezi poate solicita aceste informații, fie subiectele anunțurilor, fie anunțurile sugerate de site-uri pe care le-ai accesat.</translation>
 <translation id="839994149685752920">Site-urile pot folosi cookie-uri terță parte pentru a personaliza conținutul și anunțurile</translation>
 <translation id="8428213095426709021">Setări</translation>
@@ -159,6 +176,7 @@
 <translation id="9043239285457057403">Această acțiune va șterge toate datele și cookie-urile stocate de <ph name="SITE_NAME" /> și de site-urile conexe</translation>
 <translation id="9162335340010958530">Site-urile nu pot folosi cookie-uri terță parte pentru a personaliza conținutul și anunțurile și pentru a afla despre acțiunile pe care le faci pe alte site-uri, cu excepția cazului în care le permiți site-urilor conexe să le acceseze</translation>
 <translation id="9168357768716791362">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Unele site-uri îți pot folosi activitatea pentru a-ți personaliza experiența, nu doar pentru anunțuri. În plus, ele pot să stocheze subiectele anunțurilor mai mult de patru săptămâni și să le combine cu alte informații pe care le dețin deja despre tine. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. Află mai multe din <ph name="BEGIN_LINK" />Politica de confidențialitate<ph name="END_LINK" />.</translation>
+<translation id="9210228052057672287">Chrome blochează cookie-urile terță parte în modul incognito, dar administratorul a permis cookie-urile terță parte pentru acest site.</translation>
 <translation id="931910205193418957">Chrome blochează cookie-urile terță parte în modul incognito, dar administratorul a permis cookie-urile terță parte pentru acest site. Modul incognito oferă și funcții care pot limita informațiile disponibile pentru companiile al căror conținut este încorporat pe un site pe care îl accesezi. Gestionează protecțiile împotriva urmăririi în modul incognito din <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="989939163029143304">Site-urile și partenerii lor publicitari pot folosi subiectele anunțurilor pentru a personaliza conținutul pentru tine. În comparație cu cookie-urile terță parte, subiectele anunțurilor te ajută să limitezi informațiile pe care site-urile le pot afla despre tine în timp ce navighezi</translation>
 </translationbundle>

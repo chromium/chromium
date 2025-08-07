@@ -315,6 +315,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1521655867290435174">Google Kalkylark</translation>
 <translation id="1524669537550112617">Möblerade hyreslägenheter</translation>
 <translation id="1527263332363067270">Väntar på anslutning …</translation>
+<translation id="1527490370616010873">Google är inte din leverantör av autofyll. Du kan aktivera dessa inställningar och använda betalningsuppgifter från Google-kontot i <ph name="BEGIN_LINK" />inställningarna för autofylltjänster<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Anslutningen blockeras eftersom den initierades av en offentlig sida för att ansluta till enheter eller servrar i ditt privata nätverk. Läs in sidan igen för att tillåta anslutningen.</translation>
 <translation id="1529789484829130889">Fack 8</translation>
 <translation id="1530707389502320859">Webbplatsen du försöker öppna ser inte ut att vara äkta. Ibland försöker hackare efterlikna webbplatser genom att göra små, svårupptäckta ändringar i webbadressen.</translation>
@@ -1757,6 +1758,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3927538228901078312">Inga jämförelsetabeller</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Neka</translation>
+<translation id="3928806096717999469">Redigera, öppnas i ett nytt fönster</translation>
 <translation id="3930260846839546333">Handväskor</translation>
 <translation id="3937834511546249636">Försvarsindustri</translation>
 <translation id="3939773374150895049">Vill du använda WebAuthn i stället för CVC?</translation>

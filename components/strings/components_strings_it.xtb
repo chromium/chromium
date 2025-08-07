@@ -315,6 +315,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1521655867290435174">Fogli Google</translation>
 <translation id="1524669537550112617">Affitti di alloggi arredati</translation>
 <translation id="1527263332363067270">In attesa di connessione…</translation>
+<translation id="1527490370616010873">Google non è il tuo servizio di compilazione automatica. Per attivare queste impostazioni e utilizzare i dati di pagamento del tuo Account Google, visita le <ph name="BEGIN_LINK" />impostazioni dei servizi di compilazione automatica<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La connessione è bloccata perché è stata avviata da una pagina pubblica per connettersi a dispositivi o server sulla tua rete privata. Ricarica questa pagina per consentire la connessione.</translation>
 <translation id="1529789484829130889">Vassoio 8</translation>
 <translation id="1530707389502320859">Il sito che stai provando a visitare risulta contraffatto. A volte i malintenzionati imitano i siti modificando leggermente e in modo poco evidente l'URL.</translation>
@@ -1196,6 +1197,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3002501248619246229">Controlla contenuti multimediali cassetto di input</translation>
 <translation id="3005723025932146533">Mostra copia salvata</translation>
 <translation id="300580149047131921">Utilizzata di recente</translation>
+<translation id="3006864083554020786">indirizzo di casa</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="3010991137650052245">Per usare <ph name="PERMISSION" /> su questo sito, consenti l'accesso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Articoli per la casa</translation>
@@ -1827,6 +1829,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="404831776305217138">L'URL di aggiornamento per l'estensione con ID "<ph name="EXTENSION_ID" />" non è valido o utilizza uno schema non supportato. Gli schemi supportati sono: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Potrai usarlo su tutti i prodotti Google</translation>
 <translation id="4050599136622776556">Chromium sta cercando di modificare i metodi di pagamento.</translation>
+<translation id="4052683751389375539">Modifica, si apre in una nuova finestra</translation>
 <translation id="405399507749852140">Ricevi avvisi se il prezzo cala su qualsiasi sito</translation>
 <translation id="4056223980640387499">Seppia</translation>
 <translation id="4059523390906550209">Scopri di più su Sensitive Data Protection</translation>
@@ -3519,6 +3522,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6881240511396774766">Crea rapidamente un nuovo documento Google</translation>
 <translation id="6882210908253838664">Se un sito non funziona, puoi provare a concedergli l'autorizzazione temporanea a utilizzare i cookie di terze parti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Il foglio per l'autenticazione delle credenziali di pagamento sicure è chiuso</translation>
+<translation id="6883745783646124431">indirizzo di lavoro</translation>
 <translation id="6884662655240309489">Dimensione 1</translation>
 <translation id="6886283082988906333">File Zip</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

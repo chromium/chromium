@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Aanbieden om wachtwoorden en toegangssleutels op te slaan</translation>
 <translation id="1794893174442046596">Tabbladgroep</translation>
 <translation id="1807893857950749072">Meldingen voor prijs volgen toestaan…</translation>
+<translation id="1809929083618343438">Hiermee verwijder je geselecteerde informatie uit Chrome, maar wordt deze informatie niet uit je Google-account verwijderd.</translation>
 <translation id="1810976980198522421">Annuleren</translation>
 <translation id="1812514023095547458">Kleur selecteren</translation>
 <translation id="1815941218935345331">Toegangscode</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Naar geopend venster gaan</translation>
 <translation id="2164946989711475905">Inloggen…</translation>
 <translation id="2175927920773552910">QR-code</translation>
+<translation id="2180338296831857171">Adressen verwijderen</translation>
 <translation id="218350106843433823">Wachtwoorden en toegangssleutels automatisch invullen</translation>
 <translation id="2184272387334793084">Log in om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Eenheidskiezer</translation>
 <translation id="2330607597130465898">Geen beveiliging</translation>
 <translation id="233375395665273385">Verwijderen en uitloggen</translation>
+<translation id="2350463587705616331">Sepia achtergrondkleur</translation>
 <translation id="2351097562818989364">Je vertaalinstellingen zijn opnieuw ingesteld.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Je kunt je wachtwoord voor {DOMAIN_ONE} opslaan in je Google-account, {EMAIL}.}=2{Je kunt je wachtwoorden voor {DOMAIN_ONE} en {DOMAIN_TWO} opslaan in je Google-account, {EMAIL}.}=3{Je kunt je wachtwoorden voor {DOMAIN_ONE}, {DOMAIN_TWO} en nog {OTHER_DOMAINS_COUNT} domein opslaan in je Google-account, {EMAIL}.}other{Je kunt je wachtwoorden voor {DOMAIN_ONE}, {DOMAIN_TWO} en nog {OTHER_DOMAINS_COUNT} domeinen opslaan in je Google-account, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Standaard siteweergave</translation>
@@ -543,6 +546,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3081338492074632642">Zorg ervoor dat het wachtwoord dat je opslaat, overeenkomt met je wachtwoord voor <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Onderaan</translation>
 <translation id="309710370695886264">Je hebt 1 hergebruikt wachtwoord. Los dit nu op om beveiligd te blijven.</translation>
+<translation id="3099402981545350675">Hiermee worden adressen verwijderd die zijn opgeslagen op dit apparaat. Ook worden geselecteerde gegevens uit Chrome verwijderd, maar deze gegevens worden niet uit je Google-account verwijderd.</translation>
 <translation id="3106258548858559536">Leesmodus uitzetten</translation>
 <translation id="3106690631878101882">Vertalen verbergen</translation>
 <translation id="310900540163454140">Wachtwoord voor <ph name="WEBSITE" /> verwijderen?</translation>
@@ -741,6 +745,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3962326069546168954">Opslaan</translation>
 <translation id="3967327056943561740">Bookmarks</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
+<translation id="3973560090698854095">Hiermee worden adressen verwijderd die zijn opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="3982893814825393515">Een probleem melden…</translation>
 <translation id="398604237578616937">Ingelogd als <ph name="USER_EMAIL" />. Accountmenu openen.</translation>
 <translation id="3986739045730058129">Naar tabblad</translation>
@@ -1021,6 +1026,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5050810143224996149">Wachtwoord delen</translation>
 <translation id="5055015094595227120">Exacte locatie</translation>
+<translation id="5055551113846164633">Hiermee worden adressen verwijderd die zijn opgeslagen op dit apparaat. Ook worden adressen verwijderd die zijn opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemen gevonden (<ph name="TIME" />).</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive installeren</translation>
@@ -1232,6 +1238,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synchroniseren…</translation>
 <translation id="583923961930319521">Wachtwoorden gebruiken op al je apparaten</translation>
+<translation id="5843013299019689749">Zwarte achtergrondkleur</translation>
 <translation id="5844284118433003733">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
 <translation id="5854790677617711513">Ouder dan 30 dagen</translation>
 <translation id="5857770089550859117">Wachtwoordzin vereist om de synchronisatie te starten.</translation>
@@ -1484,6 +1491,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6682680306647339111">Herinnering verwijderd</translation>
 <translation id="6684262542644248484">Log in bij een website</translation>
 <translation id="6685259053455152195">Snelkoppelingen om snel instellingen te wijzigen en functies te gebruiken via de adresbalk.</translation>
+<translation id="6689342293888598653">Witte achtergrondkleur</translation>
 <translation id="6689685206615181381">Alleen de incognitomodus is beschikbaar</translation>
 <translation id="6708501134077648845">Wachtwoordopties</translation>
 <translation id="6709964700841491574">Lockdown-modus</translation>
@@ -1591,6 +1599,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="714291438898585119">Met ster</translation>
 <translation id="7146301801400584641">Agendabestand beschikbaar</translation>
 <translation id="7149893636342594995">Afgelopen 24 uur</translation>
+<translation id="7154417656353909837">Adressen verwijderen</translation>
 <translation id="7161230316646448869">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="7173114856073700355">Instellingen openen</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bookmark opgeslagen}other{{count} bookmarks opgeslagen}}</translation>
@@ -1660,6 +1669,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7458706065921255639">Personalisatie en koppelen</translation>
 <translation id="745899714366929493">Hele dag</translation>
 <translation id="7460698861522306757">Mobiele site opvragen</translation>
+<translation id="7464143666517313304">Hiermee worden adressen verwijderd die zijn opgeslagen op dit apparaat.</translation>
 <translation id="7468373585447318060">Blijf op de hoogte van prijsdalingen voor alle producten die je volgt.</translation>
 <translation id="746872191028309255">Koop wat je ziet met je camera of fotogalerij.</translation>
 <translation id="7471557245617580330">Nieuw tabblad maken</translation>
@@ -1711,6 +1721,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>
 <translation id="764827086632467055">Tik op Standaard browser-app</translation>
 <translation id="7649070708921625228">Hulp</translation>
+<translation id="765555660695722850">Hiermee worden adressen verwijderd die zijn opgeslagen op dit apparaat. Ook wordt bepaalde informatie uit je Google-account verwijderd, maar niet basisinformatie zoals je naam of woonadres.</translation>
 <translation id="765631330137769217">Tik op Opslaan om dit wachtwoord makkelijk te vinden als je de volgende keer inlogt</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7662316065255305764">Site-informatie</translation>
@@ -2056,6 +2067,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8891031436559779793">Je krijgt een melding bij een prijsdaling op een site.</translation>
 <translation id="8893208530912252670">Video's</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
+<translation id="8900845556227858314">Browser-app</translation>
 <translation id="890565330728586731">Terug</translation>
 <translation id="8907722425137681851">Zoeken op pagina…</translation>
 <translation id="8909135823018751308">Delen</translation>

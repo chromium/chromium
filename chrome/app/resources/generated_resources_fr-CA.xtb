@@ -1004,6 +1004,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1668804837842452164">Enregistrer dans <ph name="BRAND" /> pour <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">En savoir plus sur les suggestions</translation>
 <translation id="1670399744444387456">De base</translation>
+<translation id="1671749176392751693">Identifiants de contenu protégé autorisés</translation>
 <translation id="1673137583248014546">L'URL <ph name="URL" /> veut voir la marque et le modèle de votre clé de sécurité</translation>
 <translation id="1674073353928166410">Tout ouvrir (<ph name="URL_COUNT" />) dans une fenêtre de navigation privée</translation>
 <translation id="1674142805528405174">Le gestionnaire de mots de passe Google peut mettre à jour votre compte avec un mot de passe fort qui est enregistré pour vous dans votre compte <ph name="EMAIL" />.</translation>
@@ -1801,6 +1802,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2234876718134438132">Synchronisation et services Google</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2236949375853147973">Mon activité</translation>
+<translation id="2236963250883149540">Retirer votre adresse professionnelle du remplissage automatique de Chrome?</translation>
 <translation id="2238379619048995541">Données sur l'état de la fréquence</translation>
 <translation id="2240582393605484605">Les données enregistrées uniquement sur cet appareil resteront dans le profil existant</translation>
 <translation id="2241053333139545397">Accéder à vos données sur un certain nombre de sites Web et les modifier</translation>
@@ -2388,6 +2390,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2624142942574147739">Cette page accède à votre caméra et à votre microphone.</translation>
 <translation id="2626799779920242286">Veuillez réessayer plus tard.</translation>
 <translation id="2627424346328942291">Impossible de partager</translation>
+<translation id="2628258844236035475">Retirer votre adresse personnelle du remplissage automatique de Chrome?</translation>
 <translation id="2628770867680720336">Vous devez réinitialiser ce Chromebook à ses paramètres par défaut pour activer le débogage PDA. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Concevoir des applications Android</translation>
 <translation id="2629437048544561682">Effacer le Canvas</translation>
@@ -3850,6 +3853,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
 <translation id="3665301845536101715">Ouvrir dans le panneau latéral</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains paramètres de votre navigateur ont été corrompus par un autre programme, et les a réinitialisé à leurs valeurs par défaut.</translation>
+<translation id="3665918214153961651">Importation du fichier en cours…</translation>
 <translation id="3665919494326051362">Version actuelle : <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Vidage de débogage des CIR Wi-Fi Intel</translation>
 <translation id="3666971425390608309">Téléchargement de <ph name="FILE_NAME" /> interrompu</translation>
@@ -4243,6 +4247,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3913689539406883376">Activer le mode lorsque mon ordinateur est débranché</translation>
 <translation id="3914173277599553213">Obligatoire</translation>
 <translation id="3914568430265141791">Ouvrir le dossier <ph name="FOLDER_TITLE" /></translation>
+<translation id="3914894336972817683">Téléversement impossible. Le fichier semble vide.</translation>
 <translation id="3915280005470252504">Recherche vocale</translation>
 <translation id="3916445069167113093">Ce type de fichier risque d'endommager votre ordinateur. Voulez-vous vraiment télécharger <ph name="FILE_NAME" />?</translation>
 <translation id="3917184139185490151">Votre ordinateur contient un module de sécurité qui est utilisé pour mettre en œuvre de nombreuses fonctionnalités de sécurité cruciales dans Chrome OS. Visitez le centre d'aide Chromebook pour en savoir plus : https://support.google.com/chromebook/?p=sm</translation>
@@ -4319,6 +4324,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3959969108528118741">Propriétaire</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Autres actions pour <ph name="IBAN_DESCRIPTION" /></translation>
+<translation id="3961823084595287812">Toujours autoriser <ph name="HOST" /> à utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="3964480518399667971">Désactiver la connectivité cellulaire</translation>
 <translation id="3965467402665811906">Les sites peuvent demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="3965965397408324205">Quitter <ph name="PROFILE_NAME" /></translation>
@@ -5974,6 +5980,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5154108062446123722">Paramètres avancés pour <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Destinataire</translation>
 <translation id="5154917547274118687">Mémoire</translation>
+<translation id="5155299520372681119">Le téléversement du fichier a expiré et a été retiré.</translation>
 <translation id="5155327081870541046">Dans la barre d'adresse, entrez le raccourci pour le site que vous voulez rechercher comme « @favoris ». Ensuite, appuyez sur votre raccourci-clavier favori et entrez votre terme de recherche.</translation>
 <translation id="5156638757840305347">Le curseur est mis en évidence lorsqu'il apparaît ou se déplace</translation>
 <translation id="5157250307065481244">Afficher les détails du site</translation>
@@ -6040,6 +6047,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5201945335223486172">Pour <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Peut modifier des fichiers ou des dossiers sur votre appareil</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Cliquer pour afficher l'extension}one{Cliquer pour afficher cette extension}other{Cliquer pour afficher ces extensions}}</translation>
+<translation id="5204282224596194174">Mot de passe de récupération pour <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Veuillez effectuer un Powerwash sur l'appareil et réessayer.</translation>
 <translation id="5204967432542742771">Entrez le mot de passe</translation>
 <translation id="5205484256512407285">Ne jamais utiliser les données cellulaires pour effectuer les transferts</translation>
@@ -6252,6 +6260,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="536278396489099088">État du système ChromeOS et rapports connexes</translation>
 <translation id="5362916924854054326">Ne pas afficher les fichiers SharePoint et OneDrive</translation>
 <translation id="5363109466694494651">Activer Powerwash et Rétablir</translation>
+<translation id="5365858324977454035">Erreur inattendue, échec du téléversement du fichier.</translation>
 <translation id="5365881113273618889">Le dossier que vous avez sélectionné contient des fichiers confidentiels. Voulez-vous vraiment accorder à « <ph name="APP_NAME" /> » un accès d'écriture permanent à ce dossier?</translation>
 <translation id="536638840841140142">Aucune</translation>
 <translation id="5368246151595623328">« <ph name="NETWORK_NAME" /> » enregistré à partir de <ph name="DEVICE_NAME" /></translation>
@@ -6280,6 +6289,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="538822246583124912">La politique de l'entreprise a changé. Le bouton des fonctionnalités expérimentales a été ajouté à la barre d'outils. Cliquez sur ce bouton pour ouvrir une boîte de dialogue permettant d'activer des fonctionnalités expérimentales.</translation>
 <translation id="5388436023007579456">Les services système ainsi que les applications et les sites Web disposant de l'autorisation d'accéder à la caméra peuvent utiliser votre caméra. Pour utiliser la caméra, vous devrez peut-être redémarrer l'application ou actualiser la page.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site trouvé contenant de nombreuses notifications}one{{NUM_SITES} site trouvé contenant de nombreuses notifications}other{{NUM_SITES} sites trouvés contenant de nombreuses notifications}}</translation>
+<translation id="5388719243178419614">Téléversement impossible. Échec du traitement du fichier d'image.</translation>
 <translation id="5388885445722491159">Associé</translation>
 <translation id="5389224261615877010">Arc-en-ciel</translation>
 <translation id="5389794555912875905">Afficher les avertissements avant d'accéder à des sites non sécurisés (recommandé)</translation>
@@ -6322,6 +6332,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5414836363063783498">Vérification...</translation>
 <translation id="5415328625985164836">Il s'agit d'un programme bêta. Vous pouvez maintenant utiliser Steam pour jouer à certains jeux sur votre Chromebook.</translation>
 <translation id="5415497281076257439">Expression</translation>
+<translation id="5417293056300086453">Ce site peut utiliser des identifiants pour faire jouer du contenu protégé.</translation>
 <translation id="5417312524372586921">Thèmes du navigateur</translation>
 <translation id="541737483547792035">Agrandir l'écran</translation>
 <translation id="541822678830750798">L'extension demande de lire et de modifier ce site</translation>
@@ -6857,6 +6868,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5804259315582798390">Échec d'activation de la récupération des données locales</translation>
 <translation id="5805268472388605531">Maintenez le doigt sur les touches du clavier pour voir les accents et les caractères spéciaux</translation>
 <translation id="5805697420284793859">Gestionnaire de fenêtres</translation>
+<translation id="5806322307130093061"><ph name="FILE_NAME" /> : appuyez sur Entrée pour supprimer le fichier</translation>
 <translation id="5806447147478173900">Espace de stockage total utilisé par les sites affichés : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (par défaut)</translation>
 <translation id="5807774529265708172">Afficher ou masquer le clavier à l'écran</translation>
@@ -6996,6 +7008,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5902892210366342391">Afficher les avertissements avant d'accéder à des sites non sécurisés en mode Navigation privée</translation>
 <translation id="5904614460720589786">Impossible de configurer <ph name="APP_NAME" /> en raison d'une erreur de configuration. Veuillez communiquer avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
+<translation id="5906457147959147328">Continuer à autoriser ce site à utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="5906655207909574370">La mise à jour est presque terminée! Pour la compléter, veuillez redémarrer votre appareil.</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
 <translation id="5906974869830879618">Veuillez entrer un NIP</translation>
@@ -7842,6 +7855,8 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6521214596282732365">Les sites utilisent généralement vos polices pour que vous puissiez créer du contenu haute fidélité grâce à des outils de conception et de graphisme en ligne</translation>
 <translation id="6523574494641144162">Le gestionnaire de mots de passe de Google n'a pas pu enregistrer ces mots de passe dans votre compte Google. Vous pouvez les enregistrer sur cet appareil.</translation>
 <translation id="652492607360843641">Vous êtes connecté à un réseau <ph name="NETWORK_TYPE" />.</translation>
+<translation id="6525594601091660913">&gt;
+Téléversement du fichier terminé</translation>
 <translation id="6525767484449074555">Cliquez sur « Installer »</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6527574156657772563">Aucun appareil accessible. Ajoutez votre compte Google à votre téléphone pour le connecter à ce <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -8975,8 +8990,10 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 favori est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{{BOOKMARK_COUNT} favori est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{{BOOKMARK_COUNT} favoris sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="7328867076235380839">Combinaison incorrecte</translation>
+<translation id="7329009627557479564">Téléversement impossible. Le fichier dépasse la taille maximale prise en charge.</translation>
 <translation id="7329154610228416156">La connexion a échoué, car elle a été configurée pour utiliser une adresse URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez communiquer avec votre administrateur.</translation>
 <translation id="7330533963640151632">Paramètres <ph name="FEATURE_NAME" /> pour l'appareil de <ph name="USER_NAME" />, partage sous le compte <ph name="USER_EMAIL" />.</translation>
+<translation id="733058866272972585">Ce site a été bloqué pour qu'il ne puisse pas utiliser d'identifiants pour faire jouer du contenu protégé.</translation>
 <translation id="7331646370422660166">alt+flèche vers le bas</translation>
 <translation id="7332053360324989309">Traitement dédié : <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Doublons d'onglets</translation>
@@ -9226,6 +9243,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7490683549040131791">Vérifier les mots de passe restants</translation>
 <translation id="7491962110804786152">Tabulation</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 témoin}one{{NUM_COOKIES} témoin}other{{NUM_COOKIES} témoins}}</translation>
+<translation id="7493355200491857618">Identifiants de contenu protégé refusés</translation>
 <translation id="7493386493263658176">L'extension <ph name="EXTENSION_NAME" /> peut recueillir tout le texte que vous entrez, y compris des données personnelles comme des mots de passe et des numéros de carte de crédit. Voulez-vous utiliser cette extension?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Appli Android</translation>
@@ -10219,6 +10237,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
 <translation id="8163152278172770963">Ne pas autoriser les sites à entrer automatiquement l'Incrustation d'image</translation>
 <translation id="8163708146810922598">La plus ancienne</translation>
+<translation id="8164842729077473463">Continuer à bloquer ce site pour qu'il ne puisse pas utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="8165997195302308593">Redirection de port Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="8168435359814927499">Contenu</translation>
@@ -10968,6 +10987,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8686142379631285985">Connecté en tant que <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Annuler <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configurer votre NIP</translation>
+<translation id="8687774873995698516">Toujours bloquer <ph name="HOST" /> pour qu'il ne puisse pas utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="8689811383248488428">Refuser et fermer le profil</translation>
 <translation id="8689998525144040851">100</translation>
@@ -11313,12 +11333,14 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installation de l'application en cours…</translation>
 <translation id="891931289445130855">Supprimer les données et les autorisations</translation>
+<translation id="8919468987486771003">Téléversement impossible. Le téléversement du fichier a échoué aux vérifications de validation.</translation>
 <translation id="8920133120839850939">Sélectionnez l'onglet Plus de gestes, puis activez Naviguer d'une page à l'autre pour naviguer vers l'avant et l'arrière</translation>
 <translation id="8921369299636221117">Le service Concierge n'est pas accessible.</translation>
 <translation id="8922348435910470639">Double réservation</translation>
 <translation id="8922624386829239660">L'écran se déplace lorsque le pointeur de la souris touche les rebords de l'écran</translation>
 <translation id="8923880975836399332">Turquoise foncé</translation>
 <translation id="8925124370124776087">La barre de titre est maintenant masquée</translation>
+<translation id="8925308599005372373">Téléverser un fichier PDF</translation>
 <translation id="8925458182817574960">Paramètre&amp;s</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8926555406617248399">Onglets masqués</translation>
@@ -11531,6 +11553,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9057354806206861646">Mettre à jour le calendrier</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Environ 1 notification par jour}one{Environ {NUM_NOTIFICATION} notification par jour}other{Environ {NUM_NOTIFICATION} notifications par jour}}</translation>
 <translation id="9058760336383947367">Afficher le PPD de l'imprimante</translation>
+<translation id="9061521313218438086">Si Chrome indique qu'un de vos mots de passe a été découvert dans un cas de violation de données public, le gestionnaire de mots de passe Google peut vous proposer de le modifier pour vous si vous êtes connecté.</translation>
 <translation id="9061694916020926968">Vous devez être connecté à un compte Google pour utiliser Steam pour Chromebook (Bêta). Connectez-vous et réessayez.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>

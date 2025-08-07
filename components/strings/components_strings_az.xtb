@@ -315,6 +315,7 @@
 <translation id="1521655867290435174">Google Cədvəl</translation>
 <translation id="1524669537550112617">Əşyalı icarələr</translation>
 <translation id="1527263332363067270">Bağlantı gözlənilir...</translation>
+<translation id="1527490370616010873">Google avto-doldurma provayderiniz deyil. Bu ayarları aktivləşdirmək və Google Hesabınızdakı ödəniş məlumatlarından istifadə etmək üçün <ph name="BEGIN_LINK" />Avtodoldurma xidmətləri ayarlarına<ph name="END_LINK" /> daxil olun.</translation>
 <translation id="1528311629279578926">Bağlantı bloklanıb, çünki şəxsi şəbəkədə cihaz və ya serverlərə qoşulmaq məqsədilə ictimai səhifə tərəfindən başladılıb. Bu səhifəni təkrar yükləyərək bağlantıya icazə verin.</translation>
 <translation id="1529789484829130889">Qab 8</translation>
 <translation id="1530707389502320859">Bu, saxta sayta oxşayır. Hücumçular bəzən URL-a kiçik, çətin sezilə bilən dəyişikliklər etməklə saytları təqlid edir.</translation>
@@ -1194,6 +1195,7 @@
 <translation id="3002501248619246229">Daxiletmə qabı mediasını yoxlayın</translation>
 <translation id="3005723025932146533">Saxlanılmış kopyanı göstərin</translation>
 <translation id="300580149047131921">Bu yaxınlarda istifadə edilib</translation>
+<translation id="3006864083554020786">ev ünvanı</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, əlçatan əməliyyatlara baxmaq üçün Tab, seçilmiş əməliyyatı icra etmək üçün Enter üzərinə basın.</translation>
 <translation id="3010991137650052245">Bu saytda <ph name="PERMISSION" /> istifadə etmək üçün <ph name="SHORT_PRODUCT_NAME" /> üzrə giriş imkanı verin</translation>
 <translation id="3013711734159931232">Məişət Avadanlıqları</translation>
@@ -1824,6 +1826,7 @@
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" ID-li artırma üçün güncəllənmə URL-i yanlışdır, yaxud sxemi dəstəklənmir. Dəstəklənən sxemlər: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> və <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Onu Google məhsullarında istifadə edə biləcəksiniz</translation>
 <translation id="4050599136622776556">Chromium ödəniş metodlarını redaktə etməyə çalışır.</translation>
+<translation id="4052683751389375539">Redaktə edin, yeni pəncərə açır</translation>
 <translation id="405399507749852140">Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Həssas datanın qorunması haqqında ətraflı məlumat</translation>
@@ -3516,6 +3519,7 @@
 <translation id="6881240511396774766">Cəld yeni Google Sənəd yaradın</translation>
 <translation id="6882210908253838664">Sayt işləməsə, üçüncü tərəf kukilərindən müvəqqəti istifadə icazəsi verə bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi bağlanıb</translation>
+<translation id="6883745783646124431">iş ünvanı</translation>
 <translation id="6884662655240309489">Ölçü 1</translation>
 <translation id="6886283082988906333">ZIP arxivi</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

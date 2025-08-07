@@ -315,6 +315,7 @@
 <translation id="1521655867290435174">Табели на Google</translation>
 <translation id="1524669537550112617">Опремени места за изнајмување</translation>
 <translation id="1527263332363067270">Се чека врска…</translation>
+<translation id="1527490370616010873">Google не е вашиот давател на услуги за автоматско пополнување. За да ги овозможите поставкиве и да ги користите податоците за плаќање од вашата сметка на Google, одете во <ph name="BEGIN_LINK" />Поставките за услугите за автоматско пополнување<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Поврзувањето е блокирано затоа што го започна јавна страница за да се поврзе на уредите или серверите во вашата приватна мрежа. Вчитајте ја страницава повторно за да го дозволите поврзувањето.</translation>
 <translation id="1529789484829130889">Фиока 8</translation>
 <translation id="1530707389502320859">Сајтот којшто се обидовте да го посетите изгледа лажно. Напаѓачите понекогаш имитираат сајтови, така што вршат мали, тешко забележливи промени во URL-адресата.</translation>
@@ -1194,6 +1195,7 @@
 <translation id="3002501248619246229">Провери ги содржините во влезната фиока</translation>
 <translation id="3005723025932146533">Прикажи зачувана копија</translation>
 <translation id="300580149047131921">Неодамна користено</translation>
+<translation id="3006864083554020786">домашна адреса</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете на Tab за прелистување на достапните дејства, а потоа притиснете на Enter за извршување на избраното дејство.</translation>
 <translation id="3010991137650052245">За да користите <ph name="PERMISSION" /> на сајтов, треба да му доделите пристап на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Производи за домаќинство</translation>
@@ -1828,6 +1830,7 @@
 <translation id="404831776305217138">URL-адресата за ажурирање екстензија со ID „<ph name="EXTENSION_ID" />“ е неважечка или користи неподдржана шема. Поддржани се следниве шеми: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ќе може да ја користите на производите на Google</translation>
 <translation id="4050599136622776556">Chromium се обидува да ги измени начините на плаќање.</translation>
+<translation id="4052683751389375539">Изменете, отвора нов прозорец</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Дознајте повеќе за заштитата на чувствителни податоци</translation>
@@ -3520,6 +3523,7 @@
 <translation id="6881240511396774766">Создајте нов документ на Google брзо</translation>
 <translation id="6882210908253838664">Ако конкретен сајт не функционира, може да се обидете да му дадете привремена дозвола за користење колачиња од трети страни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Листот за проверка на акредитиви за безбедно плаќање е затворен</translation>
+<translation id="6883745783646124431">адреса на работа</translation>
 <translation id="6884662655240309489">Големина 1</translation>
 <translation id="6886283082988906333">ZIP-архива</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

@@ -6051,6 +6051,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> ಗಾಗಿ</translation>
 <translation id="5203035663139409780">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಫೈಲ್‌ಗಳು ಅಥವಾ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ವಿಸ್ತರಣೆಯನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}one{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}other{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> ಗಾಗಿ ರಿಕವರಿ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="5204673965307125349">ಸಾಧನವನ್ನು ಪವರ್‌ವಾಷ್ ಮಾಡಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5204967432542742771">ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="5205484256512407285">ವರ್ಗಾವಣೆ ಮಾಡಲು ಎಂದಿಗೂ ಮೊಬೈಲ್ ಡೇಟಾ ಬಳಸಬೇಡಿ</translation>
@@ -11559,6 +11560,7 @@
 <translation id="9057354806206861646">ಅಪ್‌ಡೇಟ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ದಿನಕ್ಕೆ ಸುಮಾರು 1 ನೋಟಿಫಿಕೇಶನ್}one{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="9058760336383947367">ಪ್ರಿಂಟರ್ PPD ಅನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="9061521313218438086">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಲ್ಲಿ ಯಾವುದಾದರೂ ಒಂದು ಸಾರ್ವಜನಿಕ ಡೇಟಾ ಉಲ್ಲಂಘನೆ ಮಾಡುತ್ತಿದೆ ಎಂದು Chrome ಗೆ ಕಂಡುಬಂದರೆ, ನೀವು ಸೈನ್ ಇನ್ ಆಗಿದ್ದರೆ Google Password Manager ನಿಮಗಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸುವ ಅವಕಾಶವನ್ನು ನೀಡಬಹುದು.</translation>
 <translation id="9061694916020926968">Steam for Chromebook (ಬೀಟಾ) ಅನ್ನು ಬಳಸಲು, ನೀವು Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರಬೇಕಾಗುತ್ತದೆ. ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> ನೇ ಸಾಲಿನಿಂದ <ph name="ERROR_LINE_END" /> ನೇ ಸಾಲಿನವರೆಗೆ ದೋಷವಿದೆ</translation>

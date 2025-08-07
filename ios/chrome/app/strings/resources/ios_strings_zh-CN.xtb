@@ -208,6 +208,7 @@
 <translation id="17906873777101817">主动询问是否保存密码和通行密钥</translation>
 <translation id="1794893174442046596">标签页分组</translation>
 <translation id="1807893857950749072">允许接收价格跟踪通知…</translation>
+<translation id="1809929083618343438">此操作会从 Chrome 中移除所选信息，但不会从您的 Google 账号中删除这些信息。</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1812514023095547458">选择颜色</translation>
 <translation id="1815941218935345331">密码</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">切换到另一个已打开的窗口</translation>
 <translation id="2164946989711475905">登录…</translation>
 <translation id="2175927920773552910">二维码</translation>
+<translation id="2180338296831857171">删除地址</translation>
 <translation id="218350106843433823">自动填充密码和通行密钥</translation>
 <translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">单位选择器</translation>
 <translation id="2330607597130465898">无保护</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
+<translation id="2350463587705616331">深褐色背景颜色</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{您可将用于登录 {DOMAIN_ONE} 的密码保存到您的 Google 账号 {EMAIL}。}=2{您可将用于登录 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密码保存到您的 Google 账号 {EMAIL}。}=3{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}other{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="2353953000228441783">默认网站视图</translation>
@@ -385,6 +388,7 @@
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2434918313224755415">向左滚动即可在无痕模式下浏览内容。</translation>
 <translation id="2435457462613246316">显示密码</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} 项历史记录}other{{count} 项历史记录}}</translation>
 <translation id="2461070143328828326">密码设置</translation>
 <translation id="2462736546165239215">您可在此处找到您的所有浏览记录。</translation>
 <translation id="2466518891828668184">保存密码即可轻松登录网站和应用。</translation>
@@ -543,6 +547,7 @@
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3087734570205094154">底部</translation>
 <translation id="309710370695886264">您有 1 个重复使用的密码。请立即修正它以确保安全。</translation>
+<translation id="3099402981545350675">此操作会删除保存在此设备上的地址，还会从 Chrome 中移除所选信息，但不会从您的 Google 账号中删除这些信息。</translation>
 <translation id="3106258548858559536">关闭阅读模式</translation>
 <translation id="3106690631878101882">隐藏“翻译”</translation>
 <translation id="310900540163454140">删除 <ph name="WEBSITE" /> 的密码？</translation>
@@ -741,6 +746,7 @@
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">书签</translation>
 <translation id="3967822245660637423">下载完毕</translation>
+<translation id="3973560090698854095">此操作会删除保存在 Google 账号 <ph name="USER_EMAIL" /> 中的地址。</translation>
 <translation id="3982893814825393515">报告问题…</translation>
 <translation id="398604237578616937">目前登录的账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
 <translation id="3986739045730058129">前往标签页</translation>
@@ -1021,6 +1027,7 @@
 <translation id="5039804452771397117">允许</translation>
 <translation id="5050810143224996149">分享密码</translation>
 <translation id="5055015094595227120">精确位置信息</translation>
+<translation id="5055551113846164633">此操作会删除保存在此设备上的地址，还会删除 Google 账号 <ph name="USER_EMAIL" /> 中保存的地址。</translation>
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
 <translation id="5059136629401106827">知道了</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
@@ -1232,6 +1239,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">正在同步…</translation>
 <translation id="583923961930319521">在您的所有设备上使用密码</translation>
+<translation id="5843013299019689749">黑色背景颜色</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
 <translation id="5854790677617711513">30 天之前的</translation>
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
@@ -1484,6 +1492,7 @@
 <translation id="6682680306647339111">提醒已移除</translation>
 <translation id="6684262542644248484">登录相应网站</translation>
 <translation id="6685259053455152195">在地址栏中输入快捷字词，即可快速修改设置以及使用某些功能。</translation>
+<translation id="6689342293888598653">白色背景颜色</translation>
 <translation id="6689685206615181381">仅无痕模式可用</translation>
 <translation id="6708501134077648845">密码选项</translation>
 <translation id="6709964700841491574">锁定模式</translation>
@@ -1507,6 +1516,7 @@
 <translation id="6791425686608802741">点按“向新分组添加标签页”</translation>
 <translation id="6794476726485507147">选择日期和时间即可接收通知，提醒您再次访问此页面</translation>
 <translation id="6795481620482106033">数据无效</translation>
+<translation id="6797543908718012274">开启阅读模式</translation>
 <translation id="6807287147325542056">其他应用中的密码</translation>
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6825078212112407882">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
@@ -1591,6 +1601,7 @@
 <translation id="714291438898585119">已加星标</translation>
 <translation id="7146301801400584641">有可用的日历文件</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
+<translation id="7154417656353909837">移除地址</translation>
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7173721738069475737">{count,plural, =1{书签已保存}other{{count} 个书签已保存}}</translation>
@@ -1660,6 +1671,7 @@
 <translation id="7458706065921255639">个性化和关联</translation>
 <translation id="745899714366929493">全天</translation>
 <translation id="7460698861522306757">请求切换到移动版网站</translation>
+<translation id="7464143666517313304">此操作会删除保存在此设备上的地址。</translation>
 <translation id="7468373585447318060">及时了解您跟踪的所有商品的降价情况。</translation>
 <translation id="746872191028309255">使用相机拍照或从图库中选择照片，从而购买所见内容。</translation>
 <translation id="7471557245617580330">创建新标签页</translation>
@@ -1711,6 +1723,7 @@
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="764827086632467055">点按“默认浏览器应用”</translation>
 <translation id="7649070708921625228">帮助</translation>
+<translation id="765555660695722850">此操作会删除保存在此设备上的地址，还会从您的 Google 账号中删除一些信息，但不会删除您的名称、住址等基本信息。</translation>
 <translation id="765631330137769217">点按“保存”即可在下次登录时轻松使用此密码</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662316065255305764">网站信息</translation>
@@ -2056,6 +2069,7 @@
 <translation id="8891031436559779793">任一网站上的商品降价时，您都会收到通知。</translation>
 <translation id="8893208530912252670">视频</translation>
 <translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
+<translation id="8900845556227858314">浏览器应用</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8907722425137681851">在当前页面中查找…</translation>
 <translation id="8909135823018751308">分享…</translation>

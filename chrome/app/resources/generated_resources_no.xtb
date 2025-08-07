@@ -5914,6 +5914,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5109044022078737958">Sporty</translation>
 <translation id="5109816792918100764">Fjern <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Åpne gruppen i et nytt vindu</translation>
+<translation id="511147239888121455">Vil du sikkerhetskopiere tingene dine?</translation>
 <translation id="5111646998522066203">Avslutt inkognitomodus</translation>
 <translation id="5111692334209731439">&amp;Bokmerkebehandling</translation>
 <translation id="5111794652433847656">Det finnes ingen passnøkler for <ph name="APP_NAME" /> på denne enheten</translation>
@@ -6049,6 +6050,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5201945335223486172">For <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Kan redigere filer og mapper på enheten</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klikk for å se utvidelsen}other{Klikk for å se disse utvidelsene}}</translation>
+<translation id="5204282224596194174">Gjenopprettingspassord for <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Utfør Powerwash på enheten, og prøv på nytt.</translation>
 <translation id="5204967432542742771">Skriv inn passordet</translation>
 <translation id="5205484256512407285">Bruk aldri mobildata til å overføre</translation>
@@ -8202,6 +8204,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
     <ph name="BEGIN_PARAGRAPH3" />For mer informasjon om hvilke data <ph name="DEVICE_OS" /> kan dele med Google, og hvordan de brukes, se g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Øker sikkerheten for deg og alle andre på nettet</translation>
 <translation id="6771503742377376720">Er en sertifiseringsinstans</translation>
+<translation id="6772103682557559072">Flere alternativer for <ph name="ADDRESS_SUMMARY" />-jobbadressen</translation>
 <translation id="6772974422346500939">Åpne og rediger</translation>
 <translation id="6773595613448852535">Rotsertifikatlageret i Chrome</translation>
 <translation id="677394079035748956">Nettstedet trenger et engangspassord</translation>
@@ -10030,6 +10033,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8025151549289123443">Låseskjerm og pålogging</translation>
 <translation id="8025291188699172126">Om oppdateringer</translation>
 <translation id="8026471514777758216">Alle enhetene dine</translation>
+<translation id="8026700655446696031">Flere alternativer for <ph name="ADDRESS_SUMMARY" />-hjemmeadressen</translation>
 <translation id="8026784703228858744">Lagre blant annet bokmerkene dine med synkronisering</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Besøkt for 0 dager siden}=1{Besøkt for 1 dag siden}other{Besøkt for # dager siden}}</translation>
 <translation id="8028060951694135607">Microsoft nøkkelgjenoppretting</translation>
@@ -10178,6 +10182,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8121537075864592453">Fullskjerm er deaktivert</translation>
 <translation id="8121750884985440809">Du caster skjermen nå</translation>
 <translation id="8122898034710982882">Telefonstyring, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Sikkerhetskopier passordene, bokmerkene dine med mer, slik at du enkelt kan få dem på alle enhetene dine</translation>
 <translation id="81238879832906896">Gul og hvit blomst</translation>
 <translation id="8123975449645947908">Rull bakover</translation>
 <translation id="8124313775439841391">Administrert ONC</translation>
@@ -11553,6 +11558,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9057354806206861646">Oppdateringsplan</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Omtrent 1 varsel per dag}other{Omtrent {NUM_NOTIFICATION} varsler per dag}}</translation>
 <translation id="9058760336383947367">Se skriverens PPD</translation>
+<translation id="9061521313218438086">Hvis Chrome finner et av passordene dine i et offentlig databrudd, kan Google Passordlagring tilby å endre passordet for deg hvis du er logget på.</translation>
 <translation id="9061694916020926968">Du må være logget på en Google-konto for å kunne bruke Steam for Chromebook (beta). Logg på, og prøv igjen.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Feil fra linje <ph name="ERROR_LINE_START" /> til linje <ph name="ERROR_LINE_END" /></translation>

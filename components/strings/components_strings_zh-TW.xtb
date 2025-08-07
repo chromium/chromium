@@ -314,6 +314,7 @@
 <translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1524669537550112617">附家具租屋</translation>
 <translation id="1527263332363067270">正在等待連線…</translation>
+<translation id="1527490370616010873">Google 不是你的自動填入服務供應商。如要啟用這些設定並使用 Google 帳戶中的付款資訊，請前往<ph name="BEGIN_LINK" />自動填入服務設定<ph name="END_LINK" />。</translation>
 <translation id="1528311629279578926">公開頁面要連線到私人網路上的裝置或伺服器，因此系統封鎖連線。請重新載入這個頁面允許連線。</translation>
 <translation id="1529789484829130889">紙匣 8</translation>
 <translation id="1530707389502320859">你剛才嘗試造訪的網站可能是假網站。攻擊者有時會在網址中加入難以辨識的細微變更來仿冒網站。</translation>
@@ -1193,6 +1194,7 @@
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="300580149047131921">最近使用過</translation>
+<translation id="3006864083554020786">住家地址</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵瀏覽可用動作，按下 Enter 鍵則可執行所選動作。</translation>
 <translation id="3010991137650052245">如要允許這個網站使用<ph name="PERMISSION" />，請將存取權授予 <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">家庭用品</translation>
@@ -1826,6 +1828,7 @@
 <translation id="404831776305217138">擴充功能 ID「<ph name="EXTENSION_ID" />」的更新網址無效，或採用不支援的網路通訊協定。支援的網路通訊協定為：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
 <translation id="4050392779074832022">你將可在各項 Google 產品中使用這項資訊</translation>
 <translation id="4050599136622776556">Chromium 正在嘗試編輯付款方式。</translation>
+<translation id="4052683751389375539">編輯，在新視窗開啟</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4059523390906550209">進一步瞭解 Sensitive Data Protection</translation>
@@ -3518,6 +3521,7 @@
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可以暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">已關閉安全付款憑證驗證表</translation>
+<translation id="6883745783646124431">公司地址</translation>
 <translation id="6884662655240309489">粗細：1</translation>
 <translation id="6886283082988906333">ZIP 封存檔</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

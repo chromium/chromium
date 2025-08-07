@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">貴機構已關閉私密瀏覽功能。</translation>
 <translation id="2122754583996902531">你的瀏覽器受到管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">貴組織的對話內容不會用於改良我們的模型。Gemini 提供的資訊可能不準確 (包括人物介紹)，因此請務必查證。<ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">以下密碼不符合規定，因此未匯入 Google 密碼管理工具。</translation>
 <translation id="2139867232736819575">搜尋你複製的文字</translation>
 <translation id="2147127444698817042">僅適用於 iPhone</translation>
 <translation id="2148799636999124959">使用已儲存的密碼快速登入網站和應用程式。</translation>
@@ -899,6 +900,7 @@
 <translation id="4621768135601674446">開啟朗讀模式選項</translation>
 <translation id="4624080227980645783">新增無痕視窗</translation>
 <translation id="4627107755957573804">允許網站和應用程式將現有帳戶升級為使用密碼金鑰</translation>
+<translation id="4629065796475200039">未匯入密碼</translation>
 <translation id="4630212057753624203">範例泡泡</translation>
 <translation id="4631335160486397366">有 <ph name="COUNT" /> 組密碼重複使用</translation>
 <translation id="4631890462758052414">新增無痕分頁</translation>
@@ -1504,6 +1506,7 @@
 <translation id="6790502149545262384">不久後，你就會在開啟新分頁時看到「<ph name="CHANNEL_NAME" />」的故事。</translation>
 <translation id="6791425686608802741">輕觸「將分頁加入新群組」</translation>
 <translation id="6794476726485507147">選擇要接收提醒通知的日期和時間，以便再次瀏覽這個頁面</translation>
+<translation id="6795481620482106033">資料無效</translation>
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
 <translation id="681368974849482173">項目已建立</translation>
 <translation id="6825078212112407882">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>

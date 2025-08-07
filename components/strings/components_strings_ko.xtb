@@ -260,6 +260,7 @@
 <translation id="14222610277930434">자주 방문함</translation>
 <translation id="1422795627423046860">날짜가 잘못되었습니다.</translation>
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
+<translation id="142559998533702194">업로드 실패</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1427192966110103169">가정용 수영장, 사우나, 스파</translation>
 <translation id="1428146450423315676">스태커 7</translation>
@@ -315,6 +316,7 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">풀옵션 임대</translation>
 <translation id="1527263332363067270">연결 대기 중...</translation>
+<translation id="1527490370616010873">Google은 자동 완성 제공업체가 아닙니다. 이 설정을 사용 설정하고 Google 계정의 결제 정보를 사용하려면 <ph name="BEGIN_LINK" />자동 완성 서비스 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="1528311629279578926">공개 페이지에서 비공개 네트워크에 있는 기기나 서버에 연결하려 했기 때문에 연결이 차단되었습니다. 연결을 허용하려면 이 페이지를 새로고침하세요.</translation>
 <translation id="1529789484829130889">트레이 8</translation>
 <translation id="1530707389502320859">방문하려고 한 사이트가 허위 사이트로 보입니다. 일부 공격자는 사이트의 URL을 알아채기 어려울 정도로 약간 변경하여 다른 사이트를 모방합니다.</translation>
@@ -361,6 +363,7 @@
 <translation id="159274626729231974">영화제</translation>
 <translation id="1593359183944365958">270도</translation>
 <translation id="1594030484168838125">선택</translation>
+<translation id="1595731774593926493">리드레스 넘버 삭제</translation>
 <translation id="1597307423671074806">WebM 동영상</translation>
 <translation id="159800670740560023">Chrome 도움말 링크, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> 링크를 열려면 Enter 키를 누르세요</translation>
 <translation id="1599199147673445968">새 카드인가요? <ph name="BEGIN_LINK" />카드 세부정보 입력<ph name="END_LINK" /></translation>
@@ -720,6 +723,7 @@
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="218940509700321686">쉼표로 구분된 값</translation>
 <translation id="2194856509914051091">고려사항</translation>
+<translation id="2198215508485017216">예상치 못한 문제가 발생했습니다. <ph name="BEGIN_LINK" />Drive 업로드에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">싫어요 버튼, 양식을 열어 이 추천이 마음에 들지 않는 이유에 관한 자세한 의견을 제출하려면 Enter 키를 누르세요.</translation>
 <translation id="2202627062836089804">카드 뒷면</translation>
 <translation id="2204482073374652408">업데이트 완료됨</translation>
@@ -735,6 +739,7 @@
 <translation id="2215539479425228550">등산</translation>
 <translation id="2215727959747642672">파일 수정</translation>
 <translation id="2215963164070968490">개</translation>
+<translation id="2218089682233901164">KTN(Known Traveler Number) 추가</translation>
 <translation id="2219376942605837404">비교 표에 탭 추가</translation>
 <translation id="2219658597883514593">가이드 다시 시작</translation>
 <translation id="2219735899272417925">기기 재설정 필요</translation>
@@ -751,6 +756,7 @@
 <translation id="2233745931693710080">컴팩트 디스크</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
+<translation id="224130779555573777">리드레스 넘버 추가</translation>
 <translation id="2241693394036365668">파일 다운로드됨</translation>
 <translation id="2242389809734574253">IBAN 저장이 닫혔습니다.</translation>
 <translation id="2246264294482514010">10x12인치</translation>
@@ -855,6 +861,7 @@
 <translation id="239429038616798445">사용할 수 없는 배송 방법입니다. 다른 방법을 선택하세요.</translation>
 <translation id="2395840535409704129">수상 스포츠</translation>
 <translation id="2396249848217231973">삭제 실행 취소(&amp;U)</translation>
+<translation id="239708975263889666">KTN(Known Traveler Number) 수정</translation>
 <translation id="2399344929880464793">이 IBAN은 Google 계정에 저장되므로 다양한 Google 서비스에서 사용할 수 있습니다.</translation>
 <translation id="2399868464369312507">Chrome에서 결제 수단을 수정하려고 합니다.</translation>
 <translation id="2400263725572336749">여권 추가</translation>
@@ -883,6 +890,7 @@
 <translation id="2451201933352935301"><ph name="URL" />에서 모든 디스플레이의 창을 관리하려고 합니다.</translation>
 <translation id="2451607499823206582">추적</translation>
 <translation id="2452098632681057184">생태학 및 환경</translation>
+<translation id="2452689005240417488">KTN(Known Traveler Number)을 저장하시겠습니까?</translation>
 <translation id="2452837234288608067">이와 관련해 도움을 드릴 수 없습니다. 다시 시도하세요.</translation>
 <translation id="2453045048779611513">조직에서 저장할 수 있는 항목을 제한함</translation>
 <translation id="2456755709261364512">배터리가 <ph name="REQUIRED_BATTERY_PRECENT" />% 이상 충전되어 있어야 합니다.</translation>
@@ -992,6 +1000,7 @@
 <translation id="2634124572758952069"><ph name="HOST_NAME" />의 서버 IP 주소를 찾을 수 없습니다.</translation>
 <translation id="2638567100095052009">@을 입력하여 <ph name="FEATURED_SEARCH_LIST" />에서 검색하세요.</translation>
 <translation id="2639739919103226564">상태:</translation>
+<translation id="2644219706149911059">Google Drive에 업로드하는 중...</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">패브릭(반광택)</translation>
 <translation id="264810637653812429">호환되는 기기가 없습니다.</translation>
@@ -1123,6 +1132,7 @@
 <translation id="2904180982022726666">조직에서 내가 공유할 수 있는 항목을 제한합니다</translation>
 <translation id="2905107382358353958">새 결제 설정에 대한 알림</translation>
 <translation id="2909946352844186028">네트워크 변경이 감지되었습니다.</translation>
+<translation id="2910062169995917863">세션 시간이 초과되었습니다.</translation>
 <translation id="2911255567212929079">머신러닝 및 인공지능</translation>
 <translation id="2911973620368911614">작업 계정 사용자 ID</translation>
 <translation id="2913421697249863476">바비큐 및 그릴</translation>
@@ -1380,6 +1390,7 @@
 <translation id="33073482541490531">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기를 바랍니다.</translation>
 <translation id="3307649904964670439">Chrome 맞춤설정 버튼, 브라우저 테마를 맞춤설정하려면 활성화하세요.</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
+<translation id="3312952471765023168">업로드 완료</translation>
 <translation id="3318016344440038475">TV 코미디</translation>
 <translation id="3324687287337751929">4x6인치</translation>
 <translation id="3324983252691184275">진홍색</translation>
@@ -2189,6 +2200,7 @@
 <translation id="4652266463001779298">허용되지 않음</translation>
 <translation id="4652440160515225514">정책을 위반하여 조직에서 차단한 사이트입니다.</translation>
 <translation id="4658638640878098064">왼쪽 상단 스테이플</translation>
+<translation id="4660592918803576381">Drive에서 열기</translation>
 <translation id="4661556981531699496">반려동물 및 동물</translation>
 <translation id="4661868874067696603">더 많은 구매 옵션 검색</translation>
 <translation id="4663373278480897665">카메라 허용됨</translation>
@@ -2923,6 +2935,7 @@
 <translation id="5886961930368713749">비교에 관한 의견 보내기</translation>
 <translation id="5887400589839399685">카드 저장됨</translation>
 <translation id="5887687176710214216">최근 방문: 어제</translation>
+<translation id="5890248301649767931">리드레스 넘버를 저장하시겠습니까?</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895187275912066135">발급일:</translation>
 <translation id="5898767305816764989">좋아요 버튼, 다음 추천이 마음에 든다는 의견을 제출하려면 Enter 키를 누르세요. <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3163,6 +3176,7 @@
 <translation id="6272088941196661550">Chrome 방문 기록에서 관련 활동을 보려면 탐색 여정을 재개하세요.</translation>
 <translation id="6272383483618007430">Google 업데이트</translation>
 <translation id="6278015583149890680">Google Drive 및 OneDrive</translation>
+<translation id="6279228081537458128">나중에 결제</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6284292079994426700">26x38인치</translation>
 <translation id="6284449872909111707">문자 메시지 및 채팅</translation>
@@ -3196,6 +3210,7 @@
 <translation id="6327065120806001832">로컬 네트워크 액세스</translation>
 <translation id="6328639280570009161">네트워크 예측을 사용 중지해 보세요.</translation>
 <translation id="6329815962353376655">&lt;질문 입력&gt;</translation>
+<translation id="633348045801643466">결제 시 <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />나중에 결제<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> 옵션 표시</translation>
 <translation id="6335029926534404762">운동화</translation>
 <translation id="6336948221660696475">VR 허용되지 않음</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
@@ -3521,6 +3536,7 @@
 <translation id="6880941331070119097">높은 가격 옵션</translation>
 <translation id="6881240511396774766">빠르게 새 Google 문서 만들기</translation>
 <translation id="6882210908253838664">사이트가 작동하지 않으면 서드 파티 쿠키를 사용하도록 임시 권한을 부여해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="6883120223439653449">KTN(Known Traveler Number)을 업데이트하시겠습니까?</translation>
 <translation id="6883221904761970440">보안 결제 사용자 인증 정보 승인 시트가 닫힘</translation>
 <translation id="6883745783646124431">직장 주소</translation>
 <translation id="6884662655240309489">크기 1</translation>
@@ -3541,6 +3557,7 @@
 <translation id="6905163627763043954">사용해 보기</translation>
 <translation id="6907458757809079309">피트니스</translation>
 <translation id="691024665142758461">여러 파일 다운로드</translation>
+<translation id="691046363691324218">리드레스 넘버</translation>
 <translation id="6915804003454593391">사용자:</translation>
 <translation id="6916193791494646625">다운로드 사유 입력(필수)</translation>
 <translation id="6917795328362592458">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정 보호를 위해 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
@@ -3630,6 +3647,7 @@
 <translation id="7044081119134178347">현재 카메라 허용됨</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" />에 접속하려고 했지만 서버가 제시한 인증서의 유효 기간이 너무 길어서 신뢰할 수 없습니다.</translation>
+<translation id="7050877504983265321">KTN(Known Traveler Number)</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7054717457611655239">지금부터 파일을 <ph name="CLOUD_PROVIDER" />에 저장하세요.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />에서 <ph name="ISSUER" /> 업체가 이 웹사이트 인증서를 발급했음을 확인했습니다.</translation>
@@ -3899,6 +3917,7 @@
 <translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />에서 자격 요건을 확인합니다(신용 점수에는 영향을 미치지 않음). 승인되면 <ph name="BNPL_ISSUER_NAME" />에서 구매를 완료하기 위해 선택할 수 있는 여러 요금제를 제공합니다.</translation>
 <translation id="7489392576326061356">샴푸 및 린스</translation>
+<translation id="7489919936111034362">Google Drive 스토리지가 가득 찼습니다.</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="749865518782565832">배관공사</translation>
 <translation id="7499188644237027195">Chrome에서 구매할 때 전자 지갑 및 Pix 옵션이 표시됩니다.</translation>
@@ -3957,6 +3976,7 @@
 <translation id="7569983096843329377">검정색</translation>
 <translation id="7571813784389228510">Google AI 모드</translation>
 <translation id="7574998639136359461">겨울 스포츠용품</translation>
+<translation id="7575130707299232096">KTN(Known Traveler Number) 삭제</translation>
 <translation id="7575207903026901870">추천 삭제 버튼, Enter 키를 눌러 이 추천 삭제</translation>
 <translation id="7575800019233204241">'연결이 비공개로 설정되어 있지 않습니다.', '&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;', '&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;', '&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;', 'SSL 인증서 오류'</translation>
 <translation id="7575887283389198269">휴대전화</translation>
@@ -3995,6 +4015,7 @@
 <translation id="7631072086707140121">URL은 https여야 합니다.</translation>
 <translation id="7631527008834753063">TV 게임쇼</translation>
 <translation id="7633909222644580952">성능 데이터 및 비정상 종료 보고서</translation>
+<translation id="7634963626477752453"><ph name="FOLDER_NAME" /> 폴더에 저장되었습니다.</translation>
 <translation id="7636346903338549690">서드 파티 쿠키 사용이 허용된 사이트</translation>
 <translation id="7637571805876720304">Chromium에서 신용카드를 삭제하시겠습니까?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{없음}=1{계정에 비밀번호가 1개 저장되어 있음(<ph name="DOMAIN_LIST" />)}other{계정에 비밀번호가 #개 저장되어 있음(<ph name="DOMAIN_LIST" />)}}</translation>
@@ -4482,6 +4503,7 @@
 <translation id="8457125768502047971">무기한</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">사용 설정</translation>
+<translation id="8461289985785035071">리드레스 넘버 수정</translation>
 <translation id="8461694314515752532">나만의 동기화 암호로 동기화된 데이터 암호화</translation>
 <translation id="8461973047386722744">비밀번호를 찾을 수 없음</translation>
 <translation id="8467494337615822642">설정의 Chrome 안전 확인 페이지로 이동</translation>
@@ -4789,6 +4811,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core 사용해 보기</translation>
 <translation id="9027531288681624875">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
+<translation id="9031426777610376427">리드레스 넘버를 업데이트하시겠습니까?</translation>
 <translation id="9035022520814077154">보안 오류</translation>
 <translation id="9035824888276246493">보안 코드 저장</translation>
 <translation id="9036306139374661733">마이크 권한을 허용하시겠습니까?</translation>

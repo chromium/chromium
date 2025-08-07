@@ -208,6 +208,7 @@
 <translation id="17906873777101817">اقتراح حفظ كلمات المرور ومفاتيح المرور</translation>
 <translation id="1794893174442046596">مجموعة علامات التبويب</translation>
 <translation id="1807893857950749072">السماح بإشعارات ميزة "تتبّع الأسعار"…</translation>
+<translation id="1809929083618343438">‏يؤدي هذا الإجراء إلى إزالة المعلومات المحدّدة من Chrome بدون حذفها من حسابك على Google.</translation>
 <translation id="1810976980198522421">إلغاء</translation>
 <translation id="1812514023095547458">تحديد اللون</translation>
 <translation id="1815941218935345331">رمز المرور</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">التبديل إلى نافذة مفتوحة</translation>
 <translation id="2164946989711475905">تسجيل الدخول…</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="2180338296831857171">حذف العناوين</translation>
 <translation id="218350106843433823">الملء التلقائي لكلمات المرور ومفاتيح المرور</translation>
 <translation id="2184272387334793084">سجِّل الدخول للوصول إلى كلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="2186206192313702726">‏عدسة Google</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">مُحدِّد الوحدات</translation>
 <translation id="2330607597130465898">بلا حماية</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
+<translation id="2350463587705616331">لون خلفية بني داكن</translation>
 <translation id="2351097562818989364">تم إعادة ضبط إعداداتك للترجمة.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بنطاق {DOMAIN_ONE} في حسابك على Google ({EMAIL}).}=2{‏يمكنك حفظ كلمتَي المرور الخاصتين بالنطاقين {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google ({EMAIL}).}=3{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}zero{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}few{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقات أخرى في حسابك على Google ({EMAIL}).}many{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقًا آخر في حسابك على Google ({EMAIL}).}other{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">العرض التلقائي للمواقع الإلكترونية</translation>
@@ -543,6 +546,7 @@
 <translation id="3081338492074632642">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="309710370695886264">لديك كلمة مرور واحدة مستخدَمة لحساب آخر. عليك تغييرها الآن للحفاظ على أمانك.</translation>
+<translation id="3099402981545350675">‏يؤدي هذا الإجراء إلى حذف العناوين المحفوظة على هذا الجهاز، وكذلك إزالة المعلومات المحدّدة من Chrome بدون حذفها من حسابك على Google.</translation>
 <translation id="3106258548858559536">إيقاف "وضع القراءة"</translation>
 <translation id="3106690631878101882">إخفاء الإجراء "ترجمة"</translation>
 <translation id="310900540163454140">هل تريد حذف كلمة مرور <ph name="WEBSITE" />؟</translation>
@@ -741,6 +745,7 @@
 <translation id="3962326069546168954">حفظ</translation>
 <translation id="3967327056943561740">الإشارات المرجعية</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
+<translation id="3973560090698854095">‏يؤدي هذا الإجراء إلى حذف العناوين المحفوظة في حسابك على Google "<ph name="USER_EMAIL" />".</translation>
 <translation id="3982893814825393515">الإبلاغ عن مشكلة…</translation>
 <translation id="398604237578616937">تم تسجيل الدخول باسم "<ph name="USER_EMAIL" />". يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="3986739045730058129">الانتقال إلى علامة التبويب</translation>
@@ -1021,6 +1026,7 @@
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5050810143224996149">مشاركة كلمة المرور</translation>
 <translation id="5055015094595227120">الموقع الجغرافي الدقيق</translation>
+<translation id="5055551113846164633">‏يؤدي هذا الإجراء إلى حذف العناوين المحفوظة على هذا الجهاز وفي حسابك على Google "<ph name="USER_EMAIL" />".</translation>
 <translation id="5056446788882570708">تم العثور على مشاكل <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">حسنًا</translation>
 <translation id="5062321486222145940">‏تثبيت Google Drive</translation>
@@ -1230,6 +1236,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">جارٍ المزامنة…</translation>
 <translation id="583923961930319521">استخدام كلمات المرور على جميع أجهزتك</translation>
+<translation id="5843013299019689749">لون خلفية أسود</translation>
 <translation id="5844284118433003733">‏عند تسجيل الدخول، يتم ربط هذه البيانات بحسابك على Google لحمايتك على خدمات Google، مثلاً تتم زيادة مستوى الحماية في Gmail بعد وقوع محاولة اختراق أمني.</translation>
 <translation id="5854790677617711513">مرّ عليها أكثر من 30 يومًا</translation>
 <translation id="5857770089550859117">عبارة المرور مطلوبة لبدء المزامنة.</translation>
@@ -1482,6 +1489,7 @@
 <translation id="6682680306647339111">تمت إزالة التذكير</translation>
 <translation id="6684262542644248484">تسجيل الدخول إلى موقع إلكتروني</translation>
 <translation id="6685259053455152195">اختصارات لتعديل الإعدادات بسرعة واستخدام الميزات من شريط العناوين</translation>
+<translation id="6689342293888598653">لون خلفية أبيض</translation>
 <translation id="6689685206615181381">لا يتوفّر سوى "وضع التصفُّح المتخفي"</translation>
 <translation id="6708501134077648845">خيارات كلمات السر</translation>
 <translation id="6709964700841491574">وضع التأمين</translation>
@@ -1589,6 +1597,7 @@
 <translation id="714291438898585119">مميّزة بنجمة</translation>
 <translation id="7146301801400584641">يتوفّر ملف تقويم</translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
+<translation id="7154417656353909837">إزالة العناوين</translation>
 <translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7173721738069475737">{count,plural, =1{تمّ حفظ إشارة مرجعية واحدة}zero{تمّ حفظ {count} إشارة مرجعية}two{تمّ حفظ إشارتَين مرجعيتَين ({count})}few{تمّ حفظ {count} إشارات مرجعية}many{تمّ حفظ {count} إشارة مرجعية}other{تمّ حفظ {count} إشارة مرجعية}}</translation>
@@ -1658,6 +1667,7 @@
 <translation id="7458706065921255639">الخيارات المخصَّصة والربط</translation>
 <translation id="745899714366929493">اليوم كله</translation>
 <translation id="7460698861522306757">طلب موقع جهاز جوّال</translation>
+<translation id="7464143666517313304">يؤدي هذا الإجراء إلى حذف العناوين المحفوظة على هذا الجهاز.</translation>
 <translation id="7468373585447318060">يمكنك متابعة أخبار الانخفاضات في أسعار جميع المنتجات التي تتبّعها.</translation>
 <translation id="746872191028309255">يمكنك تسوّق أي منتج تراه إمّا من خلال الكاميرا أو معرض الصور.</translation>
 <translation id="7471557245617580330">إنشاء علامة تبويب جديدة</translation>
@@ -1709,6 +1719,7 @@
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
 <translation id="764827086632467055">انقر على تطبيق المتصفِّح التلقائي.</translation>
 <translation id="7649070708921625228">مساعدة</translation>
+<translation id="765555660695722850">‏يؤدي هذا الإجراء إلى حذف العناوين المحفوظة على هذا الجهاز، وكذلك بعض المعلومات من حسابك على Google وليس الأساسي منها مثل اسمك أو عنوان منزلك.</translation>
 <translation id="765631330137769217">النقر على "حفظ" للوصول بسهولة إلى كلمة المرور هذه في المرة القادمة التي يتم فيها تسجيل الدخول</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7662316065255305764">معلومات الموقع الإلكتروني</translation>
@@ -2055,6 +2066,7 @@
 <translation id="8891031436559779793">سيتم إرسال إشعار إليك في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="8893208530912252670">الفيديوهات</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
+<translation id="8900845556227858314">تطبيق المتصفّح</translation>
 <translation id="890565330728586731">رجوع</translation>
 <translation id="8907722425137681851">البحث في الصفحة…</translation>
 <translation id="8909135823018751308">مشاركة…</translation>

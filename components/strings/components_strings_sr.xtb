@@ -316,6 +316,7 @@
 <translation id="1521655867290435174">Google табеле</translation>
 <translation id="1524669537550112617">Изнајмљивање опремљених некретнина</translation>
 <translation id="1527263332363067270">Чека се веза…</translation>
+<translation id="1527490370616010873">Google није добављач аутоматског попуњавања. Да бисте омогућили ова подешавања и користили информације о плаћању са Google налога, посетите <ph name="BEGIN_LINK" />подешавања услуга аутоматског попуњавања<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Веза је блокирана зато што ју је покренула јавна страница за повезивање са уређајима или серверима на приватној мрежи. Поново учитајте ову страницу да бисте дозволили повезивање.</translation>
 <translation id="1529789484829130889">8. фиока</translation>
 <translation id="1530707389502320859">Сајт који сте управо пробали да посетите делује лажно. Нападачи понекад имитирају сајтове тако што незнатно и скоро неприметно измене URL.</translation>
@@ -1767,6 +1768,7 @@
 <translation id="3927538228901078312">Нема табела за поређење</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Одбиј</translation>
+<translation id="3928806096717999469">Измените, отвара нови прозор</translation>
 <translation id="3930260846839546333">Женске ташне и торбе</translation>
 <translation id="3937834511546249636">Војна индустрија</translation>
 <translation id="3939773374150895049">Желите ли да користите WebAuthn уместо CVC-а?</translation>
@@ -3180,7 +3182,7 @@
 <translation id="6284449872909111707">Размена текстуалних и тренутних порука</translation>
 <translation id="6284517535531159884">Тип почетне вредности варијација</translation>
 <translation id="6287197303017372967">Добијајте упутства до одредишта помоћу детаљних упутстава уз функцију за навигацију.</translation>
-<translation id="6288559570252410796">Питајте режим Google вештачке интелигенције</translation>
+<translation id="6288559570252410796">Питајте Google AI режим</translation>
 <translation id="628877850550444614">Пронађен је попуст</translation>
 <translation id="6289939620939689042">Боја странице</translation>
 <translation id="6292819926564202163">Ваш претраживач у Chrome-у</translation>
@@ -4418,7 +4420,7 @@
 <translation id="831997045666694187">Увече</translation>
 <translation id="8321448084834652864">Можете да промените претраживач у сваком тренутку у подешавањима Chromium-а.</translation>
 <translation id="8321476692217554900">обавештења</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Enter да бисте питали режим Google вештачке интелигенције</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Enter да бисте питали Google AI режим</translation>
 <translation id="8322402665880479974">Кревети и узглавља</translation>
 <translation id="8323505966575306467">Додајте још заштите лозинкама</translation>
 <translation id="832547548543012337">Избришите пасош</translation>
@@ -4964,7 +4966,7 @@
 <translation id="950926967802086924">Приступни кључ • Google менаџер лозинки</translation>
 <translation id="955429569736351433">ВР је дозвољен</translation>
 <translation id="955627189349169688">Ове смернице можете да онемогућите у <ph name="BEGIN_LINK" />подешавањима Chrome синхронизације<ph name="END_LINK" />.</translation>
-<translation id="95676157383774931">Дугме за режим вештачке интелигенције, активирајте да бисте питали режим Google вештачке интелигенције</translation>
+<translation id="95676157383774931">Дугме за режим вештачке интелигенције, активирајте да бисте питали Google AI режим</translation>
 <translation id="95721182352849470">Жута 2</translation>
 <translation id="961663415146723894">Повез на дну</translation>
 <translation id="961856697154696964">Избриши податке прегледања</translation>

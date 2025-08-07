@@ -315,6 +315,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alquiler de viviendas amobladas</translation>
 <translation id="1527263332363067270">Esperando conexión…</translation>
+<translation id="1527490370616010873">Google no es tu proveedor de autocompletado. Para habilitar estos parámetros de configuración y usar la información de pago de tu Cuenta de Google, visita la <ph name="BEGIN_LINK" />configuración de los servicios de autocompletado<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La conexión se bloqueó porque una página pública la inició para conectarse a los dispositivos o servidores de tu red privada. Vuelve a cargar esta página para permitir la conexión.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">El sitio que intentaste visitar parece falso. A veces, los atacantes hacen cambios sutiles y difíciles de detectar en la URL para imitar sitios.</translation>
@@ -1194,6 +1195,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3002501248619246229">Revisar el medio en la bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
 <translation id="300580149047131921">Se usó recientemente</translation>
+<translation id="3006864083554020786">dirección de casa</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab para explorar las acciones disponibles y, luego, presiona Intro para ejecutar la acción seleccionada.</translation>
 <translation id="3010991137650052245">Para usar tu <ph name="PERMISSION" /> en este sitio, otorga acceso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Productos para el hogar</translation>
@@ -1829,6 +1831,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="404831776305217138">La URL de actualización para la extensión con el ID "<ph name="EXTENSION_ID" />" no es válida o utiliza un esquema no compatible. Los esquemas compatibles son <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> y <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Podrás usarla en todos los productos de Google</translation>
 <translation id="4050599136622776556">Chromium está intentando editar formas de pago.</translation>
+<translation id="4052683751389375539">Editar, se abre en una ventana nueva</translation>
 <translation id="405399507749852140">Recibe alertas si baja el precio en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">Más información sobre la protección de datos sensibles</translation>
@@ -3521,6 +3524,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6881240511396774766">Crea un documento de Google nuevo rápidamente</translation>
 <translation id="6882210908253838664">Si un sitio no funciona, intenta otorgarle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Está cerrada la hoja de autenticación de credenciales de pago seguro</translation>
+<translation id="6883745783646124431">dirección de trabajo</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886283082988906333">Archivo ZIP</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

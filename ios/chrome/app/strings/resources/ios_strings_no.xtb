@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Tilby å lagre passord og passnøkler</translation>
 <translation id="1794893174442046596">Fanegruppe</translation>
 <translation id="1807893857950749072">Tillat varsler om prissporing…</translation>
+<translation id="1809929083618343438">Dette fjerner den valgte informasjonen fra Chrome, men den slettes ikke fra Google-kontoen din.</translation>
 <translation id="1810976980198522421">Avbryt</translation>
 <translation id="1812514023095547458">Velg farge</translation>
 <translation id="1815941218935345331">Sikkerhetskode</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Bytt til åpent vindu</translation>
 <translation id="2164946989711475905">Logg på…</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2180338296831857171">Slett adressene</translation>
 <translation id="218350106843433823">Autofyll passord og passnøkler</translation>
 <translation id="2184272387334793084">Logg på for å få blant annet passordene dine på alle enhetene dine</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Enhetsvelger</translation>
 <translation id="2330607597130465898">Ingen beskyttelse</translation>
 <translation id="233375395665273385">Slett og logg av</translation>
+<translation id="2350463587705616331">Sepia bakgrunnsfarge</translation>
 <translation id="2351097562818989364">Oversettelsesinnstillingene dine er tilbakestilt.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Du kan lagre passordet for {DOMAIN_ONE} i Google-kontoen din, {EMAIL}.}=2{Du kan lagre passordene for {DOMAIN_ONE} og {DOMAIN_TWO} i Google-kontoen din, {EMAIL}.}=3{Du kan lagre passordene for {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} til i Google-kontoen din, {EMAIL}.}other{Du kan lagre passordene for {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} til i Google-kontoen din, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Standard nettstedsvisning</translation>
@@ -543,6 +546,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3081338492074632642">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bunn</translation>
 <translation id="309710370695886264">Du har ett gjenbrukt passord. Løs problemet nå for å ivareta sikkerheten.</translation>
+<translation id="3099402981545350675">Dette sletter adresser som er lagret på denne enheten. Den fjerner også valgt informasjon fra Chrome, men den sletter ikke denne informasjonen fra Google-kontoen din.</translation>
 <translation id="3106258548858559536">Slå av lesemodus</translation>
 <translation id="3106690631878101882">Skjul Oversetter</translation>
 <translation id="310900540163454140">Vil du slette passordet for <ph name="WEBSITE" />?</translation>
@@ -741,6 +745,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3962326069546168954">Lagre</translation>
 <translation id="3967327056943561740">Bokmerker</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
+<translation id="3973560090698854095">Dette sletter adresser som er lagret i Google-kontoen din (<ph name="USER_EMAIL" />).</translation>
 <translation id="3982893814825393515">Rapporter et problem…</translation>
 <translation id="398604237578616937">Logget på som <ph name="USER_EMAIL" />. Åpne kontomenyen.</translation>
 <translation id="3986739045730058129">Gå til fanen</translation>
@@ -1021,6 +1026,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5050810143224996149">Del passord</translation>
 <translation id="5055015094595227120">Nøyaktig posisjon</translation>
+<translation id="5055551113846164633">Dette sletter adresser som er lagret på denne enheten. Den sletter også adresser som er lagret i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Fant problemer <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disk</translation>
@@ -1232,6 +1238,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synkroniserer …</translation>
 <translation id="583923961930319521">Bruk passord på alle enhetene dine</translation>
+<translation id="5843013299019689749">Svart bakgrunnsfarge</translation>
 <translation id="5844284118433003733">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="5854790677617711513">Eldre enn 30 dager</translation>
 <translation id="5857770089550859117">Det kreves en passordfrase for å starte synkroniseringen.</translation>
@@ -1484,6 +1491,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6682680306647339111">Påminnelsen er fjernet</translation>
 <translation id="6684262542644248484">Logg på et nettsted</translation>
 <translation id="6685259053455152195">Hurtigtaster for å endre innstillinger raskt og bruke funksjoner fra adressefeltet.</translation>
+<translation id="6689342293888598653">Hvit bakgrunnsfarge</translation>
 <translation id="6689685206615181381">Kun inkognitomodus er tilgjengelig</translation>
 <translation id="6708501134077648845">Passordvalg</translation>
 <translation id="6709964700841491574">Låsingsmodus</translation>
@@ -1591,6 +1599,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="714291438898585119">Stjernemerket</translation>
 <translation id="7146301801400584641">En kalenderfil er tilgjengelig</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
+<translation id="7154417656353909837">Fjern adresser</translation>
 <translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bokmerket er lagret}other{{count} bokmerker er lagret}}</translation>
@@ -1660,6 +1669,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7458706065921255639">Personlig tilpasning og tilknytning</translation>
 <translation id="745899714366929493">Hele dagen</translation>
 <translation id="7460698861522306757">Be om mobilversjonen av nettstedet</translation>
+<translation id="7464143666517313304">Dette sletter adresser som er lagret på denne enheten.</translation>
 <translation id="7468373585447318060">Følg med på avslag på alle produktene du sporer.</translation>
 <translation id="746872191028309255">Kjøp det du ser, med kameraet eller i bildegalleriet.</translation>
 <translation id="7471557245617580330">Åpne ny fane</translation>
@@ -1711,6 +1721,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7646772052135772216">Passordsynkronisering fungerer ikke</translation>
 <translation id="764827086632467055">Trykk på Standard nettleserapp</translation>
 <translation id="7649070708921625228">Hjelp</translation>
+<translation id="765555660695722850">Dette sletter adresser som er lagret på denne enheten. Den sletter også noe informasjon fra Google-kontoen din, men ikke grunnleggende informasjon som navn eller hjemmeadresse.</translation>
 <translation id="765631330137769217">Trykk på «Lagre» for å få enkel tilgang til dette passordet neste gang du logger på</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7662316065255305764">Opplysninger om nettstedet</translation>
@@ -2056,6 +2067,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8891031436559779793">Du blir varslet hvis prisen settes ned på noe nettsted.</translation>
 <translation id="8893208530912252670">Videoer</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
+<translation id="8900845556227858314">Nettleserapp</translation>
 <translation id="890565330728586731">Tilbake</translation>
 <translation id="8907722425137681851">Finn på siden…</translation>
 <translation id="8909135823018751308">Del</translation>

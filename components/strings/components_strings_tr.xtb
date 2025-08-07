@@ -315,6 +315,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1521655867290435174">Google E-Tablolar</translation>
 <translation id="1524669537550112617">Eşyalı Kiralık Konutlar</translation>
 <translation id="1527263332363067270">Bağlantı bekleniyor…</translation>
+<translation id="1527490370616010873">Google, otomatik doldurma sağlayıcınız değil. Bu ayarları etkinleştirmek ve Google Hesabınızdaki ödeme bilgilerini kullanmak için <ph name="BEGIN_LINK" />Otomatik doldurma hizmetleriyle ilgili ayarlar<ph name="END_LINK" /> bölümünü ziyaret edin.</translation>
 <translation id="1528311629279578926">Bağlantı, özel ağınızdaki cihazlara veya sunuculara bağlanırken herkese açık bir sayfa tarafından başlatıldığı için engellendi. Bağlantıya izin vermek için bu sayfayı yeniden yükleyin.</translation>
 <translation id="1529789484829130889">Tepsi 8</translation>
 <translation id="1530707389502320859">Az önce girmeye çalıştığınız site sahte görünüyor. Saldırganlar bazen URL'de görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.</translation>
@@ -1194,6 +1195,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3002501248619246229">Giriş tepsisi ortam kontrolü</translation>
 <translation id="3005723025932146533">Kaydedilen kopyayı göster</translation>
 <translation id="300580149047131921">Son kullanılan</translation>
+<translation id="3006864083554020786">Ev adresi</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, kullanılabilir işlemlere göz atmak için Sekme tuşuna, ardından seçilen işlemi yürütmek için Enter tuşuna basın.</translation>
 <translation id="3010991137650052245">Bu sitede <ph name="PERMISSION" /> kullanabilmesi amacıyla <ph name="SHORT_PRODUCT_NAME" /> için erişim izni verin</translation>
 <translation id="3013711734159931232">Ev Malzemeleri</translation>
@@ -1611,7 +1613,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; adresine gitmek mi istemiştiniz?</translation>
 <translation id="3678029195006412963">İstek imzalanamadı</translation>
 <translation id="3678529606614285348">Sayfayı yeni Gizli pencerede açın (Ctrl-Üst Karakter-N)</translation>
-<translation id="3678914302246317895"><ph name="OTP_LENGTH" /> haneli doğrulama kodunu girin</translation>
+<translation id="3678914302246317895"><ph name="OTP_LENGTH" /> basamaklı doğrulama kodunu girin</translation>
 <translation id="3681007416295224113">Sertifika bilgileri</translation>
 <translation id="3681421644246505351">Chrome, son tarama geçmişinize göre ilgi alanlarınızı kaydeder.</translation>
 <translation id="3681841880472207951">Quicktime video</translation>
@@ -1828,6 +1830,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" kimliğine sahip uzantının güncelleme URL'si geçersiz veya desteklenmeyen bir şema kullanıyor. Desteklenen şemalar şunlardır: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ve <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Bu adresi Google ürünlerinde kullanabilirsiniz</translation>
 <translation id="4050599136622776556">Chromium ödeme yöntemlerini düzenlemeye çalışıyor.</translation>
+<translation id="4052683751389375539">Düzenle (yeni pencerede açılır)</translation>
 <translation id="405399507749852140">Herhangi bir sitedeki fiyat düşüşüyle ilgili uyarıları alın</translation>
 <translation id="4056223980640387499">Sepya Tonu</translation>
 <translation id="4059523390906550209">Hassas verilerin korunması hakkında daha fazla bilgi</translation>
@@ -3520,6 +3523,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6881240511396774766">Hızlıca yeni bir Google Dokümanı oluşturun</translation>
 <translation id="6882210908253838664">Çalışmayan bir sitenin, üçüncü taraf çerezlerini kullanmasına geçici olarak izin vermeyi deneyebilirsiniz. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Güvenli ödeme kimlik bilgisi doğrulama sayfası kapatıldı</translation>
+<translation id="6883745783646124431">İş adresi</translation>
 <translation id="6884662655240309489">Boyut 1</translation>
 <translation id="6886283082988906333">ZIP Arşivi</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

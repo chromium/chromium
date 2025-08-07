@@ -301,6 +301,7 @@
 <translation id="2120553909046681540">A túa organización desactivou a navegación privada.</translation>
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Os chats da túa organización non se usan para mellorar os nosos modelos. Gemini pode mostrar información inexacta, mesmo sobre persoas, polo que é recomendable que a verifiques. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="2126034128616392756">Non se importaron os seguintes contrasinais ao xestor de contrasinais de Google porque non cumpren os requisitos.</translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="2147127444698817042">Só está dispoñible en iPhone</translation>
 <translation id="2148799636999124959">Inicia sesión de forma rápida en sitios e aplicacións cos contrasinais que teñas gardados.</translation>
@@ -899,6 +900,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4621768135601674446">Abrir opcións do modo de lectura</translation>
 <translation id="4624080227980645783">Nova ventá do modo de incógnito</translation>
 <translation id="4627107755957573804">Permite que os sitios e as aplicacións actualicen as contas para poder usar claves de acceso</translation>
+<translation id="4629065796475200039">O teu contrasinal non se importou</translation>
 <translation id="4630212057753624203">Globo de mostra</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> contrasinais reutilizados</translation>
 <translation id="4631890462758052414">Pestana nova do modo de incógnito</translation>
@@ -1504,6 +1506,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6791425686608802741">Toca Engadir pestana ao grupo novo</translation>
 <translation id="6794476726485507147">Escolle unha data e unha hora na que recibir unha notificación de recordatorio para volver visitar esta páxina</translation>
+<translation id="6795481620482106033">Datos non válidos</translation>
 <translation id="6807287147325542056">Contrasinais doutras aplicacións</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="6825078212112407882">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{{count} marcadores gardáronse na túa Conta de Google ({email})}}</translation>

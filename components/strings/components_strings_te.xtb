@@ -310,6 +310,7 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">ఫర్నీచర్ కలిగిన రెంటల్స్</translation>
 <translation id="1527263332363067270">కనెక్షన్ కోసం వేచి ఉన్నాము...</translation>
+<translation id="1527490370616010873">Google మీ ఆటోఫిల్ ప్రొవైడర్ కాదు. ఈ సెట్టింగ్‌లను ఎనేబుల్ చేయడానికి, మీ Google ఖాతా నుండి పేమెంట్ సమాచారాన్ని ఉపయోగించడానికి, <ph name="BEGIN_LINK" />ఆటోఫిల్ సర్వీస్‌ల సెట్టింగ్‌లను సందర్శించండి<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">మీ ప్రైవేట్ నెట్‌వర్క్‌లోని పరికరాలు లేదా సర్వర్‌లకు కనెక్ట్ చేయడానికి పబ్లిక్ పేజీ ద్వారా ప్రారంభించబడినందున కనెక్షన్ బ్లాక్ చేయబడింది. కనెక్షన్‌ను అనుమతించడానికి ఈ పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="1529789484829130889">ట్రే 8</translation>
 <translation id="1530707389502320859">ఇప్పుడు మీరు సందర్శించాలని ప్రయత్నించిన సైట్ నకిలీదిగా అనిపిస్తుంది. URLకు చిన్న, అంత తేలికగా కనపడని మార్పులను చేయడం ద్వారా దాడి చేసేవారు కొన్నిసార్లు సైట్‌లను అనుకరిస్తారు.</translation>
@@ -356,6 +357,7 @@
 <translation id="159274626729231974">సినిమా ఉత్సవాలు</translation>
 <translation id="1593359183944365958">270 డిగ్రీలు</translation>
 <translation id="1594030484168838125">ఎంచుకోండి</translation>
+<translation id="1595731774593926493">రిడ్రస్ నంబర్‌ను తొలగించండి</translation>
 <translation id="1597307423671074806">WebM వీడియో</translation>
 <translation id="159800670740560023">Chrome చిట్కా లింక్, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />‌ను తెరవడానికి Enterను నొక్కండి</translation>
 <translation id="1599199147673445968">కొత్త కార్డా? <ph name="BEGIN_LINK" />కార్డ్ వివరాలను ఎంటర్ చేయండి<ph name="END_LINK" /></translation>
@@ -746,6 +748,7 @@
 <translation id="2233745931693710080">కాంపాక్ట్ డిస్క్</translation>
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2239100178324503013">ఇప్పుడే పంపండి</translation>
+<translation id="224130779555573777">రిడ్రస్ నంబర్‌ను జోడించండి</translation>
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
 <translation id="2242389809734574253">IBAN మూసివేయడాన్ని సేవ్ చేయండి.</translation>
 <translation id="2246264294482514010">10 x 12 అంగుళాలు</translation>
@@ -2918,6 +2921,7 @@
 <translation id="5886961930368713749">కంపార్ చేయడం కోసం ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="5887400589839399685">కార్డ్ సేవ్ చేయబడింది</translation>
 <translation id="5887687176710214216">చివరిగా నిన్న సందర్శించారు</translation>
+<translation id="5890248301649767931">రిడ్రస్ నంబర్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5895187275912066135">జారీ చేయబడినది</translation>
 <translation id="5898767305816764989">బాగుంది అని తెలియజేసే బటన్, మీకు నచ్చిందని ఫీడ్‌బ్యాక్‌ను సమర్పించడానికి ఎంటర్ చేయండి, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3536,6 +3540,7 @@
 <translation id="6905163627763043954">దీన్ని ప్రయత్నించు</translation>
 <translation id="6907458757809079309">ఫిట్‌నెస్</translation>
 <translation id="691024665142758461">బహుళ ఫైళ్లను డౌన్‌లోడ్ చేయాలనుకుంటోంది</translation>
+<translation id="691046363691324218">రిడ్రస్ నంబర్</translation>
 <translation id="6915804003454593391">వినియోగదారు:</translation>
 <translation id="6916193791494646625">డౌన్‌లోడ్ చేయడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
 <translation id="6917795328362592458">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
@@ -4478,6 +4483,7 @@
 <translation id="8457125768502047971">అనిశ్చితం</translation>
 <translation id="8458202188076138974">లెటర్ అదనం</translation>
 <translation id="8460854335417802511">దీన్ని ఆన్ చేయండి</translation>
+<translation id="8461289985785035071">రిడ్రస్ నంబర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="8461694314515752532">మీ స్వంత సింక్‌ రహస్య పదబంధంతో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8461973047386722744">పాస్‌వర్డ్‌లు ఏవీ దొరకలేదు</translation>
 <translation id="8467494337615822642">సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
@@ -4785,6 +4791,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Coreను ట్రై చేయండి</translation>
 <translation id="9027531288681624875">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ కావడానికి, |<ph name="ACCELERATOR" />|ను నొక్కి, పట్టుకోండి</translation>
+<translation id="9031426777610376427">రిడ్రస్ నంబర్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="9035022520814077154">భద్రతా ఎర్రర్</translation>
 <translation id="9035824888276246493">సెక్యూరిటీ కోడ్‌లను సేవ్ చేయండి</translation>
 <translation id="9036306139374661733">మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి అనుమతించాలా?</translation>
