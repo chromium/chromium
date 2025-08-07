@@ -3852,6 +3852,7 @@ if (!is_android) {
         "//chrome/browser/glic/fre",
         "//chrome/browser/glic/test_support",
         "//chrome/renderer/actor:browser_tests",
+        "//chrome/renderer/webui_browser:browser_tests",
       ]
     }
 

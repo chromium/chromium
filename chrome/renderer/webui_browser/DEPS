@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/guest_contents/renderer",
+]
+
+specific_include_rules = {
+  "webui_browser_renderer_extension_browsertest.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+content/public/browser",
+  ],
+}

@@ -68,6 +68,7 @@
 #include "chrome/renderer/v8_unwinder.h"
 #include "chrome/renderer/web_link_preview_triggerer_impl.h"
 #include "chrome/renderer/websocket_handshake_throttle_provider_impl.h"
+#include "chrome/renderer/webui_browser/webui_browser_renderer_extension.h"
 #include "chrome/renderer/worker_content_settings_client.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
@@ -741,6 +742,12 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (base::FeatureList::IsEnabled(features::kBoardingPassDetector) &&
       render_frame->IsMainFrame()) {
     new wallet::BoardingPassExtractor(render_frame, registry);
+  }
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kWebium)) {
+    WebUIBrowserRendererExtension::Create(render_frame);
   }
 #endif
 }
