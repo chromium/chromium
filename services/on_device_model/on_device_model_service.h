@@ -25,8 +25,6 @@
 
 namespace on_device_model {
 
-inline constexpr base::TimeDelta kDefaultModelIdleTimeout = base::Minutes(5);
-
 class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
     : public mojom::OnDeviceModelService {
  public:

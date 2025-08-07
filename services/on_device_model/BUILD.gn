@@ -23,6 +23,8 @@ component("backend_interfaces") {
 
 component("on_device_model_service") {
   sources = [
+    "on_device_model_mojom_impl.cc",
+    "on_device_model_mojom_impl.h",
     "on_device_model_service.cc",
     "on_device_model_service.h",
   ]
