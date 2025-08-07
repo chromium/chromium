@@ -1847,7 +1847,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},
 #else
       {"editPerson", IDS_SETTINGS_CUSTOMIZE_PROFILE},
-      {"profileNameAndPicture", IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE},
       {"accountPageTitle", IDS_SETTINGS_ACCOUNT_PAGE_TITLE},
       {"accountDataTypesHeading", IDS_SETTINGS_ACCOUNT_DATATYPES_HEADING},
       {"accountDataTypesBody", IDS_SETTINGS_ACCOUNT_BODY},
@@ -1901,6 +1900,11 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
         syncer::kReplaceSyncPromosWithSignInPromos)
         ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
         : IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT);
+  html_source->AddLocalizedString(
+      "profileNameAndPicture",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? IDS_SETTINGS_CUSTOMIZE_PROFILE
+          : IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE);
 #endif
 
   html_source->AddBoolean(
