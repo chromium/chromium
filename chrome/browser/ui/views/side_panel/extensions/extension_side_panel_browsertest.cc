@@ -1054,16 +1054,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
     ASSERT_TRUE(panel_1_listener.WaitUntilSatisfied());
   }
 
-  // Detach the second tab from `browser()`
+  // Open a new browser window.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  TabStripModel* target_tab_strip =
+      ExtensionTabUtil::GetEditableTabStripModel(second_browser);
+
+  // Detach the second tab from `browser()` and add it to the new browser.
   std::unique_ptr<tabs::TabModel> detached_tab =
       browser()->tab_strip_model()->DetachTabAtForInsertion(
           /*index=*/1);
   ASSERT_EQ(second_tab, detached_tab.get());
 
-  // Open a new browser window and add `detached_tab`.
-  Browser* second_browser = CreateBrowser(browser()->profile());
-  TabStripModel* target_tab_strip =
-      ExtensionTabUtil::GetEditableTabStripModel(second_browser);
   target_tab_strip->InsertDetachedTabAt(
       /*index=*/1, std::move(detached_tab), AddTabTypes::ADD_NONE);
 
