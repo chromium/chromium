@@ -84,6 +84,22 @@ void ExclusiveAccessManagerAndroid::CancelKeyboardLockRequest(
   eam_.keyboard_lock_controller()->CancelKeyboardLockRequest(wc);
 }
 
+void ExclusiveAccessManagerAndroid::RequestPointerLock(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& jweb_contents,
+    bool user_gesture,
+    bool last_unlocked_by_target) {
+  content::WebContents* wc =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(wc != nullptr);
+  eam_.pointer_lock_controller()->RequestToLockPointer(wc, user_gesture,
+                                                       last_unlocked_by_target);
+}
+
+void ExclusiveAccessManagerAndroid::LostPointerLock(JNIEnv* env) {
+  eam_.pointer_lock_controller()->ExitExclusiveAccessToPreviousState();
+}
+
 void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }

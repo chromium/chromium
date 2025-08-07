@@ -106,6 +106,21 @@ public class ExclusiveAccessManager implements Destroyable {
                         mExclusiveAccessManagerAndroidNativePointer, webContents);
     }
 
+    public void requestPointerLock(
+            WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {
+        ExclusiveAccessManagerJni.get()
+                .requestPointerLock(
+                        mExclusiveAccessManagerAndroidNativePointer,
+                        webContents,
+                        userGesture,
+                        lastUnlockedByTarget);
+    }
+
+    public void lostPointerLock() {
+        ExclusiveAccessManagerJni.get()
+                .lostPointerLock(mExclusiveAccessManagerAndroidNativePointer);
+    }
+
     /** Cleanup function which should be called when owning object is destroyed. */
     @Override
     public void destroy() {
@@ -144,6 +159,14 @@ public class ExclusiveAccessManager implements Destroyable {
 
         void cancelKeyboardLockRequest(
                 long nativeExclusiveAccessManagerAndroid, WebContents webContents);
+
+        void requestPointerLock(
+                long nativeExclusiveAccessManagerAndroid,
+                WebContents webContents,
+                boolean userGesture,
+                boolean lastUnlockedByTarget);
+
+        void lostPointerLock(long nativeExclusiveAccessManagerAndroid);
 
         void destroy(long nativeExclusiveAccessManagerAndroid);
     }

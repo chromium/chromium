@@ -744,6 +744,19 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
     }
 
+    @Override
+    public void requestPointerLock(
+            WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {
+        assert mExclusiveAccessManager != null;
+        mExclusiveAccessManager.requestPointerLock(webContents, userGesture, lastUnlockedByTarget);
+    }
+
+    @Override
+    public void lostPointerLock() {
+        assert mExclusiveAccessManager != null;
+        mExclusiveAccessManager.lostPointerLock();
+    }
+
     protected @Nullable TabGroupModelFilter getTabGroupModelFilter(Tab tab) {
         return TabModelUtils.getTabGroupModelFilterByTab(tab);
     }

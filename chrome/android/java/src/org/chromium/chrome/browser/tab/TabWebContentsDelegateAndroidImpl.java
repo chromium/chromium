@@ -521,6 +521,19 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.isDynamicSafeAreaInsetsEnabled();
     }
 
+    @CalledByNative
+    @Override
+    public void requestPointerLock(
+            WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {
+        mDelegate.requestPointerLock(webContents, userGesture, lastUnlockedByTarget);
+    }
+
+    @CalledByNative
+    @Override
+    public void lostPointerLock() {
+        mDelegate.lostPointerLock();
+    }
+
     @Override
     public int getTopControlsHeight() {
         return mDelegate.getTopControlsHeight();

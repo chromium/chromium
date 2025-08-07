@@ -50,6 +50,13 @@ class ExclusiveAccessManagerAndroid {
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jweb_contents);
 
+  void RequestPointerLock(JNIEnv* env,
+                          const jni_zero::JavaRef<jobject>& jweb_contents,
+                          bool user_gesture,
+                          bool last_unlocked_by_target);
+
+  void LostPointerLock(JNIEnv* env);
+
  private:
   // Our global reference to the Java ExclusiveAccessManagerAndroid.
   base::android::ScopedJavaGlobalRef<jobject> j_eam_;

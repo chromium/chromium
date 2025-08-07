@@ -307,4 +307,38 @@ public class WebContentsDelegateAndroid {
      */
     @CalledByNative
     public void didChangeCloseSignalInterceptStatus() {}
+
+    /**
+     * Requests that the web contents obtain a pointer lock.
+     *
+     * <p>A pointer lock restricts the mouse cursor to the bounds of the view and provides relative
+     * motion events as the user moves the mouse.
+     *
+     * @param webContents The {@link WebContents} for which to request the pointer lock.
+     * @param userGesture {@code true} if the request is a result of a user gesture, {@code false}
+     *     otherwise. A user gesture is required for the pointer lock to be granted.
+     * @param lastUnlockedByTarget {@code true} if the pointer was previously unlocked by the target
+     *     (website) itself, {@code false} if it was unlocked by the system or user action. This
+     *     flag helps to prevent websites from instantly re-locking the pointer after it has been
+     *     released by the user or system.
+     */
+    public void requestPointerLock(
+            WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {}
+
+    /**
+     * Called when the pointer lock is lost, either by a system event, user action or when the
+     * focused view changes.
+     *
+     * <p>This method is invoked when the pointer lock, previously requested via {@link
+     * #requestPointerLock}, is no longer active. This can occur for several reasons:
+     *
+     * <ul>
+     *   <li>The user pressed the escape key or a system-defined key to release the lock.
+     *   <li>The application called {@code document.exitPointerLock()} in JavaScript.
+     *   <li>The window lost focus.
+     *   <li>The view hierarchy capturing the pointer went out of focus.
+     *   <li>The system released the pointer lock for other reasons.
+     * </ul>
+     */
+    public void lostPointerLock() {}
 }
