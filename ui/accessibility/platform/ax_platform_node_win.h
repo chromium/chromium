@@ -1188,6 +1188,7 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // Firing a UIA event can cause UIA to call back into our APIs, don't
   // consider this to be usage.
   static void PauseAXModeChanges(bool pause) { pause_ax_mode_changes_ = pause; }
+  static bool AreAXModeChangesPaused() { return pause_ax_mode_changes_; }
 
   // Convert a mojo event to an MSAA event. Exposed for testing.
   static std::optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
