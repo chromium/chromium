@@ -181,8 +181,8 @@
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #endif
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)

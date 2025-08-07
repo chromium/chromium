@@ -37,7 +37,7 @@ void TrackingProtectionSettingsFactory::RegisterBrowserStatePrefs(
 
 TrackingProtectionSettingsFactory::TrackingProtectionSettingsFactory()
     : ProfileKeyedServiceFactoryIOS("TrackingProtectionSettings",
-                                    ProfileSelection::kRedirectedInIncognito) {
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(ios::HostContentSettingsMapFactory::GetInstance());
   DependsOn(policy::ManagementServiceIOSFactory::GetInstance());
 }

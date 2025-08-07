@@ -25,6 +25,7 @@ include_rules = [
   "+components/enterprise",
   "+components/error_page/common",
   "+components/favicon/core",
+  "+components/fingerprinting_protection_filter/browser",
   "+components/fingerprinting_protection_filter/common",
   "+components/fingerprinting_protection_filter/ios",
   "+components/shared_highlighting/core/common",
@@ -80,6 +81,7 @@ include_rules = [
   "+components/policy/policy_constants.h",
   "+components/policy/proto/device_management_backend.pb.h",
   "+components/pref_registry",
+  "+components/privacy_sandbox",
   "+components/push_notification",
   "+components/startup_metric_utils/browser",
   "+components/startup_metric_utils/common",
@@ -181,6 +183,7 @@ include_rules = [
   "-ios/chrome/browser",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/profile/model",
+  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/privacy_sandbox",
@@ -191,6 +194,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/search_engine_logo/ui",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/privacy_sandbox",
 
   # Shared dependencies.
   "+ios/chrome/browser/shared/coordinator",

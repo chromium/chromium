@@ -5,14 +5,20 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SETTINGS_H_
 #define COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SETTINGS_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings_types.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "url/gurl.h"
+
+namespace content_settings {
+struct SettingInfo;
+}
 
 class HostContentSettingsMap;
 class PrefService;
@@ -28,7 +34,8 @@ inline bool IsTrackingProtectionsUi(CookieControlsState controls_state) {
 
 // A service which provides an interface for observing and reading tracking
 // protection settings.
-class TrackingProtectionSettings : public KeyedService {
+class TrackingProtectionSettings : public KeyedService,
+                                   public content_settings::Observer {
  public:
   explicit TrackingProtectionSettings(
       PrefService* pref_service,
@@ -40,8 +47,14 @@ class TrackingProtectionSettings : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  virtual void AddObserver(TrackingProtectionSettingsObserver* observer);
-  virtual void RemoveObserver(TrackingProtectionSettingsObserver* observer);
+  // content_settings::Observer:
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
+
+  void AddObserver(TrackingProtectionSettingsObserver* observer);
+  void RemoveObserver(TrackingProtectionSettingsObserver* observer);
 
   // Returns whether "do not track" is enabled.
   bool IsDoNotTrackEnabled() const;
@@ -77,6 +90,9 @@ class TrackingProtectionSettings : public KeyedService {
       const GURL& first_party_url,
       content_settings::SettingInfo* info = nullptr) const;
 
+  // Returns a list of all tracking protection exceptions.
+  ContentSettingsForOneType GetTrackingProtectionExceptions() const;
+
   // Returns whether IP protection is disabled, either because an enterprise
   // policy has been set that disables the feature or, when the
   // `kIpPrivacyDisableForEnterpriseByDefault` feature is enabled, because no
@@ -86,8 +102,6 @@ class TrackingProtectionSettings : public KeyedService {
 
  private:
   void OnEnterpriseControlForPrefsChanged();
-  void MigrateUserBypassExceptions(ContentSettingsType from,
-                                   ContentSettingsType to);
 
   // Callbacks for pref observation.
   void OnDoNotTrackEnabledPrefChanged();
@@ -95,12 +109,15 @@ class TrackingProtectionSettings : public KeyedService {
   void OnTrackingProtection3pcdPrefChanged();
   void OnIpProtectionPrefChanged();
   void OnFpProtectionPrefChanged();
+  void OnTrackingProtectionExceptionsChanged();
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<policy::ManagementService> management_service_;
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_settings_observation_{this};
 
   bool is_incognito_;
 };
