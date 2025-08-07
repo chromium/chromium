@@ -31,6 +31,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -112,8 +113,6 @@ public class ListMenuUtils {
         @Nullable ModelList parentHeaderModelList =
                 headerModelList == null ? null : shallowCopy(headerModelList);
         ModelList parentModelList = shallowCopy(contentModelList);
-        contentModelList.clear();
-        if (headerModelList != null) headerModelList.clear();
         // Add the clicked item as a header to the submenu.
         Runnable headerBackClick =
                 () -> {
@@ -138,19 +137,23 @@ public class ListMenuUtils {
                                     return false;
                                 })
                         .build();
-        (headerModelList == null ? contentModelList : headerModelList)
-                .add(new ListItem(ListItemType.SUBMENU_HEADER, model));
-
-        for (ListItem listItem : item.model.get(SUBMENU_ITEMS)) {
-            contentModelList.add(listItem);
+        ListItem headerItem = new ListItem(ListItemType.SUBMENU_HEADER, model);
+        List<ListItem> newContentList = new ArrayList<>();
+        if (headerModelList == null) {
+            newContentList.add(headerItem);
+        } else {
+            headerModelList.set(List.of(headerItem));
         }
+        newContentList.addAll(item.model.get(SUBMENU_ITEMS));
+        contentModelList.set(newContentList);
     }
 
     private static void setModelListContent(ModelList modelList, ModelList target) {
-        modelList.clear();
+        List<ListItem> targetItems = new ArrayList<>();
         for (ListItem item : target) {
-            modelList.add(item);
+            targetItems.add(item);
         }
+        modelList.set(targetItems);
     }
 
     /** Returns a shallow copy of {@param modelList}. */
@@ -265,10 +268,10 @@ public class ListMenuUtils {
             mContentModelList = contentModelList;
         }
 
-        // Note: because ListMenuUtils methods clear the ModelList and add elements one-by-one,
-        // we need to listen to a "0th item added" signal to determine when we have a new header.
+        // Note: because ListMenuUtils methods use ModelList#set, they trigger onItemRangeChanged.
         @Override
-        public void onItemRangeInserted(ListObservable source, int index, int count) {
+        public void onItemRangeChanged(
+                ListObservable<Void> source, int index, int count, @Nullable Void payload) {
             if (index != 0) return; // If the 1st element wasn't changed, the "header" is the same.
             String accessibilityPaneTitle =
                     mView.getContext().getString(R.string.listmenu_a11y_default_pane_title);

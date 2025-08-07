@@ -85,7 +85,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
         private final ComponentCallbacks mComponentCallbacks;
         private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
         private AnchoredPopupWindow mMenuWindow;
-        private boolean mSubmenuNavigationInProgress;
 
         OverflowMenuHolder(
                 RectProvider anchorViewRectProvider,
@@ -129,10 +128,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
                                 // one, we need to manually call click listeners.
                                 if (model.containsKey(CLICK_LISTENER)
                                         && model.get(CLICK_LISTENER) != null) {
-                                    // Set mSubmenuNavigationInProgress to prevent the popup from
-                                    // being destroyed. It will be cleaned up in the DataSetObserver
-                                    // below.
-                                    mSubmenuNavigationInProgress = true;
                                     model.get(CLICK_LISTENER).onClick(mContentView);
                                     return;
                                 }
@@ -176,10 +171,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
                     new DataSetObserver() {
                         @Override
                         public void onChanged() {
-                            if (mSubmenuNavigationInProgress) {
-                                mSubmenuNavigationInProgress = false;
-                                return;
-                            }
                             resize();
                         }
                     });
