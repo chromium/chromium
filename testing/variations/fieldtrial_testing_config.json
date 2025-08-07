@@ -13204,6 +13204,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "EnableReadabilityHeuristic",
                         "EnableReaderMode",
                         "EnableReaderModeDefaultBrowserPromo",
                         "EnableReaderModePageEligibilityForToolsMenu",
