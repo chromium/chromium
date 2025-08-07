@@ -364,7 +364,7 @@ def UploadArtifacts(test_result, upload_bucket, run_identifier):
 
 def GetTraceUrl(test_result):
   artifacts = test_result.get('outputArtifacts', {})
-  trace_artifact = artifacts.get(compute_metrics.HTML_TRACE_NAME, {})
+  trace_artifact = artifacts.get(compute_metrics.CONCATENATED_PROTO_NAME, {})
   if 'viewUrl' in trace_artifact:
     return trace_artifact['viewUrl']
   if 'filePath' in trace_artifact:
