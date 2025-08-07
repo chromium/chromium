@@ -2084,7 +2084,6 @@
       // crbug.com/414112253
       name: "FastSelectionSync",
       status: "stable",
-      depends_on: ["SelectionDeleteFromDocumentUaShadowFix"],
     },
     {
       name: "FedCm",
@@ -4382,11 +4381,6 @@
     {
       // See https://crbug.com/40664519
       name: "SelectionAndFocusedVisiblePositionMatch",
-      status: "stable",
-    },
-    {
-      // See https://crbug.com/417823377
-      name: "SelectionDeleteFromDocumentUaShadowFix",
       status: "stable",
     },
     {
