@@ -1,7 +1,7 @@
 caption: Settings for GenAI local foundational model
 
 desc: |-
-  Configure how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> downloads the foundational GenAI model and uses for inference locally. 
+  Configure how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> downloads the foundational GenAI model and uses for inference locally.
 
   When the policy is set to Allowed (0) or not set, the model is downloaded automatically, and used for inference.
 
@@ -12,7 +12,7 @@ desc: |-
 default: 0
 example_value: 1
 features:
-  dynamic_refresh: false
+  dynamic_refresh: true
   per_profile: false
 future_on:
 - chrome_os
