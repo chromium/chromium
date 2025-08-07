@@ -628,6 +628,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // not including itself).
   static Widgets GetAllOwnedWidgets(gfx::NativeView native_view);
 
+  // Iterates over all owned widgets, running `on_widget` for each. This is
+  // robust against widgets being destroyed during iteration.
+  static void ForEachOwnedWidget(gfx::NativeView native_view,
+                                 base::FunctionRef<void(Widget*)> on_widget);
+
   // https://crbug.com/391414831: This is only used by some views
   // implementation details for content::WebContents glue, and for ChromeOS.
   // New use cases should not be added. Use Reparent() instead.

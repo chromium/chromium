@@ -59,6 +59,7 @@
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_deletion_observer.h"
+#include "ui/views/widget/widget_enumerator.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_removals_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -389,6 +390,16 @@ Widget::Widgets Widget::GetAllOwnedWidgets(gfx::NativeView native_view) {
   return native_view
              ? internal::NativeWidgetPrivate::GetAllOwnedWidgets(native_view)
              : Widget::Widgets();
+}
+
+// static
+void Widget::ForEachOwnedWidget(gfx::NativeView native_view,
+                                base::FunctionRef<void(Widget*)> on_widget) {
+  WidgetEnumerator widget_iterator(
+      internal::NativeWidgetPrivate::GetAllOwnedWidgets(native_view));
+  while (!widget_iterator.IsEmpty()) {
+    on_widget(widget_iterator.Next());
+  }
 }
 
 // static

@@ -4810,6 +4810,74 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   EXPECT_TRUE(std::ranges::equal(expected, owned_widgets));
 }
 
+// Test the result of Widget::ForEachOwnedWidget().
+TEST_F(WidgetTest, ForEachOwnedWidget) {
+  // Create the following widget hierarchy:
+  //
+  // toplevel
+  // +-- w1
+  //     +-- w11
+  // +-- w2
+  //     +-- w21
+  //     +-- w22
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  Widget* w1 = CreateChildPlatformWidget(toplevel->GetNativeView());
+  Widget* w11 = CreateChildPlatformWidget(w1->GetNativeView());
+  Widget* w2 = CreateChildPlatformWidget(toplevel->GetNativeView());
+  Widget* w21 = CreateChildPlatformWidget(w2->GetNativeView());
+  Widget* w22 = CreateChildPlatformWidget(w2->GetNativeView());
+
+  std::set<Widget*> expected;
+  expected.insert(w1);
+  expected.insert(w11);
+  expected.insert(w2);
+  expected.insert(w21);
+  expected.insert(w22);
+
+  Widget::Widgets widgets;
+  Widget::ForEachOwnedWidget(
+      toplevel->GetNativeView(),
+      [&widgets](Widget* widget) { widgets.insert(widget); });
+
+  EXPECT_TRUE(std::ranges::equal(expected, widgets));
+}
+
+// Test that ForEachOwnedWidget is robust to deletion.
+TEST_F(WidgetTest, ForEachOwnedWidget_WithDeletion) {
+  // Create the following widget hierarchy:
+  //
+  // toplevel
+  // +-- w1
+  // +-- w2
+  // +-- w3
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  Widget* w1 = CreateChildPlatformWidget(toplevel->GetNativeView());
+  Widget* w2 = CreateChildPlatformWidget(toplevel->GetNativeView());
+  Widget* w3 = CreateChildPlatformWidget(toplevel->GetNativeView());
+
+  // We need to delete a widget from another widget's callback.
+  // The iteration order is pointer-based, so we sort them to find
+  // two widgets where we can guarantee the order.
+  std::vector<Widget*> children = {w1, w2, w3};
+  std::sort(children.begin(), children.end());
+
+  Widget* first_widget = children[0];
+  Widget* second_widget = children[1];
+
+  std::set<Widget*> visited_widgets;
+  Widget::ForEachOwnedWidget(toplevel->GetNativeView(), [&](Widget* widget) {
+    if (widget == first_widget) {
+      second_widget->CloseNow();
+    }
+    visited_widgets.insert(widget);
+  });
+
+  EXPECT_EQ(2u, visited_widgets.size());
+  EXPECT_TRUE(visited_widgets.count(first_widget));
+  EXPECT_FALSE(visited_widgets.count(second_widget));
+  EXPECT_TRUE(visited_widgets.count(children[2]));
+}
+
 // Used by DestroyChildWidgetsInOrder. On destruction adds the supplied name to
 // a vector.
 class DestroyedTrackingView : public View {
