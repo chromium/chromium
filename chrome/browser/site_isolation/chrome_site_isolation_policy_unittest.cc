@@ -68,7 +68,6 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
         {});
     site_isolation::SiteIsolationPolicy::
         SetDisallowMemoryThresholdCachingForTesting(true);
-    content::SiteIsolationPolicy::IgnoreOriginKeyedProcessOverridesForTesting();
   }
 
   void TearDown() override {
