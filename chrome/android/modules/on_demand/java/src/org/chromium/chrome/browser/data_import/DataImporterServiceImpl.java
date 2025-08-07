@@ -91,7 +91,7 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             try {
                 mStarted = true;
                 mServer.start();
-                // TODO(crbug.com/431218724): Figure out when to shut down the server again (and
+                // TODO(crbug.com/436826856): Figure out when to shut down the server again (and
                 // then handle the server being in the shutdown process here).
             } catch (IOException e) {
                 Log.e(TAG, "Failed to start grpc server for TargetService", e);
