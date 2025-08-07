@@ -251,8 +251,6 @@ static_library("test_support") {
     "base/scoped_browser_locale.h",
     "base/scoped_metrics_service_for_synthetic_trials.cc",
     "base/scoped_metrics_service_for_synthetic_trials.h",
-    "base/scoped_testing_local_state.cc",
-    "base/scoped_testing_local_state.h",
     "base/search_test_utils.cc",
     "base/search_test_utils.h",
     "base/test_launcher_utils.cc",
