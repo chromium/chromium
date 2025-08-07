@@ -207,6 +207,8 @@ public class PersistentVersioningMessageMediator {
 
         VersioningMessageController versioningMessageController =
                 tabGroupSyncService.getVersioningMessageController();
+        if (versioningMessageController == null) return null;
+
         VersioningModalDialog versioningModalDialog =
                 new VersioningModalDialog(context, modalDialogManager, /* exitRunnable= */ null);
 
