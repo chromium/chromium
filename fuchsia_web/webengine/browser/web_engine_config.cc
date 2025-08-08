@@ -104,6 +104,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       switches::kVulkanSyncCpuMemoryLimitMb,
       switches::kWebglAntialiasingMode,
       switches::kWebglMSAASampleCount,
+      switches::kProtectedServiceWorkers,
   };
 
   for (const auto arg : *args) {
