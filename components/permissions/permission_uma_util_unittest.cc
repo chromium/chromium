@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -202,14 +203,17 @@ TEST_F(PermissionUmaUtilTest, ScopedRevocationReporter) {
 
   // TODO(tsergeant): Add more comprehensive tests of PermissionUmaUtil.
   base::HistogramTester histograms;
-  HostContentSettingsMap* map =
-      PermissionsClient::Get()->GetSettingsMap(&browser_context);
+  auto* map = PermissionsClient::Get()->GetSettingsMap(&browser_context);
   GURL host("https://example.com");
   ContentSettingsPattern host_pattern =
       ContentSettingsPattern::FromURLNoWildcard(host);
   ContentSettingsPattern host_containing_wildcards_pattern =
       ContentSettingsPattern::FromString("https://[*.]example.com/");
-  ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType type =
+      base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)
+          ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+          : ContentSettingsType::GEOLOCATION;
   PermissionSourceUI source_ui = PermissionSourceUI::SITE_SETTINGS;
 
   // Allow->Block triggers a revocation.

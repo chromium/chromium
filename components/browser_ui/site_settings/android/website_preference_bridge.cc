@@ -297,8 +297,8 @@ void SetPermissionSettingForOrigin(
           browser_context, origin_url, embedder_url, content_type,
           permissions::PermissionSourceUI::SITE_SETTINGS);
   GetHostContentSettingsMap(browser_context)
-      ->SetContentSettingDefaultScope(origin_url, embedder_url, content_type,
-                                      setting);
+      ->SetPermissionSettingDefaultScope(origin_url, embedder_url, content_type,
+                                         setting);
 }
 
 permissions::ObjectPermissionContextBase* GetChooserContext(
@@ -528,9 +528,13 @@ static void JNI_WebsitePreferenceBridge_SetGeolocationSettingForOrigin(
 
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
 
-  GeolocationSetting setting = {
-      ToPermissionOption(static_cast<ContentSetting>(approximate)),
-      ToPermissionOption(static_cast<ContentSetting>(precise))};
+  std::optional<PermissionSetting> setting;
+  if (approximate != CONTENT_SETTING_DEFAULT) {
+    CHECK_NE(precise, CONTENT_SETTING_DEFAULT);
+    setting = GeolocationSetting{
+        ToPermissionOption(static_cast<ContentSetting>(approximate)),
+        ToPermissionOption(static_cast<ContentSetting>(precise))};
+  }
 
   GetHostContentSettingsMap(browser_context)
       ->SetPermissionSettingDefaultScope(

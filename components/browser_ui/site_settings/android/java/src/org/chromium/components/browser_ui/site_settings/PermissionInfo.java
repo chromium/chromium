@@ -127,7 +127,7 @@ public class PermissionInfo implements Serializable {
 
     /** Set the Geolocation permission value for this origin. */
     public void setGeolocationSetting(
-            BrowserContextHandle browserContextHandle, GeolocationSetting setting) {
+            BrowserContextHandle browserContextHandle, @Nullable GeolocationSetting setting) {
         assert mContentSettingsType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         WebsitePreferenceBridgeJni.get()
                 .setGeolocationSettingForOrigin(
@@ -135,7 +135,7 @@ public class PermissionInfo implements Serializable {
                         mContentSettingsType,
                         mOrigin,
                         getEmbedderSafe(),
-                        setting.mApproximate,
-                        setting.mPrecise);
+                        setting != null ? setting.mApproximate : ContentSettingValues.DEFAULT,
+                        setting != null ? setting.mPrecise : ContentSettingValues.DEFAULT);
     }
 }

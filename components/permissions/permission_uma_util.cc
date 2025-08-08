@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -1156,14 +1157,16 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
     is_initially_allowed_ = false;
     return;
   }
-  HostContentSettingsMap* settings_map =
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      content_type);
+  CHECK(info);
+  auto* settings_map =
       PermissionsClient::Get()->GetSettingsMap(browser_context_);
-  ContentSetting initial_content_setting = settings_map->GetContentSetting(
-      primary_url_, secondary_url_, content_type_);
-  is_initially_allowed_ = initial_content_setting == CONTENT_SETTING_ALLOW;
   content_settings::SettingInfo setting_info;
-  settings_map->GetWebsiteSetting(primary_url, secondary_url, content_type_,
-                                  &setting_info);
+  PermissionSetting initial_setting = settings_map->GetPermissionSetting(
+      primary_url_, secondary_url_, content_type_, &setting_info);
+  is_initially_allowed_ =
+      info->delegate().IsAnyPermissionAllowed(initial_setting);
   last_modified_date_ = setting_info.metadata.last_modified();
   scoped_revocation_reporter_in_scope = true;
 }
@@ -1192,16 +1195,19 @@ PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
       !PermissionUtil::IsPermission(content_type_)) {
     return;
   }
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      content_type_);
   HostContentSettingsMap* settings_map =
       PermissionsClient::Get()->GetSettingsMap(browser_context_);
-  ContentSetting final_content_setting = settings_map->GetContentSetting(
+  PermissionSetting final_setting = settings_map->GetPermissionSetting(
       primary_url_, secondary_url_, content_type_);
-  if (final_content_setting != CONTENT_SETTING_ALLOW) {
+  if (!info->delegate().IsAnyPermissionAllowed(final_setting)) {
     // PermissionUmaUtil takes origins, even though they're typed as GURL.
     GURL requesting_origin = primary_url_.DeprecatedGetOriginAsURL();
     PermissionRevoked(content_type_, source_ui_, requesting_origin,
                       browser_context_);
     if ((content_type_ == ContentSettingsType::GEOLOCATION ||
+         content_type_ == ContentSettingsType::GEOLOCATION_WITH_OPTIONS ||
          content_type_ == ContentSettingsType::MEDIASTREAM_CAMERA ||
          content_type_ == ContentSettingsType::MEDIASTREAM_MIC) &&
         !last_modified_date_.is_null()) {
