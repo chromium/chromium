@@ -48,7 +48,8 @@ if (target_os == "android") {
       "trichrome_auto_version_code = \"@TRICHROME_AUTO_VERSION_CODE@\" " +
       "trichrome_beta_version_code = \"@TRICHROME_BETA_VERSION_CODE@\" " +
       "webview_stable_version_code = \"@WEBVIEW_STABLE_VERSION_CODE@\" " +
-      "webview_beta_version_code = \"@WEBVIEW_BETA_VERSION_CODE@\" "
+      "webview_beta_version_code = \"@WEBVIEW_BETA_VERSION_CODE@\" " +
+      "webview_auto_version_code = \"@WEBVIEW_AUTO_VERSION_CODE@\" "
 
   # Generate hybrid configurations for target_cpu's that can run in hybrid configurations.
   # i.e. "riscv64" does not show up in this list, as it's a 64-bit-only target_cpu.
@@ -110,6 +111,16 @@ if (target_os == "android") {
     _version_dictionary_template += "webview_64_32_beta_version_code = \"@WEBVIEW_64_32_BETA_VERSION_CODE@\" "
     if (target_cpu == "arm64") {
       _version_dictionary_template += "webview_64_32_high_beta_version_code = \"@WEBVIEW_64_32_HIGH_BETA_VERSION_CODE@\" "
+    }
+
+    _version_dictionary_template +=
+        "webview_auto_32_version_code = \"@WEBVIEW_AUTO_32_VERSION_CODE@\" "
+    _version_dictionary_template += "webview_auto_32_64_version_code = \"@WEBVIEW_AUTO_32_64_VERSION_CODE@\" "
+    _version_dictionary_template +=
+        "webview_auto_64_version_code = \"@WEBVIEW_AUTO_64_VERSION_CODE@\" "
+    _version_dictionary_template += "webview_auto_64_32_version_code = \"@WEBVIEW_AUTO_64_32_VERSION_CODE@\" "
+    if (target_cpu == "arm64") {
+      _version_dictionary_template += "webview_auto_64_32_high_version_code = \"@WEBVIEW_AUTO_64_32_HIGH_VERSION_CODE@\" "
     }
   }
 
@@ -192,6 +203,12 @@ if (is_mac) {
                            "webview_64_32_stable_version_code",
                            "webview_64_32_high_beta_version_code",
                            "webview_64_32_high_stable_version_code",
+                           "webview_auto_version_code",
+                           "webview_auto_32_version_code",
+                           "webview_auto_32_64_version_code",
+                           "webview_auto_64_version_code",
+                           "webview_auto_64_32_version_code",
+                           "webview_auto_64_32_high_version_code",
                          ])
 
   chrome_version_name = chrome_version_full
@@ -203,6 +220,7 @@ if (is_mac) {
     trichrome_auto_64_32_high_version_code = trichrome_auto_64_32_version_code
     webview_64_32_high_beta_version_code = webview_64_32_beta_version_code
     webview_64_32_high_stable_version_code = webview_64_32_stable_version_code
+    webview_auto_64_32_high_version_code = webview_auto_64_32_version_code
   }
 }
 
@@ -216,6 +234,7 @@ if (is_android && current_toolchain == default_toolchain) {
     "TrichromeChromeAuto: $trichrome_auto_version_code",
     "AndroidWebviewStable: $webview_stable_version_code",
     "AndroidWebviewBeta: $webview_beta_version_code",
+    "AndroidWebviewAuto: $webview_auto_version_code",
   ]
 
   if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
@@ -233,11 +252,16 @@ if (is_android && current_toolchain == default_toolchain) {
       "TrichromeChromeAuto64: $trichrome_auto_64_version_code",
       "TrichromeChromeAuto6432: $trichrome_auto_64_32_version_code",
       "TrichromeChromeDesktop64: $trichrome_desktop_64_version_code",
+      "AndroidWebviewAuto32: $webview_auto_32_version_code",
+      "AndroidWebviewAuto3264: $webview_auto_32_64_version_code",
+      "AndroidWebviewAuto64: $webview_auto_64_version_code",
+      "AndroidWebviewAuto6432: $webview_auto_64_32_version_code",
     ]
     if (target_cpu == "arm64") {
       lines_to_write += [
         "TrichromeChrome6432High: $trichrome_64_32_high_version_code",
         "TrichromeChromeAuto6432High: $trichrome_auto_64_32_high_version_code",
+        "AndroidWebviewAuto6432High: $webview_auto_64_32_high_version_code",
       ]
     }
     lines_to_write += [

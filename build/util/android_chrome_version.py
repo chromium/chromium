@@ -93,6 +93,7 @@ _APKS = {
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32'),
+        ('WEBVIEW_AUTO', 'WEBVIEW_AUTO', '32'),
     ],
     '64': [
         ('CHROME', 'CHROME', '64'),
@@ -152,6 +153,9 @@ _APKS = {
         ('WEBVIEW_32_DEV', 'WEBVIEW_DEV', '32'),
         ('WEBVIEW_64_DEV', 'WEBVIEW_DEV', '64'),
         ('WEBVIEW_64_32_DEV', 'WEBVIEW_DEV', '64_32'),
+        ('WEBVIEW_AUTO', 'WEBVIEW_AUTO', '32_64'),
+        ('WEBVIEW_AUTO_32', 'WEBVIEW_AUTO', '32'),
+        ('WEBVIEW_AUTO_32_64', 'WEBVIEW_AUTO', '32_64'),
         ('WEBVIEW_AUTO_64', 'WEBVIEW_AUTO', '64'),
         ('WEBVIEW_AUTO_64_32', 'WEBVIEW_AUTO', '64_32'),
         ('WEBVIEW_AUTO_64_32_HIGH', 'WEBVIEW_AUTO', '64_32_high'),
