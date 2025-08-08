@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill.password_generation;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -29,7 +30,7 @@ class TouchToFillPasswordGenerationBridge
     private static TouchToFillPasswordGenerationBridge create(
             WindowAndroid windowAndroid,
             WebContents webContents,
-            PrefService prefService,
+            @JniType("PrefService*") PrefService prefService,
             long nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);

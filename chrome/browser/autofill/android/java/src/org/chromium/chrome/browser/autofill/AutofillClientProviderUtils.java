@@ -13,6 +13,7 @@ import android.view.autofill.AutofillManager;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
@@ -83,7 +84,8 @@ public class AutofillClientProviderUtils {
      *     or a reason why it can't.
      */
     @CalledByNative
-    public static int getAndroidAutofillFrameworkAvailability(PrefService prefs) {
+    public static int getAndroidAutofillFrameworkAvailability(
+            @JniType("PrefService*") PrefService prefs) {
         if (sAndroidAutofillFrameworkAvailabilityForTesting != null) {
             return sAndroidAutofillFrameworkAvailabilityForTesting;
         }

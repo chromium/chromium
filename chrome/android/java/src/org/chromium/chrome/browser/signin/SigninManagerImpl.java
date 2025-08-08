@@ -122,7 +122,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     static SigninManager create(
             long nativeSigninManagerAndroid,
             @JniType("Profile*") Profile profile,
-            PrefService prefService,
+            @JniType("PrefService*") PrefService prefService,
             @JniType("signin::IdentityManager*") IdentityManager identityManager,
             IdentityMutator identityMutator) {
         assert nativeSigninManagerAndroid != 0;

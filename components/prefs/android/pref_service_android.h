@@ -6,6 +6,7 @@
 #define COMPONENTS_PREFS_ANDROID_PREF_SERVICE_ANDROID_H_
 
 #include "base/android/jni_android.h"
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/prefs_export.h"
 
@@ -84,6 +85,11 @@ inline PrefService* FromJniType<PrefService*>(JNIEnv* env,
                                               const JavaRef<jobject>& obj) {
   return PrefServiceAndroid::FromPrefServiceAndroid(obj);
 }
+
+template <>
+COMPONENTS_PREFS_EXPORT ScopedJavaLocalRef<jobject> ToJniType<PrefService>(
+    JNIEnv* env,
+    PrefService* pref_service);
 }  // namespace jni_zero
 
 #endif  // COMPONENTS_PREFS_ANDROID_PREF_SERVICE_ANDROID_H_

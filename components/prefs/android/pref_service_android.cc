@@ -177,3 +177,12 @@ jboolean PrefServiceAndroid::IsDefaultValuePreference(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
   return pref && pref->IsDefaultValue();
 }
+
+namespace jni_zero {
+
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<PrefService>(JNIEnv* env,
+                                                   PrefService* pref_service) {
+  return pref_service->GetJavaObject();
+}
+}  // namespace jni_zero

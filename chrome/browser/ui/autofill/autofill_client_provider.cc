@@ -17,9 +17,12 @@
 #include "base/android/jni_string.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/autofill/android/android_autofill_availability_status.h"
-#include "chrome/browser/autofill/android/jni_headers/AutofillClientProviderUtils_jni.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
+#include "components/prefs/android/pref_service_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/autofill/android/jni_headers/AutofillClientProviderUtils_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -81,7 +84,7 @@ AndroidAutofillAvailabilityStatus GetAndroidAutofillAvailabilityStatus(
   AndroidAutofillAvailabilityStatus availability = static_cast<
       AndroidAutofillAvailabilityStatus>(
       Java_AutofillClientProviderUtils_getAndroidAutofillFrameworkAvailability(
-          base::android::AttachCurrentThread(), prefs.GetJavaObject()));
+          base::android::AttachCurrentThread(), &prefs));
   // Check whether the returned availability is affected by feature parameters
   // that skip some checks on this client.
   switch (availability) {
