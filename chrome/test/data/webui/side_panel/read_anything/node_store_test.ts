@@ -4,8 +4,9 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, COUNT_WORDS_SEEN_DELAY_MS, NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -125,5 +126,146 @@ suite('NodeStore', () => {
 
     assertArrayEquals([id1, id2, id3], readingMode.fetchedImages);
     assertFalse(nodeStore.hasImagesToFetch());
+  });
+
+  test('estimateWordsSeenWithDelay updates words seen after delay', () => {
+    const node = document.createElement('p');
+    const text = document.createTextNode('Annie are you okay?');
+    nodeStore.setDomNode(node, 1);
+    nodeStore.setDomNode(text, 2);
+    node.appendChild(text);
+    document.body.appendChild(node);
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    nodeStore.estimateWordsSeenWithDelay();
+    assertEquals(0, readingMode.wordsSeen);
+
+    mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+    mockTimer.uninstall();
+    assertEquals(4, readingMode.wordsSeen);
+  });
+
+  test(
+      'estimateWordsSeenWithDelay multiple times before delay, only counts once',
+      () => {
+        const node = document.createElement('p');
+        const text1 =
+            document.createTextNode('Would you tell us that you\'re okay?');
+        const text2 = document.createTextNode('There\'s a sound at the window');
+        nodeStore.setDomNode(node, 1);
+        nodeStore.setDomNode(text1, 2);
+        nodeStore.setDomNode(text2, 3);
+        node.appendChild(text1);
+        document.body.appendChild(node);
+        const mockTimer = new MockTimer();
+        mockTimer.install();
+
+        // First request, with text1 in view.
+        nodeStore.estimateWordsSeenWithDelay();
+
+        // After a time less than the full delay, request again with only text2
+        // in view, and no words should be counted as seen yet.
+        node.removeChild(text1);
+        node.appendChild(text2);
+        mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS / 2);
+        nodeStore.estimateWordsSeenWithDelay();
+        assertEquals(0, readingMode.wordsSeen);
+
+        // The above request should have reset the timer, so still no words
+        // seen.
+        mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS / 2);
+        assertEquals(0, readingMode.wordsSeen);
+
+        // After the full timer, we should only count the latest text shown.
+        mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS / 2);
+        assertEquals(6, readingMode.wordsSeen);
+        mockTimer.uninstall();
+      });
+
+  test(
+      'estimateWordsSeenWithDelay multiple times after delay, accumulates count',
+      () => {
+        const node = document.createElement('p');
+        const text1 = document.createTextNode('that he struck you');
+        const text2 = document.createTextNode('a crescendo, Annie');
+        nodeStore.setDomNode(node, 1);
+        nodeStore.setDomNode(text1, 2);
+        nodeStore.setDomNode(text2, 3);
+        node.appendChild(text1);
+        document.body.appendChild(node);
+        const mockTimer = new MockTimer();
+        mockTimer.install();
+
+        // First request, with text1 in view.
+        nodeStore.estimateWordsSeenWithDelay();
+        mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+        assertEquals(4, readingMode.wordsSeen);
+
+        // Second request, with only text2 in view, we should count all text
+        // as being read since there was the full delay between each.
+        node.removeChild(text1);
+        node.appendChild(text2);
+        nodeStore.estimateWordsSeenWithDelay();
+        mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+        assertEquals(7, readingMode.wordsSeen);
+        mockTimer.uninstall();
+      });
+
+  test('estimateWordsSeenWithDelay does not double count the same text', () => {
+    const node = document.createElement('p');
+    const text1 = document.createTextNode('He came into your apartment');
+    const text2 =
+        document.createTextNode('and left the bloodstains on the carpet');
+    nodeStore.setDomNode(node, 1);
+    nodeStore.setDomNode(text1, 2);
+    nodeStore.setDomNode(text2, 3);
+    node.appendChild(text1);
+    document.body.appendChild(node);
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    // First request, with text1 in view.
+    nodeStore.estimateWordsSeenWithDelay();
+    mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+    assertEquals(5, readingMode.wordsSeen);
+
+    // Second request, with both text1 and text2 in view, we should not count
+    // text1 again.
+    node.appendChild(text2);
+    nodeStore.estimateWordsSeenWithDelay();
+    mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+    assertEquals(12, readingMode.wordsSeen);
+    mockTimer.uninstall();
+  });
+
+  test('estimateWordsSeenWithDelay after clear resets words seen', () => {
+    const node = document.createElement('p');
+    const text1 = document.createTextNode('You ran into the bedroom');
+    const text2 = document.createTextNode('You were struck down');
+    nodeStore.setDomNode(node, 1);
+    nodeStore.setDomNode(text1, 2);
+    node.appendChild(text1);
+    document.body.appendChild(node);
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    // First request, with text1 in view.
+    nodeStore.estimateWordsSeenWithDelay();
+    mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+    assertEquals(5, readingMode.wordsSeen);
+
+    // Simulate the nodes clearing for a new tree.
+    node.removeChild(text1);
+    node.appendChild(text2);
+    nodeStore.clearDomNodes();
+    nodeStore.setDomNode(node, 1);
+    nodeStore.setDomNode(text2, 3);
+
+    // Count only the newly visible text2.
+    nodeStore.estimateWordsSeenWithDelay();
+    mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+    assertEquals(4, readingMode.wordsSeen);
+    mockTimer.uninstall();
   });
 });

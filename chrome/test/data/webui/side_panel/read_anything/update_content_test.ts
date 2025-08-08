@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, SpeechBrowserProxyImpl, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, COUNT_WORDS_SEEN_DELAY_MS, SpeechBrowserProxyImpl, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
+import {emitEvent, mockMetrics, setupBasicSpeech, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -119,4 +120,24 @@ suite('UpdateContent', () => {
         // have the new content.
         assertEquals(expected2, app.$.container.textContent);
       });
+
+  test('estimates words seen after draw', () => {
+    stubAnimationFrame();
+    const node = document.createElement('p');
+    const text = document.createTextNode('One swing ahead of the sword');
+    node.appendChild(text);
+    app.appendChild(node);
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+    let sentWordsSeen = false;
+    readingMode.updateWordsSeen = () => {
+      sentWordsSeen = true;
+    };
+
+    app.updateContent();
+    mockTimer.tick(COUNT_WORDS_SEEN_DELAY_MS);
+    mockTimer.uninstall();
+
+    assertTrue(sentWordsSeen);
+  });
 });

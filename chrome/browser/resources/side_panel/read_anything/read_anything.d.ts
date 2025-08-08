@@ -235,6 +235,9 @@ declare namespace chrome {
     // by clicking.
     function onCollapseSelection(): void;
 
+    // Called when the number of words seen by a reading mode user changes.
+    function updateWordsSeen(wordsSeen: number): void;
+
     // Set the content. Used by tests only.
     // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
     //   const axTree = {

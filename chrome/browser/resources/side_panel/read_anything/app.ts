@@ -398,6 +398,10 @@ export class AppElement extends AppElementBase implements
     }
   }
 
+  protected onContainerScrollEnd_() {
+    this.nodeStore_.estimateWordsSeenWithDelay();
+  }
+
   // TODO: crbug.com/40910704- Potentially hide links during distillation.
   private shouldShowLinks(): boolean {
     // Links should only show when Read Aloud is paused.
@@ -563,13 +567,14 @@ export class AppElement extends AppElementBase implements
           this.speechController_.setPreviousReadingPositionIfExists();
     }
 
-    if (!setPreviousReadingPosition) {
+    requestAnimationFrame(() => {
       // Scroll back to the top after we've drawn as long as we aren't keeping
       // the reading position from before.
-      requestAnimationFrame(() => {
+      if (!setPreviousReadingPosition) {
         this.$.containerScroller.scrollTop = 0;
-      });
-    }
+      }
+      this.nodeStore_.estimateWordsSeenWithDelay();
+    });
   }
 
   async onImageDownloaded(nodeId: number) {

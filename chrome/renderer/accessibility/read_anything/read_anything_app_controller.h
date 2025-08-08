@@ -264,6 +264,7 @@ class ReadAnythingAppController
   void OnScrolledToBottom();
   bool IsDocsLoadMoreButtonVisible() const;
   void OnNoTextContent(bool previouslyHadContent);
+  void UpdateWordsSeen(int words_seen);
 
   // The language code that should be used to determine which voices are
   // supported for speech.
@@ -378,6 +379,11 @@ class ReadAnythingAppController
   // Records the number of selections that occurred for the active page. Called
   // when the active tree changes.
   void RecordNumSelections();
+
+  // Records the number of words consumed on the active page via reading mode.
+  // This number is an estimate based on scrolling position and does not work
+  // for languages that don't use whitespace to separate words.
+  void RecordEstimatedWordsSeen();
 
   void RecordDistillationSuccess();
 

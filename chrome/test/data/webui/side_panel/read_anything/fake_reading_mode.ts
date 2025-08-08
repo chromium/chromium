@@ -85,6 +85,7 @@ export class FakeReadingMode {
   private maxNodeId: number = 5;
 
   fetchedImages: number[] = [];
+  wordsSeen: number = 0;
 
   // Returns whether the reading highlight is currently on.
   isHighlightOn(): boolean {
@@ -331,6 +332,11 @@ export class FakeReadingMode {
   // SidePanelWebUIView::ShowUI
   shouldShowUi(): boolean {
     return true;
+  }
+
+  // Called when the number of words seen by a reading mode user changes.
+  updateWordsSeen(wordsSeen: number) {
+    this.wordsSeen = wordsSeen;
   }
 
   ////////////////////////////////////////////////////////////////

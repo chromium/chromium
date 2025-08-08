@@ -47,6 +47,10 @@ export interface SettingsPrefs {
 }
 
 const ACTIVE_CSS_CLASS = 'active';
+// The percent of a view that must be visible to be considered "mostly visible"
+// for the purpose of determining what's likely being actually read in the
+// reading mode panel.
+export const MOSTLY_VISIBLE_PERCENT = 0.8;
 
 export function getCurrentSpeechRate(): number {
   return parseFloat(chrome.readingMode.speechRate.toFixed(1));
@@ -102,6 +106,22 @@ export function isWhitespace(s: string): boolean {
   return /\s+/g.test(s);
 }
 
+// Returns true if the given rect is mostly within the visible window.
+export function isRectMostlyVisible(rect: DOMRect): boolean {
+  if (rect.height <= 0) {
+    return false;
+  }
+  const isTopMostlyVisible = isPointVisible(rect.top) &&
+      isPointVisible(rect.top + (rect.height * MOSTLY_VISIBLE_PERCENT));
+  const isBottomMostlyVisible = isPointVisible(rect.bottom) &&
+      isPointVisible(rect.bottom - (rect.height * MOSTLY_VISIBLE_PERCENT));
+  const isMiddleMostlyVisible = rect.top < 0 &&
+      rect.bottom > window.innerHeight &&
+      (rect.height * MOSTLY_VISIBLE_PERCENT) < window.innerHeight;
+  return isTopMostlyVisible || isBottomMostlyVisible || isMiddleMostlyVisible;
+}
+
+// Returns true if any part of the given rect is within the visible window.
 export function isRectVisible(rect: DOMRect): boolean {
   return (rect.height > 0) &&
       ((rect.top <= 0 && rect.bottom >= window.innerHeight) ||

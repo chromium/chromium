@@ -10,7 +10,7 @@ export {PageCallbackRouter} from '//resources/cr_components/color_change_listene
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export type {AppElement} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
-export {getCurrentSpeechRate, isRectVisible, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
+export {getCurrentSpeechRate, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 export type {LanguageMenuElement} from './language_menu.js';
 export type {LanguageToastElement} from './language_toast.js';
@@ -22,7 +22,7 @@ export {MenuStateItem} from './menus/menu_util.js';
 export type {RateMenuElement} from './menus/rate_menu.js';
 export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
-export {NodeStore} from './node_store.js';
+export {COUNT_WORDS_SEEN_DELAY_MS, NodeStore} from './node_store.js';
 export {currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter} from './read_aloud/highlighter.js';
 export {MAX_SPEECH_LENGTH, SpeechController, SpeechListener} from './read_aloud/speech_controller.js';
 export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/speech_model.js';

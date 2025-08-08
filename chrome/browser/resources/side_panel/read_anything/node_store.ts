@@ -4,6 +4,8 @@
 
 import {assert} from '//resources/js/assert.js';
 
+import {isRectMostlyVisible} from './common.js';
+
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
 class TwoWayMap<K, V> extends Map<K, V> {
@@ -35,6 +37,13 @@ class TwoWayMap<K, V> extends Map<K, V> {
   }
 }
 
+// The delay after which to estimate the number of words being read by the user.
+// TODO(crbug.com/c/372890165): Consider making this delay a function of the
+// the current size of the window and font size. Larger windows and smaller
+// fonts will contain more words, where smaller windows and larger fonts will
+// contain less words.
+export const COUNT_WORDS_SEEN_DELAY_MS = 10 * 1000;
+
 // Stores the nodes used in reading mode for access across the reading mode app.
 export class NodeStore {
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
@@ -49,18 +58,81 @@ export class NodeStore {
   private hiddenImageNodesIds_: Set<number> = new Set();
   private imageNodeIdsToFetch_: Set<number> = new Set();
 
+  // Accumulation of the text nodes seen by the user. Should be a subset of the
+  // current nodes in domNodeToAxNodeIdMap_. Used to estimate the number of
+  // words read by the user via reading mode.
+  private textNodesSeen_: Set<Text> = new Set();
+  private countWordsTimer?: number;
+
   clear() {
-    this.domNodeToAxNodeIdMap_.clear();
     this.hiddenImageNodesIds_.clear();
     this.imageNodeIdsToFetch_.clear();
+    this.clearDomNodes();
   }
 
   clearDomNodes() {
     this.domNodeToAxNodeIdMap_.clear();
+    this.textNodesSeen_.clear();
+    clearTimeout(this.countWordsTimer);
+    this.countWordsTimer = undefined;
   }
 
   clearHiddenImageNodes() {
     this.hiddenImageNodesIds_.clear();
+  }
+
+  // After a delay, uses a heuristic to estimate the number of words being read
+  // by the user in reading mode. The delay is to ignore blocks of text that are
+  // only viewed briefly, likely meaning the user didn't actually read it.
+  estimateWordsSeenWithDelay() {
+    clearTimeout(this.countWordsTimer);
+    this.countWordsTimer = setTimeout(() => {
+      this.estimateWordsSeen_();
+    }, COUNT_WORDS_SEEN_DELAY_MS);
+  }
+
+  // Estimates the number of words that have been read by the user.
+  // This heuristic assumes:
+  //   - Text nodes that are fully visible are being read.
+  //   - If only a small portion of a text node is offscreen, that text is
+  //     likely being read.
+  //   - If only a small portion of a text node is on-screen, that text is
+  //     is likely not being read. If the user wants to read it, they will
+  //     likely scroll so more of it is in view and it will be counted then.
+  // If updating the heuristic for estimating words seen, please update the
+  // assumptions listed above.
+  private estimateWordsSeen_() {
+    const textNodes: Text[] = Array.from(this.domNodeToAxNodeIdMap_.keys())
+                                  .filter(node => node instanceof Text);
+
+    // Add the text nodes that are currently visible. textNodesSeen_ is a Set so
+    // that if the user scrolls and a previously seen text node is still in
+    // view, it's not counted twice. Nodes that were previously marked as "seen"
+    // will remain in the set, and the total count will be re-calculated from
+    // the total set of seen nodes, including both the old and new ones.
+    for (const textNode of textNodes) {
+      const bounds = textNode.parentElement?.getBoundingClientRect();
+      // Only add text nodes that are significantly within the visible window.
+      // If a text node is only slightly visible, then it's less likely the user
+      // is actually reading that text.
+      if (bounds && isRectMostlyVisible(bounds)) {
+        this.textNodesSeen_.add(textNode);
+      }
+    }
+    const wordsSeen =
+        Array.from(this.textNodesSeen_).reduce((totalCount, currentNode) => {
+          const text = currentNode.textContent?.trim();
+          if (!text || !text.length) {
+            return totalCount;
+          }
+          // Estimate the word count of each node by splitting the text by
+          // whitespace characters.
+          // TODO(crbug.com/c/372890165): Handle scriptio continua languages
+          // that don't use whitespace to separate words.
+          const words = text.split(/\s+/).filter(word => word.length > 0);
+          return totalCount + words.length;
+        }, 0);
+    chrome.readingMode.updateWordsSeen(wordsSeen);
   }
 
   getDomNode(axNodeId: number): Node|undefined {

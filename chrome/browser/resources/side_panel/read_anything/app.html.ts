@@ -48,7 +48,8 @@ export function getHtml(this: AppElement) {
   <div id="containerParent" class="sp-card"
       ?hidden="${!this.hasContent_}">
     <div id="containerScroller" class="sp-scroller"
-        @scroll="${this.onContainerScroll_}">
+        @scroll="${this.onContainerScroll_}"
+        @scrollend="${this.onContainerScrollEnd_}">
       <div id="container"
         class=
           "user-select-disabled-when-speech-active-${this.isSpeechActive_}">
