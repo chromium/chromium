@@ -101,7 +101,10 @@ static_library("comments_internal") {
       "android/comments/comments_service_bridge.h",
     ]
 
-    deps += [ ":comments_jni_headers" ]
+    deps += [
+      ":comments_jni_headers",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
   }
 }
 
@@ -330,6 +333,7 @@ if (is_android) {
       "//components/collaboration/public:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
     ]
   }
 
@@ -363,6 +367,8 @@ if (is_android) {
       "//components/collaboration/public:comments_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:url_java",
     ]
 
     srcjar_deps = [ ":comments_native_j_unittests_jni_headers" ]

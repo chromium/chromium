@@ -217,7 +217,21 @@ if (is_android) {
   android_library("comments_java") {
     sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsService.java" ]
 
-    deps = [ "//build/android:build_java" ]
+    deps = [
+      "//base:callback_java",
+      "//build/android:build_java",
+      "//components/data_sharing/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:url_java",
+    ]
+
+    srcjar_deps = [ ":comments_enums_java" ]
+  }
+
+  java_cpp_enum("comments_enums_java") {
+    visibility = [ ":*" ]
+
+    sources = [ "comments/comments_service.h" ]
   }
 
   android_library("messaging_java") {

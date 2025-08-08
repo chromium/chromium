@@ -112,6 +112,7 @@ if (is_android) {
       "//base:base_java",
       "//components/collaboration/public:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:url_java",
     ]
   }
 
