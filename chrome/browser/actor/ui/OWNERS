@@ -1,4 +1,6 @@
-file://chrome/browser/actor/OWNERS
+boujane@google.com
+chrstne@google.com
+kmg@google.com
 
 # For horizontal changes, usually related to the WebUI toolchain. For any
 # changes that have to do with business logic direct to Actor OWNERS above.
