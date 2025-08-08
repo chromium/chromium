@@ -3368,6 +3368,15 @@ bool LocalFrame::IsCapturingMedia() const {
 }
 
 SystemClipboard* LocalFrame::GetSystemClipboard() {
+  // PagePopup uses the SystemClipboard associated with its OwnerElement.
+  if (RuntimeEnabledFeatures::PagePopupCopyPasteEnabled()) {
+    if (auto* owner = PagePopupOwner()) {
+      if (auto* frame = owner->GetDocument().GetFrame()) {
+        return frame->GetSystemClipboard();
+      }
+    }
+  }
+
   if (!system_clipboard_)
     system_clipboard_ = MakeGarbageCollected<SystemClipboard>(this);
 

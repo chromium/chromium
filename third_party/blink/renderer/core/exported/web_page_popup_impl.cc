@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
@@ -1078,6 +1079,13 @@ void WebPagePopupImpl::EmulatedToScreenRect(gfx::Rect& screen_rect) {
 std::unique_ptr<cc::LayerTreeFrameSink>
 WebPagePopupImpl::AllocateNewLayerTreeFrameSink() {
   return nullptr;
+}
+
+void WebPagePopupImpl::ExecuteEditCommand(const String& command,
+                                          const String& value) {
+  if (LocalFrame* frame = page_->GetFocusController().FocusedFrame()) {
+    frame->GetEditor().ExecuteCommand(command, value);
+  }
 }
 
 // WebPagePopup ----------------------------------------------------------------

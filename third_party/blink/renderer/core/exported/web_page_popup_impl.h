@@ -134,6 +134,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       const display::ScreenInfos& screen_infos,
       PagePopupClient*);
 
+  void ExecuteEditCommand(const String& command, const String& value);
+
  private:
   // WidgetBaseClient overrides:
   void OnCommitRequested() override;

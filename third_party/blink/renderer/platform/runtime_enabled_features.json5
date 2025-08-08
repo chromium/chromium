@@ -3503,6 +3503,11 @@
       status: {"Android": "", "iOS": "", "default": "stable"},
     },
     {
+      name: "PagePopupCopyPaste",
+      depends_on: ["PagePopup"],
+      status: "stable",
+    },
+    {
       name: "PageRevealEvent",
       status: "stable",
     },
