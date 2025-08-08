@@ -142,4 +142,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiTest, OpenPanelErrors) {
   ASSERT_TRUE(RunExtensionTest("side_panel/open_panel_errors"));
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelApiTest, ClosePanelErrors) {
+  ASSERT_TRUE(RunExtensionTest("side_panel/close_panel_errors"));
+}
 }  // namespace extensions

@@ -41,6 +41,26 @@ void OpenContextualExtensionSidePanel(Browser& browser,
                                       content::WebContents& web_contents,
                                       const ExtensionId& extension_id);
 
+// Closes the global side panel for the given `extension_id` in `browser`.
+// This will close the global side panel across all tabs where no contextual
+// panel is active. No-op (and safe to call) if the panel is already closed.
+// This function provides a programmatic way to close global side panels
+// without user interaction.
+// Implemented by extension_side_panel_utils.cc in views/.
+void CloseGlobalExtensionSidePanel(Browser* browser,
+                                   const ExtensionId& extension_id);
+
+// Closes the contextual side panel for the specified `extension_id` in
+// `browser` associated with `web_contents`. If no contextual panel exists on
+// this tab and `window_id` is not `nullopt`, checks for a global side panel
+// for the same extension in `browser` and closes it across all tabs if found.
+// No-op (and safe to call) if the panel is already closed.
+// Implemented in extension_side_panel_utils.cc in views/.
+void CloseContextualExtensionSidePanel(Browser* browser,
+                                       content::WebContents* web_contents,
+                                       const ExtensionId& extension_id,
+                                       std::optional<int> window_id);
+
 }  // namespace extensions::side_panel_util
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_UTILS_H_

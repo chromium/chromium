@@ -103,6 +103,18 @@ class SidePanelGetLayoutFunction : public SidePanelApiFunction {
   ResponseAction RunFunction() override;
 };
 
+class SidePanelCloseFunction : public SidePanelApiFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("sidePanel.close", SIDEPANEL_CLOSE)
+  SidePanelCloseFunction() = default;
+  SidePanelCloseFunction(const SidePanelCloseFunction&) = delete;
+  SidePanelCloseFunction& operator=(const SidePanelCloseFunction&) = delete;
+
+ private:
+  ~SidePanelCloseFunction() override = default;
+  ResponseAction RunFunction() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_SIDE_PANEL_SIDE_PANEL_API_H_

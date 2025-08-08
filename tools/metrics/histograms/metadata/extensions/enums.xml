@@ -2833,6 +2833,7 @@ Called by update_extension_histograms.py.-->
   <int value="1944" label="EXPERIMENTALACTOR_REQUESTTABOBSERVATION"/>
   <int value="1945" label="PDFVIEWERPRIVATE_SAVETODRIVE"/>
   <int value="1946" label="SIDEPANEL_GETLAYOUT"/>
+  <int value="1947" label="SIDEPANEL_CLOSE"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

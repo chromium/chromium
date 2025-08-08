@@ -158,6 +158,8 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
+  int GetCurrentWindowId() { return ExtensionTabUtil::GetWindowId(browser()); }
+
   SidePanelRegistry* GetCurrentTabRegistry() {
     return SidePanelRegistry::GetDeprecated(
         browser()->tab_strip_model()->GetActiveWebContents());
@@ -1349,8 +1351,6 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
     RunOpenPanel(extension, /*tab_id=*/std::nullopt, window_id, profile);
   }
 
-  int GetCurrentWindowId() { return ExtensionTabUtil::GetWindowId(browser()); }
-
  private:
   void RunOpenPanel(const Extension& extension,
                     std::optional<int> tab_id,
@@ -2090,6 +2090,201 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, GetLayout) {
   // false, and to the right when it’s true.
   runCheck(false, "left");
   runCheck(true, "right");
+}
+
+class ExtensionCloseSidePanelBrowserTest
+    : public ExtensionSidePanelBrowserTest {
+ public:
+  ExtensionCloseSidePanelBrowserTest() = default;
+  ~ExtensionCloseSidePanelBrowserTest() override = default;
+
+ protected:
+  void RunClosePanel(const Extension& extension,
+                     std::optional<int> tab_id,
+                     std::optional<int> window_id) {
+    auto function = base::MakeRefCounted<SidePanelCloseFunction>();
+    function->set_extension(&extension);
+
+    base::Value::Dict options;
+    if (tab_id) {
+      options.Set("tabId", *tab_id);
+    }
+    if (window_id) {
+      options.Set("windowId", *window_id);
+    }
+
+    std::string args_str;
+    base::JSONWriter::Write(base::Value::List().Append(std::move(options)),
+                            &args_str);
+    EXPECT_TRUE(
+        api_test_utils::RunFunction(function.get(), args_str, profile()))
+        << function->GetError();
+  }
+};
+
+// Tests closing the global side panel using the windowId.
+IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
+                       CloseGlobalSidePanel_ByWindowId) {
+  // Load the extension and verify its global panel registration.
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+  EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
+
+  // Show the extension's side panel and verify it is visible.
+  side_panel_coordinator()->Show(extension_key);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Close the panel by calling the API with only the `windowId` specified.
+  RunClosePanel(*extension, /*tab_id=*/std::nullopt, GetCurrentWindowId());
+
+  WaitForSidePanelClose();
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Tests closing the global side panel using both tabId and windowId when no
+// contextual panel is present.
+IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
+                       CloseGlobalSidePanel_WithTabAndWindowId) {
+  // Load an extension with a global panel.
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+  ASSERT_TRUE(global_registry()->GetEntryForKey(extension_key));
+
+  // Show the global panel and verify it is visible.
+  side_panel_coordinator()->Show(extension_key);
+  ASSERT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Call close() with both the current tabId and windowId.
+  RunClosePanel(*extension, GetCurrentTabId(), GetCurrentWindowId());
+
+  // The panel should close successfully.
+  WaitForSidePanelClose();
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Tests closing a contextual side panel on the active tab using the tabId.
+IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
+                       CloseContextualSidePanelOnActiveTab_ByTabId) {
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/setoptions"));
+  ASSERT_TRUE(extension);
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  // Enable a contextual panel for the active tab.
+  RunSetOptions(*extension, GetCurrentTabId(), "panel_2.html",
+                /*enabled=*/true);
+  SidePanelRegistry* contextual_registry =
+      SidePanelRegistry::GetDeprecated(active_web_contents);
+  ASSERT_TRUE(contextual_registry->GetEntryForKey(extension_key));
+
+  // Show the panel and verify it is visible.
+  side_panel_coordinator()->Show(extension_key);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Close the panel by calling the API with only the `tabId` specified.
+  RunClosePanel(*extension, GetCurrentTabId(), /*window_id=*/std::nullopt);
+  WaitForSidePanelClose();
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Tests that closing a contextual panel on an inactive tab resets that tab's
+// panel state, preventing it from reopening on a future tab switch.
+IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
+                       CloseContextualPanelOnInactiveTab) {
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/setoptions"));
+  ASSERT_TRUE(extension);
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  // We start on the first tab.
+  content::WebContents* first_tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(first_tab_contents);
+  RunSetOptions(*extension, GetCurrentTabId(), "panel_2.html",
+                /*enabled=*/true);
+  side_panel_coordinator()->Show(extension_key);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Open a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* second_tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int second_tab_id = ExtensionTabUtil::GetTabId(second_tab_contents);
+
+  // In the second tab, enable and show a contextual panel.
+  SidePanelRegistry* second_tab_registry =
+      SidePanelRegistry::GetDeprecated(second_tab_contents);
+  ASSERT_TRUE(second_tab_registry);
+  RunSetOptions(*extension, second_tab_id, "panel_2.html", /*enabled=*/true);
+  side_panel_coordinator()->Show(extension_key);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_TRUE(second_tab_registry->active_entry().has_value());
+
+  // Switch back to the first tab, making the second tab inactive.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(first_tab_contents,
+            browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // From the first tab, call `sidePanel.close()` targeting the inactive second
+  // tab.
+  RunClosePanel(*extension, second_tab_id, /*window_id=*/std::nullopt);
+
+  // Directly check that the inactive tab's registry has been reset.
+  EXPECT_FALSE(second_tab_registry->active_entry().has_value());
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Switch back to the second tab to confirm the panel does not reopen.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Tests that closing a global panel with a windowId resets its state and
+// prevents it from reopening on a future tab switch when a contextual panel is
+// active on the current tab.
+IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
+                       CloseGlobalPanel_WhenContextualPanelIsActive) {
+  // Load an extension with a global panel and another with a contextual panel.
+  scoped_refptr<const Extension> global_extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(global_extension);
+  SidePanelEntry::Key global_key = GetKey(global_extension->id());
+
+  scoped_refptr<const Extension> contextual_extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/setoptions"));
+  ASSERT_TRUE(contextual_extension);
+  SidePanelEntry::Key contextual_key = GetKey(contextual_extension->id());
+
+  // Show the global panel first to set it as the window's active global entry.
+  side_panel_coordinator()->Show(global_key);
+  ASSERT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(global_key));
+  ASSERT_TRUE(global_registry()->active_entry().has_value());
+
+  // Enable and show the contextual panel, which will replace the global
+  // panel in the UI.
+  RunSetOptions(*contextual_extension, GetCurrentTabId(), "panel_2.html", true);
+  side_panel_coordinator()->Show(contextual_key);
+  ASSERT_TRUE(
+      side_panel_coordinator()->IsSidePanelEntryShowing(contextual_key));
+
+  // Call close with a windowId on the `global_extension`.
+  RunClosePanel(*global_extension, /*tab_id=*/std::nullopt,
+                GetCurrentWindowId());
+
+  // The contextual panel should remain visible.
+  EXPECT_TRUE(
+      side_panel_coordinator()->IsSidePanelEntryShowing(contextual_key));
+  // The global registry's active entry should be reset.
+  EXPECT_FALSE(global_registry()->active_entry().has_value());
 }
 
 // TODO(crbug.com/40243760): Add a test here which requires a browser in
