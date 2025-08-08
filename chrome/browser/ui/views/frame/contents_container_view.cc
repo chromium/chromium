@@ -220,6 +220,12 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
       kContentRoundedCorners) {
     contents_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_border_) {
+    glic_border_->SetRoundedCorners(content_rounded_corners);
+  }
+#endif
 }
 
 void ContentsContainerView::ClearBorderRoundedCorners() {
@@ -235,6 +241,12 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
   }
 
   contents_scrim_view_->SetRoundedCorners(kNoRoundedCorners);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_border_) {
+    glic_border_->SetRoundedCorners(kNoRoundedCorners);
+  }
+#endif
 }
 
 void ContentsContainerView::ChildVisibilityChanged(View* child) {

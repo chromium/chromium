@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
@@ -78,6 +79,8 @@ class GlicBorderView : public views::View,
 
   bool IsShowing() const;
 
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
+
   // TODO(crbug.com/384712084): Ideally we shouldn't expose these internals for
   // testing. The pixel comparison tests were flaky thus reverted. Remove these
   // once we set up the Skia Gold tests.
@@ -127,6 +130,9 @@ class GlicBorderView : public views::View,
   // Returns a value from 0 to 1 indicating progress through the effect.
   float GetEffectProgress(base::TimeTicks timestamp) const;
 
+  // Returns the rounded corner radius to use for the border.
+  gfx::RoundedCornersF GetContentBorderRadius() const;
+
   // Returns the timestamp when the instance was created (but permits being
   // adjusted by the Tester).
   base::TimeTicks GetCreationTime() const;
@@ -153,6 +159,8 @@ class GlicBorderView : public views::View,
   float opacity_ = 0.f;
   float emphasis_ = 0.f;
   float progress_ = 0.f;
+
+  gfx::RoundedCornersF corner_radius_;
 
   const base::TimeTicks creation_time_;
   base::TimeTicks first_frame_time_;

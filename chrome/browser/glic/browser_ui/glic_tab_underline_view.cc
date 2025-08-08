@@ -597,17 +597,9 @@ void GlicTabUnderlineView::OnPaint(gfx::Canvas* canvas) {
   // Insets aren't relevant to the tab underline effect, but are defined in the
   // uniforms of the GlicBorderView shader.
   gfx::Insets uniform_insets = gfx::Insets();
-
-  float corner_radius = 0.0f;
-#if BUILDFLAG(IS_MAC)
-  if (!browser_->window()->IsFullscreen()) {
-    corner_radius = 12.0f;
-  }
-#endif
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
       {.name = SkString("u_time"), .value = GetEffectTime()},
       {.name = SkString("u_emphasis"), .value = 0},
-      {.name = SkString("u_corner_radius"), .value = corner_radius},
       {.name = SkString("u_insets"),
        .value = static_cast<float>(uniform_insets.left())},
       {.name = SkString("u_progress"), .value = progress_}};
@@ -623,6 +615,9 @@ void GlicTabUnderlineView::OnPaint(gfx::Canvas* canvas) {
        .value = UseDarkMode(theme_service_) ? 1 : 0}};
 
   std::vector<cc::PaintShader::Float4Uniform> float4_uniforms;
+  float4_uniforms.push_back({.name = SkString("u_corner_radius"),
+                             .value = SkV4{0.0f, 0.0f, 0.0f, 0.0f}});
+
   if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
     for (int i = 0; i < static_cast<int>(colors_.size()); ++i) {
       float4_uniforms.push_back(

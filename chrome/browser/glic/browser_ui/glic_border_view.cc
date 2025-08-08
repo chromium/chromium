@@ -87,18 +87,6 @@ gfx::Insets GetContentsBorderInsets(BrowserView& browser_view) {
   return insets_for_contents_border;
 }
 
-float GetContentBorderRadius(BrowserView& browser_view) {
-  if (browser_view.IsInSplitView()) {
-    return 6.0f;
-  }
-#if BUILDFLAG(IS_MAC)
-  if (!browser_view.IsFullscreen()) {
-    return 12.0f;
-  }
-#endif
-  return 0.0f;
-}
-
 std::vector<SkColor> GetParameterizedColors() {
   std::vector<SkColor> colors;
   if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
@@ -483,11 +471,10 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
   CHECK_EQ(uniform_insets.left(), uniform_insets.bottom());
   bounds.Inset(uniform_insets);
 
-  float corner_radius = GetContentBorderRadius(browser_->GetBrowserView());
+  gfx::RoundedCornersF corner_radius = GetContentBorderRadius();
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
       {.name = SkString("u_time"), .value = GetEffectTime()},
       {.name = SkString("u_emphasis"), .value = emphasis_},
-      {.name = SkString("u_corner_radius"), .value = corner_radius},
       {.name = SkString("u_insets"),
        .value = static_cast<float>(uniform_insets.left())},
       {.name = SkString("u_progress"), .value = progress_}};
@@ -503,6 +490,11 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
        .value = UseDarkMode(theme_service_) ? 1 : 0}};
 
   std::vector<cc::PaintShader::Float4Uniform> float4_uniforms;
+  float4_uniforms.push_back(
+      {.name = SkString("u_corner_radius"),
+       .value = SkV4{corner_radius.upper_left(), corner_radius.upper_right(),
+                     corner_radius.lower_right(), corner_radius.lower_left()}});
+
   if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
     for (int i = 0; i < static_cast<int>(colors_.size()); ++i) {
       float4_uniforms.push_back(
@@ -667,6 +659,20 @@ bool GlicBorderView::IsShowing() const {
   return !!compositor_;
 }
 
+void GlicBorderView::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
+  if (corner_radius_ == radii) {
+    return;
+  }
+
+  corner_radius_ = radii;
+
+  if (IsShowing()) {
+    layer()->SetRoundedCornerRadius(radii);
+    layer()->SetIsFastRoundedCorner(true);
+    SchedulePaint();
+  }
+}
+
 float GlicBorderView::GetEffectTimeForTesting() const {
   return GetEffectTime();
 }
@@ -685,6 +691,8 @@ void GlicBorderView::Show() {
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetRoundedCornerRadius(corner_radius_);
+  layer()->SetIsFastRoundedCorner(true);
   SetVisible(true);
 
   skip_emphasis_animation_ =
@@ -855,6 +863,20 @@ float GlicBorderView::GetEffectProgress(base::TimeTicks timestamp) const {
       static_cast<float>(time_since_first_frame.InMillisecondsF() /
                          total_duration.InMillisecondsF()),
       0.0f, 1.0f);
+}
+
+gfx::RoundedCornersF GlicBorderView::GetContentBorderRadius() const {
+  if (!corner_radius_.IsEmpty()) {
+    return corner_radius_;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  if (!browser_->GetBrowserView().IsFullscreen()) {
+    return gfx::RoundedCornersF(0.0f, 0.0f, 12.0f, 12.0f);
+  }
+#endif
+
+  return gfx::RoundedCornersF();
 }
 
 base::TimeTicks GlicBorderView::GetCreationTime() const {
