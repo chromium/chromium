@@ -174,14 +174,9 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // Wait for the Family Link page to finish loading.
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-  // For testing, there will be a redirect to the main Family Link website and
-  // thus we only compare the hostnames.
-  std::string expectedHostname =
-      GURL(supervised_user::kManagedByParentUiMoreInfoUrl).host();
-  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL].host(),
-                  expectedHostname,
-                  @"Did not open the correct Learn more URL with hostname %s",
-                  expectedHostname.c_str());
+  // For testing, there will be a redirect to the main Family Link website.
+  GREYAssert([[ChromeEarlGrey currentTabTitle] isEqualToString:@"Family Link"],
+             @"Family Link not shown in tab title");
 
   GREYAssertNil([MetricsAppInterface
                     expectTotalCount:1
