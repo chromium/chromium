@@ -45,13 +45,6 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-// Templates in this file are instantiated many times with different types.
-// Adding the regular GC_PLUGIN_IGNORE annotations to fields in the templates
-// results in the annotation being duplicated many times, growing the debug
-// symbols, and regressing binary size. To avoid the binary size regression,
-// mark the file to ignore instead.
-GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
-
 #if !defined(DUMP_HASHTABLE_STATS)
 #define DUMP_HASHTABLE_STATS 0
 #endif
@@ -229,16 +222,30 @@ struct WeakProcessingHashTableHelper;
 
 typedef enum { kHashItemKnownGood } HashItemKnownGoodTag;
 
+// Base class that is marked as stack allocated if Allocator is a garbage
+// collected allocator. Used as a base for hash table iterators to mark
+// iterators to garbage collected hash table as stack allocated.
+template <typename Allocator>
+class ConditionallyStackAllocatedHashTableIteratorBase;
+
+template <typename Allocator>
+  requires(Allocator::kIsGarbageCollected)
+class ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
+  STACK_ALLOCATED();
+};
+
+template <typename Allocator>
+  requires(!Allocator::kIsGarbageCollected)
+class ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {};
+
 template <typename Key,
           typename Value,
           typename Extractor,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTableConstIterator final {
-  STACK_ALLOCATED();
-
- private:
+class HashTableConstIterator final
+    : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
       HashTableType;
   typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
@@ -422,10 +429,8 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTableIterator final {
-  STACK_ALLOCATED();
-
- private:
+class HashTableIterator final
+    : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
       HashTableType;
   typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
@@ -639,7 +644,7 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTable final {
+class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   DISALLOW_NEW();
 
  public:
