@@ -6878,18 +6878,6 @@ auto GraphBuilderTflite::SerializePrelu(const mojom::Prelu& prelu)
   const TensorIndex output_tensor_index =
       SerializeOutputTensorInfo(prelu.output_operand_id).index;
 
-  // `ValidatePreluAndInferOutput` function has checked broadcastable shapes
-  // between input and slope operand, but TFLite XNNPACK delegate doesn't
-  // support to broadcast last dimension.
-  // TODO(crbug.com/335517470): Support last dimension broadcastable.
-  if (input_tensor_info.dimensions.size() != 0 &&
-      slope_tensor_info.dimensions.size() != 0 &&
-      input_tensor_info.dimensions.back() !=
-          slope_tensor_info.dimensions.back()) {
-    return base::unexpected(
-        "The input and slope should have the same last dimension.");
-  }
-
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_PRELU);
   const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,
