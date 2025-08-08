@@ -71,6 +71,15 @@ void UndoPasswordChangeController::OnTroubleSigningInClicked(
 void UndoPasswordChangeController::OnLoginPotentiallyFailed(
     PasswordManagerDriver* driver,
     const PasswordForm& login_form) {
+  auto password_field_it = std::ranges::find(
+      login_form.form_data.fields(), login_form.password_element_renderer_id,
+      &autofill::FormFieldData::renderer_id);
+  // Ignore forms where we couldn't possibly fill passwords. This is most likely
+  // a false positive failed login detection.
+  if (password_field_it == login_form.form_data.fields().end() ||
+      !password_field_it->is_focusable()) {
+    return;
+  }
   driver_ = driver->AsWeakPtr();
   failed_login_form_ = login_form;
   password_form_cache_ = driver_->GetPasswordManager()->GetPasswordFormCache();

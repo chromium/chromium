@@ -86,6 +86,10 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
   // if the signon realm changes.
   void OnNavigation(const url::Origin& url, ukm::SourceId ukm_source_id);
 
+#if defined(UNIT_TEST)
+  std::optional<PasswordForm> failed_login_form() { return failed_login_form_; }
+#endif
+
  private:
   // PasswordFormManagerObserver:
 
