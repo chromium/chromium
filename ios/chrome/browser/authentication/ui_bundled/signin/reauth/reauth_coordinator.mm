@@ -60,6 +60,17 @@
   CHECK(!_identityInteractionManager, base::NotFatalUntil::M144);
 }
 
+- (BOOL)isAtRiskOfASWViewBug {
+  if (@available(iOS 26, *)) {
+    // The authentication view don’t disappear silently on iOS 26.
+    return NO;
+  }
+  // Once the authentication is done, the manager is set to nil and the view
+  // can’t have disappeared.
+  CHECK(_identityInteractionManager, base::NotFatalUntil::M144);
+  return _identityInteractionManager != nil;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

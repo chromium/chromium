@@ -374,4 +374,12 @@ using signin_metrics::PromoAction;
   signinCompletion(signinResult, completionIdentity);
 }
 
+#pragma mark - Property
+
+- (BOOL)isAtRiskOfASWViewBug {
+  // Subclasses must implement this property. See the description in the header
+  // file for its implementation.
+  NOTREACHED();
+}
+
 @end

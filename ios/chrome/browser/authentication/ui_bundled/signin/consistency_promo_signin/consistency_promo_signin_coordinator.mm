@@ -235,6 +235,13 @@
                     completionIdentity:completionIdentity];
 }
 
+- (BOOL)isAtRiskOfASWViewBug {
+  // This coordinator has no view of its own. So we only need to check whether
+  // the coordinator currently started’s view may have disappeared silently.
+  return self.addAccountCoordinator.isAtRiskOfASWViewBug ||
+         self.reauthCoordinator.isAtRiskOfASWViewBug;
+}
+
 #pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {

@@ -70,6 +70,12 @@
   [_syncPopupCoordinator start];
 }
 
+#pragma mark - SigninCoordinator
+
+- (BOOL)isAtRiskOfASWViewBug {
+  return NO;
+}
+
 #pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {

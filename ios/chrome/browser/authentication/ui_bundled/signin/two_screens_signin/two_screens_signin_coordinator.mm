@@ -94,6 +94,12 @@ using base::UserMetricsAction;
   CHECK(!_upgradeSigninLogger, base::NotFatalUntil::M146);
 }
 
+#pragma mark - SigninCoordinator
+
+- (BOOL)isAtRiskOfASWViewBug {
+  return NO;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

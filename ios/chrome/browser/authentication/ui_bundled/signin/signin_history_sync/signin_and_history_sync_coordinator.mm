@@ -143,6 +143,14 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
   [super stopAnimated:animated];
 }
 
+#pragma mark - SigninCoordinator
+
+- (BOOL)isAtRiskOfASWViewBug {
+  // As the current coordinator has no view, its view can has disappeared only
+  // if its signin coordinator view may have disappeared.
+  return _signinCoordinator.isAtRiskOfASWViewBug;
+}
+
 #pragma mark - HistorySyncPopupCoordinatorDelegate
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator

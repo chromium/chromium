@@ -11,8 +11,6 @@
 // Coordinates adding an account with different intents:
 //  + adding account from the settings
 //  + reauthentication
-// Once started and up to iOS 18,, the view may be removed by UIKit without the
-// signoutCompletion being called. See See crbug.com/395959814.
 @interface AddAccountSigninCoordinator : SigninCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

@@ -245,6 +245,18 @@ using signin_metrics::PromoAction;
   }
 }
 
+#pragma mark - SigninCoordinator
+
+- (BOOL)isAtRiskOfASWViewBug {
+  if (@available(iOS 26, *)) {
+    // The authentication view doesn’t disappear silently on iOS 26.
+    return NO;
+  }
+  // Once the authentication is done, the manager is set to nil and the view
+  // can’t have disappeared.
+  return self.addAccountSigninManager != nil;
+}
+
 #pragma mark - Private
 
 - (void)stopAlertCoordinator {
