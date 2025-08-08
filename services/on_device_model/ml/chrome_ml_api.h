@@ -32,8 +32,10 @@ using ChromeMLScheduleFn = void (*)(uintptr_t context,
 
 #if defined(_WIN32)
 using PlatformFile = void*;
+extern const PlatformFile kInvalidPlatformFile;
 #else
 using PlatformFile = int;
+inline constexpr PlatformFile kInvalidPlatformFile = -1;
 #endif
 
 // Opaque handle to an instance of a ChromeML model.
@@ -69,9 +71,9 @@ struct ChromeMLModelData {
 
   // Files holding the weight cache. These files will be owned by the inference
   // library and closed upon model destruction.
-  PlatformFile cache_file;
-  PlatformFile encoder_cache_file;
-  PlatformFile adapter_cache_file;
+  PlatformFile cache_file = kInvalidPlatformFile;
+  PlatformFile encoder_cache_file = kInvalidPlatformFile;
+  PlatformFile adapter_cache_file = kInvalidPlatformFile;
 
   // Null-terminated model path pointing to the model to use. Only kApuBackend
   // provides this field. Other backends provide model through the
