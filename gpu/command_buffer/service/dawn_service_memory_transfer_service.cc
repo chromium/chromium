@@ -104,10 +104,12 @@ class WriteHandleImpl
                              size_t size) override {
     // Nothing is serialized because we're using shared memory.
     DCHECK_EQ(deserialize_size, 0u);
-    DCHECK(mTargetData);
     DCHECK(buffer_data_view_.data());
 
-    if (offset > mDataLength || size > mDataLength - offset) {
+    auto targetData = GetTarget();
+    DCHECK(targetData.data());
+
+    if (offset > targetData.size() || size > targetData.size() - offset) {
       return false;
     }
     if (offset > buffer_data_view_.size() ||
@@ -116,9 +118,9 @@ class WriteHandleImpl
     }
 
     // Copy from shared memory into the target buffer.
-    // mTargetData will always be the starting address
+    // `GetTarget()` will always return the starting address
     // of the backing buffer after the dawn side change.
-    UNSAFE_TODO(memcpy(static_cast<uint8_t*>(mTargetData) + offset,
+    UNSAFE_TODO(memcpy(static_cast<uint8_t*>(targetData.data()) + offset,
                        buffer_data_view_.data() + offset, size));
     return true;
   }
