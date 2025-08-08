@@ -490,12 +490,10 @@ class BLINK_PLATFORM_EXPORT Platform {
     bool fail_if_major_performance_caveat = false;
     ContextType context_type = kGLES2ContextType;
 
-    // Offscreen contexts created for WebGL should not need the RasterInterface
-    // or GrContext. If either of these are set to false, it will not be
-    // possible to use the corresponding interface for the lifetime of the
-    // context.
+    // Offscreen contexts created for WebGL should not need the RasterInterface.
+    // If it's set to false, it will not be possible to use the corresponding
+    // interface for the lifetime of the context.
     bool enable_raster_interface = false;
-    bool support_grcontext = false;
   };
   struct GraphicsInfo {
     unsigned vendor_id = 0;

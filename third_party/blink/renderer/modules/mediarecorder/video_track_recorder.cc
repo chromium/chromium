@@ -595,10 +595,6 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
     attributes.enable_raster_interface = true;
     attributes.prefer_low_power_gpu = true;
 
-    // TODO(crbug.com/1240756): This line can be removed once OOPR-Canvas has
-    // shipped on all platforms
-    attributes.support_grcontext = true;
-
     Platform::GraphicsInfo info;
     encoder_thread_context_ =
         VideoTrackRecorderImplContextProvider::CreateOffscreenGraphicsContext(

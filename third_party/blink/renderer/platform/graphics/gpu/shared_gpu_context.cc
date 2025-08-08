@@ -97,7 +97,6 @@ static void CreateContextProviderOnMainThread(
 
   Platform::ContextAttributes context_attributes;
   context_attributes.enable_raster_interface = true;
-  context_attributes.support_grcontext = true;
 
   // The shared GPU context should not trigger a switch to the high-performance
   // GPU.
