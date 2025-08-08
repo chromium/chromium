@@ -145,6 +145,8 @@ inline constexpr char kFacilitatedPaymentsEwallet[] =
     "facilitated_payments.ewallet";
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
 inline constexpr char kFacilitatedPaymentsPixAccountLinking[] =
+    "facilitated_payments.pix_account_linking_enabled";
+inline constexpr char kFacilitatedPaymentsPixAccountLinkingDeprecated[] =
     "facilitated_payments.pix_account_linking";
 inline constexpr char kFacilitatedPaymentsA2AEnabled[] =
     "facilitated_payments.a2a_enabled";
