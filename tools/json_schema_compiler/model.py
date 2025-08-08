@@ -36,8 +36,7 @@ class Model(object):
   - |namespaces| a map of a namespace name to its model.Namespace
   """
 
-  def __init__(self, allow_inline_enums=True):
-    self._allow_inline_enums = allow_inline_enums
+  def __init__(self):
     self.namespaces = {}
 
   def AddNamespace(self,
@@ -50,8 +49,7 @@ class Model(object):
     namespace = Namespace(json,
                           source_file,
                           include_compiler_options=include_compiler_options,
-                          environment=environment,
-                          allow_inline_enums=self._allow_inline_enums)
+                          environment=environment)
     self.namespaces[namespace.name] = namespace
     return namespace
 
@@ -123,8 +121,7 @@ class Namespace(object):
                json,
                source_file,
                include_compiler_options=False,
-               environment=None,
-               allow_inline_enums=True):
+               environment=None):
     self.name = json['namespace']
     if 'description' not in json:
       # TODO(kalman): Go back to throwing an error here.
@@ -139,7 +136,6 @@ class Namespace(object):
     self.source_file_dir, self.source_file_filename = os.path.split(source_file)
     self.short_filename = os.path.basename(source_file).split('.')[0]
     self.parent = None
-    self.allow_inline_enums = allow_inline_enums
     self.platforms = _GetPlatforms(json)
     toplevel_origin = Origin(from_client=True, from_json=True)
 
@@ -251,7 +247,7 @@ class Type(object):
         namespace._manifest_referenced_types.add(self.ref_type)
 
     elif 'enum' in json and json_type == 'string':
-      if not namespace.allow_inline_enums and not isinstance(parent, Namespace):
+      if not isinstance(parent, Namespace):
         raise ParseException(
             self,
             'Inline enum "%s" found in namespace "%s". These are not allowed. '

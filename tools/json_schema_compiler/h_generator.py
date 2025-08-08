@@ -230,17 +230,14 @@ class _Generator(object):
       if type_.description:
         c.Comment(type_.description)
       c.Cblock(self._GenerateEnumDeclaration(classname, type_))
-      # Top level enums are in a namespace scope so the methods shouldn't be
-      # static. On the other hand, those declared inline (e.g. in an object) do.
-      maybe_static = '' if is_toplevel else 'static '
       (c.Append() \
-        .Append('%sconst char* ToString(%s as_enum);' %
-                (maybe_static, classname)) \
-        .Append('%s%s Parse%s(std::string_view as_string);' %
-                (maybe_static, classname, classname)) \
+        .Append('const char* ToString(%s as_enum);' %
+                (classname)) \
+        .Append('%s Parse%s(std::string_view as_string);' %
+                (classname, classname)) \
         .Append(
-            '%sstd::u16string Get%sParseError(std::string_view as_string);' %
-            (maybe_static, classname))
+            'std::u16string Get%sParseError(std::string_view as_string);' %
+            (classname))
       )
     elif type_.property_type in (PropertyType.CHOICES, PropertyType.OBJECT):
       if type_.description:
