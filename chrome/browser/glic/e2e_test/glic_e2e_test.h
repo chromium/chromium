@@ -61,9 +61,11 @@ class GlicE2ETest : public InteractiveBrowserTestT<signin::test::LiveTest> {
   WebPageReplayServerWrapper* web_page_replay_server_wrapper();
 
   GlicE2ETestMode test_mode() const { return test_mode_; }
+  bool run_actor_tests() const { return running_actor_tests_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  bool running_actor_tests_ = false;
   GlicE2ETestMode test_mode_;
   std::unique_ptr<WebPageReplayServerWrapper> web_page_replay_server_wrapper_;
 };

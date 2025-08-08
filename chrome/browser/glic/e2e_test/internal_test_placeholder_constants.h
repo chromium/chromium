@@ -15,6 +15,7 @@ namespace glic::test {
 
 inline constexpr char kAllowedHostAndPathForWpr[] = "";
 inline constexpr char kTestAccountLabel[] = "";
+inline constexpr char kTestActorAccountLabel[] = "";
 auto kWprArguments = std::vector<std::string>{};
 
 }  // namespace glic::test
