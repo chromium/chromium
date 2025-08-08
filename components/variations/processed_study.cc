@@ -218,6 +218,9 @@ bool ValidateStudyTypeEnums(const Study& study) {
   if (study.activation_type() == Study::STICKY_AFTER_QUERY) {
     // TODO: crbug.com/435630455 - STICKY_AFTER_QUERY studies are under
     // development but not yet supported.
+    LogInvalidReason(InvalidStudyReason::kUnsupportedStudyActivationType);
+    DVLOG(1) << study.name() << " has an unsupported activation type: "
+             << study.activation_type();
     return false;
   }
   return true;

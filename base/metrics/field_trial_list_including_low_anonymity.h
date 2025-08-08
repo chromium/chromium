@@ -20,6 +20,7 @@ class ChildProcessFieldTrialSyncer;
 class EntropyProviders;
 class ProcessedStudy;
 struct SeedSimulationResult;
+class StickyActivationManager;
 class VariationsCrashKeys;
 class VariationsLayers;
 SeedSimulationResult ComputeDifferences(
@@ -59,6 +60,8 @@ class BASE_EXPORT FieldTrialListIncludingLowAnonymity {
   // other friend classes / methods listed here.
   friend class content::FieldTrialSynchronizer;
   friend class variations::ChildProcessFieldTrialSyncer;
+
+  friend class variations::StickyActivationManager;
 
   // This is only used to simulate seed changes, not sent to Google servers.
   friend variations::SeedSimulationResult variations::ComputeDifferences(

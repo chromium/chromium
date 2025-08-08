@@ -243,6 +243,7 @@ source_set("unit_tests") {
     "processed_study_unittest.cc",
     "seed_reader_writer_unittest.cc",
     "simulate_for_crosstalk_unittest.cc",
+    "sticky_activation_manager_unittest.cc",
     "study_filtering_unittest.cc",
     "synthetic_trial_registry_unittest.cc",
     "uniformity_unittest.cc",

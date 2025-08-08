@@ -89,6 +89,10 @@ class VariationsServiceClient {
   virtual void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) = 0;
 
+  // Whether support for STICKY_AFTER_QUERY activation for studies is enabled.
+  // TODO: crbug.com/435630455 - Fully enable and remove this once ready.
+  virtual bool IsStickyActivationEnabled() const;
+
  private:
   // Gets the channel of the embedder. But all variations callers should use
   // |GetChannelForVariations()| instead.

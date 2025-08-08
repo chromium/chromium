@@ -207,7 +207,8 @@ VariationsFieldTrialCreator::VariationsFieldTrialCreator(
       application_locale_(
           language::GetApplicationLocale(seed_store_->local_state())),
       ui_string_overrider_(ui_string_overrider),
-      sticky_activation_manager_(seed_store_->local_state()) {}
+      sticky_activation_manager_(seed_store_->local_state(),
+                                 client->IsStickyActivationEnabled()) {}
 
 VariationsFieldTrialCreator::~VariationsFieldTrialCreator() = default;
 
@@ -737,6 +738,7 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
           base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
                               base::Unretained(this)),
           entropy_providers, layers, feature_list);
+  sticky_activation_manager_.StartMonitoring();
 
   VLOG(1) << "CreateTrialsFromSeed complete with "
           << "seed.version='" << seed.version() << "'";

@@ -151,20 +151,43 @@ void ApplyUIStringOverrides(
   }
 }
 
+// Whether the given study should be activated on startup.
+bool ShouldActivate(const Study& study,
+                    const std::string group_name,
+                    StickyActivationManager& sticky_activation_manager) {
+  switch (study.activation_type()) {
+    case Study::ACTIVATE_ON_STARTUP:
+      return true;
+    case Study::ACTIVATE_ON_QUERY:
+      return false;
+    case Study::STICKY_AFTER_QUERY:
+      return sticky_activation_manager.ShouldActivate(study.name(), group_name);
+    case Study_ActivationType_Study_ActivationType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case Study_ActivationType_Study_ActivationType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      // Part of the enum but won't be seen in practice. See processed_study.cc.
+      return false;
+  }
+}
+
 // Forces the specified |experiment| to be enabled in |study|.
 void ForceExperimentState(
     const Study& study,
     const Study::Experiment& experiment,
     const VariationsSeedProcessor::UIStringOverrideCallback& override_callback,
-    base::FieldTrial* trial) {
+    StickyActivationManager& sticky_activation_manager,
+    base::FieldTrial& trial) {
   RegisterExperimentParams(study, experiment);
-  RegisterVariationIds(experiment, study.name(), trial->IsOverridden());
-  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
+  RegisterVariationIds(experiment, study.name(), trial.IsOverridden());
+
+  if (ShouldActivate(study, experiment.name(), sticky_activation_manager)) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
-    trial->Activate();
-    // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
+    trial.Activate();
+  }
+
+  // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
+  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
     ApplyUIStringOverrides(experiment, override_callback);
   }
 }
@@ -176,8 +199,20 @@ void AssociateDefaultFeatures(const Study& study,
   // Note: We only compute feature associations for ACTIVATE_ON_QUERY studies,
   // since these associations are only used to determine that the trial has
   // been queried when the feature is queried.
-  if (study.activation_type() != Study_ActivationType_ACTIVATE_ON_QUERY) {
-    return;
+  // Note: We only compute feature associations for ACTIVATE_ON_QUERY and
+  // STICKY_AFTER_QUERY studies, since these associations are only used to
+  // ensure that the trial is activated when the feature is queried
+  switch (study.activation_type()) {
+    case Study::ACTIVATE_ON_STARTUP:
+      return;
+    case Study::ACTIVATE_ON_QUERY:
+      // fall-through:
+    case Study::STICKY_AFTER_QUERY:
+      break;
+    case Study_ActivationType_Study_ActivationType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case Study_ActivationType_Study_ActivationType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      // Part of the enum but won't be seen in practice. See processed_study.cc.
+      return;
   }
 
   std::set<std::string> features_to_associate;
@@ -386,7 +421,8 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
             experiment.feature_association().forcing_feature_off(),
             base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial);
       }
-      ForceExperimentState(study, experiment, override_callback, trial);
+      ForceExperimentState(study, experiment, override_callback,
+                           *sticky_activation_manager_, *trial);
       return;
     }
   }
@@ -439,41 +475,34 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
 
   trial->SetForced();
 
+  const std::string& group_name = trial->GetGroupNameWithoutActivation();
+  std::optional<Study::Experiment> experiment;
   {
-    const std::string& group_name = trial->GetGroupNameWithoutActivation();
     int experiment_index = processed_study.GetExperimentIndexByName(group_name);
     // If the trial was forced on the command line, we may not be able to find
     // the experiment.
     if (experiment_index != -1) {
-      const Study::Experiment& experiment = study.experiment(experiment_index);
-      RegisterExperimentParams(study, experiment);
+      experiment = study.experiment(experiment_index);
+      RegisterExperimentParams(study, *experiment);
       if (enables_or_disables_features) {
-        RegisterFeatureOverrides(study, experiment, trial.get(), feature_list);
+        RegisterFeatureOverrides(study, *experiment, trial.get(), feature_list);
       }
     }
   }
 
-  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
+  if (ShouldActivate(study, group_name, *sticky_activation_manager_)) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
-    const std::string& group_name = trial->group_name();
+    trial->Activate();
+  }
 
-    // Don't try to apply overrides if none of the experiments in this study had
-    // any.
-    if (!has_overrides) {
-      return;
-    }
-
-    // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
-    int experiment_index = processed_study.GetExperimentIndexByName(group_name);
-    // If the chosen experiment was not found in the study, simply return.
-    // Although not normally expected, but could happen if the trial was forced
-    // on the command line.
-    if (experiment_index != -1) {
-      ApplyUIStringOverrides(study.experiment(experiment_index),
-                             override_callback);
-    }
+  // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
+  // Only do this if the chosen experiment was found in the study. Not found can
+  // happen if the trial was forced on the command line.
+  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP && has_overrides &&
+      experiment.has_value()) {
+    ApplyUIStringOverrides(*experiment, override_callback);
   }
 }
 
