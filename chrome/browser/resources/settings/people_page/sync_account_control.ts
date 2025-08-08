@@ -39,6 +39,13 @@ export interface SettingsSyncAccountControlElement {
   };
 }
 
+// Helper enum to determine which promo type the app should display. Used in the
+// CSS styling, where the string literals are used for attributes matching.
+enum PromoType {
+  SIGNIN = 'signin',
+  SYNC = 'sync',
+}
+
 const SettingsSyncAccountControlElementBase =
     WebUiListenerMixin(PrefsMixin(PolymerElement));
 
@@ -133,6 +140,13 @@ export class SettingsSyncAccountControlElement extends
         computed: 'computeShowSetupButtons_(' +
             'hideButtons, syncStatus.firstSetupInProgress)',
       },
+
+      // Reflected as `promo-type_` to be used in the CSS styling with
+      // attributes matching.
+      promoType_: {
+        type: String,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -159,6 +173,7 @@ export class SettingsSyncAccountControlElement extends
   declare private showSetupButtons_: boolean;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
+  declare private promoType_: PromoType;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -173,6 +188,11 @@ export class SettingsSyncAccountControlElement extends
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
     this.addWebUiListener(
         'profile-avatar-changed', this.handleUpdateAvatar_.bind(this));
+
+    this.promoType_ =
+        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ?
+        PromoType.SIGNIN :
+        PromoType.SYNC;
   }
 
   /**
@@ -225,7 +245,8 @@ export class SettingsSyncAccountControlElement extends
       return loadTimeData.substituteString(syncingLabel, email);
     }
 
-    return (this.shownAccount_! && this.shownAccount_.isPrimaryAccount) ?
+    return (this.shownAccount_! && this.shownAccount_.isPrimaryAccount &&
+            this.promoType_ === PromoType.SYNC) ?
         loadTimeData.substituteString(signedInLabel, email) :
         email;
   }
@@ -437,7 +458,7 @@ export class SettingsSyncAccountControlElement extends
    * set.
    */
   private shouldHideSyncButton_(): boolean {
-    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+    if (this.promoType_ === PromoType.SIGNIN) {
       return true;
     }
 

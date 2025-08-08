@@ -599,7 +599,7 @@ suite('PeoplePageAccountSettings', function() {
                                   '#account-name')!.textContent!.trim();
     const accountEmail =
         peoplePage.shadowRoot!.querySelector(
-                                  '#account-email')!.textContent!.trim();
+                                  '#account-subtitle')!.textContent!.trim();
 
     assertEquals(expectedAccount.fullName, accountName);
     assertEquals(expectedAccount.email, accountEmail);
@@ -608,6 +608,27 @@ suite('PeoplePageAccountSettings', function() {
         peoplePage.shadowRoot!.querySelector<HTMLElement>(
                                   '#profile-icon')!.style.backgroundImage;
     assertTrue(bgImage.includes(expectedAccount.avatarImage));
+  });
+
+  test('AccountRowSubtitleUpdatedForPassphraseError', async function() {
+    const testEmail = 'test@email.com';
+    await simulateSignedInState(SignedInState.SIGNED_IN, [{email: testEmail}]);
+
+    // First, it shows the user's email.
+    const accountSubtitle =
+        peoplePage.shadowRoot!.querySelector('#account-subtitle')!;
+    assertEquals(testEmail, accountSubtitle.textContent!.trim());
+
+    // When the passphrase needs to be entered, a message is displayed instead.
+    simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.ENTER_PASSPHRASE,
+      statusText: 'Enter the passphrase for $1',
+    });
+    assertEquals(
+        loadTimeData.substituteString(
+            peoplePage.syncStatus!.statusText!, testEmail),
+        accountSubtitle.textContent!.trim());
   });
 });
 // </if>

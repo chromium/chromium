@@ -25,7 +25,7 @@ import '../settings_shared.css.js';
 import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 // <if expr="is_chromeos">
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
@@ -445,6 +445,16 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     return this.replaceSyncPromosWithSignInPromos_ &&
         (!this.syncStatus ||
          this.syncStatus.signedInState !== SignedInState.SYNCING);
+  }
+
+  private getAccountRowSubtitle_(): string {
+    if (!!this.syncStatus && !!this.syncStatus.statusText &&
+        this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
+      return loadTimeData.substituteString(
+          this.syncStatus.statusText, this.primaryAccountEmail_);
+    }
+
+    return this.primaryAccountEmail_;
   }
   // </if>
 

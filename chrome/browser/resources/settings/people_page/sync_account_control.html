@@ -5,6 +5,54 @@
         --sync-icon-size: 16px;
       }
 
+      :host([promo-type_="sync"]) {
+        h3 {
+          font-size: inherit;
+          margin: 0;
+          font-weight: normal;
+        }
+
+        #banner {
+          background: url(chrome://settings/images/sync_banner.svg) no-repeat;
+          background-size: 100% auto;
+          display: none;
+          padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+          display: block;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          #banner {
+            background-image:
+                url(chrome://settings/images/sync_banner_dark.svg);
+          }
+        }
+      }
+
+      :host([promo-type_="signin"]) {
+        h3 {
+          margin-top: 4px;
+          margin-bottom: 4px;
+          font-size: 1rem;
+          font-weight: 500;
+          letter-spacing: .25px;
+        }
+
+        #banner {
+          background: url(chrome://settings/images/signin_banner.svg) no-repeat;
+          background-size: 100% auto;
+          display: none;
+          padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+          display: block;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          #banner {
+            background-image:
+                url(chrome://settings/images/signin_banner_dark.svg);
+          }
+        }
+      }
+
       .account-icon {
         border-radius: 50%;
         flex-shrink: 0;
@@ -86,12 +134,6 @@
         }
       }
 
-      h3 {
-        font-size: inherit;
-        margin: 0;
-        font-weight: normal;
-      }
-
       #sync-icon-container cr-icon {
         fill: white;  /* Same in light and dark modes. */
         height: 12px;
@@ -101,20 +143,6 @@
 
       #signIn {
         min-width: 100px;
-      }
-
-      #banner {
-        background: url(chrome://settings/images/sync_banner.svg) no-repeat;
-        background-size: 100% auto;
-        display: none;
-        padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
-        display: block;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        #banner {
-          background-image: url(chrome://settings/images/sync_banner_dark.svg);
-        }
       }
 
     </style>

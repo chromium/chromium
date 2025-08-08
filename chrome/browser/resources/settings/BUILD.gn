@@ -45,6 +45,8 @@ build_webui("build") {
     "images/privacy_guide/safe_browsing_graphic_v2.svg",
     "images/privacy_guide/welcome_banner.svg",
     "images/privacy_guide/welcome_banner_dark.svg",
+    "images/signin_banner.svg",
+    "images/signin_banner_dark.svg",
     "images/sync_banner.svg",
     "images/sync_banner_dark.svg",
     "images/tracking_protection_banner.svg",

@@ -196,11 +196,13 @@ suite('SyncAccountControl', function() {
       function() {
         loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
         resetRouterForTesting();
-
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        testElement = document.createElement('settings-sync-account-control');
         testElement.syncStatus = {
           signedInState: SignedInState.SIGNED_IN,
           statusAction: StatusAction.NO_ACTION,
         };
+        document.body.appendChild(testElement);
         flush();
 
         assertFalse(isChildVisible(testElement, '#sync-button'));
