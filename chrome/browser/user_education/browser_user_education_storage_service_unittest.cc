@@ -430,7 +430,7 @@ TEST_F(BrowserUserEducationStorageServiceTest, LegacyDataTest) {
 }
 
 TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoData) {
-  user_education::KeyedNtpPromoData data;
+  user_education::NtpPromoData data;
   data.last_clicked = base::Time::FromSecondsSinceUnixEpoch(1);
   data.completed = base::Time::FromSecondsSinceUnixEpoch(2);
   data.last_top_spot_session = 2;
@@ -440,12 +440,12 @@ TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoData) {
 }
 
 TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoDataNotPresent) {
-  user_education::KeyedNtpPromoData data;
+  user_education::NtpPromoData data;
   EXPECT_FALSE(service().ReadNtpPromoData(kNtpPromoId).has_value());
 }
 
 TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoDataReset) {
-  user_education::KeyedNtpPromoData data;
+  user_education::NtpPromoData data;
   data.last_top_spot_session = 3;
   service().SaveNtpPromoData(kNtpPromoId, data);
   service().SaveNtpPromoData(kNtpPromo2Id, data);
@@ -453,4 +453,27 @@ TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoDataReset) {
   // Ensure only the specified promo is cleared.
   EXPECT_FALSE(service().ReadNtpPromoData(kNtpPromoId).has_value());
   EXPECT_TRUE(service().ReadNtpPromoData(kNtpPromo2Id).has_value());
+}
+
+TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoPreferences) {
+  user_education::NtpPromoPreferences prefs;
+  prefs.disabled = true;
+  prefs.last_snoozed = base::Time::FromSecondsSinceUnixEpoch(1);
+  service().SaveNtpPromoPreferences(prefs);
+  EXPECT_EQ(prefs, service().ReadNtpPromoPreferences());
+}
+
+TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoPreferencesNotPresent) {
+  user_education::NtpPromoPreferences prefs;
+  EXPECT_EQ(prefs, service().ReadNtpPromoPreferences());
+}
+
+TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoPreferencesReset) {
+  user_education::NtpPromoPreferences prefs;
+  prefs.disabled = true;
+  prefs.last_snoozed = base::Time::FromSecondsSinceUnixEpoch(1);
+  service().SaveNtpPromoPreferences(prefs);
+  service().ResetNtpPromoPreferences();
+  prefs = user_education::NtpPromoPreferences();
+  EXPECT_EQ(prefs, service().ReadNtpPromoPreferences());
 }

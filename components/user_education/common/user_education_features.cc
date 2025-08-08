@@ -59,6 +59,13 @@ inline constexpr char kPollingInterval[] = "polling_interval";
 inline constexpr base::TimeDelta kDefaultPollingInterval =
     base::Milliseconds(500);
 
+inline constexpr base::TimeDelta kDefaultNtpSetupListSnoozeTime = base::Days(7);
+inline constexpr char kNtpBrowserPromoTypeOptionName[] = "promo-type";
+inline constexpr std::array<base::FeatureParam<NtpBrowserPromoType>::Option, 2U>
+    kNtpBrowserPromoTypeOptions({{NtpBrowserPromoType::kSimple, "simple"},
+                                 {NtpBrowserPromoType::kSetupList,
+                                  "setuplist"}});
+
 }  // namespace
 
 BASE_FEATURE(kUserEducationExperienceVersion2Point5,
@@ -165,12 +172,26 @@ base::TimeDelta GetPromoControllerPollingInterval() {
       kDefaultPollingInterval);
 }
 
+base::TimeDelta GetNtpSetupListSnoozeTime() {
+  return kDefaultNtpSetupListSnoozeTime;
+}
+
 BASE_FEATURE(kEnableNtpBrowserPromos,
              "EnableNtpBrowserPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool NtpBrowserPromosEnabled() {
-  return base::FeatureList::IsEnabled(kEnableNtpBrowserPromos);
+BASE_FEATURE_ENUM_PARAM(NtpBrowserPromoType,
+                        kNtpBrowserPromoType,
+                        &kEnableNtpBrowserPromos,
+                        kNtpBrowserPromoTypeOptionName,
+                        NtpBrowserPromoType::kSimple,
+                        kNtpBrowserPromoTypeOptions);
+
+NtpBrowserPromoType GetNtpBrowserPromoType() {
+  if (base::FeatureList::IsEnabled(kEnableNtpBrowserPromos)) {
+    return kNtpBrowserPromoType.Get();
+  }
+  return NtpBrowserPromoType::kNone;
 }
 
 }  // namespace user_education::features

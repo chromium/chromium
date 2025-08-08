@@ -4696,6 +4696,19 @@ const FeatureEntry::FeatureVariation
         {"Search this page with Google Lens", kLensOverlayEntrypointLabelAlt3,
          std::size(kLensOverlayEntrypointLabelAlt3), nullptr},
 };
+
+const FeatureEntry::FeatureParam kEnableNtpBrowserPromosVariationSimple[] = {
+    {"promo-type", "simple"}};
+
+const FeatureEntry::FeatureParam kEnableNtpBrowserPromosVariationSetupList[] = {
+    {"promo-type", "setuplist"}};
+
+const FeatureEntry::FeatureVariation kEnableNtpBrowserPromosVariations[] = {
+    {"Single-promo", kEnableNtpBrowserPromosVariationSimple,
+     std::size(kEnableNtpBrowserPromosVariationSimple)},
+    {"Setup List", kEnableNtpBrowserPromosVariationSetupList,
+     std::size(kEnableNtpBrowserPromosVariationSetupList)},
+};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // LINT.IfChange(DataSharingVersioningChoices)
@@ -12898,7 +12911,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-ntp-browser-promos",
      flag_descriptions::kEnableNtpBrowserPromosName,
      flag_descriptions::kEnableNtpBrowserPromosDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(user_education::features::kEnableNtpBrowserPromos)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         user_education::features::kEnableNtpBrowserPromos,
+         kEnableNtpBrowserPromosVariations,
+         "EnableNtpBrowserPromos")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

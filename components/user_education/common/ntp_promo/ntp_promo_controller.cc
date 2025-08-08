@@ -11,6 +11,7 @@
 #include "components/user_education/common/ntp_promo/ntp_promo_order.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -35,7 +36,7 @@ constexpr char kPromoMetricCompletedSuffix[] = ".Completed";
 // Decides whether a promo should be shown or not, based on the supplied
 // data. If this logic becomes more complex, consider pulling it out to a
 // separate file (crbug.com/435159508).
-bool ShouldShowPromo(const KeyedNtpPromoData& prefs,
+bool ShouldShowPromo(const NtpPromoData& prefs,
                      Eligibility eligibility,
                      const base::Time& now) {
   // If an eligible promo has been clicked recently, don't show it again for
@@ -117,6 +118,10 @@ NtpPromoController::NtpPromoController(
 NtpPromoController::~NtpPromoController() = default;
 
 bool NtpPromoController::HasShowablePromos(Profile* profile) {
+  if (ArePromosBlocked()) {
+    return false;
+  }
+
   // Generate promo lists here, since the Eligibility callback results are
   // insufficient. Promo callbacks may report Eligible or Completed, but be
   // suppressed for several reasons.
@@ -125,6 +130,12 @@ bool NtpPromoController::HasShowablePromos(Profile* profile) {
 }
 
 NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
+  // This can happen if an NTP is loading while the user snoozes/disables
+  // all promos. If this situation is detected, just return an empty list.
+  if (ArePromosBlocked()) {
+    return NtpShowablePromos();
+  }
+
   return GenerateShowablePromos(profile, /*apply_ordering=*/true);
 }
 
@@ -147,7 +158,7 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
     }
 
     auto prefs =
-        storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+        storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
 
     // Record the first evidence of completion. In the future, promos may
     // explicitly notify of completion, but we'll also use this opportunity.
@@ -200,11 +211,23 @@ void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id,
                                         BrowserWindowInterface* browser) {
   registry_->GetNtpPromoSpecification(id)->action_callback().Run(browser);
 
-  auto prefs =
-      storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+  auto prefs = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
   prefs.last_clicked = base::Time::Now();
   storage_service_->SaveNtpPromoData(id, prefs);
   LogPromoClicked(id);
+}
+
+void NtpPromoController::SetAllPromosSnoozed(bool snooze) {
+  NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
+  prefs.last_snoozed = snooze ? base::Time::Now() : base::Time();
+  storage_service_->SaveNtpPromoPreferences(prefs);
+}
+
+void NtpPromoController::SetAllPromosDisabled(bool disabled) {
+  NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
+  prefs.last_snoozed = base::Time();
+  prefs.disabled = disabled;
+  storage_service_->SaveNtpPromoPreferences(prefs);
 }
 
 // static
@@ -220,8 +243,7 @@ base::TimeDelta NtpPromoController::GetClickedPromoHideDurationForTest() {
 void NtpPromoController::OnPromoShownInTopSpot(NtpPromoIdentifier id) {
   const int current_session = storage_service_->GetSessionNumber();
   // If no data is present, default-construct.
-  auto data =
-      storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+  auto data = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
   if (data.last_top_spot_session != current_session) {
     data.last_top_spot_session = current_session;
     // If this promo is reclaiming the top spot, start a fresh count.
@@ -253,13 +275,20 @@ NtpPromoIdentifier NtpPromoController::GetMostRecentTopSpotPromo() {
   NtpPromoIdentifier most_recent_id;
   for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
     auto prefs =
-        storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+        storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
     if (prefs.last_top_spot_session > most_recent_session) {
       most_recent_session = prefs.last_top_spot_session;
       most_recent_id = id;
     }
   }
   return most_recent_id;
+}
+
+bool NtpPromoController::ArePromosBlocked() const {
+  NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
+  return prefs.disabled ||
+         base::Time::Now() <
+             prefs.last_snoozed + features::GetNtpSetupListSnoozeTime();
 }
 
 }  // namespace user_education

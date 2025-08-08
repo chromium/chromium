@@ -45,7 +45,7 @@ class NtpPromoOrderTest : public testing::Test {
         NtpPromoSpecification::EligibilityCallback(), base::DoNothing(),
         base::DoNothing(), std::move(show_after), user_education::Metadata()));
 
-    KeyedNtpPromoData pref;
+    NtpPromoData pref;
     pref.last_top_spot_session = last_top_spot_session;
     pref.top_spot_session_count = top_spot_session_count;
     pref.completed = completed_time;

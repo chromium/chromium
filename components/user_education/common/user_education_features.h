@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
 namespace user_education::features {
@@ -89,10 +90,27 @@ extern base::TimeDelta GetIdleTimeBeforeHeavyweightPromo();
 // Returns the polling interval for the promo controller for User Education 2.5.
 extern base::TimeDelta GetPromoControllerPollingInterval();
 
+// Returns how long the NTP Setup List module is snoozed for.
+extern base::TimeDelta GetNtpSetupListSnoozeTime();
+
 // Advertises browser features in New Tab Page promos.
 BASE_DECLARE_FEATURE(kEnableNtpBrowserPromos);
 
-extern bool NtpBrowserPromosEnabled();
+// Describes the type of NTP promo that can be shown, if any.
+enum class NtpBrowserPromoType {
+  // Indicates that the flag is disabled.
+  kNone,
+  // Indicates that a simple (single-promo) option is selected.
+  kSimple,
+  // Indicates that a full Setup List style is selected.
+  kSetupList,
+};
+
+// The parameter that specifies which promo option to use.
+BASE_DECLARE_FEATURE_PARAM(NtpBrowserPromoType, kNtpBrowserPromoType);
+
+// Returns the current NTP promo type, or kNone if it is not enabled.
+extern NtpBrowserPromoType GetNtpBrowserPromoType();
 
 }  // namespace user_education::features
 

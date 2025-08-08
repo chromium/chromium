@@ -83,6 +83,14 @@ class NtpPromoController {
   virtual void OnPromoClicked(NtpPromoIdentifier id,
                               BrowserWindowInterface* browser);
 
+  // Sets or resets the snoozed state. Snooze, when set, will last for a fixed
+  // period of time.
+  virtual void SetAllPromosSnoozed(bool snooze);
+
+  // Sets or resets the disabled state. Disable, when set, will last
+  // indefinitely.
+  virtual void SetAllPromosDisabled(bool disable);
+
   // Returns the duration for which a promo can be shown after completion.
   static base::TimeDelta GetCompletedPromoShowDurationForTest();
 
@@ -102,6 +110,9 @@ class NtpPromoController {
   // Checks which promo ID (if any) was most recently shown in the top spot.
   // Returns an empty string if there is no recorded top-spot promo.
   NtpPromoIdentifier GetMostRecentTopSpotPromo();
+
+  // Returns whether promos are disabled or snoozed.
+  bool ArePromosBlocked() const;
 
   // Assembles a vector of showable promo objects (ie. the presentation parts
   // of the promo) to be sent to the NTP.

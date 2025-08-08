@@ -88,7 +88,7 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
   promos.reserve(ids.size());
   for (const auto& id : ids) {
     const auto prefs =
-        storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+        storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
     promos.push_back(SortablePendingPromo{
         .id = id,
         .last_top_spot_session = prefs.last_top_spot_session,
@@ -154,7 +154,7 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderCompletedPromos(
   promos.reserve(ids.size());
   for (const auto& id : ids) {
     const auto prefs =
-        storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+        storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
     promos.push_back(SortableCompletedPromo{
         .id = id,
         .completed = prefs.completed,

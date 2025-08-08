@@ -434,8 +434,8 @@ auto GetNtpPromoData(
     const user_education::NtpPromoSpecification& spec,
     Profile* profile,
     const user_education::UserEducationStorageService& storage) {
-  const auto data = storage.ReadNtpPromoData(id).value_or(
-      user_education::KeyedNtpPromoData());
+  const auto data =
+      storage.ReadNtpPromoData(id).value_or(user_education::NtpPromoData());
   std::vector<FeaturePromoDemoPageDataPtr> result;
   std::string eligibility = [&]() {
     switch (spec.eligibility_callback().Run(profile)) {

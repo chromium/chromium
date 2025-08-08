@@ -566,7 +566,8 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
 
-  if (user_education::features::NtpBrowserPromosEnabled()) {
+  if (user_education::features::GetNtpBrowserPromoType() !=
+      user_education::features::NtpBrowserPromoType::kNone) {
     RegisterWebUIControllerInterfaceBinder<
         ntp_promo::mojom::NtpPromoHandlerFactory, NewTabPageUI>(map);
   }
