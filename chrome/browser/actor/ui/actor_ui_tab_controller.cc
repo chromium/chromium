@@ -77,6 +77,8 @@ void ActorUiTabController::RegisterTabSubscriptions() {
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
                                               UiResultCallback callback) {
   if (current_ui_tab_state_ == ui_tab_state) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
   VLOG(4) << "Tab scoped UI components updated FROM -> TO:\n"
