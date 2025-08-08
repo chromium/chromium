@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module first [system] [extern_c] {
+  header "first.h"
+  module submod {
+    textual header "first_textual.h"
+  }
+
+  umbrella "first"
+}
+
+explicit module second.submodule [system] [extern_c] {
+  header "second.h"
+  module submod {
+    textual header "second_textual.h"
+  }
+}
+
