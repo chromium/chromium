@@ -182,6 +182,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // toggle row view.
   raw_ptr<views::BoxLayoutView> third_party_cookies_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> third_party_cookies_label_wrapper_ = nullptr;
+  raw_ptr<views::View> cookies_description_wrapper_ = nullptr;
   raw_ptr<views::Label> third_party_cookies_title_ = nullptr;
   raw_ptr<views::Label> third_party_cookies_description_ = nullptr;
   raw_ptr<RichControlsContainerView> third_party_cookies_row_ = nullptr;

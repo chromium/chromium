@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -28,6 +29,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -97,6 +99,36 @@ class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
 BEGIN_METADATA(ThirdPartyCookieLabelWrapper)
 END_METADATA
 
+class CookiesDescriptionLabelWrapper : public views::View {
+  METADATA_HEADER(CookiesDescriptionLabelWrapper, views::View)
+
+ public:
+  explicit CookiesDescriptionLabelWrapper(
+      int max_width,
+      std::unique_ptr<views::StyledLabel> label)
+      : max_width_(max_width) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    label_ = AddChildView(std::move(label));
+  }
+  ~CookiesDescriptionLabelWrapper() override = default;
+
+ private:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    CHECK(label_);
+    const int target_width = available_size.width().is_bounded()
+                                 ? available_size.width().value()
+                                 : max_width_;
+
+    return gfx::Size(target_width, label_->GetHeightForWidth(target_width));
+  }
+  const int max_width_;
+  raw_ptr<views::StyledLabel> label_ = nullptr;
+};
+
+BEGIN_METADATA(CookiesDescriptionLabelWrapper)
+END_METADATA
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoCookiesContentView,
@@ -114,24 +146,24 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   // The last view is a RichHoverButton, which overrides the bottom
   // dialog inset in favor of its own.
   SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
-
-  // The top and bottom margins should be the same as for buttons shown below.
   const auto button_insets = layout_provider->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
 
-  cookies_description_label_ =
-      AddChildView(std::make_unique<views::StyledLabel>());
-
-  // In the new UI iteration, description labels are aligned with the icons on
-  // the left, not with the bubble title.
-  cookies_description_label_->SetProperty(views::kMarginsKey, button_insets);
+  auto label = std::make_unique<views::StyledLabel>();
+  cookies_description_label_ = label.get();
   cookies_description_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
   cookies_description_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
   cookies_description_label_->SetDefaultEnabledColorId(
       kColorPageInfoForeground);
-  cookies_description_label_->SizeToFit(PageInfoViewFactory::kMinBubbleWidth -
-                                        button_insets.width());
+  const int max_label_width =
+      PageInfoViewFactory::kMinBubbleWidth - button_insets.width();
+  // Use a wrapper for the description label to ensure its height is set
+  // correctly after subsequent text changes and styling.
+  cookies_description_wrapper_ =
+      AddChildView(std::make_unique<CookiesDescriptionLabelWrapper>(
+          max_label_width, std::move(label)));
+  cookies_description_wrapper_->SetProperty(views::kMarginsKey, button_insets);
 
   AddThirdPartyCookiesContainer();
 
@@ -362,7 +394,7 @@ void PageInfoCookiesContentView::SetIncognitoTrackingProtectionsDescription(
     CookieControlsState controls_state) {
   // No description exists for when protections are paused.
   if (controls_state == CookieControlsState::kPausedTp) {
-    cookies_description_label_->SetVisible(false);
+    cookies_description_wrapper_->SetVisible(false);
     return;
   }
   int description = IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION;
@@ -376,7 +408,7 @@ void PageInfoCookiesContentView::SetIncognitoTrackingProtectionsDescription(
         IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION;
   }
   cookies_description_label_->SetText(l10n_util::GetStringUTF16(description));
-  cookies_description_label_->SetVisible(true);
+  cookies_description_wrapper_->SetVisible(true);
 }
 
 void PageInfoCookiesContentView::SetCookiesDescription(
