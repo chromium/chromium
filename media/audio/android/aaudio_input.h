@@ -23,9 +23,8 @@ namespace media {
 class AudioManagerAndroid;
 
 // Class which uses the AAudio library to record input.
-class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
-    : public AudioInputStream,
-      public AAudioStreamWrapper::DataCallback {
+class AAudioInputStream : public AudioInputStream,
+                          public AAudioStreamWrapper::DataCallback {
  public:
   AAudioInputStream(AudioManagerAndroid* manager,
                     const AudioParameters& params,

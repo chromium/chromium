@@ -294,18 +294,10 @@ void CombineBluetoothClassicDevices(
 }
 
 bool UseAAudioOutput() {
-  if (!__builtin_available(android AAUDIO_MIN_API, *)) {
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(features::kUseAAudioDriver);
 }
 
 bool UseAAudioInput() {
-  if (!__builtin_available(android AAUDIO_MIN_API, *)) {
-    return false;
-  }
-
   if (!base::FeatureList::IsEnabled(features::kUseAAudioInput)) {
     return false;
   }
@@ -677,9 +669,7 @@ void AudioManagerAndroid::ReleaseOutputStream(AudioOutputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
   output_streams_.erase(static_cast<MuteableAudioOutputStream*>(stream));
-  if (__builtin_available(android AAUDIO_MIN_API, *)) {
-    bluetooth_output_streams_.erase(stream);
-  }
+  bluetooth_output_streams_.erase(stream);
 
   AudioManagerBase::ReleaseOutputStream(stream);
 }
@@ -702,15 +692,14 @@ AudioOutputStream* AudioManagerAndroid::MakeLinearOutputStream(
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  if (__builtin_available(android AAUDIO_MIN_API, *)) {
-    if (UseAAudioOutput()) {
-      return new AAudioOutputStream(
-          this, params, AudioDevice::Default(), AAUDIO_USAGE_MEDIA,
-          base::BindRepeating(&AudioManager::TraceAmplitudePeak,
-                              base::Unretained(this),
-                              /*trace_start=*/false));
-    }
+  if (UseAAudioOutput()) {
+    return new AAudioOutputStream(
+        this, params, AudioDevice::Default(), AAUDIO_USAGE_MEDIA,
+        base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                            base::Unretained(this),
+                            /*trace_start=*/false));
   }
+
 #if BUILDFLAG(USE_OPENSLES)
   return new OpenSLESOutputStream(this, params, SL_ANDROID_STREAM_MEDIA);
 #else
@@ -724,44 +713,42 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
-  if (__builtin_available(android AAUDIO_MIN_API, *)) {
-    if (UseAAudioOutput()) {
-      DLOG_IF(WARNING, !UseAAudioPerStreamDeviceSelection() &&
-                           !AudioDeviceDescription::IsDefaultDevice(device_id))
-          << "Non-default output device requested for output communication "
-             "stream.";
+  if (UseAAudioOutput()) {
+    DLOG_IF(WARNING, !UseAAudioPerStreamDeviceSelection() &&
+                         !AudioDeviceDescription::IsDefaultDevice(device_id))
+        << "Non-default output device requested for output communication "
+           "stream.";
 
-      std::optional<AudioDevice> device =
-          GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kOutput);
-      if (!device.has_value()) {
-        return nullptr;
-      }
-
-      const aaudio_usage_t usage = communication_mode_is_on_
-                                       ? AAUDIO_USAGE_VOICE_COMMUNICATION
-                                       : AAUDIO_USAGE_MEDIA;
-
-      auto peak_detected_cb = base::BindRepeating(
-          &AudioManager::TraceAmplitudePeak, base::Unretained(this),
-          /*trace_start=*/false);
-      if (device->GetAssociatedScoDevice().has_value()) {
-        // Use a specialized stream implementation to handle "combined" A2DP/SCO
-        // devices.
-
-        // TODO(crbug.com/405955144): Set `use_sco_device` based on the SCO
-        // state as reported by the system in order to handle SCO management by
-        // other apps.
-        auto* stream = new AAudioBluetoothOutputStream(
-            *this, params, std::move(device).value(),
-            /*use_sco_device=*/!input_streams_requiring_sco_.empty(), usage,
-            peak_detected_cb);
-        bluetooth_output_streams_.insert(stream);
-        return stream;
-      }
-
-      return new AAudioOutputStream(this, params, std::move(device).value(),
-                                    usage, peak_detected_cb);
+    std::optional<AudioDevice> device =
+        GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kOutput);
+    if (!device.has_value()) {
+      return nullptr;
     }
+
+    const aaudio_usage_t usage = communication_mode_is_on_
+                                     ? AAUDIO_USAGE_VOICE_COMMUNICATION
+                                     : AAUDIO_USAGE_MEDIA;
+
+    auto peak_detected_cb = base::BindRepeating(
+        &AudioManager::TraceAmplitudePeak, base::Unretained(this),
+        /*trace_start=*/false);
+    if (device->GetAssociatedScoDevice().has_value()) {
+      // Use a specialized stream implementation to handle "combined" A2DP/SCO
+      // devices.
+
+      // TODO(crbug.com/405955144): Set `use_sco_device` based on the SCO state
+      // as reported by the system in order to handle SCO management by other
+      // apps.
+      auto* stream = new AAudioBluetoothOutputStream(
+          *this, params, std::move(device).value(),
+          /*use_sco_device=*/!input_streams_requiring_sco_.empty(), usage,
+          peak_detected_cb);
+      bluetooth_output_streams_.insert(stream);
+      return stream;
+    }
+
+    return new AAudioOutputStream(this, params, std::move(device).value(),
+                                  usage, peak_detected_cb);
   }
 
   // Set stream type which matches the current system-wide audio mode used by
@@ -791,15 +778,13 @@ AudioInputStream* AudioManagerAndroid::MakeLinearInputStream(
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
 
-  if (__builtin_available(android AAUDIO_MIN_API, *)) {
-    if (UseAAudioInput()) {
-      std::optional<AudioDevice> device =
-          GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kInput);
-      if (!device.has_value()) {
-        return nullptr;
-      }
-      return new AAudioInputStream(this, params, std::move(device).value());
+  if (UseAAudioInput()) {
+    std::optional<AudioDevice> device =
+        GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kInput);
+    if (!device.has_value()) {
+      return nullptr;
     }
+    return new AAudioInputStream(this, params, std::move(device).value());
   }
 
 #if BUILDFLAG(USE_OPENSLES)
@@ -831,15 +816,13 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
     }
   }
 
-  if (__builtin_available(android AAUDIO_MIN_API, *)) {
-    if (UseAAudioInput()) {
-      std::optional<AudioDevice> device =
-          GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kInput);
-      if (!device.has_value()) {
-        return nullptr;
-      }
-      return new AAudioInputStream(this, params, std::move(device).value());
+  if (UseAAudioInput()) {
+    std::optional<AudioDevice> device =
+        GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kInput);
+    if (!device.has_value()) {
+      return nullptr;
     }
+    return new AAudioInputStream(this, params, std::move(device).value());
   }
 
   // Create a new audio input stream and enable or disable all audio effects

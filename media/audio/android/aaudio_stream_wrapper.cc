@@ -26,7 +26,7 @@ namespace media {
 
 // Used to circumvent issues where the AAudio thread callbacks continue
 // after AAudioStream_requestStop() completes. See crbug.com/1183255.
-class REQUIRES_ANDROID_API(AAUDIO_MIN_API) LOCKABLE AAudioDestructionHelper {
+class LOCKABLE AAudioDestructionHelper {
  public:
   explicit AAudioDestructionHelper(AAudioStreamWrapper* wrapper)
       : wrapper_(wrapper) {}
@@ -60,11 +60,11 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) LOCKABLE AAudioDestructionHelper {
   bool is_closing_ GUARDED_BY(lock_) = false;
 };
 
-static REQUIRES_ANDROID_API(AAUDIO_MIN_API) aaudio_data_callback_result_t
-    OnAudioDataRequestedCallback(AAudioStream* stream,
-                                 void* user_data,
-                                 void* audio_data,
-                                 int32_t num_frames) {
+static aaudio_data_callback_result_t OnAudioDataRequestedCallback(
+    AAudioStream* stream,
+    void* user_data,
+    void* audio_data,
+    int32_t num_frames) {
   AAudioDestructionHelper* destruction_helper =
       reinterpret_cast<AAudioDestructionHelper*>(user_data);
 
@@ -80,10 +80,9 @@ static REQUIRES_ANDROID_API(AAUDIO_MIN_API) aaudio_data_callback_result_t
   return result;
 }
 
-static REQUIRES_ANDROID_API(AAUDIO_MIN_API) void OnStreamErrorCallback(
-    AAudioStream* stream,
-    void* user_data,
-    aaudio_result_t error) {
+static void OnStreamErrorCallback(AAudioStream* stream,
+                                  void* user_data,
+                                  aaudio_result_t error) {
   AAudioDestructionHelper* destruction_helper =
       reinterpret_cast<AAudioDestructionHelper*>(user_data);
 

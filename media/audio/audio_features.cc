@@ -38,8 +38,8 @@ BASE_FEATURE(kUseAAudioInput,
 // of using communication streams and managing the system-wide communication
 // route. This is not fully reliable on all Android devices.
 //
-// Requires `UseAAudioDriver`, `UseAAudioInput`, and an Android API level >=
-// `AAUDIO_MIN_API`, otherwise it will have no effect.
+// Requires `UseAAudioDriver` and `UseAAudioInput`, otherwise it will have no
+// effect.
 BASE_FEATURE(kAAudioPerStreamDeviceSelection,
              "AAudioPerStreamDeviceSelection",
              base::FEATURE_DISABLED_BY_DEFAULT);

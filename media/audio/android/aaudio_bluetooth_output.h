@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "media/audio/android/aaudio_output.h"
-#include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/android/audio_device.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/base/audio_parameters.h"
@@ -25,8 +24,7 @@ class AudioManagerAndroid;
 // `AAudioOutputStream`, each only functional for one of the two protocols, such
 // that the correct of the two streams can be selected to play audio at a given
 // time.
-class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioBluetoothOutputStream
-    : public MuteableAudioOutputStream {
+class AAudioBluetoothOutputStream : public MuteableAudioOutputStream {
  public:
   AAudioBluetoothOutputStream(
       AudioManagerAndroid& manager,

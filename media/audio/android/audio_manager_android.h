@@ -169,13 +169,11 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   // Called by an `AAudioInputStream` when it is started, i.e. it begins
   // providing audio data.
-  void REQUIRES_ANDROID_API(AAUDIO_MIN_API)
-      OnStartAAudioInputStream(AAudioInputStream* stream);
+  void OnStartAAudioInputStream(AAudioInputStream* stream);
 
   // Called by an `AAudioInputStream` when it is stopped, i.e. it stops
   // providing audio data.
-  void REQUIRES_ANDROID_API(AAUDIO_MIN_API)
-      OnStopAAudioInputStream(AAudioInputStream* stream);
+  void OnStopAAudioInputStream(AAudioInputStream* stream);
 
   void SetJniDelegateForTesting(std::unique_ptr<JniDelegate> jni_delegate);
 
@@ -190,10 +188,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       base::flat_map<android::AudioDeviceId, android::AudioDevice>;
   using OutputStreams =
       base::flat_set<raw_ptr<MuteableAudioOutputStream, CtnExperimental>>;
-  REQUIRES_ANDROID_API(AAUDIO_MIN_API)
-  typedef base::flat_set<raw_ptr<AAudioBluetoothOutputStream, CtnExperimental>>
-      BluetoothOutputStreams;  // `REQUIRES_ANDROID_API` appears to be
-                               // incompatible with using-declarations.
+  using BluetoothOutputStreams =
+      base::flat_set<raw_ptr<AAudioBluetoothOutputStream, CtnExperimental>>;
   using InputStreams =
       base::flat_set<raw_ptr<AudioInputStream, CtnExperimental>>;
 
@@ -242,7 +238,6 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   DeviceCache output_device_cache_;
 
   OutputStreams output_streams_;
-  REQUIRES_ANDROID_API(AAUDIO_MIN_API)
   BluetoothOutputStreams bluetooth_output_streams_;
 
   InputStreams input_streams_requiring_sco_;

@@ -30,7 +30,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/android/audio_device_type.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_device_description.h"
@@ -535,11 +534,7 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
         break;
     }
 
-    if (enable_aaudio) {
-      if (!__builtin_available(android AAUDIO_MIN_API, *)) {
-        GTEST_SKIP() << "AAudio is not available.";
-      }
-    } else {
+    if (!enable_aaudio) {
       // Use OpenSL ES fallback
 #if !BUILDFLAG(USE_OPENSLES)
       GTEST_SKIP() << "OpenSLES is not available.";
