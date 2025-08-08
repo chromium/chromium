@@ -300,6 +300,7 @@ source_set("sync_integration_tests_impl") {
         "//chrome/browser/ash/printing",
         "//chrome/browser/ash/sync",
         "//chrome/browser/ash/system_web_apps/test_support",
+        "//chrome/browser/ui/ash/multi_user",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/dbus/shill",
         "//chromeos/ash/components/sync_wifi",

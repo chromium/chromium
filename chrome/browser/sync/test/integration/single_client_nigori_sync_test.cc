@@ -83,6 +83,8 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/trusted_vault/features.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -1315,13 +1317,15 @@ IN_PROC_BROWSER_TEST_F(
 class SingleClientNigoriWithWebApiAndDialogUIParamTest
     : public SingleClientNigoriWithWebApiTest {
  public:
-  SingleClientNigoriWithWebApiAndDialogUIParamTest() = default;
+  SingleClientNigoriWithWebApiAndDialogUIParamTest() {
+    SetUsePrimaryUserProfile(true);
+  }
   ~SingleClientNigoriWithWebApiAndDialogUIParamTest() override = default;
 
   bool WaitForTrustedVaultReauthCompletion() {
-      return TabClosedChecker(
-                 GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
-          .Wait();
+    auto* browser = chrome::FindTabbedBrowser(GetProfile(0), false);
+    return TabClosedChecker(browser->tab_strip_model()->GetActiveWebContents())
+        .Wait();
   }
 };
 
@@ -1332,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiAndDialogUIParamTest,
                         GetFakeServer());
 
   ASSERT_TRUE(SetupClients());
-
+  ASSERT_TRUE(GetBrowser(0));
   NotificationDisplayServiceTester display_service(GetProfile(0));
 
   // SyncErrorNotifier needs explicit instantiation in tests, because the test

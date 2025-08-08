@@ -259,6 +259,7 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/app_constants",
     "//components/app_icon_loader",
     "//components/exo",

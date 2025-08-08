@@ -153,6 +153,12 @@ class SyncTest : public PlatformBrowserTest,
   // owns the objects and manages its lifetime.
   std::vector<raw_ptr<Profile, VectorExperimental>> GetAllProfiles();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enable using primary user profile for the sync test.
+  // When this is set, the number of profiles must be one.
+  void SetUsePrimaryUserProfile(bool value);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_ANDROID)
   // Returns a pointer to a particular browser. Callee owns the object
   // and manages its lifetime. The called browser must not be closed before.
@@ -406,6 +412,8 @@ class SyncTest : public PlatformBrowserTest,
   // A factory-like callback to create a model updater for testing, which will
   // take the place of the real updater in AppListSyncableService for testing.
   std::unique_ptr<base::ScopedClosureRunner> model_updater_factory_scope_;
+
+  bool use_primary_user_profile_ = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

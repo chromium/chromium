@@ -181,18 +181,6 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
     return;
   }
 
-  if (enable_multi_user_) {
-    // By default, `MultiUserWindowManager` is created with multi profile off.
-    // Re-create for multi profile tests. This has to be done after
-    // `SetUpOnMainThread` of a base class as the original multi-profile-off
-    // `MultiUserWindowManager` is created there.
-    MultiUserWindowManagerHelper::CreateInstanceForTest();
-    auto account_id = GetPrimaryUserContext().GetAccountId();
-    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
-        account_id);
-    MultiUserWindowManagerHelper::GetInstance()->AddUser(account_id);
-  }
-
   // If we don't intend to enforce ScalableIph setup (i.e. the user profile
   // doesn't qualify for ScalableIph), do not set up mocks as ScalableIph
   // should not be available for the profile.

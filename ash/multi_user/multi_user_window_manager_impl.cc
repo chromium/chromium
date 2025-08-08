@@ -118,6 +118,7 @@ MultiUserWindowManagerImpl::~MultiUserWindowManagerImpl() {
     // no longer does that.
     aura::Window* window = window_to_entry_.begin()->first;
     window->RemoveObserver(this);
+    RemoveTransientOwnerRecursive(window);
     OnWindowDestroyed(window);
   }
 
@@ -136,12 +137,14 @@ void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
   DCHECK(window);
   DCHECK(account_id.is_valid());
 
-  if (GetWindowOwner(window) == account_id)
+  if (GetWindowOwner(window) == account_id) {
     return;
+  }
 
   // Transient window ownership is tracked by the parent window's ownership.
-  if (GetOwningWindowInTransientChain(window))
+  if (GetOwningWindowInTransientChain(window)) {
     return;
+  }
 
   DCHECK(GetWindowOwner(window).empty());
   std::unique_ptr<WindowEntry> window_entry_ptr =
@@ -297,6 +300,7 @@ void MultiUserWindowManagerImpl::OnWindowDestroyed(aura::Window* window) {
     RemoveTransientOwnerRecursive(window);
     return;
   }
+
   ::wm::TransientWindowManager::GetOrCreate(window)->RemoveObserver(this);
   window_to_entry_.erase(window);
 }
@@ -525,8 +529,13 @@ void MultiUserWindowManagerImpl::AddTransientOwnerRecursive(
 void MultiUserWindowManagerImpl::RemoveTransientOwnerRecursive(
     aura::Window* window) {
   // First remove all child windows.
-  for (aura::Window* transient_child : ::wm::GetTransientChildren(window))
+  for (aura::Window* transient_child : ::wm::GetTransientChildren(window)) {
     RemoveTransientOwnerRecursive(transient_child);
+  }
+
+  if (!GetWindowOwner(window).empty()) {
+    return;
+  }
 
   // Find from transient window storage the visibility for the given window,
   // set the visibility accordingly and delete the window from the map.

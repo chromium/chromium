@@ -13,6 +13,8 @@
 
 namespace {
 MultiUserWindowManagerHelper* g_multi_user_window_manager_instance = nullptr;
+
+bool g_multi_user_window_manager_enabled = true;
 }  // namespace
 
 // static
@@ -30,14 +32,9 @@ ash::MultiUserWindowManager* MultiUserWindowManagerHelper::GetWindowManager() {
 
 // static
 MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::CreateInstance() {
-  DCHECK(!g_multi_user_window_manager_instance);
-  if (SessionControllerClientImpl::IsMultiProfileAvailable()) {
-    g_multi_user_window_manager_instance =
-        new MultiUserWindowManagerHelper(ash::MultiUserWindowManager::Create());
-  } else {
-    g_multi_user_window_manager_instance = new MultiUserWindowManagerHelper(
-        std::make_unique<MultiUserWindowManagerStub>());
-  }
+  CHECK(!g_multi_user_window_manager_instance);
+  g_multi_user_window_manager_instance =
+      new MultiUserWindowManagerHelper(ash::MultiUserWindowManager::Create());
   return g_multi_user_window_manager_instance;
 }
 
@@ -65,21 +62,22 @@ void MultiUserWindowManagerHelper::DeleteInstance() {
 
 // static
 void MultiUserWindowManagerHelper::CreateInstanceForTest() {
-  if (g_multi_user_window_manager_instance) {
-    DeleteInstance();
-  }
-  g_multi_user_window_manager_instance =
-      new MultiUserWindowManagerHelper(ash::MultiUserWindowManager::Create());
+  // TODO(crbug.com/425160398): Remove this method and use CreateInstance()
+  // always.
+  CreateInstance();
 }
 
 // static
-void MultiUserWindowManagerHelper::CreateInstanceForTest(
-    std::unique_ptr<ash::MultiUserWindowManager> window_manager) {
-  if (g_multi_user_window_manager_instance) {
-    DeleteInstance();
-  }
-  g_multi_user_window_manager_instance =
-      new MultiUserWindowManagerHelper(std::move(window_manager));
+bool MultiUserWindowManagerHelper::IsEnabled() {
+  return g_multi_user_window_manager_enabled;
+}
+
+// static
+base::AutoReset<bool> MultiUserWindowManagerHelper::DisableForTesting() {
+  CHECK(g_multi_user_window_manager_enabled)
+      << "MultiUserSignIn is already disabled";
+  base::AutoReset resetter(&g_multi_user_window_manager_enabled, false);
+  return resetter;
 }
 
 void MultiUserWindowManagerHelper::AddUser(const AccountId& account_id) {

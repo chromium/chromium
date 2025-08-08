@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_
 
+#include "base/auto_reset.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
@@ -19,6 +20,7 @@ class TwoClientWebAppsIntegrationTestBase
       public WebAppIntegrationTestDriver::TestDelegate {
  public:
   TwoClientWebAppsIntegrationTestBase();
+  ~TwoClientWebAppsIntegrationTestBase() override;
 
   // WebAppIntegrationTestDriver::TestDelegate:
   Browser* CreateBrowser(Profile* profile) override;
@@ -42,6 +44,10 @@ class TwoClientWebAppsIntegrationTestBase
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::AutoReset<bool> multi_user_window_manager_resetter_;
+#endif  // BUIDLFLAG(IS_CHROMEOS)
 
   WebAppIntegrationTestDriver helper_;
 };

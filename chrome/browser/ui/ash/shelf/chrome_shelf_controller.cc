@@ -20,6 +20,7 @@
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -316,16 +317,25 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   shelf_spinner_controller_ = std::make_unique<ShelfSpinnerController>(this);
 
   // Create either the real window manager or a stub.
-  MultiUserWindowManagerHelper::CreateInstance();
+  if (ash::Shell::HasInstance() && MultiUserWindowManagerHelper::IsEnabled()) {
+    MultiUserWindowManagerHelper::CreateInstance();
+    auto active_account_id =
+        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+    LOG(ERROR) << "Active Account Id: " << active_account_id;
+    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
+        active_account_id);
+    MultiUserWindowManagerHelper::GetInstance()->AddUser(active_account_id);
+  } else {
+    // In some unit tests, ash::Shell is not initialized because they are
+    // not related to window management.
+    // This is short-term workaround for the transition period,
+    // because MultiUserWindowManager is going to be moved out.
+    CHECK_IS_TEST();
+  }
 
   // On Chrome OS using multi profile we want to switch the content of the shelf
   // with a user change. Note that for unit tests the instance can be nullptr.
   if (SessionControllerClientImpl::IsMultiProfileAvailable()) {
-    auto active_account_id =
-        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
-    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
-        active_account_id);
-    MultiUserWindowManagerHelper::GetInstance()->AddUser(active_account_id);
     user_switch_observer_ =
         std::make_unique<ChromeShelfControllerUserSwitchObserver>(this);
   }
@@ -357,7 +367,9 @@ ChromeShelfController::~ChromeShelfController() {
   model_->RemoveObserver(this);
 
   // Get rid of the multi user window manager instance.
-  MultiUserWindowManagerHelper::DeleteInstance();
+  if (MultiUserWindowManagerHelper::GetInstance()) {
+    MultiUserWindowManagerHelper::DeleteInstance();
+  }
 
   g_instance = nullptr;
 }

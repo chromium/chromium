@@ -60,9 +60,21 @@ const uint32_t kIncludeBrowsersScheduledForDeletion = 1 << 6;
 bool DoesBrowserMatchProfile(Browser& browser,
                              Profile* profile,
                              uint32_t match_types) {
+  if (match_types & kMatchOriginalProfile) {
+    if (browser.profile()->GetOriginalProfile() !=
+        profile->GetOriginalProfile()) {
+      return false;
+    }
+  } else {
+    if (browser.profile() != profile) {
+      return false;
+    }
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Get the profile on which the window is currently shown.
   // MultiUserWindowManagerHelper might be NULL under test scenario.
+  // TODO(crbug.com/427889779): Consider to drop this check.
   ash::MultiUserWindowManager* const multi_user_window_manager =
       MultiUserWindowManagerHelper::GetWindowManager();
   Profile* shown_profile = nullptr;
@@ -74,30 +86,14 @@ bool DoesBrowserMatchProfile(Browser& browser,
         shown_account_id.is_valid()
             ? multi_user_util::GetProfileFromAccountId(shown_account_id)
             : nullptr;
-  }
-#endif
 
-  if (match_types & kMatchOriginalProfile) {
-    if (browser.profile()->GetOriginalProfile() !=
-        profile->GetOriginalProfile()) {
-      return false;
-    }
-#if BUILDFLAG(IS_CHROMEOS)
     if (shown_profile &&
         shown_profile->GetOriginalProfile() != profile->GetOriginalProfile()) {
       return false;
     }
-#endif
-  } else {
-    if (browser.profile() != profile) {
-      return false;
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    if (shown_profile && shown_profile != profile) {
-      return false;
-    }
-#endif
   }
+#endif
+
   return true;
 }
 

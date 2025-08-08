@@ -9,6 +9,8 @@
 #include <memory>
 #include <set>
 
+#include "base/auto_reset.h"
+
 class AccountId;
 class MultiProfileSupport;
 
@@ -50,10 +52,13 @@ class MultiUserWindowManagerHelper {
   // |account_id|.
   static void CreateInstanceForTest();
 
-  // Used in tests that want to supply a specific ash::MultiUserWindowManager
-  // implementation.
-  static void CreateInstanceForTest(
-      std::unique_ptr<ash::MultiUserWindowManager> window_manager);
+  // Returns true if MultiUserSignIn is enabled. Always true on production.
+  static bool IsEnabled();
+
+  // Temporarily disables MultiUserSignIn for testing purpose.
+  // On destruction of the returned AutoReset instance, disabling is reset
+  // (so the following tests will run with MultiUserSignIn).
+  [[nodiscard]] static base::AutoReset<bool> DisableForTesting();
 
   // Adds user to monitor starting and running V1/V2 application windows.
   // Returns immediately if the user (identified by a |profile|) is already

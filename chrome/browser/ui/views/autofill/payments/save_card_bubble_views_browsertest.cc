@@ -935,18 +935,12 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 class SaveCardBubbleViewsFullFormBrowserTestSettings
     : public SaveCardBubbleViewsFullFormBrowserTest {
  public:
-  SaveCardBubbleViewsFullFormBrowserTestSettings() = default;
-
-  void SetUpOnMainThread() override {
-    SaveCardBubbleViewsFullFormBrowserTest::SetUpOnMainThread();
+  SaveCardBubbleViewsFullFormBrowserTestSettings() {
 #if BUILDFLAG(IS_CHROMEOS)
     // OpenSettingsFromManageCardsPrompt() tries to retrieve the PhoneHubManager
     // keyed service, whose factory implementation relies on ChromeOS having a
-    // single profile, and consequently a single service instance. Creating a
-    // service for both browser()->profile() and GetProfile(0) hits a CHECK,
-    // so prevent this by disabling the feature.
-    GetProfile(0)->GetPrefs()->SetBoolean(
-        ash::multidevice_setup::kPhoneHubAllowedPrefName, false);
+    // single profile, and consequently a single service instance.
+    SetUsePrimaryUserProfile(true);
 #endif
   }
 

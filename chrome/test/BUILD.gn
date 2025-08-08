@@ -12397,6 +12397,7 @@ source_set("sync_integration_test_support") {
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/printing",
       "//chrome/browser/ash/system_web_apps/test_support",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/network/portal_detector",
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc/mojom",
