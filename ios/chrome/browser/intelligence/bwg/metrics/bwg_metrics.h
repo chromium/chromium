@@ -52,4 +52,8 @@ extern const char kBWGSessionTimeHistogram[];
 // Records the duration of a Gemini session.
 void RecordBWGSessionTime(base::TimeDelta session_duration);
 
+// Records when user sees the Gemini entry point impression.
+// Can be called once every 10 minutes to avoid spam logging.
+void RecordGeminiEntryPointImpression();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

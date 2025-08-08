@@ -54,6 +54,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
