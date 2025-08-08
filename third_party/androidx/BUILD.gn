@@ -331,7 +331,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_collection_collection_ktx_java") {
-    jar_path = "../androidx/cipd/libs/androidx_collection_collection_ktx/collection-ktx-1.5.0.jar"
+    jar_path = "../androidx/cipd/libs/androidx_collection_collection_ktx/collection-ktx-1.6.0-SNAPSHOT.jar"
     output_name = "androidx_collection_collection_ktx"
     supports_android = true
     requires_android = true
@@ -1744,7 +1744,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_collection_collection_jvm_java") {
-    jar_path = "../androidx/cipd/libs/androidx_collection_collection_jvm/collection-jvm-1.5.0.jar"
+    jar_path = "../androidx/cipd/libs/androidx_collection_collection_jvm/collection-jvm-1.6.0-SNAPSHOT.jar"
     output_name = "androidx_collection_collection_jvm"
     supports_android = true
     requires_android = true
@@ -2660,6 +2660,7 @@ if (!limit_android_deps) {
       "//third_party/android_deps:*",
     ]
     deps = [
+      ":androidx_collection_collection_java",
       ":androidx_core_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
