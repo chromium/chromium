@@ -46,8 +46,8 @@ class TabbedModeScopeMatcher {
   // matching required for hostname.
   std::optional<RE2::Set> hostname_scope_set_;
 
-  // A compiled RE2::Set to match portmembers, or nullopt if there is no
-  // matching required for protocol.
+  // A compiled RE2::Set to match port members, or nullopt if there is no
+  // matching required for port.
   std::optional<RE2::Set> port_scope_set_;
 
   // A compiled RE2::Set to match pathname members, or nullopt if there is no
