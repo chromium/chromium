@@ -90,10 +90,8 @@ public class ChromeAndroidTaskIntegrationTest {
         // Act
         Rect actualBounds = chromeAndroidTask.getBounds();
 
-        // Assert
-        var display = activity.getDisplay();
-        assertNotNull(display);
-        Rect expectedBounds = new Rect(0, 0, display.getWidth(), display.getHeight());
+        // Assert: by default, the bounds are the maximum window bounds.
+        var expectedBounds = activity.getWindowManager().getMaximumWindowMetrics().getBounds();
         assertFalse(actualBounds.isEmpty());
         assertEquals(expectedBounds, actualBounds);
     }
