@@ -363,7 +363,8 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessInstallPlaceholder) {
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);
   EXPECT_TRUE(registrar().GetAppIconInfos(app_id).empty());
-  EXPECT_TRUE(registrar().GetAppDownloadedIconSizesAny(app_id).empty());
+  EXPECT_TRUE(
+      registrar().GetAppTrustedIconSizesFallbackToUntrusted(app_id).empty());
   EXPECT_FALSE(fake_provider().icon_manager().HasSmallestIcon(
       app_id, {IconPurpose::ANY}, /*min_size=*/0));
 }

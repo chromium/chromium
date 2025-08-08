@@ -502,7 +502,9 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
   CHECK(provider);
 
   provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
-      app_id, provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id),
+      app_id,
+      provider->registrar_unsafe().GetAppTrustedIconSizesFallbackToUntrusted(
+          app_id),
       IconPurpose::ANY,
       base::BindOnce(&WebAppUiManagerImpl::OnIconsReadForUninstall,
                      weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,

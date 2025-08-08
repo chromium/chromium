@@ -1207,6 +1207,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstalledCount.HasNoTrustedIcons" units="count"
+    expires_after="2026-08-07">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps that are installed that have no trusted icon
+    metadata populated, but contains manifest icons that are untrusted. This is
+    recorded on the initialization of the Profile object, which can happen
+    either at chrome startup or when the user switches profiles. Note: This is
+    supposed to go down once existing apps start getting their manifests
+    updated, or new installs come in.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstalledCount.HasTrustedIcons" units="count"
+    expires_after="2026-08-07">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps that are installed that have trusted icon
+    metadata populated for it. This is recorded on the initialization of the
+    Profile object, which can happen either at chrome startup or when the user
+    switches profiles.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstalledCount.NotSyncing.SyncEnabled" units="count"
     expires_after="2026-01-18">
   <owner>mek@chromium.org</owner>

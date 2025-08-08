@@ -78,6 +78,11 @@ using InstallableAppCount =
     base::StrongAlias<class InstallableAppCountTag, int>;
 using NonSyncingAppCount = base::StrongAlias<class NonSyncingAppCountTag, int>;
 
+using AppsHavingNoTrustedIconsCount =
+    base::StrongAlias<class AppsHavingNoTrustedIconsCountTag, int>;
+using AppsHavingTrustedIconsCount =
+    base::StrongAlias<class AppsHavingTrustedIconsCountTag, int>;
+
 // Enabling this will force all apps that are exclusively preinstalled and open
 // in a browser tab to have the default navigation capturing setting be 'on'.
 // This is needed for use-cases where a preinstalled app needs to capture
@@ -350,8 +355,10 @@ class WebAppRegistrar {
   std::vector<apps::IconInfo> GetAppIconInfos(
       const webapps::AppId& app_id) const;
 
-  // Represents which icon sizes we successfully downloaded from the IconInfos.
-  SortedSizesPx GetAppDownloadedIconSizesAny(
+  // Represents which icon sizes of trusted icons exist on the disk. If trusted
+  // icons do not exist, fallbacks to returning sizes of icons of purpose `ANY`
+  // as per the fallback mechanism.
+  SortedSizesPx GetAppTrustedIconSizesFallbackToUntrusted(
       const webapps::AppId& app_id) const;
 
   // Returns the "shortcuts" field from the app manifest, use
@@ -674,6 +681,11 @@ class WebAppRegistrar {
   // Requires app registry to be in a ready state.
   std::tuple<DiyAppCount, InstallableAppCount, NonSyncingAppCount>
   CountTotalUserInstalledAppsIncludingDiy() const;
+
+  // Count number of apps that are installed and have trusted icons populated or
+  // not populated.
+  std::tuple<AppsHavingNoTrustedIconsCount, AppsHavingTrustedIconsCount>
+  CountAppsHavingTrustedIcons() const;
 
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;

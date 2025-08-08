@@ -130,7 +130,8 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
 
     provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
         app_id_,
-        provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id_),
+        provider->registrar_unsafe().GetAppTrustedIconSizesFallbackToUntrusted(
+            app_id_),
         IconPurpose::ANY,
         base::BindOnce(&LaunchAppUserChoiceDialogView::OnIconsRead,
                        weak_ptr_factory_.GetWeakPtr()));

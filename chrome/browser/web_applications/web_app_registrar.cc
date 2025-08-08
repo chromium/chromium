@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -899,6 +900,14 @@ void WebAppRegistrar::Start() {
         "WebApp.InstalledCount.ByUserNotLocallyInstalled.SyncDisabled",
         num_non_locally_installed);
   }
+
+  auto app_icons_count = CountAppsHavingTrustedIcons();
+  base::UmaHistogramCounts1000(
+      "WebApp.InstalledCount.HasTrustedIcons",
+      std::get<AppsHavingTrustedIconsCount>(app_icons_count).value());
+  base::UmaHistogramCounts1000(
+      "WebApp.InstalledCount.HasNoTrustedIcons",
+      std::get<AppsHavingNoTrustedIconsCount>(app_icons_count).value());
 
 #if BUILDFLAG(IS_MAC)
   auto multi_profile_app_ids =
@@ -1891,11 +1900,25 @@ std::vector<apps::IconInfo> WebAppRegistrar::GetAppIconInfos(
   return web_app ? web_app->manifest_icons() : std::vector<apps::IconInfo>();
 }
 
-SortedSizesPx WebAppRegistrar::GetAppDownloadedIconSizesAny(
+SortedSizesPx WebAppRegistrar::GetAppTrustedIconSizesFallbackToUntrusted(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->downloaded_icon_sizes(IconPurpose::ANY)
-                 : SortedSizesPx();
+  if (!web_app) {
+    return SortedSizesPx();
+  }
+
+  SortedSizesPx sorted_sizes;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  if (!web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE).empty()) {
+    return web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE);
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+
+  if (!web_app->stored_trusted_icon_sizes(IconPurpose::ANY).empty()) {
+    return web_app->stored_trusted_icon_sizes(IconPurpose::ANY);
+  }
+
+  return web_app->downloaded_icon_sizes(IconPurpose::ANY);
 }
 
 std::vector<WebAppShortcutsMenuItemInfo>
@@ -2192,6 +2215,20 @@ WebAppRegistrar::CountTotalUserInstalledAppsIncludingDiy() const {
   }
   return std::make_tuple(num_diy_apps_user_installed, num_user_installed,
                          num_non_syncing_user_installed);
+}
+
+std::tuple<AppsHavingNoTrustedIconsCount, AppsHavingTrustedIconsCount>
+WebAppRegistrar::CountAppsHavingTrustedIcons() const {
+  AppsHavingNoTrustedIconsCount num_apps_no_trusted_icons(0);
+  AppsHavingTrustedIconsCount num_apps_trusted_icons(0);
+  for (const WebApp& app : GetApps()) {
+    if (app.trusted_icons().empty()) {
+      ++num_apps_no_trusted_icons.value();
+    } else {
+      ++num_apps_trusted_icons.value();
+    }
+  }
+  return std::make_tuple(num_apps_no_trusted_icons, num_apps_trusted_icons);
 }
 
 bool WebAppRegistrar::IsDiyAppIconsMarkedMaskedOnMac(
