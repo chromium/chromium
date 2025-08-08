@@ -159,9 +159,15 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
 - (void)displayLinkDidFire:(CADisplayLink*)displayLink {
   DCHECK(_client);
 
-  // Get the previous vsync time.
-  const base::TimeTicks vsync_time = base::TimeTicks::FromMachAbsoluteTime(
-      GetMachTimeFromSeconds(displayLink.timestamp));
+  // Get the previous vsync time - clamp to `Now()`. Although CADisplayLink's
+  // `timestamp` is derived from mach_absolute_time, there's precision loss when
+  // converting from the uint64_t mach time to the CFTimeInterval double.
+  // Converting back from the CFTimeInterval to uint64_t can cause it to be in
+  // the future with respect to `Now()`.
+  const base::TimeTicks vsync_time =
+      std::min(base::TimeTicks::Now(),
+               base::TimeTicks::FromMachAbsoluteTime(
+                   GetMachTimeFromSeconds(displayLink.timestamp)));
 
   // Get the next vsync time.
   const base::TimeTicks next_vsync_time = base::TimeTicks::FromMachAbsoluteTime(
