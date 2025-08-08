@@ -815,15 +815,14 @@ public class UrlBarUnitTest {
     /**
      * Simulate specific font metrics.
      *
-     * @param useElegantText whether Android can increase the line height by up to 60% to show text
      * @param fontActualHeight the desired actual difference between top and the bottom pixel ever
      *     drawn by the font
      */
-    private void applyFontMetrics(boolean useElegantText, float fontActualHeight) {
+    private void applyFontMetrics(float fontActualHeight) {
         mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, FONT_HEIGHT_NOMINAL);
-        float lineHeightScaleFactor =
-                useElegantText ? LINE_HEIGHT_ELEGANT_FACTOR : LINE_HEIGHT_REGULAR_FACTOR;
-        doReturn((int) (FONT_HEIGHT_NOMINAL * lineHeightScaleFactor)).when(mUrlBar).getLineHeight();
+        doReturn((int) (FONT_HEIGHT_NOMINAL * LINE_HEIGHT_ELEGANT_FACTOR))
+                .when(mUrlBar)
+                .getLineHeight();
         // Respect the font height, but simulate that it's shifted 10px up.
         mFontMetrics.top = -10;
         mFontMetrics.bottom = fontActualHeight - 10;
@@ -834,149 +833,69 @@ public class UrlBarUnitTest {
     /**
      * Compute the expected font height given the Url bar constraints.
      *
-     * @param useElegantText whether Android can increase the line height by up to 60% to show text
      * @param fontActualHeight the desired actual difference between top and the bottom pixel ever
      *     drawn by the font
      * @param urlBarHeight the usable area of the UrlBar that will accommodate the text
      */
-    private float computeExpectedFontHeight(
-            boolean useElegantText, float fontActualHeight, int urlBarHeight) {
-        float lineHeightScaleFactor =
-                useElegantText ? LINE_HEIGHT_ELEGANT_FACTOR : LINE_HEIGHT_REGULAR_FACTOR;
+    private float computeExpectedFontHeight(float fontActualHeight, int urlBarHeight) {
+        float lineHeightScaleFactor = LINE_HEIGHT_ELEGANT_FACTOR;
         return FONT_HEIGHT_NOMINAL * (urlBarHeight / (fontActualHeight * lineHeightScaleFactor));
     }
 
     @Test
-    public void enforceMaxTextHeight_shrinkTallFontToFit_noElegantText_noPadding() {
-        doReturn(false).when(mPaint).isElegantTextHeight();
-        measureAndLayoutUrlBar();
-        applyFontMetrics(false, FONT_HEIGHT_ACTUAL_TALL);
-
-        mUrlBar.setPaddingRelative(0, 0, 0, 0);
-        mUrlBar.enforceMaxTextHeight();
-
-        assertEquals(
-                computeExpectedFontHeight(false, FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT),
-                mUrlBar.getTextSize(),
-                MathUtils.EPSILON);
-    }
-
-    @Test
-    public void enforceMaxTextHeight_shrinkTallFontToFit_noElegantText_withPadding() {
-        doReturn(false).when(mPaint).isElegantTextHeight();
-        measureAndLayoutUrlBar();
-        applyFontMetrics(false, FONT_HEIGHT_ACTUAL_TALL);
-
-        mUrlBar.setPaddingRelative(0, 5, 0, 15);
-        mUrlBar.enforceMaxTextHeight();
-
-        assertEquals(
-                computeExpectedFontHeight(false, FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT - 20),
-                mUrlBar.getTextSize(),
-                MathUtils.EPSILON);
-    }
-
-    @Test
-    public void enforceMaxTextHeight_shrinkShortFontToFit_noElegantText_noPadding() {
-        doReturn(false).when(mPaint).isElegantTextHeight();
-        applyFontMetrics(false, FONT_HEIGHT_ACTUAL_SHORT);
-        measureAndLayoutUrlBar();
-
-        mUrlBar.setPaddingRelative(0, 0, 0, 0);
-        mUrlBar.enforceMaxTextHeight();
-
-        assertEquals(
-                computeExpectedFontHeight(false, FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT),
-                mUrlBar.getTextSize(),
-                MathUtils.EPSILON);
-    }
-
-    @Test
-    public void enforceMaxTextHeight_shrinkShortFontToFit_noElegantText_withPadding() {
-        doReturn(false).when(mPaint).isElegantTextHeight();
-        applyFontMetrics(false, FONT_HEIGHT_ACTUAL_SHORT);
-        measureAndLayoutUrlBar();
-
-        mUrlBar.setPaddingRelative(0, 5, 0, 15);
-        mUrlBar.enforceMaxTextHeight();
-
-        assertEquals(
-                computeExpectedFontHeight(false, FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT - 20),
-                mUrlBar.getTextSize(),
-                MathUtils.EPSILON);
-    }
-
-    @Test
     public void enforceMaxTextHeight_shrinkTallFontToFit_withElegantText_noPadding() {
-        doReturn(true).when(mPaint).isElegantTextHeight();
         measureAndLayoutUrlBar();
-        applyFontMetrics(true, FONT_HEIGHT_ACTUAL_TALL);
+        applyFontMetrics(FONT_HEIGHT_ACTUAL_TALL);
 
         mUrlBar.setPaddingRelative(0, 0, 0, 0);
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(true, FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
     }
 
     @Test
     public void enforceMaxTextHeight_shrinkTallFontToFit_withElegantText_withPadding() {
-        doReturn(true).when(mPaint).isElegantTextHeight();
         measureAndLayoutUrlBar();
-        applyFontMetrics(true, FONT_HEIGHT_ACTUAL_TALL);
+        applyFontMetrics(FONT_HEIGHT_ACTUAL_TALL);
 
         mUrlBar.setPaddingRelative(0, 5, 0, 15);
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(true, FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT - 20),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT - 20),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
     }
 
     @Test
     public void enforceMaxTextHeight_shrinkShortFontToFit_withElegantText_noPadding() {
-        doReturn(true).when(mPaint).isElegantTextHeight();
         measureAndLayoutUrlBar();
-        applyFontMetrics(true, FONT_HEIGHT_ACTUAL_SHORT);
+        applyFontMetrics(FONT_HEIGHT_ACTUAL_SHORT);
 
         mUrlBar.setPaddingRelative(0, 0, 0, 0);
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(true, FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
     }
 
     @Test
     public void enforceMaxTextHeight_shrinkShortFontToFit_withElegantText_withPadding() {
-        doReturn(true).when(mPaint).isElegantTextHeight();
         measureAndLayoutUrlBar();
-        applyFontMetrics(true, FONT_HEIGHT_ACTUAL_SHORT);
+        applyFontMetrics(FONT_HEIGHT_ACTUAL_SHORT);
 
         mUrlBar.setPaddingRelative(0, 5, 0, 15);
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(true, FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT - 20),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT - 20),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
-    }
-
-    @Test
-    public void enforceMaxTextHeight_growToFitCurrentlyDisabled() {
-        doReturn(false).when(mPaint).isElegantTextHeight();
-        measureAndLayoutUrlBarForSize(URL_BAR_WIDTH, 50);
-        mUrlBar.setPaddingRelative(0, 0, 0, 0);
-        mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, 40);
-        mFontMetrics.top = 0;
-        mFontMetrics.bottom = 40;
-
-        mUrlBar.enforceMaxTextHeight();
-        assertEquals(40, mUrlBar.getTextSize(), MathUtils.EPSILON);
     }
 
     @Test

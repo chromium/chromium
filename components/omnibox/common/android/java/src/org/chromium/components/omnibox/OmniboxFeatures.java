@@ -120,9 +120,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sAsyncViewInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, FeatureState.ENABLED_IN_TEST);
 
-    public static final CachedFlag sElegantTextHeight =
-            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, FeatureState.ENABLED_IN_PROD);
-
     public static final CachedFlag sJumpStartOmnibox =
             newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, FeatureState.ENABLED_IN_TEST);
 

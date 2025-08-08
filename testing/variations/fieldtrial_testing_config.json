@@ -16278,21 +16278,6 @@
             ]
         }
     ],
-    "OmniboxElegantTextHeight": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxElegantTextHeight"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxInspireMePhase2": [
         {
             "platforms": [
