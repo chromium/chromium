@@ -69,13 +69,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
                        TrackParentWindowDestruction) {
   // Create a second browser to prevent the app from exiting when the browser is
   // closed.
-  CreateBrowser(browser()->profile());
+  CreateBrowser(profile());
 
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
-  ExtensionInstallPrompt prompt(browser()->profile(),
+  ExtensionInstallPrompt prompt(profile(),
                                 browser()->window()->GetNativeWindow());
   browser()->window()->Close();
   content::RunAllPendingInMessageLoop();

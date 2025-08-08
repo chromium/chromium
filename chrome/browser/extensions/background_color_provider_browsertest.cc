@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                                 .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
                                 .AppendASCII("1.0.0.0")));
 
-  ProcessManager* manager = ProcessManager::Get(browser()->profile());
+  ProcessManager* manager = ProcessManager::Get(profile());
   ExtensionHost* host = FindHostWithPath(manager, "/backgroundpage.html", 1);
 
   TestWebContentsObserver observer(host->host_contents());

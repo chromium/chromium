@@ -223,8 +223,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     }
 
     return InstallApproval::CreateWithNoInstallPrompt(
-        browser()->profile(), id, std::move(*parsed_manifest),
-        strict_manifest_checks);
+        profile(), id, std::move(*parsed_manifest), strict_manifest_checks);
   }
 
   const Extension* GetInstalledExtension(
@@ -385,8 +384,8 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                       mock_prompt.get());
 
     std::unique_ptr<const PermissionSet> permissions =
-        ExtensionPrefs::Get(browser()->profile())
-            ->GetGrantedPermissions(mock_prompt->extension_id());
+        ExtensionPrefs::Get(profile())->GetGrantedPermissions(
+            mock_prompt->extension_id());
     ASSERT_TRUE(permissions.get());
   }
 };
@@ -494,8 +493,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   download_crx_util::SetMockInstallPromptForTesting(
       mock_prompt->CreatePrompt());
 
-  content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
+  content::DownloadManager* download_manager = profile()->GetDownloadManager();
 
   std::unique_ptr<content::DownloadTestObserver> observer(
       new content::DownloadTestObserverTerminal(
@@ -592,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, HiDpiThemeTest) {
 
   const extensions::ExtensionId extension_id(
       "gllekhaobjnhgeagipipnkpmmmpchacm");
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
@@ -608,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       "ldnnhddmnhbkjipkidpdiheffobcpfmf");
   base::FilePath base_path = test_data_dir_.AppendASCII("delayed_install");
 
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   ASSERT_TRUE(registry);
 
   // Install version 1 of the test extension. This extension does not have
@@ -1035,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
 
   extensions::ExtensionId extension_id = extension->id();
   UninstallExtension(extension_id);
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   EXPECT_FALSE(registry->enabled_extensions().GetByID(extension_id));
 
   content::RunAllTasksUntilIdle();
@@ -1057,11 +1055,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, DoNotSync) {
   EXPECT_FALSE(installer_done_future.Get().has_value());
   ASSERT_TRUE(crx_installer->extension());
 
-  const ExtensionPrefs* extension_prefs =
-      ExtensionPrefs::Get(browser()->profile());
+  const ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(extension_prefs->DoNotSync(crx_installer->extension()->id()));
-  EXPECT_FALSE(
-      sync_util::ShouldSync(browser()->profile(), crx_installer->extension()));
+  EXPECT_FALSE(sync_util::ShouldSync(profile(), crx_installer->extension()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, ManagementPolicy) {
@@ -1253,8 +1249,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionCrxInstallerTestWithWithholdingUI,
   // `should_withhold_permissions` is true.
   const Extension* extension =
       GetInstalledExtension(mock_prompt->extension_id());
-  PermissionsManager* permissions_manager =
-      PermissionsManager::Get(browser()->profile());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_EQ(should_withhold_permissions,
             permissions_manager->HasWithheldHostPermissions(*extension));
 

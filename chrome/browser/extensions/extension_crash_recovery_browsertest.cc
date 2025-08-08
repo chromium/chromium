@@ -51,16 +51,15 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
   }
 
   extensions::ExtensionService* GetExtensionService() {
-    return extensions::ExtensionSystem::Get(browser()->profile())->
-        extension_service();
+    return extensions::ExtensionSystem::Get(profile())->extension_service();
   }
 
   extensions::ProcessManager* GetProcessManager() {
-    return extensions::ProcessManager::Get(browser()->profile());
+    return extensions::ProcessManager::Get(profile());
   }
 
   ExtensionRegistry* GetExtensionRegistry() {
-    return ExtensionRegistry::Get(browser()->profile());
+    return ExtensionRegistry::Get(profile());
   }
 
   size_t GetEnabledExtensionCount() {
@@ -105,7 +104,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     ASSERT_FALSE(GetProcessManager()->GetAllFrames().empty());
     ASSERT_TRUE(extension_host->IsRendererLive());
     extensions::ProcessMap* process_map =
-        extensions::ProcessMap::Get(browser()->profile());
+        extensions::ProcessMap::Get(profile());
     ASSERT_TRUE(process_map->Contains(
         extension_id,
         extension_host->render_process_host()->GetDeprecatedID()));

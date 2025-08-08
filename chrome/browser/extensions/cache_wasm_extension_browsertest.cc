@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(WasmExtensionCachingBrowserTest, CacheWasmExtensions) {
   })");
 
   // After loading the extension, no WebAssembly has been executed.
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(profile());
   LOG(INFO) << "Loading extension, expecting zero misses / hits";
   loader.LoadExtension(GetExtensionDir());
   WaitForHistogramSamples(kHistogram, 0);

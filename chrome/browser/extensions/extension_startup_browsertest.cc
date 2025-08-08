@@ -184,13 +184,13 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
   }
 
   ExtensionRegistrar* GetExtensionRegistrar() {
-    return ExtensionRegistrar::Get(browser()->profile());
+    return ExtensionRegistrar::Get(GetProfile());
   }
 
   void WaitForServicesToStart(int num_expected_extensions,
                               bool expect_extensions_enabled) {
     extensions::ExtensionSystem* extension_system =
-        extensions::ExtensionSystem::Get(browser()->profile());
+        extensions::ExtensionSystem::Get(GetProfile());
     // Wait until the extension system is ready.
     base::RunLoop run_loop;
     extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
@@ -199,7 +199,7 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     if (!unauthenticated_load_allowed_)
       num_expected_extensions = 0;
     ASSERT_EQ(num_expected_extensions,
-              GetNonComponentEnabledExtensionCount(browser()->profile()));
+              GetNonComponentEnabledExtensionCount(GetProfile()));
 
     ASSERT_EQ(expect_extensions_enabled,
               GetExtensionRegistrar()->extensions_enabled());
@@ -208,12 +208,11 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
       return;
 
     extensions::ExtensionRegistry* registry =
-        extensions::ExtensionRegistry::Get(browser()->profile());
+        extensions::ExtensionRegistry::Get(GetProfile());
 
     ManifestContentScriptWaiter waiter;
     extensions::UserScriptManager* manager =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->user_script_manager();
+        extensions::ExtensionSystem::Get(GetProfile())->user_script_manager();
 
     for (const auto& extension : registry->enabled_extensions()) {
       extensions::ExtensionUserScriptLoader* loader =
@@ -295,26 +294,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, NoFileAccess) {
   std::vector<const extensions::Extension*> extension_list;
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(GetProfile());
   for (extensions::ExtensionSet::const_iterator it =
            registry->enabled_extensions().begin();
        it != registry->enabled_extensions().end(); ++it) {
     if ((*it)->location() == extensions::mojom::ManifestLocation::kComponent)
       continue;
-    if (extensions::util::AllowFileAccess((*it)->id(), browser()->profile()))
+    if (extensions::util::AllowFileAccess((*it)->id(), GetProfile())) {
       extension_list.push_back(it->get());
+    }
   }
 
   extensions::UserScriptManager* manager =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->user_script_manager();
+      extensions::ExtensionSystem::Get(GetProfile())->user_script_manager();
 
   for (size_t i = 0; i < extension_list.size(); ++i) {
     extensions::ExtensionId id = extension_list[i]->id();
     extensions::TestExtensionRegistryObserver registry_observer(registry, id);
     ManifestContentScriptWaiter waiter;
 
-    extensions::util::SetAllowFileAccess(id, browser()->profile(), false);
+    extensions::util::SetAllowFileAccess(id, GetProfile(), false);
     registry_observer.WaitForExtensionLoaded();
     extensions::ExtensionUserScriptLoader* loader =
         manager->GetUserScriptLoaderForExtension(id);
@@ -409,11 +408,11 @@ class DisableExtensionsExceptBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   ExtensionRegistry* GetExtensionRegistry() {
-    return ExtensionRegistry::Get(browser()->profile());
+    return ExtensionRegistry::Get(GetProfile());
   }
 
   ExtensionRegistrar* GetExtensionRegistrar() {
-    return ExtensionRegistrar::Get(browser()->profile());
+    return ExtensionRegistrar::Get(GetProfile());
   }
 };
 

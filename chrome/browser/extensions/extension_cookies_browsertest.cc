@@ -175,7 +175,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
                   const std::vector<std::string>& cookies) {
     GURL url = test_server()->GetURL(host, "/");
     for (const std::string& cookie : cookies) {
-      ASSERT_TRUE(content::SetCookie(browser()->profile(), url, cookie));
+      ASSERT_TRUE(content::SetCookie(profile(), url, cookie));
     }
   }
 
@@ -742,9 +742,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   constexpr char kActiveTabHost[] = "active-tab.example";
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), test_server()->GetURL(kActiveTabHost, "/title1.html")));
-  CookieSettingsFactory::GetForProfile(browser()->profile())
-      ->SetCookieSetting(test_server()->GetURL(kActiveTabHost, "/"),
-                         CONTENT_SETTING_ALLOW);
+  CookieSettingsFactory::GetForProfile(profile())->SetCookieSetting(
+      test_server()->GetURL(kActiveTabHost, "/"), CONTENT_SETTING_ALLOW);
   SetCookies(kActiveTabHost);
   content::RenderFrameHost* extension_subframe = nullptr;
   {

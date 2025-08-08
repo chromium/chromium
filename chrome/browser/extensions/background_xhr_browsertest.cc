@@ -102,7 +102,7 @@ class BackgroundXhrTest : public ExtensionBrowserTest {
 IN_PROC_BROWSER_TEST_F(BackgroundXhrTest, TlsClientAuth) {
   // Install a FakeClientCertStore so the client auth prompt isn't bypassed due
   // to the system certificate store returning no certificates.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(profile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateFakeClientCertStore));
 

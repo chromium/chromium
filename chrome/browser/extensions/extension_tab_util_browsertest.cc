@@ -501,8 +501,7 @@ class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
                      const syncer::CollaborationId& collaboration_id) {
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
-            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
     service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
   }
 

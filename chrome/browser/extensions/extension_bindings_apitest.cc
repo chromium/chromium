@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, LastError) {
 
   // Get the ExtensionHost that is hosting our background page.
   extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(browser()->profile());
+      extensions::ProcessManager::Get(profile());
   extensions::ExtensionHost* host = FindHostWithPath(manager, "/bg.html", 1);
   ASSERT_TRUE(host);
 

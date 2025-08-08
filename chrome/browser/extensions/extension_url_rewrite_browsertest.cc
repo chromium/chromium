@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionURLRewriteBrowserTest, NewTabPageURL) {
                                            GURL(chrome::kChromeUINewTabURL)));
   EXPECT_EQ("", GetLocationBarText());
   // Check that the actual and virtual URL corresponds to the new tab URL.
-  EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+  EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(profile()),
             GetNavigationEntry()->GetVirtualURL());
   EXPECT_TRUE(
       search::IsNTPOrRelatedURL(GetNavigationEntry()->GetURL(), profile()));

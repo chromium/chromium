@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
                         .AppendASCII("none"));
   ASSERT_TRUE(extension.get());
 
-  content::BrowserContext* browser_context = browser()->profile();
+  content::BrowserContext* browser_context = profile();
 
   // Popup hosts are created with the correct type and profile.
   std::unique_ptr<ExtensionViewHost> host =
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
                         .AppendASCII("simple_default"));
   ASSERT_TRUE(extension.get());
 
-  content::BrowserContext* browser_context = browser()->profile();
+  content::BrowserContext* browser_context = profile();
 
   {
     // Create a side panel host with a browser passed in.

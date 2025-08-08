@@ -81,13 +81,13 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
     ASSERT_EQ(theme->name(), expected_name);
   }
 
-  const Extension* GetTheme() const {
-    return ThemeServiceFactory::GetThemeForProfile(browser()->profile());
+  const Extension* GetTheme() {
+    return ThemeServiceFactory::GetThemeForProfile(profile());
   }
 
   void WaitForThemeChange() {
     test::ThemeServiceChangedWaiter waiter(
-        ThemeServiceFactory::GetForProfile(browser()->profile()));
+        ThemeServiceFactory::GetForProfile(profile()));
     waiter.WaitForThemeChanged();
   }
 };
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   InstallThemeAndVerify("theme", "camo theme");
 
   // Reset to default theme.
-  ThemeServiceFactory::GetForProfile(browser()->profile())->UseDefaultTheme();
+  ThemeServiceFactory::GetForProfile(profile())->UseDefaultTheme();
   ASSERT_FALSE(GetTheme());
 }
 
