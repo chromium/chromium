@@ -35,11 +35,7 @@ void FlingSchedulerAndroid::DidStopFlingingOnBrowser(
   rir_->DidStopFlinging();
 }
 
-bool FlingSchedulerAndroid::NeedsBeginFrameForFlingProgress() {
-  // Viz never receives an OnAnimate call since it don't have access to
-  // WindowAndroid. Hence, it always fall back to BeginFrames notifications
-  // coming from corresponding CompositorFrameSinkSupport's BeginFrameSource in
-  // Viz.
+bool FlingSchedulerAndroid::ProgressFlingOnFlingStart() {
   return true;
 }
 

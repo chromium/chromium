@@ -59,8 +59,8 @@ void FlingScheduler::DidStopFlingingOnBrowser(
   host_->GetRenderInputRouter()->DidStopFlinging();
 }
 
-bool FlingScheduler::NeedsBeginFrameForFlingProgress() {
-  return !GetCompositor();
+bool FlingScheduler::ProgressFlingOnFlingStart() {
+  return GetCompositor();
 }
 
 bool FlingScheduler::ShouldUseMobileFlingCurve() {

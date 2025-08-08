@@ -119,8 +119,8 @@ MockInputRouterClient::GetAndResetCompositorAllowedTouchAction() {
   return allowed;
 }
 
-bool MockInputRouterClient::NeedsBeginFrameForFlingProgress() {
-  return false;
+bool MockInputRouterClient::ProgressFlingOnFlingStart() {
+  return true;
 }
 
 bool MockInputRouterClient::ShouldUseMobileFlingCurve() {

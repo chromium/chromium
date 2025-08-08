@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(INPUT) FlingControllerSchedulerClient {
   virtual void DidStopFlingingOnBrowser(
       base::WeakPtr<FlingController> fling_controller) = 0;
 
-  virtual bool NeedsBeginFrameForFlingProgress() = 0;
+  virtual bool ProgressFlingOnFlingStart() = 0;
 
   virtual bool ShouldUseMobileFlingCurve() = 0;
 
