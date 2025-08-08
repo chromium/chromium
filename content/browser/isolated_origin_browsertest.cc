@@ -212,7 +212,15 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
 
 class IsolatedOriginTest : public IsolatedOriginTestBase {
  public:
-  IsolatedOriginTest() = default;
+  IsolatedOriginTest() {
+    // Setting create_speculative_rfh_delay_ms to deflake
+    // IsolatedServiceWorkerDoesNotReuseUnsuitableProcessWithPendingSiteEntry.
+    // The test may fail if the RFH creation task for hung page is called after
+    // the following navigation in the new tab.
+    features_.InitAndEnableFeatureWithParameters(
+        features::kDeferSpeculativeRFHCreation,
+        {{"create_speculative_rfh_delay_ms", "0"}});
+  }
   ~IsolatedOriginTest() override = default;
 
   IsolatedOriginTest(const IsolatedOriginTest&) = delete;
@@ -243,6 +251,9 @@ class IsolatedOriginTest : public IsolatedOriginTestBase {
                            "document.body.appendChild(link);"
                            "link.click();"));
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 // Tests that verify the header can be used to opt-in to origin isolation.
@@ -4289,6 +4300,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the request and send it.  This will place
   // isolated.foo.com on the list of pending sites for this tab's process.
+  // TODO(crbug.com/437230046): The test can be flaky if we enable the
+  // delay when deferring the speculative RFH creation. We need to make
+  // sure the navigation takes the RFH and RPH of the blank page before
+  // triggering the second request.
   EXPECT_TRUE(manager.WaitForRequestStart());
   manager.ResumeNavigation();
 
