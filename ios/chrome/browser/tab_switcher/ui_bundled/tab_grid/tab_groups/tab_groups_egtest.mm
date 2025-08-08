@@ -87,11 +87,9 @@ NSString* const kGroup2Name = @"2group";
 void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
   // It happens that on certain bots, the grey_longPress action doesn't return
   // an error for EarlGrey, but the context menu doesn't open accordingly.
-  // Waiting has been seen as fixing this.
-  base::PlatformThread::Sleep(base::Seconds(1));
-
+  // Long press for a pre-determined duration to force the context menu to open.
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_cell_index)]
-      performAction:grey_longPress()];
+      performAction:grey_longPressWithDuration(base::Seconds(1))];
 }
 
 // Displays the group cell context menu by long pressing at the group cell at
