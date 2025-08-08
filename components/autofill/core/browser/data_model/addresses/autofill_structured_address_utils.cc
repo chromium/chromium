@@ -346,9 +346,8 @@ bool AreStringTokenEquivalent(const std::u16string& one,
 
 bool AreStringTokenCompatible(const std::u16string& first,
                               const std::u16string& second) {
-  SortedTokenComparisonResult result = CompareSortedTokens(
-      TokenizeValue(AutofillProfileComparator::NormalizeForComparison(first)),
-      TokenizeValue(AutofillProfileComparator::NormalizeForComparison(second)));
+  SortedTokenComparisonResult result =
+      CompareSortedTokens(TokenizeValue(first), TokenizeValue(second));
   return result.status == SortedTokenComparisonStatus::kMatch ||
          result.status == SortedTokenComparisonStatus::kSubset;
 }
@@ -430,9 +429,12 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
     tokens.reserve(value.size());
     for (const std::u16string& part : parts.value()) {
       for (size_t j = 0; j < part.size(); j++) {
-        tokens.emplace_back(AddressToken{.value = part.substr(j, 1),
-                                         .normalized_value = part.substr(j, 1),
-                                         .position = index++});
+        tokens.emplace_back(
+            AddressToken{.value = part.substr(j, 1),
+                         .normalized_value =
+                             AutofillProfileComparator::NormalizeForComparison(
+                                 part.substr(j, 1)),
+                         .position = index++});
       }
     }
   } else {
