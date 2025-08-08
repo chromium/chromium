@@ -111,3 +111,7 @@ BASE_FEATURE(kLensInitialLvfZoomLevel90Percent,
 BASE_FEATURE(kLensTripleCameraEnabled,
              "LensTripleCameraEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensStrokesAPIEnabled,
+             "LensStrokesAPIEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
