@@ -144,9 +144,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
                                 static_cast<int>(FilteringBehavior::kAllow));
-  registry->RegisterBooleanPref(
-      prefs::kSupervisedUserSafeSites,
-      !base::FeatureList::IsEnabled(kAlignSafeSitesValueWithBrowserDefault));
+  registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, false);
   for (const char* pref : kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
   }
@@ -187,8 +185,7 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
 #endif
 
 bool IsSafeSitesEnabled(const PrefService& pref_service) {
-  if (base::FeatureList::IsEnabled(kDecoupleSafeSitesFromMainSwitch) &&
-      base::FeatureList::IsEnabled(kAlignSafeSitesValueWithBrowserDefault)) {
+  if (base::FeatureList::IsEnabled(kDecoupleSafeSitesFromMainSwitch)) {
     return pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
   }
 

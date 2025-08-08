@@ -81,10 +81,7 @@ void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values) {
 
   pref_values.SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
   pref_values.SetBoolean(feed::prefs::kEnableSnippets, false);
-
-  if (base::FeatureList::IsEnabled(kAlignSafeSitesValueWithBrowserDefault)) {
-    pref_values.SetBoolean(prefs::kSupervisedUserSafeSites, true);
-  }
+  pref_values.SetBoolean(prefs::kSupervisedUserSafeSites, true);
 }
 }  // namespace supervised_user
 

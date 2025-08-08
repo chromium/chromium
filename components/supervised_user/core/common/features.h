@@ -42,12 +42,7 @@ BASE_DECLARE_FEATURE(kSupervisedUserBlockInterstitialV3);
 BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 #endif
 
-// Manages kSupervisedUserSafeSites exclusively within managed user pref store,
-// while keeping the default value neutral.
-BASE_DECLARE_FEATURE(kAlignSafeSitesValueWithBrowserDefault);
-
-// Allows reading SafeSites setting without extra supervised user guard. Can be
-// enabled iff kAlignSafeSitesValueWithBrowserDefault is also enabled.
+// Allows reading SafeSites setting without extra supervised user guard.
 BASE_DECLARE_FEATURE(kDecoupleSafeSitesFromMainSwitch);
 
 #if BUILDFLAG(IS_ANDROID)
