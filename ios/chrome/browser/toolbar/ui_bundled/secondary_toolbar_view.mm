@@ -426,14 +426,16 @@ UIView* SecondaryToolbarLocationBarContainerView(
                        constant:-kAdaptiveToolbarMargin],
   ]];
 
-  if (IsDiamondPrototypeEnabled()) {
+  [NSLayoutConstraint activateConstraints:@[
+    [self.separator.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+    [self.separator.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    [self.separator.heightAnchor
+        constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                      kToolbarSeparatorHeight)],
+  ]];
+  if (!IsDiamondPrototypeEnabled()) {
     [NSLayoutConstraint activateConstraints:@[
-      [self.separator.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-      [self.separator.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-      [self.separator.heightAnchor
-          constraintEqualToConstant:ui::AlignValueToUpperPixel(
-                                        kToolbarSeparatorHeight)],
+      [self.separator.bottomAnchor constraintEqualToAnchor:self.topAnchor],
     ]];
   }
 }
