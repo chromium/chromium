@@ -91,11 +91,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ForceSignin"/>
 </enum>
 
-<enum name="GuestProfileCreatedType">
-  <int value="0" label="ParentGuest"/>
-  <int value="1" label="FirstChildGuest"/>
-</enum>
-
 <enum name="NukeProfileResult">
   <int value="0" label="Success (1st attempt)"/>
   <int value="1" label="Success (2nd attempt)"/>

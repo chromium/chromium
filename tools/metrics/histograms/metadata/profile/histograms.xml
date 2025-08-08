@@ -249,17 +249,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.Guest.TypeCreated" enum="GuestProfileCreatedType"
-    expires_after="2025-07-13">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the type of Guest profile created, either a parent guest or the
-    first child (off-the-record) guest profile for the active parent guest
-    profile. It is recorded during the guest profile creation.
-  </summary>
-</histogram>
-
 <histogram name="Profile.Incognito.Lifetime" units="minutes"
     expires_after="2026-01-18">
   <owner>rhalavati@chromium.org</owner>

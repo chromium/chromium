@@ -986,10 +986,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
 
   EXPECT_EQ(profile_metrics::BrowserProfileType::kGuest,
             profile_metrics::GetBrowserProfileType(guest_browser->profile()));
-
-  // Verify that both a parent and a child profile creation are recorded
-  EXPECT_THAT(tester.GetAllSamples("Profile.Guest.TypeCreated"),
-              ::testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
 #endif
 }
 

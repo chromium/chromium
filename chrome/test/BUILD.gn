@@ -8023,7 +8023,6 @@ test("unit_tests") {
       "../browser/policy/webhid_device_policy_handler_unittest.cc",
       "../browser/profile_resetter/profile_resetter_unittest.cc",
       "../browser/profile_resetter/reset_report_uploader_unittest.cc",
-      "../browser/profiles/guest_profile_creation_logger_unittest.cc",
       "../browser/profiles/profile_avatar_icon_util_unittest.cc",
       "../browser/profiles/profile_destroyer_unittest.cc",
       "../browser/renderer_context_menu/render_view_context_menu_unittest.cc",
