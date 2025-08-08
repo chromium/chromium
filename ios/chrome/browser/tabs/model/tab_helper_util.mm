@@ -86,7 +86,6 @@
 #import "ios/chrome/browser/passwords/model/well_known_change_password_tab_helper.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_tab_helper.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
@@ -326,7 +325,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
       web_state, profile->GetPrefs(),
-      PrerenderServiceFactory::GetForProfile(profile),
       HttpsUpgradeServiceFactory::GetForProfile(profile));
   HttpsOnlyModeContainer::CreateForWebState(web_state);
 

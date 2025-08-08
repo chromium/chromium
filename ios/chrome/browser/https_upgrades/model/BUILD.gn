@@ -42,8 +42,6 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//components/prefs:test_support",
     "//components/security_interstitials/core",
-    "//ios/chrome/browser/prerender/model",
-    "//ios/chrome/browser/prerender/model:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
