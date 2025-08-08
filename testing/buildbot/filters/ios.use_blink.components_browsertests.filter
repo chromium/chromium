@@ -16,6 +16,7 @@
 -DomDistillerDistillablePageUtilsTest.TestIsDistillablePage
 -DomDistillerDistillablePageUtilsTest.TestIsNotDistillablePage
 -DomDistillerJsTest.RunJsTests
+-ViewerJsTest.SanitizeLinks
 
 # These tests are hitting a NOTREACHED() in WebContentsImpl::GetSize().
 -All/PageContentProtoProviderBrowserTestMultiProcess.*
