@@ -155,27 +155,6 @@ class AutofillMetricsTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 };
 
-// Parameterized test class to test
-// kAutofillEnableLogFormEventsToAllParsedFormTypes and ensure form event
-// logging still works in the appropriate histograms when logging to parsed form
-// types on a webpage.
-class AutofillMetricsTestWithParsedFormLogging
-    : public testing::WithParamInterface<bool>,
-      public AutofillMetricsTest {
- public:
-  AutofillMetricsTestWithParsedFormLogging() {
-    feature_list_.InitWithFeatureState(
-        features::kAutofillEnableLogFormEventsToAllParsedFormTypes, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillMetricsTestWithParsedFormLogging,
-                         testing::Bool());
-
 TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
   FormData address_form = test::GetFormData(
       {.fields = {{.role = NAME_FULL,
@@ -1452,7 +1431,7 @@ TEST_F(AutofillMetricsTest, ShouldNotLogFormEventNoCardForAddressForm) {
 }
 
 // Test that we log parsed form events for address.
-TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressParsedFormEvents) {
+TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -1482,7 +1461,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressParsedFormEvents) {
 }
 
 // Test that we log interacted form events for address.
-TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressInteractedFormEvents) {
+TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
@@ -1561,7 +1540,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressInteractedFormEvents) {
 }
 
 // Test that we log suggestion shown form events for address.
-TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressShownFormEvents) {
+TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
   RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
@@ -1690,7 +1669,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressShownFormEvents) {
 }
 
 // Test that we log filled form events for address.
-TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressFilledFormEvents) {
+TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
   RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
@@ -1758,7 +1737,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressFilledFormEvents) {
 }
 
 // Test that we log submitted form events for address.
-TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressSubmittedFormEvents) {
+TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),
@@ -1900,7 +1879,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressSubmittedFormEvents) {
 }
 
 // Test that we log "will submit" and "submitted" form events for address.
-TEST_P(AutofillMetricsTestWithParsedFormLogging, AddressWillSubmitFormEvents) {
+TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   RecreateProfile();
   FormData form = CreateForm(
       {CreateTestFormField("State", "state", "", FormControlType::kInputText),

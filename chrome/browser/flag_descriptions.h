@@ -498,9 +498,6 @@ extern const char kAutofillEnableEmailOrLoyaltyCardsFillingDescription[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[];
 
-extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
-extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
-
 extern const char kAutofillEnableLoyaltyCardsFillingName[];
 extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
 

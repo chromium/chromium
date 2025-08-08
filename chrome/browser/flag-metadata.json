@@ -829,11 +829,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "autofill-enable-log-form-events-to-all-parsed-form-types",
-    "owners": [ "osaul@google.com",  "vinnypersky@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "autofill-enable-loyalty-cards-filling",
     "owners": [ "vizcay@google.com", "tchudakov@google.com"],
     "expiry_milestone": 145

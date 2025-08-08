@@ -66,8 +66,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableLoadBnplAllowlistAfterSyncing);
 
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment);
 COMPONENT_EXPORT(AUTOFILL)

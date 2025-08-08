@@ -11634,14 +11634,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "JumpStartOmnibox")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-log-form-events-to-all-parsed-form-types",
-     flag_descriptions::kAutofillEnableLogFormEventsToAllParsedFormTypesName,
-     flag_descriptions::
-         kAutofillEnableLogFormEventsToAllParsedFormTypesDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableLogFormEventsToAllParsedFormTypes)},
-
     {"enable-segmentation-internals-survey",
      flag_descriptions::kSegmentationSurveyPageName,
      flag_descriptions::kSegmentationSurveyPageDescription, kOsAll,
