@@ -112,8 +112,8 @@ void SearchApiUnitTest::TearDown() {
 
 void SearchApiUnitTest::RunFunctionAndExpectError(const std::string& input,
                                                   std::string_view expected) {
-  auto result = api_test_utils::RunFunctionAndReturnError(function(), input,
-                                                          browser()->profile());
+  auto result =
+      api_test_utils::RunFunctionAndReturnError(function(), input, profile());
   EXPECT_EQ(expected, result);
 }
 

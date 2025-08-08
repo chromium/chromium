@@ -123,8 +123,7 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   }
 
   tab_groups::TabGroupSyncService* sync_service() {
-    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-        browser()->profile());
+    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1652,8 +1651,7 @@ TEST_F(TabsApiUnitTest, ScreenshotDisabledInProfilePreferences) {
   web_contents_tester->NavigateAndCommit(kGoogle);
 
   // Disable screenshot.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots,
-                                               true);
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
 
   // Run the function and check result.
   std::string error = api_test_utils::RunFunctionAndReturnError(

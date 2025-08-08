@@ -20,7 +20,7 @@
 namespace extensions {
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, GetIncognitoModeAvailability) {
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = profile()->GetPrefs();
   pref_service->SetInteger(policy::policy_prefs::kIncognitoModeAvailability, 1);
 
   EXPECT_TRUE(RunExtensionTest("system/get_incognito_mode_availability", {},

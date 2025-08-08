@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
   host_port_pair.set_host(kHostname);
 
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ExtensionTestMessageListener listener("info_please",
                                         ReplyBehavior::kWillReply);
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, MAYBE_SocketTCPExtension) {
   host_port_pair.set_host("lOcAlHoSt");
 
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ExtensionTestMessageListener listener("info_please",
                                         ReplyBehavior::kWillReply);
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, MAYBE_SocketTCPExtension) {
 
 IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPServerExtension) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   ExtensionTestMessageListener listener("info_please",
                                         ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("socket/api")));
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPServerUnbindOnUnload) {
 #endif
 IN_PROC_BROWSER_TEST_F(SocketApiTest, MAYBE_SocketMulticast) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   ExtensionTestMessageListener listener("info_please",
                                         ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("socket/api")));
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, TCPSocketWriteQuota) {
   ASSERT_GT(port, 0);
 
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ExtensionTestMessageListener listener("info_please",
                                         ReplyBehavior::kWillReply);
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, UDPSocketWriteQuota) {
   ASSERT_GT(port, 0);
 
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ExtensionTestMessageListener listener("info_please",
                                         ReplyBehavior::kWillReply);

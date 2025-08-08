@@ -387,21 +387,21 @@ class SerialApiTest : public ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(SerialApiTest, SerialFakeHardware) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ASSERT_TRUE(RunExtensionTest("serial/api")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(SerialApiTest, SerialRealHardware) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ASSERT_TRUE(RunExtensionTest("serial/real_hardware")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(SerialApiTest, SerialRealHardwareFail) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   // chrome.serial.getDevices() should get an empty list when the serial
   // enumerator interface is unavailable.

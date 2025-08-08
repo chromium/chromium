@@ -49,7 +49,7 @@ using ExtensionTabsTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   // Create a new window which making it the "last focused" window.
   // Note that "last focused" means the "top" most window.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(new_browser));
 
   GURL url("about:blank");
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   function = new extensions::WindowsGetLastFocusedFunction();
   function->set_extension(extension.get());
   result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"populate\": true}]", browser()->profile()));
+      function.get(), "[{\"populate\": true}]", GetProfile()));
 
   // The id should always match the last focused window and does not depend
   // on what was passed to RunFunctionAndReturnSingleResult.
@@ -88,10 +88,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   const size_t kExtraWindows = 2;
   for (size_t i = 0; i < kExtraWindows; ++i) {
-    CreateBrowser(browser()->profile());
+    CreateBrowser(GetProfile());
   }
 
-  Browser* focused_window = CreateBrowser(browser()->profile());
+  Browser* focused_window = CreateBrowser(GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
 
   GURL url("about:blank");
@@ -108,8 +108,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   function->set_extension(extension.get());
   base::Value::List result_tabs(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[{\"lastFocusedWindow\":true}]",
-          browser()->profile())));
+          function.get(), "[{\"lastFocusedWindow\":true}]", GetProfile())));
 
   // We should have one initial tab and one added tab.
   EXPECT_EQ(2u, result_tabs.size());
@@ -123,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   function = new extensions::TabsQueryFunction();
   function->set_extension(extension.get());
   result_tabs = utils::ToList(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"lastFocusedWindow\":false}]", browser()->profile()));
+      function.get(), "[{\"lastFocusedWindow\":false}]", GetProfile()));
 
   // We should get one tab for each extra window and one for the initial window.
   EXPECT_EQ(kExtraWindows + 1, result_tabs.size());
@@ -266,10 +265,9 @@ Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
   Browser* new_browser;
   if (as_popup) {
     new_browser = Browser::Create(
-        Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+        Browser::CreateParams(Browser::TYPE_POPUP, GetProfile(), true));
   } else {
-    new_browser =
-        Browser::Create(Browser::CreateParams(browser()->profile(), true));
+    new_browser = Browser::Create(Browser::CreateParams(GetProfile(), true));
   }
   AddBlankTabAndShow(new_browser);
   return new_browser;
@@ -293,7 +291,7 @@ std::optional<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
     const std::string& params) {
   function->set_extension(extension_.get());
   return utils::RunFunctionAndReturnSingleResult(function, params,
-                                                 browser()->profile());
+                                                 GetProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
@@ -318,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
       " \"minWidth\": 200, \"minHeight\": 200,"
       " \"maxWidth\": 400, \"maxHeight\": 400}}");
   {
-    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(browser()->profile()),
+    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(GetProfile()),
                                  app_window->extension_id());
     waiter.WaitForActivated();
 
@@ -390,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
       " \"minWidth\": 200, \"minHeight\": 200,"
       " \"maxWidth\": 400, \"maxHeight\": 400}}");
   {
-    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(browser()->profile()),
+    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(GetProfile()),
                                  app_window->extension_id());
     waiter.WaitForActivated();
 
@@ -401,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
               api_test_utils::RunFunctionAndReturnError(
                   get_current_app_function.get(),
                   "[{\"populate\": true, \"windowTypes\": [ \"app\" ]}]",
-                  browser()->profile()));
+                  GetProfile()));
   }
 
   chrome::CloseWindow(normal_browser);

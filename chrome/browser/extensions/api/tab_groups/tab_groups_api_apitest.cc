@@ -40,20 +40,19 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
 // test.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupEventsAcrossProfiles) {
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
 
   // The EventRouter is shared between on- and off-the-record profiles, so
   // this observer will catch events for each. To verify that the events are
   // restricted to their respective contexts, we check the event metadata.
-  TestEventRouterObserver event_observer(
-      EventRouter::Get(browser()->profile()));
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
   browser()->tab_strip_model()->AddToNewGroup({0});
   ASSERT_TRUE(base::Contains(event_observer.events(),
                              api::tab_groups::OnCreated::kEventName));
   Event* normal_event =
       event_observer.events().at(api::tab_groups::OnCreated::kEventName).get();
-  EXPECT_EQ(normal_event->restrict_to_browser_context, browser()->profile());
+  EXPECT_EQ(normal_event->restrict_to_browser_context, profile());
 
   event_observer.ClearEvents();
 
@@ -74,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
   tab_groups::TabGroupId group =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
-  TestEventRouterObserver event_observer(
-      EventRouter::Get(browser()->profile()));
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
   std::unique_ptr<DetachedTabCollection> detached_group =
       browser()->tab_strip_model()->DetachTabGroupForInsertion(group);

@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrameIncognito) {
 
   GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
 
-  Browser* incognito_browser = OpenURLOffTheRecord(browser()->profile(), url);
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), url);
   ASSERT_TRUE(incognito_browser);
 
   // Now that we have a OTR browser, run the extension test.
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiPrerenderTestWithServiceWorker,
   // TODO(crbug.com/40248833): Use https in the test and remove this allowlist
   // entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
-      {"a.test"}, browser()->profile()->GetPrefs());
+      {"a.test"}, profile()->GetPrefs());
 
   ASSERT_TRUE(StartEmbeddedTestServer());
   EXPECT_TRUE(RunExtensionTest("webnavigation/prerendering")) << message_;
@@ -407,8 +407,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiPrerenderTestWithServiceWorker,
 #endif
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Download) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
+  content::DownloadManager* download_manager = profile()->GetDownloadManager();
   content::DownloadTestObserverTerminal observer(
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
@@ -422,7 +421,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
   // TODO(crbug.com/40248833): Use https in the test and remove these allowlist
   // entries.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
-      {"www.a.com", "www.b.com"}, browser()->profile()->GetPrefs());
+      {"www.a.com", "www.b.com"}, profile()->GetPrefs());
 
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -629,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
   GURL url = embedded_test_server()->GetURL(
       "/extensions/api_test/webnavigation/targetBlank/a.html");
 
-  Browser* otr_browser = OpenURLOffTheRecord(browser()->profile(), url);
+  Browser* otr_browser = OpenURLOffTheRecord(profile(), url);
   WebContents* tab = otr_browser->tab_strip_model()->GetActiveWebContents();
   content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(tab);
 
@@ -735,7 +734,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
   // TODO(crbug.com/40248833): Use https in the test and remove this allowlist
   // entry.
   ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
-      {"www.a.com"}, browser()->profile()->GetPrefs());
+      {"www.a.com"}, profile()->GetPrefs());
 
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   ASSERT_TRUE(StartEmbeddedTestServer());

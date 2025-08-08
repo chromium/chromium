@@ -312,8 +312,7 @@ class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
     TabGroupsApiUnitTest ::SetUp();
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
-            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
     service->SetIsInitializedForTesting(true);
   }
 
@@ -321,8 +320,7 @@ class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
                      const syncer::CollaborationId& collaboration_id) {
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
-            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
     service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
   }
 
@@ -347,8 +345,8 @@ TEST_F(SharedTabGroupExtensionsTabUtilTest, TabGroupsQueryShared) {
   {  // Query unshared groups.
     scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-    base::Value::List groups_list = RunTabGroupsQueryFunction(
-        browser()->profile(), extension.get(), not_shared_query);
+    base::Value::List groups_list =
+        RunTabGroupsQueryFunction(profile(), extension.get(), not_shared_query);
     ASSERT_EQ(1u, groups_list.size());
 
     const base::Value& group_info = groups_list[0];
@@ -484,8 +482,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
   tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
 
   tab_groups::TabGroupSyncService* saved_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser()->profile());
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
   ASSERT_TRUE(saved_service);
   saved_service->SetIsInitializedForTesting(true);
   saved_service->AddGroup(

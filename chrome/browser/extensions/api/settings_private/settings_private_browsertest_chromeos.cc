@@ -26,7 +26,7 @@ class SettingsPrivateGuestModeTest : public MixinBasedInProcessBrowserTest {
 
 // Regression test for https://crbug.com/887383.
 IN_PROC_BROWSER_TEST_F(SettingsPrivateGuestModeTest, GuestMode) {
-  Profile* guest_profile = browser()->profile();
+  Profile* guest_profile = GetProfile();
   EXPECT_TRUE(guest_profile->IsOffTheRecord());
 
   // SettingsPrivate uses the incognito profile, not the recording profile,
