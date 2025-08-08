@@ -21,7 +21,6 @@
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_state_observer.h"
 
-class PrerenderService;
 class SessionRestorationService;
 class WebStateList;
 
@@ -202,10 +201,6 @@ class TabUsageRecorderBrowserAgent
 
   // The WebStateList containing all the monitored tabs.
   raw_ptr<WebStateList> web_state_list_;  // weak
-
-  // The PrerenderService used to check whether a tab is pre-rendering. May
-  // be null during unit testing.
-  raw_ptr<PrerenderService> prerender_service_;
 
   // Observation for SessionRestorationService events.
   base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
