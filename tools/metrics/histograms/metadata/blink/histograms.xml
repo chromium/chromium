@@ -513,8 +513,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Canvas.ToBlob.IdleTaskStatus"
-    enum="IdleTaskStatus" expires_after="2025-04-01">
+<histogram name="Blink.Canvas.ToBlob.IdleTaskStatus" enum="IdleTaskStatus"
+    expires_after="2025-04-01">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
