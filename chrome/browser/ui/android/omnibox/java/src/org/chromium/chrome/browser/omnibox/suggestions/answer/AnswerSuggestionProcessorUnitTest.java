@@ -29,6 +29,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -221,7 +222,8 @@ public class AnswerSuggestionProcessorUnitTest {
                         Optional.of(mImageSupplier),
                         mBookmarkState,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new AnswerSuggestionProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }

@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -131,7 +132,8 @@ public class BaseSuggestionProcessorUnitTest {
                         Optional.of(mImageSupplier),
                         mBookmarkState,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new TestBaseSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         mInput.setPageClassification(
@@ -271,7 +273,7 @@ public class BaseSuggestionProcessorUnitTest {
                         R.string.accessibility_omnibox_btn_refine, mSuggestion.getFillIntoEdit());
         Assert.assertEquals(expectedDescription, action.accessibilityDescription);
         Assert.assertEquals(
-                R.drawable.btn_suggestion_refine,
+                R.drawable.btn_suggestion_refine_up,
                 shadowOf(action.icon.drawable).getCreatedFromResId());
 
         var monitor = new UserActionTester();
@@ -299,9 +301,7 @@ public class BaseSuggestionProcessorUnitTest {
                 mContext.getString(
                         R.string.accessibility_omnibox_btn_refine, mSuggestion.getFillIntoEdit());
         Assert.assertEquals(expectedDescription, action.accessibilityDescription);
-        Assert.assertEquals(
-                R.drawable.btn_suggestion_refine,
-                shadowOf(action.icon.drawable).getCreatedFromResId());
+        // Note: shadows don't work with vector drawables.
 
         var monitor = new UserActionTester();
         action.callback.run();

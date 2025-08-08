@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
@@ -48,6 +49,9 @@ public final class AutocompleteUIContext {
     /** Share delegate supplier, may be null if sharing functionality is not available. */
     public final @Nullable Supplier<ShareDelegate> shareDelegateSupplier;
 
+    /** Toolbar position supplier, reporting the on-screen position of the Toolbar. */
+    public final Supplier<@ControlsPosition Integer> toolbarPositionSupplier;
+
     /**
      * @param context Android context for UI operations
      * @param host Component for creating suggestion view delegates
@@ -64,7 +68,8 @@ public final class AutocompleteUIContext {
             Optional<OmniboxImageSupplier> imageSupplier,
             BookmarkState bookmarkState,
             Supplier<@Nullable Tab> activityTabSupplier,
-            @Nullable Supplier<ShareDelegate> shareDelegateSupplier) {
+            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         this.context = context;
         this.host = host;
         this.textProvider = textProvider;
@@ -72,5 +77,6 @@ public final class AutocompleteUIContext {
         this.bookmarkState = bookmarkState;
         this.activityTabSupplier = activityTabSupplier;
         this.shareDelegateSupplier = shareDelegateSupplier;
+        this.toolbarPositionSupplier = toolbarPositionSupplier;
     }
 }

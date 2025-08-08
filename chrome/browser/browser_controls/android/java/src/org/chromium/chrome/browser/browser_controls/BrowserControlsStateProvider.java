@@ -10,8 +10,10 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** An interface for retrieving and monitoring browser controls state. */
 @NullMarked
@@ -21,6 +23,7 @@ public interface BrowserControlsStateProvider {
      */
     @IntDef({ControlsPosition.TOP, ControlsPosition.BOTTOM, ControlsPosition.NONE})
     @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
     @interface ControlsPosition {
         /** Controls are top-anchored. */
         int TOP = 0;

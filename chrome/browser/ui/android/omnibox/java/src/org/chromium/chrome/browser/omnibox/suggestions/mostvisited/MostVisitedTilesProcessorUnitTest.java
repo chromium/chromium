@@ -40,6 +40,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -129,7 +130,8 @@ public final class MostVisitedTilesProcessorUnitTest {
                         Optional.of(mImageSupplier),
                         mBookmarkState,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new MostVisitedTilesProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }
@@ -214,7 +216,8 @@ public final class MostVisitedTilesProcessorUnitTest {
                         /* imageSupplier= */ Optional.empty(),
                         mBookmarkState,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new MostVisitedTilesProcessor(uiContext);
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));

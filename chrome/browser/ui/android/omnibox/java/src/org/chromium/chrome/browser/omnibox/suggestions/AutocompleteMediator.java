@@ -205,7 +205,10 @@ class AutocompleteMediator
         mWindowAndroid = windowAndroid;
         mEmbedder = embedder;
         mDropdownViewInfoListBuilder =
-                new DropdownItemViewInfoListBuilder(activityTabSupplier, bookmarkState);
+                new DropdownItemViewInfoListBuilder(
+                        activityTabSupplier,
+                        bookmarkState,
+                        locationBarDataProvider.getToolbarPositionSupplier());
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(mSuggestionModels, context);

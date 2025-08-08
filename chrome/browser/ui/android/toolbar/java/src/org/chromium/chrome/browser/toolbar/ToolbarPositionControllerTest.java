@@ -261,6 +261,8 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Boolean> mIsFindInPageShowing =
             new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<@ControlsPosition Integer> mToolbarPosition =
+            new ObservableSupplierImpl<>(ControlsPosition.NONE);
     private final FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private BottomControlsStacker mBottomControlsStacker;
     private ToolbarPositionController mController;
@@ -345,7 +347,8 @@ public class ToolbarPositionControllerTest {
                         mControlContainerHeightSupplier,
                         mTopInsetCoordinatorSupplier,
                         new Handler(Looper.getMainLooper()),
-                        mContext);
+                        mContext,
+                        mToolbarPosition);
 
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }

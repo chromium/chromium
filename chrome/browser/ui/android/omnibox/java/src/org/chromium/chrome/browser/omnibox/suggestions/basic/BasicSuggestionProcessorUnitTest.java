@@ -33,6 +33,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -148,7 +149,8 @@ public class BasicSuggestionProcessorUnitTest {
                         Optional.of(mImageSupplier),
                         mIsBookmarked,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new BasicSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();
@@ -373,7 +375,7 @@ public class BasicSuggestionProcessorUnitTest {
         Assert.assertEquals(1, actions.size());
         final OmniboxDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(
-                R.drawable.btn_suggestion_refine,
+                R.drawable.btn_suggestion_refine_up,
                 shadowOf(iconState.drawable).getCreatedFromResId());
     }
 

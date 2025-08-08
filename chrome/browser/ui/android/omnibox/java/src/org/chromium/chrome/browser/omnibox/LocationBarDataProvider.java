@@ -10,8 +10,10 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
@@ -165,4 +167,7 @@ public interface LocationBarDataProvider {
     /** Returns the resource ID of the content description for the security icon. */
     @StringRes
     int getSecurityIconContentDescriptionResourceId();
+
+    /** Returns the user-selected placement of the Toolbar. */
+    Supplier<@ControlsPosition Integer> getToolbarPositionSupplier();
 }

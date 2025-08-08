@@ -13,6 +13,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
@@ -51,13 +52,17 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private Optional<OmniboxImageSupplier> mImageSupplier;
     private final BookmarkState mBookmarkState;
+    private final Supplier<@ControlsPosition Integer> mToolbarPositionSupplier;
 
     DropdownItemViewInfoListBuilder(
-            Supplier<@Nullable Tab> tabSupplier, BookmarkState bookmarkState) {
+            Supplier<@Nullable Tab> tabSupplier,
+            BookmarkState bookmarkState,
+            Supplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mActivityTabSupplier = tabSupplier;
         mImageSupplier = Optional.empty();
         mBookmarkState = bookmarkState;
+        mToolbarPositionSupplier = toolbarPositionSupplier;
     }
 
     /**
@@ -77,7 +82,8 @@ class DropdownItemViewInfoListBuilder {
                 mImageSupplier,
                 mBookmarkState,
                 mActivityTabSupplier,
-                mShareDelegateSupplier);
+                mShareDelegateSupplier,
+                mToolbarPositionSupplier);
     }
 
     /**

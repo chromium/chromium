@@ -22,9 +22,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -139,6 +141,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private final NewTabPageDelegate mNtpDelegate;
     private final UrlFormatter mUrlFormatter;
     private final OfflineStatus mOfflineStatus;
+    private final Supplier<@ControlsPosition Integer> mToolbarPositionSupplier;
+
     // Always null if optimizations are disabled. Otherwise, non-null and unchanging following
     // native init. Always tied to the original profile which is safe because no underlying
     // services have an incognito-specific instance.
@@ -187,7 +191,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             Context context,
             NewTabPageDelegate newTabPageDelegate,
             UrlFormatter urlFormatter,
-            OfflineStatus offlineStatus) {
+            OfflineStatus offlineStatus,
+            Supplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         mContext = context;
         mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
@@ -196,6 +201,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ false);
         mUrlForDisplay = "";
         mFormattedFullUrl = "";
+        mToolbarPositionSupplier = toolbarPositionSupplier;
     }
 
     /** Handle any initialization that must occur after native has been initialized. */
@@ -889,5 +895,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
             observer.onPageLoadStopped();
         }
+    }
+
+    @Override
+    public Supplier<@ControlsPosition Integer> getToolbarPositionSupplier() {
+        return mToolbarPositionSupplier;
     }
 }

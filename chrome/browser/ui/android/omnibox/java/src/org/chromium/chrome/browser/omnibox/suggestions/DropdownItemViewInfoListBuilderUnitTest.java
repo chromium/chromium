@@ -37,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -74,7 +75,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
         when(mMockSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
 
-        mBuilder = new DropdownItemViewInfoListBuilder(() -> null, (url) -> false);
+        mBuilder =
+                new DropdownItemViewInfoListBuilder(
+                        () -> null, (url) -> false, () -> ControlsPosition.TOP);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setGroupSeparatorProcessorForTest(mGroupSeparatorProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);

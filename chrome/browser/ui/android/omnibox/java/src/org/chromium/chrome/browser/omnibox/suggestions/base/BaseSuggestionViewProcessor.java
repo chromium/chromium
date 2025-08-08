@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
@@ -42,7 +43,7 @@ import java.util.Optional;
 /** A class that handles base properties and model for most suggestions. */
 @NullMarked
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
-
+    protected final AutocompleteUIContext mUiContext;
     protected final Context mContext;
     protected final SuggestionHost mSuggestionHost;
     private final ActionChipsProcessor mActionChipsProcessor;
@@ -55,6 +56,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param uiContext Context object containing common UI dependencies.
      */
     public BaseSuggestionViewProcessor(AutocompleteUIContext uiContext) {
+        mUiContext = uiContext;
         mContext = uiContext.context;
         mSuggestionHost = uiContext.host;
         mImageSupplier = uiContext.imageSupplier;
@@ -162,7 +164,11 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                             mContext,
                             R.string.accessibility_omnibox_btn_refine,
                             suggestion.getFillIntoEdit());
-            icon = R.drawable.btn_suggestion_refine;
+            icon =
+                    mUiContext.toolbarPositionSupplier.get() == ControlsPosition.TOP
+                            ? R.drawable.btn_suggestion_refine_up
+                            : R.drawable.btn_suggestion_refine_down;
+
             action =
                     () -> {
                         if (suggestion.isSearchSuggestion()) {

@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -115,7 +116,8 @@ public class StatusViewRenderTest {
                                     mStatusView.getContext(),
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
-                                    ToolbarUnitTestUtils.OFFLINE_STATUS);
+                                    ToolbarUnitTestUtils.OFFLINE_STATUS,
+                                    () -> ControlsPosition.TOP);
                     mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(

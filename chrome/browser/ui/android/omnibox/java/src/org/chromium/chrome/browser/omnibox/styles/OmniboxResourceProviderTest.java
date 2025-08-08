@@ -392,15 +392,16 @@ public class OmniboxResourceProviderTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void getDrawableCached() {
         Drawable drawable =
-                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine);
+                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
         ConstantState constantState = drawable.getConstantState();
 
         Assert.assertEquals(
                 constantState,
                 OmniboxResourceProvider.getDrawableCacheForTesting()
-                        .get(R.drawable.btn_suggestion_refine));
+                        .get(R.drawable.btn_suggestion_refine_up));
 
-        drawable = OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine);
+        drawable =
+                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
         Assert.assertNotNull(drawable);
     }
 
@@ -455,13 +456,13 @@ public class OmniboxResourceProviderTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void invalidateDrawableCache() {
         Drawable drawable =
-                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine);
+                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
         ConstantState constantState = drawable.getConstantState();
 
         Assert.assertEquals(
                 constantState,
                 OmniboxResourceProvider.getDrawableCacheForTesting()
-                        .get(R.drawable.btn_suggestion_refine));
+                        .get(R.drawable.btn_suggestion_refine_up));
 
         OmniboxResourceProvider.invalidateDrawableCache();
         Assert.assertEquals(0, OmniboxResourceProvider.getDrawableCacheForTesting().size());

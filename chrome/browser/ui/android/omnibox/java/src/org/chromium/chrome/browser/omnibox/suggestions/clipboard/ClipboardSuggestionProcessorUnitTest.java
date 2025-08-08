@@ -33,6 +33,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -99,7 +100,8 @@ public class ClipboardSuggestionProcessorUnitTest {
                         Optional.of(mImageSupplier),
                         mBookmarkState,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new ClipboardSuggestionProcessor(uiContext);
         mRootView = new LinearLayout(mContext);
         mTitleTextView = new TextView(mContext);

@@ -37,6 +37,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -132,7 +133,8 @@ public class EntitySuggestionProcessorUnitTest {
                         Optional.of(mImageSupplier),
                         mBookmarkState,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new EntitySuggestionProcessor(uiContext);
         doReturn("").when(mTextProvider).getTextWithoutAutocomplete();
     }
@@ -224,7 +226,8 @@ public class EntitySuggestionProcessorUnitTest {
                         /* imageSupplier= */ Optional.empty(),
                         mBookmarkState,
                         mTabSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        () -> ControlsPosition.TOP);
         mProcessor = new EntitySuggestionProcessor(uiContext);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);

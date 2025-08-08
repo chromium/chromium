@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -115,7 +116,8 @@ public final class ToolbarSecurityIconTest {
                                 context,
                                 NewTabPageDelegate.EMPTY,
                                 (url) -> url.getSpec(),
-                                ToolbarUnitTestUtils.OFFLINE_STATUS));
+                                ToolbarUnitTestUtils.OFFLINE_STATUS,
+                                () -> ControlsPosition.TOP));
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
