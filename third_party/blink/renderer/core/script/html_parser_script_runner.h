@@ -48,6 +48,15 @@ class HTMLParserScriptRunnerHost;
 // executing it when required.
 //
 // An HTMLParserScriptRunner is owned by its host, an HTMLDocumentParser.
+//
+// Design Rationale:
+// Its sole responsibility is to manage scripts that directly interfere with the
+// parser's lifecycle (i.e., parser-blocking and deferred scripts).
+//
+// Asynchronous scripts do not affect the parser's lifecycle. To keep
+// this class's responsibility pure, they are routed directly to
+// Document::ScriptRunner during the preparation phase in ScriptLoader and are
+// never processed by this class.
 class HTMLParserScriptRunner final
     : public GarbageCollected<HTMLParserScriptRunner>,
       public PendingScriptClient,
