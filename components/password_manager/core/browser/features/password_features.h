@@ -105,6 +105,7 @@ BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetV2);
 BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
 
 // Allows filling from a secondary recovery password saved as a backup on iOS.
+// Acts as an iOS kill switch for the `kImprovedPasswordChangeService` feature.
 BASE_DECLARE_FEATURE(kIOSFillRecoveryPassword);
 
 #endif  // BUILDFLAG(IS_IOS)

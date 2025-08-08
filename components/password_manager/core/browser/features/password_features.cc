@@ -103,7 +103,7 @@ BASE_FEATURE(kIOSProactivePasswordGenerationBottomSheet,
 
 BASE_FEATURE(kIOSFillRecoveryPassword,
              "IOSFillRecoveryPassword",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 BASE_FEATURE(kPasswordFormGroupedAffiliations,
