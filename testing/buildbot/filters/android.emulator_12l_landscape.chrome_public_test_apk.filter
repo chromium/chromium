@@ -5,8 +5,3 @@
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testCloseButtonReturnsToUrlBeforeRedirects
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testOffScopeNewTabLinkShowsToolbar
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testOpenInChromeFromContextMenuTabbedChrome
-
-# https://crbug.com/436445484
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testPrintPageLongPress
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSavePageLongPress
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSharePageLongPress

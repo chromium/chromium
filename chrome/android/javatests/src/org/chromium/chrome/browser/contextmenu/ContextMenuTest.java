@@ -724,8 +724,6 @@ public class ContextMenuTest {
         Assert.assertEquals("Copied tel number is not correct", "10000000000", getClipboardText());
     }
 
-    // TODO(436445484): The test is disabled for some Android 12 builders, please remove comment and
-    // update the filters to re-enable test.
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
@@ -1278,8 +1276,6 @@ public class ContextMenuTest {
                 chromeExtrasCaptor.getValue().saveLastUsed());
     }
 
-    // TODO(436445484): The test is disabled for some Android 12 builders, please remove comment and
-    // update the filters to re-enable test.
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
@@ -1374,8 +1370,6 @@ public class ContextMenuTest {
                 chromeExtrasCaptor.getValue().saveLastUsed());
     }
 
-    // TODO(436445484): The test is disabled for some Android 12 builders, please remove comment and
-    // update the filters to re-enable test.
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
