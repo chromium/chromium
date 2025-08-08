@@ -130,7 +130,7 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
 
   CoreAccountInfo CreateFakeAccountInfoAndSetAsPrimary() {
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile());
+        IdentityManagerFactory::GetForProfile(GetProfile());
     CoreAccountInfo account_info = SetPrimaryAccount(
         identity_manager, kTestEmail, signin::ConsentLevel::kSync);
     SetRefreshTokenForPrimaryAccount(identity_manager, kFakeRefreshToken);
@@ -152,7 +152,7 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     resolution_data.url = url;
     resolution_data.cookies = resolution_cookies;
 
-    flow_ = std::make_unique<GaiaRemoteConsentFlow>(&mock(), profile(),
+    flow_ = std::make_unique<GaiaRemoteConsentFlow>(&mock(), GetProfile(),
                                                     token_key, resolution_data,
                                                     /*user_gesture=*/true);
   }
@@ -189,8 +189,6 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* fake_gaia_test_server() {
     return &fake_gaia_test_server_;
   }
-
-  Profile* profile() { return browser()->profile(); }
 
   GaiaRemoteConsentFlow* flow() { return flow_.get(); }
 
