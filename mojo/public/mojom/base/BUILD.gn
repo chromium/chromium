@@ -15,6 +15,7 @@ mojom_component("base") {
     "big_buffer.mojom",
     "big_string.mojom",
     "binder.mojom",
+    "byte_count.mojom",
     "byte_string.mojom",
     "empty.mojom",
     "error.mojom",
@@ -141,7 +142,7 @@ mojom_component("base") {
         {
           mojom = "mojo_base.mojom.Empty"
           cpp = "::std::monostate"
-        }
+        },
       ]
       traits_headers = [ "//mojo/public/cpp/base/empty_mojom_traits.h" ]
     },
@@ -424,6 +425,20 @@ mojom_component("base") {
       traits_headers = [ "//mojo/public/cpp/base/big_string_mojom_traits.h" ]
       traits_public_deps = [
         "//mojo/public/cpp/base",
+        "//mojo/public/cpp/base:typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteCount"
+          cpp = "::base::ByteCount"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_count_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
         "//mojo/public/cpp/base:typemap_traits",
       ]
     },

@@ -5,10 +5,9 @@
 #ifndef BASE_BYTE_COUNT_H_
 #define BASE_BYTE_COUNT_H_
 
-#include <compare>
+#include <concepts>
 #include <cstdint>
 #include <iosfwd>
-#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/numerics/checked_math.h"
@@ -56,6 +55,10 @@ class BASE_EXPORT ByteCount {
 
   constexpr bool is_zero() const { return bytes_ == 0; }
 
+  // A value corresponding to the "maximum" number of bytes possible. Useful as
+  // a constant to mean "unlimited".
+  static constexpr ByteCount Max();
+
   // Conversion to integral values.
   constexpr int64_t InBytes() const { return bytes_; }
   constexpr int64_t InKiB() const { return bytes_ / 1024; }
@@ -92,6 +95,9 @@ class BASE_EXPORT ByteCount {
 
   // Math operations.
 
+  constexpr ByteCount operator+() const { return *this; }
+  constexpr ByteCount operator-() const { return ByteCount(-bytes_); }
+
   constexpr ByteCount& operator+=(const ByteCount& other) {
     *this =
         ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) + other.bytes_);
@@ -127,6 +133,12 @@ class BASE_EXPORT ByteCount {
   }
 
   template <typename T>
+  friend constexpr ByteCount operator*(const T& left, ByteCount right) {
+    right *= left;
+    return right;
+  }
+
+  template <typename T>
   constexpr ByteCount& operator/=(const T& value) {
     *this = ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) / value);
     return *this;
@@ -153,86 +165,91 @@ class BASE_EXPORT ByteCount {
 // premature truncation.
 
 template <typename T>
-  requires std::is_integral_v<T>
+  requires std::integral<T>
 constexpr ByteCount KiB(T kib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(kib) * 1024);
 }
 
 template <typename T>
-  requires std::is_floating_point_v<T>
+  requires std::floating_point<T>
 constexpr ByteCount KiB(T kib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(kib * 1024.0));
 }
 
 template <typename T>
-  requires std::is_integral_v<T>
+  requires std::integral<T>
 constexpr ByteCount MiB(T mib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(mib) * 1024 * 1024);
 }
 
 template <typename T>
-  requires std::is_floating_point_v<T>
+  requires std::floating_point<T>
 constexpr ByteCount MiB(T mib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(mib * 1024.0 * 1024.0));
 }
 
 template <typename T>
-  requires std::is_integral_v<T>
+  requires std::integral<T>
 constexpr ByteCount GiB(T gib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(gib) * 1024 * 1024 *
                                 1024);
 }
 
 template <typename T>
-  requires std::is_floating_point_v<T>
+  requires std::floating_point<T>
 constexpr ByteCount GiB(T gib) {
   return ByteCount::FromChecked(
       CheckedNumeric<int64_t>(gib * 1024.0 * 1024.0 * 1024.0));
 }
 
 template <typename T>
-  requires std::is_integral_v<T>
+  requires std::integral<T>
 constexpr ByteCount TiB(T tib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(tib) * 1024 * 1024 *
                                 1024 * 1024);
 }
 
 template <typename T>
-  requires std::is_floating_point_v<T>
+  requires std::floating_point<T>
 constexpr ByteCount TiB(T gib) {
   return ByteCount::FromChecked(
       CheckedNumeric<int64_t>(gib * 1024.0 * 1024.0 * 1024.0 * 1024.0));
 }
 
 template <typename T>
-  requires std::is_integral_v<T>
+  requires std::integral<T>
 constexpr ByteCount PiB(T pib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(pib) * 1024 * 1024 *
                                 1024 * 1024 * 1024);
 }
 
 template <typename T>
-  requires std::is_floating_point_v<T>
+  requires std::floating_point<T>
 constexpr ByteCount PiB(T pib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(
       pib * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0));
 }
 
 template <typename T>
-  requires std::is_integral_v<T>
+  requires std::integral<T>
 constexpr ByteCount EiB(T eib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(eib) * 1024 * 1024 *
                                 1024 * 1024 * 1024 * 1024);
 }
 
 template <typename T>
-  requires std::is_floating_point_v<T>
+  requires std::floating_point<T>
 constexpr ByteCount EiB(T eib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(
       eib * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0));
 }
 
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, ByteCount byte_count);
+
+// static
+constexpr ByteCount ByteCount::Max() {
+  return ByteCount(std::numeric_limits<int64_t>::max());
+}
 
 }  // namespace base
 
