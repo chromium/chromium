@@ -279,7 +279,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     const GURL start_url = https_test_server_.GetURL(web_app_start_url);
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
-    auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
+    auto* provider = web_app::WebAppProvider::GetForTest(profile());
     EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(web_app_id));
     EXPECT_EQ(0, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
@@ -400,13 +400,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   EXPECT_TRUE(registry->enabled_extensions().GetByID(
       extension_ids_["enabled_extension"]));
 
   // Ensure that all actions are allowed.
-  extensions::ExtensionSystem::Get(
-      browser()->profile())->management_policy()->UnregisterAllProviders();
+  extensions::ExtensionSystem::Get(profile())
+      ->management_policy()
+      ->UnregisterAllProviders();
 
   ASSERT_TRUE(RunExtensionTest("management/management_policy",
                                {.custom_arg = "runAllowedTests"}));
@@ -420,13 +421,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
   LoadExtensions();
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   EXPECT_TRUE(registry->enabled_extensions().GetByID(
       extension_ids_["enabled_extension"]));
 
   // Prohibit status changes.
-  extensions::ManagementPolicy* policy = extensions::ExtensionSystem::Get(
-      browser()->profile())->management_policy();
+  extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(profile())->management_policy();
   policy->UnregisterAllProviders();
   extensions::TestManagementPolicyProvider provider(
       extensions::TestManagementPolicyProvider::PROHIBIT_MODIFY_STATUS |
@@ -452,7 +453,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
 
   // Find the app's browser.  Check that it is a popup.
   ASSERT_EQ(2u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   Browser* app_browser = FindOtherBrowser(browser());
   ASSERT_TRUE(app_browser->is_type_app());
 
@@ -460,18 +461,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   CloseBrowserSynchronously(app_browser);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   // Unload the extension.
   UninstallExtension(app_id);
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   ASSERT_FALSE(registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::EVERYTHING));
 
   // Set a pref indicating that the user wants to launch in a regular tab.
   // This should be ignored, because panel apps always load in a popup.
-  extensions::SetLaunchType(browser()->profile(), app_id,
-                            extensions::LAUNCH_TYPE_REGULAR);
+  extensions::SetLaunchType(profile(), app_id, extensions::LAUNCH_TYPE_REGULAR);
 
   // Load the extension again.
   std::string app_id_new;
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   // Find the app's browser.  Apps that should load in a panel ignore
   // prefs, so we should still see the launch in a popup.
   ASSERT_EQ(2u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   app_browser = FindOtherBrowser(browser());
   ASSERT_TRUE(app_browser->is_type_app());
 }
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   // Code below assumes that the test starts with a single browser window
   // hosting one tab.
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Load an app with app.launch.container = "tab".
@@ -510,21 +510,20 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
 
   // Check that the app opened in a new tab of the existing browser.
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   // Unload the extension.
   UninstallExtension(app_id);
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   ASSERT_FALSE(registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::EVERYTHING));
 
   // Set a pref indicating that the user wants to launch in a window.
-  extensions::SetLaunchType(browser()->profile(), app_id,
-                            extensions::LAUNCH_TYPE_WINDOW);
+  extensions::SetLaunchType(profile(), app_id, extensions::LAUNCH_TYPE_WINDOW);
 
   std::string app_id_new;
   LoadAndWaitForLaunch("management/launch_app_tab", &app_id_new);
@@ -536,7 +535,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   // Find the app's browser.  Opening in a new window will create
   // a new browser.
   ASSERT_EQ(2u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   Browser* app_browser = FindOtherBrowser(browser());
   ASSERT_TRUE(app_browser->is_type_app());
 }
@@ -582,7 +581,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
   // Code below assumes that the test starts with a single browser window
   // hosting one tab.
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
-                    browser()->profile()));
+                    profile()));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Load an app with app.launch.container = "tab". This is a chrome app, so

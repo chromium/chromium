@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest, UninstallSelf) {
   // Construct this before loading the extension, since the extension will
   // immediately uninstall itself when it loads.
   extensions::TestExtensionRegistryObserver observer(
-      extensions::ExtensionRegistry::Get(browser()->profile()));
+      extensions::ExtensionRegistry::Get(profile()));
 
   base::FilePath path = test_dir.Pack();
   // Note: We set LoadOptions::wait_for_renderers to false because the extension

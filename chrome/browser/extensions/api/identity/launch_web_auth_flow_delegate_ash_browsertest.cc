@@ -36,9 +36,9 @@ class LaunchWebAuthFlowDelegateAshBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Needed to launch Files app.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(GetProfile())
         ->InstallSystemAppsForTesting();
-    file_ = file_manager::test::CopyTestFilesIntoMyFiles(profile(),
+    file_ = file_manager::test::CopyTestFilesIntoMyFiles(GetProfile(),
                                                          {"text.docx"})[0];
   }
 
@@ -48,7 +48,7 @@ class LaunchWebAuthFlowDelegateAshBrowserTest : public InProcessBrowserTest {
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     base::RunLoop run_loop;
     file_manager::util::ShowItemInFolder(
-        profile(), file_.path(),
+        GetProfile(), file_.path(),
         base::BindLambdaForTesting(
             [&run_loop](platform_util::OpenOperationResult result) {
               EXPECT_EQ(platform_util::OpenOperationResult::OPEN_SUCCEEDED,
@@ -58,13 +58,11 @@ class LaunchWebAuthFlowDelegateAshBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
     browser_added_observer.Wait();
 
-    Browser* files_browser =
-        FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::FILE_MANAGER);
+    Browser* files_browser = FindSystemWebAppBrowser(
+        GetProfile(), ash::SystemWebAppType::FILE_MANAGER);
     EXPECT_NE(files_browser, nullptr);
     return files_browser;
   }
-
-  Profile* profile() { return browser()->profile(); }
 
   storage::FileSystemURL file_;
 };
@@ -74,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   LaunchWebAuthFlowDelegateAsh delegate;
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
-  delegate.GetOptionalWindowBounds(profile(), "", future.GetCallback());
+  delegate.GetOptionalWindowBounds(GetProfile(), "", future.GetCallback());
   std::optional<gfx::Rect> result = future.Get();
 
   EXPECT_EQ(result, std::nullopt);
@@ -85,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   LaunchWebAuthFlowDelegateAsh delegate;
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
-  delegate.GetOptionalWindowBounds(profile(), "abcdef", future.GetCallback());
+  delegate.GetOptionalWindowBounds(GetProfile(), "abcdef",
+                                   future.GetCallback());
   std::optional<gfx::Rect> result = future.Get();
 
   EXPECT_EQ(result, std::nullopt);
@@ -96,8 +95,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   LaunchWebAuthFlowDelegateAsh delegate;
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
-  delegate.GetOptionalWindowBounds(profile(), extension_misc::kODFSExtensionId,
-                                   future.GetCallback());
+  delegate.GetOptionalWindowBounds(
+      GetProfile(), extension_misc::kODFSExtensionId, future.GetCallback());
   std::optional<gfx::Rect> result = future.Get();
 
   EXPECT_EQ(result, std::nullopt);
@@ -111,8 +110,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   files_app_browser->window()->SetBounds(gfx::Rect(200, 200, 600, 600));
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
-  delegate.GetOptionalWindowBounds(profile(), extension_misc::kODFSExtensionId,
-                                   future.GetCallback());
+  delegate.GetOptionalWindowBounds(
+      GetProfile(), extension_misc::kODFSExtensionId, future.GetCallback());
   std::optional<gfx::Rect> result = future.Get();
 
   EXPECT_EQ(result, gfx::Rect(193, 170, 615, 660));
@@ -126,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   files_app_browser->window()->SetBounds(gfx::Rect(200, 200, 700, 700));
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
-  delegate.GetOptionalWindowBounds(profile(), extension_misc::kODFSExtensionId,
-                                   future.GetCallback());
+  delegate.GetOptionalWindowBounds(
+      GetProfile(), extension_misc::kODFSExtensionId, future.GetCallback());
   std::optional<gfx::Rect> result = future.Get();
 
   EXPECT_EQ(result, gfx::Rect(242, 220, 615, 660));
@@ -141,8 +140,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   files_app_browser->window()->SetBounds(gfx::Rect(-50, -80, 600, 600));
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
-  delegate.GetOptionalWindowBounds(profile(), extension_misc::kODFSExtensionId,
-                                   future.GetCallback());
+  delegate.GetOptionalWindowBounds(
+      GetProfile(), extension_misc::kODFSExtensionId, future.GetCallback());
   std::optional<gfx::Rect> result = future.Get();
 
   EXPECT_EQ(result, gfx::Rect(0, 0, 615, 660));

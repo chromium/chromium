@@ -719,8 +719,7 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
     // the listener context. This elicits the browser to respond on behalf of
     // the listener.
     browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-        browser()->profile(), extension->id(),
-        base::RunLoop::Type::kNestableTasksAllowed);
+        profile(), extension->id(), base::RunLoop::Type::kNestableTasksAllowed);
     // Notify the test cases to proceed.
     worker_shutdown_listener.Reply("");
     worker_shutdown_listener.Reset();

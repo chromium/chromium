@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
   base::RunLoop run_loop;
   TestFeedbackUploaderDelegate delegate(run_loop.QuitClosure());
   feedback::FeedbackUploaderFactoryChrome::GetInstance()
-      ->GetForBrowserContext(browser()->profile())
+      ->GetForBrowserContext(profile())
       ->set_feedback_uploader_delegate(&delegate);
 
   // Click the send button.
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
   // is the main case we are concerned about.
   run_loop.Run();
   feedback::FeedbackUploaderFactoryChrome::GetInstance()
-      ->GetForBrowserContext(browser()->profile())
+      ->GetForBrowserContext(profile())
       ->set_feedback_uploader_delegate(nullptr);
 }
 

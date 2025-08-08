@@ -33,7 +33,7 @@ class MessageTrackerMessagingTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    message_tracker_ = MessageTracker::Get(browser()->profile());
+    message_tracker_ = MessageTracker::Get(profile());
   }
 
   void TearDownOnMainThread() override {

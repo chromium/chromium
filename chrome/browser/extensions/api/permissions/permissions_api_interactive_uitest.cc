@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiInteractiveTest,
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(first_browser));
 
   // Create a second browser window and wait for activation.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(profile());
   ASSERT_NE(first_browser, second_browser);
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(second_browser));
 

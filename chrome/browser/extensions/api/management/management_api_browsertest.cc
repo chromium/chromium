@@ -69,8 +69,8 @@ class ExtensionManagementApiBrowserTest : public ExtensionBrowserTest {
  protected:
   bool CrashEnabledExtension(const ExtensionId& extension_id) {
     ExtensionHost* background_host =
-        ProcessManager::Get(browser()->profile())
-            ->GetBackgroundHostForExtension(extension_id);
+        ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+            extension_id);
     if (!background_host)
       return false;
     content::CrashTab(background_host->host_contents());
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(true);
   test_utils::RunFunctionAndReturnSingleResult(
       create_shortcut_function.get(),
-      base::StringPrintf("[\"%s\"]", app_id.c_str()), browser()->profile());
+      base::StringPrintf("[\"%s\"]", app_id.c_str()), profile());
 
   create_shortcut_function = new ManagementCreateAppShortcutFunction();
   create_shortcut_function->set_user_gesture(true);
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   EXPECT_TRUE(base::MatchPattern(
       test_utils::RunFunctionAndReturnError(
           create_shortcut_function.get(),
-          base::StringPrintf("[\"%s\"]", app_id.c_str()), browser()->profile()),
+          base::StringPrintf("[\"%s\"]", app_id.c_str()), profile()),
       keys::kCreateShortcutCanceledError));
 }
 
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
       base::MakeRefCounted<ManagementGetAllFunction>();
   std::optional<base::Value> result =
       test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
-                                                   browser()->profile());
+                                                   profile());
   ASSERT_TRUE(result->is_list());
   EXPECT_EQ(1U, result->GetList().size());
 
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
 
   function = base::MakeRefCounted<ManagementGetAllFunction>();
   result = test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
-                                                        browser()->profile());
+                                                        profile());
   ASSERT_TRUE(result->is_list());
   EXPECT_EQ(1U, result->GetList().size());
 }
@@ -339,8 +339,8 @@ class ExtensionManagementApiEscalationTest :
     EXPECT_FALSE(UpdateExtension(kId, path_v2, -1));
     EXPECT_FALSE(extension_registry()->enabled_extensions().GetByID(kId));
     EXPECT_TRUE(extension_registry()->disabled_extensions().GetByID(kId));
-    EXPECT_TRUE(ExtensionPrefs::Get(browser()->profile())
-                    ->DidExtensionEscalatePermissions(kId));
+    EXPECT_TRUE(
+        ExtensionPrefs::Get(profile())->DidExtensionEscalatePermissions(kId));
   }
 
   void SetEnabled(bool enabled,
@@ -356,7 +356,7 @@ class ExtensionManagementApiEscalationTest :
     bool response = test_utils::RunFunction(
         function.get(),
         base::StringPrintf("[\"%s\", %s]", kId, base::ToString(enabled)),
-        browser()->profile(), api_test_utils::FunctionMode::kNone);
+        profile(), api_test_utils::FunctionMode::kNone);
     if (expected_error.empty()) {
       EXPECT_EQ(true, response);
     } else {
@@ -379,8 +379,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
       new ManagementGetFunction();
   base::Value::Dict dict =
       test_utils::ToDict(test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), base::StringPrintf("[\"%s\"]", kId),
-          browser()->profile()));
+          function.get(), base::StringPrintf("[\"%s\"]", kId), profile()));
   std::string reason =
       api_test_utils::GetString(dict, keys::kDisabledReasonKey);
   EXPECT_TRUE(base::IsStringASCII(reason));

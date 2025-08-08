@@ -139,8 +139,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
 // figured out.
 // Regression test for crbug.com/44415.
 IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
-  ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+  ExtensionRegistry* registry = extensions::ExtensionRegistry::Get(profile());
 
   size_t size_before = registry->enabled_extensions().size();
 

@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Normal) {
 #endif
 IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Incognito) {
   ResultCatcher catcher;
-  CreateIncognitoBrowser(browser()->profile());
+  CreateIncognitoBrowser(profile());
   ASSERT_TRUE(RunExtensionTest("search/query/incognito", {},
                                {.allow_in_incognito = true}))
       << message_;
@@ -45,8 +45,8 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Incognito) {
 IN_PROC_BROWSER_TEST_F(SearchApiTest, IncognitoSplit) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  CreateIncognitoBrowser(browser()->profile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  CreateIncognitoBrowser(profile());
   ASSERT_TRUE(RunExtensionTest("search/query/incognito_split", {},
                                {.allow_in_incognito = true}))
       << message_;

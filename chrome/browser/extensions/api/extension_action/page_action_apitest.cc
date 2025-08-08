@@ -44,8 +44,7 @@ class PageActionApiTest : public ExtensionApiTest,
  protected:
   ExtensionAction* GetPageAction(const Extension& extension) {
     ExtensionAction* extension_action =
-        ExtensionActionManager::Get(browser()->profile())
-            ->GetExtensionAction(extension);
+        ExtensionActionManager::Get(profile())->GetExtensionAction(extension);
     return extension_action->action_type() == ActionInfo::Type::kPage
                ? extension_action
                : nullptr;

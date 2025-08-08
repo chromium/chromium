@@ -168,8 +168,7 @@ TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChain) {
 
 TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChainForNonSafeBrowsingUser) {
   // Disable Safe Browsing.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                               false);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
   const std::vector<GURL> urls = {GURL("http://www.foo.test"),
                                   GURL("http://www.bar.test")};
