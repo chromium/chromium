@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -276,6 +277,11 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 }
 
 - (void)testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
+  // TODO(crbug.com/437268290): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:YES];
 
   // Avoid immediately failing due to missing access token.

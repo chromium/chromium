@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -216,6 +217,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // is uploaded to the sync server) displays only entries matching the search
 // term.
 - (void)testSearchSyncedHistory {
+  // TODO(crbug.com/437314320): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   const char syncedURL[] = "http://mockurl/sync/";
   const GURL mockURL(syncedURL);
 

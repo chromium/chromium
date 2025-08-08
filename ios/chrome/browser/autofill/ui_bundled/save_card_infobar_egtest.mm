@@ -5,6 +5,7 @@
 #import <memory>
 
 #import "base/i18n/time_formatting.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -1172,6 +1173,11 @@ void FillAndSubmitXframeCreditCardForm() {
 // Test local save bottomsheet is shown and directly shows confirmation state on
 // being accepted.
 - (void)testLocalSaveBottomSheet {
+  // TODO(crbug.com/437271524): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [self fillAndSubmitFormWithID:kFillFullFormId
                paymentsResponse:kResponseGetUploadDetailsFailure
                       errorCode:net::HTTP_OK

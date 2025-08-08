@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_app_interface.h"
@@ -295,6 +296,11 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Tests that Native Find in Page works as expected for PDF documents.
 - (void)testFindInPagePDF {
+  // TODO(crbug.com/437314322): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   [_helper helperTestFindInPagePDF];
 }
 

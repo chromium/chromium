@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/drive_file_picker/test/drive_file_picker_app_interface.h"
@@ -267,6 +268,11 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 
 // Tests that toolbar items are still interactable when search bar is focused.
 - (void)testToolbarAboveKeyboardDuringSearch {
+  // TODO(crbug.com/437314913): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   // Initialize the Drive file picker.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
