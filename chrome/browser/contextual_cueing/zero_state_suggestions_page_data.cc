@@ -128,6 +128,12 @@ ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() {
   MODEL_EXECUTION_LOG(base::StringPrintf(
       "ZeroStateSuggestionsPageData: Destructing page data for %s.",
       GetUrl().spec()));
+  if (!work_done()) {
+    MODEL_EXECUTION_LOG(base::StringPrintf(
+        "ZeroStateSuggestionsPageData: %s: Destroying before content extracted",
+        GetUrl().spec()));
+    GiveUp();
+  }
 }
 
 void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
@@ -145,7 +151,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
   if (!timeout_scheduled_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&ZeroStateSuggestionsPageData::OnTimeout, AsWeakPtr()),
+        base::BindOnce(&ZeroStateSuggestionsPageData::GiveUp, AsWeakPtr()),
         kZSSPageContextTimeout.Get());
     timeout_scheduled_ = true;
   }
@@ -320,9 +326,10 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
   InvokePageContextCallbacksIfComplete();
 }
 
-void ZeroStateSuggestionsPageData::OnTimeout() {
+void ZeroStateSuggestionsPageData::GiveUp() {
   MODEL_EXECUTION_LOG(
-      base::StringPrintf("ZeroStateSuggestionsPageData: Timed out waiting for "
+      base::StringPrintf("ZeroStateSuggestionsPageData: Timed out or page "
+                         "destroyed while waiting for "
                          "annotated page content from %s.",
                          GetUrl().spec()));
   // If we've timed out, fail everything.
