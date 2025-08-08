@@ -1969,11 +1969,6 @@
       status: {"Android": "stable"},
     },
     {
-      // crbug.com/341564372
-      name: "EditingFastDelete",
-      status: "stable",
-    },
-    {
       name: "ElementCapture",
       status: {"Android": "", "default": "stable"},
     },

@@ -625,7 +625,6 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
   }
 
   const ShouldAssumeContentIsAlwaysEditable always_editable(
-      RuntimeEnabledFeatures::EditingFastDeleteEnabled() &&
       EnclosingTextControl(node));
   // Actually remove the nodes in |nodes_to_be_removed|.
   for (Node* node_to_be_removed : nodes_to_be_removed) {
@@ -724,9 +723,7 @@ void DeleteSelectionCommand::
   }
   Node* node = range->FirstNode();
   Node* past_last = range->PastLastNode();
-  while (node && node != (RuntimeEnabledFeatures::EditingFastDeleteEnabled()
-                              ? past_last
-                              : range->PastLastNode())) {
+  while (node && node != past_last) {
     Node* next_node = NodeTraversal::Next(*node);
     if (IsA<HTMLStyleElement>(*node) || IsA<HTMLLinkElement>(*node)) {
       next_node = NodeTraversal::NextSkippingChildren(*node);
