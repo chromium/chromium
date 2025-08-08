@@ -206,7 +206,7 @@ class SaveCardBubbleControllerImpl
 
   // The type of bubble that is either currently being shown or would
   // be shown when the save card icon is clicked.
-  PaymentsBubbleType current_bubble_type_ = PaymentsBubbleType::INACTIVE;
+  PaymentsBubbleType current_bubble_type_ = PaymentsBubbleType::kInactive;
 
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt or the CVC upload offer-to-save prompt

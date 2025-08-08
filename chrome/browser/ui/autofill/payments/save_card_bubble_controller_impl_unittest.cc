@@ -1154,7 +1154,7 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
           .with_card_save_type(CardSaveType::kCvcSaveOnly)
           .with_show_prompt(true));
 
-  ASSERT_EQ(PaymentsBubbleType::LOCAL_CVC_SAVE,
+  ASSERT_EQ(PaymentsBubbleType::kLocalCvcSave,
             controller()->GetPaymentsBubbleType());
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
@@ -1170,7 +1170,7 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
           .with_card_save_type(CardSaveType::kCvcSaveOnly)
           .with_show_prompt(true));
 
-  ASSERT_EQ(PaymentsBubbleType::UPLOAD_CVC_SAVE,
+  ASSERT_EQ(PaymentsBubbleType::kUploadCvcSave,
             controller()->GetPaymentsBubbleType());
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
@@ -1194,7 +1194,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // After closing the sign-in promo, clicking the icon should bring up the
   // Manage cards bubble. Verify that the icon tooltip, the title for the
   // bubble, and the save animation reflect the correct info.
-  ASSERT_EQ(PaymentsBubbleType::MANAGE_CARDS,
+  ASSERT_EQ(PaymentsBubbleType::kManageCards,
             controller()->GetPaymentsBubbleType());
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Card saved");
@@ -1217,7 +1217,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // After closing the sign-in promo, clicking the icon should bring up the
   // Manage cards bubble. Verify that the icon tooltip, the title for the
   // bubble, and the save animation reflect the correct info.
-  ASSERT_EQ(PaymentsBubbleType::MANAGE_CARDS,
+  ASSERT_EQ(PaymentsBubbleType::kManageCards,
             controller()->GetPaymentsBubbleType());
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"CVC saved");
@@ -1233,7 +1233,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ShowLocalBubble();
   ClickSaveButton();
   CloseAndReshowBubble();
-  ASSERT_EQ(PaymentsBubbleType::MANAGE_CARDS,
+  ASSERT_EQ(PaymentsBubbleType::kManageCards,
             controller()->GetPaymentsBubbleType());
 
   ClickSaveButton();
@@ -1315,26 +1315,26 @@ TEST_F(SaveCardBubbleControllerImplTest,
        Upload_OnSave_ShowConfirmationBubbleView) {
   ShowUploadBubble();
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_SAVE);
+            PaymentsBubbleType::kUploadSave);
   EXPECT_TRUE(controller()->IsIconVisible());
   EXPECT_TRUE(IsSaveCardBubbleVisible());
 
   controller()->OnSaveButton({});
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_IN_PROGRESS);
+            PaymentsBubbleType::kUploadInProgress);
   EXPECT_TRUE(IsSaveCardBubbleVisible());
   EXPECT_FALSE(IsConfirmationBubbleVisible());
 
   ShowConfirmationBubbleView(/*card_saved=*/true);
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_COMPLETED);
+            PaymentsBubbleType::kUploadComplete);
   EXPECT_FALSE(IsSaveCardBubbleVisible());
   EXPECT_TRUE(IsConfirmationBubbleVisible());
   EXPECT_TRUE(controller()->GetConfirmationUiParams().is_success);
 
   controller()->HideSaveCardBubble();
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::INACTIVE);
+            PaymentsBubbleType::kInactive);
   EXPECT_FALSE(IsConfirmationBubbleVisible());
   EXPECT_FALSE(controller()->IsIconVisible());
 }
@@ -1347,7 +1347,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   EXPECT_FALSE(IsSaveCardBubbleVisible());
   EXPECT_TRUE(IsConfirmationBubbleVisible());
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_COMPLETED);
+            PaymentsBubbleType::kUploadComplete);
   EXPECT_FALSE(controller()->GetConfirmationUiParams().is_success);
 }
 
@@ -1358,13 +1358,13 @@ TEST_F(SaveCardBubbleControllerImplTest,
        Upload_OnShowConfirmationBubbleView_ThenShowUploadView) {
   ShowConfirmationBubbleView(/*card_saved=*/true);
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_COMPLETED);
+            PaymentsBubbleType::kUploadComplete);
   EXPECT_TRUE(IsConfirmationBubbleVisible());
   EXPECT_TRUE(controller()->GetConfirmationUiParams().is_success);
 
   ShowUploadBubble();
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_SAVE);
+            PaymentsBubbleType::kUploadSave);
   EXPECT_TRUE(IsSaveCardBubbleVisible());
   EXPECT_FALSE(IsConfirmationBubbleVisible());
   EXPECT_TRUE(controller()->IsIconVisible());
@@ -1520,16 +1520,16 @@ TEST_F(SaveCardBubbleControllerImplTest,
   EXPECT_TRUE(controller()->IsIconVisible());
 }
 
-// Test that while in the UPLOAD_IN_PROGRESS state, after changing tabs and
+// Test that while in the kUploadInProgress state, after changing tabs and
 // returning to the tab with the save card, the state will remain as
-// UPLOAD_IN_PROGRESS.
+// kUploadInProgress.
 TEST_F(SaveCardBubbleControllerImplTest,
        VisibilityChange_Upload_InProgressState_Retained) {
   ShowUploadBubble();
   controller()->OnSaveButton({});
   EXPECT_TRUE(IsSaveCardBubbleVisible());
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_IN_PROGRESS);
+            PaymentsBubbleType::kUploadInProgress);
 
   // Simulate switching to a different tab and back to the original tab.
   active_web_contents()->UpdateWebContentsVisibility(
@@ -1539,10 +1539,10 @@ TEST_F(SaveCardBubbleControllerImplTest,
       content::Visibility::VISIBLE);
 
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
-            PaymentsBubbleType::UPLOAD_IN_PROGRESS);
+            PaymentsBubbleType::kUploadInProgress);
 }
 
-// Test that while in the UPLOAD_IN_PROGRESS state, if the tab is changed and
+// Test that while in the kUploadInProgress state, if the tab is changed and
 // the upload is completed, upon returning to the original tab with the save
 // card, the confirmation bubble will be showing.
 TEST_F(SaveCardBubbleControllerImplTest,
@@ -1689,7 +1689,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
           .with_card_save_type(CardSaveType::kCardSaveOnly)
           .with_show_prompt(true));
 
-  ASSERT_EQ(PaymentsBubbleType::LOCAL_SAVE,
+  ASSERT_EQ(PaymentsBubbleType::kLocalSave,
             controller()->GetPaymentsBubbleType());
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");
@@ -1706,7 +1706,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
           .with_card_save_type(CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true));
 
-  ASSERT_EQ(PaymentsBubbleType::LOCAL_SAVE,
+  ASSERT_EQ(PaymentsBubbleType::kLocalSave,
             controller()->GetPaymentsBubbleType());
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");

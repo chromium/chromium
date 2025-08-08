@@ -84,12 +84,12 @@ void SaveCardOfferBubbleViews::Init() {
   SaveCardBubbleViews::Init();
 
   if (controller() && (controller()->GetPaymentsBubbleType() ==
-                           PaymentsBubbleType::UPLOAD_SAVE ||
+                           PaymentsBubbleType::kUploadSave ||
                        controller()->GetPaymentsBubbleType() ==
-                           PaymentsBubbleType::UPLOAD_IN_PROGRESS)) {
+                           PaymentsBubbleType::kUploadInProgress)) {
     loading_row_ = AddChildView(CreateLoadingRow());
     if (controller()->GetPaymentsBubbleType() ==
-        PaymentsBubbleType::UPLOAD_IN_PROGRESS) {
+        PaymentsBubbleType::kUploadInProgress) {
       ShowThrobber();
     }
   }
@@ -99,7 +99,7 @@ void SaveCardOfferBubbleViews::Init() {
 
 bool SaveCardOfferBubbleViews::Accept() {
   bool show_throbber = controller() && controller()->GetPaymentsBubbleType() ==
-                                           PaymentsBubbleType::UPLOAD_SAVE;
+                                           PaymentsBubbleType::kUploadSave;
 
   if (show_throbber) {
     ShowThrobber();
@@ -173,13 +173,13 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   SaveCardBubbleViews::AddedToWidget();
   int lottie_resource_id;
   switch (controller()->GetPaymentsBubbleType()) {
-    case PaymentsBubbleType::UPLOAD_SAVE:
-    case PaymentsBubbleType::UPLOAD_IN_PROGRESS:
-    case PaymentsBubbleType::UPLOAD_COMPLETED:
+    case PaymentsBubbleType::kUploadSave:
+    case PaymentsBubbleType::kUploadInProgress:
+    case PaymentsBubbleType::kUploadComplete:
       lottie_resource_id = IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE;
       break;
-    case PaymentsBubbleType::LOCAL_CVC_SAVE:
-    case PaymentsBubbleType::UPLOAD_CVC_SAVE:
+    case PaymentsBubbleType::kLocalCvcSave:
+    case PaymentsBubbleType::kUploadCvcSave:
       lottie_resource_id = IDR_AUTOFILL_SAVE_SECURITY_CODE_LOTTIE;
       break;
     default:
