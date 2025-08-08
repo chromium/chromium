@@ -21,10 +21,10 @@
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -65,7 +65,8 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
+  bluez::BluezDBusManager::Initialize(
+      dbus_thread_linux::GetSharedSystemBus().get());
 
   // Set up crypt config. This needs to be done before anything starts the
   // network service, as the raw encryption key needs to be shared with the
@@ -133,7 +134,6 @@ void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
   // No-op; per PostBrowserStart() comment, this is done elsewhere.
 #else
   bluez::BluezDBusManager::Shutdown();
-  bluez::BluezDBusThreadManager::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ChromeBrowserMainPartsPosix::PostDestroyThreads();

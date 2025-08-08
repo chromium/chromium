@@ -541,7 +541,11 @@ component("headless_non_renderer") {
   }
 
   if (use_dbus) {
-    deps += [ "//device/bluetooth" ]
+    deps += [
+      "//components/dbus",
+      "//dbus",
+      "//device/bluetooth",
+    ]
   }
 
   configs += [ ":inside_headless_component" ]
