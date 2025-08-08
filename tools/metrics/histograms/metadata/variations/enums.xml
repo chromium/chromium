@@ -156,6 +156,8 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Forcing flag has an invalid name"/>
   <int value="15" label="Unsupported study consistency"/>
   <int value="16" label="Unsupported study activation type"/>
+  <int value="17" label="Invalid consistency for sticky study"/>
+  <int value="18" label="Unsupported expiry_date field"/>
 </enum>
 
 <enum name="VariationsLimitedEntropySeedRejectionReason">

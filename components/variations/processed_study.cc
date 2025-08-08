@@ -215,12 +215,12 @@ bool ValidateStudyTypeEnums(const Study& study) {
              << study.activation_type();
     return false;
   }
-  if (study.activation_type() == Study::STICKY_AFTER_QUERY) {
-    // TODO: crbug.com/435630455 - STICKY_AFTER_QUERY studies are under
-    // development but not yet supported.
-    LogInvalidReason(InvalidStudyReason::kUnsupportedStudyActivationType);
-    DVLOG(1) << study.name() << " has an unsupported activation type: "
-             << study.activation_type();
+  if (study.activation_type() == Study::STICKY_AFTER_QUERY &&
+      study.consistency() != Study::PERMANENT) {
+    LogInvalidReason(InvalidStudyReason::kInvalidConsistencyForStickyStudy);
+    DVLOG(1) << study.name() << " has invalid consistency ("
+             << study.consistency()
+             << ") for activation type STICKY_AFTER_QUERY";
     return false;
   }
   return true;
@@ -241,6 +241,12 @@ bool ValidateStudyAndComputeTotalProbability(
   if (!base::FeatureList::IsValidFeatureOrFieldTrialName(study.name())) {
     LogInvalidReason(InvalidStudyReason::kInvalidStudyName);
     DVLOG(1) << study.name() << " is an invalid experiment name";
+    return false;
+  }
+
+  if (study.has_expiry_date()) {
+    LogInvalidReason(InvalidStudyReason::kUnsupportedExpiryDate);
+    DVLOG(1) << study.name() << " uses the unsupported expiry_date field.";
     return false;
   }
 

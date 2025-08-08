@@ -383,6 +383,7 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   permanent_consistency_country_initialized_ = true;
 
   state->policy_restriction = GetVariationPolicyRestriction(local_state());
+  state->is_sticky_activation_enabled = client_->IsStickyActivationEnabled();
   return state;
 }
 

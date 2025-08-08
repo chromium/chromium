@@ -35,7 +35,9 @@ enum class InvalidStudyReason {
   kInvalidForcingFlag = 14,
   kUnsupportedStudyConsistency = 15,
   kUnsupportedStudyActivationType = 16,
-  kMaxValue = kUnsupportedStudyActivationType,
+  kInvalidConsistencyForStickyStudy = 17,
+  kUnsupportedExpiryDate = 18,
+  kMaxValue = kUnsupportedExpiryDate,
 };
 
 class Study;

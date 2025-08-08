@@ -297,9 +297,11 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
                     const ClientFilterableState& client_state,
                     const VariationsLayers& layers) {
   const Study& study = *processed_study.study();
-  if (study.has_expiry_date()) {
+
+  if (study.activation_type() == Study::STICKY_AFTER_QUERY &&
+      !client_state.is_sticky_activation_enabled) {
     DVLOG(1) << "Filtered out study " << study.name()
-             << " due to unsupported expiry_date field.";
+             << " due to unsupported STICKY_AFTER_QUERY activation type.";
     return false;
   }
 
