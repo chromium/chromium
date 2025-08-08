@@ -51,8 +51,17 @@ void GlicActorController::StopTask(actor::TaskId task_id,
   if (!task) {
     return;
   }
-  actor::ActorKeyedService::Get(profile_.get())
-      ->StopTask(task->id(), /*success=*/true);
+  if (auto* actor_keyed_service =
+          actor::ActorKeyedService::Get(profile_.get())) {
+    switch (stop_reason) {
+      case mojom::ActorTaskStopReason::kTaskComplete:
+        actor_keyed_service->StopTask(task->id(), /*success=*/true);
+        break;
+      case mojom::ActorTaskStopReason::kStoppedByUser:
+        actor_keyed_service->StopTask(task->id(), /*success=*/false);
+        break;
+    }
+  }
 }
 
 void GlicActorController::PauseTask(actor::TaskId task_id,
