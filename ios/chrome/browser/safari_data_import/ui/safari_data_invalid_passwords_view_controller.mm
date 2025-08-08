@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
+#import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -18,6 +19,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+/// Spacing between cell labels.
+const CGFloat kLabelSpacing = 4;
 
 /// The identifier for the only section in the table.
 NSString* const kSafariDataInvalidPasswordSection =
@@ -103,6 +107,7 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
       GetInvalidPasswordsTableViewAccessibilityIdentifier();
   self.tableView.delegate = self;
   self.tableView.allowsSelection = NO;
+  self.tableView.separatorInset = GetSafariDataImportSeparatorInset();
   /// Register cells.
   RegisterTableViewCell<TableViewURLCell>(self.tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
@@ -148,12 +153,13 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
   cell.accessibilityIdentifier =
       GetInvalidPasswordsTableViewCellAccessibilityIdentifier(indexPath.item);
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.labelSpacing = kLabelSpacing;
   /// Populate cell with information.
   PasswordImportItem* item = _invalidPasswords[identifier.intValue];
   cell.titleLabel.text = item.url;
-  cell.titleLabel.numberOfLines = 1;
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   cell.URLLabel.text = item.username;
+  cell.URLLabel.numberOfLines = 2;
   cell.thirdRowLabel.text = GetErrorMessageForPasswordImportStatus(item.status);
   cell.thirdRowLabel.textColor = [UIColor colorNamed:kRed600Color];
   if (item.faviconAttributes) {

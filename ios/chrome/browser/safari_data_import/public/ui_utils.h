@@ -12,4 +12,7 @@
 UIFontTextStyle GetSafariDataImportTitleLabelFontTextStyle(
     UITraitCollection* traitCollection);
 
+/// Get separator inset for table views in the workflow.
+UIEdgeInsets GetSafariDataImportSeparatorInset();
+
 #endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_UI_UTILS_H_

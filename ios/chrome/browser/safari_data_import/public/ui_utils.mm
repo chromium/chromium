@@ -20,3 +20,7 @@ UIFontTextStyle GetSafariDataImportTitleLabelFontTextStyle(
   }
   return UIFontTextStyleTitle2;
 }
+
+UIEdgeInsets GetSafariDataImportSeparatorInset() {
+  return UIEdgeInsetsMake(0, 60, 0, 0);
+}
