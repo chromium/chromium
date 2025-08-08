@@ -5,6 +5,7 @@
 #include "chrome/renderer/webui_browser/webui_browser_renderer_extension.h"
 
 #include "base/check.h"
+#include "chrome/common/url_constants.h"
 #include "components/guest_contents/renderer/swap_render_frame.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "gin/converter.h"
@@ -12,6 +13,8 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-isolate.h"
@@ -19,11 +22,13 @@
 
 namespace {
 
-// Expose the API to only chrome://webui-browser.
+// Expose the API to only chrome://webui-browser/*.
 bool ShouldExposeWebUIBrowserApi(content::RenderFrame* render_frame) {
   CHECK(render_frame);
-  return render_frame->GetWebFrame()->GetDocument().Url() ==
-         chrome::kChromeUIWebuiBrowserURL;
+  const url::Origin webui_browser_origin =
+      url::Origin::Create(GURL(chrome::kChromeUIWebuiBrowserURL));
+  return url::Origin::Create(render_frame->GetWebFrame()->GetDocument().Url())
+      .IsSameOriginWith(webui_browser_origin);
 }
 
 // Implementation of chrome.browser.allowCustomElementRegistration(callback)
