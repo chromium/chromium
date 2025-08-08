@@ -67,6 +67,7 @@ dependencies {
     compileLatest 'javax.annotation:javax.annotation-api:+'
     buildCompileLatest "org.ow2.asm:asm:+"
     buildCompileLatest "org.ow2.asm:asm-commons:+"
+    buildCompileLatest 'com.android.extensions.xr:extensions-xr:+'
 
     // Needed by internal targets
     compileLatest 'com.google.auto.service:auto-service-annotations:+'
