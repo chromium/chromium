@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/content_hash_fetcher.h"
@@ -90,6 +91,9 @@ void ContentHash::Create(
     ContentVerifierDelegate::VerifierSourceType source_type,
     const IsCancelledCallback& is_cancelled,
     CreatedCallback created_callback) {
+  TRACE_EVENT("extensions.content_verifier.debug", "ContentHash::Create",
+              "key_extension_id", key.extension_root, "key_extension_version",
+              key.extension_version.GetString());
   if (source_type ==
       ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES) {
     // In case of signed hashes, we should read or fetch verified_contents.json
@@ -111,6 +115,9 @@ void ContentHash::Create(
 void ContentHash::ForceBuildComputedHashes(
     const IsCancelledCallback& is_cancelled,
     CreatedCallback created_callback) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentHash::ForceBuildComputedHashes", "extension_id",
+              extension_id(), "extension_root", extension_root());
   BuildComputedHashes(false /* did_fetch_verified_contents */,
                       true /* force_build */, is_cancelled);
   std::move(created_callback).Run(this, is_cancelled && is_cancelled.Run());

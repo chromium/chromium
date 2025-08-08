@@ -126,6 +126,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("event"),
     perfetto::Category("exo"),
     perfetto::Category("extensions"),
+    perfetto::Category("extensions.content_verifier.debug").SetDescription(
+      "Traces for the extension file (content) verification process at "
+      "//extensions/browser/content_verifier.").SetTags("debug"),
     perfetto::Category("explore_sites"),
     perfetto::Category("FileSystem"),
     perfetto::Category("file_system_provider"),

@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/version_info/channel.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/hash.h"
@@ -138,6 +139,9 @@ void ContentVerifyJob::Start(ContentVerifier* verifier,
                              const base::Version& extension_version,
                              int manifest_version,
                              FailureCallback failure_callback) {
+  TRACE_EVENT("extensions.content_verifier.debug", "ContentVerifyJob::Start",
+              "extension_version", extension_version.GetString(), "job_root",
+              extension_root_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
   manifest_version_ = manifest_version;
@@ -160,6 +164,10 @@ void ContentVerifyJob::Start(ContentVerifier* verifier,
 
 void ContentVerifyJob::DidCreateContentHashOnIO(
     scoped_refptr<const ContentHash> content_hash) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifyJob::DidCreateContentHashOnIO", "hash_extension_id",
+              content_hash->extension_id(), "hash_extension_root",
+              content_hash->extension_root());
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
   StartWithContentHash(std::move(content_hash));
@@ -167,6 +175,9 @@ void ContentVerifyJob::DidCreateContentHashOnIO(
 
 void ContentVerifyJob::StartWithContentHash(
     scoped_refptr<const ContentHash> content_hash) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifyJob::StartWithContentHash", "job_root",
+              extension_root_, "hash_root", content_hash->extension_root());
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // If the hash and the verify jobs' roots don't match then the hash comparison

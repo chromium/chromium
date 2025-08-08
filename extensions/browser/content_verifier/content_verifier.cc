@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -340,6 +341,12 @@ class ContentVerifier::HashHelper {
       ContentVerifierDelegate::VerifierSourceType source_type,
       const IsCancelledCallback& is_cancelled,
       ContentHash::CreatedCallback created_callback) {
+    TRACE_EVENT("extensions.content_verifier.debug",
+                "HashHelper::ReadHashOnFileTaskRunner",
+                "fetch_key_extension_id", fetch_key.extension_id,
+                "fetch_key_extension_root", fetch_key.extension_root,
+                "fetch_key_extension_version",
+                fetch_key.extension_version.GetString());
     ContentHash::Create(
         std::move(fetch_key), source_type, is_cancelled,
         base::BindOnce(&HashHelper::ForwardToIO, std::move(created_callback)));
@@ -349,6 +356,10 @@ class ContentVerifier::HashHelper {
       const scoped_refptr<ContentHash> content_hash,
       const IsCancelledCallback& is_cancelled,
       ContentHash::CreatedCallback created_callback) {
+    TRACE_EVENT("extensions.content_verifier.debug",
+                "HashHelper::ForceBuildComputedHashesOnFileTaskRuner",
+                "hash_extension_id", content_hash->extension_id(),
+                "hash_extension_root", content_hash->extension_root());
     content_hash->ForceBuildComputedHashes(
         is_cancelled,
         base::BindOnce(&HashHelper::ForwardToIO, std::move(created_callback)));
@@ -358,6 +369,10 @@ class ContentVerifier::HashHelper {
                    const scoped_refptr<IsCancelledChecker>& checker,
                    scoped_refptr<ContentHash> content_hash,
                    bool was_cancelled) {
+    TRACE_EVENT("extensions.content_verifier.debug", "HashHelper::DidReadHash",
+                "hash_extension_id", content_hash->extension_id(),
+                "hash_extension_root", content_hash->extension_root(),
+                "was_cancelled", (was_cancelled ? "true" : "false"));
     DCHECK(checker);
     if (was_cancelled ||
         // The request might have been cancelled on IO after |content_hash| was
@@ -398,6 +413,11 @@ class ContentVerifier::HashHelper {
                            const scoped_refptr<IsCancelledChecker>& checker,
                            scoped_refptr<ContentHash> content_hash,
                            bool was_cancelled) {
+    TRACE_EVENT("extensions.content_verifier.debug",
+                "HashHelper::CompleteDidReadHash", "hash_extension_id",
+                content_hash->extension_id(), "hash_extension_root",
+                content_hash->extension_root(), "was_cancelled",
+                (was_cancelled ? "true" : "false"));
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     DCHECK(checker);
     if (was_cancelled ||
@@ -618,6 +638,12 @@ void ContentVerifier::CreateContentHash(
     const base::Version& extension_version,
     bool force_missing_computed_hashes_creation,
     ContentHashCallback callback) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::CreateContentHash", "extension_id",
+              extension_id, "extension_root", extension_root,
+              "extension_version", extension_version.GetString(),
+              "force_missing_computed_hashes_creation",
+              (force_missing_computed_hashes_creation ? "true" : "false"));
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (shutdown_on_io_) {
     return;
@@ -643,6 +669,11 @@ scoped_refptr<const ContentHash> ContentVerifier::GetCachedContentHash(
     const ExtensionId& extension_id,
     const base::Version& extension_version,
     bool force_missing_computed_hashes_creation) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::GetCachedContentHash", "extension_id",
+              extension_id, "extension_version", extension_version.GetString(),
+              "force_missing_computed_hashes_creation",
+              (force_missing_computed_hashes_creation ? "true" : "false"));
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (shutdown_on_io_) {
     return nullptr;
@@ -664,6 +695,9 @@ void ContentVerifier::VerifyFailed(
     const std::vector<VerifiedFileType>& failed_file_types,
     int manifest_version,
     ContentVerifyJob::FailureReason reason) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::VerifyFailed", "extension_id", extension_id,
+              "ContentVerifyJob::FailureReason", reason);
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -733,6 +767,10 @@ void ContentVerifier::VerifyFailed(
 void ContentVerifier::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionLoaded", "extension_id",
+              extension->id(), "extension_root", extension->path(),
+              "extension_version", extension->version().GetString());
   if (shutdown_on_ui_)
     return;
 
@@ -749,6 +787,10 @@ void ContentVerifier::OnExtensionLoadedOnIO(
     const base::FilePath& extension_root,
     const base::Version& extension_version,
     std::unique_ptr<ContentVerifierIOData::ExtensionData> data) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionLoadedOnIO", "extension_id",
+              extension_id, "extension_root", extension_root,
+              "extension_version", extension_version.GetString());
   if (shutdown_on_io_)
     return;
 
@@ -769,6 +811,11 @@ void ContentVerifier::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionUnloaded", "extension_id",
+              extension->id(), "extension_root", extension->path(),
+              "extension_version", extension->version().GetString(),
+              "UnloadedExtensionReason", reason);
   if (shutdown_on_ui_)
     return;
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -801,6 +848,9 @@ void ContentVerifier::ClearCacheForTesting() {
 void ContentVerifier::OnExtensionUnloadedOnIO(
     const ExtensionId& extension_id,
     const base::Version& extension_version) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionUnloadedOnIO", "extension_id",
+              extension_id, "extension_version", extension_version.GetString());
   if (shutdown_on_io_)
     return;
   io_data_.RemoveData(extension_id);
@@ -830,6 +880,8 @@ void ContentVerifier::OnExtensionDataReady(const ExtensionId& extension_id) {
 }
 
 bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
+  TRACE_EVENT("extensions.content_verifier.debug", "ContentVerifier::StartJob",
+              "job_extension_id", job->extension_id());
   const ContentVerifierIOData::ExtensionData* data =
       io_data_.GetData(job->extension_id());
   // The absence of |data| means that we don't have to verify the extension
@@ -837,6 +889,11 @@ bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
   if (!data) {
     return false;
   }
+
+  TRACE_EVENT_INSTANT("extensions.content_verifier.debug",
+                      "ContentVerifier::StartJob", "job_extension_id",
+                      job->extension_id(), "data_extension_version",
+                      data->version.GetString());
 
   VerifiedFileType verified_file_type =
       VerifiedFileTypeHelper(*data).GetVerifiedFileType(job->relative_path());
