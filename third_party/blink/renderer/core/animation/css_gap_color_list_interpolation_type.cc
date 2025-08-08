@@ -47,15 +47,15 @@ InterpolationValue GetInterpolationValueFromGapData(
           data.GetValue(), style->UsedColorScheme(), color_provider));
 }
 
-bool IsCompatible(const InterpolableValue& a, const InterpolableValue& b) {
-  if (a.IsGapColorRepeater() != b.IsGapColorRepeater()) {
+bool IsCompatible(const InterpolableValue* a, const InterpolableValue* b) {
+  if (a->IsGapColorRepeater() != b->IsGapColorRepeater()) {
     return false;
   }
-  if (!a.IsGapColorRepeater()) {
+  if (!a->IsGapColorRepeater()) {
     return true;  // colors are compatible.
   }
-  return To<InterpolableGapColorRepeater>(a).IsCompatibleWith(
-      To<InterpolableGapColorRepeater>(b));
+  return To<InterpolableGapColorRepeater>(*a).IsCompatibleWith(
+      To<InterpolableGapColorRepeater>(*b));
 }
 
 }  // namespace
@@ -75,8 +75,13 @@ class UnderlyingGapColorListChecker final
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
-    return To<InterpolableList>(*underlying_->underlying().interpolable_value)
-        .Equals(To<InterpolableList>(*underlying.interpolable_value));
+    auto& underlying_list =
+        To<InterpolableList>(*underlying_->underlying().interpolable_value);
+    auto& other_list = To<InterpolableList>(*underlying.interpolable_value);
+    return ListInterpolationFunctions::InterpolableListsAreCompatible(
+        underlying_list, other_list, underlying_list.length(),
+        ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
+        &IsCompatible);
   }
 
   const Member<const InterpolationValueGCed> underlying_;
@@ -107,8 +112,8 @@ void CSSGapColorListInterpolationType::Composite(
       [this, &owner, &value](UnderlyingValue& underlying_value, double fraction,
                              const InterpolableValue& interpolable_value,
                              const NonInterpolableValue*) {
-        if (!IsCompatible(underlying_value.MutableInterpolableValue(),
-                          interpolable_value)) {
+        if (!IsCompatible(&underlying_value.MutableInterpolableValue(),
+                          &interpolable_value)) {
           owner.Set(this, value);
           return;
         }
@@ -304,8 +309,8 @@ PairwiseInterpolationValue CSSGapColorListInterpolationType::MaybeMergeSingles(
       std::move(start), std::move(end),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
       [](InterpolationValue&& start_item, InterpolationValue&& end_item) {
-        if (!IsCompatible(*start_item.interpolable_value,
-                          *end_item.interpolable_value)) {
+        if (!IsCompatible(start_item.interpolable_value,
+                          end_item.interpolable_value)) {
           return PairwiseInterpolationValue(nullptr);
         }
 
