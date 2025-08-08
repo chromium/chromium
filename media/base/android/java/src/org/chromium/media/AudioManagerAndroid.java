@@ -77,10 +77,14 @@ class AudioManagerAndroid {
         private final @Nullable String mName;
         private final int mType;
 
-        public AudioDevice(int id, @Nullable String name, int type) {
+        // Empty if arbitrary sample rates are supported.
+        private final int[] mSampleRates;
+
+        public AudioDevice(int id, @Nullable String name, int type, int[] sampleRates) {
             mId = id;
             mName = name;
             mType = type;
+            mSampleRates = sampleRates;
         }
 
         @CalledByNative("AudioDevice")
@@ -96,6 +100,11 @@ class AudioManagerAndroid {
         @CalledByNative("AudioDevice")
         private int type() {
             return mType;
+        }
+
+        @CalledByNative("AudioDevice")
+        private @JniType("std::vector<int>") int[] sampleRates() {
+            return mSampleRates;
         }
     }
 
@@ -344,7 +353,8 @@ class AudioManagerAndroid {
                 // `android.os.Build.MODEL` to facilitate providing a custom fallback name instead.
                 name = null;
             }
-            devices.add(new AudioDevice(id, name, type));
+            int[] sampleRates = deviceInfo.getSampleRates();
+            devices.add(new AudioDevice(id, name, type, sampleRates));
         }
         return devices.toArray(new AudioDevice[0]);
     }
