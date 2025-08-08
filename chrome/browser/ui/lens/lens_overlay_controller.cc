@@ -2090,6 +2090,16 @@ void LensOverlayController::SetOverlayRoundedCorner() {
 
   overlay_web_view_->holder()->SetCornerRadii(radii);
 
+  // If we show the overlay with overlay_view_ being painted to a layer,
+  // there is a visual bug where the background is momentarily transparent,
+  // causing flickering. When we don't want the corner to be rounded,
+  // instead of setting the corner radii to 0, destroy the layer instead.
+  // See crbug.com/437355402.
+  if (!should_round_corner) {
+    overlay_view_->DestroyLayer();
+    return;
+  }
+
   overlay_view_->SetPaintToLayer();
   overlay_view_->layer()->SetIsFastRoundedCorner(true);
   overlay_view_->layer()->SetRoundedCornerRadius(radii);
