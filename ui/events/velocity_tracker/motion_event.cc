@@ -73,8 +73,8 @@ bool MotionEvent::IsLatestEventTimeResampled() const {
   return false;
 }
 
-std::unique_ptr<MotionEvent> MotionEvent::Clone() const {
-  return MotionEventGeneric::CloneEvent(*this);
+std::unique_ptr<MotionEvent> MotionEvent::Clone(bool with_history) const {
+  return MotionEventGeneric::CloneEvent(*this, with_history);
 }
 
 std::unique_ptr<MotionEvent> MotionEvent::Cancel() const {

@@ -99,6 +99,11 @@ const ui::MotionEvent* FilteredGestureProvider::GetCurrentDownEvent() const {
   return gesture_provider_->current_down_event();
 }
 
+const ui::MotionEvent* FilteredGestureProvider::GetLastEventWithoutHistory()
+    const {
+  return gesture_provider_->last_event_without_history();
+}
+
 void FilteredGestureProvider::OnGestureEvent(const GestureEventData& event) {
   if (handling_event_) {
     if (event.details.type() == ui::EventType::kGestureScrollBegin) {
