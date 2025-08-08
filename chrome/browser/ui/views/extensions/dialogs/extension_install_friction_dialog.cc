@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,17 +43,22 @@ void ReportExtensionInstallFrictionDialogAction(
                                 action);
 }
 
-void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
-  switch (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue()) {
-    case extensions::ScopedTestDialogAutoConfirm::ACCEPT:
+void AutoConfirmDialog(
+    extensions::ScopedTestDialogAutoConfirm::AutoConfirm auto_confirm_value,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK_IS_TEST();
+  switch (auto_confirm_value) {
+    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::ACCEPT:
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), true));
       return;
-    case extensions::ScopedTestDialogAutoConfirm::CANCEL:
+    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::CANCEL:
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), false));
       return;
-    default:
+    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::NONE:
+    case extensions::ScopedTestDialogAutoConfirm::AutoConfirm::
+        ACCEPT_AND_OPTION:
       NOTREACHED();
   }
 }
@@ -128,9 +134,9 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionInstallFrictionLearnMoreLink);
 void ShowExtensionInstallFrictionDialog(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback) {
-  if (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=
-      extensions::ScopedTestDialogAutoConfirm::NONE) {
-    AutoConfirmDialog(std::move(callback));
+  auto auto_confirm_value = ScopedTestDialogAutoConfirm::GetAutoConfirmValue();
+  if (auto_confirm_value != extensions::ScopedTestDialogAutoConfirm::NONE) {
+    AutoConfirmDialog(auto_confirm_value, std::move(callback));
     return;
   }
 
