@@ -550,4 +550,47 @@ TEST_F(SaveAndFillManagerImplTest,
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 }
 
+TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+
+  CreditCard card_to_fill;
+  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
+      .WillOnce(testing::SaveArg<0>(&card_to_fill));
+  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce([&](const LegalMessageLines&,
+                    TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
+                        callback) {
+        std::move(callback).Run(
+            CardSaveAndFillDialogUserDecision::kAccepted,
+            CreateUserProvidedCardDetails(
+                /*card_number=*/u"1111222233334444",
+                /*cardholder_name=*/u"Jane Smith",
+                /*expiration_date_month=*/ASCIIToUTF16(test::NextMonth()),
+                /*expiration_date_year=*/ASCIIToUTF16(test::NextYear()),
+                /*security_code=*/u"456"));
+      });
+
+  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
+      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("some risk data");
+      });
+  EXPECT_CALL(*mock_network_interface_, CreateCard)
+      .WillOnce(testing::Return(RequestId("11223344")));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+
+  EXPECT_EQ(u"1111222233334444", card_to_fill.GetRawInfo(CREDIT_CARD_NUMBER));
+  EXPECT_EQ(u"Jane Smith", card_to_fill.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(ASCIIToUTF16(test::NextMonth()),
+            card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(ASCIIToUTF16(test::NextYear()),
+            card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"456", card_to_fill.cvc());
+}
+
 }  // namespace autofill::payments

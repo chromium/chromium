@@ -223,16 +223,30 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
     CardSaveAndFillDialogUserDecision user_decision,
     const UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
-  // TODO(crbug.com/378164165): Implement logic to handle user decision for
-  // upload Save and Fill dialog.
   switch (user_decision) {
     case CardSaveAndFillDialogUserDecision::kAccepted:
       upload_save_and_fill_dialog_accepted_ = true;
+      PopulateCreditCardInfo(upload_details_.card,
+                             user_provided_card_save_and_fill_details);
+      if (fill_card_callback_) {
+        std::move(fill_card_callback_).Run(upload_details_.card);
+      }
+      // If risk data has already been loaded, send the request now. Otherwise,
+      // continue to wait and let OnDidLoadRiskData handle it.
+      if (!upload_details_.risk_data.empty()) {
+        SendCreateCardRequest();
+      }
       break;
     case CardSaveAndFillDialogUserDecision::kDeclined:
       GetSaveAndFillStrikeDatabase()->AddStrike();
       break;
   }
+
+  payments_autofill_client()
+      ->GetPaymentsDataManager()
+      .OnUserAcceptedUpstreamOffer();
+
+  fill_card_callback_.Reset();
 }
 
 void SaveAndFillManagerImpl::OnDidLoadRiskData(const std::string& risk_data) {
