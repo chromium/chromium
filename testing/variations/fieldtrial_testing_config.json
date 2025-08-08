@@ -7414,6 +7414,21 @@
             ]
         }
     ],
+    "CreateTabHelperOnlyForRealizedWebStates": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CreateTabHelperOnlyForRealizedWebStates"
+                    ]
+                }
+            ]
+        }
+    ],
     "CreateURLLoaderPipeAsync": [
         {
             "platforms": [
