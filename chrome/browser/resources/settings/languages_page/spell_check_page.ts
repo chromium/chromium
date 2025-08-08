@@ -221,7 +221,10 @@ export class SettingsSpellCheckPageElement extends
     // `browser.enable_spellchecking` as the toggle for the 1 language as
     // well.
     if (this.spellCheckLanguages_.length === 1) {
-      this.languageHelper_.toggleSpellCheck(
+      // Need to call getLanguageHelperInstance() instead of
+      // this.languageHelper_ here, because Polymer observers fire before
+      // connectedCallback sometimes.
+      getLanguageHelperInstance().toggleSpellCheck(
           this.spellCheckLanguages_[0].language.code,
           !!this.getPref('browser.enable_spellchecking').value);
     }

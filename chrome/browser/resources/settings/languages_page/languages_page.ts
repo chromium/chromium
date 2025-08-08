@@ -236,8 +236,15 @@ export class SettingsLanguagesPageElement extends
    */
   private isRestartRequired_(
       languageCode: string, prospectiveUILanguage: string): boolean {
+    if (!this.isConnected) {
+      // Mysteriously happens in SettingsLanguagePageTest.LanguageMenu.
+      return false;
+    }
+
+    // Using getLanguageHelperInstance() directly for the same reason as in
+    // `canEnableSomeSupportedLanguage_` (see comment there).
     return prospectiveUILanguage === languageCode &&
-        this.languageHelper_.requiresRestart();
+        getLanguageHelperInstance().requiresRestart();
   }
 
   private onCloseMenu_() {
