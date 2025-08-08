@@ -6795,8 +6795,6 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
       if (is_subgrid_track_list) {
         return nullptr;
       }
-      // TODO(almaher): We need to adjust this to allow intrinsic sized
-      // tracks alongside repeat(auto-fill, auto).
       if (all_tracks_are_intrinsic_repeat_or_fixed_sized) {
         all_tracks_are_intrinsic_repeat_or_fixed_sized =
             IsGridTrackFixedSized(*value);
