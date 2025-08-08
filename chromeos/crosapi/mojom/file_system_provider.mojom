@@ -192,12 +192,8 @@ interface FileSystemProvider {
 interface FileSystemProviderService {
   // Mount@1 was removed.
   // Unmount@2 was removed.
-
-  // Returns all file systems mounted by the extension.
-  GetAll@3(string provider) => (array<FileSystemInfo> infos);
-
-  // Returns information about a file system with the passed file_system_id.
-  Get@4(FileSystemId file_system_id) => (FileSystemInfo? info);
+  // GetAll@3 was removed.
+  // Get@4 was removed.
 
   // Called by the extension to notify watchers of changes.
   // |file_system_id| is the identifier of the file system related to this

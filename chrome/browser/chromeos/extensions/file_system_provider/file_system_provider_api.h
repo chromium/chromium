@@ -46,7 +46,6 @@ class FileSystemProviderGetAllFunction : public FileSystemProviderBase {
                              FILESYSTEMPROVIDER_GETALL)
 
  protected:
-  void RespondWithInfos(std::vector<crosapi::mojom::FileSystemInfoPtr>);
   ~FileSystemProviderGetAllFunction() override = default;
   ResponseAction Run() override;
 };
@@ -56,7 +55,6 @@ class FileSystemProviderGetFunction : public FileSystemProviderBase {
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.get", FILESYSTEMPROVIDER_GET)
 
  protected:
-  void RespondWithInfo(crosapi::mojom::FileSystemInfoPtr info);
   ~FileSystemProviderGetFunction() override = default;
   ResponseAction Run() override;
 };

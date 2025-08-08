@@ -34,43 +34,47 @@ namespace {
 
 constexpr const char kInterfaceUnavailable[] = "interface unavailable";
 
-api::file_system_provider::FileSystemInfo ConvertFileSystemInfoMojomToExtension(
-    crosapi::mojom::FileSystemInfoPtr info) {
-  using api::file_system_provider::OpenedFile;
-  using api::file_system_provider::Watcher;
-  api::file_system_provider::FileSystemInfo item;
-  item.file_system_id = info->metadata->file_system_id->id;
-  item.display_name = info->metadata->display_name;
-  item.writable = info->metadata->writable;
-  item.opened_files_limit = info->metadata->opened_files_limit;
-  item.supports_notify_tag = info->metadata->supports_notify;
+api::file_system_provider::FileSystemInfo ConvertFileSystemToExtension(
+    ash::file_system_provider::ProvidedFileSystemInterface& file_system) {
+  const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info =
+      file_system.GetFileSystemInfo();
 
-  for (const auto& watcher : info->watchers) {
-    Watcher watcher_item;
-    watcher_item.entry_path = watcher->entry_path.value();
-    watcher_item.recursive = watcher->recursive;
-    if (!watcher->last_tag.empty()) {
-      watcher_item.last_tag = watcher->last_tag;
+  api::file_system_provider::FileSystemInfo item;
+  item.file_system_id = file_system_info.file_system_id();
+  item.display_name = file_system_info.display_name();
+  item.writable = file_system_info.writable();
+  item.opened_files_limit = file_system_info.opened_files_limit();
+  item.supports_notify_tag = file_system_info.supports_notify_tag();
+
+  if (file_system_info.watchable()) {
+    for (const auto& watcher : *file_system.GetWatchers()) {
+      api::file_system_provider::Watcher watcher_item;
+      watcher_item.entry_path = watcher.second.entry_path.value();
+      watcher_item.recursive = watcher.second.recursive;
+      if (!watcher.second.last_tag.empty()) {
+        watcher_item.last_tag = watcher.second.last_tag;
+      }
+      item.watchers.push_back(std::move(watcher_item));
     }
-    item.watchers.push_back(std::move(watcher_item));
   }
 
-  for (const auto& opened_file : info->opened_files) {
-    OpenedFile opened_file_item;
-    opened_file_item.open_request_id = opened_file->open_request_id;
-    opened_file_item.file_path = opened_file->file_path;
-    switch (opened_file->mode) {
-      case crosapi::mojom::OpenFileMode::kRead:
+  for (const auto& opened_file : file_system.GetOpenedFiles()) {
+    api::file_system_provider::OpenedFile opened_file_item;
+    opened_file_item.open_request_id = opened_file.first;
+    opened_file_item.file_path = opened_file.second.file_path.value();
+    switch (opened_file.second.mode) {
+      case ash::file_system_provider::OPEN_FILE_MODE_READ:
         opened_file_item.mode =
             extensions::api::file_system_provider::OpenFileMode::kRead;
         break;
-      case crosapi::mojom::OpenFileMode::kWrite:
+      case ash::file_system_provider::OPEN_FILE_MODE_WRITE:
         opened_file_item.mode =
             extensions::api::file_system_provider::OpenFileMode::kWrite;
         break;
     }
     item.opened_files.push_back(std::move(opened_file_item));
   }
+
   return item;
 }
 
@@ -204,24 +208,21 @@ ExtensionFunction::ResponseAction FileSystemProviderUnmountFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FileSystemProviderGetAllFunction::Run() {
-  auto callback =
-      base::BindOnce(&FileSystemProviderGetAllFunction::RespondWithInfos, this);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->file_system_provider_service_ash()
-      ->GetAllWithProfile(GetProviderId(), std::move(callback),
-                          Profile::FromBrowserContext(browser_context()));
-  return RespondLater();
-}
+  auto& service =
+      CHECK_DEREF(ash::file_system_provider::Service::Get(browser_context()));
+  auto provider_id =
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          GetProviderId());
 
-void FileSystemProviderGetAllFunction::RespondWithInfos(
-    std::vector<crosapi::mojom::FileSystemInfoPtr> infos) {
-  using api::file_system_provider::FileSystemInfo;
-  std::vector<FileSystemInfo> items;
-  for (auto& info : infos) {
-    items.push_back(ConvertFileSystemInfoMojomToExtension(std::move(info)));
+  std::vector<api::file_system_provider::FileSystemInfo> items;
+  for (const auto& file_system_info :
+       service.GetProvidedFileSystemInfoList(provider_id)) {
+    ash::file_system_provider::ProvidedFileSystemInterface* const file_system =
+        service.GetProvidedFileSystem(file_system_info.provider_id(),
+                                      file_system_info.file_system_id());
+    items.push_back(ConvertFileSystemToExtension(CHECK_DEREF(file_system)));
   }
-  Respond(
+  return RespondNow(
       ArgumentList(api::file_system_provider::GetAll::Results::Create(items)));
 }
 
@@ -230,28 +231,21 @@ ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto id = crosapi::mojom::FileSystemId::New();
-  id->provider = GetProviderId();
-  id->id = params->file_system_id;
-  auto callback =
-      base::BindOnce(&FileSystemProviderGetFunction::RespondWithInfo, this);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->file_system_provider_service_ash()
-      ->GetWithProfile(std::move(id), std::move(callback),
-                       Profile::FromBrowserContext(browser_context()));
-  return RespondLater();
-}
+  auto& service =
+      CHECK_DEREF(ash::file_system_provider::Service::Get(browser_context()));
+  auto provider_id =
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          GetProviderId());
 
-void FileSystemProviderGetFunction::RespondWithInfo(
-    crosapi::mojom::FileSystemInfoPtr info) {
-  using api::file_system_provider::FileSystemInfo;
-  if (!info) {
-    Respond(Error(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND)));
-    return;
+  ash::file_system_provider::ProvidedFileSystemInterface* file_system =
+      service.GetProvidedFileSystem(provider_id, params->file_system_id);
+  if (!file_system) {
+    return RespondNow(
+        Error(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND)));
   }
-  auto result = ConvertFileSystemInfoMojomToExtension(std::move(info));
-  Respond(ArgumentList(
+
+  auto result = ConvertFileSystemToExtension(*file_system);
+  return RespondNow(ArgumentList(
       api::file_system_provider::Get::Results::Create(std::move(result))));
 }
 
