@@ -2672,50 +2672,6 @@
     ],
     "expires": "never"
   },
-  "These tests require the experimental speculative prefetch feature, and",
-  "requires extra switches to enable content implementation of speculation",
-  "rules prefetch.",
-  {
-    "prefix": "prefetch",
-    "owners": [
-      "jbroman@chromium.org",
-      "liviutinta@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/speculation-rules/prefetch",
-      "http/tests/inspector-protocol/prefetch"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--disable-features=PrefetchServiceWorker"
-    ],
-    "expires": "Oct 1, 2025"
-  },
-  {
-    "prefix": "prefetch-sw",
-    "owners": [
-      "hiroshige@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/speculation-rules/prefetch",
-      "http/tests/inspector-protocol/prefetch"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker"
-    ],
-    "expires": "Oct 1, 2025"
-  },
   {
     "prefix": "preload-link-rel-dataurls-disabled",
     "owners": [
@@ -2757,6 +2713,7 @@
       "Win"
     ],
     "bases": [
+      "http/tests/inspector-protocol/prefetch",
       "http/tests/inspector-protocol/preload",
       "http/tests/inspector-protocol/prerender",
       "http/tests/inspector-protocol/tracing/prerender.js"
@@ -2766,33 +2723,6 @@
     ],
     "args": [
       "--enable-features=Prerender2FallbackPrefetchSpecRules:kPrerender2FallbackPrefetchSchedulerPolicy/Burst"
-    ],
-    "owners": [
-      "kenoss@chromium.org"
-    ],
-    "expires": "Nov 30, 2025"
-  },
-  "prerender2-fallback-prefetch-spec-rules for exclusive tests http/tests/inspector-protocol/prefetch",
-  "We maintain this separated from prerender2-fallback-prefetch-spec-rules because",
-  "- http/tests/inspector-protocol/prefetch is `exclusive_tests` in `prefetch`.",
-  "  If other suite wants to execute it, it needs include the directry to its `exclusive_tests`.",
-  "- It requires lots of feature flags. We don't need to mix them up.",
-  {
-    "prefix": "prerender2-fallback-prefetch-spec-rules-prefetch",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/inspector-protocol/prefetch"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=Prerender2FallbackPrefetchSpecRules",
-      "--disable-features=PrefetchServiceWorker",
-      "--disable-threaded-compositing",
-      "--disable-threaded-animation"
     ],
     "owners": [
       "kenoss@chromium.org"

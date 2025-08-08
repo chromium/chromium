@@ -1909,10 +1909,8 @@ crbug.com/41442253 [ Mac ] external/wpt/clipboard-apis/async-navigator-clipboard
 crbug.com/41442253 [ iOS26-simulator ] external/wpt/clipboard-apis/async-navigator-clipboard-change-event.tentative.https.html [ Skip ]
 
 # These tests are run exclusively in the prefetch-proxy VirtualTestSuite.
-virtual/prefetch/external/wpt/speculation-rules/prefetch/anonymous-client.https.html [ Skip ]
-virtual/prefetch/external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
-virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/anonymous-client.https.html [ Skip ]
-virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
+external/wpt/speculation-rules/prefetch/anonymous-client.https.html [ Skip ]
+external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
 
 # These tests test origin trial behavior that is only enabled on windows.
 [ Mac ] http/tests/origin_trials/webexposed/incoming-call-notifications-origin-trial-interfaces.html [ Skip ]

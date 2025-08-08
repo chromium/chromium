@@ -4108,8 +4108,8 @@ crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/response/response-err
 crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/response/response-error-from-stream.any.sharedworker.html [ Failure Timeout ]
 crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/response/response-error-from-stream.any.worker.html [ Failure Timeout ]
 crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/response/response-stream-bad-chunk.any.serviceworker.html [ Failure Timeout ]
-crbug.com/340066067 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForResponse [ Timeout ]
-crbug.com/340066067 [ Win11-arm64 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForResponse [ Timeout ]
+crbug.com/340066067 [ Mac12 ] external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForResponse [ Timeout ]
+crbug.com/340066067 [ Win11-arm64 ] external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForResponse [ Timeout ]
 crbug.com/340066066 [ Win11-arm64 ] external/wpt/html/canvas/element/text/2d.text.measure.advances-not-defined.html [ Failure Timeout ]
 crbug.com/339317629 external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html [ Timeout ]
 crbug.com/339310103 [ Win11-arm64 ] external/wpt/focus/focus-restoration-in-different-site-iframes.html [ Timeout ]
@@ -5456,12 +5456,8 @@ crbug.com/41393762 http/tests/devtools/sxg/sxg-prefetch-fail.js [ Failure Pass ]
 crbug.com/41393762 http/tests/devtools/sxg/sxg-prefetch.js [ Failure Pass ]
 
 # Prefetching inspector protocol test is flaky
-crbug.com/40854799 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prefetch-sw/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prefetch-sw/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
+crbug.com/40854799 http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
+crbug.com/40854799 http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
 
 # Sheriff 2018-03-22
 crbug.com/824848 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
@@ -9038,8 +9034,6 @@ crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failur
 
 # Flaky output
 crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Failure ]
-
-crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure ]
 
 # The overlapping navigation behavior is flaky.
 crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-nav.html [ Failure Pass ]
