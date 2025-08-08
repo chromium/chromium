@@ -451,6 +451,17 @@ MediaQueryEvaluatorTestCase g_scripting_enabled_cases[] = {
     {"(scripting: enabled)", true},
 };
 
+// Exercised for UBSAN:
+MediaQueryEvaluatorTestCase g_float_cast_overflow_cases[] = {
+    {"(color: 3.0e38)", false},
+    {"(color-index: 3.0e38)", false},
+    {"(monochrome: 3.0e38)", false},
+    {"(grid: 3.0e38)", false},
+    {"(-webkit-transform-3d: 3.0e38)", false},
+    {"(horizontal-viewport-segments: 3.0e38)", false},
+    {"(vertical-viewport-segments: 3.0e38)", false},
+};
+
 void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
                      const MediaQueryEvaluator* media_query_evaluator,
                      CSSParserMode mode) {
@@ -961,6 +972,14 @@ TEST(MediaQueryEvaluatorTest, CachedScripting) {
         MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_scripting_enabled_cases, media_query_evaluator);
   }
+}
+
+TEST(MediaQueryEvaluatorTest, FloatCastOverflow) {
+  MediaValuesCached::MediaValuesCachedData data;
+  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
+  TestMQEvaluator(g_float_cast_overflow_cases, media_query_evaluator);
 }
 
 TEST(MediaQueryEvaluatorTest, RangedValues) {

@@ -327,7 +327,7 @@ static bool ColorMediaFeatureEval(const MediaQueryExpValue& value,
                                bits_per_component);
   if (value.IsValid()) {
     return NumberValue(value, number, media_values) &&
-           CompareValue(bits_per_component, static_cast<int>(number), op);
+           CompareValue(bits_per_component, ClampTo<int>(number), op);
   }
 
   return bits_per_component != 0;
@@ -347,7 +347,7 @@ static bool ColorIndexMediaFeatureEval(const MediaQueryExpValue& value,
   // value is zero.
   float number;
   return NumberValue(value, number, media_values) &&
-         CompareValue(0, static_cast<int>(number), op);
+         CompareValue(0, ClampTo<int>(number), op);
 }
 
 static bool MonochromeMediaFeatureEval(const MediaQueryExpValue& value,
@@ -360,7 +360,7 @@ static bool MonochromeMediaFeatureEval(const MediaQueryExpValue& value,
       bits_per_component);
   if (value.IsValid()) {
     return NumberValue(value, number, media_values) &&
-           CompareValue(bits_per_component, static_cast<int>(number), op);
+           CompareValue(bits_per_component, ClampTo<int>(number), op);
   }
   return bits_per_component != 0;
 }
@@ -640,7 +640,7 @@ static bool GridMediaFeatureEval(const MediaQueryExpValue& value,
   // assume we have bitmap device
   float number;
   if (value.IsValid() && NumberValue(value, number, media_values)) {
-    return CompareValue(static_cast<int>(number), 0, op);
+    return CompareValue(ClampTo<int>(number), 0, op);
   }
   return false;
 }
@@ -949,7 +949,7 @@ static bool Transform3dMediaFeatureEval(const MediaQueryExpValue& value,
   if (value.IsValid()) {
     float number;
     return NumberValue(value, number, media_values) &&
-           CompareValue(have3d_rendering, static_cast<int>(number), op);
+           CompareValue(have3d_rendering, ClampTo<int>(number), op);
   }
   return return_value_if_no_parameter;
 }
@@ -1336,8 +1336,7 @@ static bool HorizontalViewportSegmentsMediaFeatureEval(
 
   float number;
   return NumberValue(value, number, media_values) &&
-         CompareValue(horizontal_viewport_segments, static_cast<int>(number),
-                      op);
+         CompareValue(horizontal_viewport_segments, ClampTo<int>(number), op);
 }
 
 static bool VerticalViewportSegmentsMediaFeatureEval(
@@ -1360,7 +1359,7 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
 
   float number;
   return NumberValue(value, number, media_values) &&
-         CompareValue(vertical_viewport_segments, static_cast<int>(number), op);
+         CompareValue(vertical_viewport_segments, ClampTo<int>(number), op);
 }
 
 static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
