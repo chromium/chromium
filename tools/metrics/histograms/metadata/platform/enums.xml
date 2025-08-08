@@ -2586,6 +2586,7 @@ Full version information for the fingerprint enum values:
   <int value="228456405" label="CROS Cr50 0.3.11"/>
   <int value="230386903" label="CROS Cr50 0.0.24 Eve Flags 0x7f00(prod)"/>
   <int value="245471087" label="CROS Cr50 0.4.25"/>
+  <int value="260595732" label="CROS Ti50 DT 0.23.210"/>
   <int value="267286010" label="CROS Cr50 0.6.40"/>
   <int value="267584297" label="CROS Cr50 0.6.290"/>
   <int value="272592294" label="CROS Ti50 0.24.170"/>
@@ -2596,7 +2597,7 @@ Full version information for the fingerprint enum values:
   <int value="313962517" label="CROS Cr50 0.3.16"/>
   <int value="320114594" label="CROS Ti50 0.22.6"/>
   <int value="337883107" label="CROS Cr50 0.4.20"/>
-  <int value="350345523" label="CROS Ti50 NT 0.33.190"/>
+  <int value="350345523" label="CROS Ti50 DT 0.23.190 or NT 0.33.190"/>
   <int value="362940849" label="CROS Ti50 0.24.0"/>
   <int value="367426829" label="CROS Cr50 0.5.180"/>
   <int value="368058567" label="STM d08"/>
@@ -2663,6 +2664,7 @@ Full version information for the fingerprint enum values:
   <int value="849048014" label="CROS Cr50 0.6.5"/>
   <int value="867657196" label="CROS Cr50 0.2.2"/>
   <int value="868340265" label="CROS Cr50 0.6.151"/>
+  <int value="870470820" label="CROS Ti50 NT 0.34.210"/>
   <int value="871939801" label="CROS Cr50 0.5.260"/>
   <int value="875174427" label="CROS Ti50 0.0.16"/>
   <int value="885470954" label="CROS Ti50 0.22.9"/>
@@ -2702,6 +2704,7 @@ Full version information for the fingerprint enum values:
   <int value="1101087472" label="CROS Cr50 0.6.251"/>
   <int value="1123680979" label="CROS Cr50 0.3.4 (duplicate)"/>
   <int value="1131918398" label="CROS Cr50 0.5.160"/>
+  <int value="1141146108" label="CROS Cr50 H1 0.6.300"/>
   <int value="1144573494" label="CROS Cr50 0.5.282"/>
   <int value="1154690950" label="CROS Cr50 0.6.250"/>
   <int value="1170421178" label="CROS Ti50 0.23.140"/>
@@ -2750,6 +2753,7 @@ Full version information for the fingerprint enum values:
   <int value="1478323543" label="CROS Cr50 0.5.120"/>
   <int value="1488690623" label="CROS Ti50 0.24.180"/>
   <int value="1490841853" label="IFX 9645 rev 49 fw 133.32 build 0050"/>
+  <int value="1495949600" label="CROS Cr50 H1 0.5.300"/>
   <int value="1498375675" label="CROS Ti50 0.24.72"/>
   <int value="1514324233" label="CROS Cr50 0.5.1"/>
   <int value="1517782969" label="CROS Ti50 0.23.51"/>
@@ -2764,6 +2768,7 @@ Full version information for the fingerprint enum values:
   <int value="1607230944" label="CROS Cr50 0.4.5 Flags 0x10(pre-pvt)"/>
   <int value="1632371059" label="CROS Cr50 0.0.22"/>
   <int value="1660111968" label="CROS Cr50 0.6.180"/>
+  <int value="1660423033" label="CROS Ti50 DT 0.24.200"/>
   <int value="1660841977" label="CROS Cr50 0.6.160"/>
   <int value="1674290856" label="CROS Cr50 0.6.170"/>
   <int value="1684843946" label="CROS Ti50 0.23.1"/>
@@ -2775,16 +2780,19 @@ Full version information for the fingerprint enum values:
   <int value="1730776982" label="CROS Ti50 0.24.140"/>
   <int value="1733077393" label="IFX 9645 rev 49 fw 133.33 build 00e3"/>
   <int value="1734763743" label="CROS Ti50 0.24.12"/>
+  <int value="1739225374" label="CROS Ti50 DT 0.24.210"/>
   <int value="1758642527" label="CROS Ti50 0.22.2"/>
   <int value="1758758919" label="CROS Cr50 0.6.130"/>
   <int value="1769445930" label="CROS Ti50 0.24.30"/>
   <int value="1774347833" label="CROS Cr50 0.0.15"/>
   <int value="1777524598" label="CROS Ti50 0.23.60"/>
+  <int value="1786542671" label="CROS Ti50 NT 0.34.200"/>
   <int value="1786639695" label="CROS Cr50 0.5.251"/>
   <int value="1787609211" label="CROS Cr50 0.3.26 aka 0.5.0"/>
   <int value="1797688072" label="CROS Cr50 0.6.150"/>
   <int value="1799811131" label="CROS Cr50 0.3.9"/>
   <int value="1800672648" label="CROS Cr50 0.5.30"/>
+  <int value="1801777741" label="CROS Ti50 NT 0.33.210"/>
   <int value="1805048980" label="CROS Cr50 0.6.140"/>
   <int value="1820069194" label="CROS Cr50 0.6.10 aka 0.6.20"/>
   <int value="1828625721" label="IFX 9655 rev 32 fw 4.31 build 02c2"/>
