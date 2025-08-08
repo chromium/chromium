@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -192,7 +193,7 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
 }
 
 void FillGlobalMotionInfo(
-    VAWarpedMotionParamsAV1 va_warped_motion[7],
+    base::span<VAWarpedMotionParamsAV1, 7> va_warped_motion,
     const std::array<libgav1::GlobalMotion, libgav1::kNumReferenceFrameTypes>&
         global_motion) {
   // global_motion[0] (for kReferenceFrameIntra) is not used.

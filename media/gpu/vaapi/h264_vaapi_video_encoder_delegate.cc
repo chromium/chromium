@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
@@ -86,15 +87,16 @@ VAEncMiscParam& AllocateMiscParameterBuffer(
   return *reinterpret_cast<VAEncMiscParam*>(va_buffer->data);
 }
 
-void CreateVAEncRateControlParams(uint32_t bps,
-                                  uint32_t target_percentage,
-                                  uint32_t window_size,
-                                  uint32_t initial_qp,
-                                  uint32_t min_qp,
-                                  uint32_t max_qp,
-                                  uint32_t framerate,
-                                  uint32_t buffer_size,
-                                  std::vector<uint8_t> misc_buffers[3]) {
+void CreateVAEncRateControlParams(
+    uint32_t bps,
+    uint32_t target_percentage,
+    uint32_t window_size,
+    uint32_t initial_qp,
+    uint32_t min_qp,
+    uint32_t max_qp,
+    uint32_t framerate,
+    uint32_t buffer_size,
+    base::span<std::vector<uint8_t>, 3> misc_buffers) {
   auto& rate_control_param =
       AllocateMiscParameterBuffer<VAEncMiscParameterRateControl>(
           misc_buffers[0], VAEncMiscParameterTypeRateControl);

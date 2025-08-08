@@ -9,6 +9,7 @@
 
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "media/base/cdm_context.h"
@@ -592,7 +593,7 @@ void H265VaapiVideoDecoderDelegate::FillVAPicture(
 
 void H265VaapiVideoDecoderDelegate::FillVARefFramesFromRefList(
     const H265Picture::Vector& ref_pic_list,
-    VAPictureHEVC* va_pics) {
+    base::span<VAPictureHEVC> va_pics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ref_pic_list_pocs_.clear();
   for (auto& it : ref_pic_list) {
