@@ -90,6 +90,10 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
 
   void OnTimerFiredForTesting() { OnTimerFired(); }
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+  void WaitForFuchsiaCleanupForTesting() { fuchsia_cleanup_loop_.Run(); }
+#endif
+
   void AddObserver(Observer* observer) override;
   void RemoveObserver(const Observer* observer) override;
 
@@ -156,6 +160,16 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   base::ObserverList<Observer> observers_;
 
   std::map<std::string, int> open_sites_;
+
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+  // If running on WebEngine on Fuchsia, any existing BTM database file is
+  // asynchronously deleted. This RunLoop allows tests to wait for the
+  // deletion to complete.
+  //
+  // TODO: crbug.com/434764000 - delete this once we are confident any leftover
+  // database files have been removed on WebEngine on Fuchsia.
+  base::RunLoop fuchsia_cleanup_loop_;
+#endif
 
   base::WeakPtrFactory<BtmServiceImpl> weak_factory_{this};
 };

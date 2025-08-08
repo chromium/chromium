@@ -6,3 +6,11 @@ assert(is_fuchsia)
 
 # Compute the path to the arch-specific boot image directory.
 boot_image_root = "//third_party/fuchsia-sdk/images/"
+
+declare_args() {
+  # Set this true for a web_engine build, a less functional web browser
+  # dedicated for smart displays. Building for web engine on fuchsia can remove
+  # some dependencies, is conflict with other builders, and needs to be executed
+  # separately.
+  is_web_engine = true
+}

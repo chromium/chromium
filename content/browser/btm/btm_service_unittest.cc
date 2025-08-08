@@ -107,9 +107,9 @@ TEST_F(BtmServiceTest, DontCreateServiceIfFeatureDisabled) {
   EXPECT_EQ(BtmServiceImpl::Get(&profile), nullptr);
 }
 
-// Verifies that if the BTM feature is enabled, BTM database files are created
-// when a (non-OTR) profile is created.
-TEST_F(BtmServiceTest, CreateDbFilesIfBtmEnabled) {
+// Verifies that if the BTM feature is enabled, BTM database is created when a
+// (non-OTR) profile is created.
+TEST_F(BtmServiceTest, CreateBTMDatabaseIfBtmEnabled) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
   BtmServiceImpl* service;
   std::unique_ptr<TestBrowserContext> profile;
@@ -125,12 +125,26 @@ TEST_F(BtmServiceTest, CreateDbFilesIfBtmEnabled) {
   // enabled.
   WaitOnStorage(service);
   BrowserContextImpl::From(profile.get())->WaitForBtmCleanupForTesting();
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+  // See crbug.com/434764000, file based BTM is disabled on web engine on
+  // fuchsia due to the storage constraint.
+  EXPECT_FALSE(base::PathExists(GetBtmFilePath(profile.get())));
+#else
   EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
+#endif
 }
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+// See crbug.com/434764000, file based BTM is disabled on web engine on fuchsia
+// due to the storage constraint.
+#define MAYBE_PreserveRegularProfileDbFiles \
+  DISABLED_PreserveRegularProfileDbFiles
+#else
+#define MAYBE_PreserveRegularProfileDbFiles PreserveRegularProfileDbFiles
+#endif
 // Verifies that when an OTR profile is opened, the BTM database file for
 // the underlying regular profile is NOT deleted.
-TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
+TEST_F(BtmServiceTest, MAYBE_PreserveRegularProfileDbFiles) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
 
   // Ensure the BTM feature is enabled.
@@ -168,8 +182,73 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // to delete that folder (`profile` will).
   otr_profile->TakePath();
 }
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+// See crbug.com/434764000, file based BTM is disabled on web engine on
+// fuchsia due to the storage constraint. But the leftover file previously
+// created should be deleted.
+TEST_F(BtmServiceTest, DeleteLeftoverDatabaseFileOnWebEngineOnFuchsia) {
+  base::FilePath user_data_dir;
+  base::FilePath db_path;
 
-TEST_F(BtmServiceTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
+  // First, create a browser context and create a mock database file at the
+  // correct path.
+  {
+    TestBrowserContext browser_context;
+    db_path = GetBtmFilePath(&browser_context);
+    // Ensure the BtmService (and its database) are initialized.
+    BrowserContextImpl::From(&browser_context)
+        ->GetBtmService()->WaitForFuchsiaCleanupForTesting();
+
+    // Create a mock database file where one would be if the platform wasn't
+    // WebEngine on Fuchsia.
+    ASSERT_TRUE(base::WriteFile(db_path, "test"));
+    ASSERT_TRUE(base::PathExists(db_path));
+
+    // Take ownership of the browser context's directory so we can reuse it.
+    user_data_dir = browser_context.TakePath();
+
+    // Confirm that WaitForBtmCleanupForTesting() returns and the file still
+    // exists.
+    BrowserContextImpl::From(&browser_context)->WaitForBtmCleanupForTesting();
+    ASSERT_TRUE(base::PathExists(db_path));
+  }
+
+  // Confirm the file still exists after the browser context is destroyed.
+  ASSERT_TRUE(base::PathExists(db_path));
+
+  // Create another browser context for the same directory and confirm the
+  // database file is deleted.
+  {
+    TestBrowserContext browser_context(user_data_dir);
+    BrowserContextImpl::From(&browser_context)
+        ->GetBtmService()->WaitForFuchsiaCleanupForTesting();
+    ASSERT_FALSE(base::PathExists(db_path));
+  }
+}
+
+TEST_F(BtmServiceTest, BtmServiceCanStartWithoutDatabaseFile) {
+  TestBrowserContext browser_context;
+  base::FilePath db_path = GetBtmFilePath(&browser_context);
+  ASSERT_FALSE(base::PathExists(db_path));
+  // Wait for the database to be created.
+  BrowserContextImpl::From(&browser_context)
+      ->GetBtmService()
+      ->storage()
+      ->FlushPostedTasksForTesting();
+  ASSERT_FALSE(base::PathExists(db_path));
+}
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+// See crbug.com/434764000, file based BTM is disabled on web engine on
+// fuchsia due to the storage constraint.
+#define MAYBE_DatabaseFileIsDeletedIfFeatureIsDisabled \
+  DISABLED_DatabaseFileIsDeletedIfFeatureIsDisabled
+#else
+#define MAYBE_DatabaseFileIsDeletedIfFeatureIsDisabled \
+  DatabaseFileIsDeletedIfFeatureIsDisabled
+#endif
+TEST_F(BtmServiceTest, MAYBE_DatabaseFileIsDeletedIfFeatureIsDisabled) {
   base::FilePath user_data_dir;
   base::FilePath db_path;
 
