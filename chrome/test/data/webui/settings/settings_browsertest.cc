@@ -917,13 +917,6 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, CookiesPageTest) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");
 }
 
-// TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
-                       CookiesPageAlwaysBlock3pcsIncognitoDisabledTest) {
-  RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('CookiesPageTest_alwaysBlock3pcsIncognitoDisabled')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ExceptionsList) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('ExceptionsList')");
 }
@@ -1025,8 +1018,7 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kPrivacyGuideForceAvailable,
          content_settings::features::kTrackingProtection3pcd,
-         optimization_guide::features::kPrivacyGuideAiSettings,
-         privacy_sandbox::kAlwaysBlock3pcsIncognito},
+         optimization_guide::features::kPrivacyGuideAiSettings},
         {});
   }
 

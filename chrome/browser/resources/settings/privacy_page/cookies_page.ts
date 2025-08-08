@@ -105,12 +105,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () =>
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
-
-      isAlwaysBlock3pcsIncognitoEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled'),
-      },
     };
   }
 
@@ -118,7 +112,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   declare private cookiesContentSettingType_: ContentSettingsTypes;
   declare private blockAllPref_: chrome.settingsPrivate.PrefObject;
   declare private is3pcdRedesignEnabled_: boolean;
-  declare private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -239,14 +232,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private relatedWebsiteSetsToggle3pcSettingDisabled_() {
     return this.getPref('generated.third_party_cookie_blocking_setting')
                .value !== ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
-  }
-
-  private getThirdPartyCookiesPageDescription_():
-      string {
-    return this.i18n(
-        this.isAlwaysBlock3pcsIncognitoEnabled_ ?
-            'thirdPartyCookiesPageDescription' :
-            'thirdPartyCookiesAlignedPageDescription');
   }
 
   // SettingsViewMixin implementation.
