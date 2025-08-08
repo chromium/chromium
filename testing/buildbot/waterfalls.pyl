@@ -123,9 +123,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'cros-cbx-dut',
-        ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         },
@@ -133,9 +130,6 @@
         'cros_board': 'brya',
       },
       'chromeos-brya-chrome-tests': {
-        'mixins': [
-            'cros-cbx-dut',
-        ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         },
@@ -406,9 +400,6 @@
       'chromeos-brya-chrome-preuprev': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'cros-cbx-dut',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_ctp_preuprev_tests',
@@ -1179,9 +1170,6 @@
       'chromeos-brya-chrome-dchecks-skylab': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'cros-cbx-dut',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',

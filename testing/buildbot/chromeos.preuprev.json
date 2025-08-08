@@ -53,7 +53,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "name": "base_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "test": "base_unittests",
@@ -64,7 +63,6 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "brya",
-        "cros_cbx": true,
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "shards": 30,
@@ -79,7 +77,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "name": "chromeos_integration_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
