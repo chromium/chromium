@@ -151,7 +151,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   [self.baseViewController presentViewController:_FREWrapperViewController
                                         animated:shouldAnimatePresentation
-                                      completion:nil];
+                                      completion:^{
+                                        // Record FRE was shown.
+                                        RecordFREShown();
+                                      }];
 
   if (BWGTabHelper) {
     BWGTabHelper->SetBwgUiShowing(true);
