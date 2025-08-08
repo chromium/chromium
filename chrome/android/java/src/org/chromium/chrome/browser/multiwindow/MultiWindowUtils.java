@@ -104,6 +104,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     private final boolean mMultiInstanceApi31Enabled;
     private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
 
+    private static final String OPEN_ADJACENTLY_PARAM = "open_adjacently";
+
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
     private @Nullable Boolean mTabbedActivity2TaskRunning;
@@ -917,6 +919,18 @@ public class MultiWindowUtils implements ActivityStateListener {
             }
         }
         return windowId;
+    }
+
+    /**
+     * Determines whether a new window should be opened adjacently or in full screen. This relies on
+     * an experimental param set on the server-side, with behavior defaulting to adjacent launch.
+     *
+     * @return {@code false} when a new window should be opened in full screen, {@code true}
+     *     otherwise.
+     */
+    public static boolean shouldOpenInAdjacentWindow() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT, OPEN_ADJACENTLY_PARAM, true);
     }
 
     /**
