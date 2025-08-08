@@ -12884,6 +12884,34 @@
             ]
         }
     ],
+    "IOSHelios": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiCrossTab",
+                        "PageActionMenu",
+                        "PageContextAnchorTags"
+                    ]
+                },
+                {
+                    "name": "Enabled_DirectEntry",
+                    "params": {
+                        "PageActionMenuDirectEntryPoint": "true"
+                    },
+                    "enable_features": [
+                        "GeminiCrossTab",
+                        "PageActionMenu",
+                        "PageContextAnchorTags"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSHomeMemoryImprovements": [
         {
             "platforms": [
