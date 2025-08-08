@@ -9378,14 +9378,9 @@
     "expiry_milestone": 140
   },
   {
-    "name": "sync-trusted-vault-infobar-improvements",
-    "owners": ["rgod@google.com", "ylahodiuk@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "sync-trusted-vault-infobar-message-improvements",
     "owners": ["ylahodiuk@google.com", "rgod@google.com"],
-    "expiry_milestone": 141
+    "expiry_milestone": 144
   },
   {
     "name": "sys-ui-holdback-drive-integration",
