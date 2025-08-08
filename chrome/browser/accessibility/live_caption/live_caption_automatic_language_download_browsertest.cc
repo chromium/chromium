@@ -13,6 +13,8 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/base/media_switches.h"
+#include "base/test/scoped_feature_list.h"
 
 namespace captions {
 
@@ -26,6 +28,12 @@ class LiveCaptionAutomaticLanguageDownloadTest
       const LiveCaptionAutomaticLanguageDownloadTest&) = delete;
   LiveCaptionAutomaticLanguageDownloadTest& operator=(
       const LiveCaptionAutomaticLanguageDownloadTest&) = delete;
+
+  // InProcessBrowserTest:
+  void SetUp() override {
+    scoped_feature_list()->InitAndEnableFeature(media::kLiveCaptionAutomaticLanguageDownload);
+    InProcessBrowserTest::SetUp();
+  }
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override {}

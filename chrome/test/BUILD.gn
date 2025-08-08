@@ -3969,6 +3969,7 @@ if (!is_android) {
       if (is_win || is_mac || is_linux) {
         sources += [
           "../browser/accessibility/live_caption/live_caption_automatic_language_download_browsertest.cc",
+          "../browser/accessibility/live_caption/live_caption_language_identification_browsertest.cc",
           "../browser/speech/on_device_speech_recognition_impl_browsertest.cc",
         ]
       }

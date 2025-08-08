@@ -26,6 +26,10 @@ class LiveCaptionBrowserTest : public InProcessBrowserTest {
   void CreatedBrowserMainParts(content::BrowserMainParts*) override;
 
  protected:
+  base::test::ScopedFeatureList* scoped_feature_list() {
+    return &scoped_feature_list_;
+  }
+
   // Enables/disables the live caption pref on the specified profile (or default
   // profile) and marks the SODA library as installed.
   void SetLiveCaptionEnabled(bool enabled);
