@@ -54,7 +54,6 @@ class ToolController {
   // Invokes a tool action.
   void CreateToolAndValidate(
       const ToolRequest& request,
-      const optimization_guide::proto::AnnotatedPageContent* last_observation,
       ResultCallback callback);
   void Invoke(ResultCallback result_callback);
 
@@ -83,9 +82,7 @@ class ToolController {
     ActiveState(
         std::unique_ptr<Tool> tool,
         ResultCallback completion_callback,
-        std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
-        const optimization_guide::proto::AnnotatedPageContent*
-            last_observation);
+        std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry);
     ~ActiveState();
     ActiveState(const ActiveState&) = delete;
     ActiveState& operator=(const ActiveState&) = delete;
@@ -98,8 +95,6 @@ class ToolController {
     std::unique_ptr<Tool> tool;
     ResultCallback completion_callback;
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry;
-    raw_ptr<const optimization_guide::proto::AnnotatedPageContent>
-        last_observation;
   };
   std::optional<ActiveState> active_state_;
 

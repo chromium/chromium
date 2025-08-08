@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -42,6 +43,7 @@ class GlicPageContextFetcher {
 namespace {
 
 void HandleFetchPageResult(
+    base::WeakPtr<tabs::TabInterface> tab,
     glic::mojom::TabDataPtr tab_data,
     url::Origin last_committed_origin,
     std::unique_ptr<optimization_guide::proto::ContentNode> media_root_node,
@@ -112,6 +114,11 @@ void HandleFetchPageResult(
           page_context.annotated_page_content_result->proto.mutable_root_node()
               ->add_children_nodes();
       media_node->Swap(media_root_node.get());
+    }
+
+    if (tab) {
+      actor::ActorTabData::From(tab.get())->DidObserveContent(
+          page_context.annotated_page_content_result->proto);
     }
 
     annotated_page_data->annotated_page_content = mojo_base::ProtoWrapper(
@@ -186,7 +193,8 @@ void FetchPageContext(
   page_content_annotations::FetchPageContext(
       *web_contents, options,
       base::BindOnce(
-          &HandleFetchPageResult, CreateTabData(web_contents),
+          &HandleFetchPageResult, tab->GetWeakPtr(),
+          CreateTabData(web_contents),
           web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
           std::move(media_root_node), std::move(callback),
           std::move(journal_entry)));

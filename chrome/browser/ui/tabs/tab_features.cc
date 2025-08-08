@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
@@ -279,6 +280,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab, actor::ActorKeyedService::Get(profile),
               std::make_unique<actor::ui::ActorUiTabControllerFactory>());
     }
+    actor_tab_data_ =
+        GetUserDataFactory().CreateInstance<actor::ActorTabData>(tab, &tab);
   }  // IsInNormalWindow() end.
 
   // This block instantiates the page action controllers that depends on the

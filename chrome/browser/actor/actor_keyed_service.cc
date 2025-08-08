@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -144,7 +145,7 @@ void ActorKeyedService::NotifyTaskStateChanged(const ActorTask& task) {
 }
 
 void ActorKeyedService::RequestTabObservation(
-    const tabs::TabInterface& tab,
+    tabs::TabInterface& tab,
     TaskId task_id,
     base::OnceCallback<void(TabObservationResult)> callback) {
   const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
@@ -158,7 +159,8 @@ void ActorKeyedService::RequestTabObservation(
   page_content_annotations::FetchPageContext(
       *tab.GetContents(), options,
       base::BindOnce(
-          [](base::OnceCallback<void(TabObservationResult)> callback,
+          [](base::WeakPtr<tabs::TabInterface> tab,
+             base::OnceCallback<void(TabObservationResult)> callback,
              std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
                  pending_journal_entry,
              const GURL& last_committed_url,
@@ -191,11 +193,16 @@ void ActorKeyedService::RequestTabObservation(
               pending_journal_entry->GetJournal().LogScreenshot(
                   last_committed_url, pending_journal_entry->GetTaskId(),
                   kMimeTypeJpeg, base::as_byte_span(data));
+              if (tab) {
+                actor::ActorTabData::From(tab.get())->DidObserveContent(
+                    fetch_result.annotated_page_content_result->proto);
+              }
 
               std::move(callback).Run(std::move(result).value());
             }
           },
-          std::move(callback), std::move(journal_entry), last_committed_url));
+          tab.GetWeakPtr(), std::move(callback), std::move(journal_entry),
+          last_committed_url));
 }
 
 void ActorKeyedService::ConvertToBrowserActionResult(

@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -208,7 +209,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   }
 
   auto CreateTask(actor::TaskId& out_task) {
-    return Steps(InAnyContext(WithElement(
+    return InAnyContext(WithElement(
         kGlicContentsElementId, [&out_task](ui::TrackedElement* el) mutable {
           content::WebContents* glic_contents =
               AsInstrumentedWebContents(el)->web_contents();
@@ -216,7 +217,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
               content::EvalJs(glic_contents, "client.browser.createTask()")
                   .ExtractInt();
           out_task = actor::TaskId(result);
-        })));
+        }));
   }
 
   // Note: In all the Create*Action functions below, parameters that are
@@ -418,7 +419,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
   // Resumes a paused task by calling the glic ResumeActorTask API.
   auto ResumeActorTask(base::Value::Dict context_options, bool expected) {
-    return Steps(InAnyContext(CheckElement(
+    return InAnyContext(CheckElement(
         kGlicContentsElementId,
         [context_options =
              std::move(context_options)](ui::TrackedElement* el) mutable {
@@ -438,7 +439,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
               std::move(context_options));
           return content::EvalJs(glic_contents, script).ExtractBool();
         },
-        expected)));
+        expected));
   }
 
   auto WaitForActorTaskState(mojom::ActorTaskState expected_state) {
@@ -446,7 +447,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     // observable may have already been deleted.
     EXPECT_NE(expected_state, mojom::ActorTaskState::kStopped);
 
-    return Steps(InAnyContext(WithElement(
+    return InAnyContext(WithElement(
         kGlicContentsElementId,
         [&task_id = task_id_, expected_state](ui::TrackedElement* el) {
           content::WebContents* glic_contents =
@@ -459,7 +460,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
               )js",
               task_id.value(), base::to_underlying(expected_state));
           ASSERT_TRUE(content::ExecJs(glic_contents, script));
-        })));
+        }));
   }
 
   // Returns a callback that returns the given string as the action proto. Meant
@@ -499,7 +500,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   // Retrieves AnnotatedPageContent for the currently focused tab (and caches
   // it in `annotated_page_content_`).
   auto GetPageContextFromFocusedTab() {
-    return Steps(Do([&]() {
+    return Do([&]() {
       GlicKeyedService* glic_service =
           GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
       ASSERT_TRUE(glic_service);
@@ -521,9 +522,6 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                       *result.value()
                            ->get_tab_context()
                            ->annotated_page_data->annotated_page_content;
-                  // Also update the cached apc in ExecutionEngine.
-                  GetActorTask()->GetExecutionEngine()->DidObserveContext(
-                      serialized_apc);
                   annotated_page_content_ =
                       std::make_unique<AnnotatedPageContent>(
                           serialized_apc.As<AnnotatedPageContent>().value());
@@ -532,11 +530,11 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
         run_loop.Run();
       }
-    }));
+    });
   }
 
   auto CheckIsActingOnTab(ui::ElementIdentifier tab, bool expected) {
-    return Steps(InAnyContext(CheckElement(
+    return InAnyContext(CheckElement(
         tab,
         [](ui::TrackedElement* el) {
           content::WebContents* tab_contents =
@@ -547,37 +545,39 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                  actor_service->IsAnyTaskActingOnTab(
                      *tabs::TabInterface::GetFromContents(tab_contents));
         },
-        expected)));
+        expected));
   }
 
   auto CheckIsWebContentsCaptured(ui::ElementIdentifier tab, bool expected) {
-    return Steps(InAnyContext(CheckElement(
+    return InAnyContext(CheckElement(
         tab,
         [](ui::TrackedElement* el) {
           content::WebContents* tab_contents =
               AsInstrumentedWebContents(el)->web_contents();
           return tab_contents->IsBeingCaptured();
         },
-        expected)));
+        expected));
   }
 
   // Check ExecutionEngine caches the last apc observation.
-  auto CheckExecutionEngineHasAnnotatedPageContentCache() {
-    return Steps(Do([&]() {
-      const AnnotatedPageContent& cached_apc =
-          *GetActorTask()->GetExecutionEngine()->GetLastObservedPageContent();
-      EXPECT_THAT(*annotated_page_content_, EqualsProto(cached_apc));
-    }));
+  auto CheckActorTabDataHasAnnotatedPageContentCache() {
+    return Do([&]() {
+      const AnnotatedPageContent* cached_apc =
+          actor::ActorTabData::From(GetActorTask()->GetTabForObservation())
+              ->GetLastObservedPageContent();
+      EXPECT_TRUE(cached_apc);
+      EXPECT_THAT(*annotated_page_content_, EqualsProto(*cached_apc));
+    });
   }
 
   auto OpenDevToolsWindow(ui::ElementIdentifier contents_to_inspect) {
-    return Steps(InAnyContext(
+    return InAnyContext(
         WithElement(contents_to_inspect, [](ui::TrackedElement* el) {
           content::WebContents* contents =
               AsInstrumentedWebContents(el)->web_contents();
           DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
                                                         /*is_docked=*/false);
-        })));
+        }));
   }
 
   auto NavigateFrame(ui::ElementIdentifier webcontents_id,
@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
                   GetPageContextFromFocusedTab(),
-                  CheckExecutionEngineHasAnnotatedPageContentCache());
+                  CheckActorTabDataHasAnnotatedPageContentCache());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,

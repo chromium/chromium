@@ -112,7 +112,7 @@ class ActorKeyedService : public KeyedService {
 
   // Request a TabOservation be generated from the given tab.
   void RequestTabObservation(
-      const tabs::TabInterface& tab,
+      tabs::TabInterface& tab,
       TaskId task_id,
       base::OnceCallback<void(TabObservationResult)> callback);
 

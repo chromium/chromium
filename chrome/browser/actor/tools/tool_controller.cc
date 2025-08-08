@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
 #include "base/state_transitions.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -29,12 +30,10 @@ using ::optimization_guide::proto::AnnotatedPageContent;
 ToolController::ActiveState::ActiveState(
     std::unique_ptr<Tool> tool,
     ResultCallback completion_callback,
-    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
-    const optimization_guide::proto::AnnotatedPageContent* last_observation)
+    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry)
     : tool(std::move(tool)),
       completion_callback(std::move(completion_callback)),
-      journal_entry(std::move(journal_entry)),
-      last_observation(last_observation) {
+      journal_entry(std::move(journal_entry)) {
   CHECK(this->tool);
   CHECK(!this->completion_callback.is_null());
 }
@@ -100,7 +99,6 @@ std::ostream& operator<<(std::ostream& o, const ToolController::State& s) {
 
 void ToolController::CreateToolAndValidate(
     const ToolRequest& request,
-    const AnnotatedPageContent* last_observation,
     ResultCallback result_callback) {
   SetState(State::kCreating);
   ToolRequest::CreateToolResult create_result =
@@ -126,7 +124,7 @@ void ToolController::CreateToolAndValidate(
       tool->JournalURL(), task_->id(), mojom::JournalTrack::kActor,
       tool->JournalEvent(), tool->DebugString());
   active_state_.emplace(std::move(tool), std::move(result_callback),
-                        std::move(journal_event), last_observation);
+                        std::move(journal_event));
 
   SetState(State::kValidating);
   active_state_->tool->Validate(base::BindOnce(&ToolController::PostValidate,
@@ -159,8 +157,20 @@ void ToolController::PostUpdateTask(mojom::ActionResultPtr result) {
 void ToolController::Invoke(ResultCallback result_callback) {
   SetState(State::kPreInvoke);
   active_state_->completion_callback = std::move(result_callback);
+
+  const optimization_guide::proto::AnnotatedPageContent*
+      last_observed_page_content = nullptr;
+  // Not all tools require a tab.
+  if (!task_->GetTabs().empty()) {
+    // TODO(crbug.com/389739308): The last tab observation should be fetched
+    // from the tool if it requires one.
+    if (auto* tab_data = ActorTabData::From(task_->GetTabForObservation())) {
+      last_observed_page_content = tab_data->GetLastObservedPageContent();
+    }
+  }
+
   mojom::ActionResultPtr toctou_result =
-      active_state_->tool->TimeOfUseValidation(active_state_->last_observation);
+      active_state_->tool->TimeOfUseValidation(last_observed_page_content);
   if (!IsOk(*toctou_result)) {
     journal().Log(active_state_->tool->JournalURL(), task_->id(),
                   mojom::JournalTrack::kActor, "TOCTOU Check Failed",

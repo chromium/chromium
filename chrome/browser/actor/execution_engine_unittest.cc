@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/shared_types.h"
@@ -218,6 +219,9 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
           .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
             return will_detach_callback_list_.Add(std::move(callback));
           });
+      ON_CALL(tab, GetUnownedUserDataHost())
+          .WillByDefault(::testing::ReturnRef(user_data_host_));
+      tab_data_ = std::make_unique<ActorTabData>(&tab);
     }
 
     ~TabState() {
@@ -231,6 +235,10 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     WillDetachCallbackList will_detach_callback_list_;
 
     tabs::MockTabInterface tab;
+
+   private:
+    ::ui::UnownedUserDataHost user_data_host_;
+    std::unique_ptr<ActorTabData> tab_data_;
   };
   std::optional<TabState> tab_state_;
 

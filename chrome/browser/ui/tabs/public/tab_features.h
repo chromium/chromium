@@ -36,6 +36,10 @@ namespace autofill {
 class BubbleManager;
 }  // namespace autofill
 
+namespace actor {
+class ActorTabData;
+}  // namespace actor
+
 namespace actor::ui {
 class ActorUiTabControllerInterface;
 }  // namespace actor::ui
@@ -426,6 +430,8 @@ class TabFeatures {
 
   std::unique_ptr<AskBeforeHttpDialogController>
       ask_before_http_dialog_controller_;
+
+  std::unique_ptr<actor::ActorTabData> actor_tab_data_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

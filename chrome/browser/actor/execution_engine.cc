@@ -334,7 +334,7 @@ void ExecutionEngine::ExecuteNextAction() {
 
   SetState(State::kToolCreateAndVerify);
   tool_controller_->CreateToolAndValidate(
-      GetInProgressAction(), last_observed_page_content_.get(),
+      GetInProgressAction(),
       base::BindOnce(&ExecutionEngine::PostToolCreate, GetWeakPtr()));
 }
 
@@ -422,18 +422,6 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
   action_sequence_.clear();
   next_action_index_ = 0;
   actions_weak_ptr_factory_.InvalidateWeakPtrs();
-  // TODO(crbug.com/409559623): Conceptually this should also reset
-  // `last_observed_page_content_`.
-}
-
-void ExecutionEngine::DidObserveContext(
-    const mojo_base::ProtoWrapper& apc_proto) {
-  last_observed_page_content_ = std::make_unique<AnnotatedPageContent>(
-      apc_proto.As<AnnotatedPageContent>().value());
-}
-
-const AnnotatedPageContent* ExecutionEngine::GetLastObservedPageContent() {
-  return last_observed_page_content_.get();
 }
 
 base::WeakPtr<ExecutionEngine> ExecutionEngine::GetWeakPtr() {

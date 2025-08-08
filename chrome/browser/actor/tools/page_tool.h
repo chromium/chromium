@@ -73,7 +73,7 @@ class PageTool : public Tool {
 
   // Set during TimeOfUseValidation. Contains the hit test result against
   // observed page content.
-  std::optional<optimization_guide::TargetNodeInfo> observed_target_node_info_;
+  mojom::ObservedToolTargetPtr observed_target_;
 
   base::WeakPtrFactory<PageTool> weak_ptr_factory_{this};
 };

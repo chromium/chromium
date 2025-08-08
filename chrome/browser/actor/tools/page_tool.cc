@@ -279,10 +279,11 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
   // like clip paths. Need more checks to ensure we don't drop actions
   // unnecessarily.
-  observed_target_node_info_ = FindLastObservedNodeForActionTarget(
-      last_observation, request_->GetTarget());
+  std::optional<TargetNodeInfo> observed_target_node_info =
+      FindLastObservedNodeForActionTarget(last_observation,
+                                          request_->GetTarget());
 
-  if (!observed_target_node_info_) {
+  if (!observed_target_node_info) {
     journal().Log(JournalURL(), task_id(), mojom::JournalTrack::kActor,
                   "TimeOfUseValidation", "No observed target found in APC.");
   }
@@ -294,12 +295,13 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
       last_observation) {
     if (!ValidateTargetFrameCandidate(request_->GetTarget(), frame,
                                       *tab->GetContents(),
-                                      observed_target_node_info_)) {
+                                      observed_target_node_info)) {
       return MakeResult(
           mojom::ActionResultCode::kFrameLocationChangedSinceObservation);
     }
   }
 
+  observed_target_ = ToMojoObservedToolTarget(observed_target_node_info);
   has_completed_time_of_use_ = true;
   target_document_ = frame->GetWeakDocumentPtr();
 
@@ -318,8 +320,8 @@ void PageTool::Invoke(InvokeCallback callback) {
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->action = request_->ToMojoToolAction();
   invocation->target = ToMojo(request_->GetTarget());
-  invocation->observed_target =
-      ToMojoObservedToolTarget(observed_target_node_info_);
+  invocation->observed_target = std::move(observed_target_);
+
   invocation->task_id = task_id().value();
 
   // ToolRequest params are checked for validity at creation.

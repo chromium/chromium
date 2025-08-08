@@ -16,6 +16,7 @@ source_set("actor") {
     "actor_keyed_service_factory.h",
     "actor_navigation_throttle.h",
     "actor_switches.h",
+    "actor_tab_data.h",
     "actor_task.h",
     "aggregated_journal.h",
     "aggregated_journal_file_serializer.h",
@@ -53,6 +54,7 @@ source_set("actor") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/tabs:public",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
   if (enable_glic) {
     public_deps += [ "//chrome/browser/glic" ]
@@ -67,6 +69,7 @@ source_set("impl") {
     "actor_keyed_service_factory.cc",
     "actor_navigation_throttle.cc",
     "actor_switches.cc",
+    "actor_tab_data.cc",
     "actor_task.cc",
     "aggregated_journal.cc",
     "aggregated_journal_file_serializer.cc",
