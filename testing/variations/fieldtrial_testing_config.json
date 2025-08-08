@@ -27480,6 +27480,24 @@
             ]
         }
     ],
+    "WebViewSpareRendererProcessPriority": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "not-perceptible-binding": "true"
+                    },
+                    "enable_features": [
+                        "SpareRendererProcessPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewSurfaceControl": [
         {
             "platforms": [
