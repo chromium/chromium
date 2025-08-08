@@ -124,6 +124,9 @@ int FakeSocket::Write(
   DCHECK(buf);
   DCHECK(!write_pending_);
 
+  if (error_on_next_write_ != 0) {
+    return error_on_next_write_;
+  }
   if (async_write_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

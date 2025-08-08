@@ -67,6 +67,7 @@ class FakeSocket : public net::StreamSocket {
   ~FakeSocket() override;
 
   void set_async_write(bool async_write) { async_write_ = async_write; }
+  void set_error_on_next_write(int code) { error_on_next_write_ = code; }
   void AppendInputData(const char* data, int data_size);
   int input_pos() const { return input_pos_; }
   bool read_pending() const { return read_pending_; }
@@ -113,6 +114,7 @@ class FakeSocket : public net::StreamSocket {
   raw_ptr<std::string> written_data_;
   bool async_write_;
   bool write_pending_;
+  int error_on_next_write_ = 0;
 
   net::IPEndPoint peer_address_;
   net::IPEndPoint local_address_;
