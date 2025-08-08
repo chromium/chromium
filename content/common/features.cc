@@ -730,11 +730,6 @@ BASE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding,
              "LimitCrossOriginNonActivatedPaintHolding",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for post OOP-C cleanup crbug.com/391648152
-BASE_FEATURE(kDisallowRasterInterfaceWithoutSkiaBackend,
-             "DisallowRasterInterfaceWithoutSkiaBackend",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Please keep features in alphabetical order.
 
 bool IsEnforceSameDocumentOriginInvariantsEnabled() {

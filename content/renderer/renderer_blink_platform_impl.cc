@@ -737,9 +737,7 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(
-          ::features::kDisallowRasterInterfaceWithoutSkiaBackend) &&
-      web_attributes.enable_raster_interface &&
+  if (web_attributes.enable_raster_interface &&
       gpu_channel_host->gpu_info().skia_backend_type ==
           gpu::SkiaBackendType::kNone) {
     return nullptr;
@@ -750,14 +748,7 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
 
   gpu::ContextCreationAttribs attributes;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
-  // TODO(crbug.com/391648152, zmo): today if Skia backend is set, Chrome either
-  // runs in GPU acceleration mode, either on top of real GPU, or on top of
-  // SwiftShader (for testing). This may change in the future if we move Skia
-  // software rendering to be OOP as well. Clean this up once
-  // kDisallowRasterInterfaceWithoutSkiaBackend is rolled out safely.
-  attributes.enable_gpu_rasterization =
-      attributes.enable_raster_interface &&
-      gpu_info.skia_backend_type != gpu::SkiaBackendType::kNone;
+  attributes.enable_gpu_rasterization = attributes.enable_raster_interface;
   attributes.enable_gles2_interface = !attributes.enable_gpu_rasterization;
   attributes.enable_grcontext =
       !attributes.enable_gpu_rasterization && web_attributes.support_grcontext;
