@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   int GetMilestone() const override;
   base::Time GetTimeForStudyDateChecks() const override;
   StoredSeed GetCompressedSeed() const override;
-  void SetCompressedSeed(ValidatedSeedInfo seed_info) override;
+  StoreSeedResult SetCompressedSeed(ValidatedSeedInfo seed_info) override;
   std::string GetLocale() const override;
   void SetLocale(const std::string& locale) override;
   std::string GetPermanentConsistencyCountry() const override;

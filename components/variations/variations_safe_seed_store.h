@@ -38,7 +38,7 @@ class VariationsSafeSeedStore {
 
   // Getter and setter for the compressed and base64-encoded safe seed.
   virtual StoredSeed GetCompressedSeed() const = 0;
-  virtual void SetCompressedSeed(ValidatedSeedInfo seed_info) = 0;
+  virtual StoreSeedResult SetCompressedSeed(ValidatedSeedInfo seed_info) = 0;
 
   // Getter and setter for the locale associated with the safe seed in the
   // underlying storage.

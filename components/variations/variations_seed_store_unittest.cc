@@ -233,8 +233,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
   //  which the client belongs.
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "coffee",
-          .base64_seed_data = "coffee",
+          .seed_data = "coffee",
           .signature = "tea",
           .milestone = 1,
           .seed_date = now - delta * 1,
@@ -247,8 +246,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
   //  which the client belongs.
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "ketchup",
-          .base64_seed_data = "ketchup",
+          .seed_data = "ketchup",
           .signature = "mustard",
           .milestone = 90,
           .seed_date = now - delta * 2,
@@ -418,12 +416,9 @@ class LoadSeedDataAllGroupsTest : public LoadSeedDataGroupTest {
     ASSERT_TRUE(seed_data != nullptr);
     VariationsSeed seed;
     ASSERT_TRUE(seed.ParseFromString(*seed_data));
-    std::string compressed_seed_data = Gzip(SerializeSeed(seed));
-    std::string base64_seed_data = SerializeSeedBase64(seed);
     seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
         ValidatedSeedInfo{
-            .compressed_seed_data = compressed_seed_data,
-            .base64_seed_data = base64_seed_data,
+            .seed_data = *seed_data,
             .signature = test_signature,
             .milestone = 1,
             .seed_date = base::Time::Now(),
@@ -452,8 +447,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ValidSeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_seed,
-          .base64_seed_data = base64_seed,
+          .seed_data = seed_data,
           .signature = base64_seed_signature,
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -497,8 +491,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidSignature) {
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(seed_data),
-          .base64_seed_data = GzipAndBase64Encode(seed_data),
+          .seed_data = seed_data,
           .signature = "a deeply compromised signature.",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -531,8 +524,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidProto) {
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip("Not a proto"),
-          .base64_seed_data = GzipAndBase64Encode("Not a proto"),
+          .seed_data = "invalid proto",
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -567,8 +559,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_RejectEmptySignature) {
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(seed_data),
-          .base64_seed_data = GzipAndBase64Encode(seed_data),
+          .seed_data = seed_data,
           .signature = "",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -605,8 +596,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_AcceptEmptySignature) {
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(seed_data),
-          .base64_seed_data = GzipAndBase64Encode(seed_data),
+          .seed_data = seed_data,
           .signature = "",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -666,8 +656,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_IdenticalToSafeSeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = kIdenticalToSafeSeedSentinel,
-          .base64_seed_data = kIdenticalToSafeSeedSentinel,
+          .seed_data = kIdenticalToSafeSeedSentinel,
           .signature = base64_seed_signature,
           .milestone = 2,
           .seed_date = base::Time::Now(),
@@ -676,8 +665,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_IdenticalToSafeSeed) {
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(seed_data),
-          .base64_seed_data = GzipAndBase64Encode(seed_data),
+          .seed_data = seed_data,
           .signature = base64_seed_signature,
           .milestone = 1,
           .seed_date = base::Time::Now() - base::Days(1),
@@ -715,14 +703,22 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_CorruptGzip) {
   compressed_seed[10] ^= 0xFF;
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_seed,
-          .base64_seed_data = base::Base64Encode(compressed_seed),
+          .seed_data = "this will be overwritten",
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
           .session_country_code = "us",
       });
+  // Data is stored in base64 format in local state.
+  if (ShouldUseLocalStateSeed()) {
+    std::string base64_compressed_seed = base::Base64Encode(compressed_seed);
+    seed_store.GetSeedReaderWriterForTesting()->StoreRawSeedForTesting(
+        base64_compressed_seed);
+  } else {
+    seed_store.GetSeedReaderWriterForTesting()->StoreRawSeedForTesting(
+        compressed_seed);
+  }
 
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
@@ -743,11 +739,10 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   // 51MiB of uncompressed data to exceed 50MiB limit.
-  const std::string compressed_seed = Gzip(std::string(51 * 1024 * 1024, 'A'));
+  std::string seed_data(51 * 1024 * 1024, 'A');
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_seed,
-          .base64_seed_data = base::Base64Encode(compressed_seed),
+          .seed_data = seed_data,
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -789,14 +784,15 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "invalid seed data",
-          .base64_seed_data = "invalid seed data",
+          .seed_data = "this will be overwritten",
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
           .session_country_code = "us",
       });
+  seed_store.GetSeedReaderWriterForTesting()->StoreRawSeedForTesting(
+      "this is not base64");
 
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
@@ -1028,9 +1024,7 @@ TEST_P(StoreSeedDataAllGroupsTest, DeltaCompressed) {
             GetParam().field_trial_group);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(kSeedDeltaTestData.GetInitialSeedData()),
-          .base64_seed_data =
-              kSeedDeltaTestData.GetInitialSeedDataAsPrefValue(),
+          .seed_data = kSeedDeltaTestData.GetInitialSeedData(),
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1049,9 +1043,7 @@ TEST_P(StoreSeedDataAllGroupsTest, DeltaCompressedGzipped) {
             GetParam().field_trial_group);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(kSeedDeltaTestData.GetInitialSeedData()),
-          .base64_seed_data =
-              kSeedDeltaTestData.GetInitialSeedDataAsPrefValue(),
+          .seed_data = kSeedDeltaTestData.GetInitialSeedData(),
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1087,9 +1079,7 @@ TEST_P(StoreSeedDataAllGroupsTest, BadDelta) {
             GetParam().field_trial_group);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(kSeedDeltaTestData.GetInitialSeedData()),
-          .base64_seed_data =
-              kSeedDeltaTestData.GetInitialSeedDataAsPrefValue(),
+          .seed_data = kSeedDeltaTestData.GetInitialSeedData(),
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1112,8 +1102,7 @@ TEST_P(StoreSeedDataAllGroupsTest, IdenticalToSafeSeed) {
             GetParam().field_trial_group);
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(serialized_seed),
-          .base64_seed_data = GzipAndBase64Encode(serialized_seed),
+          .seed_data = serialized_seed,
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1154,8 +1143,7 @@ TEST_P(StoreSeedDataAllGroupsTest,
             GetParam().field_trial_group);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(seed_data),
-          .base64_seed_data = GzipAndBase64Encode(seed_data),
+          .seed_data = seed_data,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1203,8 +1191,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_ValidSeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_seed,
-          .base64_seed_data = base64_seed,
+          .seed_data = serialized_seed,
           .signature = "a test signature, ignored.",
           .milestone = 1,
           .seed_date = reference_date,
@@ -1264,8 +1251,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_InvalidSignature) {
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(seed_data),
-          .base64_seed_data = GzipAndBase64Encode(seed_data),
+          .seed_data = seed_data,
           .signature = "a deeply compromised signature.",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1327,8 +1313,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_CorruptGzip) {
   compressed_seed[10] ^= 0xFF;
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_seed,
-          .base64_seed_data = base::Base64Encode(compressed_seed),
+          .seed_data = "this will be overwritten",
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1336,6 +1321,15 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_CorruptGzip) {
           .session_country_code = "us",
           .permanent_country_code = "us",
       });
+  // Data is stored in base64 format in local state.
+  if (ShouldUseLocalStateSeed()) {
+    std::string base64_compressed_seed = base::Base64Encode(compressed_seed);
+    seed_store.GetSafeSeedReaderWriterForTesting()->StoreRawSeedForTesting(
+        base64_compressed_seed);
+  } else {
+    seed_store.GetSafeSeedReaderWriterForTesting()->StoreRawSeedForTesting(
+        compressed_seed);
+  }
 
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
@@ -1368,11 +1362,9 @@ TEST_P(LoadSafeSeedDataAllGroupsTest,
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   // 51MiB of uncompressed data to exceed 50MiB limit.
-  const std::string compressed_seed = Gzip(std::string(51 * 1024 * 1024, 'A'));
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_seed,
-          .base64_seed_data = base::Base64Encode(compressed_seed),
+          .seed_data = std::string(51 * 1024 * 1024, 'A'),
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1422,8 +1414,7 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "invalid seed data",
-          .base64_seed_data = "invalid seed data",
+          .seed_data = "this will be overwritten",
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -1431,6 +1422,8 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
           .session_country_code = "us",
           .permanent_country_code = "us",
       });
+  seed_store.GetSafeSeedReaderWriterForTesting()->StoreRawSeedForTesting(
+      "this is not base64");
 
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
@@ -1724,8 +1717,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
             GetParam().field_trial_group);
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_old_seed,
-          .base64_seed_data = base64_old_seed,
+          .seed_data = old_seed_data,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
@@ -1735,8 +1727,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
       });
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = kIdenticalToSafeSeedSentinel,
-          .base64_seed_data = kIdenticalToSafeSeedSentinel,
+          .seed_data = kIdenticalToSafeSeedSentinel,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
@@ -1873,8 +1864,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
             GetParam().field_trial_group);
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_old_seed,
-          .base64_seed_data = base64_old_seed,
+          .seed_data = old_seed_data,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
@@ -1884,8 +1874,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
       });
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = kIdenticalToSafeSeedSentinel,
-          .base64_seed_data = kIdenticalToSafeSeedSentinel,
+          .seed_data = kIdenticalToSafeSeedSentinel,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
@@ -1952,8 +1941,7 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
             GetParam().field_trial_group);
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = compressed_seed,
-          .base64_seed_data = base64_seed,
+          .seed_data = serialized_seed,
           .signature = "ignored signature",
           .milestone = 92,
           .seed_date = client_state->reference_date,
@@ -2105,8 +2093,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_DistinctSeeds) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "one",
-          .base64_seed_data = "one",
+          .seed_data = "one",
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -2115,8 +2102,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_DistinctSeeds) {
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "not one",
-          .base64_seed_data = "not one",
+          .seed_data = "not one",
           .signature = "ignored signature",
           .milestone = 2,
           .seed_date = base::Time::Now(),
@@ -2142,8 +2128,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = kIdenticalToSafeSeedSentinel,
-          .base64_seed_data = kIdenticalToSafeSeedSentinel,
+          .seed_data = kIdenticalToSafeSeedSentinel,
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = WrapTime(1),
@@ -2152,8 +2137,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "some seed",
-          .base64_seed_data = "some seed",
+          .seed_data = "some seed",
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = WrapTime(1),
@@ -2182,8 +2166,7 @@ TEST_P(VariationsSeedStoreTestAllGroups,
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = Gzip(seed_data),
-          .base64_seed_data = GzipAndBase64Encode(seed_data),
+          .seed_data = seed_data,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
@@ -2202,14 +2185,15 @@ TEST_P(VariationsSeedStoreTestAllGroups,
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
-          .compressed_seed_data = "invalid seed data",
-          .base64_seed_data = "invalid seed data",
+          .seed_data = "this will be overwritten",
           .signature = "an unused signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
           .session_country_code = "us",
       });
+  seed_store.GetSeedReaderWriterForTesting()->StoreRawSeedForTesting(
+      "invalid seed data");
   EXPECT_EQ(std::string(), seed_store.GetLatestSerialNumber());
   EXPECT_TRUE(PrefHasDefaultValue(prefs_, prefs::kVariationsCompressedSeed));
   EXPECT_THAT(GetSeedData(seed_store).data, IsEmpty());

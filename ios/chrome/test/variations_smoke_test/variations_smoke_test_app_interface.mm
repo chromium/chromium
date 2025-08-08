@@ -63,17 +63,12 @@ base::Time GetProcessStartTime() {
 + (void)storeSeed:(NSString*)seed_data andSignature:(NSString*)signature {
   std::string string_seed = base::SysNSStringToUTF8(seed_data);
   std::string string_signature = base::SysNSStringToUTF8(signature);
-  std::string decoded_seed;
-  base::Base64Decode(string_seed, &decoded_seed);
   GetApplicationContext()
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSeedReaderWriterForTesting()
-      ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
-          .compressed_seed_data = decoded_seed,
-          .base64_seed_data = string_seed,
-          .signature = string_signature,
-      });
+      ->StoreBase64EncodedSeedAndSignatureForTesting(string_seed,
+                                                     string_signature);
 }
 
 @end

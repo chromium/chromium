@@ -58,9 +58,9 @@ StoredSeed VariationsSafeSeedStoreLocalState::GetCompressedSeed() const {
   return seed_reader_writer_->GetSeedData();
 }
 
-void VariationsSafeSeedStoreLocalState::SetCompressedSeed(
+StoreSeedResult VariationsSafeSeedStoreLocalState::SetCompressedSeed(
     ValidatedSeedInfo seed_info) {
-  seed_reader_writer_->StoreValidatedSeedInfo(seed_info);
+  return seed_reader_writer_->StoreValidatedSeedInfo(seed_info);
 }
 
 std::string VariationsSafeSeedStoreLocalState::GetLocale() const {

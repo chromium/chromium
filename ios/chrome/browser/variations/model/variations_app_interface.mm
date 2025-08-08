@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/base64.h"
 #import "base/metrics/field_trial.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
@@ -60,13 +61,15 @@
 }
 
 + (void)setTestSafeSeedAndSignature {
+  std::string seed_data;
+  base::Base64Decode(variations::kTestSeedData.base64_uncompressed_data,
+                     &seed_data);
   GetApplicationContext()
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSafeSeedReaderWriterForTesting()
       ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
-          .compressed_seed_data = variations::kTestSeedData.GetCompressedData(),
-          .base64_seed_data = variations::kTestSeedData.base64_compressed_data,
+          .seed_data = seed_data,
           .signature = variations::kTestSeedData.base64_signature,
           .milestone = 92,  // Milestone number is arbitrary.
           .seed_date = base::Time::Now(),
@@ -79,15 +82,15 @@
 }
 
 + (void)setCrashingRegularSeedAndSignature {
+  std::string seed_data;
+  base::Base64Decode(variations::kCrashingSeedData.base64_uncompressed_data,
+                     &seed_data);
   GetApplicationContext()
       ->GetVariationsService()
       ->GetSeedStoreForTesting()
       ->GetSeedReaderWriterForTesting()
       ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
-          .compressed_seed_data =
-              variations::kCrashingSeedData.GetCompressedData(),
-          .base64_seed_data =
-              variations::kCrashingSeedData.base64_compressed_data,
+          .seed_data = seed_data,
           .signature = variations::kCrashingSeedData.base64_signature,
           .milestone = 92,  // Milestone number is arbitrary.
           .seed_date = base::Time::Now(),

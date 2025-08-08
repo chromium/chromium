@@ -41,13 +41,8 @@ struct ValidatedSeed {
   ValidatedSeed(ValidatedSeed&& other);
   ValidatedSeed& operator=(ValidatedSeed&& other);
 
-  // Returns whether a seed matches an already stored seed.
-  bool MatchesStoredSeed(const StoredSeed& stored_seed) const;
-
-  // Gzipped and base-64 encoded serialized VariationsSeed.
-  std::string base64_seed_data;
-  // Gzipped serialized VariationsSeed.
-  std::string compressed_seed_data;
+  // Serialized VariationsSeed.
+  std::string seed_data;
   // A cryptographic signature on the seed_data.
   std::string base64_seed_signature;
   // The seed data parsed as a proto.
@@ -356,15 +351,16 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       SeedProcessingResult result);
 
   // Updates the latest seed with validated data.
-  void StoreValidatedSeed(const ValidatedSeed& seed,
-                          const std::string& country_code,
-                          base::Time date_fetched);
+  StoreSeedResult StoreValidatedSeed(const ValidatedSeed& seed,
+                                     const std::string& country_code,
+                                     base::Time date_fetched);
 
   // Updates the safe seed with validated data.
-  void StoreValidatedSafeSeed(const ValidatedSeed& seed,
-                              int seed_milestone,
-                              const ClientFilterableState& client_state,
-                              base::Time seed_fetch_time);
+  StoreSeedResult StoreValidatedSafeSeed(
+      const ValidatedSeed& seed,
+      int seed_milestone,
+      const ClientFilterableState& client_state,
+      base::Time seed_fetch_time);
 
   // Processes seed data (decompression, parsing and signature verification).
   // This is meant to be called on a background thread in the case of periodic

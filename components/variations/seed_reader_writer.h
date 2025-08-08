@@ -87,8 +87,7 @@ struct COMPONENT_EXPORT(VARIATIONS) StoredSeed {
 // and ready to be stored in a seed file or local state. This struct is passed
 // by value, so it must be copyable and lightweight.
 struct ValidatedSeedInfo {
-  const std::string_view compressed_seed_data;
-  const std::string_view base64_seed_data;
+  const std::string_view seed_data;
   const std::string_view signature;
   const int milestone = 0;
   const base::Time seed_date;
@@ -145,12 +144,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   ~SeedReaderWriter() override;
 
-  // Schedules a write of `compressed_seed_data` to a seed file for some
-  // clients (see ShouldUseSeedFile()) and schedules a write of
-  // `base64_seed_data` to local state for all other clients. Also stores other
-  // seed-related info.
-  // `permanent_country_version` should be empty for the safe seed.
-  void StoreValidatedSeedInfo(ValidatedSeedInfo seed_info);
+  // Schedules a write of the compressed seed data to a seed file for some
+  // clients (see ShouldUseSeedFile()) and schedules a write of the compressed
+  // and base64-encoded seed data to local state for all other clients. Also
+  // stores other seed-related info in local state.  `permanent_country_version`
+  // should be empty for the safe seed.
+  StoreSeedResult StoreValidatedSeedInfo(ValidatedSeedInfo seed_info);
 
   // Clears seed data and other seed-related info. The following fields are
   // cleared: seed data, signature, milestone, seed_date and client_fetch_time.
@@ -191,6 +190,16 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   LoadSeedResult ReadSeedData(std::string* seed_data,
                               std::string* base64_seed_signature = nullptr);
 
+  // Stores the seed without applying any extra processing or validation. This
+  // is used to store invalid data for testing.
+  void StoreRawSeedForTesting(std::string seed_data);
+
+  // Stores a base64-encoded gzipped seed and base64-encoded signature. This is
+  // the format used when passing the seed by argument in tests.
+  void StoreBase64EncodedSeedAndSignatureForTesting(
+      std::string base64_compressed_data,
+      std::string base64_signature);
+
  private:
   // Returns the serialized data to be written to disk. This is done
   // asynchronously during the write process.
@@ -200,7 +209,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Schedules `seed_info` to be written using `seed_writer_`. If a field is
   // empty, it will not be updated. If you want to clear the seed file, use
   // ScheduleSeedFileClear() instead.
-  void ScheduleSeedFileWrite(ValidatedSeedInfo seed_info);
+  StoreSeedResult ScheduleSeedFileWrite(ValidatedSeedInfo seed_info);
 
   // Schedules `seed_info_` to be cleared using `seed_writer_`. See
   // VariationsSeedStore::ClearPrefs() .
@@ -219,7 +228,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Schedules a write of `base64_seed_data` to `local_state_`. Fields with
   // zero/empty values will be ignored. If you want to clear the seed file, use
   // ScheduleSeedFileClear() instead.
-  void ScheduleLocalStateWrite(ValidatedSeedInfo seed_info);
+  StoreSeedResult ScheduleLocalStateWrite(ValidatedSeedInfo seed_info);
 
   // Returns true if a seed file should be used.
   bool ShouldUseSeedFile() const;

@@ -151,6 +151,10 @@ base::Time ProtoTimeToTime(int64_t proto_time) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
 }
 
+bool ShouldStoreWithoutProcessing(std::string_view seed_data) {
+  return seed_data.empty() || seed_data == kIdenticalToSafeSeedSentinel;
+}
+
 }  // namespace
 
 const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
@@ -229,12 +233,13 @@ SeedReaderWriter::~SeedReaderWriter() {
   }
 }
 
-void SeedReaderWriter::StoreValidatedSeedInfo(ValidatedSeedInfo seed_info) {
+StoreSeedResult SeedReaderWriter::StoreValidatedSeedInfo(
+    ValidatedSeedInfo seed_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
-    ScheduleSeedFileWrite(seed_info);
+    return ScheduleSeedFileWrite(seed_info);
   } else {
-    ScheduleLocalStateWrite(seed_info);
+    return ScheduleLocalStateWrite(seed_info);
   }
 }
 
@@ -410,6 +415,34 @@ LoadSeedResult SeedReaderWriter::ReadSeedData(
   return LoadSeedResult::kSuccess;
 }
 
+void SeedReaderWriter::StoreRawSeedForTesting(std::string seed_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ShouldUseSeedFile()) {
+    seed_info_.set_data(std::move(seed_data));
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
+  } else {
+    local_state_->SetString(fields_prefs_->seed, std::move(seed_data));
+  }
+}
+
+void SeedReaderWriter::StoreBase64EncodedSeedAndSignatureForTesting(
+    std::string base64_compressed_data,
+    std::string base64_signature) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ShouldUseSeedFile()) {
+    std::string decoded_seed_data;
+    CHECK(base::Base64Decode(base64_compressed_data, &decoded_seed_data));
+    seed_info_.set_data(std::move(decoded_seed_data));
+    seed_info_.set_signature(std::move(base64_signature));
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
+  } else {
+    local_state_->SetString(fields_prefs_->seed,
+                            std::move(base64_compressed_data));
+    local_state_->SetString(fields_prefs_->signature,
+                            std::move(base64_signature));
+  }
+}
+
 base::ImportantFileWriter::BackgroundDataProducerCallback
 SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -425,13 +458,22 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
   return base::BindOnce(&DoSerialize, seed_info_);
 }
 
-void SeedReaderWriter::ScheduleSeedFileWrite(ValidatedSeedInfo seed_info) {
+StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
+    ValidatedSeedInfo seed_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set `seed_info_.data`, this will be used later by the background
   // serialization and can be changed multiple times before a scheduled write
   // completes, in which case the background serializer will use the
   // `seed_info_.data` set at the last call of this function.
-  seed_info_.set_data(seed_info.compressed_seed_data);
+  std::string seed_data;
+  // If the seed data is empty or it's the sentinel value, store the given
+  // string without compressing.
+  if (ShouldStoreWithoutProcessing(seed_info.seed_data)) {
+    seed_data = seed_info.seed_data;
+  } else if (!compression::GzipCompress(seed_info.seed_data, &seed_data)) {
+    return StoreSeedResult::kFailedGzip;
+  }
+  seed_info_.set_data(seed_data);
   seed_info_.set_signature(seed_info.signature);
   seed_info_.set_milestone(seed_info.milestone);
   seed_info_.set_seed_date(TimeToProtoTime(seed_info.seed_date));
@@ -476,6 +518,7 @@ void SeedReaderWriter::ScheduleSeedFileWrite(ValidatedSeedInfo seed_info) {
                                seed_info_.permanent_country_code(),
                                seed_info_.permanent_version());
   }
+  return StoreSeedResult::kSuccess;
 }
 
 void SeedReaderWriter::ScheduleSeedFileClear() {
@@ -550,13 +593,19 @@ void SeedReaderWriter::ReadSeedFile() {
     // in the seed file experiment's treatment group.
     // 3. Seed file exists and read failed.
     std::string decoded_data;
-    if (base::Base64Decode(local_state_->GetString(fields_prefs_->seed),
-                           &decoded_data)) {
+    std::string uncompressed_data;
+    bool decoded_successfully = base::Base64Decode(
+        local_state_->GetString(fields_prefs_->seed), &decoded_data);
+    // If the seed is empty, compression::GzipUncompress() will return false.
+    // However, we still want to write an empty seed to the file.
+    if (decoded_successfully &&
+        (decoded_data.empty() ||
+         compression::GzipUncompress(decoded_data, &uncompressed_data))) {
       PermanentCountryVersion permanent_country_version =
           GetPermanentCountryVersion(
               local_state_, fields_prefs_->permanent_country_code_version);
       ScheduleSeedFileWrite(ValidatedSeedInfo{
-          .compressed_seed_data = decoded_data,
+          .seed_data = uncompressed_data,
           .signature = local_state_->GetString(fields_prefs_->signature),
           .milestone = local_state_->GetInteger(fields_prefs_->milestone),
           .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
@@ -594,9 +643,23 @@ void SeedReaderWriter::ReadSeedFile() {
   local_state_->ClearPref(fields_prefs_->seed);
 }
 
-void SeedReaderWriter::ScheduleLocalStateWrite(ValidatedSeedInfo seed_info) {
+StoreSeedResult SeedReaderWriter::ScheduleLocalStateWrite(
+    ValidatedSeedInfo seed_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetString(fields_prefs_->seed, seed_info.base64_seed_data);
+  // If the seed data is empty or it's the sentinel value, store the given
+  // string without compressing.
+  std::string seed_data;
+  if (ShouldStoreWithoutProcessing(seed_info.seed_data)) {
+    seed_data = seed_info.seed_data;
+  } else {
+    std::string compressed_seed_data;
+    if (!compression::GzipCompress(seed_info.seed_data,
+                                   &compressed_seed_data)) {
+      return StoreSeedResult::kFailedGzip;
+    }
+    seed_data = base::Base64Encode(compressed_seed_data);
+  }
+  local_state_->SetString(fields_prefs_->seed, seed_data);
   local_state_->SetString(fields_prefs_->signature, seed_info.signature);
   local_state_->SetInteger(fields_prefs_->milestone, seed_info.milestone);
   local_state_->SetTime(fields_prefs_->seed_date, seed_info.seed_date);
@@ -612,6 +675,7 @@ void SeedReaderWriter::ScheduleLocalStateWrite(ValidatedSeedInfo seed_info) {
         local_state_, fields_prefs_->permanent_country_code_version,
         seed_info.permanent_country_code, seed_info.permanent_country_version);
   }
+  return StoreSeedResult::kSuccess;
 }
 
 bool SeedReaderWriter::ShouldUseSeedFile() const {

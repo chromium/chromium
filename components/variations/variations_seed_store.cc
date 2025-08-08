@@ -151,15 +151,6 @@ ValidatedSeed::~ValidatedSeed() = default;
 ValidatedSeed::ValidatedSeed(ValidatedSeed&& other) = default;
 ValidatedSeed& ValidatedSeed::operator=(ValidatedSeed&& other) = default;
 
-bool ValidatedSeed::MatchesStoredSeed(const StoredSeed& stored_seed) const {
-  switch (stored_seed.storage_format) {
-    case StoredSeed::StorageFormat::kCompressed:
-      return compressed_seed_data == stored_seed.data;
-    case StoredSeed::StorageFormat::kCompressedAndBase64Encoded:
-      return base64_seed_data == stored_seed.data;
-  }
-}
-
 VariationsSeedStore::VariationsSeedStore(
     PrefService* local_state,
     std::unique_ptr<SeedResponse> initial_seed,
@@ -294,7 +285,12 @@ bool VariationsSeedStore::StoreSafeSeed(
     return false;
   }
 
-  StoreValidatedSafeSeed(seed, seed_milestone, client_state, seed_fetch_time);
+  StoreSeedResult store_result = StoreValidatedSafeSeed(
+      seed, seed_milestone, client_state, seed_fetch_time);
+  if (store_result != StoreSeedResult::kSuccess) {
+    RecordStoreSafeSeedResult(validation_result);
+    return false;
+  }
   RecordStoreSafeSeedResult(StoreSeedResult::kSuccess);
   return true;
 }
@@ -645,15 +641,17 @@ void VariationsSeedStore::OnSeedDataProcessed(
     return;
   }
 
-  StoreValidatedSeed(result.validated, result.seed_data.country_code,
-                     result.seed_data.date_fetched);
-  RecordStoreSeedResult(StoreSeedResult::kSuccess);
+  StoreSeedResult store_result =
+      StoreValidatedSeed(result.validated, result.seed_data.country_code,
+                         result.seed_data.date_fetched);
+  RecordStoreSeedResult(store_result);
   std::move(done_callback).Run(true, std::move(result.validated.parsed));
 }
 
-void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
-                                             const std::string& country_code,
-                                             base::Time date_fetched) {
+StoreSeedResult VariationsSeedStore::StoreValidatedSeed(
+    const ValidatedSeed& seed,
+    const std::string& country_code,
+    base::Time date_fetched) {
 #if BUILDFLAG(IS_ANDROID)
   // If currently we do not have any stored seed, then we mark seed storing as
   // successful on the Java side to avoid repeated seed fetches.
@@ -668,36 +666,40 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
 
   // As a space optimization, store an alias to the safe seed if the contents
   // are identical.
-  if (seed.MatchesStoredSeed(safe_seed_store_->GetCompressedSeed())) {
-    seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
-        .compressed_seed_data = kIdenticalToSafeSeedSentinel,
-        .base64_seed_data = kIdenticalToSafeSeedSentinel,
-        .signature = seed.base64_seed_signature,
-        .milestone = milestone,
-        .seed_date = date_fetched,
-        .client_fetch_time = base::Time::Now(),
-        .session_country_code = country_code,
-    });
+  std::string safe_seed_data;
+  LoadSeedResult load_result = safe_seed_store_->ReadSeedData(
+      &safe_seed_data, /*base64_seed_signature=*/nullptr);
+  std::string_view seed_data;
+  if (load_result == LoadSeedResult::kSuccess &&
+      safe_seed_data == seed.seed_data) {
+    seed_data = kIdenticalToSafeSeedSentinel;
   } else {
-    seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
-        .compressed_seed_data = seed.compressed_seed_data,
-        .base64_seed_data = seed.base64_seed_data,
-        .signature = seed.base64_seed_signature,
-        .milestone = milestone,
-        .seed_date = date_fetched,
-        .client_fetch_time = base::Time::Now(),
-        .session_country_code = country_code,
-    });
+    seed_data = seed.seed_data;
+  }
+  StoreSeedResult result =
+      seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
+          .seed_data = seed_data,
+          .signature = seed.base64_seed_signature,
+          .milestone = milestone,
+          .seed_date = date_fetched,
+          .client_fetch_time = base::Time::Now(),
+          .session_country_code = country_code,
+      });
+  if (result != StoreSeedResult::kSuccess) {
+    return result;
   }
   latest_serial_number_ = seed.parsed.serial_number();
+  return StoreSeedResult::kSuccess;
 }
 
-void VariationsSeedStore::StoreValidatedSafeSeed(
+StoreSeedResult VariationsSeedStore::StoreValidatedSafeSeed(
     const ValidatedSeed& seed,
     int seed_milestone,
     const ClientFilterableState& client_state,
     base::Time seed_fetch_time) {
-  const StoredSeed previous_safe_seed = safe_seed_store_->GetCompressedSeed();
+  std::string previous_safe_seed_data;
+  LoadSeedResult load_safe_seed_result =
+      safe_seed_store_->ReadSeedData(&previous_safe_seed_data, nullptr);
   // Before updating the safe seed, update the latest seed if the latest
   // seed's value is |kIdenticalToSafeSeedSentinel|.
   //
@@ -711,58 +713,66 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
   //    avoid duplicating seed A in storage.
   // 4. The client is promoting seed B to safe seed.
   const StoredSeed latest_seed = seed_reader_writer_->GetSeedData();
-  if (!seed.MatchesStoredSeed(previous_safe_seed) &&
+  if (load_safe_seed_result == LoadSeedResult::kSuccess &&
+      previous_safe_seed_data != seed.seed_data &&
       latest_seed.data == kIdenticalToSafeSeedSentinel) {
-    // For the below call to StoreValidatedSeed(), there are two possibilities
-    // to consider:
-    //
-    // 1. The client is in the SeedFile experiment's treatment group. In this
-    //    case, StoreValidatedSeedInfo() updates the seed file and ignores the
-    //    local state seed.
-    // 2. The client is either not in the experiment or is in its control or
-    //    default group. In this case, |previous_safe_seed.data| is ignored.
-    seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
-        .compressed_seed_data = previous_safe_seed.data,
-        .base64_seed_data =
-            local_state_->GetString(prefs::kVariationsSafeCompressedSeed),
-        .signature = latest_seed.signature,
-        .milestone = latest_seed.milestone,
-        .seed_date = latest_seed.seed_date,
-        .client_fetch_time = latest_seed.client_fetch_time,
-    });
+    StoreSeedResult store_result =
+        seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
+            .seed_data = previous_safe_seed_data,
+            .signature = latest_seed.signature,
+            .milestone = latest_seed.milestone,
+            .seed_date = latest_seed.seed_date,
+            .client_fetch_time = latest_seed.client_fetch_time,
+        });
+    if (store_result != StoreSeedResult::kSuccess) {
+      return store_result;
+    }
   }
 
-  safe_seed_store_->SetCompressedSeed(ValidatedSeedInfo{
-      .compressed_seed_data = seed.compressed_seed_data,
-      .base64_seed_data = seed.base64_seed_data,
-      .signature = seed.base64_seed_signature,
-      .milestone = seed_milestone,
-      .seed_date = client_state.reference_date,
-      .client_fetch_time = seed_fetch_time,
-      .session_country_code = client_state.session_consistency_country,
-      .permanent_country_code = client_state.permanent_consistency_country,
-      // The permanent version is not stored in the safe seed, only the country.
-      .permanent_country_version = "",
-  });
-
+  {
+    StoreSeedResult store_result =
+        safe_seed_store_->SetCompressedSeed(ValidatedSeedInfo{
+            .seed_data = seed.seed_data,
+            .signature = seed.base64_seed_signature,
+            .milestone = seed_milestone,
+            .seed_date = client_state.reference_date,
+            .client_fetch_time = seed_fetch_time,
+            .session_country_code = client_state.session_consistency_country,
+            .permanent_country_code =
+                client_state.permanent_consistency_country,
+            // The permanent version is not stored in the safe seed, only the
+            // country.
+            .permanent_country_version = "",
+        });
+    if (store_result != StoreSeedResult::kSuccess) {
+      return store_result;
+    }
+  }
   safe_seed_store_->SetLocale(client_state.locale);
 
   // As a space optimization, overwrite the stored latest seed data with an
   // alias to the safe seed, if they are identical.
-  if (seed.MatchesStoredSeed(seed_reader_writer_->GetSeedData())) {
-    seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
-        .compressed_seed_data = kIdenticalToSafeSeedSentinel,
-        .base64_seed_data = kIdenticalToSafeSeedSentinel,
-        .signature = latest_seed.signature,
-        .milestone = latest_seed.milestone,
-        .seed_date = latest_seed.seed_date,
-        .client_fetch_time = latest_seed.client_fetch_time,
-    });
+  std::string latest_seed_data;
+  seed_reader_writer_->ReadSeedData(&latest_seed_data,
+                                    /*base64_seed_signature=*/nullptr);
+  if (latest_seed_data == seed.seed_data) {
+    StoreSeedResult store_result =
+        seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
+            .seed_data = kIdenticalToSafeSeedSentinel,
+            .signature = latest_seed.signature,
+            .milestone = latest_seed.milestone,
+            .seed_date = latest_seed.seed_date,
+            .client_fetch_time = latest_seed.client_fetch_time,
+        });
+    if (store_result != StoreSeedResult::kSuccess) {
+      return store_result;
+    }
 
     // Moreover, in this case, the last fetch time for the safe seed should
     // match the latest seed's.
     safe_seed_store_->SetFetchTime(latest_seed.client_fetch_time);
   }
+  return StoreSeedResult::kSuccess;
 }
 
 // static
@@ -841,12 +851,7 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
       return StoreSeedResult::kFailedSignature;
   }
 
-  std::string compressed_seed_data;
-  if (!compression::GzipCompress(seed_bytes, &compressed_seed_data)) {
-    return StoreSeedResult::kFailedGzip;
-  }
-  result->base64_seed_data = base::Base64Encode(compressed_seed_data);
-  result->compressed_seed_data = std::move(compressed_seed_data);
+  result->seed_data = seed_bytes;
   result->base64_seed_signature = base64_seed_signature;
   result->parsed.Swap(&seed);
   return StoreSeedResult::kSuccess;
