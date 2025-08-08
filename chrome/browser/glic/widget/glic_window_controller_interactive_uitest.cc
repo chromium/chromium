@@ -585,7 +585,23 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
 
 // TODO(b/426542319): Fix and enable tests on non-mac platforms.
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPositionMetrics) {
+class GlicWindowControllerLocationMetricsUiTest
+    : public GlicWindowControllerUiTest {
+ public:
+  GlicWindowControllerLocationMetricsUiTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicPanelResetOnSessionTimeout,
+                               features::kGlicPanelResetSizeAndLocationOnOpen});
+  }
+  ~GlicWindowControllerLocationMetricsUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
+                       TestPositionMetrics) {
   if (IsWorkAreaTooSmallForTest()) {
     GTEST_SKIP()
         << "Test's work area bounds are too small for consistent results.";
@@ -667,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPositionMetrics) {
   // tests involving moving Glic to another display are flaky.
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPercentOverlapMetrics) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
+                       TestPercentOverlapMetrics) {
   if (IsWorkAreaTooSmallForTest()) {
     GTEST_SKIP()
         << "Test's work area bounds are too small for consistent results.";

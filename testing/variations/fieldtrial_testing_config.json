@@ -11084,6 +11084,41 @@
             ]
         }
     ],
+    "GlicResetPanelPositionOnNewThread": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "glic-panel-reset-session-timeout-delay-h": "0"
+                    },
+                    "enable_features": [
+                        "GlicResetPanelOnSessionTimeout"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicResetPanelSizeAndLocationOnOpen": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicPanelResetSizeAndLocationOnOpen"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicRolloutDogfood": [
         {
             "platforms": [
