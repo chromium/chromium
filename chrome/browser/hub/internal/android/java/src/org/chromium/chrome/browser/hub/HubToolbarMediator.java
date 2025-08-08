@@ -57,6 +57,8 @@ public class HubToolbarMediator {
         HubSearchEntrypoint.INCOGNITO_SEARCHBOX,
         HubSearchEntrypoint.REGULAR_LOUPE,
         HubSearchEntrypoint.INCOGNITO_LOUPE,
+        HubSearchEntrypoint.TAB_GROUPS_SEARCHBOX,
+        HubSearchEntrypoint.TAB_GROUPS_LOUPE,
         HubSearchEntrypoint.NUM_ENTRIES
     })
     public @interface HubSearchEntrypoint {
@@ -64,9 +66,11 @@ public class HubToolbarMediator {
         int INCOGNITO_SEARCHBOX = 1;
         int REGULAR_LOUPE = 2;
         int INCOGNITO_LOUPE = 3;
+        int TAB_GROUPS_SEARCHBOX = 4;
+        int TAB_GROUPS_LOUPE = 5;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 6;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:HubSearchEntrypoint)
@@ -325,29 +329,41 @@ public class HubToolbarMediator {
                         .setIncognito(mPropertyModel.get(IS_INCOGNITO))
                         .setResolutionType(ResolutionType.OPEN_IN_CHROME)
                         .build());
-        recordHubSearchEntrypointHistogram(
-                mPropertyModel.get(SEARCH_BOX_VISIBLE), mPropertyModel.get(IS_INCOGNITO));
+        recordHubSearchEntrypointHistogram(mPropertyModel.get(SEARCH_BOX_VISIBLE));
     }
 
     private void onCurrentTabChange(@Nullable Tab tab) {
         mPropertyModel.set(BACK_BUTTON_ENABLED, tab != null);
     }
 
-    private void recordHubSearchEntrypointHistogram(boolean isSearchBox, boolean isIncognito) {
+    private void recordHubSearchEntrypointHistogram(boolean isSearchBox) {
         // Based on the ComponentCallback#onConfigurationChanged logic for hub search, it is implied
         // that the search box and search loupe visibilities have opposite behaviors at any time.
         @HubSearchEntrypoint int action;
+        @PaneId int focusedPaneId = mPaneManager.getFocusedPaneSupplier().get().getPaneId();
 
-        if (isIncognito) {
-            action =
-                    isSearchBox
-                            ? HubSearchEntrypoint.INCOGNITO_SEARCHBOX
-                            : HubSearchEntrypoint.INCOGNITO_LOUPE;
-        } else {
-            action =
-                    isSearchBox
-                            ? HubSearchEntrypoint.REGULAR_SEARCHBOX
-                            : HubSearchEntrypoint.REGULAR_LOUPE;
+        switch (focusedPaneId) {
+            case PaneId.INCOGNITO_TAB_SWITCHER:
+                action =
+                        isSearchBox
+                                ? HubSearchEntrypoint.INCOGNITO_SEARCHBOX
+                                : HubSearchEntrypoint.INCOGNITO_LOUPE;
+                break;
+            case PaneId.TAB_SWITCHER:
+                action =
+                        isSearchBox
+                                ? HubSearchEntrypoint.REGULAR_SEARCHBOX
+                                : HubSearchEntrypoint.REGULAR_LOUPE;
+                break;
+            case PaneId.TAB_GROUPS:
+                action =
+                        isSearchBox
+                                ? HubSearchEntrypoint.TAB_GROUPS_SEARCHBOX
+                                : HubSearchEntrypoint.TAB_GROUPS_LOUPE;
+                break;
+            default:
+                assert false : "Invalid focused pane id " + focusedPaneId;
+                action = HubSearchEntrypoint.REGULAR_SEARCHBOX;
         }
 
         RecordHistogram.recordEnumeratedHistogram(
