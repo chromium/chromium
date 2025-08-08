@@ -109,7 +109,3 @@ void PrerenderServiceImpl::CancelAllPrerenders() {
 bool PrerenderServiceImpl::HasPrerenderForUrl(const GURL& url) {
   return url == controller_.prerenderedURL;
 }
-
-bool PrerenderServiceImpl::IsWebStatePrerendered(web::WebState* web_state) {
-  return PrerenderTabHelper::FromWebState(web_state) != nullptr;
-}

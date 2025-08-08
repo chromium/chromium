@@ -45,10 +45,6 @@ bool FakePrerenderService::HasPrerenderForUrl(const GURL& url) {
   return preload_url_ == url;
 }
 
-bool FakePrerenderService::IsWebStatePrerendered(web::WebState* web_state) {
-  return PrerenderTabHelper::FromWebState(web_state) != nullptr;
-}
-
 void FakePrerenderService::CancelPrerender() {
   CancelAllPrerenders();
 }

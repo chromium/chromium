@@ -38,6 +38,4 @@ class PrerenderServiceImplTest : public PlatformTest {
 TEST_F(PrerenderServiceImplTest, NoPrerender) {
   GURL test_url("https://www.google.com");
   EXPECT_FALSE(service_->HasPrerenderForUrl(test_url));
-
-  EXPECT_FALSE(service_->IsWebStatePrerendered(&web_state_));
 }

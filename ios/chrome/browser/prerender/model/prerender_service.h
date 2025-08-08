@@ -64,9 +64,6 @@ class PrerenderService : public KeyedService {
 
   // Returns true if there is a prerender for the given `url`.
   virtual bool HasPrerenderForUrl(const GURL& url) = 0;
-
-  // Returns true if the given `web_state` is being prerendered.
-  virtual bool IsWebStatePrerendered(web::WebState* web_state) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_PRERENDER_MODEL_PRERENDER_SERVICE_H_

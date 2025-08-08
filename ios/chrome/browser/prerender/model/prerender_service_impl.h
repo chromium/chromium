@@ -35,7 +35,6 @@ class PrerenderServiceImpl : public PrerenderService {
   bool IsLoadingPrerender() override;
   void CancelAllPrerenders() override;
   bool HasPrerenderForUrl(const GURL& url) override;
-  bool IsWebStatePrerendered(web::WebState* web_state) override;
 
   // KeyedService:
   void Shutdown() override;
