@@ -8,7 +8,6 @@ import tempfile
 import textwrap
 
 from compiler import _maybe_cache
-from compiler import _parse_modulemap
 from compiler import Compiler
 from modularize import SOURCE_ROOT
 
@@ -63,23 +62,6 @@ class CompilerTest(unittest.TestCase):
     # This one should be unrelated since it has a different gn_out dir.
     self.compiler2.n = 4
     self.assertEqual(self.compiler2.cached_n(), 4)
-
-  def test_parse_modulemap(self):
-    self.assertDictEqual(
-        # It's a defaultdict
-        _parse_modulemap(SOURCE_ROOT /
-                         'build/modules/modularize/testdata/module.modulemap'),
-        {
-            'first': [
-                ('first.h', False),
-                ('../first_textual.h', True),
-            ],
-            'second': [
-                ('second.h', False),
-                ('../second_textual.h', True),
-            ]
-        },
-    )
 
   def test_parse_depfile(self):
     self.assertListEqual(

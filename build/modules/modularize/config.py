@@ -9,6 +9,29 @@ from graph import IncludeDir
 from graph import Header
 from graph import HeaderRef
 
+IGNORED_MODULES = [
+    # This is a builtin module with feature requirements.
+    'opencl_c',
+    # This is a mac module with feature requirements that should be disabled.
+    '_stddef',
+]
+
+# When any of the following directory names are in the path, it's treated as a toolchain directory.
+SYSROOT_DIRS = {
+    'android_toolchain',
+    'debian_bullseye_amd64-sysroot',
+    'MacOSX.platform',
+    'win_toolchain',
+}
+
+# It doesn't matter if these don't work on all platforms.
+# It'll just print a warning saying it failed to compile.
+# This contains a list of files that aren't depended on by libc++, but we still
+# want to precompile.
+SYSROOT_PRECOMPILED_HEADERS = [
+    'fcntl.h',
+]
+
 
 def fix_graph(graph: dict[HeaderRef, Header], os: str, cpu: str):
   """Applies manual augmentation of the header graph."""
