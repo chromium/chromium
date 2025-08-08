@@ -118,7 +118,7 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string="benchmark")
+        filter_string="benchmark,disabled-by-default-histogram_samples")
     if self.verbose_memory_metrics:
       tbm_options = memory.CreateCoreTimelineBasedMemoryMeasurementOptions()
 
@@ -136,6 +136,7 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
       tbm_options.config.chrome_trace_config.EnableUMAHistograms(histogram)
 
     tbm_options.AddTimelineBasedMetric('umaMetric')
+    tbm_options.AddTimelineBasedMetric('tbmv3:uma_metrics')
     if self.verbose_cpu_metrics:
       tbm_options.AddTimelineBasedMetric('limitedCpuTimeMetric')
     return tbm_options
