@@ -18,7 +18,6 @@ suite('PrivacyPageIndex', function() {
 
     loadTimeData.overrideValues(Object.assign(
         {
-          isGuest: false,
           enableSecurityKeysSubpage: false,
           isPrivacySandboxRestricted: false,
           isPrivacySandboxRestrictedNoticeEnabled: false,
@@ -148,15 +147,6 @@ suite('PrivacyPageIndex', function() {
     assertTrue(!!index.$.viewManager.querySelector(
         `#securityKeys[slot=view][data-parent-view-id=old]`));
   });
-
-  // <if expr="is_chromeos">
-  test('RoutingGuestMode', async function() {
-    assertFalse(loadTimeData.getBoolean('isGuest'));
-    assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
-    await createPrivacyPageIndex({isGuest: true});
-    assertActiveViews(['old']);
-  });
-  // </if>
 
   // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
   // inherited correctly.
