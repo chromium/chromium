@@ -169,6 +169,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
     async_activation_timeout_ms_ = async_activation_timeout_ms;
   }
 
+  // Triggers a call to OnError() on the sink to simulate a stream error.
+  // This method is for testing purposes only.
+  void SimulateErrorForTesting();
+
  private:
   class DataDiscontinuityReporter;
   class EchoCancellationConfig;
@@ -392,6 +396,8 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Timeout period for waiting on the OS to activate the audio interface for
   // application loopback capture.
   base::TimeDelta async_activation_timeout_ms_ = base::Seconds(10);
+
+  bool simulate_error_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
