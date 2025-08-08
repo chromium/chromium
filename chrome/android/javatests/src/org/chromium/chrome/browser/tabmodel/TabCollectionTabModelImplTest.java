@@ -2092,6 +2092,147 @@ public class TabCollectionTabModelImplTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    public void testAddTabsToGroup_CreateNewGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token newGroupId = mCollectionModel.addTabsToGroup(null, List.of(tab0, tab1));
+                    assertNotNull(newGroupId);
+                    assertEquals(newGroupId, tab0.getTabGroupId());
+                    assertEquals(newGroupId, tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(newGroupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTabsToGroup_AddToExistingGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token groupId = tab0.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    Token returnedGroupId =
+                            mCollectionModel.addTabsToGroup(groupId, List.of(tab1, tab2));
+                    assertEquals(groupId, returnedGroupId);
+                    assertEquals(groupId, tab0.getTabGroupId());
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertEquals(groupId, tab2.getTabGroupId());
+                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTabsToGroup_MoveFromAnotherGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token groupId1 = tab0.getTabGroupId();
+                    assertNotNull(groupId1);
+
+                    mCollectionModel.createSingleTabGroup(tab1);
+                    Token groupId2 = tab1.getTabGroupId();
+                    assertNotNull(groupId2);
+                    assertNotEquals(groupId1, groupId2);
+
+                    Token returnedGroupId =
+                            mCollectionModel.addTabsToGroup(groupId1, List.of(tab1));
+                    assertEquals(groupId1, returnedGroupId);
+                    assertEquals(groupId1, tab0.getTabGroupId());
+                    assertEquals(groupId1, tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId1).size());
+                    assertFalse(mCollectionModel.tabGroupExists(groupId2));
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTabsToGroup_EmptyList() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token newGroupId =
+                            mCollectionModel.addTabsToGroup(null, Collections.emptyList());
+                    assertNull(newGroupId);
+
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token groupId = tab0.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    Token returnedGroupId =
+                            mCollectionModel.addTabsToGroup(groupId, Collections.emptyList());
+                    assertNull(returnedGroupId);
+                    assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTabsToGroup_SomeTabsAlreadyInGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token groupId = tab0.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    Token returnedGroupId =
+                            mCollectionModel.addTabsToGroup(groupId, List.of(tab0, tab1));
+                    assertEquals(groupId, returnedGroupId);
+                    assertEquals(groupId, tab0.getTabGroupId());
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTabsToGroup_AddToNonExistentGroup() {
+        Tab tab0 = getTabAt(0);
+        assertTabsInOrderAre(List.of(tab0));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token nonExistentGroupId = Token.createRandom();
+                    Token returnedGroupId =
+                            mCollectionModel.addTabsToGroup(nonExistentGroupId, List.of(tab0));
+                    assertNull(returnedGroupId);
+                    assertNull(tab0.getTabGroupId());
+                });
+    }
+
     private void assertTabsInOrderAre(List<Tab> tabs) {
         assertEquals(
                 "Mismatched tab count",

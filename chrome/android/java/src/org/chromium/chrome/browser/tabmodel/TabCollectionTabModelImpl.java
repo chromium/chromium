@@ -780,7 +780,32 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     protected @Nullable Token addTabsToGroup(@Nullable Token tabGroupId, List<Tab> tabs) {
-        return null;
+        if (tabs.isEmpty()) return null;
+
+        // In this method we explicitly use ungroup() before grouping to protect any collaborations
+        // from being destroyed.
+
+        // Case 1: Create a new group.
+        if (tabGroupId == null) {
+            ungroup(tabs);
+            Tab destinationTab = tabs.get(0);
+            mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ false);
+            return destinationTab.getTabGroupId();
+        }
+
+        // Case 2: Add tabs to an existing group.
+        List<Tab> tabsInGroup = getTabsInGroup(tabGroupId);
+        if (tabsInGroup.isEmpty()) return null;
+
+        List<Tab> tabsToUngroup = new ArrayList<>();
+        for (Tab tab : tabs) {
+            if (!tabsInGroup.contains(tab)) {
+                tabsToUngroup.add(tab);
+            }
+        }
+        ungroup(tabsToUngroup);
+        mergeListOfTabsToGroup(tabs, tabsInGroup.get(0), /* notify= */ false);
+        return tabGroupId;
     }
 
     // TabGroupModelFilter overrides.
