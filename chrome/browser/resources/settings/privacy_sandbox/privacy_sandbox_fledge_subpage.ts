@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_subpage.js';
 import './privacy_sandbox_interest_item.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -20,6 +21,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
@@ -34,7 +36,7 @@ export interface SettingsPrivacySandboxFledgeSubpageElement {
 const maxFledgeSitesCount: number = 15;
 
 const SettingsPrivacySandboxFledgeSubpageElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsPrivacySandboxFledgeSubpageElement extends
     SettingsPrivacySandboxFledgeSubpageElementBase {
@@ -282,6 +284,11 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
   private onPrivacyPolicyLinkClicked_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked');
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

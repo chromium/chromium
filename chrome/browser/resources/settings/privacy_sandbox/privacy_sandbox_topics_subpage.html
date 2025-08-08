@@ -85,6 +85,8 @@
   }
 </style>
 
+<settings-subpage page-title="$i18n{topicsPageTitle}"
+    learn-more-url="$i18n{adPrivacyLearnMoreURL}">
 <settings-toggle-button
     id="topicsToggle"
     pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
@@ -212,3 +214,4 @@
       on-close="onBlockTopicDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>
+</settings-subpage>

@@ -75,6 +75,8 @@
   }
 </style>
 
+<settings-subpage page-title="$i18n{fledgePageTitle}"
+    learn-more-url="$i18n{adPrivacyLearnMoreURL}">
 <template is="dom-if" if="[[!shouldShowV2_]]">
   <settings-toggle-button
       id="fledgeToggle"
@@ -218,3 +220,4 @@
     </div>
   </cr-dialog>
 </template>
+</settings-subpage>

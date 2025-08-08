@@ -45,6 +45,47 @@
     </settings-cookies-page>
   </template>
 
+  <template is="dom-if" if="[[isAdPrivacyAvailable_]]" restamp>
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY_SANDBOX, currentRoute, inSearchMode)]]">
+      <settings-privacy-sandbox-page slot="view" id="privacySandbox"
+          data-parent-view-id="old" prefs="{{prefs}}">
+      </settings-privacy-sandbox-page>
+    </template>
+
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY_SANDBOX_AD_MEASUREMENT, currentRoute, inSearchMode)]]">
+      <settings-privacy-sandbox-ad-measurement-subpage slot="view"
+          id="privacySandboxAdMeasurement" data-parent-view-id="old"
+          prefs="{{prefs}}">
+      </settings-privacy-sandbox-ad-measurement-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]" restamp>
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY_SANDBOX_FLEDGE, currentRoute, inSearchMode)]]">
+      <settings-privacy-sandbox-fledge-subpage slot="view"
+          id="privacySandboxFledge" data-parent-view-id="old" prefs="{{prefs}}">
+      </settings-privacy-sandbox-fledge-subpage>
+    </template>
+
+    <template is="dom-if" if="[[renderView_(
+          routes_.PRIVACY_SANDBOX_TOPICS, currentRoute, inSearchMode)]]">
+      <settings-privacy-sandbox-topics-subpage slot="view"
+          id="privacySandboxTopics" data-parent-view-id="old" prefs="{{prefs}}">
+      </settings-privacy-sandbox-topics-subpage>
+    </template>
+
+    <template is="dom-if" if="[[renderView_(
+          routes_.PRIVACY_SANDBOX_MANAGE_TOPICS, currentRoute, inSearchMode)]]">
+      <settings-privacy-sandbox-manage-topics-subpage slot="view"
+          id="privacySandboxManageTopics" data-parent-view-id="old"
+          prefs="{{prefs}}">
+      </settings-privacy-sandbox-manage-topics-subpage>
+    </template>
+  </template>
+
   <template is="dom-if" if="[[renderOldView_(currentRoute, inSearchMode)]]">
     <!-- TODO(crbug.com/424223101): Remove <settings-basic-page> once all UIs
         have been migrated to standalone views. -->

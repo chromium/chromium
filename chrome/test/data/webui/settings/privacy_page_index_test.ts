@@ -20,6 +20,8 @@ suite('PrivacyPageIndex', function() {
         {
           isGuest: false,
           enableSecurityKeysSubpage: false,
+          isPrivacySandboxRestricted: false,
+          isPrivacySandboxRestrictedNoticeEnabled: false,
         },
         overrides || {}));
     resetPageVisibilityForTesting();
@@ -36,8 +38,12 @@ suite('PrivacyPageIndex', function() {
     return flushTasks();
   }
 
-  function assertActiveViews(ids: string[]) {
-    for (const id of ids) {
+  async function testActiveViewsForRoute(route: Route, viewIds: string[]) {
+    Router.getInstance().navigateTo(route);
+    await flushTasks();
+    await waitBeforeNextRender(index);
+
+    for (const id of viewIds) {
       assertTrue(
           !!index.$.viewManager.querySelector(`#${id}.active[slot=view]`));
     }
@@ -50,15 +56,8 @@ suite('PrivacyPageIndex', function() {
   test('Routing', async function() {
     const defaultViews = ['old', 'privacyGuidePromo', 'safetyHubEntryPoint'];
 
-    Router.getInstance().navigateTo(routes.PRIVACY);
-    await flushTasks();
-    await waitBeforeNextRender(index);
-    assertActiveViews(defaultViews);
-
-    Router.getInstance().navigateTo(routes.BASIC);
-    await flushTasks();
-    await waitBeforeNextRender(index);
-    assertActiveViews(defaultViews);
+    await testActiveViewsForRoute(routes.PRIVACY, defaultViews);
+    await testActiveViewsForRoute(routes.BASIC, defaultViews);
 
     // Non-exhaustive list of PRIVACY child routes to check.
     // Some of these routs have not been migrated to the new architecture
@@ -74,10 +73,7 @@ suite('PrivacyPageIndex', function() {
     ];
 
     for (const {route, viewId} of routesToVisit) {
-      Router.getInstance().navigateTo(route);
-      await flushTasks();
-      await waitBeforeNextRender(index);
-      assertActiveViews([viewId]);
+      await testActiveViewsForRoute(route, [viewId]);
     }
   });
 
@@ -88,21 +84,65 @@ suite('PrivacyPageIndex', function() {
     await flushTasks();
     await waitBeforeNextRender(index);
     assertFalse(!!index.$.viewManager.querySelector('#old'));
+    await testActiveViewsForRoute(routes.PRIVACY, ['old']);
+  });
 
-    Router.getInstance().navigateTo(routes.PRIVACY);
-    await flushTasks();
-    await waitBeforeNextRender(index);
-    assertTrue(!!index.$.viewManager.querySelector('#old.active'));
+  test('RoutingPrivacySandboxRestrictedFalse', async function() {
+    await createPrivacyPageIndex({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
+    });
+
+    // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
+    // automatically redirect to its parent.
+    index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+
+    const routesToVisit: Array<{route: Route, viewId: string}> = [
+      {route: routes.PRIVACY_SANDBOX, viewId: 'privacySandbox'},
+      {route: routes.PRIVACY_SANDBOX_TOPICS, viewId: 'privacySandboxTopics'},
+      {
+        route: routes.PRIVACY_SANDBOX_MANAGE_TOPICS,
+        viewId: 'privacySandboxManageTopics',
+      },
+      {route: routes.PRIVACY_SANDBOX_FLEDGE, viewId: 'privacySandboxFledge'},
+      {
+        route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
+        viewId: 'privacySandboxAdMeasurement',
+      },
+    ];
+
+    for (const {route, viewId} of routesToVisit) {
+      await testActiveViewsForRoute(route, [viewId]);
+    }
+  });
+
+  test('RoutingPrivacySandboxRestrictedNoticeEnableTrue', async function() {
+    await createPrivacyPageIndex({
+      isPrivacySandboxRestricted: true,
+      isPrivacySandboxRestrictedNoticeEnabled: true,
+    });
+
+    // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
+    // automatically redirect to its parent.
+    index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+
+    const routesToVisit: Array<{route: Route, viewId: string}> = [
+      {route: routes.PRIVACY_SANDBOX, viewId: 'privacySandbox'},
+      {
+        route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
+        viewId: 'privacySandboxAdMeasurement',
+      },
+    ];
+
+    for (const {route, viewId} of routesToVisit) {
+      await testActiveViewsForRoute(route, [viewId]);
+    }
   });
 
   test('RoutingSecurityKeys', async function() {
     assertFalse(loadTimeData.getBoolean('enableSecurityKeysSubpage'));
     await createPrivacyPageIndex({enableSecurityKeysSubpage: true});
-
-    Router.getInstance().navigateTo(routes.SECURITY_KEYS);
-    await flushTasks();
-    await waitBeforeNextRender(index);
-    assertActiveViews(['securityKeys']);
+    await testActiveViewsForRoute(routes.SECURITY_KEYS, ['securityKeys']);
 
     // Test that data-parent-view is correctly populated.
     assertTrue(!!index.$.viewManager.querySelector(

@@ -6,20 +6,19 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/shared/settings/prefs/prefs.js';
 import '../icons.html.js';
+import '../settings_page/settings_subpage.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './privacy_sandbox_page.html.js';
 
@@ -30,7 +29,7 @@ export interface SettingsPrivacySandboxPageElement {
 }
 
 const SettingsPrivacySandboxPageElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsPrivacySandboxPageElement extends
     SettingsPrivacySandboxPageElementBase {
@@ -44,11 +43,6 @@ export class SettingsPrivacySandboxPageElement extends
 
   static get properties() {
     return {
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
-
       isPrivacySandboxRestricted_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
@@ -63,39 +57,10 @@ export class SettingsPrivacySandboxPageElement extends
     };
   }
 
-  declare focusConfig: FocusConfig;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private measurementLinkRowClass_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    assert(!oldConfig);
-    if (routes.PRIVACY_SANDBOX_TOPICS) {
-      this.focusConfig.set(routes.PRIVACY_SANDBOX_TOPICS.path, () => {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#privacySandboxTopicsLinkRow');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
-    }
-    if (routes.PRIVACY_SANDBOX_FLEDGE) {
-      this.focusConfig.set(routes.PRIVACY_SANDBOX_FLEDGE.path, () => {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#privacySandboxFledgeLinkRow');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
-    }
-    if (routes.PRIVACY_SANDBOX_AD_MEASUREMENT) {
-      this.focusConfig.set(routes.PRIVACY_SANDBOX_AD_MEASUREMENT.path, () => {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#privacySandboxAdMeasurementLinkRow');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
-    }
-  }
 
   private computePrivacySandboxTopicsSublabel_(): string {
     return this.i18n(
@@ -146,6 +111,33 @@ export class SettingsPrivacySandboxPageElement extends
     return this.getPref('privacy_sandbox.m1.ad_measurement_enabled').value;
   }
 
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map();
+
+    if (routes.PRIVACY_SANDBOX_TOPICS) {
+      map.set(
+          routes.PRIVACY_SANDBOX_TOPICS.path, '#privacySandboxTopicsLinkRow');
+    }
+
+    if (routes.PRIVACY_SANDBOX_FLEDGE) {
+      map.set(
+          routes.PRIVACY_SANDBOX_FLEDGE.path, '#privacySandboxFledgeLinkRow');
+    }
+
+    if (routes.PRIVACY_SANDBOX_AD_MEASUREMENT) {
+      map.set(
+          routes.PRIVACY_SANDBOX_AD_MEASUREMENT.path,
+          '#privacySandboxAdMeasurementLinkRow');
+    }
+
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

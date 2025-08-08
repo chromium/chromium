@@ -83,6 +83,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
           focusInPrivacyPage.bind(this, '#thirdPartyCookiesLinkRow'));
     }
 
+    if (routes.PRIVACY_SANDBOX) {
+      map.set(
+          routes.PRIVACY_SANDBOX.path,
+          focusInPrivacyPage.bind(this, '#privacySandboxLinkRow'));
+    }
+
     if (routes.SECURITY_KEYS) {
       map.set(
           routes.SECURITY_KEYS.path,

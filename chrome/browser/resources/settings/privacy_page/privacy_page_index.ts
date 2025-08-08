@@ -64,7 +64,7 @@ export class SettingsPrivacyPageIndexElement extends
 
       pageVisibility_: {
         type: Object,
-        value() {
+        value: () => {
           return pageVisibility || {};
         },
       },
@@ -82,9 +82,25 @@ export class SettingsPrivacyPageIndexElement extends
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
-        value() {
+        value: () => {
           return loadTimeData.getBoolean('enableSecurityKeysSubpage');
         },
+      },
+
+      isAdPrivacyAvailable_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => {
+          return !loadTimeData.getBoolean('isPrivacySandboxRestricted') ||
+              loadTimeData.getBoolean(
+                  'isPrivacySandboxRestrictedNoticeEnabled');
+        },
+      },
+
+      isPrivacySandboxRestricted_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
     };
   }
@@ -100,6 +116,8 @@ export class SettingsPrivacyPageIndexElement extends
   declare private routes_: SettingsRoutes;
   declare private showPrivacyGuidePromo_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;
+  declare private isAdPrivacyAvailable_: boolean;
+  declare private isPrivacySandboxRestricted_: boolean;
 
   private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private privacyGuidePromoWasShown_: boolean;
@@ -153,6 +171,21 @@ export class SettingsPrivacyPageIndexElement extends
         return ['securityKeys'];
       case routes.SAFETY_HUB:
         return ['safetyHub'];
+      case routes.PRIVACY_SANDBOX:
+        assert(this.isAdPrivacyAvailable_);
+        return ['privacySandbox'];
+      case routes.PRIVACY_SANDBOX_TOPICS:
+        assert(!this.isPrivacySandboxRestricted_);
+        return ['privacySandboxTopics'];
+      case routes.PRIVACY_SANDBOX_MANAGE_TOPICS:
+        assert(!this.isPrivacySandboxRestricted_);
+        return ['privacySandboxManageTopics'];
+      case routes.PRIVACY_SANDBOX_FLEDGE:
+        assert(!this.isPrivacySandboxRestricted_);
+        return ['privacySandboxFledge'];
+      case routes.PRIVACY_SANDBOX_AD_MEASUREMENT:
+        assert(this.isAdPrivacyAvailable_);
+        return ['privacySandboxAdMeasurement'];
       default: {
         if (this.isNonMigratedPrivacyRoute_(route)) {
           // Handle case where Privacy child route has not migrated to the new

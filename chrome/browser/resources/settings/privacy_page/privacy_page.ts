@@ -237,10 +237,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
           }
 
-          if (routes.PRIVACY_SANDBOX) {
-            map.set(routes.PRIVACY_SANDBOX.path, '#privacySandboxLinkRow');
-          }
-
           if (routes.INCOGNITO_TRACKING_PROTECTIONS) {
             map.set(routes.INCOGNITO_TRACKING_PROTECTIONS.path,
               '#incognitoTrackingProtectionsLinkRow');
@@ -535,6 +531,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         break;
       case 'securityKeys':
         triggerId = 'securityLinkRow';
+        break;
+      case 'privacySandbox':
+      case 'privacySandboxAdMeasurement':
+      case 'privacySandboxFledge':
+      case 'privacySandboxManageTopics':
+      case 'privacySandboxTopics':
+        triggerId = 'privacySandboxLinkRow';
         break;
       // TODO(crbug.com/424223101): Add more child view IDs as they
       // are migrated to the new architecture.

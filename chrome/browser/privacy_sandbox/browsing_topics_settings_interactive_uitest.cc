@@ -47,14 +47,12 @@ constexpr char BlockedTopicsListFirstTopicIdFunc[] =
 DeepQuery GetManageTopicsPageQuery() {
   return DeepQuery(
       {{"settings-ui", "settings-main", "settings-privacy-page-index",
-        "settings-basic-page", "settings-privacy-page",
         "settings-privacy-sandbox-manage-topics-subpage"}});
 }
 
 DeepQuery GetAdTopicsPageQuery() {
   return DeepQuery(
       {{"settings-ui", "settings-main", "settings-privacy-page-index",
-        "settings-basic-page", "settings-privacy-page",
         "settings-privacy-sandbox-topics-subpage"}});
 }
 
@@ -233,10 +231,10 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
-      WaitForStateChange(
-          kPrivacySandboxTopicsElementId,
-          ElementIsVisibleStateChange(kPrivacySandboxManageTopicsPageVisible,
-                                      GetManageTopicsPageQuery())),
+      WaitForStateChange(kPrivacySandboxTopicsElementId,
+                         ElementIsVisibleStateChange(
+                             kPrivacySandboxManageTopicsPageVisible,
+                             GetManageTopicsPageQuery() + "settings-subpage")),
       CheckJsResultAt(kPrivacySandboxTopicsElementId,
                       GetManageTopicsPageQuery(),
                       R"(

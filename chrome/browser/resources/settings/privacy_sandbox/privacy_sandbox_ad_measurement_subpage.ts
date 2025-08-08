@@ -6,6 +6,7 @@ import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -15,6 +16,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './privacy_sandbox_ad_measurement_subpage.html.js';
 
@@ -25,7 +27,7 @@ export interface SettingsPrivacySandboxAdMeasurementSubpageElement {
 }
 
 const SettingsPrivacySandboxAdMeasurementSubpageElementBase =
-    PrefsMixin(PolymerElement);
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
     SettingsPrivacySandboxAdMeasurementSubpageElementBase {
@@ -66,6 +68,11 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
   private onPrivacyPolicyLinkClicked_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked');
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 
