@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Remote offer SDP missing max-message-size attribute
+  promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to parse SessionDescription. a=max-message-size:undefined Invalid SCTP max message size."
+Harness: the test ran to completion.
+

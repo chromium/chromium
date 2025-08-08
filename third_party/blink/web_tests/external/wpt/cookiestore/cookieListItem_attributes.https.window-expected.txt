@@ -19,5 +19,7 @@ This is a testharness.js-based test.
   assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
 [FAIL] CookieListItem - cookieStore.set with sameSite set to none
   assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] Test max-age attribute over the 400 days
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
 Harness: the test ran to completion.
 

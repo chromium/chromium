@@ -1531,7 +1531,7 @@ crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 
 # Interestfor related tests
 crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
-crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-pseudo-element-appearance.tentative.html [ Pass Failure ]
+crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-pseudo-element-appearance.tentative.html [ Failure Pass ]
 
 crbug.com/421119389 external/wpt/pointerevents/crashtests/longpress-crash.html [ Crash ]
 
@@ -1891,10 +1891,10 @@ crbug.com/435623334 virtual/xslt-disabled/fast/xsl/xslt-translate.html [ Failure
 crbug.com/435623334 virtual/xslt-disabled/http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure ]
 crbug.com/435623334 virtual/xslt-disabled/http/tests/xsl/xsl-using-document-with-external-entity.xml [ Failure ]
 crbug.com/435623334 virtual/xslt-disabled/loader/resources/document-updated-by-xslt.svg [ Failure ]
-crbug.com/435623334 virtual/xslt-disabled/external/wpt/dom/xslt/large-cdata.html [ Failure Timeout Crash ]
+crbug.com/435623334 virtual/xslt-disabled/external/wpt/dom/xslt/large-cdata.html [ Crash Failure Timeout ]
 crbug.com/435623334 virtual/xslt-disabled/fast/xsl/xslt-multiple-relative-import.xml [ Crash Failure ]
 crbug.com/435623334 virtual/xslt-disabled/fast/parser/base-with-surrogate-pair.html [ Pass Timeout ]
-crbug.com/435623334 virtual/xslt-disabled/fast/parser/stray-end-tags-with-attributes-002.html [ Pass Failure ]
+crbug.com/435623334 virtual/xslt-disabled/fast/parser/stray-end-tags-with-attributes-002.html [ Failure Pass ]
 
 # Working on getting the CSP tests going:
 
@@ -2773,6 +2773,7 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Skip Timeout ]
 
 # ====== Test expectations added to unblock wpt-importer ======
+external/wpt/html/semantics/embedded-content/the-img-element/animated-webp-update.tentative.html [ Failure ]
 crbug.com/431542979 [ Android ] external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/431542979 [ Linux ] external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/431542979 [ Mac ] external/wpt/speech-api/idlharness.window.html [ Failure ]
