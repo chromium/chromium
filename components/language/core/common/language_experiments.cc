@@ -24,6 +24,6 @@ BASE_FEATURE(kTranslateOpenSettings,
 
 BASE_FEATURE(kDisableGeoLanguageModel,
              "DisableGeoLanguageModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace language
