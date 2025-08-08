@@ -16,8 +16,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
 
 import java.util.List;
 
@@ -105,8 +103,8 @@ public class GmsCoreGetCredentialsHelper {
         final long startTimeMs = SystemClock.elapsedRealtime();
         if (reason == Reason.GET_ASSERTION_NON_GOOGLE
                 && GmsCoreUtils.isPasskeyCacheSupported()
-                && DeviceFeatureMap.isEnabled(
-                        DeviceFeatureList.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION)) {
+                && WebauthnFeatureMap.getInstance()
+                        .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION)) {
             Fido2ApiCallHelper.getInstance()
                     .invokePasskeyCacheGetCredentials(
                             authenticationContextProvider,

@@ -11,6 +11,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
+    "java/src/org/chromium/components/webauthn/WebauthnFeatureMap.java",
     "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManSupportProvider.java",
   ]
@@ -56,6 +57,8 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/RecordOutcomeCallback.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebauthnCredentialDetails.java",
+    "java/src/org/chromium/components/webauthn/WebauthnFeatureMap.java",
+    "java/src/org/chromium/components/webauthn/WebauthnFeatures.java",
     "java/src/org/chromium/components/webauthn/WebauthnLogger.java",
     "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/AppCredManRequestDecorator.java",
@@ -157,6 +160,7 @@ source_set("android") {
     "webauthn_cred_man_delegate.h",
     "webauthn_cred_man_delegate_factory.cc",
     "webauthn_cred_man_delegate_factory.h",
+    "webauthn_feature_map.cc",
     "webauthn_mode.h",
     "webauthn_mode_provider.cc",
   ]
@@ -165,6 +169,7 @@ source_set("android") {
     "//base",
     "//components/cbor",
     "//components/ukm/android:ukm_recorder",
+    "//components/webauthn:features",
     "//components/webauthn/core/browser",
     "//components/webauthn/json",
     "//content/public/browser",
