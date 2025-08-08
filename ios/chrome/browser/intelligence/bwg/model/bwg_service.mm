@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -39,6 +40,10 @@ void BwgService::Shutdown() {
 bool BwgService::IsProfileEligibleForBwg() {
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  bool tokens_ok =
+      identity_manager_
+          ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
+          .state() == GoogleServiceAuthError::NONE;
 
   // If the account info was not found, the user is likely not authenticated.
   bool has_account_info = !account_info.IsEmpty();
@@ -56,7 +61,7 @@ bool BwgService::IsProfileEligibleForBwg() {
       is_disabled_by_gemini_policy_;
 
   bool is_eligible = can_use_model_execution && !is_disabled_by_policy &&
-                     !profile_->IsOffTheRecord();
+                     tokens_ok && !profile_->IsOffTheRecord();
 
   base::UmaHistogramBoolean(kEligibilityHistogram, is_eligible);
 
