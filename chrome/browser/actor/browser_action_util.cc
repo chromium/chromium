@@ -668,8 +668,9 @@ void BuildActionsResultWithObservations(
     // tab_observation can be Unretained because the underlying APC is owned by
     // the barrier which is ref-counted.
     actor_service->RequestTabObservation(
-        *tab, base::BindOnce(FetchCallback, barrier,
-                             base::Unretained(tab_observation)));
+        *tab, task.id(),
+        base::BindOnce(FetchCallback, barrier,
+                       base::Unretained(tab_observation)));
   }
 }
 

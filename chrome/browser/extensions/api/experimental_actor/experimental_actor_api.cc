@@ -505,10 +505,14 @@ ExperimentalActorRequestTabObservationFunction::Run() {
   }
 
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
+
+  // TODO(dtapuska): We may want to add an optional task_id to the API so
+  // we can attribute this tab observation to an appropriate task.
   actor_service->RequestTabObservation(
-      *tab, base::BindOnce(&ExperimentalActorRequestTabObservationFunction::
-                               OnObservationFinished,
-                           this));
+      *tab, actor::TaskId(),
+      base::BindOnce(&ExperimentalActorRequestTabObservationFunction::
+                         OnObservationFinished,
+                     this));
 
   return RespondLater();
 }

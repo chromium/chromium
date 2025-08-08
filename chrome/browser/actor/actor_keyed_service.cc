@@ -145,7 +145,12 @@ void ActorKeyedService::NotifyTaskStateChanged(const ActorTask& task) {
 
 void ActorKeyedService::RequestTabObservation(
     const tabs::TabInterface& tab,
+    TaskId task_id,
     base::OnceCallback<void(TabObservationResult)> callback) {
+  const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
+  auto journal_entry = journal_.CreatePendingAsyncEntry(
+      last_committed_url, task_id, mojom::JournalTrack::kActor,
+      "RequestTabOservation", "");
   page_content_annotations::FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
   options.annotated_page_content_options =
@@ -154,6 +159,9 @@ void ActorKeyedService::RequestTabObservation(
       *tab.GetContents(), options,
       base::BindOnce(
           [](base::OnceCallback<void(TabObservationResult)> callback,
+             std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
+                 pending_journal_entry,
+             const GURL& last_committed_url,
              page_content_annotations::FetchPageContextResultCallbackArg
                  result) {
             if (result.has_value()) {
@@ -170,10 +178,24 @@ void ActorKeyedService::RequestTabObservation(
                 return;
               }
 
+              size_t size = fetch_result.annotated_page_content_result->proto
+                                .ByteSizeLong();
+              std::vector<uint8_t> buffer(size);
+              fetch_result.annotated_page_content_result->proto
+                  .SerializeToArray(buffer.data(), size);
+              pending_journal_entry->GetJournal().LogAnnotatedPageContent(
+                  last_committed_url, pending_journal_entry->GetTaskId(),
+                  buffer);
+
+              auto& data = fetch_result.screenshot_result->jpeg_data;
+              pending_journal_entry->GetJournal().LogScreenshot(
+                  last_committed_url, pending_journal_entry->GetTaskId(),
+                  kMimeTypeJpeg, base::as_byte_span(data));
+
               std::move(callback).Run(std::move(result).value());
             }
           },
-          std::move(callback)));
+          std::move(callback), std::move(journal_entry), last_committed_url));
 }
 
 void ActorKeyedService::ConvertToBrowserActionResult(
@@ -199,19 +221,11 @@ void ActorKeyedService::ConvertToBrowserActionResult(
   CHECK(fetch_result.annotated_page_content_result.has_value());
   CHECK(fetch_result.screenshot_result.has_value());
 
-  size_t size =
-      fetch_result.annotated_page_content_result->proto.ByteSizeLong();
-  std::vector<uint8_t> buffer(size);
-  fetch_result.annotated_page_content_result->proto.SerializeToArray(
-      buffer.data(), size);
-  journal_.LogAnnotatedPageContent(url, task_id, buffer);
-
   browser_action_result.mutable_annotated_page_content()->Swap(
       &fetch_result.annotated_page_content_result->proto);
-  auto& data = fetch_result.screenshot_result->jpeg_data;
-  journal_.LogScreenshot(url, task_id, kMimeTypeJpeg, base::as_byte_span(data));
 
   // TODO(bokan): Can we avoid a copy here?
+  auto& data = fetch_result.screenshot_result->jpeg_data;
   browser_action_result.set_screenshot(data.data(), data.size());
   browser_action_result.set_screenshot_mime_type(kMimeTypeJpeg);
 
@@ -240,7 +254,7 @@ void ActorKeyedService::OnActionFinished(
   }
   int32_t tab_id = tab->GetHandle().raw_value();
   RequestTabObservation(
-      *tab,
+      *tab, task_id,
       base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      task_id, tab_id, tab->GetContents()->GetLastCommittedURL(),
