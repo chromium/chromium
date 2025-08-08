@@ -77,6 +77,195 @@ Google has policies restricting what data can be collected and for what purpose.
 Googlers, see go/uma-privacy#principles to verify your desired histogram
 adheres to those policies.
 
+## Choosing When to Emit to a Histogram
+
+Often it's obvious when to emit to a histogram. For example, to measure how long
+a page takes to emit, emit the elapsed time the instant the page loads.
+Likewise, to see how common various database errors are, emit the database error
+at the time the database API call returns.
+
+### Periodically Emitting to a Histogram
+
+Sometimes you want for a histogram to be emitted periodically. For instance, to
+know how many Chrome windows are typically open, the histogram needs to be
+emitted regularly, indicating how many windows are open at that instant.
+
+There are four primary reasons you may want a histogram to be emitted
+periodically. Our recommendation for how to implement periodic emission depends
+on the motivation / use case.
+
+| Motivation | Primary Way to Use the Histogram | Solution |
+| - | - | - |
+| You want to be able to reliably tag clients with their histogram state. | Count unique clients who emit particular value(s) to the histogram. | Use a `MetricsProvider`; see [details below](#metrics-provider). |
+| You want to be able to slice UMA data according to the value emitted to this histogram by this client. | Slice UMA data based on histogram state. | Use a `MetricsProvider`; see [details below](#metrics-provider)|
+| You want the emits to come at a higher frequency during more intensive browsing and maybe not at all when there's little interesting activity. | Look at counts of emits to the histogram; don't look at counting unique clients. | Emit upon the appropriate activity; see [details below](#periodic-emits-varying-frequency). |
+| You want to look at your metric where each data point corresponds to roughly the same amount of time spent with the browser open. | Look at counts of emits to the histogram; don't look at counting unique clients. | No good solutions; see [reasoning and alternatives below](#periodic-emits-regular-frequency) |
+| You want to look at "time that my feature is in use" | See if feature interactions tend to be short- or long-lived. | It's possible and easy under some circumstance to do this correctly and difficult in others. Broadly, the solution is to emit to a histogram the length of time a feature is used. See [details about the hurdles of this solution below](#time-feature-is-in-use). |
+| You want to look at "percent of time that my feature is in use" | See if feature is active during most of the time the browser is open. | This is not possible at this time. Do not do this; see [reasoning](#percent-of-time-feature-is-in-use). |
+
+#### Use a `MetricsProvider` {#metrics-provider}
+
+For the first two motivations, you should emit to histogram with every UMA
+record. It ensures that every client who uploads data also uploads this
+histogram (regardless of what else they do or do not do). That's necessary for
+counting unique clients in various states. It's also the only way to satisfy the
+second motivation, as this ensures that all data you might want to slice comes
+with the histogram attached.
+
+To emit to histogram with every UMA record, implement a
+[`MetricsProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/metrics_provider.h).
+Emit the histogram in your implementation of
+[`ProvideCurrentSessionData()`](https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/metrics_provider.h?q=%22void%20ProvideCurrentSessionData%22)
+and maybe also
+[`ProvidePreviousSessionData()`](https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/metrics_provider.h?q=%22void%20ProvidePreviousSessionData%22).
+(For information whether to emit in `ProvidePreviousSessionData`, see the comments
+by the function declaration.) Here is
+[an example change of emitting a histogram in a `MetricsProvider`](https://chromium-review.googlesource.com/c/chromium/src/+/3914305/9/chrome/browser/metrics/chrome_android_metrics_provider.cc).
+
+One downside of using a `MetricsProvider` is that the number of emits to the
+histogram is not particularly meaningful. For example, Chrome on Android starts
+a new UMA record when Chrome gets put in the background and another one when
+Chrome gets put in the foreground. Users who have a short timeout before
+displaying their lock screen will be overweighted according to the number of
+emits. Likewise, users who often click back and forth between GMail and Chrome
+will be overweighted.
+
+Google employees: to enable slicing by your histogram in the UMA dashboard,
+see [these instructions](https://shortn.googleplex.com/_0OdHLZVXFF).
+
+#### Emit upon the appropriate activity {#periodic-emits-varying-frequency}
+
+Emitting upon appropriate activity either requires integrating with code that's
+naturally called when the activity happens or requires a listener for the
+activity.
+
+One common desire is to emit at higher frequency during more intensive browsing.
+A common answer to this desire is to listen for page loads and emit the
+histogram on every page load. To listen for page loads,
+use a
+[`PageLoadMetricsObserver`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/page_load_metrics_observer.h).
+(In most cases, you don't need to implement a new `PageLoadMetricsObserver`;
+commonly, you can hook into an existing one.) Typically, people emit histograms
+in the observer's implementation of `OnCommit()` or
+`OnFirstContentfulPaintInPage()`. Here is
+[an example change](https://chromium-review.googlesource.com/c/chromium/src/+/3690215/9/chrome/browser/page_load_metrics/observers/omnibox_suggestion_used_page_load_metrics_observer.cc).
+
+Reminder: it's possible that an active client doesn't emit this histogram in a
+day because they don't do the required activity.
+
+#### Emitting at equal periods of time {#periodic-emits-regular-frequency}
+
+There is no good solution to emit to a histogram periodically where each data
+point represents the same amount of time spent with the browser open. Suppose
+you want each data point to represent an hour. No solution handles well the case
+of a user who opens Chrome regularly but only for a short time (say, ten
+seconds). If you wait until the user has accumulated one hour of time in Chrome
+total, that's 360 Chrome sessions. If these sessions happen once a day, you
+won't count the user unless you're analyzing about a year of data.  If you're
+analyzing less than a year of data, people with short sessions are effectively
+unrepresented or underrepresented.
+
+There are two substitute approaches people have taken here:
+
+-   Use a `MetricsProvider` to emit at each UMA record, but keep in mind that
+    each UMA record may represent different lengths of time. See details in
+    [the `MetricsProvider` section](#metrics-provider).
+
+-   Use a
+    [`base::RepeatingTimer`](https://source.chromium.org/chromium/chromium/src/+/main:base/timer/timer.h?q=RepeatingTimer)
+    to emit periodically. Reasonable emission intervals are every 1 hour or
+    every 24 hours. Despite what the timer implies, each emit may cover a
+    different length of time. For example, a client who opens Chrome once at
+    10am for one minute, once the next day at 11am for one minute, and once the
+    following day at 12pm for one minute, will emit three times, once per each
+    day. (That's because each day's session is more than 24 hours since the last
+    emit. A `RepeatingTimer` emits on startup if it's been more than the elapsed
+    time since the last emit.) Consequently, there are three data points, each
+    covering a minute, whereas client who used Chrome for 23 hours straight will
+    have a single data point covering 23 hours of hours usage.
+
+    Reminder: also, it's possible that an active client with doesn't emit the
+    histogram in a day.
+
+#### Discouraged: Emit when Chrome is conceptually opened
+
+You may see code that emits when Chrome is conceptually opened. This can mean:
+
+-   On desktop, emit the histogram on Chrome startup or on profile open. If
+    the histogram is related to a
+    [`KeyedService`](https://source.chromium.org/chromium/chromium/src/+/main:components/keyed_service/core/keyed_service.h)
+    (each instance of which is associated with a profile), then emitting
+    within the constructor would naturally cause the histogram to be emitted
+    on profile open.
+
+-   On Android and iOS, emit the histogram when Chrome is put in the
+    foreground. (On these platforms, we discourage emitting on startup or
+    emitting on profile open as there are vary ways Chrome can start on these
+    platforms without user intervention and without the user ending up seeing
+    or using Chrome.)
+
+Emitting in a `MetricsProvider` (see section above) is typically better.
+Both have the same downsides on mobile about overweighting people who enter
+and leave Chrome quickly. However, the `MetricsProvider` approach is better
+on desktop platforms, as it better reflects people who leave their browser open
+for a long time. Emitting on startup on desktop will underweight those users.
+Leaving a browser open for a long time is not an unusual behavior on desktop.
+
+#### Difficult: Identify time a feature is in use {#time-feature-is-in-use}
+
+Ideally one could add client code to record locally a timestamp when the feature
+started being used, then emit to a histogram the elapsed time when the feature
+stopped being used. This will work well only if (i) it's easy to tell when a
+feature is and is not being used and (ii) the feature can only be open at
+most once at a time. These restrictions are much harder to overcome than they
+initially appear.
+
+The solution doesn't work well if it's hard to tell when a feature is being used.
+For example, if the bookmarks bar is always displayed in a window, is that
+continuous usage?
+
+The situation is made worse because people could leave their browser open with
+the feature "open" and go do something else (such as have lunch).  Is the
+feature in use during that time?
+
+If multiple instances of the feature can be opened at the same time--such as
+due to multiple browser windows or multiple profiles--then this solution also
+doesn't work well.
+
+If you have clear answers to the above situations then, with careful coding,
+this solution can work.
+
+For this use case, do not emit "periodically"; none of the other solutions are
+applicable.
+
+#### Impossible: Identify percent of browsing time a feature is in use {#percent-of-time-feature-is-in-use}
+
+It is not possible to do this accurately. In addition to [the difficulty in
+identifying when a feature is in use](#time-feature-is-in-use), one needs a
+denominator: the total browsing time. There's no good one.
+
+The closest denominator may be the UMA histogram `Session.TotalDuration`.
+However, that counts only "active" browsing time. The logic for determining
+when a browser is active is complex (on some platforms). If your "feature in
+use" logging can end up counting time for feature use during time when the
+browser is not considered to be in use, you end up with an unfair comparison.
+There will be time counted for the numerator that's not counted for the
+denominator. It's not reasonably possible--instead, call it impossible--to
+properly incorporate the `Session.TotalDuration` logic in your "feature in use"
+logic.
+
+An alternate denominator might be the total time the browser has been running.
+That's not a good idea either, as people can leave their browser running,
+perhaps with the screen locked, for days. Including that time in the numerator
+and denominator isn't going to be a accurate reflect of percent of spent with
+the browser when the feature was in use.
+
+It's possible to get a very rough estimate of the desired percentage using a `MetricsProvider`. Emit "feature in use" in each UMA record. If you take this
+approach keep in mind that each UMA record may represent different lengths of
+time. See details in [the `MetricsProvider` section](#metrics-provider). That's
+why this approach will not give a true percentage of time. (It gives a
+percentage of UMA records.)
+
 ## Coding (Emitting to Histograms)
 
 Prefer the helper functions defined in
