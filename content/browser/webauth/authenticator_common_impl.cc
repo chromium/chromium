@@ -842,17 +842,7 @@ AuthenticatorCommonImpl::AuthenticatorCommonImpl(
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       serving_requests_for_(serving_requests_for),
       security_checker_(static_cast<RenderFrameHostImpl*>(render_frame_host)
-                            ->GetWebAuthRequestSecurityChecker()) {
-  // Disable the back-forward cache for any document that makes WebAuthn
-  // requests. Pages using privacy-sensitive APIs are generally exempt from
-  // back-forward cache for now as a precaution.
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNewBfCacheHandling)) {
-    BackForwardCache::DisableForRenderFrameHost(
-        render_frame_host,
-        BackForwardCacheDisable::DisabledReason(
-            BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI));
-  }
-}
+                            ->GetWebAuthRequestSecurityChecker()) {}
 
 AuthenticatorCommonImpl::~AuthenticatorCommonImpl() = default;
 

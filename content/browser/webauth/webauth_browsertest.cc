@@ -1939,33 +1939,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
   ASSERT_EQ(kOkMessage, result);
 }
 
-class WebAuthLocalClientBackForwardCacheBrowserTest
-    : public WebAuthLocalClientBrowserTest {
- public:
-  WebAuthLocalClientBackForwardCacheBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        device::kWebAuthnNewBfCacheHandling);
-  }
-
- protected:
-  BackForwardCacheDisabledTester tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBackForwardCacheBrowserTest,
-                       WebAuthDisablesBackForwardCache) {
-  // Initialisation of the test should disable bfcache.
-  EXPECT_TRUE(tester_.IsDisabledForFrameWithReason(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
-      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
-      BackForwardCacheDisable::DisabledReason(
-          BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI)));
-}
-
 // WebAuthBrowserCtapTest ----------------------------------------------
 
 class WebAuthBrowserCtapTest : public WebAuthLocalClientBrowserTest {
