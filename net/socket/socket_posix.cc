@@ -678,13 +678,6 @@ int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
       statistics_auto_lock.Release();
 #endif  // DEBUG_CRBUG_40064248_STATISTICS
 
-      // Signal to chrome_crashpad_handler that this bug has occurred. It may
-      // want to collect additional information.
-      //
-      // TODO(crbug.com/40064248): Remove this once sufficient information is
-      // collected.
-      SCOPED_CRASH_KEY_STRING32("net", "crbug_40064248", "1");
-
       // This duplicates the CHECK_LE below. Keep it here so that the aliased
       // debug buffers are in scope when the process crashes.
       CHECK_LE(send_rv, buf_len);
