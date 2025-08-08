@@ -25791,40 +25791,6 @@
             ]
         }
     ],
-    "V8IntelJCCErratumMitigation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledNoSlowHistogram",
-                    "enable_features": [
-                        "V8IntelJCCErratumMitigation"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8IntelJCCErratumMitigation",
-                        "V8SlowHistogramsIntelJCCErratumMitigation"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "enable_features": [
-                        "V8SlowHistogramsIntelJCCErratumMitigation"
-                    ],
-                    "disable_features": [
-                        "V8IntelJCCErratumMitigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8LargePagePool": [
         {
             "platforms": [

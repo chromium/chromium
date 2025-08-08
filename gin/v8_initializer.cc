@@ -490,8 +490,6 @@ void SetFeatureFlags() {
   bool any_slow_histograms_alias =
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsCodeMemoryWriteProtection) ||
-      base::FeatureList::IsEnabled(
-          features::kV8SlowHistogramsIntelJCCErratumMitigation) ||
       base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) ||
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsSparkplugAndroid) ||
@@ -506,10 +504,6 @@ void SetFeatureFlags() {
   SetV8FlagsIfOverridden(features::kV8IgnitionElideRedundantTdzChecks,
                          "--ignition-elide-redundant-tdz-checks",
                          "--no-ignition-elide-redundant-tdz-checks");
-
-  SetV8FlagsIfOverridden(features::kV8IntelJCCErratumMitigation,
-                         "--intel-jcc-erratum-mitigation",
-                         "--no-intel-jcc-erratum-mitigation");
 
   SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
                          "--use-libm-trig-functions",

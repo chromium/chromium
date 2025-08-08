@@ -216,9 +216,6 @@ BASE_FEATURE(kV8SlowHistograms,
 BASE_FEATURE(kV8SlowHistogramsCodeMemoryWriteProtection,
              "V8SlowHistogramsCodeMemoryWriteProtection",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kV8SlowHistogramsIntelJCCErratumMitigation,
-             "V8SlowHistogramsIntelJCCErratumMitigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8SlowHistogramsSparkplug,
              "V8SlowHistogramsSparkplug",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -259,14 +256,6 @@ BASE_FEATURE(kV8IdleGcOnContextDisposal,
 // manually overridden.
 BASE_FEATURE(kV8IgnitionElideRedundantTdzChecks,
              ("V8IgnitionElideRedundantTdzChecks"),
-             kFeatureDefaultStateControlledByV8);
-
-// Add additional alignment for some jumps in generated x64 code, to mitigate
-// the performance impact of the Intel JCC erratum (https://crbug.com/v8/14225).
-// Currently disabled by default in V8, but adding here temporarily to test
-// real-world performance impact via a Finch experiment.
-BASE_FEATURE(kV8IntelJCCErratumMitigation,
-             ("V8IntelJCCErratumMitigation"),
              kFeatureDefaultStateControlledByV8);
 
 // JavaScript language features.
