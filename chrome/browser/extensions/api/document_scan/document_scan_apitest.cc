@@ -111,8 +111,8 @@ class DocumentScanApiTest : public ExtensionApiTest,
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-    DocumentScanAPIHandler::Get(browser()->profile())
-        ->SetDocumentScanForTesting(&document_scan_ash_);
+    DocumentScanAPIHandler::Get(profile())->SetDocumentScanForTesting(
+        &document_scan_ash_);
 
     document_scan()->SetSmallestMaxReadSize(kRealBackendMinimumReadSize);
   }
@@ -129,8 +129,7 @@ class DocumentScanApiTest : public ExtensionApiTest,
 
   void SetScannerInfoList(std::vector<lorgnette::ScannerInfo> scanners) {
     auto* scanner_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
-        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(
-            browser()->profile()));
+        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
 
     lorgnette::ListScannersResponse response;
     response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);

@@ -65,7 +65,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    prefs_ = browser()->profile()->GetPrefs();
+    prefs_ = profile()->GetPrefs();
     SetAuthenticatedUser();
 
     // UserPrivateTokenKeyPermissionsManagerService and the underlying
@@ -76,7 +76,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
     ash::platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
         GetInstance()
             ->SetTestingFactory(
-                browser()->profile(),
+                profile(),
                 base::BindRepeating(&EPKChallengeKeyTestBase::
                                         CreateKeyPermissionsManagerService,
                                     base::Unretained(this)));
@@ -128,7 +128,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   // user in the IdentityManager class.
   virtual void SetAuthenticatedUser() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()), kUserEmail,
+        IdentityManagerFactory::GetForProfile(profile()), kUserEmail,
         signin::ConsentLevel::kSync);
   }
 

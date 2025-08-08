@@ -1227,7 +1227,7 @@ class UserContextGatedTest : public ExtensionApiUnittest {
     auto* factory = enterprise_signals::SignalsAggregatorFactory::GetInstance();
     mock_aggregator_ = static_cast<device_signals::MockSignalsAggregator*>(
         factory->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockAggregator)));
+            profile(), base::BindRepeating(&BuildMockAggregator)));
   }
 
   void SetFakeResponse(

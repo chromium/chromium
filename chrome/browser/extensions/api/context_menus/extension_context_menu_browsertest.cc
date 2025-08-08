@@ -80,15 +80,14 @@ class ExtensionContextMenuBrowserTest
 
   // Shortcut to return the current MenuManager.
   extensions::MenuManager* menu_manager() {
-    return extensions::MenuManager::Get(browser()->profile());
+    return extensions::MenuManager::Get(profile());
   }
 
   // Returns a pointer to the currently loaded extension with |name|, or null
   // if not found.
   const extensions::Extension* GetExtensionNamed(const std::string& name) {
     const extensions::ExtensionSet& extensions =
-        extensions::ExtensionRegistry::Get(browser()->profile())
-            ->enabled_extensions();
+        extensions::ExtensionRegistry::Get(profile())->enabled_extensions();
     for (const auto& ext : extensions) {
       if (ext->name() == name)
         return ext.get();
@@ -774,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuSWTest, IncognitoSplit) {
 
   // Open an incognito window.
   Browser* browser_incognito =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
 
   ASSERT_TRUE(LoadContextMenuExtensionWithIncognitoFlags("incognito"));
 
@@ -926,7 +925,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
 
   // Create an incognito profile.
   Profile* incognito =
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(incognito);
   ASSERT_TRUE(LoadContextMenuExtensionWithIncognitoFlags("incognito"));
 
@@ -935,7 +934,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
   ASSERT_TRUE(created_incognito.WaitUntilSatisfied());
   ASSERT_EQ(2u, GetItems().size());
 
-  browser()->profile()->DestroyOffTheRecordProfile(incognito);
+  profile()->DestroyOffTheRecordProfile(incognito);
   ASSERT_EQ(1u, GetItems().size());
 }
 

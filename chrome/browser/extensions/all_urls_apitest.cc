@@ -55,8 +55,7 @@ class AllUrlsApiTest : public ExtensionApiTest {
   void NavigateAndWait(const std::string& url) {
     std::string expected_url = url;
     if (url == chrome::kChromeUINewTabURL) {
-      expected_url =
-          ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
+      expected_url = ntp_test_utils::GetFinalNtpUrl(profile()).spec();
     }
     ExtensionTestMessageListener listener_a("content script: " + expected_url);
     ExtensionTestMessageListener listener_b("execute: " + expected_url);

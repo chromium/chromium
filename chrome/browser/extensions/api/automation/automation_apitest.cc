@@ -379,8 +379,8 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Enable image labels.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityImageLabelsEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
+                                    true);
 
   // Initially there should be no accessibility mode set.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
   screen->SetDisplayForNewWindows(display2);
   // Run the test in the browser in the non-primary display.
   // Open a browser on the secondary display, which is default for new windows.
-  CreateBrowser(browser()->profile());
+  CreateBrowser(profile());
   // Close the browser which was already opened on the primary display.
   CloseBrowserSynchronously(browser());
   // Sets browser() to return the one created above, instead of the one which

@@ -528,8 +528,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   ASSERT_TRUE(extension) << message_;
 
   ExtensionAction* extension_action =
-      ExtensionActionManager::Get(browser()->profile())
-          ->GetExtensionAction(*extension);
+      ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);
   ASSERT_TRUE(extension_action);
 
   // Execute the action, its title should change.
@@ -695,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 
   // Open an incognito window and test that the browser action isn't there by
   // default.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(profile());
   ExtensionsToolbarContainer* extensions_container_incognito =
       incognito_browser->GetBrowserView().toolbar()->extensions_container();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
@@ -709,8 +708,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   ExtensionTestMessageListener incognito_ready_listener("ready");
   TestExtensionRegistryObserver registry_observer(
       ExtensionRegistry::Get(profile()), extension->id());
-  extensions::util::SetIsIncognitoEnabled(
-      extension->id(), browser()->profile(), true);
+  extensions::util::SetIsIncognitoEnabled(extension->id(), profile(), true);
   extension = registry_observer.WaitForExtensionLoaded();
 
   ASSERT_EQ(1, extensions_container_incognito->GetNumberOfActionsForTesting());
@@ -751,7 +749,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 
   // Open an incognito window and test that the browser action isn't there by
   // default.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(profile());
   ExtensionsToolbarContainer* extensions_container_incognito =
       incognito_browser->GetBrowserView().toolbar()->extensions_container();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
@@ -770,8 +768,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // extension, so we have to wait for it to finish.
   TestExtensionRegistryObserver registry_observer(
       ExtensionRegistry::Get(profile()), extension->id());
-  extensions::util::SetIsIncognitoEnabled(extension->id(), browser()->profile(),
-                                          true);
+  extensions::util::SetIsIncognitoEnabled(extension->id(), profile(), true);
   extension = registry_observer.WaitForExtensionLoaded();
   ASSERT_TRUE(extension);
   ASSERT_EQ(1, extensions_container()->GetNumberOfActionsForTesting());
@@ -807,7 +804,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
   // Open an incognito browser.
   // Note: It is important that we create incognito profile before loading
   // |extension| below. "event_page" based test fails otherwise.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(profile());
 
   ResultCatcher catcher;
   const Extension* extension =
@@ -842,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
 
   // There is a background page and a browser action with no badge text.
   extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(browser()->profile());
+      extensions::ProcessManager::Get(profile());
 
   ExtensionHost* extension_host =
       manager->GetBackgroundHostForExtension(extension->id());
@@ -1018,8 +1015,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest,
   EXPECT_TRUE(browser_action);
 
   // Find the background page.
-  ProcessManager* process_manager =
-      extensions::ProcessManager::Get(browser()->profile());
+  ProcessManager* process_manager = extensions::ProcessManager::Get(profile());
   content::WebContents* web_contents =
       process_manager->GetBackgroundHostForExtension(extension->id())
           ->web_contents();

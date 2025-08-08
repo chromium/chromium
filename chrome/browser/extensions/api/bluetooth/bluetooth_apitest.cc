@@ -125,9 +125,7 @@ class BluetoothApiTest : public ExtensionApiTest {
     return bluetooth_api()->event_router();
   }
 
-  BluetoothAPI* bluetooth_api() {
-    return BluetoothAPI::Get(browser()->profile());
-  }
+  BluetoothAPI* bluetooth_api() { return BluetoothAPI::Get(profile()); }
 
  private:
   scoped_refptr<const Extension> empty_extension_;
@@ -150,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetAdapterState) {
   get_adapter_state = setupFunction(new api::BluetoothGetAdapterStateFunction);
 
   std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-      get_adapter_state.get(), "[]", browser()->profile());
+      get_adapter_state.get(), "[]", profile());
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
   auto state = api::bluetooth::AdapterState::FromValue(result->GetDict());
@@ -165,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetAdapterState) {
 
 IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DeviceEvents) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ASSERT_TRUE(LoadExtension(
         test_data_dir_.AppendASCII("bluetooth/device_events")));
@@ -197,15 +195,15 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, Discovery) {
   FailNextCall();
   scoped_refptr<api::BluetoothStartDiscoveryFunction> start_function;
   start_function = setupFunction(new api::BluetoothStartDiscoveryFunction);
-  std::string error(utils::RunFunctionAndReturnError(start_function.get(), "[]",
-                                                     browser()->profile()));
+  std::string error(
+      utils::RunFunctionAndReturnError(start_function.get(), "[]", profile()));
 
   testing::Mock::VerifyAndClearExpectations(mock_adapter_);
   // Simulate successful start discovery
   EXPECT_CALL(*mock_adapter_, StartScanWithFilter_(_, _))
       .WillOnce(Invoke(this, &BluetoothApiTest::StartScanOverride));
   start_function = setupFunction(new api::BluetoothStartDiscoveryFunction);
-  utils::RunFunction(start_function.get(), "[]", browser()->profile(),
+  utils::RunFunction(start_function.get(), "[]", profile(),
                      utils::FunctionMode::kNone);
 
   testing::Mock::VerifyAndClearExpectations(mock_adapter_);
@@ -216,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, Discovery) {
   scoped_refptr<api::BluetoothStopDiscoveryFunction> stop_function;
   stop_function = setupFunction(new api::BluetoothStopDiscoveryFunction);
   [[maybe_unused]] auto result = utils::RunFunctionAndReturnSingleResult(
-      stop_function.get(), "[]", browser()->profile());
+      stop_function.get(), "[]", profile());
   SetUpMockAdapter();
 }
 
@@ -226,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DiscoveryCallback) {
   EXPECT_CALL(*mock_adapter_, StopScan(_))
       .WillOnce(Invoke(this, &BluetoothApiTest::StopScanOverride));
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ExtensionTestMessageListener discovery_started("ready",
                                                  ReplyBehavior::kWillReply);
@@ -268,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DiscoveryInProgress) {
   event_router()->DeviceAdded(mock_adapter_, device1_.get());
 
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   EXPECT_CALL(*mock_adapter_, StartScanWithFilter_(_, _))
       .WillOnce(Invoke(this, &BluetoothApiTest::StartScanOverride));
@@ -301,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DiscoveryInProgress) {
 
 IN_PROC_BROWSER_TEST_F(BluetoothApiTest, OnAdapterStateChanged) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   // Load and wait for setup
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
@@ -353,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, OnAdapterStateChanged) {
 
 IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetDevices) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   BluetoothAdapter::ConstDeviceList devices;
   devices.push_back(device1_.get());
@@ -376,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetDevices) {
 
 IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetDevice) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   EXPECT_CALL(*mock_adapter_, GetDevice(device1_->GetAddress()))
       .WillOnce(testing::Return(device1_.get()));
@@ -397,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetDevice) {
 
 IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DeviceInfo) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   // Set up the first device object to reflect a real-world device.
   BluetoothAdapter::ConstDeviceList devices;

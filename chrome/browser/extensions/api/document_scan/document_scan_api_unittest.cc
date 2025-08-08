@@ -35,8 +35,7 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
   std::string RunFunctionAndReturnError(const std::string& args) {
     function_->set_extension(extension());
     std::string error = api_test_utils::RunFunctionAndReturnError(
-        function_.get(), args, browser()->profile(),
-        api_test_utils::FunctionMode::kNone);
+        function_.get(), args, profile(), api_test_utils::FunctionMode::kNone);
     return error;
   }
 

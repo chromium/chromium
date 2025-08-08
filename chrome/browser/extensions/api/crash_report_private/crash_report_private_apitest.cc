@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
   // Open devtools, should suppress crash report.
-  ProcessManager* process_manager = ProcessManager::Get(browser()->profile());
+  ProcessManager* process_manager = ProcessManager::Get(profile());
   ExtensionHost* host =
       process_manager->GetBackgroundHostForExtension(extension_->id());
   ASSERT_TRUE(host);

@@ -73,7 +73,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 
     // The browser might get closed later (and therefore be destroyed), so we
     // save the profile.
-    profile_ = browser()->profile();
+    profile_ = profile();
 
     // Closing the last browser window also releases a KeepAlive. Make
     // sure it's not the last one, so the message loop doesn't quit

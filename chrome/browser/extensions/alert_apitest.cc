@@ -80,8 +80,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertBasic) {
   ASSERT_TRUE(RunExtensionTest("alert")) << message_;
 
   const Extension* extension = GetSingleLoadedExtension();
-  ExtensionHost* host = ProcessManager::Get(browser()->profile())
-                            ->GetBackgroundHostForExtension(extension->id());
+  ExtensionHost* host =
+      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension->id());
   ASSERT_TRUE(host);
   host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"alert('This should not crash.');", base::NullCallback(),
@@ -94,8 +95,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertQueue) {
   ASSERT_TRUE(RunExtensionTest("alert")) << message_;
 
   const Extension* extension = GetSingleLoadedExtension();
-  ExtensionHost* host = ProcessManager::Get(browser()->profile())
-                            ->GetBackgroundHostForExtension(extension->id());
+  ExtensionHost* host =
+      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension->id());
   ASSERT_TRUE(host);
 
   // Creates several dialogs at the same time.
@@ -129,8 +131,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
   ASSERT_TRUE(RunExtensionTest("alert")) << message_;
 
   const Extension* extension = GetSingleLoadedExtension();
-  ExtensionHost* host = ProcessManager::Get(browser()->profile())
-                            ->GetBackgroundHostForExtension(extension->id());
+  ExtensionHost* host =
+      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension->id());
   ASSERT_TRUE(host);
 
   // Creates several dialogs at the same time.

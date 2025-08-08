@@ -74,7 +74,7 @@ class BluetoothPrivateApiTest : public ExtensionApiTest {
   }
 
   BluetoothEventRouter* event_router() {
-    return BluetoothAPI::Get(browser()->profile())->event_router();
+    return BluetoothAPI::Get(profile())->event_router();
   }
 
   void SetName(const std::string& name, base::OnceClosure callback) {
@@ -110,8 +110,8 @@ class BluetoothPrivateApiTest : public ExtensionApiTest {
     std::unique_ptr<Event> event(new Event(events::BLUETOOTH_PRIVATE_ON_PAIRING,
                                            bt_private::OnPairing::kEventName,
                                            std::move(args)));
-    EventRouter::Get(browser()->profile())
-        ->DispatchEventToExtension(kTestExtensionId, std::move(event));
+    EventRouter::Get(profile())->DispatchEventToExtension(kTestExtensionId,
+                                                          std::move(event));
   }
 
   void DispatchAuthorizePairingEvent() {
