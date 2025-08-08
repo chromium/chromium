@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_promo_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_ui_handler.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -335,7 +336,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 - (void)displaySafariDataImportEntryPoint {
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol([self commandDispatcher], ApplicationCommands);
-  [applicationHandler displaySafariDataImportEntryPointWithUIHandler:self];
+  [applicationHandler displaySafariDataImportFromEntryPoint:
+                          SafariDataImportEntryPoint::kFirstRun
+                                              withUIHandler:self];
 }
 
 // Logs the user decision for the Guided Tour promo.

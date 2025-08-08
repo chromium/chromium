@@ -4800,7 +4800,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.SafariImport.DisplayAlert" enum="BooleanSuccess"
+<histogram name="IOS.SafariImport.EntryPoint{EntryPoint}.Action"
+    enum="SafariDataImportEntryPointAction" expires_after="2026-01-28">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    User is on the Safari Import half-sheet landing page {EntryPoint} and
+    performs an action on it. Pertentages of the total count are NOT meaningful
+    since actions are not mutually exclusive.
+  </summary>
+  <token key="EntryPoint">
+    <variant name="FRE" summary="on first run"/>
+    <variant name="Reminder" summary="displayed as a reminder promo"/>
+    <variant name="Setting" summary="through setting"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.SafariImport.ExportEducationAction"
+    enum="SafariDataImportExportEducationAction" expires_after="2026-01-28">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    This histogram is logged when the user taps the button on the export
+    education screen to perform the logged action. Pertentages of the total
+    count is NOT meaningful since actions are NOT mutually exclusive.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SafariImport.Import.DeleteFile" enum="Boolean"
+    expires_after="2026-01-28">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Logs whether the user chooses to delete the ZIP file when being asked on
+    exitting the Safari Import workflow.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SafariImport.Import.ExitOnStage"
+    enum="SafariDataImportStage" expires_after="2026-01-28">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Logs the import stage when the user exits the workflow for users who have
+    landed on the import screen. If the user exits on the stage &quot;import
+    complete&quot;, that means the user has completed the import from Safari
+    from start to finish!
+  </summary>
+</histogram>
+
+<histogram name="IOS.SafariImport.Import.FailureAlert" enum="BooleanSuccess"
     expires_after="2026-01-28">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -4809,6 +4858,28 @@ chromium-metrics-reviews@google.com.
     an invalid file to be imported to Chrome as Safari data, indicating whether
     the display is success or not. Added to keep track of potential race
     conditions when the file picker has not been fully dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SafariImport.Import.InvalidPasswords.Display"
+    enum="Boolean" expires_after="2026-01-28">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    This histogram is logged when the user taps the &quot;info&quot; button next
+    to password import results to view the list of invalid passwords.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SafariImport.Import.PasswordConflictsScreenAction"
+    enum="SafariDataImportPasswordConflictScreenAction"
+    expires_after="2026-01-28">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    This histogram is logged when the user performs the respective action on the
+    passwords conflict page. Pertentages of the total count are NOT meaningful
+    since actions are not mutually exclusive.
   </summary>
 </histogram>
 

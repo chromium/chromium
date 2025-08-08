@@ -1697,6 +1697,59 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeTheme) -->
 
+<!-- LINT.IfChange(SafariDataImportEntryPointAction) -->
+
+<enum name="SafariDataImportEntryPointAction">
+  <int value="0" label="Dismiss">
+    Dismisses it by tapping on the top-right X button
+  </int>
+  <int value="1" label="Import">Starts the import process</int>
+  <int value="2" label="Remind Me Later">
+    Snoozes it by tapping &quot;remind me later&quot;
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/metrics.h:SafariDataImportEntryPointAction) -->
+
+<!-- LINT.IfChange(SafariDataImportExportEducationAction) -->
+
+<enum name="SafariDataImportExportEducationAction">
+  <int value="0" label="Cancel">Dismiss the workflow</int>
+  <int value="1" label="Go to Settings">
+    Go to iOS settings and export from Safari
+  </int>
+  <int value="2" label="I've exported my data">Continues to import</int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/metrics.h:SafariDataImportExportEducationAction) -->
+
+<!-- LINT.IfChange(SafariDataImportPasswordConflictScreenAction) -->
+
+<enum name="SafariDataImportPasswordConflictScreenAction">
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Deselect All"/>
+  <int value="2" label="Select All"/>
+  <int value="3" label="Continue"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/metrics.h:SafariDataImportPasswordConflictScreenAction) -->
+
+<!-- LINT.IfChange(SafariDataImportStage) -->
+
+<enum name="SafariDataImportStage">
+  <int value="0" label="not started">
+    user has not selected a file for import
+  </int>
+  <int value="1" label="file loading">selecting or preprocessing zip file</int>
+  <int value="2" label="ready to import"/>
+  <int value="3" label="importing">
+    user should not be able to exit from this stage
+  </int>
+  <int value="4" label="import complete"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h:SafariDataImportStage) -->
+
 <enum name="TextSelectionDetectedEntityType">
   <int value="0" label="Unknown"/>
   <int value="1" label="None"/>

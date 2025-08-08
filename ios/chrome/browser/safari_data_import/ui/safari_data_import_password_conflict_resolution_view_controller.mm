@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
@@ -125,11 +126,15 @@ const CGFloat kLabelSpacing = 4;
 #pragma mark - Button selectors
 
 - (void)didTapCancelButton {
+  RecordSafariDataImportDismissPasswordConflictScreen(
+      SafariDataImportPasswordConflictScreenAction::kCancel);
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:nil];
 }
 
 - (void)didTapContinueButton {
+  RecordSafariDataImportDismissPasswordConflictScreen(
+      SafariDataImportPasswordConflictScreenAction::kContinue);
   NSMutableArray<NSNumber*>* passwordIdentifiers = [NSMutableArray array];
   for (NSIndexPath* indexPath in [self.tableView indexPathsForSelectedRows]) {
     [passwordIdentifiers
@@ -153,6 +158,9 @@ const CGFloat kLabelSpacing = 4;
                             scrollPosition:UITableViewScrollPositionNone];
     }
   }
+  RecordSafariDataImportDismissPasswordConflictScreen(
+      deselect ? SafariDataImportPasswordConflictScreenAction::kDeselectAll
+               : SafariDataImportPasswordConflictScreenAction::kSelectAll);
   [self updateSelectionButton];
 }
 

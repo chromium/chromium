@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_entry_point_mediator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_ui_handler.h"
+#import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_entry_point_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -27,6 +28,8 @@
 @end
 
 @implementation SafariDataImportMainCoordinator {
+  /// How the Safari data workflow is started.
+  SafariDataImportEntryPoint _entryPoint;
   /// Mediator for the main workflow.
   SafariDataImportEntryPointMediator* _mediator;
   /// View controller for the entry point of the Ssafari data import workflow.
@@ -35,6 +38,16 @@
   /// process. Its view controller will be presented on top of
   /// `_viewController`.
   SafariDataImportExportCoordinator* _exportCoordinator;
+}
+
+- (instancetype)initFromEntryPoint:(SafariDataImportEntryPoint)entryPoint
+            withBaseViewController:(UIViewController*)viewController
+                           browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _entryPoint = entryPoint;
+  }
+  return self;
 }
 
 - (void)start {
@@ -69,6 +82,8 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  RecordSafariImportActionOnEntryPoint(
+      SafariDataImportEntryPointAction::kImport, _entryPoint);
   CHECK(!_exportCoordinator);
   _exportCoordinator = [[SafariDataImportExportCoordinator alloc]
       initWithBaseViewController:_viewController
@@ -78,11 +93,15 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  RecordSafariImportActionOnEntryPoint(
+      SafariDataImportEntryPointAction::kRemindMeLater, _entryPoint);
   [_mediator registerReminder];
   [self.delegate safariImportWorkflowDidEndForCoordinator:self];
 }
 
 - (void)confirmationAlertDismissAction {
+  RecordSafariImportActionOnEntryPoint(
+      SafariDataImportEntryPointAction::kDismiss, _entryPoint);
   [self.delegate safariImportWorkflowDidEndForCoordinator:self];
 }
 
