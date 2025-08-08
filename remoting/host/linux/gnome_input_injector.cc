@@ -15,13 +15,19 @@ namespace remoting {
 
 GnomeInputInjector::GnomeInputInjector(
     std::unique_ptr<EiSenderSession> session,
-    base::WeakPtr<const PipewireCaptureStreamManager> stream_manager)
-    : ei_session_(std::move(session)), stream_manager_(stream_manager) {}
+    base::WeakPtr<const PipewireCaptureStreamManager> stream_manager,
+    GDBusConnectionRef dbus_connection,
+    gvariant::ObjectPath session_path)
+    : ei_session_(std::move(session)),
+      stream_manager_(stream_manager),
+      clipboard_(std::move(dbus_connection), std::move(session_path)) {}
 
 GnomeInputInjector::~GnomeInputInjector() = default;
 
 void GnomeInputInjector::Start(
-    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {}
+    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
+  clipboard_.Start(std::move(client_clipboard));
+}
 
 void GnomeInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
   if (!event.has_usb_keycode() || !event.has_pressed()) {
@@ -90,7 +96,7 @@ void GnomeInputInjector::InjectTouchEvent(const protocol::TouchEvent& event) {
 
 void GnomeInputInjector::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
-  NOTIMPLEMENTED();
+  clipboard_.InjectClipboardEvent(event);
 }
 
 }  // namespace remoting

@@ -136,6 +136,8 @@ source_set("platform_impls") {
     "audio_capturer_linux.h",
     "audio_pipe_reader.cc",
     "audio_pipe_reader.h",
+    "clipboard_gnome.cc",
+    "clipboard_gnome.h",
     "curtain_mode_wayland.cc",
     "curtain_mode_wayland.h",
     "curtain_mode_x11.cc",
