@@ -999,6 +999,9 @@ void RelaunchApp() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:ElementSelectorToLongPressLink()];
+
   [ChromeEarlGreyUI longPressElementOnWebView:ElementSelectorToLongPressLink()];
 
   // Make sure the context menu appeared.
@@ -1051,6 +1054,8 @@ void RelaunchApp() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:ElementSelectorToLongPressImage()];
 
   [ChromeEarlGreyUI
       longPressElementOnWebView:ElementSelectorToLongPressImage()];
