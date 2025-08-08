@@ -2381,6 +2381,9 @@ _KNOWN_ROBOTS = set() | set('%s@appspot.gserviceaccount.com' % s for s in (
         ) | set(
             '%s@skia-public.iam.gserviceaccount.com' % s
             for s in ('chromium-autoroll', 'chromium-release-autoroll')) | set(
+            '%s@skia-infra-corp.iam.gserviceaccount.com' % s
+            for s in ('pinpoint-worker',)
+            ) | set(
                 '%s@skia-corp.google.com.iam.gserviceaccount.com' % s
                 for s in ('chromium-internal-autoroll', )
             ) | set(
