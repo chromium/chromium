@@ -95,8 +95,9 @@ public class StripLayoutTabDelegate {
      * @param visibleRightBound The strip's visible right bound, in dps.
      * @param newTabButton The New Tab Button, used for positioning calculations.
      * @param isFirstLayoutPass Whether this is the first layout pass, used to suppress animations.
+     * @return Whether the close button changed visibility.
      */
-    public void updateTabCloseButtonVisibility(
+    public boolean updateTabCloseButtonVisibility(
             StripLayoutTab tab,
             boolean isLastTab,
             float stripLeftFadeWidth,
@@ -117,6 +118,7 @@ public class StripLayoutTabDelegate {
                         visibleRightBound,
                         newTabButton);
 
+        boolean currentCanShow = tab.canShowCloseButton();
         boolean canShow =
                 (tab.getWidth() >= TAB_WIDTH_MEDIUM || (tab.getIsSelected() && isFullyVisible));
 
@@ -125,10 +127,12 @@ public class StripLayoutTabDelegate {
         if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
                 && tab.isDying()
                 && !tab.getIsSelected()) {
-            tab.setCanShowCloseButton(false, false);
+            canShow = false;
+            tab.setCanShowCloseButton(canShow, false);
         } else {
             tab.setCanShowCloseButton(canShow, !isFirstLayoutPass);
         }
+        return currentCanShow != canShow;
     }
 
     /**

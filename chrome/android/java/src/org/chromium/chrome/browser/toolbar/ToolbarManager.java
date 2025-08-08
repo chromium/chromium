@@ -3273,6 +3273,18 @@ public class ToolbarManager
         return mToolbar.containsKeyboardFocus();
     }
 
+    /**
+     * Reorders the focused item, if there is one.
+     *
+     * @param toLeft Whether the focused item should be reordered to the left (note: this is still
+     *     left in RTL).
+     * @return Whether the item was reordered.
+     */
+    public boolean reorderKeyboardFocusedItem(boolean toLeft) {
+        if (mStripLayoutHelperManager == null) return false;
+        return mStripLayoutHelperManager.reorderKeyboardFocusedItem(toLeft);
+    }
+
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
         boolean isFsm = Boolean.TRUE.equals(fullSpaceMode);
         mSuppressToolbarSceneLayerSupplier.set(isFsm);

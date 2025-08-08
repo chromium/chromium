@@ -695,6 +695,11 @@ public class StripLayoutTab extends StripLayoutView {
         checkCloseButtonVisibility(animate);
     }
 
+    /** Returns whether the close button is allowed to be shown. */
+    public boolean canShowCloseButton() {
+        return mCanShowCloseButton;
+    }
+
     /** {@link StripLayoutView} Implementation */
     @Override
     public void setDrawX(float x) {
