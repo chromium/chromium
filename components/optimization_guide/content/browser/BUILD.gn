@@ -79,6 +79,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "media_transcript_provider_unittest.cc",
     "page_content_proto_util_unittest.cc",
     "page_context_eligibility_unittest.cc",
     "page_text_dump_result_unittest.cc",
