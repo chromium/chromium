@@ -13615,28 +13615,33 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "enabled_baseline_2025-03-19_Stable_Perf_External",
+                    "name": "enabled_incognito_full_mdl_Canary_Dev_2025-08-06_North_America",
                     "params": {
-                        "IpPrivacyAuthTokenCacheBatchSize": "64",
-                        "IpPrivacyAuthTokenCacheLowWaterMark": "16",
-                        "IpPrivacyBsaEnablePrivacyPass": "true",
-                        "IpPrivacyCacheTokensByGeo": "true",
-                        "IpPrivacyDebugExperimentArm": "6",
+                        "BypassProbabilisticRevealTokenRegistry": "false",
+                        "IpPrivacyDebugExperimentArm": "30",
                         "IpPrivacyDirectOnly": "false",
-                        "IpPrivacyUseProxyChains": "true",
+                        "IpPrivacyEnableIppInDevTools": "true",
+                        "IpPrivacyEnableUserBypass": "true",
+                        "IpPrivacyOnlyInIncognito": "true",
                         "IpPrivacyUseQuicProxies": "false",
-                        "MaskedDomainListExperimentalVersion": ""
+                        "MaskedDomainListExperimentalVersion": "2025.8.8.0",
+                        "ProbabilisticRevealTokenFetchOnly": "false",
+                        "ProbabilisticRevealTokensOnlyInIncognito": "false"
                     },
                     "enable_features": [
                         "EnableIpPrivacyProxy",
-                        "MaskedDomainList",
-                        "PartitionProxyChains"
+                        "IpProtectionUx",
+                        "MaskedDomainList"
+                    ],
+                    "disable_features": [
+                        "EnableProbabilisticRevealTokens"
                     ]
                 }
             ]
