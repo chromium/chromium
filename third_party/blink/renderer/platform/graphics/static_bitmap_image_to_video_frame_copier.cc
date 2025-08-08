@@ -203,9 +203,10 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
       temp_argb_frame->stride(media::VideoFrame::Plane::kARGB),
       temp_argb_frame->GetWritableVisiblePlaneData(
           media::VideoFrame::Plane::kARGB),
-      WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
-                    weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
-                    std::move(callback)));
+      blink::BindOnce(
+          &StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
+          weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
+          std::move(callback)));
   gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 
@@ -243,11 +244,11 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       output_frame->stride(media::VideoFrame::Plane::kV),
       output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kV),
       gfx::Point(0, 0),
-      WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
-                    weak_ptr_factory_.GetWeakPtr(), image),
-      WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync,
-                    weak_ptr_factory_.GetWeakPtr(), output_frame,
-                    std::move(callback)));
+      blink::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
+                      weak_ptr_factory_.GetWeakPtr(), image),
+      blink::BindOnce(
+          &StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync,
+          weak_ptr_factory_.GetWeakPtr(), output_frame, std::move(callback)));
   gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 

@@ -48,14 +48,14 @@ class PLATFORM_EXPORT BeginFrameProvider
 
   // viz::mojom::blink::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      WTF::Vector<viz::ReturnedResource> resources) final {
+      Vector<viz::ReturnedResource> resources) final {
     NOTIMPLEMENTED();
   }
   void OnBeginFrame(const viz::BeginFrameArgs&,
-                    const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-                    WTF::Vector<viz::ReturnedResource> resources) final;
+                    const HashMap<uint32_t, viz::FrameTimingDetails>&,
+                    Vector<viz::ReturnedResource> resources) final;
   void OnBeginFramePausedChanged(bool paused) final {}
-  void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) final {
+  void ReclaimResources(Vector<viz::ReturnedResource> resources) final {
     NOTIMPLEMENTED();
   }
   void OnCompositorFrameTransitionDirectiveProcessed(

@@ -121,14 +121,14 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
       uint64_t submit_time);
   void DidNotProduceFrame(uint32_t sink_id, const viz::BeginFrameAck& ack);
 #if BUILDFLAG(IS_ANDROID)
-  void SetThreads(uint32_t sink_id, const WTF::Vector<viz::Thread>& threads);
+  void SetThreads(uint32_t sink_id, const Vector<viz::Thread>& threads);
 #endif
 
   // viz::mojom::blink::FrameSinkBundleClient implementation:
   void FlushNotifications(
-      WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,
-      WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames,
-      WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr>
+      Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,
+      Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames,
+      Vector<viz::mojom::blink::BundledReturnedResourcesPtr>
           reclaimed_resources) override;
   void OnBeginFramePausedChanged(uint32_t sink_id, bool paused) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
@@ -142,12 +142,11 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
   const viz::FrameSinkBundleId id_;
   mojo::Remote<viz::mojom::blink::FrameSinkBundle> bundle_;
   mojo::Receiver<viz::mojom::blink::FrameSinkBundleClient> receiver_{this};
-  WTF::HashMap<uint32_t, viz::mojom::blink::CompositorFrameSinkClient*>
-      clients_;
-  WTF::HashSet<uint32_t> sinks_needing_begin_frames_;
+  HashMap<uint32_t, viz::mojom::blink::CompositorFrameSinkClient*> clients_;
+  HashSet<uint32_t> sinks_needing_begin_frames_;
 
   bool defer_submissions_ = false;
-  WTF::Vector<viz::mojom::blink::BundledFrameSubmissionPtr> submission_queue_;
+  Vector<viz::mojom::blink::BundledFrameSubmissionPtr> submission_queue_;
 
   base::OnceClosure disconnect_handler_for_testing_;
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;

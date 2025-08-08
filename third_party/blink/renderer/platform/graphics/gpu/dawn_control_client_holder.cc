@@ -36,7 +36,7 @@ scoped_refptr<DawnControlClientHolder> DawnControlClientHolder::Create(
   // shared memory. There may still be outstanding mapped GPUBuffers pointing to
   // this memory.
   dawn_control_client_holder->context_provider_->ContextProvider()
-      .SetLostContextCallback(WTF::BindRepeating(
+      .SetLostContextCallback(blink::BindRepeating(
           &DawnControlClientHolder::MarkContextLost,
           dawn_control_client_holder->weak_ptr_factory_.GetWeakPtr()));
   return dawn_control_client_holder;
@@ -126,7 +126,7 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
     // is empty. Do nothing.
     return;
   }
-  event_loop.EnqueueMicrotask(WTF::BindOnce(
+  event_loop.EnqueueMicrotask(blink::BindOnce(
       [](scoped_refptr<DawnControlClientHolder> dawn_control_client) {
         if (auto context_provider =
                 dawn_control_client->GetContextProviderWeakPtr()) {

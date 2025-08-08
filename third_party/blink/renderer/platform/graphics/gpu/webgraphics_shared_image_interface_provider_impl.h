@@ -49,7 +49,7 @@ class WebGraphicsSharedImageInterfaceProviderImpl
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   // GpuChannelLost observed by CanvasResourceProviders
-  WTF::Vector<BitmapGpuChannelLostObserver*> observer_list_;
+  Vector<BitmapGpuChannelLostObserver*> observer_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

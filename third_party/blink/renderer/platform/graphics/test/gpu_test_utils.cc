@@ -36,9 +36,9 @@ void InitializeSharedGpuContextGLES2(
   test_context_provider->BindToCurrentSequence();
   viz::TestGLES2Interface* gl = test_context_provider->TestContextGL();
   GrDirectContext* context = test_context_provider->GrContext();
-  SharedGpuContext::SetContextProviderFactoryForTesting(WTF::BindRepeating(
-      factory, WTF::Unretained(gl), WTF::Unretained(context),
-      WTF::Unretained(cache), WTF::Unretained(test_context_provider),
+  SharedGpuContext::SetContextProviderFactoryForTesting(blink::BindRepeating(
+      factory, blink::Unretained(gl), blink::Unretained(context),
+      blink::Unretained(cache), blink::Unretained(test_context_provider),
       set_context_lost));
 }
 
@@ -67,9 +67,9 @@ void InitializeSharedGpuContextRaster(
   test_context_provider->BindToCurrentSequence();
   viz::TestRasterInterface* raster =
       test_context_provider->GetTestRasterInterface();
-  SharedGpuContext::SetContextProviderFactoryForTesting(WTF::BindRepeating(
-      factory, WTF::Unretained(raster), WTF::Unretained(cache),
-      WTF::Unretained(test_context_provider), set_context_lost));
+  SharedGpuContext::SetContextProviderFactoryForTesting(blink::BindRepeating(
+      factory, blink::Unretained(raster), blink::Unretained(cache),
+      blink::Unretained(test_context_provider), set_context_lost));
 }
 
 }  // namespace blink

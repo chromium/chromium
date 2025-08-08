@@ -89,7 +89,7 @@ class MockEmbeddedFrameSinkProvider
     using mojom::blink::EmbeddedFrameSinkProvider;
 
     return std::make_unique<
-        TestingPlatformSupport::ScopedOverrideMojoInterface>(WTF::BindRepeating(
+        TestingPlatformSupport::ScopedOverrideMojoInterface>(BindRepeating(
         [](mojo::Receiver<EmbeddedFrameSinkProvider>* receiver,
            const char* interface_name, mojo::ScopedMessagePipeHandle pipe) {
           if (strcmp(interface_name, EmbeddedFrameSinkProvider::Name_))
@@ -98,7 +98,7 @@ class MockEmbeddedFrameSinkProvider
           receiver->Bind(mojo::PendingReceiver<EmbeddedFrameSinkProvider>(
               std::move(pipe)));
         },
-        WTF::Unretained(receiver)));
+        Unretained(receiver)));
   }
 
   // Similar to above but allows for an override that binds multiple concurrent
@@ -109,7 +109,7 @@ class MockEmbeddedFrameSinkProvider
     using mojom::blink::EmbeddedFrameSinkProvider;
 
     return std::make_unique<
-        TestingPlatformSupport::ScopedOverrideMojoInterface>(WTF::BindRepeating(
+        TestingPlatformSupport::ScopedOverrideMojoInterface>(BindRepeating(
         [](EmbeddedFrameSinkProvider* impl,
            mojo::ReceiverSet<EmbeddedFrameSinkProvider>* receivers,
            const char* interface_name, mojo::ScopedMessagePipeHandle pipe) {
@@ -118,7 +118,7 @@ class MockEmbeddedFrameSinkProvider
           receivers->Add(impl, mojo::PendingReceiver<EmbeddedFrameSinkProvider>(
                                    std::move(pipe)));
         },
-        WTF::Unretained(this), WTF::Unretained(&receivers)));
+        Unretained(this), Unretained(&receivers)));
   }
 
   MockCompositorFrameSink& mock_compositor_frame_sink() const {

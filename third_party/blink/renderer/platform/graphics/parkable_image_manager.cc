@@ -183,8 +183,8 @@ void ParkableImageManager::Remove(ParkableImageImpl* image) {
 }
 
 void ParkableImageManager::MoveImage(ParkableImageImpl* image,
-                                     WTF::HashSet<ParkableImageImpl*>* from,
-                                     WTF::HashSet<ParkableImageImpl*>* to) {
+                                     HashSet<ParkableImageImpl*>* from,
+                                     HashSet<ParkableImageImpl*>* to) {
   auto it = from->find(image);
   CHECK(it != from->end());
   CHECK(!to->Contains(image));
@@ -238,7 +238,7 @@ void ParkableImageManager::MaybeParkImages() {
   // directly, to avoid deadlock when we need to park synchronously (i.e. if we
   // have already written to disk and don't need to post a background task), as
   // synchronous parking calls |ParkableImageManager::OnWrittenToDisk()|;
-  WTF::Vector<ParkableImageImpl*> unparked_images(unparked_images_);
+  Vector<ParkableImageImpl*> unparked_images(unparked_images_);
 
   // We unlock here so that we can avoid a deadlock, since if the data for the
   // image is already written to disk, we can discard our copy of the data

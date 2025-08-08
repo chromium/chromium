@@ -202,7 +202,7 @@ class PLATFORM_EXPORT HibernatedCanvasMemoryDumpProvider
   HibernatedCanvasMemoryDumpProvider();
 
   base::Lock lock_;
-  WTF::HashSet<CanvasHibernationHandler*> handlers_ GUARDED_BY(lock_);
+  HashSet<CanvasHibernationHandler*> handlers_ GUARDED_BY(lock_);
 };
 
 }  // namespace blink

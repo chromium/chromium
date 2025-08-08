@@ -17,7 +17,7 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcher {
   virtual ~AnimationWorkletMutatorDispatcher() = default;
 
   using AsyncMutationCompleteCallback =
-      WTF::CrossThreadOnceFunction<void(MutateStatus)>;
+      CrossThreadOnceFunction<void(MutateStatus)>;
 
   // Run the animation frame callbacks from all connected AnimationWorklets.
   virtual void MutateSynchronously(

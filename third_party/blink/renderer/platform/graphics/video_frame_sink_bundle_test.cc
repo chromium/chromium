@@ -68,8 +68,8 @@ viz::mojom::blink::BeginFrameInfoPtr MakeBeginFrameInfo(uint32_t sink_id) {
       viz::BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, 1, 1, base::TimeTicks(),
                                   base::TimeTicks(), base::TimeDelta(),
                                   viz::BeginFrameArgs::NORMAL),
-      WTF::HashMap<uint32_t, viz::FrameTimingDetails>(),
-      WTF::Vector<viz::ReturnedResource>());
+      HashMap<uint32_t, viz::FrameTimingDetails>(),
+      Vector<viz::ReturnedResource>());
 }
 
 class MockFrameSinkBundleClient
@@ -78,12 +78,11 @@ class MockFrameSinkBundleClient
   ~MockFrameSinkBundleClient() override = default;
 
   // viz::mojom::blink::FrameSinkBundleClient implementation:
-  MOCK_METHOD3(
-      FlushNotifications,
-      void(WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,
-           WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames,
-           WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr>
-               reclaimed_resources));
+  MOCK_METHOD3(FlushNotifications,
+               void(Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,
+                    Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames,
+                    Vector<viz::mojom::blink::BundledReturnedResourcesPtr>
+                        reclaimed_resources));
   MOCK_METHOD2(OnBeginFramePausedChanged, void(uint32_t sink_id, bool paused));
   MOCK_METHOD2(OnCompositorFrameTransitionDirectiveProcessed,
                void(uint32_t sink_id, uint32_t sequence_id));
@@ -227,7 +226,7 @@ TEST_F(VideoFrameSinkBundleTest, BatchSubmissionsDuringOnBeginFrame) {
                                  std::nullopt, 0);
   });
 
-  WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames;
+  Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames;
   begin_frames.push_back(MakeBeginFrameInfo(kTestVideoSinkId1.sink_id()));
   begin_frames.push_back(MakeBeginFrameInfo(kTestVideoSinkId2.sink_id()));
   begin_frames.push_back(MakeBeginFrameInfo(kTestVideoSinkId3.sink_id()));
@@ -289,7 +288,7 @@ TEST_F(VideoFrameSinkBundleTest,
   VideoFrameSinkBundle& bundle = test_bundle();
 
   auto make_begin_frames = [] {
-    WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames;
+    Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames;
     begin_frames.push_back(MakeBeginFrameInfo(kTestVideoSinkId1.sink_id()));
     return begin_frames;
   };

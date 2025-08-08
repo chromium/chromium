@@ -98,7 +98,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
   // Need to update the sync token, however.
   std::move(external_callback).Run(release_token);
 
-  auto release_callback = WTF::BindOnce(
+  auto release_callback = blink::BindOnce(
       [](base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
          scoped_refptr<gpu::ClientSharedImage> shared_image,
          const gpu::SyncToken& sync_token, bool is_lost) {

@@ -278,7 +278,7 @@ WebGPUSwapBufferProvider::ExportCurrentSharedImage(
   // any thread in case this thread was terminated. Ref to SwapBuffers is enough
   // to keep underlying resources alive, so we don't need to hold ref to
   // WebGPUSwapBufferProvider itself.
-  *out_release_callback = WTF::BindOnce(
+  *out_release_callback = blink::BindOnce(
       &WebGPUSwapBufferProvider::MailboxReleased,
       weak_ptr_factory_.GetWeakPtr(), base::PlatformThread::CurrentRef(),
       std::move(current_swap_buffer_));

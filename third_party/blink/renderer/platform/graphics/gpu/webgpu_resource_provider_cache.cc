@@ -33,7 +33,7 @@ WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
     : context_provider_(std::move(context_provider)),
       task_runner_(std::move(task_runner)) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-  timer_func_ = WTF::BindRepeating(
+  timer_func_ = blink::BindRepeating(
       &WebGPURecyclableResourceCache::ReleaseStaleResources, weak_ptr_);
 
   DCHECK_LE(kTimerDurationInSeconds, kCleanUpDelayInSeconds);

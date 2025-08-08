@@ -151,7 +151,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
       dest_rect.IsEmpty() && transform == media::kNoTransformation &&
       CanUseZeroCopyImages(*frame)) {
     // Hold a ref by storing it in the release callback.
-    auto release_callback = WTF::BindOnce(
+    auto release_callback = blink::BindOnce(
         [](scoped_refptr<media::VideoFrame> frame,
            base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
            const gpu::SyncToken& sync_token, bool is_lost) {

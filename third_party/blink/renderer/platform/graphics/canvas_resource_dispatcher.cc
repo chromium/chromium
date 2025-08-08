@@ -317,7 +317,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
 }
 
 void CanvasResourceDispatcher::DidReceiveCompositorFrameAck(
-    WTF::Vector<viz::ReturnedResource> resources) {
+    Vector<viz::ReturnedResource> resources) {
   ReclaimResources(std::move(resources));
   pending_compositor_frames_--;
   DCHECK_GE(pending_compositor_frames_, 0u);
@@ -381,8 +381,8 @@ bool CanvasResourceDispatcher::HasTooManyPendingFrames() const {
 
 void CanvasResourceDispatcher::OnBeginFrame(
     const viz::BeginFrameArgs& begin_frame_args,
-    const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-    WTF::Vector<viz::ReturnedResource> resources) {
+    const HashMap<uint32_t, viz::FrameTimingDetails>&,
+    Vector<viz::ReturnedResource> resources) {
   if (!resources.empty()) {
     ReclaimResources(std::move(resources));
   }
@@ -425,7 +425,7 @@ void CanvasResourceDispatcher::OnFakeFrameTimer(TimerBase* timer) {
 }
 
 void CanvasResourceDispatcher::ReclaimResources(
-    WTF::Vector<viz::ReturnedResource> resources) {
+    Vector<viz::ReturnedResource> resources) {
   for (const auto& resource : resources) {
     auto it = exported_resources_.find(resource.id);
 

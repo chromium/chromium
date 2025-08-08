@@ -43,8 +43,8 @@ CreateWebGPUGraphicsContext3DProvider(const KURL& url);
 PLATFORM_EXPORT void CreateWebGPUGraphicsContext3DProviderAsync(
     const KURL& url,
     scoped_refptr<base::SingleThreadTaskRunner> current_thread_task_runner,
-    WTF::CrossThreadOnceFunction<
-        void(std::unique_ptr<WebGraphicsContext3DProvider>)> callback);
+    CrossThreadOnceFunction<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
+        callback);
 
 // If the shared GPU context exists, sets whether it aggressively frees
 // resources to `value`.

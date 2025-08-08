@@ -363,8 +363,8 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
   return CopyRGBATextureToVideoFrame(
              src_video_frame->coded_size(), src_video_frame->shared_image(),
              src_video_frame->acquire_sync_token(), dst_color_space,
-             WTF::BindOnce(ApplyMetadataAndRunCallback, src_video_frame,
-                           std::move(callback)))
+             blink::BindOnce(ApplyMetadataAndRunCallback, src_video_frame,
+                             std::move(callback)))
       .has_value();
 }
 

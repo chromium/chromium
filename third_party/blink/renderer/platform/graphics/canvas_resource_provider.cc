@@ -912,7 +912,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
   void ClearOldUnusedResources() {
-    WTF::EraseIf(unused_resources_, [](const UnusedResource& resource) {
+    EraseIf(unused_resources_, [](const UnusedResource& resource) {
       return base::TimeTicks::Now() - resource.last_use >=
              kUnusedResourceExpirationTime;
     });
@@ -992,7 +992,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |unused_resources_| will be empty.
-  WTF::Vector<UnusedResource> unused_resources_;
+  Vector<UnusedResource> unused_resources_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
   base::OneShotTimer unused_resources_reclaim_timer_;

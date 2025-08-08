@@ -132,7 +132,7 @@ void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
 
   base::WaitableEvent event;
   CrossThreadOnceClosure on_done = CrossThreadBindOnce(
-      &base::WaitableEvent::Signal, WTF::CrossThreadUnretained(&event));
+      &base::WaitableEvent::Signal, CrossThreadUnretained(&event));
   RequestMutations(std::move(on_done));
   event.Wait();
 

@@ -481,8 +481,9 @@ void CanvasHibernationHandler::InitiateHibernationIfNecessary() {
   ReportHibernationEvent(HibernationEvent::kHibernationScheduled);
   hibernation_scheduled_ = true;
   ThreadScheduler::Current()->PostIdleTask(
-      FROM_HERE, WTF::BindOnce(&CanvasHibernationHandler::HibernateOrLogFailure,
-                               weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      blink::BindOnce(&CanvasHibernationHandler::HibernateOrLogFailure,
+                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace blink
