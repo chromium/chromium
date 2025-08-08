@@ -16,6 +16,10 @@
 
 class GURL;
 
+namespace autofill {
+class LogRouter;
+}  // namespace autofill
+
 namespace affiliations {
 class AffiliationService;
 }
@@ -51,8 +55,8 @@ class ChromePasswordChangeService
       affiliations::AffiliationService* affiliation_service,
       OptimizationGuideKeyedService* optimization_keyed_service,
       password_manager::PasswordManagerSettingsService* settings_service,
-      std::unique_ptr<password_manager::PasswordFeatureManager>
-          feature_manager);
+      std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager,
+      autofill::LogRouter* log_router);
   ~ChromePasswordChangeService() override;
 
   // Indicates that password change will be proposed to the user for a given
@@ -99,6 +103,9 @@ class ChromePasswordChangeService
 
   std::vector<std::unique_ptr<PasswordChangeDelegate>>
       password_change_delegates_;
+
+  // The router for logs. Maybe be null in tests.
+  const raw_ptr<autofill::LogRouter> log_router_;
 
   base::WeakPtrFactory<ChromePasswordChangeService> weak_ptr_factory_{this};
 };

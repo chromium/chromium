@@ -373,7 +373,8 @@ class MockPasswordChangeService : public ChromePasswordChangeService {
                                     /*affiliation_service=*/nullptr,
                                     /*optimization_keyed_service=*/nullptr,
                                     /*settings_service=*/nullptr,
-                                    /*feature_manager=*/nullptr) {}
+                                    /*feature_manager=*/nullptr,
+                                    /*log_router*/ nullptr) {}
 
   MOCK_METHOD(void,
               OfferPasswordChangeUi,

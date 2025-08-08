@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
@@ -78,7 +79,7 @@ class ChromePasswordChangeServiceBase {
     feature_manager_ = feature_manager.get();
     change_service_ = std::make_unique<ChromePasswordChangeService>(
         &prefs_, &mock_affiliation_service_, &mock_optimization_service_,
-        &settings_service_, std::move(feature_manager));
+        &settings_service_, std::move(feature_manager), &log_router_);
   }
 
   ~ChromePasswordChangeServiceBase() = default;
@@ -107,6 +108,7 @@ class ChromePasswordChangeServiceBase {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_{
       password_manager::features::kImprovedPasswordChangeService};
+  autofill::LogRouter log_router_;
   TestingPrefServiceSimple prefs_;
   testing::StrictMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
