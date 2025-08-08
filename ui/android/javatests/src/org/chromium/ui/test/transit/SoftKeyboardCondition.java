@@ -41,7 +41,8 @@ public class SoftKeyboardCondition extends ConditionWithResult<Boolean> {
         if (!mShouldSoftKeyboardShow) {
             return fulfilled(
                             "Soft keyboard not expected because hard keyboard is connected and"
-                                    + " show_ime_with_hard_keyboard is off")
+                                + " either show_ime_with_hard_keyboard is off or the OS is Android"
+                                + " 16+.")
                     .withResult(false);
         }
 

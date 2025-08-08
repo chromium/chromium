@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
@@ -63,6 +64,8 @@ public class NewTabGroupDialogFacility<
     public ViewElement<View> doneButtonElement;
     private @Nullable String mTitle;
     private @Nullable List<Integer> mTabIdsToGroup;
+
+    private static final String TAG = "TransitLayer";
 
     /** Constructor. Expects no particular title or selected color. */
     public NewTabGroupDialogFacility(SoftKeyboardFacility softKeyboard) {
@@ -271,8 +274,13 @@ public class NewTabGroupDialogFacility<
 
     private void ensureSoftKeyboardClosed() {
         if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
+            Log.i(TAG, "SoftKeyboardFacility active, try to close soft keyboard.");
             mSoftKeyboard.close(dialogElement);
         } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
+            Log.i(
+                    TAG,
+                    "SoftKeyboardFacility already finished, won't try to close soft keyboard"
+                            + " again.");
             // Do nothing as the soft keyboard has already been closed
         } else {
             throw new IllegalArgumentException(

@@ -6,6 +6,7 @@ package org.chromium.ui;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
@@ -147,6 +148,12 @@ public final class KeyboardUtils {
      * input fields. NOTE: This is the default behavior on emulated devices.
      */
     public static boolean shouldShowImeWithHardwareKeyboard(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            // In Android 16, the soft keyboard shows up when the hardware keyboard is in use
+            // even when |show_ime_with_hard_keyboard=0|.
+            return true;
+        }
+
         return Settings.Secure.getInt(
                         context.getContentResolver(), "show_ime_with_hard_keyboard", 0)
                 != 0;
