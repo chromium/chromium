@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.DoNotStripLogs;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -344,7 +345,7 @@ public class AutofillManagerWrapper {
 
     /** Always check isLoggable() before call this method. */
     public static void log(String log) {
-        // Log.i() instead of Log.d() is used here because log.d() is stripped out in release build.
+        // Log.i() instead of Log.d() is used here because Log.d() is stripped out in release build.
         Log.i(TAG, log);
     }
 
@@ -353,6 +354,7 @@ public class AutofillManagerWrapper {
     }
 
     @DoNotStripLogs
+    @DoNotInline
     private static void updateLogStat() {
         // Use 'setprop log.tag.AwAutofillManager DEBUG' to enable the log at runtime.
         // NOTE: See the comment on TAG above for why this is still AwAutofillManager.
