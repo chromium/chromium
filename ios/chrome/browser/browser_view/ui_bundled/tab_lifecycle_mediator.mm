@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -84,12 +84,12 @@
 #pragma mark - TabsDependencyInstalling
 
 - (void)webStateInserted:(web::WebState*)webState {
-  // If there is a prerender service, this webstate shouldn't be a prerendered
-  // one. (There's no prerender service in incognito, for example).
-  DCHECK(!_prerenderService ||
-         !_prerenderService->IsWebStatePrerendered(webState));
   // Only realized webstates should have dependencies installed.
   DCHECK(webState->IsRealized());
+
+  // The WebState must not be used for prerendering (i.e. it must not have a
+  // PrerenderTabHelper attached).
+  DCHECK(!PrerenderTabHelper::FromWebState(webState));
 
   DCHECK(_snapshotGeneratorDelegate);
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(

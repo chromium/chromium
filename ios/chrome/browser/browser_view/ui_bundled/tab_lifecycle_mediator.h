@@ -11,7 +11,6 @@
 @class CommandDispatcher;
 @protocol DownloadManagerTabHelperDelegate;
 @protocol PasswordControllerDelegate;
-class PrerenderService;
 @class PrintCoordinator;
 @protocol RepostFormTabHelperDelegate;
 @class SadTabCoordinator;
@@ -33,7 +32,6 @@ class Browser;
 
 @property(nonatomic, weak) id<DownloadManagerTabHelperDelegate>
     downloadManagerTabHelperDelegate;
-@property(nonatomic, assign) PrerenderService* prerenderService;
 @property(nonatomic, weak) UIViewController* baseViewController;
 @property(nonatomic, weak) CommandDispatcher* commandDispatcher;
 @property(nonatomic, weak) id<NetExportTabHelperDelegate> tabHelperDelegate;

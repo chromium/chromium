@@ -1215,9 +1215,9 @@ enum class ToolbarKind {
   _keyCommandsProvider.bookmarksHandler =
       static_cast<id<BookmarksCommands>>(_dispatcher);
 
-  PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForProfile(profile);
   if (!profile->IsOffTheRecord()) {
+    PrerenderService* prerenderService =
+        PrerenderServiceFactory::GetForProfile(profile);
     DCHECK(prerenderService);
     prerenderService->SetDelegate(self);
   }
@@ -1815,8 +1815,6 @@ enum class ToolbarKind {
       initWithWebStateList:browser->GetWebStateList()];
 
   // Set properties that are already valid.
-  tabLifecycleMediator.prerenderService =
-      PrerenderServiceFactory::GetForProfile(browser->GetProfile());
   tabLifecycleMediator.commandDispatcher = browser->GetCommandDispatcher();
   tabLifecycleMediator.tabHelperDelegate = self;
   tabLifecycleMediator.repostFormDelegate = self;
