@@ -2159,12 +2159,17 @@ public class StripLayoutHelper
                         && mTabGroupContextMenuCoordinator.isMenuShowing())
                 || (mTabContextMenuCoordinator != null
                         && mTabContextMenuCoordinator.isMenuShowing())
+                || (mMultiSelectedTabsContextMenuCoordinator != null
+                        && mMultiSelectedTabsContextMenuCoordinator.isMenuShowing())
                 || (mCloseButtonMenu != null && mCloseButtonMenu.isShowing());
     }
 
     private void dismissContextMenu() {
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
+        if (mMultiSelectedTabsContextMenuCoordinator != null) {
+            mMultiSelectedTabsContextMenuCoordinator.dismiss();
+        }
         if (mCloseButtonMenu != null) mCloseButtonMenu.dismiss();
     }
 

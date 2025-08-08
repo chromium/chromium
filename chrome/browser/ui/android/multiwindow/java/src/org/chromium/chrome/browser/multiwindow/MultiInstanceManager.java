@@ -142,6 +142,28 @@ public abstract class MultiInstanceManager {
     }
 
     /**
+     * Move the specified tabs to the current instance of the ChromeTabbedActivity window.
+     *
+     * @param activity Activity of the Chrome Window in which the tab is to be moved.
+     * @param tabs The list of tabs that is to be moved to the current instance.
+     * @param atIndex Tab position index in the destination window instance.
+     */
+    public void moveTabsToWindow(@Nullable Activity activity, List<Tab> tabs, int atIndex) {
+        // Not implemented
+    }
+
+    /**
+     * Move the specified tabs to the specified instance of the ChromeTabbedActivity window.
+     *
+     * @param info {@link InstanceInfo} describing the destination window.
+     * @param tabs The list of tabs that is to be moved to the current instance.
+     * @param atIndex Tab position index in the destination window instance.
+     */
+    public void moveTabsToWindow(InstanceInfo info, List<Tab> tabs, int atIndex) {
+        // Not implemented
+    }
+
+    /**
      * Move an entire tab group to the current instance of the ChromeTabbedActivity window.
      *
      * @param activity Activity of the Chrome Window in which the tab group is to be moved.

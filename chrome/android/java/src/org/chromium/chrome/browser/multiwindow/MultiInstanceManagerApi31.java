@@ -291,6 +291,29 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         }
     }
 
+    @Override
+    public void moveTabsToWindow(InstanceInfo info, List<Tab> tabs, int tabAtIndex) {
+        Activity targetActivity = getActivityById(info.instanceId);
+        if (targetActivity != null) {
+            reparentTabsToRunningActivity((ChromeTabbedActivity) targetActivity, tabs, tabAtIndex);
+        } else {
+            TabModelSelector selector =
+                    TabWindowManagerSingleton.getInstance()
+                            .getTabModelSelectorById(getCurrentInstanceId());
+            // If the source Chrome instance still has tabs (including incognito), allow
+            // launching the new window adjacently. Otherwise, skip
+            // FLAG_ACTIVITY_LAUNCH_ADJACENT to avoid a black screen caused by the source
+            // window closing before the new one launches.
+            boolean openAdjacently = assumeNonNull(selector).getTotalTabCount() > 1;
+            moveAndReparentTabsToNewWindow(
+                    tabs,
+                    info.instanceId,
+                    /* preferNew= */ false,
+                    openAdjacently,
+                    /* addTrustedIntentExtras= */ true);
+        }
+    }
+
     @VisibleForTesting
     void moveTabsAction(InstanceInfo info, List<Tab> tabs, int tabAtIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
@@ -1457,6 +1480,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
+    public void moveTabsToWindow(@Nullable Activity activity, List<Tab> tabs, int atIndex) {
+        // Get the current instance and move tab there.
+        InstanceInfo info = getInstanceInfoFor(activity);
+        if (info != null) {
+            moveTabsToWindow(info, tabs, atIndex);
+        } else {
+            Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
+        }
+    }
+
+    @Override
     public void moveTabGroupToWindow(
             @Nullable Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
@@ -1537,10 +1571,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance()
                         .getTabModelSelectorById(info.get(0).instanceId);
-        if (selector == null) {
-            Log.d(TAG, "TabModelSelector is null for instance ID: " + info.get(0).instanceId);
-            return;
-        }
+        if (selector == null) return;
 
         cleanupSyncedTabGroups(selector);
     }
@@ -1556,10 +1587,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             int windowId, boolean isIncognito) {
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance().getTabModelSelectorById(windowId);
-        if (selector == null) {
-            Log.d(TAG, "TabModelSelector is null for instance ID: " + windowId);
-            return null;
-        }
+        if (selector == null) return null;
 
         return selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(isIncognito);
     }
@@ -1567,10 +1595,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     private @Nullable TabGroupSyncService getTabGroupSyncService(
             int windowId, boolean isIncognito) {
         TabGroupModelFilter filter = getTabGroupModelFilterByWindowId(windowId, isIncognito);
-        if (filter == null) {
-            Log.d(TAG, "TabGroupModelFilter is null for instance ID: " + windowId);
-            return null;
-        }
+        if (filter == null) return null;
 
         @Nullable Profile profile = filter.getTabModel().getProfile();
         if (profile == null

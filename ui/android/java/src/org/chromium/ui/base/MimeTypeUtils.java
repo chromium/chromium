@@ -29,6 +29,9 @@ public class MimeTypeUtils {
     /** The MIME type for a tab object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
 
+    /** The MIME type for a multi-tab object dragged from Chrome. */
+    public static final String CHROME_MIMETYPE_MULTI_TAB = "chrome/multi-tab";
+
     /** The MIME type for a tab group object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB_GROUP = "chrome/tab-group";
 
@@ -106,6 +109,7 @@ public class MimeTypeUtils {
     public static boolean clipDescriptionHasBrowserContent(ClipDescription clipDescription) {
         if (clipDescription == null) return false;
         return clipDescription.hasMimeType(CHROME_MIMETYPE_TAB)
-                || clipDescription.hasMimeType(CHROME_MIMETYPE_TAB_GROUP);
+                || clipDescription.hasMimeType(CHROME_MIMETYPE_TAB_GROUP)
+                || clipDescription.hasMimeType(CHROME_MIMETYPE_MULTI_TAB);
     }
 }

@@ -954,9 +954,8 @@ public class IntentHandler {
                 }
                 Bundle multiTabBundle = intent.getBundleExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA);
                 ArrayList<Integer> tabIds =
-                        multiTabBundle.getIntegerArrayList("MultiTabReparentingIdsKey");
-                ArrayList<String> urls =
-                        multiTabBundle.getStringArrayList("MultiTabReparentingUrlsKey");
+                        multiTabBundle.getIntegerArrayList(MULTI_TAB_KEY_TAB_IDS);
+                ArrayList<String> urls = multiTabBundle.getStringArrayList(MULTI_TAB_KEY_TAB_URLS);
 
                 if (urls == null || tabIds == null || urls.size() != tabIds.size()) {
                     assert false : "Urls and tabIds size are mismatched or empty.";

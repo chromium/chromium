@@ -26,6 +26,8 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.widget.Toast;
 
+import java.util.List;
+
 /** Utility class for Chrome drag and drop implementations. */
 @NullMarked
 public class ChromeDragDropUtils {
@@ -134,6 +136,22 @@ public class ChromeDragDropUtils {
                 : "Attempting to access dragged tab group with invalid drag state.";
         if (!(globalState.getData() instanceof ChromeTabGroupDropDataAndroid)) return null;
         return ((ChromeTabGroupDropDataAndroid) globalState.getData()).tabGroupMetadata;
+    }
+
+    /**
+     * Retrieves a list of {@link Tab}s from the global drag-and-drop state.
+     *
+     * @param globalState The {@link DragDropGlobalState} containing drag data.
+     * @return The list of {@link Tab}s if available, otherwise {@code null}.
+     */
+    public static @Nullable List<Tab> getTabsFromGlobalState(
+            @Nullable DragDropGlobalState globalState) {
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null : "Attempting to access dragged tabs with invalid drag state.";
+        if (globalState.getData() instanceof ChromeMultiTabDropDataAndroid data) {
+            return data.tabs;
+        }
+        return null;
     }
 
     /**

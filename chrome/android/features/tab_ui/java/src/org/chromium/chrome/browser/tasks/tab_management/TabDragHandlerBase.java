@@ -44,6 +44,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.widget.Toast;
 
+import java.util.Collections;
 import java.util.List;
 
 /** A helper class that provides access to common logic involved in tab dragging. */
@@ -272,6 +273,8 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
         ChromeMultiTabDropDataAndroid.Builder builder = new ChromeMultiTabDropDataAndroid.Builder();
         builder.withAllowDragToCreateInstance(allowDragToCreateInstance);
         builder.withWindowId(windowId);
+        // Reverse the order to preserve the order in the destination strip.
+        Collections.reverse(tabs);
         builder.withTabs(tabs);
         return builder.build();
     }

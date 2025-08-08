@@ -44,7 +44,7 @@ public class ChromeMultiTabDropDataAndroid extends ChromeDropDataAndroid {
     @Override
     public String[] getSupportedMimeTypes() {
         return new String[] {
-            MimeTypeUtils.CHROME_MIMETYPE_TAB,
+            MimeTypeUtils.CHROME_MIMETYPE_MULTI_TAB,
             ClipDescription.MIMETYPE_TEXT_PLAIN,
             ClipDescription.MIMETYPE_TEXT_INTENT,
             MimeTypeUtils.CHROME_MIMETYPE_LINK

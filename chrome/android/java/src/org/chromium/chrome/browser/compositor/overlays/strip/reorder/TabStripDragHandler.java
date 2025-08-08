@@ -53,6 +53,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -407,6 +408,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             return handleTabDrop(dropEvent, helper);
         }
 
+        if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_MULTI_TAB)) {
+            return handleMultiTabDrop(dropEvent, helper);
+        }
+
         if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP)) {
             return handleGroupDrop(dropEvent, helper);
         }
@@ -441,6 +446,40 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                     Collections.singletonList(tabBeingDragged.getId()),
                     tabIndex,
                     /* isCollapsed= */ false);
+        }
+        DragDropMetricUtils.recordDragDropType(
+                DragDropType.TAB_STRIP_TO_TAB_STRIP,
+                mIsAppInDesktopWindowSupplier.get(),
+                /* isTabGroup= */ false);
+        return true;
+    }
+
+    private boolean handleMultiTabDrop(DragEvent dropEvent, StripLayoutHelper helper) {
+        List<Tab> tabsBeingDragged =
+                ChromeDragDropUtils.getTabsFromGlobalState(getDragDropGlobalState(dropEvent));
+        if (tabsBeingDragged == null || tabsBeingDragged.isEmpty()) {
+            return false;
+        }
+        boolean tabsDraggedBelongToCurrentModel =
+                doesBelongToCurrentModel(tabsBeingDragged.get(0).isIncognitoBranded());
+        // Move tabs to another window.
+        if (!tabsDraggedBelongToCurrentModel) {
+            mMultiInstanceManager.moveTabsToWindow(
+                    getActivity(),
+                    tabsBeingDragged,
+                    getTabModelSelector()
+                            .getModel(tabsBeingDragged.get(0).isIncognito())
+                            .getCount());
+            showDroppedDifferentModelToast(getActivity());
+        } else {
+            // Reparent tabs at drop index.
+            int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
+            mMultiInstanceManager.moveTabsToWindow(getActivity(), tabsBeingDragged, tabIndex);
+            List<Integer> tabsBeingDraggedIds = new ArrayList<>();
+            for (Tab tab : tabsBeingDragged) {
+                tabsBeingDraggedIds.add(tab.getId());
+            }
+            helper.maybeMergeToGroupOnDrop(tabsBeingDraggedIds, tabIndex, /* isCollapsed= */ false);
         }
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,

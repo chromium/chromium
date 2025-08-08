@@ -35,6 +35,9 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.util.XrUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** A helper activity for routing Chrome tab, tab group and link drag & drop launcher intents. */
 // TODO (crbug/331865433): Consider removing use of this trampoline activity.
 @NullMarked
@@ -115,8 +118,8 @@ public class DragAndDropLauncherActivity extends Activity {
     }
 
     /**
-     * Creates an intent from a tab or tab group dragged out of Chrome to move it to a new Chrome
-     * window.
+     * Creates an intent from a tab, list of tabs or tab group dragged out of Chrome to move it to a
+     * new Chrome window.
      *
      * @param chromeDropDataAndroid The drop data containing either a single tab or tab group
      *     metadata.
@@ -138,6 +141,9 @@ public class DragAndDropLauncherActivity extends Activity {
             intent = getTabIntent(intent, tabDropData.tab);
         } else if (chromeDropDataAndroid instanceof ChromeTabGroupDropDataAndroid groupDropData) {
             intent = getTabGroupIntent(intent, groupDropData.tabGroupMetadata);
+        } else if (chromeDropDataAndroid
+                instanceof ChromeMultiTabDropDataAndroid multiTabDropData) {
+            intent = getMultiTabIntent(intent, multiTabDropData.tabs);
         }
         intent.putExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, sourceWindowId);
         DragAndDropLauncherActivity.setIntentCreationTimestampMs(SystemClock.elapsedRealtime());
@@ -175,6 +181,28 @@ public class DragAndDropLauncherActivity extends Activity {
         intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_IN_STRIP);
         intent.putExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, assumeNonNull(tab).getId());
         intent.setData(Uri.parse(tab.getUrl().getSpec()));
+        return intent;
+    }
+
+    /**
+     * Creates an intent from a list of tabs dragged out of Chrome to move it to a new Chrome
+     * window.
+     *
+     * @param intent The intent to be configured for moving tabs to a new window.
+     * @param tabs The list of dragged tabs.
+     * @return The intent that will be used to move dragged tabs to a new Chrome instance.
+     */
+    @VisibleForTesting
+    static Intent getMultiTabIntent(Intent intent, @Nullable List<Tab> tabs) {
+        intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_IN_STRIP);
+        ArrayList<Integer> tabIds = new ArrayList<>();
+        ArrayList<String> tabUrls = new ArrayList<>();
+        for (Tab tab : assumeNonNull(tabs)) {
+            tabIds.add(tab.getId());
+            tabUrls.add(tab.getUrl().getSpec());
+        }
+        intent.putIntegerArrayListExtra(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
+        intent.putStringArrayListExtra(IntentHandler.MULTI_TAB_KEY_TAB_URLS, tabUrls);
         return intent;
     }
 
