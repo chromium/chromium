@@ -1,27 +1,12 @@
 # TODO(crbug.com/431824306): These tests are failing on tvOS. Remove lines if
 # more tests are supported on the platform.
 -FormAutofillUtilsTest.InferLabelForElementTest
--FrameMetadataObserverBrowserTest.LateObserver
--FrameMetadataObserverBrowserTest.MetaTags
--FrameMetadataObserverBrowserTest.MetaTagsLateObserver
--FrameMetadataObserverBrowserTest.MetaTagsNameMismatch
--FrameMetadataObserverBrowserTest.NoMetaTags
--FrameMetadataObserverBrowserTest.NoPaidContent
--FrameMetadataObserverBrowserTest.PaidContent
 -InnerTextBrowserTest.Basic
 -RenderProcessHostProxyTest.RPHDeletionInvalidatesProxy
 -ResourceAttrMemoryMeasurementProviderBrowserTest.TwoFramesSeparateProcesses
 -InputBrowserTest.RenderInputRouterNotCreatedOnNonAndroid
 -PerformanceManagerBrowserTest.UsesWebRTC
 -FormAutofillUtilsTest.ExtractFormData_FormControlTypes
-
-# TODO(crbug.com/434224561): These tests have been failing since
-# https://crrev.com/c/6759170. While iOS fixed the test failures by implementing
-# GetSize() in WebContentsImpl, the tests are still failing on tvOS.
--PageContentProtoProviderBrowserTestMediaData.UpdateVideoInMainFrame
--PageContentProtoProviderBrowserTestMediaData.VideoInIframe
--PageContentProtoProviderBrowserTestMediaData.VideoInMainFrame
--PageContentProtoProviderBrowserTestScriptTools.Basic
 
 # TODO(crbug.com/436306678): The test has been failing on tvOS due to its
 # single-process mode, which leads to a NOTREACHED() assertion.

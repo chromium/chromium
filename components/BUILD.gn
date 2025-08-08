@@ -1173,10 +1173,11 @@ if (use_blink) {
         "//testing/buildbot/filters:components_browsertests_use_blink_filters_bundle_data",
       ]
 
+      deps += [ "//components/test:optimization_guide_test_bundle_data" ]
+
       if (target_platform == "iphoneos") {
         entitlements_path = "//content/app/ios/appex/app.entitlements"
         deps += [
-          "//components/test:optimization_guide_test_bundle_data",
           "//content/test/ios/appex:test_content_process_bundle",
           "//content/test/ios/appex:test_gpu_process_bundle",
           "//content/test/ios/appex:test_network_process_bundle",
