@@ -276,38 +276,33 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests dynamic sizing.
 - (void)testProactiveBottomSheetWithDynamicTypeSizing {
-  if (@available(iOS 17.0, *)) {
-    [self loadSignupPage];
+  [self loadSignupPage];
 
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:chrome_test_util::TapWebElementWithId(
-                          kNewPasswordFieldID)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
 
-    // Change trait collection to use accessibility large content size.
-    ScopedTraitOverrider overrider(TopPresentedViewController());
-    overrider.SetContentSizeCategory(UIContentSizeCategoryAccessibilityLarge);
+  // Change trait collection to use accessibility large content size.
+  ScopedTraitOverrider overrider(TopPresentedViewController());
+  overrider.SetContentSizeCategory(UIContentSizeCategoryAccessibilityLarge);
 
-    [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
-    // Verify that the "Use Suggested Password" and "Use Keyboard" buttons are
-    // still visible.
-    [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the "Use Suggested Password" and "Use Keyboard" buttons are
+  // still visible.
+  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
-    [[EarlGrey
-        selectElementWithMatcher:ProactivePasswordGenerationUseKeyboardButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:ProactivePasswordGenerationUseKeyboardButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
-    [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
-        performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+      performAction:grey_tap()];
 
-    [self verifyNewPasswordFieldsHaveBeenFilled];
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"Not available for under iOS 17.");
-  }
+  [self verifyNewPasswordFieldsHaveBeenFilled];
 }
 
 // Tests that the bottom sheet does not show if the user isn't signed in.

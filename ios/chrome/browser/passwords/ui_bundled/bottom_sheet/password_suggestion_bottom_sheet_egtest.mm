@@ -950,39 +950,35 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 // related field and that the buttons are still visible after we chang the trait
 // collection to larger content size.
 - (void)testOpenPasswordBottomSheetUsePasswordAfterTraitCollectionChange {
-  if (@available(iOS 17.0, *)) {
-    [self saveGenericPasswordAndLoadLoginPage];
+  [self saveGenericPasswordAndLoadLoginPage];
 
-    [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-        performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-    // Change trait collection to use accessibility large content size.
-    ScopedTraitOverrider overrider(TopPresentedViewController());
-    overrider.SetContentSizeCategory(UIContentSizeCategoryAccessibilityLarge);
+  // Change trait collection to use accessibility large content size.
+  ScopedTraitOverrider overrider(TopPresentedViewController());
+  overrider.SetContentSizeCategory(UIContentSizeCategoryAccessibilityLarge);
 
-    [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
-    // Verify that the "Use Password" and "No Thanks" buttons are still visible.
-    [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
-        assertWithMatcher:grey_notNil()];
+  // Verify that the "Use Password" and "No Thanks" buttons are still visible.
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      assertWithMatcher:grey_notNil()];
 
-    [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
-        assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+      assertWithMatcher:grey_notNil()];
 
-    // Verify the credit card tablew view is still visible.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
-        assertWithMatcher:grey_notNil()];
+  // Verify the credit card tablew view is still visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
+      assertWithMatcher:grey_notNil()];
 
-    [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
-        performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
 
-    [self verifyPasswordFieldsHaveBeenFilled:@"user"];
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"Not available for under iOS 17.");
-  }
+  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
 // TODO(crbug.com/361518360): Unflake the test.
