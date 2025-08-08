@@ -172,6 +172,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3003694935412297923">All tasks</translation>
 <translation id="3018957014024118866">Also delete data from Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Relaunch to update Chrome OS Flex</translation>
+<translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
 <translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
@@ -408,6 +409,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5980111191913430208">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
 <translation id="6008161919456049856">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.</translation>
+<translation id="6009821354356307391">Ask a follow-up</translation>
 <translation id="6014316319780893079">With <ph name="BEGIN_LINK" />tools from Chrome<ph name="END_LINK" />, you can browse safely and stay in control</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6025087594896450715">Google Chrome will restart in <ph name="REMAINING_TIME" /></translation>

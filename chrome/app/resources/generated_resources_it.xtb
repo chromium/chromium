@@ -642,6 +642,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1438630805136563416">Azione rimossa: <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">assistenza a lungo termine</translation>
 <translation id="1440090277117135316">Hai completato la registrazione per uso scolastico</translation>
+<translation id="1441971243157709645">Stampante gestita</translation>
 <translation id="1442054921249164535">Altri dati</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selezionati</translation>
 <translation id="1442851588227551435">Impostare richiesta di Kerberos attiva</translation>
@@ -5057,6 +5058,10 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4501530680793980440">Conferma rimozione</translation>
 <translation id="4502423230170890588">Rimuovi da questo dispositivo</translation>
 <translation id="4502477450742595012">Fai clic con il tasto destro del mouse su una scheda e seleziona "Aggiungi scheda a nuovo gruppo"</translation>
+<translation id="4503362512377701151">Stai visualizzando i gruppi di schede utilizzati di recente per riprendere facilmente da dove avevi interrotto.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puoi gestire le impostazioni dal menu della scheda o visualizzare altre opzioni in Personalizza Chrome.</translation>
 <translation id="4503748371388753124">Il computer contiene un dispositivo di sicurezza TPM (Trusted Platform Module) che viene utilizzato per implementare in ChromeOS Flex molte funzionalità di sicurezza fondamentali. Per saperne di più, visita il Centro assistenza Chromebook all'indirizzo: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{I cookie sono consentiti}=1{I cookie sono consentiti, 1 eccezione}other{I cookie sono consentiti, {COUNT} eccezioni}}</translation>
 <translation id="4504940961672722399">Utilizza questa estensione facendo clic su questa icona o premendo <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -5909,6 +5914,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Rimuovi <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Apri il gruppo in una nuova finestra</translation>
+<translation id="511147239888121455">Eseguire il backup dei tuoi contenuti?</translation>
 <translation id="5111646998522066203">Esci dalla modalità in incognito</translation>
 <translation id="5111692334209731439">&amp;Gestione Preferiti</translation>
 <translation id="5111794652433847656">Non sono presenti passkey per <ph name="APP_NAME" /> su questo dispositivo</translation>
@@ -8197,6 +8203,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
     <ph name="BEGIN_PARAGRAPH3" />Visita la pagina g.co/flex/HWDataCollection per avere maggiori informazioni sui dati che <ph name="DEVICE_OS" /> potrebbe condividere con Google e sulle relative modalità di utilizzo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del web</translation>
 <translation id="6771503742377376720">È un'autorità di certificazione</translation>
+<translation id="6772103682557559072">Altre opzioni per l'indirizzo di lavoro <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Apri e modifica</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Il sito richiede una password monouso</translation>
@@ -10025,6 +10032,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8025151549289123443">Schermata di blocco e accesso</translation>
 <translation id="8025291188699172126">Informazioni sugli aggiornamenti</translation>
 <translation id="8026471514777758216">Tutti i tuoi dispositivi</translation>
+<translation id="8026700655446696031">Altre opzioni per l'indirizzo di casa <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Salva i tuoi preferiti e altro ancora con la sincronizzazione</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Visitato 0 giorni fa}=1{Visitato 1 giorno fa}other{Visitato # giorni fa}}</translation>
 <translation id="8028060951694135607">Recupero chiavi Microsoft</translation>
@@ -10173,6 +10181,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8121537075864592453">Schermo intero non attivato</translation>
 <translation id="8121750884985440809">Al momento stai trasmettendo il tuo schermo</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Esegui il backup di password, preferiti e altro ancora per accedervi facilmente su tutti i tuoi dispositivi</translation>
 <translation id="81238879832906896">Fiore bianco e giallo</translation>
 <translation id="8123975449645947908">Scorri indietro</translation>
 <translation id="8124313775439841391">ONC gestito</translation>

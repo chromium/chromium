@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Tab baharu dalam kumpulan</translation>
 <translation id="2918484639460781603">Pergi ke tetapan</translation>
 <translation id="2928243913527329289">Google | Perihal kedai ini</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> dipilih}other{<ph name="ITEMS_COUNT_MANY" /> dipilih}}</translation>
 <translation id="3008554597174452548">Hentikan penjejakan produk</translation>
 <translation id="3026391124054406831">Buat kumpulan untuk menyusun tab anda.</translation>
 <translation id="3051031624272448591">Anda boleh mendapatkan semula tab melalui sejarah pada bila-bila masa</translation>

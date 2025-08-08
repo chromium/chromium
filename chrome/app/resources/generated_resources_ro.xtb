@@ -5909,6 +5909,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Elimină <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Deschide grupul într-o fereastră nouă</translation>
+<translation id="511147239888121455">Faci backup conținutului?</translation>
 <translation id="5111646998522066203">Ieși din modul incognito</translation>
 <translation id="5111692334209731439">&amp;Manager de marcaje</translation>
 <translation id="5111794652433847656">Nu există chei de acces pentru <ph name="APP_NAME" /> pe acest dispozitiv</translation>
@@ -6044,6 +6045,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5201945335223486172">Pentru <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Poate edita fișiere sau dosare de pe dispozitiv</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Dă clic pentru a vedea extensia}few{Dă clic pentru a vedea extensiile}other{Dă clic pentru a vedea extensiile}}</translation>
+<translation id="5204282224596194174">Parola de recuperare pentru <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Folosește funcția Powerwash pe dispozitiv și încearcă din nou.</translation>
 <translation id="5204967432542742771">Introdu parola</translation>
 <translation id="5205484256512407285">Nu folosi niciodată date mobile pentru transfer</translation>
@@ -8200,6 +8202,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
     <ph name="BEGIN_PARAGRAPH3" />Pentru detalii suplimentare despre datele pe care <ph name="DEVICE_OS" /> le poate trimite la Google și cum sunt folosite acestea, accesează g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Îmbunătățește securitatea pe web pentru tine și toți ceilalți</translation>
 <translation id="6771503742377376720">Este o Autoritate de certificare</translation>
+<translation id="6772103682557559072">Mai multe opțiuni pentru adresa de serviciu pentru <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Deschide și editează</translation>
 <translation id="6773595613448852535">Magazin Chrome de încredere</translation>
 <translation id="677394079035748956">Site-ul are nevoie de o parolă valabilă o singură dată</translation>
@@ -10028,6 +10031,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8025151549289123443">Ecranul de blocare și conectarea</translation>
 <translation id="8025291188699172126">Despre actualizări</translation>
 <translation id="8026471514777758216">Toate dispozitivele tale</translation>
+<translation id="8026700655446696031">Mai multe opțiuni pentru adresa de acasă pentru <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Salvează-ți marcajele și altele cu sincronizarea</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Ai vizitat acum 0 zile}=1{Ai vizitat acum o zi}few{Ai vizitat acum # zile}other{Ai vizitat acum # de zile}}</translation>
 <translation id="8028060951694135607">Recuperare de chei Microsoft</translation>
@@ -10176,6 +10180,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8121537075864592453">Ecranul complet este dezactivat</translation>
 <translation id="8121750884985440809">Momentan proiectezi ecranul</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Fă backup parolelor, marcajelor și altor date ca să le poți accesa cu ușurință pe toate dispozitivele</translation>
 <translation id="81238879832906896">Floare galbenă și albă</translation>
 <translation id="8123975449645947908">Derulează înapoi</translation>
 <translation id="8124313775439841391">Proprietăți ONC gestionate</translation>
@@ -11552,6 +11557,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9057354806206861646">Programarea actualizărilor</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Aproximativ o notificare pe zi}few{Aproximativ {NUM_NOTIFICATION} notificări pe zi}other{Aproximativ {NUM_NOTIFICATION} de notificări pe zi}}</translation>
 <translation id="9058760336383947367">Vezi PPD-ul pentru imprimantă</translation>
+<translation id="9061521313218438086">Dacă Chrome găsește una dintre parolele tale într-o încălcare a securității datelor publice, Managerul de parole Google se poate oferi să-ți schimbe parola dacă te-ai conectat.</translation>
 <translation id="9061694916020926968">Ca să folosești Steam pentru Chromebook (beta) trebuie să te conectezi la un Cont Google. Conectează-te și încearcă din nou.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Eroare de la linia <ph name="ERROR_LINE_START" /> la linia <ph name="ERROR_LINE_END" /></translation>

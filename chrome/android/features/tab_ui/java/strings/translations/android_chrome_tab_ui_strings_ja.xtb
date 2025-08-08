@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">グループにタブを追加</translation>
 <translation id="2918484639460781603">設定に移動</translation>
 <translation id="2928243913527329289">Google | このショップについて</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> 件を選択済み}other{<ph name="ITEMS_COUNT_MANY" /> 件を選択済み}}</translation>
 <translation id="3008554597174452548">商品のトラッキングを停止</translation>
 <translation id="3026391124054406831">グループを作成すると、タブを整理できます。</translation>
 <translation id="3051031624272448591">履歴でいつでも元に戻すことができます</translation>

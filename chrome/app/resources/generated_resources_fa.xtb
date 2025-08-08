@@ -643,6 +643,7 @@
 <translation id="1438630805136563416">کنش <ph name="REMOVED_ACTION" /> برداشته شد</translation>
 <translation id="1439671507542716852">پشتیبانی بلندمدت</translation>
 <translation id="1440090277117135316">ثبت‌نام مدرسه کامل شد</translation>
+<translation id="1441971243157709645">چاپگر مدیریت‌شده</translation>
 <translation id="1442054921249164535">سایر داده‌ها</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> انتخاب شد</translation>
 <translation id="1442851588227551435">‏تنظیم کردن بلیت فعال Kerberos</translation>
@@ -5067,6 +5068,10 @@
 <translation id="4501530680793980440">تأیید حذف</translation>
 <translation id="4502423230170890588">حذف از این دستگاه</translation>
 <translation id="4502477450742595012">روی یکی از برگه‌ها کلیک راست کنید و «افزودن برگه به گروه جدید» را انتخاب کنید</translation>
+<translation id="4503362512377701151">‏درحال دیدن گروه‌های زبانه‌ای که اخیراً استفاده کرده‌اید هستید تا به شما کمک کند به‌راحتی کارتان را از جایی که رها کرده‌اید ادامه دهید.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        از منو کارت می‌توانید تنظیمات را مدیریت کنید یا در «سفارشی‌سازی Chrome» گزینه‌های بیشتری ببینید.</translation>
 <translation id="4503748371388753124">‏رایانه شما دارای دستگاه امنیتی «ماژول پلاتفرم مورداعتماد» (TPM) است که برای اجرای بسیاری از ویژگی‌های امنیتی مهم در ChromeOS Flex استفاده می‌شود. برای کسب اطلاعات بیشتر، به «مرکز راهنمایی Chromebook» مراجعه کنید: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{کوکی‌ها مجاز هستند}=1{کوکی‌ها مجاز هستند، ۱ استثنا}one{کوکی‌ها مجاز هستند، {COUNT} استثنا}other{کوکی‌ها مجاز هستند، {COUNT} استثنا}}</translation>
 <translation id="4504940961672722399">با کلیک کردن روی این نماد یا با فشار دادن <ph name="EXTENSION_SHORTCUT" /> از این برنامه افزودنی استفاده کنید.</translation>
@@ -10199,7 +10204,7 @@
 <translation id="8126355825906412872">لبخند زدن</translation>
 <translation id="8129265306888404830">‏برای استفاده از نشانی ایمیل سازمانتان (<ph name="EMAIL_DOMAIN" />)، باید از ثبت‌نام شرکتی استفاده کنید. اگر این دستگاه برای استفاده شخصی شما است، با «حساب Google» شخصی خود به سیستم وارد شوید.</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
-<translation id="8131740175452115882">تأیید</translation>
+<translation id="8131740175452115882">تأیید کردن</translation>
 <translation id="8133297578569873332">‏قابل قبول - FM</translation>
 <translation id="8133676275609324831">&amp;نمایش در پوشه</translation>
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" /> کیلوبایت</translation>

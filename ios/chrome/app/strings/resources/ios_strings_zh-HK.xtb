@@ -208,6 +208,7 @@
 <translation id="17906873777101817">提示儲存密碼和密鑰</translation>
 <translation id="1794893174442046596">分頁群組</translation>
 <translation id="1807893857950749072">允許價格追蹤通知…</translation>
+<translation id="1809929083618343438">所選資料會 Chrome 移除，但不會從 Google 帳戶中刪除。</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1812514023095547458">選取顏色</translation>
 <translation id="1815941218935345331">密碼</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">切換至已開啟的視窗</translation>
 <translation id="2164946989711475905">登入…</translation>
 <translation id="2175927920773552910">二維條碼</translation>
+<translation id="2180338296831857171">刪除地址</translation>
 <translation id="218350106843433823">自動填入密碼與密鑰</translation>
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2186206192313702726">Google 智能鏡頭</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">單位選取器</translation>
 <translation id="2330607597130465898">沒有保護</translation>
 <translation id="233375395665273385">刪除並登出</translation>
+<translation id="2350463587705616331">棕褐色背景</translation>
 <translation id="2351097562818989364">您的翻譯設定已重設。</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{你可將 {DOMAIN_ONE} 的密碼儲存至 Google 帳戶 ({EMAIL})。}=2{你可將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼儲存至 Google 帳戶 ({EMAIL})。}=3{你可將 {DOMAIN_ONE}、{DOMAIN_TWO} 及另外 {OTHER_DOMAINS_COUNT} 個密碼儲存至 Google 帳戶 ({EMAIL})。}other{你可將 {DOMAIN_ONE}、{DOMAIN_TWO} 及另外 {OTHER_DOMAINS_COUNT} 個密碼儲存至 Google 帳戶 ({EMAIL})。}}</translation>
 <translation id="2353953000228441783">預設的網站檢視模式</translation>
@@ -385,6 +388,7 @@
 <translation id="2434405374328098816">您已儲存「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2434918313224755415">向左碌就可以用無痕模式瀏覽。</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} 個記錄項目}other{{count} 個記錄項目}}</translation>
 <translation id="2461070143328828326">密碼設定</translation>
 <translation id="2462736546165239215">你可在此找到所有瀏覽記錄。</translation>
 <translation id="2466518891828668184">儲存密碼，輕鬆登入網站和應用程式。</translation>
@@ -543,6 +547,7 @@
 <translation id="3081338492074632642">請確保您儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3087734570205094154">下方</translation>
 <translation id="309710370695886264">你有 1 個重用密碼。請立即修正以確保安全。</translation>
+<translation id="3099402981545350675">這將會刪除此裝置儲存的地址，所選資料也會從 Chrome 移除，但不會從 Google 帳戶中刪除。</translation>
 <translation id="3106258548858559536">關閉「閱讀模式」</translation>
 <translation id="3106690631878101882">隱藏「翻譯」</translation>
 <translation id="310900540163454140">要刪除「<ph name="WEBSITE" />」的密碼嗎？</translation>
@@ -741,6 +746,7 @@
 <translation id="3962326069546168954">儲存</translation>
 <translation id="3967327056943561740">書籤</translation>
 <translation id="3967822245660637423">下載完成</translation>
+<translation id="3973560090698854095">這將會刪除 Google 帳戶 <ph name="USER_EMAIL" /> 儲存的地址。</translation>
 <translation id="3982893814825393515">報告問題…</translation>
 <translation id="398604237578616937">已使用 <ph name="USER_EMAIL" /> 的身分登入。開啟帳戶選單。</translation>
 <translation id="3986739045730058129">前往該分頁</translation>
@@ -1021,6 +1027,7 @@
 <translation id="5039804452771397117">允許</translation>
 <translation id="5050810143224996149">分享密碼</translation>
 <translation id="5055015094595227120">精確位置</translation>
+<translation id="5055551113846164633">這將會刪除此裝置儲存的地址，也會刪除 Google 帳戶 <ph name="USER_EMAIL" /> 儲存的地址。</translation>
 <translation id="5056446788882570708">發現問題：<ph name="TIME" />。</translation>
 <translation id="5059136629401106827">確定</translation>
 <translation id="5062321486222145940">安裝「Google 雲端硬碟」</translation>
@@ -1232,6 +1239,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">同步中…</translation>
 <translation id="583923961930319521">在所有裝置上使用密碼</translation>
+<translation id="5843013299019689749">黑色背景</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="5854790677617711513">超過 30 天</translation>
 <translation id="5857770089550859117">必須輸入密碼短語，才能開始同步資料。</translation>
@@ -1484,6 +1492,7 @@
 <translation id="6682680306647339111">提醒已移除</translation>
 <translation id="6684262542644248484">登入網站</translation>
 <translation id="6685259053455152195">運用捷徑快速修改設定及使用網址列的功能。</translation>
+<translation id="6689342293888598653">白色背景</translation>
 <translation id="6689685206615181381">只能使用無痕模式</translation>
 <translation id="6708501134077648845">密碼選項</translation>
 <translation id="6709964700841491574">鎖定模式</translation>
@@ -1507,6 +1516,7 @@
 <translation id="6791425686608802741">輕按 [將分頁加入新群組]</translation>
 <translation id="6794476726485507147">選擇要提醒自己再次瀏覽此頁的日期和時間</translation>
 <translation id="6795481620482106033">資料無效</translation>
+<translation id="6797543908718012274">開啟「閱讀模式」</translation>
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
 <translation id="681368974849482173">已建立項目</translation>
 <translation id="6825078212112407882">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
@@ -1591,6 +1601,7 @@
 <translation id="714291438898585119">已加星號</translation>
 <translation id="7146301801400584641">有可用的日曆檔案</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
+<translation id="7154417656353909837">移除地址</translation>
 <translation id="7161230316646448869">將您的書籤、記錄等資料同步至所有裝置</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7173721738069475737">{count,plural, =1{已儲存書籤}other{已儲存 {count} 個書籤}}</translation>
@@ -1660,6 +1671,7 @@
 <translation id="7458706065921255639">個人化和連結</translation>
 <translation id="745899714366929493">全日</translation>
 <translation id="7460698861522306757">切換至流動網站</translation>
+<translation id="7464143666517313304">這將會刪除此裝置儲存的地址。</translation>
 <translation id="7468373585447318060">緊貼所有追蹤產品的減價消息。</translation>
 <translation id="746872191028309255">透過相機或相片庫購買所見內容。</translation>
 <translation id="7471557245617580330">新增分頁</translation>
@@ -1711,6 +1723,7 @@
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="764827086632467055">輕按 [預設瀏覽器應用程式]</translation>
 <translation id="7649070708921625228">說明</translation>
+<translation id="765555660695722850">這將會刪除此裝置儲存的地址，也會刪除 Google 帳戶的部分資料，但不包括姓名或住宅地址等基本資料。</translation>
 <translation id="765631330137769217">輕按 [儲存]，下次登入時就能輕鬆取用此密碼</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662316065255305764">網站資料</translation>
@@ -2058,6 +2071,7 @@
 <translation id="8891031436559779793">如果產品在任何網站上降價，你會收到通知。</translation>
 <translation id="8893208530912252670">影片</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
+<translation id="8900845556227858314">瀏覽器應用程式</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8907722425137681851">在網頁中搜尋…</translation>
 <translation id="8909135823018751308">共用…</translation>

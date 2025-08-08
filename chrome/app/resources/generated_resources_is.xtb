@@ -5924,6 +5924,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5109044022078737958">Þura</translation>
 <translation id="5109816792918100764">Fjarlægja <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Opna hóp í nýjum glugga</translation>
+<translation id="511147239888121455">Taka öryggisafrit af efninu þínu?</translation>
 <translation id="5111646998522066203">Fara úr huliðsstillingu</translation>
 <translation id="5111692334209731439">&amp;Bókamerkjastjórnun</translation>
 <translation id="5111794652433847656">Það eru engir aðgangslyklar fyrir <ph name="APP_NAME" /> í tækinu</translation>
@@ -6059,6 +6060,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5201945335223486172">Fyrir: <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Mega breyta skrám eða möppum í tækinu</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Smelltu til að skoða viðbótina}one{Smelltu til að skoða þessar viðbætur}other{Smelltu til að skoða þessar viðbætur}}</translation>
+<translation id="5204282224596194174">Endurheimtaraðgangsorð fyrir <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Djúphreinsaðu tækið og reyndu aftur.</translation>
 <translation id="5204967432542742771">Sláðu inn aðgangsorð</translation>
 <translation id="5205484256512407285">Aldrei nota farsímagögn við flutning</translation>
@@ -8216,6 +8218,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Frekari upplýsingar um gögn sem <ph name="DEVICE_OS" /> kann að deila með Google og um það hvernig gögnin eru notuð er að finna á g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Eykur öryggi þitt og allra á vefnum</translation>
 <translation id="6771503742377376720">Er vottunarstöð</translation>
+<translation id="6772103682557559072">Fleiri valkostir fyrir vinnuheimilisfangið „<ph name="ADDRESS_SUMMARY" />“</translation>
 <translation id="6772974422346500939">Opna og breyta</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Vefsvæðið þarfnast einnota aðgangsorðs</translation>
@@ -10042,6 +10045,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8025151549289123443">Skjálás og innskráning</translation>
 <translation id="8025291188699172126">Um uppfærslur</translation>
 <translation id="8026471514777758216">Öll tækin þín</translation>
+<translation id="8026700655446696031">Fleiri valkostir fyrir heimilisfangið „<ph name="ADDRESS_SUMMARY" />“</translation>
 <translation id="8026784703228858744">Vistaðu bókamerki og fleira með samstillingu</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Heimsótt fyrir núll dögum}=1{Heimsótt fyrir einum degi}one{Heimsótt fyrir # degi}other{Heimsótt fyrir # dögum}}</translation>
 <translation id="8028060951694135607">Microsoft-lyklaendurheimt</translation>
@@ -10190,6 +10194,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8121537075864592453">Slökkt á heilum skjá</translation>
 <translation id="8121750884985440809">Þú ert að varpa skjánum þínum.</translation>
 <translation id="8122898034710982882">Símstöð, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Vistaðu aðgangsorð, bókamerki og fleira til að hafa greiðan aðgang að þeim í öðrum tækjum</translation>
 <translation id="81238879832906896">Gult og hvítt blóm</translation>
 <translation id="8123975449645947908">Fletta til baka</translation>
 <translation id="8124313775439841391">Stýrt ONC</translation>
@@ -11566,6 +11571,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9057354806206861646">Uppfæra áætlun</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Um 1 tilkynning á dag}one{Um {NUM_NOTIFICATION} tilkynning á dag}other{Um {NUM_NOTIFICATION} tilkynningar á dag}}</translation>
 <translation id="9058760336383947367">Skoða PPD prentara</translation>
+<translation id="9061521313218438086">Ef Chrome finnur aðgangsorð frá þér í almennu öryggisbroti getur Google-aðgangsorðastjórnun boðist til að breyta aðgangsorðinu ef þú ert með innskráningu.</translation>
 <translation id="9061694916020926968">Þú þarft að skrá þig inn á Google-reikning til að nota Steam fyrir Chromebook (beta). Skráðu þig inn og reyndu aftur.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Villa frá línu <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>

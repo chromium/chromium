@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Chromeமில் டார்க் தீமினைப் பயன்படுத்தும்போது சாத்தியமான சூழல்களில் தளங்களுக்கும் பயன்படுத்தப்படும்</translation>
 <translation id="2390272837142897736">பெரிதாக்கும்</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> மெ.பை.</translation>
+<translation id="2403474027143565107">துல்லியமானது</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் வழங்கப்பட்டுள்ளன}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் வழங்கப்பட்டுள்ளன}}</translation>
+<translation id="2404857459073803936">இந்தத் தளத்திற்கான இருப்பிட அணுகல்</translation>
 <translation id="2410940059315936967">நீங்கள் பார்வையிடும் தளம் பிற தளங்களில் உள்ள உள்ளடக்கத்தை (படங்கள், விளம்பரங்கள், வார்த்தைகள் போன்றவை) உட்பொதிக்கலாம். இதுபோல பிற தளங்கள் அமைக்கும் குக்கீகள் மூன்றாம் தரப்புக் குக்கீகள் என்று அழைக்கப்படுகின்றன.</translation>
 <translation id="2411116727035790889">ஷார்ட்கட்களை ஆன் செய்யும்</translation>
 <translation id="2433507940547922241">தோற்றம்</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">இந்தப் பக்கம் - ஓர் அறிமுகம்</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
+<translation id="4042597221652780603">தோராயமானது</translation>
 <translation id="4046123991198612571">அடுத்த டிராக்</translation>
 <translation id="4077310749977440510">நகலெடுத்த உரையின் வடிவமைப்பை அப்படியே வைத்துக்கொள்ளுதல் போன்ற அம்சங்களுக்காக, கிளிப்போர்டைத் தளங்கள் வழக்கமாகப் படிக்கும்</translation>
 <translation id="4082080074595021446">Android சாதனத்தில் போதிய RAM இல்லாததால், குறிப்பிட்ட இணையதளங்களுக்கான விதிவிலக்குகள் அனுமதிக்கப்படுவதில்லை.</translation>

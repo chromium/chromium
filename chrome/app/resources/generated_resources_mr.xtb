@@ -642,6 +642,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> ही कृती काढून टाकली आहे</translation>
 <translation id="1439671507542716852">दीर्घकालीन सपोर्ट</translation>
 <translation id="1440090277117135316">शाळेशी संबंधित नोंदणी पूर्ण झाली आहे</translation>
+<translation id="1441971243157709645">व्यवस्थापित केलेला प्रिंटर</translation>
 <translation id="1442054921249164535">अन्य डेटा</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> निवडले</translation>
 <translation id="1442851588227551435">अ‍ॅक्टिव्ह Kerberos तिकीट सेट करा</translation>
@@ -5067,6 +5068,10 @@
 <translation id="4501530680793980440">काढून टाकण्याची पुष्टी करा</translation>
 <translation id="4502423230170890588">या डिव्हाइसवरून काढून टाका</translation>
 <translation id="4502477450742595012">टॅबवर राइट-क्लिक करा आणि "टॅब नवीन गटामध्ये जोडा" निवडा</translation>
+<translation id="4503362512377701151">तुम्ही जिथे सोडले होते, तिथून सहजपणे सुरुवात करण्यास मदत करण्यासाठी तुम्ही तुमचे अलीकडे वापरलेले टॅब गट पाहत आहात.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ मधून आणखी पर्याय पाहू शकता.</translation>
 <translation id="4503748371388753124">तुमच्या कॉंप्युटरमध्ये विश्वासू प्लॅटफॉर्म मॉड्युल (TPM) सुरक्षा डिव्हाइस आहे, जे ChromeOS Flex मध्ये अनेक महत्त्वाची सुरक्षा वैशिष्ट्ये लागू करण्यासाठी वापरले जाते. अधिक जाणून घेण्यासाठी Chromebook मदत केंद्र ला भेट द्या: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{कुकींना अनुमती आहे}=1{कुकींना अनुमती आहे, एक अपवाद}other{कुकींना अनुमती आहे, {COUNT} अपवाद}}</translation>
 <translation id="4504940961672722399">या आयकनवर क्लिक करुन किंवा <ph name="EXTENSION_SHORTCUT" /> प्रेस करून हे एक्स्टेंशन वापरा.</translation>

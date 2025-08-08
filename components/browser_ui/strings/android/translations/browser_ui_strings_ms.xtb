@@ -120,7 +120,9 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="2379925928934107488">Gunakan tema gelap pada laman apabila Chrome menggunakan tema gelap, jika boleh</translation>
 <translation id="2390272837142897736">Zum masuk</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Tepat</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}}</translation>
+<translation id="2404857459073803936">Akses lokasi untuk laman ini</translation>
 <translation id="2410940059315936967">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Kuki yang ditetapkan oleh laman lain ini dipanggil kuki pihak ketiga.</translation>
 <translation id="2411116727035790889">Hidupkan pintasan</translation>
 <translation id="2433507940547922241">Tampilan</translation>
@@ -276,6 +278,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3992684624889376114">Perihal halaman ini</translation>
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4031179711345676612">Mikrofon dibenarkan</translation>
+<translation id="4042597221652780603">Anggaran</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
 <translation id="4077310749977440510">Laman biasanya membaca papan keratan anda untuk ciri seperti mengekalkan format teks yang anda salin</translation>
 <translation id="4082080074595021446">Pengecualian untuk laman web tertentu tidak dibenarkan kerana peranti Android tidak memiliki RAM yang mencukupi.</translation>

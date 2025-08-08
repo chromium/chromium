@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Առաջարկել պահել գաղտնաբառերն ու մուտքի բանալիները</translation>
 <translation id="1794893174442046596">Ներդիրների խումբ</translation>
 <translation id="1807893857950749072">Թույլատրել գների հետագծման ծանուցումները…</translation>
+<translation id="1809929083618343438">Ընտրված տեղեկությունները կհեռացվեն Chrome-ից, բայց ոչ Google հաշվից։</translation>
 <translation id="1810976980198522421">Չեղարկել</translation>
 <translation id="1812514023095547458">Ընտրեք գույնը</translation>
 <translation id="1815941218935345331">Անցակոդ</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Անցնել բացված պատուհան</translation>
 <translation id="2164946989711475905">Մուտք գործել…</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
+<translation id="2180338296831857171">Ջնջել հասցեները</translation>
 <translation id="218350106843433823">Ավտոմատ լրացնել գաղտնաբառերը և մուտքի բանալիները</translation>
 <translation id="2184272387334793084">Մուտք գործեք՝ ձեր գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="2186206192313702726">Google Տեսապակի</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Միավորի ընտրիչ</translation>
 <translation id="2330607597130465898">Պաշտպանություն չկա</translation>
 <translation id="233375395665273385">Ջնջել և դուրս գալ</translation>
+<translation id="2350463587705616331">«Սեպիա» ֆոն</translation>
 <translation id="2351097562818989364">Ձեր թարգմանության կայանքները զրոյացվել են:</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Դուք կարող եք {DOMAIN_ONE} տիրույթի գաղտնաբառը պահել ձեր Google հաշվում ({EMAIL})։}=2{Դուք կարող եք {DOMAIN_ONE} և {DOMAIN_TWO} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}=3{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}one{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}other{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}}</translation>
 <translation id="2353953000228441783">Կայքերի ցուցադրման կանխադրված ռեժիմ</translation>
@@ -543,6 +546,7 @@
 <translation id="3081338492074632642">Ստուգեք՝ արդյոք գաղտնաբառը, որն ուզում եք պահել, համընկնում է <ph name="WEBSITE" /> կայքի ձեր գաղտնաբառի հետ։</translation>
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="309710370695886264">Դուք ունեք 1 կրկնվող գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
+<translation id="3099402981545350675">Այս սարքում պահված հասցեները կջնջվեն։ Ինչպես նաև ընտրված տեղեկությունները կհեռացվեն Chrome-ից, բայց ոչ Google հաշվից։</translation>
 <translation id="3106258548858559536">Անջատել ընթերցման ռեժիմը</translation>
 <translation id="3106690631878101882">Թաքցնել «Թարգմանել» գործողությունը</translation>
 <translation id="310900540163454140">Ջնջե՞լ <ph name="WEBSITE" />-ի գաղտնաբառը</translation>
@@ -741,6 +745,7 @@
 <translation id="3962326069546168954">Պահել</translation>
 <translation id="3967327056943561740">Էջանիշներ</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
+<translation id="3973560090698854095">Ձեր <ph name="USER_EMAIL" /> Google հաշվում պահված հասցեները կջնջվեն։</translation>
 <translation id="3982893814825393515">Հաղորդել խնդրի մասին…</translation>
 <translation id="398604237578616937">Դուք մուտք եք գործել որպես <ph name="USER_EMAIL" />։ Բացել հաշվի ընտրացանկը։</translation>
 <translation id="3986739045730058129">Անցնել ներդիր</translation>
@@ -1021,6 +1026,7 @@
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5050810143224996149">Գաղտնաբառի փոխանցում</translation>
 <translation id="5055015094595227120">Ճշգրիտ տեղադրություն</translation>
+<translation id="5055551113846164633">Այս սարքում պահված հասցեները կջնջվեն։ Ինչպես նաև կջնջվեն ձեր <ph name="USER_EMAIL" /> Google հաշվում պահված հասցեները։</translation>
 <translation id="5056446788882570708">Խնդիրները հայտնաբերվել են <ph name="TIME" />։</translation>
 <translation id="5059136629401106827">Եղավ</translation>
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
@@ -1232,6 +1238,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Համաժամացում…</translation>
 <translation id="583923961930319521">Օգտագործեք գաղտնաբառերը ձեր բոլոր սարքերում</translation>
+<translation id="5843013299019689749">Սև ֆոն</translation>
 <translation id="5844284118433003733">Երբ մուտք գործեք, այս տվյալները կկապվեն ձեր Google հաշվի հետ՝ ձեզ Google-ի ծառայություններում պաշտպանելու համար, օրինակ՝ անվտանգության հետ կապված միջադեպից հետո բարձրացնելու անվտանգության մակարդակը Gmail-ում։</translation>
 <translation id="5854790677617711513">30 օր և ավելի</translation>
 <translation id="5857770089550859117">Համաժամացումը սկսելու համար անհրաժեշտ է անցաբառ:</translation>
@@ -1484,6 +1491,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6682680306647339111">Հիշեցումը հեռացված է</translation>
 <translation id="6684262542644248484">Մուտք գործեք որևէ կայք</translation>
 <translation id="6685259053455152195">Դյուրանցումներ՝ կարգավորումներն արագ փոփոխելու և գործառույթները հասցեագոտուց օգտագործելու համար։</translation>
+<translation id="6689342293888598653">Սպիտակ ֆոն</translation>
 <translation id="6689685206615181381">Հասանելի է միայն ինկոգնիտո ռեժիմը</translation>
 <translation id="6708501134077648845">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="6709964700841491574">Արգելափակման ռեժիմ</translation>
@@ -1591,6 +1599,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="714291438898585119">Աստղանշված</translation>
 <translation id="7146301801400584641">Հասանելի է օրացույցի ֆայլ</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
+<translation id="7154417656353909837">Հեռացնել հասցեները</translation>
 <translation id="7161230316646448869">Համաժամացրեք ձեր էջանիշները, պատմությունն ու մյուս կարգավորումները բոլոր սարքերում</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7173721738069475737">{count,plural, =1{Էջանիշը պահվեց}one{{count} էջանիշ պահվեց}other{{count} էջանիշ պահվեց}}</translation>
@@ -1660,6 +1669,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7458706065921255639">Անհատականացում և կապում</translation>
 <translation id="745899714366929493">Ամբողջ օրը</translation>
 <translation id="7460698861522306757">Պահանջել կայքի բջջային տարբերակը</translation>
+<translation id="7464143666517313304">Այս սարքում պահված հասցեները կջնջվեն։</translation>
 <translation id="7468373585447318060">Հետևեք գնիջեցումներին բոլոր ապրանքների համար, որոնք հետագծում եք։</translation>
 <translation id="746872191028309255">Ձեր տեսախցիկի կամ պատկերասրահի օգնությամբ գնեք այն, ինչ տեսնում եք։</translation>
 <translation id="7471557245617580330">Ստեղծել նոր ներդիր</translation>
@@ -1711,6 +1721,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="764827086632467055">Հպեք «Դիտարկիչի կանխադրված հավելված»</translation>
 <translation id="7649070708921625228">Օգնություն</translation>
+<translation id="765555660695722850">Այս սարքում պահված հասցեները կջնջվեն։ Ինչպես նաև Google հաշվից կջնջվեն տեղեկությունների մի մասը՝ բացի հիմնականից, օրինակ՝ անունը և տան հասցեն։</translation>
 <translation id="765631330137769217">Հպեք «Պահել»՝ հաջորդ անգամ մուտք գործելիս այս գաղտնաբառը հեշտությամբ լրացնելու համար</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7662316065255305764">Տեղեկություններ կայքի մասին</translation>
@@ -2058,6 +2069,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8891031436559779793">Մենք կտեղեկացնենք ձեզ, երբ որևէ կայքում գները նվազեն։</translation>
 <translation id="8893208530912252670">Տեսանյութեր</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
+<translation id="8900845556227858314">Դիտարկիչի հավելված</translation>
 <translation id="890565330728586731">Հետ</translation>
 <translation id="8907722425137681851">Գտնել էջում…</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>

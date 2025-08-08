@@ -260,6 +260,7 @@
 <translation id="14222610277930434">Ви часто відвідуєте цю сторінку</translation>
 <translation id="1422795627423046860">Недійсна дата</translation>
 <translation id="1422930527989633628">Може просити дозвіл шукати пристрої з Bluetooth поблизу</translation>
+<translation id="142559998533702194">Не завантажено</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1427192966110103169">Домашні плавальні басейни, сауни й спа</translation>
 <translation id="1428146450423315676">Накопичувач 7</translation>
@@ -362,6 +363,7 @@
 <translation id="159274626729231974">Кінофестивалі</translation>
 <translation id="1593359183944365958">270 градусів</translation>
 <translation id="1594030484168838125">Вибрати</translation>
+<translation id="1595731774593926493">Видалити номер оскарження</translation>
 <translation id="1597307423671074806">Відео у форматі WebM</translation>
 <translation id="159800670740560023">Посилання на пораду щодо Chrome. Натисніть клавішу Enter, щоб відкрити посилання "<ph name="IPH_LINK_FOCUSED_LINK_TEXT" />".</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
@@ -721,6 +723,7 @@
 <translation id="2188375229972301266">Пробити кілька отворів унизу</translation>
 <translation id="218940509700321686">Значення, розділені комами</translation>
 <translation id="2194856509914051091">Що варто врахувати</translation>
+<translation id="2198215508485017216">Сталася неочікувана помилка. <ph name="BEGIN_LINK" />Докладніше про завантаження на Диск.<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Кнопка "Не подобається": натисніть клавішу Enter, щоб відкрити форму й залишити докладний відгук про те, чому вам не подобається ця пропозиція</translation>
 <translation id="2202627062836089804">зворотній стороні картки</translation>
 <translation id="2204482073374652408">Оновлення завершено.</translation>
@@ -736,6 +739,7 @@
 <translation id="2215539479425228550">Скелелазіння й альпінізм</translation>
 <translation id="2215727959747642672">Редагування файлів</translation>
 <translation id="2215963164070968490">Собаки</translation>
+<translation id="2218089682233901164">Додати номер надійного мандрівника</translation>
 <translation id="2219376942605837404">Додати вкладку в порівняльну таблицю</translation>
 <translation id="2219658597883514593">Переглянути навчальний посібник знову</translation>
 <translation id="2219735899272417925">Потрібно скинути налаштування пристрою</translation>
@@ -752,6 +756,7 @@
 <translation id="2233745931693710080">Компакт-диск</translation>
 <translation id="2235344399760031203">Сторонні файли cookie блокуються</translation>
 <translation id="2239100178324503013">Надіслати</translation>
+<translation id="224130779555573777">Додати номер оскарження</translation>
 <translation id="2241693394036365668">Завантажено файл</translation>
 <translation id="2242389809734574253">Вікно "Зберегти номер IBAN" закрито.</translation>
 <translation id="2246264294482514010">10 x 12 дюйм.</translation>
@@ -855,6 +860,7 @@
 <translation id="239429038616798445">Цей спосіб відправлення недоступний. Виберіть інший спосіб.</translation>
 <translation id="2395840535409704129">Водні види спорту</translation>
 <translation id="2396249848217231973">&amp;Відмінити видалення</translation>
+<translation id="239708975263889666">Змінити номер надійного мандрівника</translation>
 <translation id="2399344929880464793">Цей номер IBAN збережено у вашому обліковому записі Google. Тепер ви можете використовувати його в усіх сервісах Google.</translation>
 <translation id="2399868464369312507">Google Chrome намагається змінити способи оплати.</translation>
 <translation id="2400263725572336749">Додати паспортні дані</translation>
@@ -883,6 +889,7 @@
 <translation id="2451201933352935301">Сайт <ph name="URL" /> запитує дозвіл керувати вікнами на всіх ваших екранах</translation>
 <translation id="2451607499823206582">Відстеження</translation>
 <translation id="2452098632681057184">Екологія і довкілля</translation>
+<translation id="2452689005240417488">Зберегти номер надійного мандрівника?</translation>
 <translation id="2452837234288608067">Не вдалося допомогти із цим запитом. Повторіть спробу.</translation>
 <translation id="2453045048779611513">Ваша організація обмежила дані, які можна зберігати</translation>
 <translation id="2456755709261364512">Заряд акумулятора має становити більше <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -992,6 +999,7 @@
 <translation id="2634124572758952069">IP-адресу сервера <ph name="HOST_NAME" /> не знайдено.</translation>
 <translation id="2638567100095052009">Введіть @, щоб шукати на вебсайтах <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Статус:</translation>
+<translation id="2644219706149911059">Завантаження на Google Диск…</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Тканина (напівглянцева)</translation>
 <translation id="264810637653812429">Сумісних пристроїв не знайдено.</translation>
@@ -1123,6 +1131,7 @@
 <translation id="2904180982022726666">Ваша організація обмежила дані, до яких можна надавати доступ</translation>
 <translation id="2905107382358353958">Сповіщення про нове налаштування платежів</translation>
 <translation id="2909946352844186028">Виявлено зміну в мережі.</translation>
+<translation id="2910062169995917863">Час очікування сеансу минув</translation>
 <translation id="2911255567212929079">Машинне навчання й штучний інтелект</translation>
 <translation id="2911973620368911614">Ідентифікатор користувача робочого облікового запису</translation>
 <translation id="2913421697249863476">Грилі й печі барбекю</translation>
@@ -1380,6 +1389,7 @@
 <translation id="33073482541490531">Введений пароль розкрито через порушення безпеки даних. Менеджер паролів радить негайно його змінити.</translation>
 <translation id="3307649904964670439">Кнопка "Налаштувати Chrome"; активуйте, щоб налаштувати вигляд веб-переглядача</translation>
 <translation id="3308006649705061278">Організаційний підрозділ (OU)</translation>
+<translation id="3312952471765023168">Успішно завантажено</translation>
 <translation id="3318016344440038475">Телевізійні комедії</translation>
 <translation id="3324687287337751929">4 x 6 дюйм.</translation>
 <translation id="3324983252691184275">Малиновий</translation>
@@ -2187,6 +2197,7 @@
 <translation id="4652266463001779298">Заборонено</translation>
 <translation id="4652440160515225514">Ваша організація заблокувала цей сайт, оскільки він порушує правила.</translation>
 <translation id="4658638640878098064">Скріпити вгорі ліворуч</translation>
+<translation id="4660592918803576381">Відкрити на Диску</translation>
 <translation id="4661556981531699496">Домашні й дикі тварини</translation>
 <translation id="4661868874067696603">Шукати інші варіанти покупки</translation>
 <translation id="4663373278480897665">Дозволено використовувати камеру</translation>
@@ -2921,6 +2932,7 @@
 <translation id="5886961930368713749">Надіслати відгук про порівняння</translation>
 <translation id="5887400589839399685">Картку збережено</translation>
 <translation id="5887687176710214216">Останнє відвідування: вчора</translation>
+<translation id="5890248301649767931">Зберегти номер оскарження?</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5895187275912066135">Дата видачі</translation>
 <translation id="5898767305816764989">Кнопка "Подобається": натисніть клавішу Enter, щоб надіслати відгук про те, що вам подобається пропозиція "<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />"</translation>
@@ -3161,6 +3173,7 @@
 <translation id="6272088941196661550">Щоб бачити релевантні дії в історії Chrome, відновіть сеанс</translation>
 <translation id="6272383483618007430">Оновлення Google</translation>
 <translation id="6278015583149890680">Google Диск і OneDrive</translation>
+<translation id="6279228081537458128">Оплатити пізніше</translation>
 <translation id="6280223929691119688">Неможливо доставити замовлення за цією адресою. Укажіть іншу адресу.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм.</translation>
 <translation id="6284449872909111707">Обмін текстовими повідомленнями й чати</translation>
@@ -3194,6 +3207,7 @@
 <translation id="6327065120806001832">доступ до локальної мережі</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
 <translation id="6329815962353376655">&lt;Введіть запитання&gt;</translation>
+<translation id="633348045801643466">Показувати варіанти <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />пізнішої оплати<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> під час оформлення замовлення</translation>
 <translation id="6335029926534404762">Спортивне взуття</translation>
 <translation id="6336948221660696475">Заборонено використовувати віртуальну реальність</translation>
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
@@ -3519,6 +3533,7 @@
 <translation id="6880941331070119097">Варіант із високою ціною</translation>
 <translation id="6881240511396774766">Швидко створити новий документ Google</translation>
 <translation id="6882210908253838664">Якщо сайт не працює, спробуйте надати йому тимчасовий дозвіл на використання сторонніх файлів cookie. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="6883120223439653449">Оновити номер надійного мандрівника?</translation>
 <translation id="6883221904761970440">Екран автентифікації облікових даних для безпечних платежів закрито</translation>
 <translation id="6883745783646124431">робоча адреса</translation>
 <translation id="6884662655240309489">Розмір 1</translation>
@@ -3539,6 +3554,7 @@
 <translation id="6905163627763043954">Спробувати</translation>
 <translation id="6907458757809079309">Фітнес</translation>
 <translation id="691024665142758461">завантажити кілька файлів</translation>
+<translation id="691046363691324218">Номер оскарження</translation>
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6916193791494646625">Укажіть причину завантаження (обов’язково)</translation>
 <translation id="6917795328362592458">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів радить перевірити збережені паролі.</translation>
@@ -3628,6 +3644,7 @@
 <translation id="7044081119134178347">Надано разовий доступ до камери</translation>
 <translation id="7048095965575426564">Fanfold (Європейський Союз)</translation>
 <translation id="7050187094878475250">Ви намагалися зв’язатися з доменом <ph name="DOMAIN" />, але сервер надав сертифікат із задовгим терміном дії.</translation>
+<translation id="7050877504983265321">Номер надійного мандрівника</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7054717457611655239">Відтепер зберігайте файли в сервісі <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998">Веб-переглядач <ph name="BROWSER" /> підтвердив, що сертифікат цьому сайту надала компанія <ph name="ISSUER" />.</translation>
@@ -3898,6 +3915,7 @@
 <translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> перевірить, чи відповідаєте ви вимогам (це не вплине на ваш кредитний рейтинг). У разі схвалення <ph name="BNPL_ISSUER_NAME" /> запропонує платіжні плани, щоб ви могли вибрати один із них і завершити покупку.</translation>
 <translation id="7489392576326061356">Шампуні й кондиціонери</translation>
+<translation id="7489919936111034362">Сховище на Google Диску заповнено</translation>
 <translation id="7495528107193238112">Підключення заблоковано. Щоб вирішити проблему, зв'яжіться з власником сайту.</translation>
 <translation id="749865518782565832">Водопровідні роботи</translation>
 <translation id="7499188644237027195">Роблячи покупки в Chrome, ви бачитимете серед способів оплати електронний гаманець і систему Pix</translation>
@@ -3956,6 +3974,7 @@
 <translation id="7569983096843329377">Чорний</translation>
 <translation id="7571813784389228510">Режим ШІ від Google</translation>
 <translation id="7574998639136359461">Обладнання для зимових видів спорту</translation>
+<translation id="7575130707299232096">Видалити номер надійного мандрівника</translation>
 <translation id="7575207903026901870">Кнопка видалення підказки: натисніть Enter, щоб видалити цю підказку</translation>
 <translation id="7575800019233204241">"З’єднання не конфіденційне", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" або "Помилка сертифіката SSL"</translation>
 <translation id="7575887283389198269">Мобільні телефони</translation>
@@ -3994,6 +4013,7 @@
 <translation id="7631072086707140121">У URL-адресі має використовуватися схема https.</translation>
 <translation id="7631527008834753063">Телевізійні ігрові шоу</translation>
 <translation id="7633909222644580952">Дані про ефективність і звіти про збої</translation>
+<translation id="7634963626477752453">Збережено в папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7636346903338549690">Сайти, яким можна використовувати сторонні файли cookie</translation>
 <translation id="7637571805876720304">Видалити дані кредитної картки з Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Немає}=1{У вашому обліковому записі збережено 1 пароль (для <ph name="DOMAIN_LIST" />)}one{У вашому обліковому записі збережено # пароль (для <ph name="DOMAIN_LIST" />)}few{У вашому обліковому записі збережено # паролі (для <ph name="DOMAIN_LIST" />)}many{У вашому обліковому записі збережено # паролів (для <ph name="DOMAIN_LIST" />)}other{У вашому обліковому записі збережено # пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
@@ -4480,6 +4500,7 @@
 <translation id="8457125768502047971">Необмежено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Увімкнути</translation>
+<translation id="8461289985785035071">Змінити номер оскарження</translation>
 <translation id="8461694314515752532">Шифрувати синхронізовані дані за допомогою власної парольної фрази</translation>
 <translation id="8461973047386722744">Паролі не знайдено</translation>
 <translation id="8467494337615822642">Перейти на сторінку "Перевірка безпеки Chrome" у налаштуваннях</translation>
@@ -4788,6 +4809,7 @@
 <translation id="9026253329950610248">Google Сайти</translation>
 <translation id="9027020981272345766">Спробувати Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Щоб вийти з повноекранного режиму, утримуйте клавішу |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">Оновити номер оскарження?</translation>
 <translation id="9035022520814077154">Помилка системи безпеки</translation>
 <translation id="9035824888276246493">Зберігати коди безпеки</translation>
 <translation id="9036306139374661733">Дозволити доступ до мікрофона?</translation>

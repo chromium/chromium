@@ -642,6 +642,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> әрекеті өшірілді</translation>
 <translation id="1439671507542716852">ұзақ мерзімді қолдау</translation>
 <translation id="1440090277117135316">Мектепке тіркелу аяқталды</translation>
+<translation id="1441971243157709645">Басқарылатын принтер</translation>
 <translation id="1442054921249164535">Басқа деректер</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> таңдалған</translation>
 <translation id="1442851588227551435">Қосулы Kerberos билетін орнату</translation>
@@ -5052,6 +5053,10 @@
 <translation id="4501530680793980440">Жоюды растау</translation>
 <translation id="4502423230170890588">Осы құрылғыдан өшіру</translation>
 <translation id="4502477450742595012">Қойындыда тінтуірдің оң жақ түймесін басып, "Қойындыны жаңа топқа қосу" тармағын таңдаңыз.</translation>
+<translation id="4503362512377701151">Тоқтаған жерден жалғастыруыңыз үшін, соңғы қолданылған қойындылар топтары көрсетілген.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Карта мәзірінде параметрлерді реттеуге немесе "Chrome-ды реттеу" бөлімінде қосымша опцияларды көруге болады.</translation>
 <translation id="4503748371388753124">Компьютеріңізде Trusted Platform Module (TPM) қауіпсіздік құрылғысы бар, ол ChromeOS Flex операциялық жүйесіндегі көптеген маңызды қауіпсіздік мүмкіндіктерін орындауға қолданылады. Толығырақ білу үшін Chromebook Анықтамалық орталығына кіріңіз: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookie файлдарына рұқсат етіледі.}=1{Cookie файлдарына рұқсат етіледі, 1 ерекше жағдай}other{Cookie файлдарына рұқсат етіледі, {COUNT} ерекше жағдай}}</translation>
 <translation id="4504940961672722399">Бұл кеңейтімді осы белгішені басу немесе <ph name="EXTENSION_SHORTCUT" /> басу арқылы пайдаланыңыз.</translation>

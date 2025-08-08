@@ -5908,6 +5908,7 @@
 <translation id="5109044022078737958">Միա</translation>
 <translation id="5109816792918100764">Հեռացնել <ph name="LANGUAGE_NAME" /> լեզուն</translation>
 <translation id="5111326646107464148">Բացել խումբը նոր պատուհանում</translation>
+<translation id="511147239888121455">Պահուստավորե՞լ ձեր տվյալները</translation>
 <translation id="5111646998522066203">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="5111692334209731439">&amp;Էջանիշների կառավարիչ</translation>
 <translation id="5111794652433847656">Այս սարքում <ph name="APP_NAME" />-ի համար մուտքի բանալիներ չկան</translation>
@@ -6043,6 +6044,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> կայքի համար</translation>
 <translation id="5203035663139409780">Կարող են ձեր սարքում խմբագրել ֆայլեր և պանակներ</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Հպեք՝ ընդլայնումը տեսնելու համար}one{Հպեք՝ այս ընդլայնումները տեսնելու համար}other{Հպեք՝ այս ընդլայնումները տեսնելու համար}}</translation>
+<translation id="5204282224596194174">Վերականգնման գաղտնաբառ <ph name="USER_EMAIL" /> հասցեի համար</translation>
 <translation id="5204673965307125349">Վերակայեք սարքի կարգավորումները և նորից փորձեք։</translation>
 <translation id="5204967432542742771">Մուտքագրեք գաղտնաբառը</translation>
 <translation id="5205484256512407285">Փոխանցելու համար երբեք չօգտագործել բջջային ինտերնետ</translation>
@@ -8196,6 +8198,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Եթե ուզում եք ավելին իմանալ, թե <ph name="DEVICE_OS" />-ն ինչ տվյալներ կարող է տրամադրել Google-ին, և ինչպես են դրանք օգտագործվում, այցելեք g.co/flex/HWDataCollection էջ։<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Համացանցը դարձնում է ավելի անվտանգ ձեր և մյուս օգտատերերի համար</translation>
 <translation id="6771503742377376720">Հավաստագրման կենտրոն է</translation>
+<translation id="6772103682557559072">Այլ գործողություններ աշխատավայրի հասցեի (<ph name="ADDRESS_SUMMARY" />) հետ</translation>
 <translation id="6772974422346500939">Բացել և փոփոխել</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Անհրաժեշտ է մուտքագրել մեկանգամյա գաղտնաբառ</translation>
@@ -10021,6 +10024,7 @@
 <translation id="8025151549289123443">Կողպէկրան և մուտք</translation>
 <translation id="8025291188699172126">Թարմացումների մասին</translation>
 <translation id="8026471514777758216">Ձեր բոլոր սարքերը</translation>
+<translation id="8026700655446696031">Այլ գործողություններ տան հասցեի (<ph name="ADDRESS_SUMMARY" />) հետ</translation>
 <translation id="8026784703228858744">Պահեք ձեր էջանիշները և այլ տվյալներ համաժամացման միջոցով</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Բացվել է 0 օր առաջ}=1{Բացվել է 1 օր առաջ}one{Բացվել է # օր առաջ}other{Բացվել է # օր առաջ}}</translation>
 <translation id="8028060951694135607">Microsoft-ի բանալիների վերականգնում</translation>
@@ -10169,6 +10173,7 @@
 <translation id="8121537075864592453">Լիաէկրան ռեժիմն անջատված է</translation>
 <translation id="8121750884985440809">Այս պահին դուք հեռարձակում եք ձեր էկրանը</translation>
 <translation id="8122898034710982882">Հեռախոսի կառավարման կենտրոն, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Պահուստավորեք ձեր գաղտնաբառերը, էջանիշները և այլ տվյալներ, որպեսզի հեշտությամբ գտնեք դրանք ցանկացած սարքում</translation>
 <translation id="81238879832906896">Դեղին ու սպիտակ ծաղիկ</translation>
 <translation id="8123975449645947908">Թերթել հետ</translation>
 <translation id="8124313775439841391">Կառավարվող ONC</translation>
@@ -11545,6 +11550,7 @@
 <translation id="9057354806206861646">Ժամանակացույցի թարմացում</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Օրական մոտ 1 ծանուցում}one{Օրական մոտ {NUM_NOTIFICATION} ծանուցում}other{Օրական մոտ {NUM_NOTIFICATION} ծանուցում}}</translation>
 <translation id="9058760336383947367">Դիտեք տպիչի PPD ֆայլը</translation>
+<translation id="9061521313218438086">Եթե հայտնաբերվի, որ ձեր գաղտնաբառերից մեկը բացահայտվել է տվյալների հանրային արտահոսքի արդյունքում, Google գաղտնաբառերի կառավարիչը կարող է առաջարկել փոխել այն, եթե դուք մուտք եք գործել հաշիվ։</translation>
 <translation id="9061694916020926968">Դուք պետք է մուտք գործած լինեք Google հաշիվ, որպեսզի օգտագործեք Chromebook-ի համար Steam-ը (բետա)։ Մտեք հաշիվ և նորից փորձեք։</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Սխալ <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /> տողերում</translation>

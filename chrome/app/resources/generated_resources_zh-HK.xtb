@@ -642,6 +642,7 @@
 <translation id="1438630805136563416">移除咗動作「<ph name="REMOVED_ACTION" />」</translation>
 <translation id="1439671507542716852">長期支援</translation>
 <translation id="1440090277117135316">學校註冊程序完成</translation>
+<translation id="1441971243157709645">受管理嘅打印機</translation>
 <translation id="1442054921249164535">其他資料</translation>
 <translation id="144283815522798837">已選取 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 個項目</translation>
 <translation id="1442851588227551435">設定使用中的 Kerberos 票證</translation>
@@ -5064,6 +5065,10 @@
 <translation id="4501530680793980440">確認移除</translation>
 <translation id="4502423230170890588">從此裝置中移除</translation>
 <translation id="4502477450742595012">在分頁上按一下右鍵，並選取「將分頁加入新群組」</translation>
+<translation id="4503362512377701151">系統會顯示你最近用過的分頁群組，方便你在之前暫停的地方繼續。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以在資訊卡選單中管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4503748371388753124">您的電腦具有可信任平台模組 (TPM) 安全性裝置，ChromeOS Flex 需要透過該裝置來執行許多重要的安全防護功能。如要瞭解詳情，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{已允許 Cookie}=1{已允許 Cookie，有 1 個例外情況}other{已允許 Cookie，有 {COUNT} 個例外情況}}</translation>
 <translation id="4504940961672722399">按一下這個圖示或按下 <ph name="EXTENSION_SHORTCUT" />，即可使用這項擴充功能。</translation>
@@ -5916,6 +5921,7 @@
 <translation id="5109044022078737958">咪咪</translation>
 <translation id="5109816792918100764">移除<ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">在新視窗中開啟分頁群組</translation>
+<translation id="511147239888121455">要備份資料嗎？</translation>
 <translation id="5111646998522066203">結束無痕模式</translation>
 <translation id="5111692334209731439">書籤管理員(&amp;B)</translation>
 <translation id="5111794652433847656">此裝置上沒有「<ph name="APP_NAME" />」的任何密鑰</translation>
@@ -8203,6 +8209,7 @@
     <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能與 Google 分享的資料，以及這些資料的用途，請前往 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">為您和網絡上的所有使用者提高安全性</translation>
 <translation id="6771503742377376720">這是憑證授權單位</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> 公司地址嘅其他選項</translation>
 <translation id="6772974422346500939">開啟並編輯</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">網站需要一次性密碼</translation>
@@ -10028,6 +10035,7 @@
 <translation id="8025151549289123443">上鎖畫面和登入</translation>
 <translation id="8025291188699172126">關於更新</translation>
 <translation id="8026471514777758216">您的所有裝置</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> 住宅地址嘅其他選項</translation>
 <translation id="8026784703228858744">透過同步處理功能儲存書籤和其他資料</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前瀏覽過}=1{1 天前瀏覽過}other{# 天前瀏覽過}}</translation>
 <translation id="8028060951694135607">Microsoft 金鑰復原</translation>
@@ -10176,6 +10184,7 @@
 <translation id="8121537075864592453">已停用全螢幕</translation>
 <translation id="8121750884985440809">您目前正在投放螢幕畫面</translation>
 <translation id="8122898034710982882">Phone Hub，<ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">備份密碼、書籤等內容，輕鬆在你的所有裝置上取用</translation>
 <translation id="81238879832906896">黃色和白色的花</translation>
 <translation id="8123975449645947908">向後捲動</translation>
 <translation id="8124313775439841391">管理 ONC</translation>

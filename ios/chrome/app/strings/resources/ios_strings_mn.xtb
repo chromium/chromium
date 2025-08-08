@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Нууц үг, нэвтрэх түлхүүр хадгалахыг санал болгох</translation>
 <translation id="1794893174442046596">Табын бүлэг</translation>
 <translation id="1807893857950749072">Үнэ мөшгөх онцлогийн мэдэгдлийг зөвшөөрөх…</translation>
+<translation id="1809929083618343438">Энэ нь Chrome-с сонгогдсон мэдээллийг хасах ч таны Google Бүртгэлээс энэ мэдээллийг устгахгүй.</translation>
 <translation id="1810976980198522421">Цуцлах</translation>
 <translation id="1812514023095547458">Өнгийг сонгох</translation>
 <translation id="1815941218935345331">Нууц код</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Нээлттэй цонх руу сэлгэх</translation>
 <translation id="2164946989711475905">Нэвтрэх…</translation>
 <translation id="2175927920773552910">QR код</translation>
+<translation id="2180338296831857171">Хаяг устгах</translation>
 <translation id="218350106843433823">Нууц үг, нэвтрэх түлхүүрийг автоматаар бөглөх</translation>
 <translation id="2184272387334793084">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Нэгж сонгогч</translation>
 <translation id="2330607597130465898">Хамгаалалтгүй</translation>
 <translation id="233375395665273385">Устгаад, гарах</translation>
+<translation id="2350463587705616331">Sepia-н дэвсгэр өнгө</translation>
 <translation id="2351097562818989364">Таны орчуулгын тохиргоо дахин шинэчлэгдсэн байна.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Та {DOMAIN_ONE}-н нууц үгээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}=2{Та {DOMAIN_ONE} болон {DOMAIN_TWO}-н нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}=3{Та {DOMAIN_ONE}, {DOMAIN_TWO} болон бусад {OTHER_DOMAINS_COUNT} домэйний нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}other{Та {DOMAIN_ONE}, {DOMAIN_TWO} болон бусад {OTHER_DOMAINS_COUNT} домэйний нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}}</translation>
 <translation id="2353953000228441783">Сайтын өгөгдмөл харагдах байдал</translation>
@@ -543,6 +546,7 @@
 <translation id="3081338492074632642">Таны хадгалж буй нууц үг <ph name="WEBSITE" />-н нууц үгтэй тохирч байгаа эсэхийг шалгана уу</translation>
 <translation id="3087734570205094154">Доод</translation>
 <translation id="309710370695886264">Танд дахин ашигласан 1 нууц үг байна. Аюулгүй байхын тулд үүнийг одоо засна уу.</translation>
+<translation id="3099402981545350675">Энэ нь уг төхөөрөмж дээр хадгалсан хаягийг устгана. Энэ нь мөн Chrome-с сонгогдсон мэдээллийг хасах ч таны Google Бүртгэлээс энэ мэдээллийг устгахгүй.</translation>
 <translation id="3106258548858559536">Унших горимыг унтраах</translation>
 <translation id="3106690631878101882">Орчуулахыг нуух</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" />-н нууц үгийг устгах уу?</translation>
@@ -741,6 +745,7 @@
 <translation id="3962326069546168954">Хадгалах</translation>
 <translation id="3967327056943561740">Хавчуурга</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
+<translation id="3973560090698854095">Энэ нь таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгалсан хаягийг устгана.</translation>
 <translation id="3982893814825393515">Асуудлыг мэдээлэх…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" />-р нэвтэрсэн. Бүртгэлийн цэсийг нээнэ үү.</translation>
 <translation id="3986739045730058129">Таб руу очих</translation>
@@ -1021,6 +1026,7 @@
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5050810143224996149">Нууц үг хуваалцах</translation>
 <translation id="5055015094595227120">Нарийвчилсан байршил</translation>
+<translation id="5055551113846164633">Энэ нь уг төхөөрөмж дээр хадгалсан хаягийг устгана. Энэ нь мөн таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгалсан хаягийг устгана.</translation>
 <translation id="5056446788882570708">Асуудлыг <ph name="TIME" />-д олсон</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive суулгах</translation>
@@ -1232,6 +1238,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синк хийж байна…</translation>
 <translation id="583923961930319521">Бүх төхөөрөмж дээрээ нууц үгээ ашиглах</translation>
+<translation id="5843013299019689749">Хар дэвсгэр өнгө</translation>
 <translation id="5844284118433003733">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="5854790677617711513">30 өдрөөс илүү</translation>
 <translation id="5857770089550859117">Синкийг эхлүүлэхийн тулд нэвтрэх үг оруулах шаардлагатай.</translation>
@@ -1484,6 +1491,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6682680306647339111">Сануулагчийг хассан</translation>
 <translation id="6684262542644248484">Вебсайтад нэвтэрнэ үү</translation>
 <translation id="6685259053455152195">Тохиргоог шуурхай өөрчлөх болон хаяг оруулах хэсгээс онцлогуудыг ашиглах товчлол.</translation>
+<translation id="6689342293888598653">Цагаан дэвсгэр өнгө</translation>
 <translation id="6689685206615181381">Зөвхөн Нууцлалын горим боломжтой</translation>
 <translation id="6708501134077648845">Нууц үгний сонголтууд</translation>
 <translation id="6709964700841491574">Түгжих горим</translation>
@@ -1591,6 +1599,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="714291438898585119">Одтой</translation>
 <translation id="7146301801400584641">Календарийн файл боломжтой</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
+<translation id="7154417656353909837">Хаягийг хасах</translation>
 <translation id="7161230316646448869">Хавчуурга, түүх болон бусад зүйлээ бүх төхөөрөмжид синк хийгээрэй</translation>
 <translation id="7173114856073700355">Тохиргоог нээх</translation>
 <translation id="7173721738069475737">{count,plural, =1{Хавчуургыг хадгалсан}other{{count} хавчуургыг хадгалсан}}</translation>
@@ -1660,6 +1669,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7458706065921255639">Хувийн болгох, холбох</translation>
 <translation id="745899714366929493">Бүтэн өдөр</translation>
 <translation id="7460698861522306757">Хөдөлгөөнт төхөөрөмжийн сайт хүсэх</translation>
+<translation id="7464143666517313304">Энэ нь уг төхөөрөмж дээр хадгалсан хаягийг устгана.</translation>
 <translation id="7468373585447318060">Мөшгөж буй бүх бүтээгдэхүүнийхээ үнэ буурсан талаар мэдээлэлтэй байгаарай.</translation>
 <translation id="746872191028309255">Камер эсвэл зургийн цомгоороо харж буй зүйлээ дэлгүүрээс хайгаарай.</translation>
 <translation id="7471557245617580330">Шинэ цонх үүсгэх</translation>
@@ -1711,6 +1721,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7646772052135772216">Нууц үгийг синк хийх ажиллахгүй байна</translation>
 <translation id="764827086632467055">Өгөгдмөл хөтчийн аппыг товшино уу</translation>
 <translation id="7649070708921625228">Тусламж</translation>
+<translation id="765555660695722850">Энэ нь уг төхөөрөмж дээр хадгалсан хаягийг устгана. Энэ нь мөн таны Google Бүртгэлээс зарим мэдээллийг устгах ч таны нэр, гэрийн хаяг зэрэг үндсэн мэдээллийг устгахгүй.</translation>
 <translation id="765631330137769217">Та дараагийн удаа нэвтрэхдээ энэ нууц үгэнд хялбархан хандахын тулд "Хадгалах" дээр товшино уу</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7662316065255305764">Сайтын мэдээлэл</translation>
@@ -2058,6 +2069,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8891031436559779793">Аль нэг сайт дээр үнэ буурсан тохиолдолд танд мэдэгдэнэ.</translation>
 <translation id="8893208530912252670">Видео</translation>
 <translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
+<translation id="8900845556227858314">Хөтчийн апп</translation>
 <translation id="890565330728586731">Буцах</translation>
 <translation id="8907722425137681851">Хуудаснаас олох…</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>

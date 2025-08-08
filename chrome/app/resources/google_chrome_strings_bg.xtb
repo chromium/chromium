@@ -170,6 +170,7 @@
 <translation id="3003694935412297923">Всички задачи</translation>
 <translation id="3018957014024118866">Изтриване на данните и от Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Повторно стартиране за актуализиране на &amp;ChromeOS Flex</translation>
+<translation id="3037517125981011456">Показва подкани за влизане в Chrome</translation>
 <translation id="3037838751736561277">Google Chrome работи на заден план.</translation>
 <translation id="3038232873781883849">Изчаква се инсталирането да започне...</translation>
 <translation id="3045032126857188731">Език на превода: <ph name="LANGUAGE" /></translation>
@@ -402,6 +403,7 @@
 <translation id="5980111191913430208">Разширения, приложения и теми от неизвестни източници могат да навредят на устройството ви. Chrome препоръчва да инсталирате такива само от <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Изтегля се... Оставащо време: <ph name="HOURS" /> ч</translation>
 <translation id="6008161919456049856">Паролите, начините на плащане и адресите, които сте запазили в профила си в Google, ще бъдат премахнати от това устройство. За да ги използвате отново в Chrome, влезте пак в профила си.</translation>
+<translation id="6009821354356307391">Задайте последващ въпрос</translation>
 <translation id="6014316319780893079">С помощта на <ph name="BEGIN_LINK" />инструментите от Chrome<ph name="END_LINK" /> можете да сърфирате безопасно и да запазите контрол</translation>
 <translation id="6022659036123304283">Персонализирайте Chrome според вкуса си</translation>
 <translation id="6025087594896450715">Google Chrome ще се рестартира след <ph name="REMAINING_TIME" /></translation>

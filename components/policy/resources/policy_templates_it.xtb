@@ -11594,13 +11594,6 @@ Per maggiori dettagli, vai su https://support.google.com/chrome/a/answer/9301891
 
       Se la policy viene impostata su Disattivata, i dispositivi registrati non segnalano le informazioni sulla versione.</translation>
 <translation id="8934296213794658971">Impostazioni per l'integrazione di Gemini</translation>
-<translation id="8934485887744460569">Configura il modo in cui <ph name="PRODUCT_NAME" /> scarica il modello di base GenAI e lo utilizza localmente per l'inferenza. 
-
-Se la policy viene impostata su Consentito (0) o se non viene configurata, il modello viene scaricato automaticamente e utilizzato per l'inferenza.
-
-Se la policy viene impostata su Disattivato (1), il modello non viene scaricato.
-
-Il download del modello può essere disattivato anche da <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8937282917198525844"> A partire dalla versione M81, abbiamo rinnovato aspetto e design degli elementi di controllo modulo standard (ad esempio, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con una superiore accessibilità e una migliore uniformità della piattaforma. Questa policy ripristina i precedenti controlli modulo "legacy" fino alla versione M84.
 
       Se questa policy viene impostata su True, gli elementi di controllo modulo "legacy" verranno utilizzati per tutti i siti.

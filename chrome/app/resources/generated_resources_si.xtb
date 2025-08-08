@@ -5911,6 +5911,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5109044022078737958">මියා</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ඉවත් කරන්න</translation>
 <translation id="5111326646107464148">සමූහය නව කවුළුවකින් විවෘත කරන්න</translation>
+<translation id="511147239888121455">ඔබේ දේවල් උපස්ථ කරන්න ද?</translation>
 <translation id="5111646998522066203">අප්‍රසිද්ධයෙන් පිටවන්න</translation>
 <translation id="5111692334209731439">&amp;පිටු සලකුණු කළමනාකරු</translation>
 <translation id="5111794652433847656">මෙම උපාංගය මත <ph name="APP_NAME" /> සඳහා මුරයතුරු කිසිවක් නොමැත</translation>
@@ -6046,6 +6047,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> සඳහා</translation>
 <translation id="5203035663139409780">ඔබේ උපාංගයෙහි ගොනු හෝ ෆෝල්ඩර සංස්කරණය කළ හැක</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{දිගුව බැලීමට ක්ලික් කරන්න}one{දිගු බැලීමට ක්ලික් කරන්න}other{දිගු බැලීමට ක්ලික් කරන්න}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> සඳහා ප්‍රතිසාධන මුරපදය</translation>
 <translation id="5204673965307125349">උපාංගය පවර්වොෂ් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="5204967432542742771">මුරපදය ඇතුළත් කරන්න</translation>
 <translation id="5205484256512407285">මාරු කිරීමට කිසි විටක ජංගම දත්ත භාවිත නොකරන්න</translation>
@@ -8201,6 +8203,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> Google සමග බෙදා ගත හැකි දත්ත සහ එය භාවිත කරන ආකාරය පිළිබඳ වැඩි විස්තර සඳහා, g.co/flex/HWDataCollection කරා පිවිසෙන්න.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">ඔබේ සහ වෙබය මත සියලු දෙනාගේම ආරක්‍ෂාව වැඩිදියුණු කරයි</translation>
 <translation id="6771503742377376720">සහතික කිරීමේ අධිකාරියකි</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> කාර්යාලයේ ලිපිනය සඳහා තවත් විකල්ප</translation>
 <translation id="6772974422346500939">විවෘත කර සංස්කරණය කරන්න</translation>
 <translation id="6773595613448852535">Chrome මූල ගබඩාව</translation>
 <translation id="677394079035748956">අඩවියට එක් වරක් පමණක් භාවිතා කළ හැකි මුරපදයක් අවශ්‍යයි</translation>
@@ -10026,6 +10029,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8025151549289123443">අගුලු තිරය සහ පිරීම</translation>
 <translation id="8025291188699172126">යාවත්කාලීන පිළිබඳව</translation>
 <translation id="8026471514777758216">ඔබේ සියලු උපාංග</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> නිවසේ ලිපිනය සඳහා තවත් විකල්ප</translation>
 <translation id="8026784703228858744">සමමුහූර්තය සමග ඔබේ පිටුසන් සහ තවත් දේ සුරකින්න</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{දින 0කට පෙර පිවිසුණි}=1{1 දිනකට පෙර පිවිසුණි}one{දින #කට පෙර පිවිසුණි}other{දින #කට පෙර පිවිසුණි}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10174,6 +10178,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8121537075864592453">පූර්ණ තිරය අබල කර ඇත</translation>
 <translation id="8121750884985440809">ඔබ දැනට ඔබේ තිරය විකාශය කරමින් සිටී</translation>
 <translation id="8122898034710982882">දුරකථන මධ්‍යස්ථානය, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">ඔබේ මුරපද, පිටුසන් සහ තවත් දේ උපස්ථ කරන්න, එවිට ඔබට ඒවා ඔබේ සියලු උපාංගවලින් පහසුවෙන් ලබා ගත හැක</translation>
 <translation id="81238879832906896">කහ සහ සුදු මල</translation>
 <translation id="8123975449645947908">පසුපසට අනුචලන කරන්න</translation>
 <translation id="8124313775439841391">පාලිත ONC</translation>
@@ -11550,6 +11555,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9057354806206861646">කාල සටහන යාවත්කාලීන කරන්න</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{දිනකට දැනුම්දීම් 1ක් පමණ}one{දිනකට දැනුම්දීම් {NUM_NOTIFICATION}ක් පමණ}other{දිනකට දැනුම්දීම් {NUM_NOTIFICATION}ක් පමණ}}</translation>
 <translation id="9058760336383947367">මුද්‍රකයේ PPD බලන්න</translation>
+<translation id="9061521313218438086">Chrome ඔබේ මුරපදයක් පොදු දත්ත කඩ කිරීමක දී සොයා ගන්නේ නම්, ඔබ පුරනය වී ඇත්නම් Google මුරපද කළමනාකරුට ඔබේ මුරපදය වෙනස් කිරීමට ඉදිරිපත් විය හැක.</translation>
 <translation id="9061694916020926968">Chromebook (බීටා) සඳහා Steam භාවිත කිරීමට ඔබ Google ගිණුමකට පුරනය වී සිටීමට අවශ්‍ය වේ. පුරනය වී නැවත උත්සාහ කරන්න.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> සිට <ph name="ERROR_LINE_END" /> දක්වා මාර්ගයෙන් දෝෂයකි</translation>

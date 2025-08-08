@@ -5923,6 +5923,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Remove <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Open group in new window</translation>
+<translation id="511147239888121455">Back up your stuff?</translation>
 <translation id="5111646998522066203">Exit incognito</translation>
 <translation id="5111692334209731439">&amp;Bookmark Manager</translation>
 <translation id="5111794652433847656">There aren't any passkeys for <ph name="APP_NAME" /> on this device</translation>
@@ -6058,6 +6059,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5201945335223486172">For <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Can edit files or folders on your device</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Click to view the extension}other{Click to view these extensions}}</translation>
+<translation id="5204282224596194174">Recovery password for <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Please powerwash the device and try again.</translation>
 <translation id="5204967432542742771">Enter password</translation>
 <translation id="5205484256512407285">Never use mobile data to transfer</translation>
@@ -8213,6 +8215,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
     <ph name="BEGIN_PARAGRAPH3" />For more details on data that <ph name="DEVICE_OS" /> may share with Google, and how it is used, visit g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
 <translation id="6771503742377376720">Is a Certification Authority</translation>
+<translation id="6772103682557559072">More options for <ph name="ADDRESS_SUMMARY" /> work address</translation>
 <translation id="6772974422346500939">Open and edit</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">The site needs a one-time password</translation>
@@ -10041,6 +10044,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8025151549289123443">Lock screen and sign-in</translation>
 <translation id="8025291188699172126">About Updates</translation>
 <translation id="8026471514777758216">All your devices</translation>
+<translation id="8026700655446696031">More options for <ph name="ADDRESS_SUMMARY" /> home address</translation>
 <translation id="8026784703228858744">Save your bookmarks and more with sync</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Visited 0 days ago}=1{Visited 1 day ago}other{Visited # days ago}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10189,6 +10193,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8121537075864592453">Full screen disabled</translation>
 <translation id="8121750884985440809">You are currently casting your screen.</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Back up your passwords, bookmarks and more, so that you can easily get them on all your devices</translation>
 <translation id="81238879832906896">Yellow and white flower</translation>
 <translation id="8123975449645947908">Scroll backwards</translation>
 <translation id="8124313775439841391">Managed ONC</translation>
@@ -11564,6 +11569,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9057354806206861646">Update schedule</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{About 1 notification a day}other{About {NUM_NOTIFICATION} notifications a day}}</translation>
 <translation id="9058760336383947367">View printer PPD</translation>
+<translation id="9061521313218438086">If Chrome finds one of your passwords in a public data breach, Google Password Manager can offer to change your password for you if you're signed in.</translation>
 <translation id="9061694916020926968">You need to be signed-in to a Google Account to use Steam for Chromebook (Beta). Sign in and try again.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>

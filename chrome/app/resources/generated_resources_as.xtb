@@ -643,6 +643,7 @@
 <translation id="1438630805136563416">আঁতৰোৱা কাৰ্য <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">দীৰ্ঘম্যাদী সমৰ্থন</translation>
 <translation id="1440090277117135316">বিদ্যালয়ৰ পঞ্জীয়ন সম্পূৰ্ণ হৈছে</translation>
+<translation id="1441971243157709645">পৰিচালিত প্ৰিণ্টাৰ</translation>
 <translation id="1442054921249164535">আন ডেটা</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> বাছনি কৰা হ’ল</translation>
 <translation id="1442851588227551435">সক্ৰিয় Kerberosৰ টিকেট ছেট কৰক</translation>
@@ -5067,6 +5068,10 @@
 <translation id="4501530680793980440">আঁতৰোৱাটো নিশ্চিত কৰক</translation>
 <translation id="4502423230170890588">এই ডিভাইচটোৰ পৰা আঁতৰাওক</translation>
 <translation id="4502477450742595012">এটা টেবত ৰাইট-ক্লিক কৰক আৰু "নতুন গোটত টেব যোগ দিয়ক" বাছনি কৰক</translation>
+<translation id="4503362512377701151">আপুনি আপোনাৰ শেহতীয়াকৈ ব্যৱহৃত টেবৰ গোটসমূহ দেখিছে যাতে আপুনি য’ত এৰিছিল তাৰ পৰাই আৰম্ভ কৰাত সহায় হয়।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        আপুনি কাৰ্ড মেনুৰ পৰা ছেটিংসমূহ পৰিচালনা কৰিব পাৰে বা Chrome কাষ্টমাইজ কৰকত অধিক বিকল্প চাব পাৰে।</translation>
 <translation id="4503748371388753124">আপোনাৰ কম্পিউটাৰটোত এটা বিশ্বাসী প্লেটফৰ্ম মডিউল (TPM)ৰ সুৰক্ষা ডিভাইচ আছে যিটোক ChromeOS Flexত বহুতো গুৰুত্বপূৰ্ণ সুৰক্ষা সম্পৰ্কীয় সুবিধা কাৰ্যকৰী কৰিবলৈ ব্যৱহাৰ কৰা হয়। অধিক জানিবলৈ Chromebookৰ সহায় কেন্দ্ৰলৈ যাওক:https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{কুকিসমূহৰ অনুমতি দিয়া হৈছে}=1{কুকিসমূহৰ অনুমতি দিয়া হৈছে, ১ টা ব্যতিক্ৰম}one{কুকিসমূহৰ অনুমতি দিয়া হৈছে, {COUNT} টা ব্যতিক্ৰম}other{কুকিসমূহৰ অনুমতি দিয়া হৈছে, {COUNT} টা ব্যতিক্ৰম}}</translation>
 <translation id="4504940961672722399">এই আইকনটোত ক্লিক কৰি বা <ph name="EXTENSION_SHORTCUT" />ত টিপি এই এক্সটেনশ্বনটো ব্যৱহাৰ কৰক।</translation>

@@ -208,6 +208,7 @@
 <translation id="17906873777101817">পাসওয়ার্ড ও পাসকী সেভ করার অফার</translation>
 <translation id="1794893174442046596">ট্যাব গ্রুপ</translation>
 <translation id="1807893857950749072">প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তির অনুমতি দিন…</translation>
+<translation id="1809929083618343438">এটি Chrome থেকে বেছে নেওয়া তথ্য সরিয়ে দেয়, তবে এটি আপনার Google অ্যাকাউন্ট থেকে এই তথ্য মুছে দেয় না।</translation>
 <translation id="1810976980198522421">বাতিল করুন</translation>
 <translation id="1812514023095547458">রঙ বেছে নিন</translation>
 <translation id="1815941218935345331">পাসকোড</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">খুলে রাখা উইন্ডোতে পরিবর্তন করুন</translation>
 <translation id="2164946989711475905">সাইন-ইন করুন…</translation>
 <translation id="2175927920773552910">QR কোড</translation>
+<translation id="2180338296831857171">ঠিকানাগুলি মুছুন</translation>
 <translation id="218350106843433823">পাসওয়ার্ড ও পাসকী অটোফিল করুন</translation>
 <translation id="2184272387334793084">আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">ইউনিট বাছাইকারী</translation>
 <translation id="2330607597130465898">কোনও সুরক্ষা নেই</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
+<translation id="2350463587705616331">ব্যাকগ্রাউন্ডের সেপিয়া রঙ</translation>
 <translation id="2351097562818989364">আপনার অনুবাদ সেটিংস রিসেট করা হয়েছে৷</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=2{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE} ও {DOMAIN_TWO}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=3{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}one{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}other{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}}</translation>
 <translation id="2353953000228441783">ডিফল্ট সাইট ভিউ</translation>
@@ -543,6 +546,7 @@
 <translation id="3081338492074632642">আপনি যে পাসওয়ার্ডটি সেভ করছেন, সেটি <ph name="WEBSITE" />-এ আপনার দেওয়া পাসওয়ার্ডের সাথে মিলছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="309710370695886264">আপনার কাছে ১টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
+<translation id="3099402981545350675">এটি এই ডিভাইসে সেভ করা ঠিকানাগুলি মুছে দেয়। এছাড়াও এটি Chrome থেকে বেছে নেওয়া তথ্য সরিয়ে দেয়, তবে এটি আপনার Google অ্যাকাউন্ট থেকে এই তথ্য মুছে দেয় না।</translation>
 <translation id="3106258548858559536">রিডিং মোড বন্ধ করুন</translation>
 <translation id="3106690631878101882">'অনুবাদ করুন' বিকল্প লুকান</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" />-এর পাসওয়ার্ড মুছতে চান?</translation>
@@ -741,6 +745,7 @@
 <translation id="3962326069546168954">সেভ করুন</translation>
 <translation id="3967327056943561740">বুকমার্ক</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
+<translation id="3973560090698854095">এটি আপনার Google অ্যাকাউন্ট <ph name="USER_EMAIL" /> থেকে সেভ করা ঠিকানাগুলি মুছে দেয়।</translation>
 <translation id="3982893814825393515">কোনও সমস্যার অভিযোগ জানান…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করেছেন। অ্যাকাউন্ট মেনু খুলুন।</translation>
 <translation id="3986739045730058129">ট্যাবে যান</translation>
@@ -1021,6 +1026,7 @@
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5050810143224996149">পাসওয়ার্ড শেয়ার করুন</translation>
 <translation id="5055015094595227120">সুনির্দিষ্ট লোকেশন</translation>
+<translation id="5055551113846164633">এটি এই ডিভাইসে সেভ করা ঠিকানাগুলি মুছে দেয়। এছাড়াও এটি আপনার Google অ্যাকাউন্ট <ph name="USER_EMAIL" /> থেকে সেভ করা ঠিকানাগুলি মুছে দেয়।</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> যে সমস্যাগুলি পাওয়া গেছে।</translation>
 <translation id="5059136629401106827">ঠিক আছে</translation>
 <translation id="5062321486222145940">Google ড্রাইভ ইনস্টল করুন</translation>
@@ -1233,6 +1239,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">সিঙ্ক হচ্ছে…</translation>
 <translation id="583923961930319521">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড ব্যবহার করুন</translation>
+<translation id="5843013299019689749">ব্যাকগ্রাউন্ডের কালো রঙ</translation>
 <translation id="5844284118433003733">আপনি সাইন-ইন করলে, এই ডেটা আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
 <translation id="5857770089550859117">সিঙ্ক শুরু করতে পাসফ্রেজ প্রয়োজন।</translation>
@@ -1485,6 +1492,7 @@
 <translation id="6682680306647339111">রিমাইন্ডার সরানো হয়েছে</translation>
 <translation id="6684262542644248484">ওয়েবসাইটে সাইন-ইন করুন</translation>
 <translation id="6685259053455152195">অ্যাড্রেস বার থেকে সেটিং দ্রুত পরিবর্তন করা ও ফিচার ব্যবহার করার শর্টকার্ট।</translation>
+<translation id="6689342293888598653">ব্যাকগ্রাউন্ডের সাদা রঙ</translation>
 <translation id="6689685206615181381">শুধু ছদ্মবেশী মোড উপলভ্য রয়েছে</translation>
 <translation id="6708501134077648845">পাসওয়ার্ড সংক্রান্ত বিকল্প</translation>
 <translation id="6709964700841491574">লকডাউন মোড</translation>
@@ -1592,6 +1600,7 @@
 <translation id="714291438898585119">তারা চিহ্নিত</translation>
 <translation id="7146301801400584641">ক্যালেন্ডার ফাইল উপলভ্য</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
+<translation id="7154417656353909837">ঠিকানাগুলি সরান</translation>
 <translation id="7161230316646448869">সমস্ত ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7173721738069475737">{count,plural, =1{বুকমার্ক সেভ করা হয়েছে}one{{count}টি বুকমার্ক সেভ করা হয়েছে}other{{count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
@@ -1661,6 +1670,7 @@
 <translation id="7458706065921255639">পছন্দমতো সাজিয়ে নেওয়া ও লিঙ্ক করা</translation>
 <translation id="745899714366929493">সারাদিন</translation>
 <translation id="7460698861522306757">মোবাইল সাইটের অনুরোধ করুন</translation>
+<translation id="7464143666517313304">এটি এই ডিভাইসে সেভ করা ঠিকানাগুলি মুছে দেয়।</translation>
 <translation id="7468373585447318060">আপনি ট্র্যাক করছেন, এমন সব প্রোডাক্টের দাম কমা সম্পর্কিত তথ্য পান।</translation>
 <translation id="746872191028309255">আপনার ক্যামেরা বা ফটো গ্যালারির মাধ্যমে যা দেখছেন তা কিনুন।</translation>
 <translation id="7471557245617580330">নতুন ট্যাব তৈরি করুন</translation>
@@ -1712,6 +1722,7 @@
 <translation id="7646772052135772216">পাসওয়ার্ড সিঙ্ক ফিচার কাজ করছে না</translation>
 <translation id="764827086632467055">'ডিফল্ট ব্রাউজার অ্যাপ' বিকল্পে ট্যাপ করুন</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
+<translation id="765555660695722850">এটি এই ডিভাইসে সেভ করা ঠিকানাগুলি মুছে দেয়। এছাড়াও এটি আপনার Google অ্যাকাউন্ট থেকে কিছু তথ্য মুছে দেয় তবে আপনার নাম বা বাড়ির ঠিকানার মতো প্রাথমিক তথ্য নয়।</translation>
 <translation id="765631330137769217">পরেরবার সাইন-ইন করার সময় সহজে এই পাসওয়ার্ড অ্যাক্সেস করতে, "সেভ করুন" বিকল্পে ট্যাপ করুন</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7662316065255305764">সাইটের তথ্য</translation>
@@ -2059,6 +2070,7 @@
 <translation id="8891031436559779793">কোনও সাইটে দাম কমলে আপনি সেই সম্পর্কে বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="8893208530912252670">ভিডিও</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
+<translation id="8900845556227858314">ব্রাউজার অ্যাপ</translation>
 <translation id="890565330728586731">ফিরে যান</translation>
 <translation id="8907722425137681851">পৃষ্ঠাতে খুঁজুন…</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>

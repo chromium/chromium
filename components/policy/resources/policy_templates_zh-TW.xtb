@@ -11153,13 +11153,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 
       如果將這項政策設為停用，已註冊的裝置不會回報版本資訊。</translation>
 <translation id="8934296213794658971">Gemini 整合設定</translation>
-<translation id="8934485887744460569">設定 <ph name="PRODUCT_NAME" /> 如何下載基礎生成式 AI 模型，運用於在本機進行推論。
-
-如果將這項政策設為「允許 (0)」或不設定，系統會自動下載模型並用於推論。
-
-如果將這項政策設為「停用 (1)」，系統就不會下載模型。
-
-可以使用 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 停用模型下載功能。</translation>
 <translation id="8937282917198525844"> 自 M81 版起，我們為標準表單控制項元素 (例如 &lt;select&gt;、&lt;button&gt; 和 &lt;input type=date&gt;) 提供煥然一新的外觀和風格，不但強化了無障礙使用設計，在各種作業系統平台操作時，效果也能更一致。這項政策恢復納入了「舊版」表單控制項元素做為使用選項，並且一路提供到 M84 版。
 
       如果將這項政策設為 True，系統會針對所有網站使用「舊版」表單控制項元素。

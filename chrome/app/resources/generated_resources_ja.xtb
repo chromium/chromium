@@ -5718,6 +5718,7 @@
 <translation id="496742804571665842">eSIM プロファイルを無効にする</translation>
 <translation id="4967571733817147990">マウスボタンをカスタマイズ</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> のデバイス名</translation>
+<translation id="4968994772848295474">ゲストモードではウェブアプリをインストールできません</translation>
 <translation id="4971412780836297815">完了後に開く</translation>
 <translation id="4972129977812092092">プリンタの編集</translation>
 <translation id="4972164225939028131">パスワードが違います</translation>
@@ -7494,6 +7495,7 @@
 <translation id="6257602895346497974">同期を有効にする...</translation>
 <translation id="625827534921607067">これまでに接続または設定したネットワークが複数ある場合は、このネットワークが優先されます</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 所有者情報を更新</translation>
+<translation id="6261688934280090835">ChromeOS キオスクアプリのログ</translation>
 <translation id="6262371516389954471">バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="6263082573641595914">Microsoft CA バージョン</translation>
 <translation id="6263284346895336537">非重要</translation>
@@ -10486,6 +10488,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> に対するその他の操作</translation>
 <translation id="8341804784147620576">検索ショートカットを表示</translation>
 <translation id="8342221978608739536">試していない</translation>
+<translation id="8342387517402567689">シークレット モードではウェブアプリをインストールできません</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
 <translation id="8345848587667658367">スマートフォンの最近の写真、メディア、通知、アプリを表示できるようになりました</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>

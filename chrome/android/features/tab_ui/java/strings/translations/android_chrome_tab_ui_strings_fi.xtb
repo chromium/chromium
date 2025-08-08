@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
 <translation id="2918484639460781603">Avaa asetukset</translation>
 <translation id="2928243913527329289">Google | Tietoja tästä kaupasta</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> valittu}other{<ph name="ITEMS_COUNT_MANY" /> valittu}}</translation>
 <translation id="3008554597174452548">Lopeta tuotteen seuraaminen</translation>
 <translation id="3026391124054406831">Luo ryhmiä, niin voit järjestellä välilehtiä.</translation>
 <translation id="3051031624272448591">Voit milloin tahansa palauttaa ne historiasta</translation>

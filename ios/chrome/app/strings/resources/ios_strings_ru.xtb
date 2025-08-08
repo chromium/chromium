@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Предл. сохр. пароли и ключи доступа</translation>
 <translation id="1794893174442046596">Группа вкладок</translation>
 <translation id="1807893857950749072">Включить уведомления об изменении цены</translation>
+<translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google</translation>
 <translation id="1810976980198522421">Отмена</translation>
 <translation id="1812514023095547458">Выберите цвет</translation>
 <translation id="1815941218935345331">Код доступа</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Переключиться на открытое окно</translation>
 <translation id="2164946989711475905">Войти</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2180338296831857171">Удалить адреса</translation>
 <translation id="218350106843433823">Автозаполнение паролей и ключей доступа</translation>
 <translation id="2184272387334793084">Войдите, чтобы получить доступ к своим паролям и другой информации на всех устройствах.</translation>
 <translation id="2186206192313702726">Google Объектив</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Список выбора единиц измерения</translation>
 <translation id="2330607597130465898">Защита отключена</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
+<translation id="2350463587705616331">Фон "Сепия"</translation>
 <translation id="2351097562818989364">Настройки перевода сброшены</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Вы можете сохранить пароль для домена {DOMAIN_ONE} в своем аккаунте Google ({EMAIL}).}=2{Вы можете сохранить пароли для доменов {DOMAIN_ONE} и {DOMAIN_TWO} в своем аккаунте Google ({EMAIL}).}=3{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}one{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}few{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} доменов в своем аккаунте Google ({EMAIL}).}many{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} доменов в своем аккаунте Google ({EMAIL}).}other{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Режим просмотра сайтов по умолчанию</translation>
@@ -385,6 +388,7 @@
 <translation id="2434405374328098816">Пароль пользователя <ph name="USERNAME" /> для сайта <ph name="WEBSITE" /> уже сохранен.</translation>
 <translation id="2434918313224755415">Чтобы перейти в режим инкогнито, прокрутите экран влево</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} элемент из истории}one{{count} элемент из истории}few{{count} элемента из истории}many{{count} элементов из истории}other{{count} элемента из истории}}</translation>
 <translation id="2461070143328828326">Настройки паролей</translation>
 <translation id="2462736546165239215">Здесь можно найти всю вашу историю браузера.</translation>
 <translation id="2466518891828668184">Сохраняйте пароли, чтобы легко входить в аккаунты на сайтах и в приложениях.</translation>
@@ -543,6 +547,7 @@
 <translation id="3081338492074632642">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="309710370695886264">У вас есть повторяющийся пароль. Устраните проблему.</translation>
+<translation id="3099402981545350675">Адреса, сохраненные на этом устройстве, будут удалены. Также выбранные данные будут удалены из Chrome, но не из аккаунта Google</translation>
 <translation id="3106258548858559536">Выключить режим чтения</translation>
 <translation id="3106690631878101882">Скрыть действие "Перевести"</translation>
 <translation id="310900540163454140">Удалить пароль для сайта <ph name="WEBSITE" />?</translation>
@@ -741,6 +746,7 @@
 <translation id="3962326069546168954">Сохранить</translation>
 <translation id="3967327056943561740">Закладки</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
+<translation id="3973560090698854095">Адреса, сохраненные в аккаунте Google <ph name="USER_EMAIL" />, будут удалены</translation>
 <translation id="3982893814825393515">Сообщить о проблеме</translation>
 <translation id="398604237578616937">Вы вошли как <ph name="USER_EMAIL" />. Открыть меню аккаунта.</translation>
 <translation id="3986739045730058129">Перейти на вкладку</translation>
@@ -1021,6 +1027,7 @@
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5050810143224996149">Отправка пароля</translation>
 <translation id="5055015094595227120">Точное местоположение</translation>
+<translation id="5055551113846164633">Адреса, сохраненные на этом устройстве и в аккаунте Google <ph name="USER_EMAIL" />, будут удалены</translation>
 <translation id="5056446788882570708">Проблемы обнаружены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">ОК</translation>
 <translation id="5062321486222145940">Установить Google Диск</translation>
@@ -1232,6 +1239,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронизация…</translation>
 <translation id="583923961930319521">Использовать пароли на всех устройствах</translation>
+<translation id="5843013299019689749">Черный фон</translation>
 <translation id="5844284118433003733">Данные будут связаны с аккаунтом Google, в который вы вошли. Это позволит защитить вас в сервисах Google, например принять дополнительные меры в Gmail после инцидента в системе безопасности.</translation>
 <translation id="5854790677617711513">Сохраненные более 30 дней назад</translation>
 <translation id="5857770089550859117">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
@@ -1484,6 +1492,7 @@
 <translation id="6682680306647339111">Напоминание удалено.</translation>
 <translation id="6684262542644248484">Войдите в аккаунт на нужном сайте.</translation>
 <translation id="6685259053455152195">Сочетания клавиш для быстрого изменения настроек и использования функций из адресной строки.</translation>
+<translation id="6689342293888598653">Белый фон</translation>
 <translation id="6689685206615181381">Доступен только режим инкогнито</translation>
 <translation id="6708501134077648845">Параметры паролей</translation>
 <translation id="6709964700841491574">Режим блокировки входа</translation>
@@ -1507,6 +1516,7 @@
 <translation id="6791425686608802741">Выберите "Добавить вкладку в новую группу".</translation>
 <translation id="6794476726485507147">Выберите дату и время, когда хотите получить напоминание о необходимости вернуться на эту страницу.</translation>
 <translation id="6795481620482106033">Недопустимые данные</translation>
+<translation id="6797543908718012274">Включить режим чтения</translation>
 <translation id="6807287147325542056">Пароли в других приложениях</translation>
 <translation id="681368974849482173">Сохранено</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{{count} закладка сохранена в аккаунте Google ({email}).}few{{count} закладки сохранено в аккаунте Google ({email}).}many{{count} закладок сохранено в аккаунте Google ({email}).}other{{count} закладки сохранено в аккаунте Google ({email}).}}</translation>
@@ -1591,6 +1601,7 @@
 <translation id="714291438898585119">Помеченные</translation>
 <translation id="7146301801400584641">Доступен файл календаря</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
+<translation id="7154417656353909837">Удалить адреса</translation>
 <translation id="7161230316646448869">Синхронизируйте закладки, историю и другие данные на всех своих устройствах</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7173721738069475737">{count,plural, =1{Закладка сохранена.}one{{count} закладка сохранена.}few{{count} закладки сохранено.}many{{count} закладок сохранено.}other{{count} закладки сохранено.}}</translation>
@@ -1660,6 +1671,7 @@
 <translation id="7458706065921255639">Персонализация и связывание</translation>
 <translation id="745899714366929493">Весь день</translation>
 <translation id="7460698861522306757">Мобильная версия</translation>
+<translation id="7464143666517313304">Адреса, сохраненные на этом устройстве, будут удалены</translation>
 <translation id="7468373585447318060">Узнавайте о скидках на интересующие вас товары.</translation>
 <translation id="746872191028309255">Покупайте товары с помощью камеры или фотографий из галереи.</translation>
 <translation id="7471557245617580330">Создать вкладку</translation>
@@ -1711,6 +1723,7 @@
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
 <translation id="764827086632467055">Нажмите "Приложение браузера по умолчанию".</translation>
 <translation id="7649070708921625228">Справка</translation>
+<translation id="765555660695722850">Адреса, сохраненные на этом устройстве, будут удалены. Также из аккаунта Google будет удалена часть информации, кроме основной, такой как имя или домашний адрес</translation>
 <translation id="765631330137769217">Нажмите "Сохранить", чтобы быстро получить доступ к этому паролю при следующем входе.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7662316065255305764">Информация о сайте</translation>
@@ -2058,6 +2071,7 @@
 <translation id="8891031436559779793">Если на одном из сайтов цена снизится, вы получите оповещение</translation>
 <translation id="8893208530912252670">Видео</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
+<translation id="8900845556227858314">Приложение браузера</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8907722425137681851">Поиск на странице</translation>
 <translation id="8909135823018751308">Поделиться...</translation>

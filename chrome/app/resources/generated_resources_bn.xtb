@@ -5924,6 +5924,7 @@
 <translation id="5109044022078737958">মিয়া</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> সরান</translation>
 <translation id="5111326646107464148">নতুন উইন্ডোয় গ্রুপ খুলুন</translation>
+<translation id="511147239888121455">আপনার কন্টেন্টের ব্যাক-আপ নেবেন?</translation>
 <translation id="5111646998522066203">ছদ্মবেশী মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="5111692334209731439">&amp;বুকমার্ক পরিচালক</translation>
 <translation id="5111794652433847656">এই ডিভাইসে <ph name="APP_NAME" /> অ্যাপের জন্য কোনও 'পাসকী' নেই</translation>
@@ -6059,6 +6060,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" />-এর জন্য</translation>
 <translation id="5203035663139409780">আপনার ডিভাইসে ফাইল অথবা ফোল্ডার এডিট করতে পারেন</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{এক্সটেনশন দেখতে ক্লিক করুন}one{এই এক্সটেনশনগুলি দেখতে ক্লিক করুন}other{এই এক্সটেনশনগুলি দেখতে ক্লিক করুন}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" />-এর জন্য পাসওয়ার্ড ফিরিয়ে আনুন</translation>
 <translation id="5204673965307125349">ডিভাইস পাওয়ারওয়াশ করে আবার চেষ্টা করুন।</translation>
 <translation id="5204967432542742771">পাসওয়ার্ড প্রবেশ করান</translation>
 <translation id="5205484256512407285">ফাইল ট্রান্সফার করতে, কখনও মোবাইল ডেটা ব্যবহার করা হয় না</translation>
@@ -8217,6 +8219,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Google-এর সাথে <ph name="DEVICE_OS" /> কোন ডেটা শেয়ার করতে পারে এবং তা কীভাবে ব্যবহার করা হয়, তার ব্যাপারে বিস্তারিত বিবরণ পেতে, g.co/flex/HWDataCollection দেখুন।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন</translation>
 <translation id="6771503742377376720">একটি শংসাপত্রের কর্তৃপক্ষ</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" />-এর কর্মস্থলের ঠিকানার জন্য আরও বিকল্প</translation>
 <translation id="6772974422346500939">খুলুন ও এডিট করুন</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">সাইটের ক্ষেত্রে একবার ব্যবহারের পাসওয়ার্ড প্রয়োজন</translation>
@@ -10044,6 +10047,7 @@
 <translation id="8025151549289123443">লক স্ক্রিন ও সাইন-ইন</translation>
 <translation id="8025291188699172126">আপডেট সম্পর্কে</translation>
 <translation id="8026471514777758216">আপনার সব ডিভাইস</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" />-এর বাড়ির ঠিকানার জন্য আরও বিকল্প</translation>
 <translation id="8026784703228858744">সিঙ্ক ব্যবহার করে আপনার বুকমার্ক ও আরও অনেক কিছু সেভ করুন</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{০ দিন আগে গেছিলেন}=1{১ দিন আগে গেছিলেন}one{# দিন আগে গেছিলেন}other{# দিন আগে গেছিলেন}}</translation>
 <translation id="8028060951694135607">Microsoft মূল পুনরুদ্ধার</translation>
@@ -10192,6 +10196,7 @@
 <translation id="8121537075864592453">ফুল-স্ক্রিন সুবিধা বন্ধ করুন</translation>
 <translation id="8121750884985440809">বর্তমানে নিজের স্ক্রিন কাস্ট করছেন</translation>
 <translation id="8122898034710982882">ফোন হাব, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">আপনার পাসওয়ার্ড, বুকমার্ক এবং আরও অনেক কিছুর ব্যাক-আপ নিন, যাতে নিজের সব ডিভাইসে সেগুলি সহজেই পেয়ে যান</translation>
 <translation id="81238879832906896">হলুদ এবং সাদা ফুল</translation>
 <translation id="8123975449645947908">পিছনের দিকে স্ক্রল করুন</translation>
 <translation id="8124313775439841391">ONC পরিচালিত করা হযেছে</translation>
@@ -11568,6 +11573,7 @@
 <translation id="9057354806206861646">সময়সূচি আপডেট করুন</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{দিনে প্রায় ১টি বিজ্ঞপ্তি}one{দিনে প্রায় {NUM_NOTIFICATION}টি বিজ্ঞপ্তি}other{দিনে প্রায় {NUM_NOTIFICATION}টি বিজ্ঞপ্তি}}</translation>
 <translation id="9058760336383947367">প্রিন্টার PPD দেখুন</translation>
+<translation id="9061521313218438086">সর্বজনীন ডেটার নিরাপত্তা লঙ্ঘন হওয়ার ঘটনাতে, Chrome আপনার কোনও পাসওয়ার্ড দেখতে পেলে, আপনি সাইন-ইন করে থাকাকালীন, Google Password Manager আপনার হয়ে পাসওয়ার্ড পরিবর্তন করে দেওয়ার অফার দিতে পারে।</translation>
 <translation id="9061694916020926968">Chromebook (বিটা)-এর জন্য Steam ব্যবহার করতে আপনাকে কোনও Google অ্যাকাউন্টে সাইন-ইন করতে হবে। সাইন-ইন করে আবার চেষ্টা করুন।</translation>
 <translation id="9062468308252555888">১৪x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> থেকে <ph name="ERROR_LINE_END" /> নম্বর লাইনে কোনও ভুল আছে</translation>

@@ -260,6 +260,7 @@
 <translation id="14222610277930434">經常瀏覽</translation>
 <translation id="1422795627423046860">日期無效</translation>
 <translation id="1422930527989633628">可要求探索附近的藍牙裝置</translation>
+<translation id="142559998533702194">上載失敗</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1427192966110103169">家居游泳池、桑拿浴和水療</translation>
 <translation id="1428146450423315676">堆疊器 7</translation>
@@ -722,6 +723,7 @@
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="218940509700321686">逗號分隔值</translation>
 <translation id="2194856509914051091">考慮因素</translation>
+<translation id="2198215508485017216">發生非預期的問題。<ph name="BEGIN_LINK" />進一步瞭解「雲端硬碟」上載功能<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">唔鍾意掣，㩒 Enter 鍵就可以打開意見表格，詳細解釋唔鍾意呢個建議嘅原因</translation>
 <translation id="2202627062836089804">信用卡背面</translation>
 <translation id="2204482073374652408">更新完成！</translation>
@@ -737,6 +739,7 @@
 <translation id="2215539479425228550">攀岩和登山運動</translation>
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2215963164070968490">狗</translation>
+<translation id="2218089682233901164">加入已知的旅客編號</translation>
 <translation id="2219376942605837404">將分頁加入比較表格</translation>
 <translation id="2219658597883514593">重新啟動教學課程</translation>
 <translation id="2219735899272417925">必須重設裝置</translation>
@@ -857,6 +860,7 @@
 <translation id="239429038616798445">不支援此運送方式，請選擇其他方式。</translation>
 <translation id="2395840535409704129">水上運動</translation>
 <translation id="2396249848217231973">復原刪除(&amp;U)</translation>
+<translation id="239708975263889666">編輯已知的旅客編號</translation>
 <translation id="2399344929880464793">此 IBAN 已儲存至 Google 帳戶，你可在各項 Google 服務中使用。</translation>
 <translation id="2399868464369312507">Google Chrome 正嘗試編輯付款方法。</translation>
 <translation id="2400263725572336749">新護照</translation>
@@ -885,6 +889,7 @@
 <translation id="2451201933352935301"><ph name="URL" /> 要求管理所有顯示屏上的視窗</translation>
 <translation id="2451607499823206582">正在追蹤</translation>
 <translation id="2452098632681057184">生態學和環境學</translation>
+<translation id="2452689005240417488">要儲存已知的旅客編號嗎？</translation>
 <translation id="2452837234288608067">無法提供協助，請再試一次。</translation>
 <translation id="2453045048779611513">你的機構對可儲存的內容設有限制</translation>
 <translation id="2456755709261364512">請務必將電池充電至 <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -994,6 +999,7 @@
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
 <translation id="2638567100095052009">輸入 @ 即可在 <ph name="FEATURED_SEARCH_LIST" /> 上搜尋</translation>
 <translation id="2639739919103226564">狀態：</translation>
+<translation id="2644219706149911059">正在上載到「Google 雲端硬碟」…</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">布料 (半光面)</translation>
 <translation id="264810637653812429">找不到任何兼容的裝置。</translation>
@@ -1125,6 +1131,7 @@
 <translation id="2904180982022726666">你的機構對可分享的內容設有限制</translation>
 <translation id="2905107382358353958">新付款設定嘅警示</translation>
 <translation id="2909946352844186028">系統偵測到網絡變更。</translation>
+<translation id="2910062169995917863">工作階段逾時</translation>
 <translation id="2911255567212929079">機器學習和人工智能</translation>
 <translation id="2911973620368911614">工作帳戶使用者 ID</translation>
 <translation id="2913421697249863476">燒烤</translation>
@@ -1382,6 +1389,7 @@
 <translation id="33073482541490531">系統發現您剛才使用的密碼因資料外洩而被洩露。「密碼管理工具」建議您立即變更密碼。</translation>
 <translation id="3307649904964670439">自訂 Chrome 按鈕，啟動之後就可以自訂瀏覽器嘅風格</translation>
 <translation id="3308006649705061278">機構單位 (OU)</translation>
+<translation id="3312952471765023168">上載成功</translation>
 <translation id="3318016344440038475">電視喜劇</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">棕紅色</translation>
@@ -1757,6 +1765,7 @@
 <translation id="3927538228901078312">無比較表格</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">拒絕</translation>
+<translation id="3928806096717999469">編輯，打開新視窗</translation>
 <translation id="3930260846839546333">手袋和手提包</translation>
 <translation id="3937834511546249636">國防工業</translation>
 <translation id="3939773374150895049">要使用 WebAuthn 取代 CVC 嗎？</translation>
@@ -2188,6 +2197,7 @@
 <translation id="4652266463001779298">不允許</translation>
 <translation id="4652440160515225514">由於此網站違反政策，因此已被您的機構封鎖。</translation>
 <translation id="4658638640878098064">釘裝 (左上方)</translation>
+<translation id="4660592918803576381">在「雲端硬碟」中開啟</translation>
 <translation id="4661556981531699496">寵物及動物</translation>
 <translation id="4661868874067696603">搜尋更多購買選項</translation>
 <translation id="4663373278480897665">已允許使用相機</translation>
@@ -3163,6 +3173,7 @@
 <translation id="6272088941196661550">恢復瀏覽過程以查看 Chrome 記錄中的相關活動</translation>
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6278015583149890680">「Google 雲端硬碟」和 OneDrive</translation>
+<translation id="6279228081537458128">稍後付款</translation>
 <translation id="6280223929691119688">無法送貨至此地址，請選取其他地址。</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284449872909111707">短訊和即時通訊</translation>
@@ -3196,6 +3207,7 @@
 <translation id="6327065120806001832">區域網絡存取權</translation>
 <translation id="6328639280570009161">建議停用網絡預測功能</translation>
 <translation id="6329815962353376655">&lt;輸入問題&gt;</translation>
+<translation id="633348045801643466">在結帳頁面顯示<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />稍後付款<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />選項</translation>
 <translation id="6335029926534404762">運動鞋</translation>
 <translation id="6336948221660696475">不允許使用 VR</translation>
 <translation id="6337133576188860026">釋的快取不到 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
@@ -3521,6 +3533,7 @@
 <translation id="6880941331070119097">高價選項</translation>
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6883120223439653449">要更新已知的旅客編號嗎？</translation>
 <translation id="6883221904761970440">閂咗安全付款憑證驗證工作表</translation>
 <translation id="6883745783646124431">公司地址</translation>
 <translation id="6884662655240309489">粗幼：1</translation>
@@ -3631,6 +3644,7 @@
 <translation id="7044081119134178347">呢次批准用相機</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">您曾嘗試前往 <ph name="DOMAIN" />，但其伺服器憑證有效期過長，並不值得信任。</translation>
+<translation id="7050877504983265321">已知的旅客編號</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7054717457611655239">由現在起，請將你的檔案儲存到「<ph name="CLOUD_PROVIDER" />」。</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 驗證到「<ph name="ISSUER" />」已發出此網站的憑證。</translation>
@@ -3901,6 +3915,7 @@
 <translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> 會確認你的資格 (這不會影響你的信貸評分)。如獲核准，<ph name="BNPL_ISSUER_NAME" /> 就會提供付款計劃供你選擇，並完成購買程序。</translation>
 <translation id="7489392576326061356">洗髮水和護髮素</translation>
+<translation id="7489919936111034362">「Google 雲端硬碟」儲存空間已滿</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="749865518782565832">水管工程</translation>
 <translation id="7499188644237027195">在 Chrome 購物時會看到電子錢包和 Pix 選項</translation>
@@ -3959,6 +3974,7 @@
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7571813784389228510">Google AI 模式</translation>
 <translation id="7574998639136359461">冬季運動用品</translation>
+<translation id="7575130707299232096">刪除已知的旅客編號</translation>
 <translation id="7575207903026901870">移除建議按鈕，㩒一下 Enter 鍵就可以移除呢個建議</translation>
 <translation id="7575800019233204241">「您的連線不是私人連線」「&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;」或「SSL 憑證錯誤」</translation>
 <translation id="7575887283389198269">手機</translation>
@@ -3997,6 +4013,7 @@
 <translation id="7631072086707140121">網址必須是 https。</translation>
 <translation id="7631527008834753063">電視遊戲節目</translation>
 <translation id="7633909222644580952">效能資料和當機報告</translation>
+<translation id="7634963626477752453">已儲存到「<ph name="FOLDER_NAME" />」資料夾</translation>
 <translation id="7636346903338549690">已允許使用第三方 Cookie 的網站</translation>
 <translation id="7637571805876720304">要從 Chromium 移除信用卡嗎？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{無}=1{帳戶中有 1 個密碼 (適用於 <ph name="DOMAIN_LIST" />)}other{帳戶中有 # 個密碼 (適用於 <ph name="DOMAIN_LIST" />)}}</translation>

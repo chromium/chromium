@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">可能であれば、Chrome がダークモードを使用している場合にダークモードをサイトに適用します</translation>
 <translation id="2390272837142897736">拡大</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">正確</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}}</translation>
+<translation id="2404857459073803936">このサイトの位置情報アクセス</translation>
 <translation id="2410940059315936967">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。こうした他のサイトによって設定された Cookie は「サードパーティ Cookie」と呼ばれます。</translation>
 <translation id="2411116727035790889">ショートカットをオンにします</translation>
 <translation id="2433507940547922241">デザイン</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
+<translation id="4042597221652780603">おおよそ</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="4077310749977440510">コピーしたテキストの書式を保持したりするため、サイトでクリップボードを読み取る場合があります</translation>
 <translation id="4082080074595021446">Android デバイスに十分な RAM がないため、特定のウェブサイトの例外は許可されません。</translation>

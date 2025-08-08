@@ -15,7 +15,6 @@
 <translation id="1058669287135776095">თქვენ ხაზგარეშე რეჟიმში ხართ. შეამოწმეთ კავშირი ინტერნეტთან და ხელახლა ცადეთ.</translation>
 <translation id="1070689840697074178">PDF-ების ჩამოტვირთვა აქ შეგიძლიათ</translation>
 <translation id="107147699690128016">ფაილის გაფართოების შეცვლის შემთხვევაში, ფაილი შეიძლება გაიხსნას სხვა აპლიკაციაში და პოტენციურად შეუქმნას საფრთხე თქვენს მოწყობილობას.</translation>
-<translation id="1080365971383768617">პაროლები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="1087799850623149508">მისამართთა ზოლის ქვემოთ გადასატანად ხანგრძლივად შეეხეთ</translation>
 <translation id="1089606299949659462">გადახედვა დასრულდა!</translation>
 <translation id="1094555143448724771">სხვა მოწყობილობებიდან ჩანართების სანახავად დაასინქრონეთ თქვენი ჩანართები და ისტორია</translation>
@@ -333,7 +332,6 @@
 <translation id="2571834852878229351">საკუთრის შექმნა</translation>
 <translation id="2574249610672786438">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chrome-ს იყენებთ, შედით სისტემაში ყველა მათგანზე</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) მომენტალურად დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“ და ვეღარ შეძლებს თქვენთან ინტერაქციას Google სერვისებში.</translation>
-<translation id="2579297619530305344">პაროლები თქვენს ყველა მოწყობილობაზე სრული სიმაღლით გაიხსნა</translation>
 <translation id="2581165646603367611">ეს მოქმედება გაასუფთავებს ქუქი-ჩანაწერებს, ქეშს და საიტების სხვა მონაცემებს, რომლებსაც Chrome უმნიშვნელოდ თვლის.</translation>
 <translation id="2587052924345400782">ხელმისაწვდომია ახალი ვერსია</translation>
 <translation id="2593272815202181319">ფიქსირებული სიგანის</translation>
@@ -960,7 +958,6 @@
 <translation id="5471273988133666918">ჩანართის „<ph name="TAB_TITLE" />“ გადატანა შეუძლებელია</translation>
 <translation id="548278423535722844">რუკების აპში გახსნა</translation>
 <translation id="549660026907543296">შეერთება სახელით <ph name="MEMBER_FULL_NAME" /></translation>
-<translation id="5503125329065007089">პაროლები თქვენს ყველა მოწყობილობაზე ნახევარი სიმაღლით გაიხსნა</translation>
 <translation id="5517326820028369152">ბოლო აქტივობების ქვედა ფურცელი</translation>
 <translation id="5526281268548144413">სხვადასხვა ფანჯრებში დახურვა შეუძლებელია</translation>
 <translation id="5548606607480005320">უსაფრთხოების შემოწმება</translation>
@@ -1095,6 +1092,7 @@
 <translation id="6125202119952209826">შეუერთდით ჩანართების ჯგუფს <ph name="OWNER_FIRST_NAME" />-სთან ერთად</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />დაწვრილებით<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
+<translation id="6127860394906721547">გახსენით ჩანართების ჯგუფი „<ph name="TITLE_OF_GROUP" />“, <ph name="COLOR_NAME" /> ფერის, ვებსაიტებით <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">ჩანართის ჩაკეცვა</translation>
 <translation id="6134168885321518274">საძიებო ზოლის გახსნა</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი}}</translation>
@@ -1136,7 +1134,6 @@
 <translation id="6267063201726531683">წაკითხ. რეჟ. ქვედა ფურცელი</translation>
 <translation id="6277522088822131679">გვერდის დაბეჭდვისას დაფიქსირდა შეცდომა. გთხოვთ ცადოთ ხელახლა.</translation>
 <translation id="6278428485366576908">თემა</translation>
-<translation id="6284472661216707937">პაროლები თქვენს ყველა მოწყობილობაზე დახურულია</translation>
 <translation id="6291294824436685757">დათვალიერების მონაცემების წაშლა; მონიშნეთ წასაშლელი მონაცემები</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="629730747756840877">ანგარიში</translation>
@@ -1220,7 +1217,6 @@
 <translation id="6593061639179217415">დესკტოპის საიტი</translation>
 <translation id="6594347733515723558">დალაგება / ვარიანტები</translation>
 <translation id="6595046016124923392">სურათები გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ.</translation>
-<translation id="6604931690954120417">როცა Chrome-ში ხართ შესული, თქვენ მიერ შენახული პაროლები Google ანგარიშში გადაინაცვლებს. ამ ფუნქციის გამოსართავად <ph name="BEGIN_LINK" />გადადით პარამეტრებში<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">უსაფრთხოების გაუმჯობესება თქვენთვის და ვების ყველა მომხმარებლისთვის.</translation>
 <translation id="6621391692573306628">ეს ჩანართი სხვა მოწყობილობაზე რომ გაგზავნოთ, შედით Chrome-ში ორივე მოწყობილობიდან</translation>
 <translation id="6627583120233659107">საქაღალდის რედაქტირება</translation>

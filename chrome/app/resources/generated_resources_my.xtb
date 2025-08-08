@@ -5921,6 +5921,7 @@
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ဖယ်ရှားရန်</translation>
 <translation id="5111326646107464148">ဝင်းဒိုးအသစ်တွင် အဖွဲ့ကို ဖွင့်ရန်</translation>
+<translation id="511147239888121455">သင်၏အရာများကို အရန်သိမ်းမလား။</translation>
 <translation id="5111646998522066203">ရုပ်ဖျက်မုဒ်မှ ထွက်ရန်</translation>
 <translation id="5111692334209731439">&amp;စာညှပ် မန်နေဂျာ</translation>
 <translation id="5111794652433847656">ဤစက်တွင် <ph name="APP_NAME" /> အတွက် လျှို့ဝှက်ကီး မရှိပါ</translation>
@@ -6056,6 +6057,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> အတွက်</translation>
 <translation id="5203035663139409780">သင့်စက်ရှိ ဖိုင် (သို့) ဖိုင်တွဲများကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{နောက်ဆက်တွဲကို ကြည့်ရန် နှိပ်ပါ}other{ဤနောက်ဆက်တွဲများကို ကြည့်ရန် နှိပ်ပါ}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> အတွက် ပြန်လည်ရယူရေး စကားဝှက်</translation>
 <translation id="5204673965307125349">စက်ပစ္စည်းကို အစအဆုံးပြန်သွင်း၍ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5204967432542742771">လျှို့ဝှက်စကားလုံး ရိုက်ထည့်</translation>
 <translation id="5205484256512407285">ပြောင်းရွှေ့ရန်အတွက် မိုဘိုင်းဒေတာကို ဘယ်တော့မှမသုံးပါ</translation>
@@ -8209,6 +8211,7 @@
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> က Google နှင့်မျှဝေနိုင်သော ဒေတာအသေးစိတ်နှင့် ၎င်းတို့အားအသုံးပြုပုံကို g.co/flex/HWDataCollection တွင်ဝင်ကြည့်နိုင်သည်။<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">သင်နှင့် ဝဘ်ပေါ်ရှိ လူအားလုံးအတွက် လုံခြုံရေးကို တိုးမြှင့်ထားသည်</translation>
 <translation id="6771503742377376720">အသိမှတ်ပြုလက်မှတ် အာဏာဖြစ်သည်</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> အလုပ်လိပ်စာအတွက် နောက်ထပ်ရွေးစရာများ</translation>
 <translation id="6772974422346500939">ဖွင့်ပြီး တည်းဖြတ်ရန်</translation>
 <translation id="6773595613448852535">Chrome Root စတိုး</translation>
 <translation id="677394079035748956">ဤဝဘ်ဆိုက်သည် တစ်ခါသုံး စကားဝှက် လိုအပ်သည်</translation>
@@ -10035,6 +10038,7 @@
 <translation id="8025151549289123443">လော့ခ်ချထားချိန် ဖန်သားပြင်နှင့် လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="8025291188699172126">အပ်ဒိတ်များအကြောင်း</translation>
 <translation id="8026471514777758216">သင့်စက်အားလုံး</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> အိမ်လိပ်စာအတွက် နောက်ထပ်ရွေးစရာများ</translation>
 <translation id="8026784703228858744">သင့်လိပ်စာများနှင့် အခြားအရာများကို စင့်ခ်လုပ်ခြင်းဖြင့် သိမ်းနိုင်သည်</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{ပြီးခဲ့သော ၀ ရက်က ဝင်ကြည့်ထားသည်}=1{ပြီးခဲ့သော ၁ ရက်က ဝင်ကြည့်ထားသည်}other{ပြီးခဲ့သော # ရက်က ဝင်ကြည့်ထားသည်}}</translation>
 <translation id="8028060951694135607">Microsoft ကီး ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
@@ -10183,6 +10187,7 @@
 <translation id="8121537075864592453">ဖန်သားပြင်အပြည့်ကို ပိတ်ထားသည်</translation>
 <translation id="8121750884985440809">သင်သည် လောလောဆယ် သင့်စခရင်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8122898034710982882">ဖုန်းစင်တာ၊ <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">သင့်စကားဝှက်၊ လိပ်စာ စသည်တို့ကို အရန်သိမ်းခြင်းဖြင့် ၎င်းတို့ကို သင့်စက်အားလုံးတွင် အလွယ်တကူ ရယူနိုင်သည်</translation>
 <translation id="81238879832906896">အဝါရောင်နှင့် အဖြူရောင်ပန်း</translation>
 <translation id="8123975449645947908">နောက်သို့ လှိမ့်ရန်</translation>
 <translation id="8124313775439841391">စီမံထားသော ONC</translation>
@@ -11558,6 +11563,7 @@
 <translation id="9057354806206861646">အစီအစဉ်ကို အပ်ဒိတ်လုပ်ခြင်း</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{တစ်ရက်လျှင် အကြောင်းကြားချက် ၁ ခုခန့်}other{တစ်ရက်လျှင် အကြောင်းကြားချက် {NUM_NOTIFICATION} ခုခန့်}}</translation>
 <translation id="9058760336383947367">ပရင့်တာ PPD ကြည့်ရန်</translation>
+<translation id="9061521313218438086">Chrome သည် သင်၏စကားဝှက်တစ်ခုခုကို အများမြင်ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိပါက သင်လက်မှတ်ထိုးဝင်ထားလျှင် Google Password Manager က စကားဝှက်ပြောင်းရန် အကြံပြုနိုင်သည်။</translation>
 <translation id="9061694916020926968">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို သုံးရန်အတွက် Google Account တစ်ခုသို့ လက်မှတ်ထိုးဝင်ရမည်။ လက်မှတ်ထိုးဝင်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="9062468308252555888">၁၄ ဆ</translation>
 <translation id="9063208415146866933">စာကြောင်း <ph name="ERROR_LINE_START" /> မှ <ph name="ERROR_LINE_END" /> အထိ အမှားအယွင်း ရှိနေသည်</translation>

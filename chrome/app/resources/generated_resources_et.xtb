@@ -5914,6 +5914,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Eemalda <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Ava grupp uues aknas</translation>
+<translation id="511147239888121455">Kas soovite varundada?</translation>
 <translation id="5111646998522066203">Välju inkognito režiimist</translation>
 <translation id="5111692334209731439">&amp;Järjehoidjate haldur</translation>
 <translation id="5111794652433847656">Selles seadmes pole saidi <ph name="APP_NAME" /> jaoks ühtegi pääsuvõtit</translation>
@@ -6049,6 +6050,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5201945335223486172">Saidi <ph name="EXAMPLE_DOMAIN_1" /> jaoks</translation>
 <translation id="5203035663139409780">Võivad teie seadmes faile ja kaustu muuta</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klõpsake laienduse vaatamiseks}other{Klõpsake nende laienduste vaatamiseks}}</translation>
+<translation id="5204282224596194174">Konto <ph name="USER_EMAIL" /> taasteparool</translation>
 <translation id="5204673965307125349">Käitage seadmes funktsiooni Powerwash ja proovige uuesti.</translation>
 <translation id="5204967432542742771">Sisestage parool</translation>
 <translation id="5205484256512407285">Mobiilset andmesidet ei kasutata ülekandmiseks kunagi</translation>
@@ -8204,6 +8206,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
     <ph name="BEGIN_PARAGRAPH3" />Lisateabe saamiseks andmete kohta, mida <ph name="DEVICE_OS" /> võib Google'iga jagada (ja kuidas neid kasutatakse), külastage saiti g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks</translation>
 <translation id="6771503742377376720">On sertifitseerimisorgan</translation>
+<translation id="6772103682557559072">Töökoha aadressi <ph name="ADDRESS_SUMMARY" /> lisavalikud</translation>
 <translation id="6772974422346500939">Ava ja muuda</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Sait vajab ühekordset parooli</translation>
@@ -10032,6 +10035,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8025151549289123443">Lukustuskuva ja sisselogimine</translation>
 <translation id="8025291188699172126">Värskenduste kohta</translation>
 <translation id="8026471514777758216">Kõigis seadmetes</translation>
+<translation id="8026700655446696031">Koduse aadressi <ph name="ADDRESS_SUMMARY" /> lisavalikud</translation>
 <translation id="8026784703228858744">Salvestage sünkroonimise abil oma järjehoidjad ja muu</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Külastasite 0 päeva tagasi}=1{Külastasite 1 päev tagasi}other{Külastasite # päeva tagasi}}</translation>
 <translation id="8028060951694135607">Microsofti võtme taastamine</translation>
@@ -10180,6 +10184,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8121537075864592453">Täisekraan on keelatud</translation>
 <translation id="8121750884985440809">Olete praegu oma ekraani üle kandmas</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Varundage oma paroolid, järjehoidjad ja muu, et neile kõigis oma seadmetes hõlpsasti juurde pääseda</translation>
 <translation id="81238879832906896">Kollane ja valge lill</translation>
 <translation id="8123975449645947908">Keri tagasi</translation>
 <translation id="8124313775439841391">Hallatud ONC</translation>
@@ -11555,6 +11560,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9057354806206861646">Ajakava värskendamine</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Umbes 1 märguanne päevas}other{Umbes {NUM_NOTIFICATION} märguannet päevas}}</translation>
 <translation id="9058760336383947367">Kuva printeri PPD</translation>
+<translation id="9061521313218438086">Kui Chrome leiab avalikust andmetega seotud rikkumisest mõne teie parooli, võib Google’i paroolihaldur pakkuda teile võimalust parool ära muuta, kui sisse logite.</translation>
 <translation id="9061694916020926968">Teenuse Steam Chromebookile (beeta) kasutamiseks peate olema Google'i kontole sisse logitud. Logige sisse ja proovige uuesti.</translation>
 <translation id="9062468308252555888">14-kordne</translation>
 <translation id="9063208415146866933">Viga ridadel <ph name="ERROR_LINE_START" /> kuni <ph name="ERROR_LINE_END" /></translation>

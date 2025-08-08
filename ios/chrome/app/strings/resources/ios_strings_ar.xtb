@@ -388,6 +388,7 @@
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2434918313224755415">يمكنك الانتقال لليمين للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
+<translation id="2458827363789845126">{count,plural, =1{عنصر واحد ({count}) من السجلّ}zero{‫{count} عنصر من السجلّ}two{عنصران ({count}) من السجلّ}few{‫{count} عناصر من السجلّ}many{‫{count} عنصرًا من السجلّ}other{‫{count} عنصر من السجلّ}}</translation>
 <translation id="2461070143328828326">إعدادات كلمات المرور</translation>
 <translation id="2462736546165239215">يمكنك العثور على سجلّ التصفُّح كاملاً هنا.</translation>
 <translation id="2466518891828668184">يمكنك حفظ كلمات المرور لتسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات.</translation>
@@ -1513,6 +1514,7 @@
 <translation id="6791425686608802741">النقر على "إضافة علامة تبويب إلى المجموعة الجديدة"</translation>
 <translation id="6794476726485507147">يُرجى اختيار تاريخ ووقت لتلقّي إشعار تذكير بالرجوع إلى هذه الصفحة</translation>
 <translation id="6795481620482106033">البيانات غير الصالحة</translation>
+<translation id="6797543908718012274">تفعيل "وضع القراءة"</translation>
 <translation id="6807287147325542056">كلمات المرور في التطبيقات الأخرى</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏تمّ حفظ إشارة مرجعية واحدة في حسابك على Google‏ ({email})}zero{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}two{‏تمّ حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email})}few{‏تمّ حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email})}many{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}other{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}}</translation>

@@ -363,6 +363,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="159274626729231974">Filmų festivaliai</translation>
 <translation id="1593359183944365958">270 laipsnių</translation>
 <translation id="1594030484168838125">Pasirinkti</translation>
+<translation id="1595731774593926493">Kompensavimo numerio ištrynimas</translation>
 <translation id="1597307423671074806">„WebM“ vaizdo įrašas</translation>
 <translation id="159800670740560023">„Chrome“ patarimo nuoroda; paspauskite „Enter“, kad atidarytumėte <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Nauja kortelė? <ph name="BEGIN_LINK" />Įveskite išsamią kortelės informaciją<ph name="END_LINK" /></translation>
@@ -755,6 +756,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2233745931693710080">Kompaktinis diskas</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="2239100178324503013">Siųsti dabar</translation>
+<translation id="224130779555573777">Kompensavimo numerio pridėjimas</translation>
 <translation id="2241693394036365668">Atsisiųstas failas</translation>
 <translation id="2242389809734574253">IBAN išsaugojimo langas uždarytas.</translation>
 <translation id="2246264294482514010">10 x 12 col.</translation>
@@ -1765,6 +1767,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3927538228901078312">Nėra palyginimo lentelių</translation>
 <translation id="3927692899758076493">Be užraitų</translation>
 <translation id="3927932062596804919">Uždrausti</translation>
+<translation id="3928806096717999469">Redaguoti, atidaromas naujas langas</translation>
 <translation id="3930260846839546333">Rankinės ir rankinukai</translation>
 <translation id="3937834511546249636">Gynybos pramonė</translation>
 <translation id="3939773374150895049">Naudoti „WebAuthn“ vietoj CVC?</translation>
@@ -2931,6 +2934,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5886961930368713749">Siųsti atsiliepimą apie palyginimą</translation>
 <translation id="5887400589839399685">Kortelė išsaugota</translation>
 <translation id="5887687176710214216">Paskutinį kartą lankytasi vakar</translation>
+<translation id="5890248301649767931">Išsaugoti kompensavimo numerį?</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5895187275912066135">Išduota</translation>
 <translation id="5898767305816764989">Mygtukas „Patinka“; paspauskite „Enter“, kad pateiktumėte atsiliepimą apie tai, jog jums patinka, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3552,6 +3556,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6905163627763043954">Išbandyti</translation>
 <translation id="6907458757809079309">Mankšta</translation>
 <translation id="691024665142758461">Atsisiųsti kelis failus</translation>
+<translation id="691046363691324218">Kompensavimo numeris</translation>
 <translation id="6915804003454593391">Naudotojas:</translation>
 <translation id="6916193791494646625">Nurodykite atsisiuntimo priežastį (būtina)</translation>
 <translation id="6917795328362592458">Slaptažodis, kurį ką tik naudojote, buvo rastas duomenų saugos pažeidime. Siekiant užtikrinti paskyrų saugumą, Slaptažodžių tvarkyklė rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
@@ -4497,6 +4502,7 @@ Papildoma išsami informacija:
 <translation id="8457125768502047971">Neribota</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Įjungti</translation>
+<translation id="8461289985785035071">Kompensavimo numerio redagavimas</translation>
 <translation id="8461694314515752532">Šifruokite sinchronizuojamus duomenis taikydami savo sinchronizavimo slaptafrazę</translation>
 <translation id="8461973047386722744">Slaptažodžių nerasta</translation>
 <translation id="8467494337615822642">Eiti į „Chrome“ saugos patikros puslapį nustatymuose</translation>
@@ -4805,6 +4811,7 @@ Papildoma išsami informacija:
 <translation id="9026253329950610248">„Google“ svetainės</translation>
 <translation id="9027020981272345766">Išbandykite „Chrome Enterprise Core“</translation>
 <translation id="9027531288681624875">Jei norite išeiti iš viso ekrano režimo, paspauskite ir palaikykite |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">Atnaujinti kompensavimo numerį?</translation>
 <translation id="9035022520814077154">Saugos klaida</translation>
 <translation id="9035824888276246493">Išsaugoti saugos kodus</translation>
 <translation id="9036306139374661733">Leisti pasiekti mikrofoną?</translation>

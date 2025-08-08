@@ -5906,6 +5906,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5109044022078737958">Maya</translation>
 <translation id="5109816792918100764">Kaldır: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Grubu yeni pencerede aç</translation>
+<translation id="511147239888121455">Bilgileriniz yedeklensin mi?</translation>
 <translation id="5111646998522066203">Gizli moddan çık</translation>
 <translation id="5111692334209731439">&amp;Yer İşareti Yöneticisi</translation>
 <translation id="5111794652433847656">Bu cihazda <ph name="APP_NAME" /> için geçiş anahtarı yok</translation>
@@ -6041,6 +6042,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> için</translation>
 <translation id="5203035663139409780">Cihazınızdaki dosyaları veya klasörleri düzenleyebilir</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Uzantıyı görüntülemek için tıklayın}other{Bu uzantıları görüntülemek için tıklayın}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> için kurtarma şifresi</translation>
 <translation id="5204673965307125349">Lütfen cihazda powerwash işlemi gerçekleştirin ve tekrar deneyin.</translation>
 <translation id="5204967432542742771">Şifre girin</translation>
 <translation id="5205484256512407285">Aktarım yapmak için asla mobil veri kullanma</translation>
@@ -8196,6 +8198,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> işletim sisteminin Google ile paylaşabileceği veriler ve bu verilerin nasıl kullanıldığıyla ilgili daha fazla bilgi için g.co/flex/HWDataCollection sayfasını ziyaret edebilirsiniz.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Hem siz hem de web'deki herkes için güvenliği iyileştirir</translation>
 <translation id="6771503742377376720">Sertifika Yetkilisidir</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> iş adresi için diğer seçenekler</translation>
 <translation id="6772974422346500939">Aç ve düzenle</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Site için tek kullanımlık şifre gerekiyor</translation>
@@ -10023,6 +10026,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8025151549289123443">Kilit ekranı ve oturum açma</translation>
 <translation id="8025291188699172126">Güncellemeler Hakkında</translation>
 <translation id="8026471514777758216">Tüm cihazlarınız</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> ev adresi için diğer seçenekler</translation>
 <translation id="8026784703228858744">Senkronize ederek yer işaretlerinizi ve diğer öğelerinizi kaydedin</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 gün önce ziyaret edildi}=1{1 gün önce ziyaret edildi}other{# gün önce ziyaret edildi}}</translation>
 <translation id="8028060951694135607">Microsoft Anahtar Kurtarma</translation>
@@ -10171,6 +10175,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8121537075864592453">Tam ekran devre dışı</translation>
 <translation id="8121750884985440809">Şu anda ekranınızı yayınlıyorsunuz</translation>
 <translation id="8122898034710982882">Telefon Merkezi, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Şifrelerinizi, yer işaretlerinizi ve diğer öğelerinizi yedekleyerek tüm cihazlarınızda kolayca kullanabilirsiniz</translation>
 <translation id="81238879832906896">Sarı ve beyaz çiçek</translation>
 <translation id="8123975449645947908">Geriye kaydırma</translation>
 <translation id="8124313775439841391">Yönetilen ONC</translation>
@@ -11546,6 +11551,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9057354806206861646">Programı güncelle</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Günde yaklaşık 1 bildirim}other{Günde yaklaşık {NUM_NOTIFICATION} bildirim}}</translation>
 <translation id="9058760336383947367">Yazıcının PPD'sini görüntüleyin</translation>
+<translation id="9061521313218438086">Chrome, şifrelerinizden birinin herkese açık veri ihlalinde yer aldığını tespit ederse ve oturumunuz açıksa Google Şifre Yöneticisi şifrenizi sizin için değiştirmeyi önerebilir.</translation>
 <translation id="9061694916020926968">Chromebook için Steam'i (Beta) kullanmak istiyorsanız bir Google Hesabı'nda oturum açmış olmanız gerekir. Oturum açıp tekrar deneyin.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />. ila <ph name="ERROR_LINE_END" />. satır arasında hata</translation>

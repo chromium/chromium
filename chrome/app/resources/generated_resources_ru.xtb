@@ -645,6 +645,7 @@
 <translation id="1438630805136563416">Действие "<ph name="REMOVED_ACTION" />" удалено</translation>
 <translation id="1439671507542716852">долгосрочная поддержка</translation>
 <translation id="1440090277117135316">Регистрация в учебном заведении завершена</translation>
+<translation id="1441971243157709645">Управляемый принтер</translation>
 <translation id="1442054921249164535">Другие данные</translation>
 <translation id="144283815522798837">Выбрано: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задать активный билет Kerberos</translation>
@@ -5059,6 +5060,10 @@
 <translation id="4501530680793980440">Подтверждение удаления</translation>
 <translation id="4502423230170890588">Удалить с устройства</translation>
 <translation id="4502477450742595012">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить вкладку в новую группу".</translation>
+<translation id="4503362512377701151">Благодаря недавно использованным группам вкладок можно легко продолжить работу с того места, на котором вы остановились.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете изменить настройки в меню карточки или посмотреть дополнительные параметры на панели "Настроить Chrome".</translation>
 <translation id="4503748371388753124">Компьютер оснащен доверенным платформенным модулем (TPM), с помощью которого в Chrome OS Flex реализовано множество критически важных функций безопасности. Более подробную информацию можно получить в Справочном центре Chromebook: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Файлы cookie разрешены.}=1{Файлы cookie разрешены (есть 1 исключение).}one{Файлы cookie разрешены (есть {COUNT} исключение).}few{Файлы cookie разрешены (есть {COUNT} исключения).}many{Файлы cookie разрешены (есть {COUNT} исключений).}other{Файлы cookie разрешены (есть {COUNT} исключения).}}</translation>
 <translation id="4504940961672722399">Активируйте это расширение, нажав на значок или с помощью комбинации клавиш <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -5911,6 +5916,7 @@
 <translation id="5109044022078737958">Мия</translation>
 <translation id="5109816792918100764">Удалить язык "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="5111326646107464148">Открыть группу в новом окне</translation>
+<translation id="511147239888121455">Сохранить резервную копию данных?</translation>
 <translation id="5111646998522066203">Выйти из режима инкогнито</translation>
 <translation id="5111692334209731439">Менеджер закладок</translation>
 <translation id="5111794652433847656">На этом устройстве нет ключей доступа для приложения "<ph name="APP_NAME" />".</translation>
@@ -6046,6 +6052,7 @@
 <translation id="5201945335223486172">Для <ph name="EXAMPLE_DOMAIN_1" />.</translation>
 <translation id="5203035663139409780">Сайты, которым разрешено изменять файлы и папки на устройстве</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Нажмите, чтобы посмотреть его.}one{Нажмите, чтобы посмотреть их.}few{Нажмите, чтобы посмотреть их.}many{Нажмите, чтобы посмотреть их.}other{Нажмите, чтобы посмотреть их.}}</translation>
+<translation id="5204282224596194174">Восстановить пароль для пользователя <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Сбросьте настройки устройства и повторите попытку.</translation>
 <translation id="5204967432542742771">Введите пароль</translation>
 <translation id="5205484256512407285">Не использовать для передачи данных мобильный Интернет</translation>
@@ -8207,6 +8214,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Если вы хотите узнать больше о том, какую информацию <ph name="DEVICE_OS" /> может отправлять в Google и как она будет использоваться, перейдите по ссылке g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Делает интернет более безопасным для вас и других пользователей.</translation>
 <translation id="6771503742377376720">Является центром сертификации</translation>
+<translation id="6772103682557559072">Другие действия с рабочим адресом (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="6772974422346500939">Открыть и редактировать</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Необходимо ввести одноразовый код</translation>
@@ -10034,6 +10042,7 @@
 <translation id="8025151549289123443">Блокировка экрана и вход</translation>
 <translation id="8025291188699172126">Подробнее об обновлениях</translation>
 <translation id="8026471514777758216">Синхронизация данных на всех устройствах</translation>
+<translation id="8026700655446696031">Другие действия с домашним адресом (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="8026784703228858744">Синхронизируйте закладки и другие данные, чтобы не терять к ним доступ.</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Вы открывали 0 дней назад}=1{Вы открывали 1 день назад}one{Вы открывали # день назад}few{Вы открывали # дня назад}many{Вы открывали # дней назад}other{Вы открывали # дня назад}}</translation>
 <translation id="8028060951694135607">Восстановление ключей Microsoft</translation>
@@ -10182,6 +10191,7 @@
 <translation id="8121537075864592453">Полноэкранный режим отключен</translation>
 <translation id="8121750884985440809">Идет трансляция экрана.</translation>
 <translation id="8122898034710982882">Управление телефоном, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Создайте резервные копии паролей, закладок и других данных, чтобы вам было легче найти их на любом устройстве.</translation>
 <translation id="81238879832906896">Цветок (желтый с белым)</translation>
 <translation id="8123975449645947908">Прокрутить назад</translation>
 <translation id="8124313775439841391">Управляемый ONC</translation>
@@ -11560,6 +11570,7 @@
 <translation id="9057354806206861646">График обновлений</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Приблизительно 1 уведомление в день}one{Приблизительно {NUM_NOTIFICATION} уведомление в день}few{Приблизительно {NUM_NOTIFICATION} уведомления в день}many{Приблизительно {NUM_NOTIFICATION} уведомлений в день}other{Приблизительно {NUM_NOTIFICATION} уведомления в день}}</translation>
 <translation id="9058760336383947367">Посмотрите PPD-файл для принтера</translation>
+<translation id="9061521313218438086">Если Chrome обнаружит, что один из ваших паролей оказался в общем доступе из-за утечки данных, Google Менеджер паролей может предложить изменить его. Для этого нужно войти в аккаунт.</translation>
 <translation id="9061694916020926968">Чтобы использовать Steam для Chromebook (бета), нужно войти в аккаунт Google. Сделайте это и повторите попытку.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Ошибка в строках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>

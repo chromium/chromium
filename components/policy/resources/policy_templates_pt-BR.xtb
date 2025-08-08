@@ -11879,13 +11879,6 @@ Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891.</trans
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>
 <translation id="8934296213794658971">Configurações da integração do Gemini</translation>
-<translation id="8934485887744460569">Configure como o <ph name="PRODUCT_NAME" /> baixa o modelo básico da IA generativa e usa para inferência local. 
-
-Quando a política é definida como "Permitida" (0) ou deixada sem definição, o modelo é baixado automaticamente e ele é usado para inferência.
-
-Quando a política é desativada (1), o modelo não é baixado.
-
-O download do modelo também pode ser desativado pela <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8937282917198525844"> A partir da versão M81, os elementos padrão de controle de formulários (por exemplo, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) foram atualizados para proporcionar melhor acessibilidade e uniformidade na plataforma. Esta política restaura os antigos elementos de controle de formulários "legados" até a M84.
 
       Se esta política for definida como verdadeira, os elementos de controle de formulários "legados" serão usados para todos os sites.

@@ -5912,6 +5912,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Retirer <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Ouvrir le groupe dans une nouvelle fenêtre</translation>
+<translation id="511147239888121455">Sauvegarder vos données?</translation>
 <translation id="5111646998522066203">Quitter les fenêtres de navigation privée</translation>
 <translation id="5111692334209731439">&amp;Gestionnaire de favoris</translation>
 <translation id="5111794652433847656">Il n'existe aucune clé d'accès pour <ph name="APP_NAME" /> sur cet appareil</translation>
@@ -8204,6 +8205,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
     <ph name="BEGIN_PARAGRAPH3" />Pour en savoir plus sur les données que <ph name="DEVICE_OS" /> peut partager avec Google et comment elles sont utilisées, consultez la page g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web</translation>
 <translation id="6771503742377376720">Est une autorité de certification</translation>
+<translation id="6772103682557559072">Plus d'options pour l'adresse professionnelle <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Ouvrir et modifier</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Le site nécessite un mot de passe à usage unique</translation>
@@ -10030,6 +10032,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8025151549289123443">Écran de verrouillage et connexion</translation>
 <translation id="8025291188699172126">À propos des mises à jour</translation>
 <translation id="8026471514777758216">Tous vos appareils</translation>
+<translation id="8026700655446696031">Plus d'options pour l'adresse personnelle <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Enregistrez vos favoris et plus encore avec la synchronisation</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Consulté il y a 0 jour}=1{Consulté il y a 1 jour}one{Consulté il y a # jour}other{Consulté il y a # jours}}</translation>
 <translation id="8028060951694135607">Récupération de clé Microsoft</translation>
@@ -10178,6 +10181,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8121537075864592453">Plein écran désactivé</translation>
 <translation id="8121750884985440809">Vous diffusez actuellement votre écran</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Sauvegardez vos mots de passe, vos favoris et plus encore, afin de pouvoir y accéder facilement sur tous vos appareils</translation>
 <translation id="81238879832906896">Fleur jaune et blanche</translation>
 <translation id="8123975449645947908">Faire défiler vers l'arrière</translation>
 <translation id="8124313775439841391">ONC géré</translation>

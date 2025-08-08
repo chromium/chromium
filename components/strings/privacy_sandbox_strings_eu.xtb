@@ -48,7 +48,7 @@
 <translation id="3463673813673164886">Hirugarrenen cookieak blokeatuta daude. Halaber, bisitatzen dituzun webguneetan kapsulatutako edukia duten enpresek atzi dezaketen informazioa muga dezaketen eginbideak eskaintzen ditu ezkutuko moduak. Kudeatu ezkutuko moduaren jarraipenaren babesak <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean.</translation>
 <translation id="3467081767799433066">Iragarkien neurketarekin, datu mota jakin batzuk soilik partekatzen dituzte webguneek elkarren artean iragarkien errendimendua neurtzeko; adibidez, webgune bat bisitatu ondoren erosketa bat egin duzun.</translation>
 <translation id="3624583033347146597">Aukeratu hirugarrenen cookieen hobespenak</translation>
-<translation id="364348650177270461">Chromium gailuko eta arakatzaileko datuak (besteak beste, instalatutako letrak edo zure ordu-zona) mugatzen saiatuko da agian zuri buruzko informazioa lortzen saiatzen ari diren kapsulatutako webguneen aurrean.</translation>
+<translation id="364348650177270461">Gailuko eta arakatzaileko datuak (besteak beste, instalatutako letrak edo zure ordu-zona) mugatzen saiatuko da Chromium agian zuri buruzko informazioa lortzen saiatzen ari diren kapsulatutako webguneen aurrean.</translation>
 <translation id="3645682729607284687">Azkenaldiko arakatze-historian oinarrituta, interesatzen zaizkizun gaiak erregistratzen ditu Chrome-k. Adibidez, kirolak, moda eta beste gauza batzuk.</translation>
 <translation id="3696118321107706175">Nola erabiltzen dituzte webguneek zure datuak?</translation>
 <translation id="3749724428455457489">Lortu webguneek iradokitako iragarkiei buruzko informazio gehiago</translation>
@@ -66,7 +66,7 @@
 <translation id="4115793614265434327">Chromium-ek hirugarrenen cookieak blokeatzen ditu ezkutuko moduan, baina administratzaileak webgune honetako hirugarrenen cookieak erabiltzea onartu du.</translation>
 <translation id="4159125650195886935">Chromium-ek hirugarrenen cookieak blokeatzen ditu ezkutuko moduan, baina administratzaileak webgune honetako hirugarrenen cookieak baimendu ditu. Halaber, bisitatzen dituzun webguneetan kapsulatutako edukia duten enpresek atzi dezaketen informazioa muga dezaketen eginbideak eskaintzen ditu ezkutuko moduak.</translation>
 <translation id="4177501066905053472">Iragarkien gaiak</translation>
-<translation id="4200539465901914137">Chrome gailuko eta arakatzaileko datuak (besteak beste, instalatutako letrak edo zure ordu-zona) mugatzen saiatuko da agian zuri buruzko informazioa lortzen saiatzen ari diren kapsulatutako webguneen aurrean.</translation>
+<translation id="4200539465901914137">Gailuko eta arakatzaileko datuak (besteak beste, instalatutako letrak edo zure ordu-zona) mugatzen saiatuko da Chrome agian zuri buruzko informazioa lortzen saiatzen ari diren kapsulatutako webguneen aurrean.</translation>
 <translation id="4278390842282768270">Onartuta</translation>
 <translation id="4301151630239508244">Iragarkien gaiak webgune batek iragarkiak pertsonalizatzeko erabil ditzakeen gauza ugarietako bat da. Iragarkien gairik gabe ere, webguneek iragarkiak erakutsi ahal izango dizkizute, baina baliteke hain pertsonalizatuta ez egotea. Lortu <ph name="BEGIN_LINK_1" />iragarkien pribatutasuna kudeatzeari<ph name="END_LINK_1" /> buruzko informazio gehiago.</translation>
 <translation id="435360899831421654">Mugatu gailuko eta arakatzaileko datuetarako sarbidea. Ezarpen hori desaktibatuta dago.</translation>

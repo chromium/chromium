@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Offer to save passwords and passkeys</translation>
 <translation id="1794893174442046596">Tab group</translation>
 <translation id="1807893857950749072">Allow price tracking notifications…</translation>
+<translation id="1809929083618343438">This removes selected info from Chrome, but it doesn't delete this info from your Google Account.</translation>
 <translation id="1810976980198522421">Cancel</translation>
 <translation id="1812514023095547458">Select Colour</translation>
 <translation id="1815941218935345331">Passcode</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Switch to open window</translation>
 <translation id="2164946989711475905">Sign in…</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="2180338296831857171">Delete addresses</translation>
 <translation id="218350106843433823">AutoFill Passwords and Passkeys</translation>
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Unit selector</translation>
 <translation id="2330607597130465898">No protection</translation>
 <translation id="233375395665273385">Delete and sign out</translation>
+<translation id="2350463587705616331">Sepia background colour</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{You can save your password for {DOMAIN_ONE} in your Google Account, {EMAIL}.}=2{You can save your passwords for {DOMAIN_ONE} and {DOMAIN_TWO} in your Google Account, {EMAIL}.}=3{You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO} and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}other{You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO} and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Default site view</translation>
@@ -543,6 +546,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3081338492074632642">Make sure that the password that you are saving matches your password for <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="309710370695886264">You have one reused password. Fix it now to stay safe.</translation>
+<translation id="3099402981545350675">This deletes addresses saved on this device. It also removes selected info from Chrome, but it doesn't delete this info from your Google Account.</translation>
 <translation id="3106258548858559536">Turn off reading mode</translation>
 <translation id="3106690631878101882">Hide Translate</translation>
 <translation id="310900540163454140">Delete password for <ph name="WEBSITE" />?</translation>
@@ -741,6 +745,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3962326069546168954">Save</translation>
 <translation id="3967327056943561740">Bookmarks</translation>
 <translation id="3967822245660637423">Download complete</translation>
+<translation id="3973560090698854095">This deletes addresses saved in your Google Account <ph name="USER_EMAIL" />.</translation>
 <translation id="3982893814825393515">Report an issue…</translation>
 <translation id="398604237578616937">Signed in as <ph name="USER_EMAIL" />. Open account menu.</translation>
 <translation id="3986739045730058129">Go to tab</translation>
@@ -1021,6 +1026,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5050810143224996149">Share password</translation>
 <translation id="5055015094595227120">Precise location</translation>
+<translation id="5055551113846164633">This deletes addresses saved on this device. It also deletes addresses saved in your Google Account <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Issues found <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Install Google Drive</translation>
@@ -1232,6 +1238,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Syncing…</translation>
 <translation id="583923961930319521">Use passwords on all your devices</translation>
+<translation id="5843013299019689749">Black background colour</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
@@ -1484,6 +1491,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6682680306647339111">Reminder removed</translation>
 <translation id="6684262542644248484">Sign in to a website</translation>
 <translation id="6685259053455152195">Shortcuts to quickly modify settings and use features from the address bar.</translation>
+<translation id="6689342293888598653">White background colour</translation>
 <translation id="6689685206615181381">Only Incognito mode is available</translation>
 <translation id="6708501134077648845">Password options</translation>
 <translation id="6709964700841491574">Lockdown mode</translation>
@@ -1591,6 +1599,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="714291438898585119">Starred</translation>
 <translation id="7146301801400584641">Calendar file available</translation>
 <translation id="7149893636342594995">Last 24 hours</translation>
+<translation id="7154417656353909837">Remove addresses</translation>
 <translation id="7161230316646448869">Sync your bookmarks, history and more on all devices</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bookmark saved}other{{count} bookmarks saved}}</translation>
@@ -1660,6 +1669,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7458706065921255639">Personalisation and linking</translation>
 <translation id="745899714366929493">All day</translation>
 <translation id="7460698861522306757">Request mobile site</translation>
+<translation id="7464143666517313304">This deletes addresses saved on this device.</translation>
 <translation id="7468373585447318060">Keep up with price drops on all the products that you track.</translation>
 <translation id="746872191028309255">Shop what you see with your camera or photo gallery.</translation>
 <translation id="7471557245617580330">Create new tab</translation>
@@ -1711,6 +1721,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="764827086632467055">Tap default browser app</translation>
 <translation id="7649070708921625228">Help</translation>
+<translation id="765555660695722850">This deletes addresses saved on this device. It also deletes some info from your Google Account but not basic info like your name or home address.</translation>
 <translation id="765631330137769217">Tap 'Save' to easily access this password the next time that you sign in</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7662316065255305764">Site information</translation>
@@ -2058,6 +2069,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8891031436559779793">You'll get notified if the price drops on any site.</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
+<translation id="8900845556227858314">Browser app</translation>
 <translation id="890565330728586731">Back</translation>
 <translation id="8907722425137681851">Find in page…</translation>
 <translation id="8909135823018751308">Share…</translation>

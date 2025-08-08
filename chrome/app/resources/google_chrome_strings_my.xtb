@@ -172,6 +172,7 @@
 <translation id="3003694935412297923">လုပ်ဆောင်စရာ အားလုံး</translation>
 <translation id="3018957014024118866">Chrome (<ph name="URL" />) မှဒေတာကိုလည်း ဖျက်ရန်</translation>
 <translation id="3019382870990049182">ChromeOS Flex အပ်ဒိတ်လုပ်ရန်အတွက် ပြန်ဖွင့်ရန်</translation>
+<translation id="3037517125981011456">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်</translation>
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3038232873781883849">ထည့်သွင်းရန်စောင့်နေသည်…</translation>
 <translation id="3045032126857188731">ပြန်ဆိုထားသော ဘာသာစကား- <ph name="LANGUAGE" /></translation>
@@ -408,6 +409,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5980111191913430208">မူရင်းမသိရှိသော ရင်းမြစ်များမှ နောက်ဆက်တွဲများ၊ အက်ပ်နှင့် အပြင်အဆင်များသည် သင့်စက်ကို ထိခိုက်စေနိုင်သည်။ ၎င်းတို့ကို <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> မှသာ ထည့်သွင်းရန် Chrome က အကြံပြုပါသည်</translation>
 <translation id="6003112304606738118">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="HOURS" /> နာရီ ကျန်သည်</translation>
 <translation id="6008161919456049856">သင်၏ Google Account တွင် သိမ်းထားသော စကားဝှက်၊ ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများကို ဤစက်မှ ဖယ်ရှားပါမည်။ Chrome တွင် ၎င်းတို့ကို ပြန်သုံးရန်အတွက် ပြန်လည်လက်မှတ်ထိုးဝင်ပါ။</translation>
+<translation id="6009821354356307391">နောက်ဆက်တွဲ မေးရန်</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome မှ တူးလ်များ<ph name="END_LINK" /> ဖြင့် လုံခြုံစွာဘရောက်စ်လုပ်ပြီး ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="6025087594896450715">Google Chrome ကို <ph name="REMAINING_TIME" /> အတွင်း ပြန်စမည်</translation>
