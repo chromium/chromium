@@ -693,13 +693,8 @@ void ClientSession::CreatePerMonitorVideoStreams() {
 
     HOST_LOG << "Creating video stream for id " << id;
 
-    auto video_capturer = desktop_environment_->CreateVideoCapturer(id);
-    if (!video_capturer) {
-      LOG(WARNING) << "Cannot create video capturer for id " << id;
-      continue;
-    }
-    auto video_stream =
-        connection_->StartVideoStream(id, std::move(video_capturer));
+    auto video_stream = connection_->StartVideoStream(
+        id, desktop_environment_->CreateVideoCapturer(id));
 
     // SetObserver(this) is not called on the new video-stream, because
     // per-monitor resizing should be handled by OnDesktopDisplayChanged()

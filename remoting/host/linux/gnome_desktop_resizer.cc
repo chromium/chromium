@@ -4,10 +4,7 @@
 
 #include "remoting/host/linux/gnome_desktop_resizer.h"
 
-#include "base/logging.h"
-#include "base/memory/weak_ptr.h"
 #include "remoting/host/linux/gnome_interaction_strategy.h"
-#include "remoting/host/linux/pipewire_capture_stream.h"
 
 namespace remoting {
 
@@ -23,13 +20,7 @@ ScreenResolution GnomeDesktopResizer::GetCurrentResolution(
     return {};
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_->sequence_checker_);
-  base::WeakPtr<PipewireCaptureStream> stream =
-      session_->capture_stream_manager_.GetStream(screen_id);
-  if (!stream) {
-    LOG(ERROR) << "Cannot find pipewire stream for screen ID: " << screen_id;
-    return {};
-  }
-  return stream->resolution();
+  return session_->capture_stream_.resolution();
 }
 
 std::list<ScreenResolution> GnomeDesktopResizer::GetSupportedResolutions(
@@ -44,13 +35,7 @@ void GnomeDesktopResizer::SetResolution(const ScreenResolution& resolution,
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_->sequence_checker_);
-  base::WeakPtr<PipewireCaptureStream> stream =
-      session_->capture_stream_manager_.GetStream(screen_id);
-  if (!stream) {
-    LOG(ERROR) << "Cannot find pipewire stream for screen ID: " << screen_id;
-    return;
-  }
-  stream->SetResolution(resolution);
+  session_->capture_stream_.SetResolution(resolution);
 }
 
 void GnomeDesktopResizer::RestoreResolution(const ScreenResolution& original,

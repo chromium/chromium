@@ -4,19 +4,15 @@
 
 #include "remoting/host/linux/gnome_input_injector.h"
 
-#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/ei_sender_session.h"
-#include "remoting/host/linux/pipewire_capture_stream.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
-GnomeInputInjector::GnomeInputInjector(
-    std::unique_ptr<EiSenderSession> session,
-    base::WeakPtr<const PipewireCaptureStreamManager> stream_manager)
-    : ei_session_(std::move(session)), stream_manager_(stream_manager) {}
+GnomeInputInjector::GnomeInputInjector(std::unique_ptr<EiSenderSession> session,
+                                       std::string_view stream_mapping_id)
+    : ei_session_(std::move(session)), stream_mapping_id_(stream_mapping_id) {}
 
 GnomeInputInjector::~GnomeInputInjector() = default;
 
@@ -40,21 +36,11 @@ void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
   if (event.has_fractional_coordinate() &&
       event.fractional_coordinate().has_x() &&
       event.fractional_coordinate().has_y()) {
-    if (!stream_manager_) {
-      LOG(WARNING) << "PipewireCaptureStreamManager no longer exists.";
-    } else {
-      webrtc::ScreenId screen_id = event.fractional_coordinate().screen_id();
-      const base::WeakPtr<PipewireCaptureStream> stream =
-          stream_manager_->GetStream(screen_id);
-      if (!stream) {
-        LOG(ERROR) << "Unexpected screen ID: " << screen_id;
-      } else {
-        ei_session_->InjectAbsolutePointerMove(
-            stream->mapping_id(), event.fractional_coordinate().x(),
-            event.fractional_coordinate().y());
-        event_sent = true;
-      }
-    }
+    ei_session_->InjectAbsolutePointerMove(stream_mapping_id_,
+                                           event.fractional_coordinate().x(),
+                                           event.fractional_coordinate().y());
+    event_sent = true;
+
   } else if (event.has_delta_x() || event.has_delta_y()) {
     ei_session_->InjectRelativePointerMove(
         event.has_delta_x() ? event.delta_x() : 0,
@@ -80,7 +66,7 @@ void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
   }
 
   if (!event_sent) {
-    LOG(WARNING) << "No mouse event is injected.";
+    LOG(WARNING) << "Mouse event with no relevant fields";
   }
 }
 

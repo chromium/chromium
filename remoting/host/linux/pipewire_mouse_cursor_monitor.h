@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "remoting/host/linux/pipewire_capture_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
@@ -15,7 +15,7 @@ namespace remoting {
 class PipewireMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   explicit PipewireMouseCursorMonitor(
-      base::WeakPtr<const PipewireCaptureStreamManager> stream_manager);
+      base::WeakPtr<PipewireCaptureStream> stream);
   ~PipewireMouseCursorMonitor() override;
   // MouseCursorMonitor implementation.
   void Init(Callback* callback, Mode mode) override;
@@ -24,7 +24,7 @@ class PipewireMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  private:
   raw_ptr<Callback> callback_;
   bool report_position_;
-  base::WeakPtr<const PipewireCaptureStreamManager> stream_manager_;
+  base::WeakPtr<PipewireCaptureStream> stream_;
 };
 
 }  // namespace remoting

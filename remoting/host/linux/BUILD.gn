@@ -168,8 +168,6 @@ source_set("platform_impls") {
     "keyboard_layout_monitor_utils.h",
     "pipewire_capture_stream.cc",
     "pipewire_capture_stream.h",
-    "pipewire_capture_stream_manager.cc",
-    "pipewire_capture_stream_manager.h",
     "pipewire_desktop_capturer.cc",
     "pipewire_desktop_capturer.h",
     "pipewire_mouse_cursor_monitor.cc",
