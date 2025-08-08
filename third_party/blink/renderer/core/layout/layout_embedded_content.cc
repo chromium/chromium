@@ -379,6 +379,17 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
     content_rect.size = View()->ViewRect().size;
   }
 
+  // SVG documents in <object>/<embed> elements should behave like images,
+  // respecting CSS properties like object-fit and object-position.
+  // To achieve this, we apply the base class' replaced element sizing logic
+  // with pixel snapping.
+  if (RuntimeEnabledFeatures::SVGEmbeddedAsReplacedElementEnabled() &&
+      GetFrameOwnerElement() && GetFrameOwnerElement()->contentDocument() &&
+      GetFrameOwnerElement()->contentDocument()->IsSVGDocument()) {
+    return PreSnappedRectForPersistentSizing(
+        LayoutReplaced::ReplacedContentRectFrom(base_content_rect));
+  }
+
   if (const std::optional<PhysicalSize> frozen_size = FrozenFrameSize()) {
     // TODO(kojii): Setting the `offset` to non-zero values breaks
     // hit-testing/inputs. Even different size is suspicious, as the input

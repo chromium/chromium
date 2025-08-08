@@ -4723,6 +4723,12 @@
       status: "stable",
     },
     {
+      // Treat SVG documents in <object>/<embed> as replaced elements
+      // https://issues.chromium.org/41302806
+      name: "SVGEmbeddedAsReplacedElement",
+      status: "experimental",
+    },
+    {
       // Enables loading of external SVG resource documents for the 'clip-path',
       // 'fill', 'stroke' and 'marker-*' properties.
       name: "SvgExternalResources",
