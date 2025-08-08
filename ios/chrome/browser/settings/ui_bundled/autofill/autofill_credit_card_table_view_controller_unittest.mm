@@ -19,6 +19,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_card_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -64,7 +65,8 @@ class AutofillCreditCardTableViewControllerTest
 
   void AddCreditCard(const std::string& origin,
                      const std::string& card_holder_name,
-                     const std::string& card_number) {
+                     const std::string& card_number,
+                     const std::string& cvc = "") {
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
     autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
@@ -75,6 +77,10 @@ class AutofillCreditCardTableViewControllerTest
                            base::ASCIIToUTF16(card_holder_name));
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
                            base::ASCIIToUTF16(card_number));
+    if (!cvc.empty()) {
+      credit_card.SetRawInfo(autofill::CREDIT_CARD_VERIFICATION_CODE,
+                             base::ASCIIToUTF16(cvc));
+    }
     personal_data_manager->payments_data_manager()
         .OnAcceptedLocalCreditCardSave(credit_card);
     personal_data_manager->address_data_manager()
@@ -127,7 +133,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestInitialization) {
 }
 
 // Adding a single credit card results in a credit card section.
-TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCard) {
+TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithoutCvc) {
   AddCreditCard("https://www.example.com/", "John Doe", "378282246310005");
   CreateController();
   CheckController();
@@ -136,7 +142,15 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCard) {
   // CVC storage switch and credit card section).
   ASSERT_EQ(4, NumberOfSections());
   // Expect credit card section to contain one row (the credit card itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(2));
+  EXPECT_EQ(1, NumberOfItemsInSection(3));
+
+  // Check that the CVC indicator is not present when CVC is not stored.
+  AutofillCardItem* item =
+      base::apple::ObjCCastStrict<AutofillCardItem>(GetTableViewItem(3, 0));
+  NSString* cvc_indicator = l10n_util::GetNSString(
+      IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY);
+  EXPECT_FALSE([item.leadingDetailText containsString:cvc_indicator])
+      << "Expected to find CVC indicator in text: " << item.leadingDetailText;
 }
 
 // Deleting the only credit card results in item deletion and section deletion.
@@ -242,6 +256,30 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
       l10n_util::GetNSString(
           IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL),
       1, 0);
+}
+
+// Tests that the CVC indicator is present when CVC is stored.
+TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithCvc) {
+  base::test::ScopedFeatureList feature_list(
+      {autofill::features::kAutofillEnableCvcStorageAndFilling});
+  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005",
+                "123");
+  CreateController();
+  CheckController();
+
+  // Expect four sections (credit card switch, mandatory reauth switch,
+  // CVC storage switch and credit card section).
+  ASSERT_EQ(4, NumberOfSections());
+  // Expect credit card section to contain one row (the credit card itself).
+  EXPECT_EQ(1, NumberOfItemsInSection(3));
+
+  // Check that the CVC indicator is present when CVC is stored.
+  AutofillCardItem* item =
+      base::apple::ObjCCastStrict<AutofillCardItem>(GetTableViewItem(3, 0));
+  NSString* cvc_indicator = l10n_util::GetNSString(
+      IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY);
+  EXPECT_TRUE([item.leadingDetailText containsString:cvc_indicator])
+      << "Expected to find CVC indicator in text: " << item.leadingDetailText;
 }
 
 }  // namespace

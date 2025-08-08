@@ -343,8 +343,16 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   AutofillCardItem* item = [[AutofillCardItem alloc] initWithType:ItemTypeCard];
   item.text = creditCardName;
-  item.leadingDetailText =
+  NSString* cardLeadingDetailText =
       autofill::GetCreditCardNameAndLastFourDigits(creditCard);
+  NSString* cardCvcIndicator = @"";
+  if (!creditCard.cvc().empty()) {
+    cardCvcIndicator = l10n_util::GetNSString(
+        IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY);
+    cardLeadingDetailText = [cardLeadingDetailText
+        stringByAppendingFormat:@" | %@", cardCvcIndicator];
+  }
+  item.leadingDetailText = cardLeadingDetailText;
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessibilityIdentifier = creditCardName;
   item.deletable = autofill::IsCreditCardLocal(creditCard);
