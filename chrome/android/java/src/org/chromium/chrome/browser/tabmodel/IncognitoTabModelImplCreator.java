@@ -95,7 +95,8 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                             mModelDelegate,
                             mAsyncTabParamsManager,
                             mTabRemover,
-                            tabUngrouper);
+                            tabUngrouper,
+                            /* supportUndo= */ false);
             filterHolder.value = model;
             return model;
         }

@@ -12,6 +12,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
+
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
@@ -27,12 +29,17 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -43,6 +50,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -382,7 +390,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(TabClosureParams.closeTab(tab1).build());
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTab(tab1).allowUndo(false).build());
                 });
 
         willCloseTabHelper.waitForOnly();
@@ -471,7 +480,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(TabClosureParams.closeTabs(tabsToClose).build());
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
                 });
 
         willCloseMultipleTabsHelper.waitForOnly();
@@ -539,6 +549,11 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
+                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
+                        fail("should not be called for close all tabs operation");
+                    }
+
+                    @Override
                     public void onFinishingMultipleTabClosure(
                             List<Tab> tabs, boolean saveToTabRestoreService) {
                         tabsInFinishingMultiple.set(tabs);
@@ -560,7 +575,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeAllTabs().allowUndo(false).build());
                 });
 
         willCloseAllTabsHelper.waitForOnly();
@@ -2345,5 +2361,518 @@ public class TabCollectionTabModelImplTest {
         if (willMove) {
             didMoveTabHelper.waitForOnly();
         }
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testCloseTab_Undo() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(tab1, getCurrentTab());
+
+        CallbackHelper onTabPendingClosure = new CallbackHelper();
+        CallbackHelper onTabCloseUndone = new CallbackHelper();
+        CallbackHelper didSelectOnCloseHelper = new CallbackHelper();
+        CallbackHelper didSelectOnUndoHelper = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabClosePending(
+                            List<Tab> tabs, boolean isAllTabs, @TabClosingSource int source) {
+                        assertEquals(TabClosingSource.UNKNOWN, source);
+                        assertEquals(1, tabs.size());
+                        assertEquals(tab1, tabs.get(0));
+                        onTabPendingClosure.notifyCalled();
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        assertEquals(tab1, tab);
+                        onTabCloseUndone.notifyCalled();
+                    }
+
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        if (didSelectOnCloseHelper.getCallCount() == 0) {
+                            // First event: Caused by closing tab1, selecting tab0.
+                            assertEquals(tab0, tab);
+                            assertEquals(TabSelectionType.FROM_CLOSE, type);
+                            assertEquals(tab1.getId(), lastId);
+                            didSelectOnCloseHelper.notifyCalled();
+                        } else {
+                            // Second event: Caused by UndoRefocusHelper re-selecting the restored
+                            // tab1.
+                            assertEquals(tab1, tab);
+                            assertEquals(tab0.getId(), lastId);
+                            didSelectOnUndoHelper.notifyCalled();
+                        }
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.closeTabs(TabClosureParams.closeTab(tab1).build());
+                });
+
+        onTabPendingClosure.waitForOnly();
+        didSelectOnCloseHelper.waitForOnly();
+
+        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab0));
+        assertEquals(tab0, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
+                    mCollectionModel.cancelTabClosure(tab1.getId());
+                });
+        onTabCloseUndone.waitForOnly();
+        didSelectOnUndoHelper.waitForOnly();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertFalse(mCollectionModel.isClosurePending(tab1.getId())));
+        assertEquals(2, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(tab1, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTab_UndoPinnedTab() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        ThreadUtils.runOnUiThreadBlocking(() -> tab0.setIsPinned(true));
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(tab1, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.closeTabs(TabClosureParams.closeTab(tab0).build());
+                });
+        assertTabsInOrderAre(List.of(tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
+                    mCollectionModel.cancelTabClosure(tab0.getId());
+                });
+        assertEquals(2, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertTrue(getTabAt(0).getIsPinned());
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTab_UndoGroupedTab() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createChildTab(tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+        assertEquals(tabGroupId, tab1.getTabGroupId());
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(tab1, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.closeTabs(TabClosureParams.closeTab(tab0).build());
+                });
+        assertTabsInOrderAre(List.of(tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
+                    mCollectionModel.cancelTabClosure(tab0.getId());
+                });
+        assertEquals(2, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(tabGroupId, getTabAt(0).getTabGroupId());
+        assertEquals(tabGroupId, getTabAt(1).getTabGroupId());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testCloseTab_UndoLastTab() throws Exception {
+        assertEquals(1, getCount());
+        Tab tab0 = getCurrentTab();
+
+        CallbackHelper onTabPendingClosure = new CallbackHelper();
+        CallbackHelper onTabCloseUndone = new CallbackHelper();
+        CallbackHelper didSelectTabHelper = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabClosePending(
+                            List<Tab> tabs, boolean isAllTabs, @TabClosingSource int source) {
+                        assertEquals(TabClosingSource.UNKNOWN, source);
+                        assertEquals(1, tabs.size());
+                        assertEquals(tab0, tabs.get(0));
+                        onTabPendingClosure.notifyCalled();
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        assertEquals(tab0, tab);
+                        onTabCloseUndone.notifyCalled();
+                    }
+
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        // Only validate and notify for the first call.
+                        if (didSelectTabHelper.getCallCount() > 0) return;
+
+                        assertEquals(tab0, tab);
+                        assertEquals(TabSelectionType.FROM_UNDO, type);
+                        assertEquals(0, lastId);
+                        didSelectTabHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.closeTabs(TabClosureParams.closeTab(tab0).build());
+                });
+
+        onTabPendingClosure.waitForOnly();
+        assertEquals(0, getCount());
+        assertNull(getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
+                    mCollectionModel.cancelTabClosure(tab0.getId());
+                });
+
+        onTabCloseUndone.waitForOnly();
+        didSelectTabHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertFalse(mCollectionModel.isClosurePending(tab0.getId())));
+        assertEquals(1, getCount());
+        assertEquals(tab0, getCurrentTab());
+
+        // Exit the tab switcher to fulfill AutoResetCtaTransitTestRule for future tests.
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        LayoutManagerChrome layoutManager = cta.getLayoutManager();
+        LayoutTestUtils.waitForLayout(layoutManager, LayoutType.TAB_SWITCHER);
+        clickFirstCardFromTabSwitcher(cta);
+        LayoutTestUtils.waitForLayout(layoutManager, LayoutType.BROWSING);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTab_Commit() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.closeTabs(TabClosureParams.closeTab(tab1).build());
+                    assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
+                });
+        assertEquals(1, getCount());
+
+        CallbackHelper onTabClosureCommitted = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        assertEquals(tab1, tab);
+                        onTabClosureCommitted.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.commitTabClosure(tab1.getId());
+                });
+
+        onTabClosureCommitted.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertFalse(mCollectionModel.isClosurePending(tab1.getId())));
+        assertTrue(tab1.isDestroyed());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testCloseTabs_UndoMultiple_ClosureRefactor() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.setIndex(2, TabSelectionType.FROM_USER));
+        assertEquals(tab2, getCurrentTab());
+
+        List<Tab> tabsToClose = List.of(tab1, tab2);
+        Set<Tab> tabsToCloseSet = new HashSet<>(tabsToClose);
+        CallbackHelper pendingClosureHelper = new CallbackHelper();
+        CallbackHelper onTabCloseUndoneHelper = new CallbackHelper();
+
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabClosePending(
+                            List<Tab> tabs, boolean isAllTabs, @TabClosingSource int source) {
+                        assertEquals(tabsToClose, tabs);
+                        assertFalse(isAllTabs);
+                        pendingClosureHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {
+                        assertEquals(1, tabs.size());
+                        assertTrue(tabsToCloseSet.containsAll(tabs));
+                        assertFalse(isAllTabs);
+                        onTabCloseUndoneHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        fail(
+                                "tabClosureUndone should not be called with closure refactor"
+                                        + " enabled.");
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.closeTabs(TabClosureParams.closeTabs(tabsToClose).build());
+                });
+
+        pendingClosureHelper.waitForOnly();
+        assertEquals(2, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab3));
+        assertEquals(tab0, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
+                    assertTrue(mCollectionModel.isClosurePending(tab2.getId()));
+                    for (Tab tabToClose : tabsToClose) {
+                        mCollectionModel.cancelTabClosure(tabToClose.getId());
+                    }
+                });
+        onTabCloseUndoneHelper.waitForCallback(0, 2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
+                    assertFalse(mCollectionModel.isClosurePending(tab2.getId()));
+                });
+        assertEquals(4, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+
+        assertEquals(tab0, getCurrentTab());
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testCloseTabs_UndoMultiple() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.setIndex(2, TabSelectionType.FROM_USER));
+        assertEquals(tab2, getCurrentTab());
+
+        List<Tab> tabsToClose = List.of(tab1, tab2);
+        Set<Tab> tabsToCloseSet = new HashSet<>(tabsToClose);
+        CallbackHelper pendingClosureHelper = new CallbackHelper();
+        CallbackHelper tabClosureUndoneHelper = new CallbackHelper();
+
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabClosePending(
+                            List<Tab> tabs, boolean isAllTabs, @TabClosingSource int source) {
+                        assertEquals(tabsToClose, tabs);
+                        assertFalse(isAllTabs);
+                        pendingClosureHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {
+                        fail(
+                                "onTabCloseUndone should not be called with closure refactor"
+                                        + " disabled.");
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        assertTrue(tabsToCloseSet.contains(tab));
+                        tabClosureUndoneHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.closeTabs(TabClosureParams.closeTabs(tabsToClose).build());
+                });
+
+        pendingClosureHelper.waitForOnly();
+        assertEquals(2, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab3));
+        assertEquals(tab0, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
+                    assertTrue(mCollectionModel.isClosurePending(tab2.getId()));
+                    for (Tab tabToClose : tabsToClose) {
+                        mCollectionModel.cancelTabClosure(tabToClose.getId());
+                    }
+                });
+        tabClosureUndoneHelper.waitForCallback(0, 2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
+                    assertFalse(mCollectionModel.isClosurePending(tab2.getId()));
+                });
+        assertEquals(4, getCount());
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+
+        assertEquals(tab0, getCurrentTab());
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTabs_CommitMultiple() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        createTab();
+        List<Tab> tabsToClose = List.of(tab0, tab1);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.closeTabs(TabClosureParams.closeTabs(tabsToClose).build());
+                    assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
+                    assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
+                });
+        assertEquals(1, getCount());
+
+        CallbackHelper onTabClosureCommitted = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        // This may be called for either tab0 or tab1.
+                        assertTrue(tabsToClose.contains(tab));
+                        onTabClosureCommitted.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.commitAllTabClosures();
+                });
+        onTabClosureCommitted.waitForCallback(0, 2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isClosurePending(tab0.getId()));
+                    assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
+                });
+        assertTrue(tab0.isDestroyed());
+        assertTrue(tab1.isDestroyed());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testCloseAllTabs_Undo() throws Exception {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        List<Tab> allTabs = List.of(tab0, tab1, tab2);
+        Set<Tab> allTabSet = new HashSet<>(allTabs);
+        assertTabsInOrderAre(allTabs);
+        assertEquals(3, getCount());
+
+        CallbackHelper willCloseAllTabsHelper = new CallbackHelper();
+        CallbackHelper tabClosureUndoneHelper = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void willCloseAllTabs(boolean isIncognito) {
+                        willCloseAllTabsHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
+                        fail("should not be called for close all tabs operation");
+                    }
+
+                    @Override
+                    public void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {
+                        fail(
+                                "onTabCloseUndone should not be called with closure refactor"
+                                        + " disabled.");
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        assertTrue(allTabSet.contains(tab));
+                        tabClosureUndoneHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.addObserver(observer));
+
+        TabUiTestHelper.enterTabSwitcher(cta);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                });
+
+        willCloseAllTabsHelper.waitForOnly();
+
+        assertEquals(0, getCount());
+        assertNull(getCurrentTab());
+        assertFalse(tab0.isDestroyed());
+        assertFalse(tab1.isDestroyed());
+        assertFalse(tab2.isDestroyed());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.getComprehensiveModel().getCount() > 0);
+                    for (Tab tabToClose : allTabs) {
+                        mCollectionModel.cancelTabClosure(tabToClose.getId());
+                    }
+                });
+        tabClosureUndoneHelper.waitForCallback(0, 3);
+
+        assertNotNull(getCurrentTab());
+        assertEquals(3, getCount());
+
+        // Exit the tab switcher to fulfill AutoResetCtaTransitTestRule for future tests.
+        TabUiTestHelper.clickNthCardFromTabSwitcher(mActivityTestRule.getActivity(), 0);
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
 }

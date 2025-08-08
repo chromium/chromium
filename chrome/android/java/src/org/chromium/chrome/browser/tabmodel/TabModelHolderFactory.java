@@ -51,7 +51,8 @@ public class TabModelHolderFactory {
                     modelDelegate,
                     asyncTabParamsManager,
                     tabRemover,
-                    tabUngrouperFactory);
+                    tabUngrouperFactory,
+                    supportUndo);
         }
         return createLegacyTabModelHolder(
                 profile,
@@ -131,7 +132,8 @@ public class TabModelHolderFactory {
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory) {
+            TabUngrouperFactory tabUngrouperFactory,
+            boolean supportUndo) {
         Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
         TabUngrouper tabUngrouper =
                 tabUngrouperFactory.create(/* isIncognitoBranded= */ false, filterHolder);
@@ -148,7 +150,8 @@ public class TabModelHolderFactory {
                         modelDelegate,
                         asyncTabParamsManager,
                         tabRemover,
-                        tabUngrouper);
+                        tabUngrouper,
+                        supportUndo);
         filterHolder.value = regularTabModel;
 
         return new TabModelHolder(regularTabModel, regularTabModel);

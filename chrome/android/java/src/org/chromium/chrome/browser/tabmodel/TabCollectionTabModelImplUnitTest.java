@@ -103,7 +103,8 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        mTabUngrouper);
+                        mTabUngrouper,
+                        /* supportUndo= */ false);
         mTabModel.addObserver(mTabModelObserver);
     }
 
