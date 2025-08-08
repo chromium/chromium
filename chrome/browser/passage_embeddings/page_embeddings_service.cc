@@ -4,6 +4,8 @@
 
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 
+#include <algorithm>
+#include <numeric>
 #include <set>
 #include <utility>
 
@@ -11,6 +13,25 @@
 #include "content/public/browser/web_contents.h"
 
 namespace passage_embeddings {
+
+namespace {
+passage_embeddings::PassagePriority ConvertToPassagePriority(
+    PageEmbeddingsService::Priority priority) {
+  switch (priority) {
+    case PageEmbeddingsService::kUserBlocking:
+      return passage_embeddings::kUserInitiated;
+
+    case PageEmbeddingsService::kUrgent:
+      return passage_embeddings::kUrgent;
+
+    case PageEmbeddingsService::kDefault:
+      return passage_embeddings::kPassive;
+
+    case PageEmbeddingsService::kBackground:
+      return passage_embeddings::kLatent;
+  }
+}
+}  // namespace
 
 WebContentsDestructionObserver::WebContentsDestructionObserver(
     content::WebContents* web_contents,
@@ -35,10 +56,14 @@ PageEmbeddingsService::~PageEmbeddingsService() = default;
 
 void PageEmbeddingsService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+
+  UpdateTaskPriorities(GetActivePriority(observers_));
 }
 
 void PageEmbeddingsService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+
+  UpdateTaskPriorities(GetActivePriority(observers_));
 }
 
 std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
@@ -74,7 +99,7 @@ void PageEmbeddingsService::OnPageContentExtracted(
   }
 
   Embedder::TaskId task_id = embedder_->ComputePassagesEmbeddings(
-      passage_embeddings::kPassive, std::move(passages),
+      ConvertToPassagePriority(current_priority_), std::move(passages),
       base::BindOnce(&PageEmbeddingsService::OnEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetWeakPtr()));
@@ -124,6 +149,34 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
 void PageEmbeddingsService::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
   web_contents_state_.erase(web_contents);
+}
+
+// static
+PageEmbeddingsService::Priority PageEmbeddingsService::GetActivePriority(
+    const base::ObserverList<Observer>& observers) {
+  return std::transform_reduce(
+      observers.begin(), observers.end(), kDefault,
+      [](Priority p1, Priority p2) { return std::min(p1, p2); },
+      [](const Observer& observer) { return observer.GetDefaultPriority(); });
+}
+
+void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
+  if (priority == current_priority_) {
+    return;
+  }
+
+  current_priority_ = priority;
+
+  std::set<Embedder::TaskId> tasks;
+  for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
+    if (web_contents_state.active_task.has_value()) {
+      tasks.insert(*web_contents_state.active_task);
+    }
+  }
+
+  if (!tasks.empty()) {
+    embedder_->ReprioritizeTasks(ConvertToPassagePriority(priority), tasks);
+  }
 }
 
 PageEmbeddingsService::WebContentsState::WebContentsState() = default;

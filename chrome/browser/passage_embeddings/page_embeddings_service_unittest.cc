@@ -18,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::AnyNumber;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Return;
@@ -49,6 +50,8 @@ class EmbedderMock : public Embedder {
 
 class ObserverMock : public PageEmbeddingsService::Observer {
  public:
+  MOCK_METHOD(PageEmbeddingsService::Priority, GetDefaultPriority, (), (const));
+
   MOCK_METHOD(void,
               OnPageEmbeddingsAvailable,
               (content::WebContents * web_contents),
@@ -114,6 +117,8 @@ TEST_F(PageEmbeddingsServiceTest, NotifiesObserver) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   ObserverMock observer;
+  EXPECT_CALL(observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   page_embeddings_service().AddObserver(&observer);
 
   Embedder::ComputePassagesEmbeddingsCallback
@@ -146,6 +151,8 @@ TEST_F(PageEmbeddingsServiceTest,
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   ObserverMock observer;
+  EXPECT_CALL(observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   page_embeddings_service().AddObserver(&observer);
 
   Embedder::ComputePassagesEmbeddingsCallback
@@ -359,6 +366,130 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
   ASSERT_EQ(1u, embeddings.size());
   EXPECT_EQ("passage text 2", embeddings[0].passage);
   EXPECT_THAT(embeddings[0].embedding.GetData(), ElementsAre(1.0f));
+}
+
+// Validates that the embeddings are computed with the priority of the highest
+// priority observer.
+TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+
+  ObserverMock observer_urgent;
+  EXPECT_CALL(observer_urgent, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kUrgent));
+
+  ObserverMock observer_user_blocking;
+  EXPECT_CALL(observer_user_blocking, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kUserBlocking));
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(AnyNumber());
+  EXPECT_CALL(embedder_mock(), TryCancel).Times(AnyNumber());
+  EXPECT_CALL(embedder_mock(), ReprioritizeTasks).Times(AnyNumber());
+
+  const auto set_priority_expectation =
+      [this](PassagePriority expected_priority) {
+        ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+            .WillByDefault(
+                [expected_priority](
+                    PassagePriority priority, std::vector<std::string> passages,
+                    Embedder::ComputePassagesEmbeddingsCallback callback) {
+                  EXPECT_EQ(expected_priority, priority);
+                  return 1;
+                });
+      };
+
+  // With no observers the priority should be the default.
+  set_priority_expectation(kPassive);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  // Adding an urgent observer should raise the priority.
+  page_embeddings_service().AddObserver(&observer_urgent);
+
+  set_priority_expectation(kUrgent);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  // Adding a user blocking observer should raise the priority again.
+  page_embeddings_service().AddObserver(&observer_user_blocking);
+
+  set_priority_expectation(kUserInitiated);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  // Removing the urgent observer should not affect the priority since a higher
+  // priority observer is present.
+  page_embeddings_service().RemoveObserver(&observer_urgent);
+
+  set_priority_expectation(kUserInitiated);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  // Removing the last observer should restore the priority to the default.
+  page_embeddings_service().RemoveObserver(&observer_user_blocking);
+
+  set_priority_expectation(kPassive);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+}
+
+// Validates that the embedder's tasks are reprioritized as expected.
+TEST_F(PageEmbeddingsServiceTest, TasksReprioritized) {
+  std::unique_ptr<content::WebContents> web_contents1 = CreateTestWebContents();
+  std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
+
+  ObserverMock observer_urgent;
+  EXPECT_CALL(observer_urgent, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kUrgent));
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(AnyNumber());
+
+  page_embeddings_service().AddObserver(&observer_urgent);
+
+  Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback;
+
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault([&](PassagePriority priority,
+                         std::vector<std::string> passages,
+                         Embedder::ComputePassagesEmbeddingsCallback callback) {
+        compute_passages_embeddings_callback = std::move(callback);
+        return 1;
+      });
+
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents1->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings).WillByDefault(Return(2));
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents2->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  ObserverMock observer_user_blocking;
+  EXPECT_CALL(observer_user_blocking, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kUserBlocking));
+
+  EXPECT_CALL(embedder_mock(),
+              ReprioritizeTasks(kUserInitiated, ElementsAre(1, 2)));
+
+  page_embeddings_service().AddObserver(&observer_user_blocking);
+
+  std::move(compute_passages_embeddings_callback)
+      .Run({"passage text"}, {Embedding({1.0f})}, 1,
+           ComputeEmbeddingsStatus::kExecutionFailure);
+
+  EXPECT_CALL(embedder_mock(), ReprioritizeTasks(kUrgent, ElementsAre(2)));
+
+  page_embeddings_service().RemoveObserver(&observer_user_blocking);
+
+  EXPECT_CALL(embedder_mock(), ReprioritizeTasks(kPassive, ElementsAre(2)));
+
+  page_embeddings_service().RemoveObserver(&observer_urgent);
 }
 
 }  // namespace passage_embeddings

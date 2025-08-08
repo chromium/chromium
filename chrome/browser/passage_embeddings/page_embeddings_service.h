@@ -53,8 +53,22 @@ class PageEmbeddingsService
     : public KeyedService,
       public page_content_annotations::PageContentExtractionService::Observer {
  public:
+  // The priority to use when computing embeddings. Higher priorities imply more
+  // performance overhead.
+  enum Priority {
+    kUserBlocking,
+    kUrgent,
+    kDefault,
+    kBackground,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
+    // Gets the default priority to use for computing embeddings.
+    // Implementations are expected to return the same value over the entire
+    // lifetime of the observer.
+    virtual Priority GetDefaultPriority() const = 0;
+
     // Invoked when embeddings become available or are updated for the
     // web_contents. The embeddings then can be queried via GetEmbeddings().
     virtual void OnPageEmbeddingsAvailable(content::WebContents* web_contents) {
@@ -99,6 +113,11 @@ class PageEmbeddingsService
 
   void OnWebContentsDestroyed(content::WebContents* web_contents);
 
+  static Priority GetActivePriority(
+      const base::ObserverList<Observer>& observers);
+
+  void UpdateTaskPriorities(Priority priority);
+
   struct WebContentsState {
     WebContentsState();
     ~WebContentsState();
@@ -118,6 +137,8 @@ class PageEmbeddingsService
       page_content_extraction_observation_{this};
 
   base::ObserverList<Observer> observers_;
+
+  Priority current_priority_ = kDefault;
 
   std::map<content::WebContents*, WebContentsState> web_contents_state_;
 
