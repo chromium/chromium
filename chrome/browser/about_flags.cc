@@ -4834,12 +4834,11 @@ const FeatureEntry::FeatureParam kAndroidTabHighlightingForceCtrlClick[] = {
     {"force_ctrl_click", "true"}};
 const FeatureEntry::FeatureParam kAndroidTabHighlightingForceShiftClick[] = {
     {"force_shift_click", "true"}};
-const FeatureEntry::FeatureVariation
-    kAndroidTabHighlightingVariations[] = {
-        {"Force Ctrl Click", kAndroidTabHighlightingForceCtrlClick,
-         std::size(kAndroidTabHighlightingForceCtrlClick), nullptr},
-        {"Force Shift Click", kAndroidTabHighlightingForceShiftClick,
-         std::size(kAndroidTabHighlightingForceShiftClick), nullptr}};
+const FeatureEntry::FeatureVariation kAndroidTabHighlightingVariations[] = {
+    {"Force Ctrl Click", kAndroidTabHighlightingForceCtrlClick,
+     std::size(kAndroidTabHighlightingForceCtrlClick), nullptr},
+    {"Force Shift Click", kAndroidTabHighlightingForceShiftClick,
+     std::size(kAndroidTabHighlightingForceShiftClick), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -13100,6 +13099,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayForceEmptyCsbQueryDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayForceEmptyCsbQuery)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-audio-device-listener",
+     flag_descriptions::kAndroidAudioDeviceListenerName,
+     flag_descriptions::kAndroidAudioDeviceListenerDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidAudioDeviceListener)}
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

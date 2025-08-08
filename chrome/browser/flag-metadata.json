@@ -223,6 +223,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-audio-device-listener",
+    "owners": [ "mjel@google.com", "lt-web-apps-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-bookmark-bar",
     "owners": [ "dmblack@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150

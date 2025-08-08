@@ -4682,6 +4682,11 @@ const char kAndroidSurfaceControlDescription[] =
     " DisplayCompositor on Android. This feature is only available on "
     " android Q+ devices";
 
+const char kAndroidAudioDeviceListenerName[] = "Android Audio Device Listener";
+const char kAndroidAudioDeviceListenerDescription[] =
+    "Enables listening to audio device list change events, allowing web apps "
+    "to react to audio devices being connected and disconnected.";
+
 const char kAndroidDataImporterServiceName[] = "Data Importer Service";
 const char kAndroidDataImporterServiceDescription[] =
     "Enables the service for importing user data from other browsers.";
