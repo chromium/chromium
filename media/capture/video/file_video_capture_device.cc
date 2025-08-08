@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -14,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -403,22 +405,25 @@ std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, crop_size);
   std::vector<uint8_t> crop_frame(crop_buffer_size);
 
-  uint8_t* crop_yp = crop_frame.data();
-  uint8_t* crop_up = UNSAFE_TODO(
-      crop_yp +
-      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, crop_size).GetArea());
-  uint8_t* crop_vp = UNSAFE_TODO(
-      crop_up +
-      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, crop_size).GetArea());
+  const size_t kCropPlaneYSize =
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, crop_size).GetArea();
+  const size_t kCropPlaneUVSize =
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, crop_size).GetArea();
+  base::span<uint8_t> crop_frame_span = crop_frame;
+  base::span<uint8_t> crop_yp = crop_frame_span.subspan(0u, kCropPlaneYSize);
+  base::span<uint8_t> crop_up =
+      crop_frame_span.subspan(kCropPlaneYSize, kCropPlaneUVSize);
+  base::span<uint8_t> crop_vp = crop_frame_span.subspan(
+      kCropPlaneYSize + kCropPlaneUVSize, kCropPlaneUVSize);
   int crop_yp_stride = crop_width;
   int crop_up_stride = crop_yp_stride / 2;
   int crop_vp_stride = crop_yp_stride / 2;
 
-  if (libyuv::ConvertToI420(frame, frame_buffer_size, crop_yp, crop_yp_stride,
-                            crop_up, crop_up_stride, crop_vp, crop_vp_stride,
-                            crop_x, crop_y, frame_size.width(),
-                            frame_size.height(), crop_width, crop_height,
-                            libyuv::RotationMode::kRotate0, fourcc)) {
+  if (libyuv::ConvertToI420(
+          frame, frame_buffer_size, crop_yp.data(), crop_yp_stride,
+          crop_up.data(), crop_up_stride, crop_vp.data(), crop_vp_stride,
+          crop_x, crop_y, frame_size.width(), frame_size.height(), crop_width,
+          crop_height, libyuv::RotationMode::kRotate0, fourcc)) {
     LOG(ERROR) << "Failed to crop image for ptz transform.";
     return {};
   }
@@ -432,23 +437,26 @@ std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, scale_size);
   std::vector<uint8_t> scale_frame(scale_buffer_size);
 
-  uint8_t* scale_yp = scale_frame.data();
-  uint8_t* scale_up = UNSAFE_TODO(
-      scale_yp +
-      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, scale_size).GetArea());
-  uint8_t* scale_vp = UNSAFE_TODO(
-      scale_up +
-      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, scale_size).GetArea());
+  const size_t kScalePlaneYSize =
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, scale_size).GetArea();
+  const size_t kScalePlaneUVSize =
+      VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, scale_size).GetArea();
+  base::span<uint8_t> scale_frame_span = scale_frame;
+  base::span<uint8_t> scale_yp = scale_frame_span.subspan(0u, kScalePlaneYSize);
+  base::span<uint8_t> scale_up =
+      scale_frame_span.subspan(kScalePlaneYSize, kScalePlaneUVSize);
+  base::span<uint8_t> scale_vp = scale_frame_span.subspan(
+      kScalePlaneYSize + kScalePlaneUVSize, kScalePlaneUVSize);
   int scale_yp_stride = scale_size.width();
   int scale_up_stride = scale_yp_stride / 2;
   int scale_vp_stride = scale_yp_stride / 2;
 
-  if (libyuv::I420Scale(crop_yp, crop_yp_stride, crop_up, crop_up_stride,
-                        crop_vp, crop_vp_stride, crop_width, crop_height,
-                        scale_yp, scale_yp_stride, scale_up, scale_up_stride,
-                        scale_vp, scale_vp_stride, scale_size.width(),
-                        scale_size.height(),
-                        libyuv::FilterMode::kFilterBilinear)) {
+  if (libyuv::I420Scale(
+          crop_yp.data(), crop_yp_stride, crop_up.data(), crop_up_stride,
+          crop_vp.data(), crop_vp_stride, crop_width, crop_height,
+          scale_yp.data(), scale_yp_stride, scale_up.data(), scale_up_stride,
+          scale_vp.data(), scale_vp_stride, scale_size.width(),
+          scale_size.height(), libyuv::FilterMode::kFilterBilinear)) {
     LOG(ERROR) << "Failed to scale image for ptz transform.";
     return {};
   }

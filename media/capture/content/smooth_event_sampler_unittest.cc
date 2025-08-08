@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/content/smooth_event_sampler.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -275,17 +280,23 @@ struct DataPoint {
   double increment_ms;
 };
 
-void ReplayCheckingSamplerDecisions(const DataPoint* data_points,
-                                    size_t num_data_points,
-                                    SmoothEventSampler* sampler) {
+void ReplayCheckingSamplerDecisions(
+    base::span<const DataPoint> data_points,
+    size_t spanification_suspected_redundant_num_data_points,
+    SmoothEventSampler* sampler) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_num_data_points == data_points.size(),
+        base::NotFatalUntil::M143);
   base::TimeTicks t = InitialTestTimeTicks();
-  for (size_t i = 0; i < num_data_points; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_num_data_points;
+       ++i) {
     t += base::Microseconds(
-        static_cast<int64_t>(UNSAFE_TODO(data_points[i]).increment_ms * 1000));
-    UNSAFE_TODO(ASSERT_EQ(data_points[i].should_capture,
-                          AddEventAndConsiderSampling(sampler, t)))
+        static_cast<int64_t>(data_points[i].increment_ms * 1000));
+    ASSERT_EQ(data_points[i].should_capture,
+              AddEventAndConsiderSampling(sampler, t))
         << "at data_points[" << i << ']';
-    if (UNSAFE_TODO(data_points[i]).should_capture) {
+    if (data_points[i].should_capture) {
       sampler->RecordSample();
     }
   }

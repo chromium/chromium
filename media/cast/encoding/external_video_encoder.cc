@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cast/encoding/external_video_encoder.h"
 
 #include <array>
@@ -11,7 +16,7 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -439,9 +444,8 @@ class ExternalVideoEncoder::VEAClientImpl final
       std::string data = stream_header_.str();
       std::ostringstream().swap(stream_header_);
       data.append(output_buffer_memory, metadata.payload_size_bytes);
-      encoded_frame->data =
-          base::HeapArray<uint8_t>::CopiedFrom(UNSAFE_TODO(base::span(
-              reinterpret_cast<const uint8_t*>(data.c_str()), data.size())));
+      encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(base::span(
+          reinterpret_cast<const uint8_t*>(data.c_str()), data.size()));
 
       // If FRAME_DURATION metadata was provided in the source VideoFrame,
       // compute the utilization metrics.
@@ -909,13 +913,11 @@ std::optional<double> QuantizerEstimator::EstimateForKeyFrame(
   const int row_skip = size.height() / rows_in_subset;
   int y = 0;
   for (int i = 0; i < rows_in_subset; ++i, y += row_skip) {
-    const uint8_t* const row_begin =
-        UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kY) +
-                    y * frame.stride(VideoFrame::Plane::kY));
-    const uint8_t* const row_end = UNSAFE_TODO(row_begin + size.width());
+    const uint8_t* const row_begin = frame.visible_data(VideoFrame::Plane::kY) +
+                                     y * frame.stride(VideoFrame::Plane::kY);
+    const uint8_t* const row_end = row_begin + size.width();
     int left_hand_pixel_value = static_cast<int>(*row_begin);
-    for (const uint8_t* p = UNSAFE_TODO(row_begin + 1); p < row_end;
-         UNSAFE_TODO(++p)) {
+    for (const uint8_t* p = row_begin + 1; p < row_end; ++p) {
       const int right_hand_pixel_value = static_cast<int>(*p);
       const int difference = right_hand_pixel_value - left_hand_pixel_value;
       const int histogram_index = difference + 255;
@@ -925,15 +927,15 @@ std::optional<double> QuantizerEstimator::EstimateForKeyFrame(
 
     // Copy the row of pixels into the buffer.  This will be used when
     // generating histograms for future delta frames.
-    UNSAFE_TODO(memcpy(last_frame_pixel_buffer_.get() + i * size.width(),
-                       row_begin, size.width()));
+    memcpy(last_frame_pixel_buffer_.get() + i * size.width(), row_begin,
+           size.width());
   }
 
   // Estimate a quantizer value depending on the difference data in the
   // histogram and return it.
   const int num_samples = (size.width() - 1) * rows_in_subset;
-  return ToQuantizerEstimate(ComputeEntropyFromHistogram(
-      histogram.data(), histogram.size(), num_samples));
+  return ToQuantizerEstimate(
+      ComputeEntropyFromHistogram(histogram, histogram.size(), num_samples));
 }
 
 std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
@@ -958,14 +960,13 @@ std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
   const int row_skip = size.height() / rows_in_subset;
   int y = 0;
   for (int i = 0; i < rows_in_subset; ++i, y += row_skip) {
-    const uint8_t* const row_begin =
-        UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kY) +
-                    y * frame.stride(VideoFrame::Plane::kY));
-    const uint8_t* const row_end = UNSAFE_TODO(row_begin + size.width());
+    const uint8_t* const row_begin = frame.visible_data(VideoFrame::Plane::kY) +
+                                     y * frame.stride(VideoFrame::Plane::kY);
+    const uint8_t* const row_end = row_begin + size.width();
     uint8_t* const last_frame_row_begin =
-        UNSAFE_TODO(last_frame_pixel_buffer_.get() + i * size.width());
+        last_frame_pixel_buffer_.get() + i * size.width();
     for (const uint8_t *p = row_begin, *q = last_frame_row_begin; p < row_end;
-         UNSAFE_TODO(++p), UNSAFE_TODO(++q)) {
+         ++p, ++q) {
       const int difference = static_cast<int>(*p) - static_cast<int>(*q);
       const int histogram_index = difference + 255;
       ++histogram[histogram_index];
@@ -973,14 +974,14 @@ std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
 
     // Copy the row of pixels into the buffer.  This will be used when
     // generating histograms for future delta frames.
-    UNSAFE_TODO(memcpy(last_frame_row_begin, row_begin, size.width()));
+    memcpy(last_frame_row_begin, row_begin, size.width());
   }
 
   // Estimate a quantizer value depending on the difference data in the
   // histogram and return it.
   const int num_samples = size.width() * rows_in_subset;
-  return ToQuantizerEstimate(ComputeEntropyFromHistogram(
-      histogram.data(), histogram.size(), num_samples));
+  return ToQuantizerEstimate(
+      ComputeEntropyFromHistogram(histogram, histogram.size(), num_samples));
 }
 
 // static
@@ -991,14 +992,19 @@ bool QuantizerEstimator::CanExamineFrame(const VideoFrame& frame) {
 }
 
 // static
-double QuantizerEstimator::ComputeEntropyFromHistogram(const int* histogram,
-                                                       size_t histogram_size,
-                                                       int num_samples) {
+double QuantizerEstimator::ComputeEntropyFromHistogram(
+    base::span<const int> histogram,
+    size_t spanification_suspected_redundant_histogram_size,
+    int num_samples) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_histogram_size == histogram.size(),
+        base::NotFatalUntil::M143);
   DCHECK_LT(0, num_samples);
   double entropy = 0.0;
-  for (size_t i = 0; i < histogram_size; ++i) {
-    const double probability =
-        static_cast<double>(UNSAFE_TODO(histogram[i])) / num_samples;
+  for (size_t i = 0; i < spanification_suspected_redundant_histogram_size;
+       ++i) {
+    const double probability = static_cast<double>(histogram[i]) / num_samples;
     if (probability > 0.0) {
       entropy = entropy - probability * std::log2(probability);
     }

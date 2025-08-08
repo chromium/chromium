@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/circular_deque.h"
@@ -98,10 +99,10 @@ struct MEDIA_EXPORT Vp9SegmentationParams {
   bool update_data;
   bool abs_or_delta_update;
   bool feature_enabled[kNumSegments][SEG_LVL_MAX];
-  int16_t feature_data[kNumSegments][SEG_LVL_MAX];
+  std::array<std::array<int16_t, SEG_LVL_MAX>, kNumSegments> feature_data;
 
-  int16_t y_dequant[kNumSegments][2];
-  int16_t uv_dequant[kNumSegments][2];
+  std::array<std::array<int16_t, 2>, kNumSegments> y_dequant;
+  std::array<std::array<int16_t, 2>, kNumSegments> uv_dequant;
 
   bool FeatureEnabled(size_t seg_id, SegmentLevelFeature feature) const {
     return feature_enabled[seg_id][feature];
@@ -120,9 +121,9 @@ struct MEDIA_EXPORT Vp9LoopFilterParams {
 
   bool delta_enabled;
   bool delta_update;
-  bool update_ref_deltas[VP9_FRAME_MAX];
-  int8_t ref_deltas[VP9_FRAME_MAX];
-  bool update_mode_deltas[kNumModeDeltas];
+  std::array<bool, VP9_FRAME_MAX> update_ref_deltas;
+  std::array<int8_t, VP9_FRAME_MAX> ref_deltas;
+  std::array<bool, kNumModeDeltas> update_mode_deltas;
   int8_t mode_deltas[kNumModeDeltas];
 
   // Calculated from above fields.
@@ -222,7 +223,7 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   bool intra_only = false;
   uint8_t reset_frame_context = 0;
   uint8_t refresh_frame_flags = 0;
-  uint8_t ref_frame_idx[kVp9NumRefsPerFrame] = {};
+  std::array<uint8_t, kVp9NumRefsPerFrame> ref_frame_idx = {};
   bool ref_frame_sign_bias[Vp9RefType::VP9_FRAME_MAX] = {false};
   bool allow_high_precision_mv = false;
   Vp9InterpolationFilter interpolation_filter{Vp9InterpolationFilter::EIGHTTAP};

@@ -123,6 +123,17 @@ const base::FilePath::CharType* kMT2TImage =
 
 constexpr int kLibYUVSuccess = 0;
 
+base::span<const uint32_t> ConvertBytesSpanToUint32Span(
+    base::span<const uint8_t> bytes) {
+  CHECK_EQ(bytes.size() % sizeof(uint32_t), 0u);
+  // SAFETY: The above CHECK_EQ() ensures that the size of `bytes` is divisible
+  // by sizeof(uint32_t), and thus the range bytes.data() + size is valid for
+  // uint32_t once you divide by sizeof(uint32_t).
+  return UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const uint32_t*>(bytes.data()),
+                 bytes.size() / sizeof(uint32_t)));
+}
+
 scoped_refptr<VideoFrame> ConvMM21ToI420(const VideoFrame& in_frame) {
   CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_NV12);
 
@@ -846,11 +857,11 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
                          output_size, transform);
   if (is_10bit) {
     psnr = test::ComputeAR30PSNR(
-        reinterpret_cast<const uint32_t*>(
-            out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        ConvertBytesSpanToUint32Span(
+            out_frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB)),
         out_frame->stride(VideoFrame::Plane::kARGB) / 4,
-        reinterpret_cast<const uint32_t*>(
-            libyuv_out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        ConvertBytesSpanToUint32Span(
+            libyuv_out_frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB)),
         libyuv_out_frame->stride(VideoFrame::Plane::kARGB) / 4,
         output_size.width(), output_size.height());
   } else {

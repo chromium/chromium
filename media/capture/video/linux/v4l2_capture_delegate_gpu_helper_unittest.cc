@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -159,7 +164,7 @@ class V4l2CaptureDelegateGpuHelperTest
           size_t size = ftell(fp);
           sample->resize(size);
           fseek(fp, 0, SEEK_SET);
-          size_t read_size = UNSAFE_TODO(fread(sample->data(), 1, size, fp));
+          size_t read_size = fread(sample->data(), 1, size, fp);
           EXPECT_EQ(size, read_size);
           fclose(fp);
         }
@@ -204,10 +209,7 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest,
 
   if (sample) {
     // corrupt the sample data
-    uint8_t* data = sample->data();
-    for (size_t i = 0; i < 0xff && i < sample->size(); i++) {
-      UNSAFE_TODO(data[i]) = 0xff;
-    }
+    std::fill(sample->begin(), sample->end(), 0xff);
   }
 
   EXPECT_CALL(client, ReserveOutputBuffer)

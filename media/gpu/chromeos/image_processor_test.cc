@@ -323,9 +323,10 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     return nullptr;
   }
 
-  uint8_t* y_plane = mapped_ret->GetWritableVisibleData(VideoFrame::Plane::kY);
-  uint8_t* uv_plane =
-      mapped_ret->GetWritableVisibleData(VideoFrame::Plane::kUV);
+  base::span<uint8_t> y_plane =
+      mapped_ret->GetWritableVisiblePlaneData(VideoFrame::Plane::kY);
+  base::span<uint8_t> uv_plane =
+      mapped_ret->GetWritableVisiblePlaneData(VideoFrame::Plane::kUV);
   for (int row = 0; row < size.height(); row++) {
     for (int col = 0; col < size.width(); col++) {
       y_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
@@ -333,9 +334,9 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
         uv_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
       }
     }
-    y_plane += mapped_ret->stride(VideoFrame::Plane::kY);
+    y_plane = y_plane.subspan(mapped_ret->stride(VideoFrame::Plane::kY));
     if (row % 2 == 0) {
-      uv_plane += mapped_ret->stride(VideoFrame::Plane::kUV);
+      uv_plane = uv_plane.subspan(mapped_ret->stride(VideoFrame::Plane::kUV));
     }
   }
 
@@ -378,14 +379,14 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
     return false;
   }
 
-  const uint8_t* test_y_plane =
-      mapped_test_frame->visible_data(VideoFrame::Plane::kY);
-  const uint8_t* test_uv_plane =
-      mapped_test_frame->visible_data(VideoFrame::Plane::kUV);
-  const uint8_t* golden_y_plane =
-      mapped_golden_frame->visible_data(VideoFrame::Plane::kY);
-  const uint8_t* golden_uv_plane =
-      mapped_golden_frame->visible_data(VideoFrame::Plane::kUV);
+  base::span<const uint8_t> test_y_plane =
+      mapped_test_frame->GetVisiblePlaneData(VideoFrame::Plane::kY);
+  base::span<const uint8_t> test_uv_plane =
+      mapped_test_frame->GetVisiblePlaneData(VideoFrame::Plane::kUV);
+  base::span<const uint8_t> golden_y_plane =
+      mapped_golden_frame->GetVisiblePlaneData(VideoFrame::Plane::kY);
+  base::span<const uint8_t> golden_uv_plane =
+      mapped_golden_frame->GetVisiblePlaneData(VideoFrame::Plane::kUV);
   for (int y = 0; y < test_frame->coded_size().height(); y++) {
     for (int x = 0; x < test_frame->coded_size().width(); x++) {
       if (test_y_plane[x] != golden_y_plane[x]) {
@@ -398,11 +399,15 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
         }
       }
     }
-    test_y_plane += mapped_test_frame->stride(VideoFrame::Plane::kY);
-    golden_y_plane += mapped_golden_frame->stride(VideoFrame::Plane::kY);
+    test_y_plane =
+        test_y_plane.subspan(mapped_test_frame->stride(VideoFrame::Plane::kY));
+    golden_y_plane = golden_y_plane.subspan(
+        mapped_golden_frame->stride(VideoFrame::Plane::kY));
     if (y % 2 == 0) {
-      test_uv_plane += mapped_test_frame->stride(VideoFrame::Plane::kUV);
-      golden_uv_plane += mapped_golden_frame->stride(VideoFrame::Plane::kUV);
+      test_uv_plane = test_uv_plane.subspan(
+          mapped_test_frame->stride(VideoFrame::Plane::kUV));
+      golden_uv_plane = golden_uv_plane.subspan(
+          mapped_golden_frame->stride(VideoFrame::Plane::kUV));
     }
   }
 

@@ -15,6 +15,7 @@
 #include <array>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
@@ -103,9 +104,9 @@ static base::HeapArray<uint8_t> ReadbackTexture(gpu::gles2::GLES2Interface* gl,
 
 // Returns a functor that retrieves a SkColor for a given pixel, from raw RGBA
 // data.
-static auto ColorGetter(uint8_t* pixels, const gfx::Size& size) {
+static auto ColorGetter(base::span<uint8_t> pixels, const gfx::Size& size) {
   return [pixels, size](size_t x, size_t y) {
-    uint8_t* p = pixels + (size.width() * y + x) * 4;
+    base::span<uint8_t> p = pixels.subspan((size.width() * y + x) * 4);
     return SkColorSetARGB(p[3], p[0], p[1], p[2]);
   };
 }
@@ -1328,7 +1329,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
 
   base::HeapArray<uint8_t> pixels =
       ReadbackTexture(destination_gl, texture, expected_size);
-  auto get_color = ColorGetter(pixels.data(), expected_size);
+  auto get_color = ColorGetter(pixels, expected_size);
 
   // Avoid checking around the seams.
   EXPECT_EQ(SK_ColorBLACK, get_color(0, 0));
@@ -1360,7 +1361,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
   base::HeapArray<uint8_t> pixels =
       ReadbackTexture(destination_gl, texture, expected_size);
-  auto get_color = ColorGetter(pixels.data(), expected_size);
+  auto get_color = ColorGetter(pixels, expected_size);
 
   // Avoid checking around the seams.
   EXPECT_EQ(SK_ColorBLACK, get_color(0, 5));

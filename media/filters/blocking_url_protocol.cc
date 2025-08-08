@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/blocking_url_protocol.h"
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
+#include <array>
+
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
@@ -66,14 +72,15 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
                                       base::Unretained(this)));
   }
 
-  base::WaitableEvent* events[] = { &aborted_, &read_complete_ };
+  auto events =
+      std::to_array<base::WaitableEvent*>({&aborted_, &read_complete_});
   size_t index;
   {
     base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
-    index = base::WaitableEvent::WaitMany(events, std::size(events));
+    index = base::WaitableEvent::WaitMany(events.data(), std::size(events));
   }
 
-  if (UNSAFE_TODO(events[index]) == &aborted_) {
+  if (events[index] == &aborted_) {
     return AVERROR(EIO);
   }
 

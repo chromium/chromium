@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/h264_parser.h"
 
 #include <array>
@@ -9,7 +14,7 @@
 #include <limits>
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
@@ -318,13 +323,12 @@ void H264Parser::SetEncryptedStream(
 
   encrypted_ranges_.clear();
   const uint8_t* start = stream;
-  const uint8_t* stream_end =
-      UNSAFE_TODO(stream_ + base::checked_cast<size_t>(bytes_left_));
+  const uint8_t* stream_end = stream_ + base::checked_cast<size_t>(bytes_left_);
   for (size_t i = 0; i < subsamples.size() && start < stream_end; ++i) {
-    UNSAFE_TODO(start += subsamples[i].clear_bytes);
+    start += subsamples[i].clear_bytes;
 
     const uint8_t* end =
-        std::min(UNSAFE_TODO(start + subsamples[i].cypher_bytes), stream_end);
+        std::min(start + subsamples[i].cypher_bytes, stream_end);
     encrypted_ranges_.Add(start, end);
     start = end;
   }
@@ -351,8 +355,7 @@ const H264SPS* H264Parser::GetSPS(int sps_id) const {
 }
 
 static inline bool IsStartCode(const uint8_t* data) {
-  return data[0] == 0x00 && UNSAFE_TODO(data[1]) == 0x00 &&
-         UNSAFE_TODO(data[2]) == 0x01;
+  return data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x01;
 }
 
 // static
@@ -366,14 +369,14 @@ bool H264Parser::FindStartCode(const uint8_t* data,
   while (bytes_left >= 3) {
     // The start code is "\0\0\1", ones are more unusual than zeroes, so let's
     // search for it first.
-    const uint8_t* tmp = reinterpret_cast<const uint8_t*>(
-        UNSAFE_TODO(memchr(data + 2, 1, bytes_left - 2)));
+    const uint8_t* tmp =
+        reinterpret_cast<const uint8_t*>(memchr(data + 2, 1, bytes_left - 2));
     if (!tmp) {
-      UNSAFE_TODO(data += bytes_left - 2);
+      data += bytes_left - 2;
       bytes_left = 2;
       break;
     }
-    UNSAFE_TODO(tmp -= 2);
+    tmp -= 2;
     bytes_left -= tmp - data;
     data = tmp;
 
@@ -384,7 +387,7 @@ bool H264Parser::FindStartCode(const uint8_t* data,
 
       // If there is a zero byte before this start code,
       // then it's actually a four-byte start code, so backtrack one byte.
-      if (*offset > 0 && *(UNSAFE_TODO(data - 1)) == 0x00) {
+      if (*offset > 0 && *(data - 1) == 0x00) {
         --(*offset);
         ++(*start_code_size);
       }
@@ -392,7 +395,7 @@ bool H264Parser::FindStartCode(const uint8_t* data,
       return true;
     }
 
-    UNSAFE_TODO(++data);
+    ++data;
     --bytes_left;
   }
 
@@ -418,11 +421,11 @@ bool H264Parser::LocateNALU(off_t* nalu_size, off_t* start_code_size) {
   }
 
   // Move the stream to the beginning of the NALU (pointing at the start code).
-  UNSAFE_TODO(stream_ += base::checked_cast<size_t>(nalu_start_off));
+  stream_ += base::checked_cast<size_t>(nalu_start_off);
   bytes_left_ -= nalu_start_off;
 
   const uint8_t* nalu_data =
-      UNSAFE_TODO(stream_ + base::checked_cast<size_t>(annexb_start_code_size));
+      stream_ + base::checked_cast<size_t>(annexb_start_code_size);
   off_t max_nalu_data_size = bytes_left_ - annexb_start_code_size;
   if (max_nalu_data_size <= 0) {
     DVLOG(3) << "End of stream";
@@ -467,16 +470,16 @@ bool H264Parser::FindStartCodeInClearRanges(
 
     // Construct a Ranges object that represents the region occupied
     // by the start code and the 1 byte needed to read the NAL unit type.
-    const uint8_t* start_code = UNSAFE_TODO(start + *offset);
-    const uint8_t* start_code_end = UNSAFE_TODO(start_code + *start_code_size);
+    const uint8_t* start_code = start + *offset;
+    const uint8_t* start_code_end = start_code + *start_code_size;
     Ranges<const uint8_t*> start_code_range;
-    start_code_range.Add(start_code, UNSAFE_TODO(start_code_end + 1));
+    start_code_range.Add(start_code, start_code_end + 1);
 
     if (encrypted_ranges.IntersectionWith(start_code_range).size() > 0) {
       // The start code is inside an encrypted section so we need to scan
       // for another start code.
       *start_code_size = 0;
-      UNSAFE_TODO(start += std::min(*offset + 1, bytes_left));
+      start += std::min(*offset + 1, bytes_left);
     }
   } while (*start_code_size == 0);
 
@@ -546,8 +549,7 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
     return kEOStream;
   }
 
-  nalu->data =
-      UNSAFE_TODO(stream_ + base::checked_cast<size_t>(start_code_size));
+  nalu->data = stream_ + base::checked_cast<size_t>(start_code_size);
   nalu->size = nalu_size_with_start_code - start_code_size;
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
@@ -562,7 +564,7 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
   // is called, we will effectively be skipping it;
   // other parsing functions will use the position saved
   // in bit reader for parsing, so we don't have to remember it here.
-  UNSAFE_TODO(stream_ += base::checked_cast<size_t>(nalu_size_with_start_code));
+  stream_ += base::checked_cast<size_t>(nalu_size_with_start_code);
   bytes_left_ -= nalu_size_with_start_code;
 
   // Read NALU header, skip the forbidden_zero_bit, but check for it.
@@ -579,9 +581,8 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
            << " ref: " << static_cast<int>(nalu->nal_ref_idc);
 
   previous_nalu_range_.clear();
-  previous_nalu_range_.Add(
-      nalu->data.get(),
-      UNSAFE_TODO(nalu->data + base::checked_cast<size_t>(nalu->size)));
+  previous_nalu_range_.Add(nalu->data.get(),
+                           nalu->data + base::checked_cast<size_t>(nalu->size));
   return kOk;
 }
 
@@ -1137,8 +1138,8 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
     Ranges<const uint8_t*> pps_range;
     // Only check that the next byte is unencrypted, not the rest of the NALU.
     const uint8_t* next_byte =
-        UNSAFE_TODO(previous_nalu_range_.end(0) - br_.NumBitsLeft() / 8);
-    pps_range.Add(next_byte, UNSAFE_TODO(next_byte + 1));
+        previous_nalu_range_.end(0) - br_.NumBitsLeft() / 8;
+    pps_range.Add(next_byte, next_byte + 1);
     pps_remainder_unencrypted =
         (encrypted_ranges_.IntersectionWith(pps_range).size() == 0);
   }
@@ -1191,7 +1192,7 @@ H264Parser::Result H264Parser::ParseRefPicListModification(
     return kInvalidStream;
 
   for (int i = 0; i < 32; ++i) {
-    pic_num_mod = &UNSAFE_TODO(ref_list_mods[i]);
+    pic_num_mod = &ref_list_mods[i];
     READ_UE_OR_RETURN(&pic_num_mod->modification_of_pic_nums_idc);
     TRUE_OR_RETURN(pic_num_mod->modification_of_pic_nums_idc < 4);
 

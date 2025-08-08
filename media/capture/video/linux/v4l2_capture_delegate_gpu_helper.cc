@@ -4,7 +4,10 @@
 
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
+#include <cstdint>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -205,20 +208,29 @@ int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
 
   const size_t i420_size = VideoFrame::AllocationSize(
       VideoPixelFormat::PIXEL_FORMAT_I420, dimensions);
-  i420_buffer_.reserve(i420_size);
+
+  if (i420_buffer_.size() < i420_size) {
+    i420_buffer_.resize(i420_size);
+  }
   if (!i420_buffer_.data()) {
     return -1;
   }
 
-  uint8_t* i420_y = i420_buffer_.data();
-  uint8_t* i420_u = UNSAFE_TODO(
-      i420_y + VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
-                                     VideoFrame::Plane::kY, dimensions)
-                   .GetArea());
-  uint8_t* i420_v = UNSAFE_TODO(
-      i420_u + VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
-                                     VideoFrame::Plane::kU, dimensions)
-                   .GetArea());
+  const size_t kPlaneYSize =
+      VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
+                            VideoFrame::Plane::kY, dimensions)
+          .GetArea();
+  const size_t kPlaneUVSize =
+      VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
+                            VideoFrame::Plane::kU, dimensions)
+          .GetArea();
+  base::span<uint8_t> i420_buffer_span = i420_buffer_;
+  base::span<uint8_t> i420_y = i420_buffer_span.subspan(0u, kPlaneYSize);
+  base::span<uint8_t> i420_u =
+      i420_buffer_span.subspan(kPlaneYSize, kPlaneUVSize);
+  base::span<uint8_t> i420_v =
+      i420_buffer_span.subspan(kPlaneYSize + kPlaneUVSize, kPlaneUVSize);
+
   std::vector<size_t> i420_strides = VideoFrame::ComputeStrides(
       VideoPixelFormat::PIXEL_FORMAT_I420, dimensions);
   const int i420_stride_y =
@@ -233,16 +245,16 @@ int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
   const int crop_width = width & ~1;
   const int crop_height = height & ~1;
   int status = libyuv::ConvertToI420(
-      sample, sample_size, i420_y, i420_stride_y, i420_u, i420_stride_u, i420_v,
-      i420_stride_v, 0, 0, width, height, crop_width, crop_height,
-      rotation_mode, fourcc);
+      sample, sample_size, i420_y.data(), i420_stride_y, i420_u.data(),
+      i420_stride_u, i420_v.data(), i420_stride_v, 0, 0, width, height,
+      crop_width, crop_height, rotation_mode, fourcc);
   if (status != 0) {
     return status;
   }
 
-  status = libyuv::I420ToNV12(i420_y, i420_stride_y, i420_u, i420_stride_u,
-                              i420_v, i420_stride_v, dst_y, dst_stride_y,
-                              dst_uv, dst_stride_uv, width, height);
+  status = libyuv::I420ToNV12(
+      i420_y.data(), i420_stride_y, i420_u.data(), i420_stride_u, i420_v.data(),
+      i420_stride_v, dst_y, dst_stride_y, dst_uv, dst_stride_uv, width, height);
 
   return status;
 }
