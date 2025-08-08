@@ -906,6 +906,7 @@
     "shadowrootdelegatesfocus",
     "shadowrootmode",
     "shadowrootserializable",
+    "shadowrootcustomelementregistry",
     "shape",
     "shape-rendering",
     "sharedstoragewritable",

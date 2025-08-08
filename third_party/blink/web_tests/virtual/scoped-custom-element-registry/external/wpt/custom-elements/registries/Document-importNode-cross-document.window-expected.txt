@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+[FAIL] Cloning with scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Cloning including shadow tree with global registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Cloning including shadow tree with explicit global registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Cloning including shadow tree with scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+[FAIL] Cloning with scoped registry (null registry target)
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] Cloning including shadow tree with global registry (null registry target)
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Cloning including shadow tree with explicit global registry (null registry target)
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Cloning including shadow tree with scoped registry (null registry target)
+  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
+Harness: the test ran to completion.

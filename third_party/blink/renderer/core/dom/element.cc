@@ -882,7 +882,7 @@ Node* Element::Clone(Document& factory,
           shadow_root->GetMode(),
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
                                         : FocusDelegation::kNone,
-          shadow_root->GetSlotAssignmentMode(), /*registry*/ nullptr,
+          shadow_root->GetSlotAssignmentMode(), customElementRegistry(),
           shadow_root->serializable(),
           /*clonable*/ true, shadow_root->referenceTarget());
 
@@ -6498,7 +6498,9 @@ CustomElementDefinition* Element::GetCustomElementDefinition() const {
 }
 
 CustomElementRegistry* Element::customElementRegistry() const {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    return nullptr;
+  }
   // TODO(crbug.com/429140221) Need to evaluate if storing registry
   // in element whenever needed is too memory consuming. For now
   // we'll take the naive approach and assume an element using its tree
@@ -6646,16 +6648,15 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
           ? AtomicString(shadow_root_init_dict->referenceTarget())
           : g_null_atom;
 
-  CustomElementRegistry* registry = nullptr;
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    // 1. Let registry be this's custom element registry
-    registry = customElementRegistry();
-    // 2. If init["customElementRegistry"] is not null, then set registry to it
-    if (shadow_root_init_dict->hasCustomElementRegistry() &&
-        shadow_root_init_dict->customElementRegistry()) {
-      registry = shadow_root_init_dict->customElementRegistry();
-    }
-  }
+  // 1. Let registry be this's custom element registry.
+  // 2. If init["customElementRegistry"] is not null, then set registry to it.
+  bool scoped_registry =
+      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      shadow_root_init_dict->hasCustomElementRegistry() &&
+      shadow_root_init_dict->customElementRegistry();
+  auto* registry = scoped_registry
+                       ? shadow_root_init_dict->customElementRegistry()
+                       : customElementRegistry();
 
   ShadowRootMode mode;
   if (const char* error_message = ErrorMessageForAttachShadow(
@@ -6707,7 +6708,8 @@ bool Element::AttachDeclarativeShadowRoot(
     SlotAssignmentMode slot_assignment,
     bool serializable,
     bool clonable,
-    const AtomicString& reference_target) {
+    const AtomicString& reference_target,
+    const bool waiting_for_scoped_registry) {
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
   // equal to declarative shadow delegates focus. If an exception was thrown by
@@ -6722,11 +6724,10 @@ bool Element::AttachDeclarativeShadowRoot(
   }
   CHECK(mode == ShadowRootMode::kOpen || mode == ShadowRootMode::kClosed);
 
-  // TODO(crbug.com/1523816): Declarative shadow roots should set the registry
-  // argument here.
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment,
-      /*registry*/ nullptr, serializable, clonable, reference_target);
+      waiting_for_scoped_registry ? nullptr : customElementRegistry(),
+      serializable, clonable, reference_target);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -6801,6 +6802,15 @@ ShadowRoot& Element::AttachShadowRootInternal(
 
   // 8. Set this’s shadow root to shadow.
   return shadow_root;
+}
+
+ShadowRoot& Element::AttachShadowRootForTesting(ShadowRootMode type) {
+  return AttachShadowRootInternal(type, FocusDelegation::kNone,
+                                  SlotAssignmentMode::kNamed,
+                                  /*registry*/ nullptr,
+                                  /*serializable*/ false,
+                                  /*clonable*/ false,
+                                  /*reference_target*/ g_null_atom);
 }
 
 ShadowRoot* Element::OpenShadowRoot() const {

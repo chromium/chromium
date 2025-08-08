@@ -3010,10 +3010,7 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/custom-elements/registries/Document-createElement.html",
-      "external/wpt/custom-elements/registries/Document-createElementNS.html",
-      "external/wpt/custom-elements/registries/Document-customElementRegistry.html",
-      "external/wpt/custom-elements/registries/ShadowRoot-init-customElementRegistry.html"
+      "external/wpt/custom-elements/registries"
     ],
     "args": [
       "--enable-blink-features=ScopedCustomElementRegistry"

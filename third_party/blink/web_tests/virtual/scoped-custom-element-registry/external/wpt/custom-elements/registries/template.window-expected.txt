@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Serializing a ShadowRoot with a registry that differs from its host
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
