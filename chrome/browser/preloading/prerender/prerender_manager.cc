@@ -453,6 +453,12 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
       return PrewarmDecision::kNotSameOriginWithDSE;
     }
   }
+  if (web_contents()->GetPictureInPictureOptions().has_value()) {
+    // Disables the feature in the Picture-in-Picture window as it disallows
+    // any navigation. See,
+    // https://wicg.github.io/document-picture-in-picture/#close-on-navigate.
+    return PrewarmDecision::kInPictureInPicture;
+  }
 
   return PrewarmDecision::kReady;
 }

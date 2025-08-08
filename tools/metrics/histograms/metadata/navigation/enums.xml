@@ -1890,6 +1890,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="No TemplateUrlService available"/>
   <int value="7" label="No DefaultSearchProvider available"/>
   <int value="8" label="Not aligned with the default search provider origin"/>
+  <int value="9" label="Running in Picture-in-Picture window"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/preloading/prerender/prerender_manager.h:PrewarmDecision) -->

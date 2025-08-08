@@ -7658,6 +7658,28 @@
             ]
         }
     ],
+    "DSEPrewarm": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithFullPrewarmPage",
+                    "params": {
+                        "reuse_search_host": "true",
+                        "url": "https://www.google.com/warmup.html",
+                        "zero_suggest_trigger": "true"
+                    },
+                    "enable_features": [
+                        "Prerender2ReuseHost",
+                        "Prewarm"
+                    ]
+                }
+            ]
+        }
+    ],
     "DTCAntivirusSignalEnabled": [
         {
             "platforms": [
