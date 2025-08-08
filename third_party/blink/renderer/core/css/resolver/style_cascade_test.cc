@@ -364,8 +364,7 @@ class StyleCascadeTest : public PageTestBase {
         .GetStyleEngine()
         .GetDocumentStyleSheetCollection()
         .ReplaceActiveStyleSheets(MediaQueryEvaluator(GetDocument().GetFrame()),
-                                  active_sheets,
-                                  /*new_style_sheets_for_style_sheet_list=*/{});
+                                  active_sheets);
   }
 
   Element* DocumentElement() const { return GetDocument().documentElement(); }

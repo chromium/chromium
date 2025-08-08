@@ -51,16 +51,18 @@ class StyleEngine;
 // are relevant for a given tree scope. Style sheets may be relevant for either
 // or both of:
 //
-//  - DOM visibility purposes (the “style sheet list”), or
-//  - Style calculation (“active style sheets”)
+//  - DOM visibility purposes (the “style sheet list”; the CSSOM spec calls this
+//    “document or shadow root CSS style sheets”), or
+//  - Style calculation (“active style sheets”; not quite what the CSSOM spec
+//    calls “the final CSS style sheets” because we remove disabled sheets)
 //
 // The style sheets are collected from places like <link> nodes, <style> nodes,
 // adopted style sheets, inspector-added style sheets and so on. (You tell the
 // collection about relevant DOM nodes by calling AddStyleSheetCandidateNode()
 // and RemoveStyleSheetCandidateNode().)
 //
-// The precise logic for which sheets are in which list (e.g., are adopted
-// style sheets visible to the DOM or not?) will depend on what kind of
+// The precise logic for which sheets are in which list (e.g., do we include
+// injected author style sheets or not?) will depend on what kind of
 // tree scope you are interested in; the actual collection logic lies in
 // subclasses DocumentStyleSheetCollection and ShadowTreeStyleSheetCollection.
 //
@@ -107,13 +109,11 @@ class CORE_EXPORT StyleSheetCollection
 
   explicit StyleSheetCollection(TreeScope&);
 
-  // Called by child classes after collecting a new set of style sheets.
+  // Called by child classes after collecting a new set of active style sheets.
   // Creates RuleSets, notifies the StyleEngine and moves the new values into
   // place.
-  void ReplaceActiveStyleSheets(
-      const MediaQueryEvaluator& medium,
-      ActiveStyleSheetVector new_active_style_sheets,
-      HeapVector<Member<StyleSheet>> new_style_sheets_for_style_sheet_list);
+  void ReplaceActiveStyleSheets(const MediaQueryEvaluator& medium,
+                                ActiveStyleSheetVector new_active_style_sheets);
 
   Document& GetDocument() const { return GetTreeScope().GetDocument(); }
   TreeScope& GetTreeScope() const { return *tree_scope_; }

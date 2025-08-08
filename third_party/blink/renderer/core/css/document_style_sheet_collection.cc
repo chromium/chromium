@@ -51,7 +51,6 @@ DocumentStyleSheetCollection::DocumentStyleSheetCollection(
 void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
     const StyleEngine& engine,
     const MediaQueryEvaluator& medium) {
-  HeapVector<Member<StyleSheet>> new_style_sheets_for_style_sheet_list;
   ActiveStyleSheetVector new_active_style_sheets;
 
   for (auto& sheet :
@@ -72,7 +71,6 @@ void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
       continue;
     }
 
-    new_style_sheets_for_style_sheet_list.push_back(sheet);
     if (candidate.CanBeActivated(
             GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {
       CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
@@ -89,7 +87,6 @@ void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
         continue;
       }
       DCHECK_EQ(GetDocument(), sheet->ConstructorDocument());
-      new_style_sheets_for_style_sheet_list.push_back(sheet);
       new_active_style_sheets.push_back(std::pair(sheet, nullptr));
     }
   }
@@ -99,8 +96,7 @@ void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
     new_active_style_sheets.push_back(std::pair(inspector_sheet, nullptr));
   }
 
-  ReplaceActiveStyleSheets(medium, std::move(new_active_style_sheets),
-                           std::move(new_style_sheets_for_style_sheet_list));
+  ReplaceActiveStyleSheets(medium, std::move(new_active_style_sheets));
 }
 
 }  // namespace blink

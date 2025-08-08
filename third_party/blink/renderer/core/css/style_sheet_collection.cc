@@ -50,8 +50,7 @@ static void CreateRuleSets(const StyleEngine& engine,
 
 void StyleSheetCollection::ReplaceActiveStyleSheets(
     const MediaQueryEvaluator& medium,
-    ActiveStyleSheetVector new_active_style_sheets,
-    HeapVector<Member<StyleSheet>> new_style_sheets_for_style_sheet_list) {
+    ActiveStyleSheetVector new_active_style_sheets) {
   HeapVector<Member<RuleSetDiff>> rule_set_diffs;
   CreateRuleSets(GetDocument().GetStyleEngine(), medium,
                  new_active_style_sheets, rule_set_diffs);
@@ -61,9 +60,6 @@ void StyleSheetCollection::ReplaceActiveStyleSheets(
       rule_set_diffs);
 
   active_style_sheets_ = std::move(new_active_style_sheets);
-  style_sheets_for_style_sheet_list_ =
-      std::move(new_style_sheets_for_style_sheet_list);
-  sheet_list_dirty_ = false;
 }
 
 // FIXME(sesse): Store this somewhere (including the two-level Eval() form),
@@ -171,11 +167,6 @@ void StyleSheetCollection::AddStyleSheetCandidateNode(Node& node) {
   }
 }
 
-// FIXME(sesse): This overwrites the list from UpdateActiveStyleSheets()
-// with a different one (it doesn't e.g. include adopted style sheets,
-// but DocumentStyleSheetCollection::UpdateActiveStyleSheets() does);
-// do we really want this? Why do we have a separate function for this
-// at all; cannot one call the other?
 void StyleSheetCollection::UpdateStyleSheetList() {
   if (!sheet_list_dirty_) {
     return;
