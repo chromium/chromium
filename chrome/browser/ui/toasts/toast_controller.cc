@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_metrics.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/pref_names.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/prefs/pref_service.h"
@@ -284,7 +285,10 @@ void ToastController::CreateToast(ToastParams params,
   if (browser_window_interface_ == nullptr ||
       !browser_window_interface_->TopContainer()) {
     // Don't actually create the toast in unit tests
-    CHECK_IS_TEST();
+    // TODO(webium): show toast in webui browser.
+    if (!webui_browser::IsWebUIBrowserEnabled()) {
+      CHECK_IS_TEST();
+    }
     return;
   }
 
