@@ -25,6 +25,7 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
  public:
   BlinkGCPluginConsumer(clang::CompilerInstance& instance,
                         const BlinkGCPluginOptions& options);
+  ~BlinkGCPluginConsumer();
 
   void HandleTranslationUnit(clang::ASTContext& context) override;
 
@@ -74,7 +75,7 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
 
   bool IsIgnoredClass(RecordInfo* info);
 
-  bool InIgnoredDirectory(RecordInfo* info);
+  bool InIgnoredDirectoryOrFile(RecordInfo* info);
 
   bool InCheckedNamespaceOrDirectory(RecordInfo* info);
 
@@ -85,6 +86,7 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
   BlinkGCPluginOptions options_;
   RecordCache cache_;
   JsonWriter* json_;
+  std::unique_ptr<clang::PragmaHandler> pragma_handler_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_BLINK_GC_PLUGIN_CONSUMER_H_

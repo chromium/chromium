@@ -58,6 +58,13 @@
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
+// Templates in this file are instantiated many times with different types.
+// Adding the regular GC_PLUGIN_IGNORE annotations to fields in the templates
+// results in the annotation being duplicated many times, growing the debug
+// symbols, and regressing binary size. To avoid the binary size regression,
+// mark the file to ignore instead.
+GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
+
 // For ASAN builds, disable inline buffers completely as they cause various
 // issues.
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
@@ -459,7 +466,7 @@ struct VectorTypeOperations {
 // Not meant for general consumption.
 
 template <typename T, typename Allocator>
-class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
+class VectorBufferBase {
   DISALLOW_NEW();
 
  public:
@@ -1020,7 +1027,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 // UncheckedIteraotr<T> is just a wrapper of a T pointer with no bounds
 // checking, and the default iterator implementation of blink::Vector.
 template <typename T>
-class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
+class UncheckedIterator {
  public:
   using difference_type = std::ptrdiff_t;
   using value_type = std::remove_cv_t<T>;

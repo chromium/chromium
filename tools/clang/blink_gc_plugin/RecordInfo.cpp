@@ -595,9 +595,6 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
   if (!qualifier)
     return nullptr;
   RecordInfo* info = cache_->Lookup(qualifier->getAsType());
-  if (!info) {
-    return nullptr;
-  }
 
   return new Iterator(info);
 }
