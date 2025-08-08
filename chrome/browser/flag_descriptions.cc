@@ -831,6 +831,10 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
+const char kKeyboardLockApiOnAndroidName[] = "Keyboard Lock API on Android";
+const char kKeyboardLockApiOnAndroidDescription[] =
+    "When enabled, allows websites to use keyboard.lock() on Android";
+
 const char kKeyboardLockPromptName[] = "Keyboard Lock prompt";
 const char kKeyboardLockPromptDescription[] =
     "Requesting to use the keyboard lock API causes a permission prompt to be "

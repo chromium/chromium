@@ -6192,6 +6192,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "keyboard-lock-api-on-android",
+    "owners": ["japhet@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "keyboard-lock-prompt",
     "owners": ["muyaoxu@google.com", "liberato@chromium.org", "openscreen-eng@google.com"],
     "expiry_milestone": 140

@@ -1249,6 +1249,9 @@ extern const char kFluentOverlayScrollbarsDescription[];
 extern const char kFluentScrollbarsName[];
 extern const char kFluentScrollbarsDescription[];
 
+extern const char kKeyboardLockApiOnAndroidName[];
+extern const char kKeyboardLockApiOnAndroidDescription[];
+
 extern const char kKeyboardLockPromptName[];
 extern const char kKeyboardLockPromptDescription[];
 

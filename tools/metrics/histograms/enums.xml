@@ -16655,6 +16655,7 @@ from previous Chrome versions.
   <int value="935653796" label="CrOSLateBootMediaDynamicCgroup:enabled"/>
   <int value="935655516" label="password-import-export:disabled"/>
   <int value="936341613" label="OfflinePagesCT:disabled"/>
+  <int value="937234193" label="KeyboardLockApiOnAndroid:disabled"/>
   <int value="937305086" label="EnableBoundSessionCredentials:enabled"/>
   <int value="937557884" label="PostQuantumKyber:disabled"/>
   <int value="937805280"
@@ -18888,6 +18889,7 @@ from previous Chrome versions.
   <int value="1731642759" label="CrOSLateBootPermissiveUsbPassthrough:enabled"/>
   <int value="1732358292"
       label="SafetyHubAbusiveNotificationRevocation:disabled"/>
+  <int value="1732903790" label="KeyboardLockApiOnAndroid:enabled"/>
   <int value="1733390925" label="force-enable-stylus-tools"/>
   <int value="1733740363" label="FedCmMetricsEndpoint:disabled"/>
   <int value="1734685331" label="NtpShoppingTasksModule:enabled"/>
