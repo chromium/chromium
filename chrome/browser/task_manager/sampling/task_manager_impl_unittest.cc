@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -103,25 +102,6 @@ class TaskManagerImplTest : public testing::Test, public TaskManagerObserver {
   std::vector<std::unique_ptr<FakeTask>> tasks_;
 };
 
-class TaskManagerImplWithRefreshedTest : public TaskManagerImplTest {
- public:
-  TaskManagerImplWithRefreshedTest() = default;
-  TaskManagerImplWithRefreshedTest(const TaskManagerImplWithRefreshedTest&) =
-      delete;
-  TaskManagerImplWithRefreshedTest& operator=(
-      const TaskManagerImplWithRefreshedTest&) = delete;
-  ~TaskManagerImplWithRefreshedTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kTaskManagerDesktopRefresh);
-    TaskManagerImplTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 TEST_F(TaskManagerImplTest, SortingTypes) {
   constexpr SessionID kTabId1 = SessionID::FromSerializedValue(10);
   constexpr SessionID kTabId2 = SessionID::FromSerializedValue(20);
@@ -169,8 +149,8 @@ TEST_F(TaskManagerImplTest, SortingTypes) {
   EXPECT_EQ(
       "Browser\n"
       "Gpu Process\n"
-      "ARC\n"
       "Crostini\n"
+      "ARC\n"
       "Zygote\n"
       "Utility One\n"
       "Utility Two\n"
@@ -271,74 +251,6 @@ TEST_F(TaskManagerImplTest, SortingCycles) {
       "Child of Cycle 4\n"  // Child of 4
       "Child of Cycle 3\n"  // Child of 3
       "Self Cycle\n",       // RENDERER (> ARC)
-      DumpSortedTasks());
-}
-
-TEST_F(TaskManagerImplWithRefreshedTest, SortingTypes) {
-  constexpr SessionID kTabId1 = SessionID::FromSerializedValue(10);
-  constexpr SessionID kTabId2 = SessionID::FromSerializedValue(20);
-
-  AddTask(100, Task::GPU, "Gpu Process", /*tab_id=*/SessionID::InvalidValue());
-
-  base::WeakPtr<Task> tab1 =
-      AddTask(200, Task::RENDERER, "Tab One", kTabId1)->AsWeakPtr();
-  AddTask(400, Task::EXTENSION, "Extension Subframe: Tab One", kTabId1)
-      ->SetParent(tab1);
-  AddTask(300, Task::RENDERER, "Subframe: Tab One", kTabId1)->SetParent(tab1);
-
-  base::WeakPtr<Task> tab2 =
-      AddTask(200, Task::RENDERER, "Tab Two: sharing process with Tab One",
-              kTabId2)
-          ->AsWeakPtr();
-
-  AddTask(301, Task::RENDERER, "Subframe: Tab Two", kTabId2)->SetParent(tab2);
-  AddTask(400, Task::EXTENSION, "Extension Subframe: Tab Two", kTabId2)
-      ->SetParent(tab2);
-
-  AddTask(600, Task::ARC, "ARC", /*tab_id=*/SessionID::InvalidValue());
-  AddTask(650, Task::CROSTINI, "Crostini",
-          /*tab_id=*/SessionID::InvalidValue());
-  AddTask(800, Task::UTILITY, "Utility One",
-          /*tab_id=*/SessionID::InvalidValue());
-  AddTask(700, Task::UTILITY, "Utility Two",
-          /*tab_id=*/SessionID::InvalidValue());
-  AddTask(1000, Task::GUEST, "Guest", kTabId2);
-  AddTask(900, Task::SERVICE_WORKER, "Service worker",
-          /*tab_id=*/SessionID::InvalidValue());
-  AddTask(900, Task::SHARED_WORKER, "Shared worker",
-          /*tab_id=*/SessionID::InvalidValue());
-  AddTask(900, Task::DEDICATED_WORKER, "Dedicated worker",
-          /*tab_id=*/SessionID::InvalidValue());
-  AddTask(500, Task::ZYGOTE, "Zygote", /*tab_id=*/SessionID::InvalidValue());
-
-  AddTask(300, Task::RENDERER, "Subframe: Tab One (2)", kTabId1)
-      ->SetParent(tab1);
-  AddTask(300, Task::RENDERER, "Subframe: Tab One (third)", kTabId1)
-      ->SetParent(tab1);
-  AddTask(300, Task::RENDERER, "Subframe: Tab One (4)", kTabId1)
-      ->SetParent(tab1);
-
-  EXPECT_EQ(
-      "Browser\n"
-      "Gpu Process\n"
-      "Crostini\n"
-      "ARC\n"
-      "Zygote\n"
-      "Utility One\n"
-      "Utility Two\n"
-      "Tab One\n"
-      "Tab Two: sharing process with Tab One\n"
-      "Subframe: Tab One\n"
-      "Subframe: Tab One (2)\n"
-      "Subframe: Tab One (third)\n"
-      "Subframe: Tab One (4)\n"
-      "Extension Subframe: Tab One\n"
-      "Extension Subframe: Tab Two\n"
-      "Subframe: Tab Two\n"
-      "Guest\n"
-      "Dedicated worker\n"
-      "Shared worker\n"
-      "Service worker\n",
       DumpSortedTasks());
 }
 
