@@ -1621,7 +1621,6 @@ crbug.com/1024331 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-002.html
 crbug.com/1140728 external/wpt/css/css-text/hyphens/hyphens-span-002.html [ Failure ]
 crbug.com/1139693 virtual/text-antialias/hyphens/midword-break-priority.html [ Failure ]
 
-crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-003.html [ Failure ]
 crbug.com/1030452 external/wpt/css/css-text/text-transform/text-transform-upperlower-016.html [ Failure ]
 
 crbug.com/1008029 [ Mac ] external/wpt/css/css-text/white-space/pre-wrap-018.html [ Failure ]
