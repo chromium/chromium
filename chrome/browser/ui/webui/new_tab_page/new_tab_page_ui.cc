@@ -367,6 +367,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDismissForHoursButtonText",
        IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT},
+      {"modulesDismissForDaysButtonText",
+       IDS_NTP_MODULES_DISMISS_FOR_DAYS_BUTTON_TEXT},
       {"modulesGoogleCalendarDismissToastMessage",
        IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_TOAST_MESSAGE},
       {"modulesGoogleCalendarDisableToastMessage",
@@ -422,6 +424,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesJourneysOpenAllInNewTabGroupButtonText",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_OPEN_ALL_IN_NEW_TAB_GROUP_BUTTON_TEXT},
       {"modulesMoreActions", IDS_NTP_MODULES_MORE_ACTIONS},
+      {"modulesSetupListDisableToastMessage",
+       IDS_NTP_MODULES_SETUP_LIST_DISABLE_TOAST_MESSAGE},
+      {"modulesSetupListDismissToastMessage",
+       IDS_NTP_MODULES_SETUP_LIST_DISMISS_TOAST_MESSAGE},
+      {"modulesSetupListInfo", IDS_NTP_MODULES_SETUP_LIST_INFO},
+      {"modulesSetupListTitle", IDS_NTP_MODULES_SETUP_LIST_TITLE},
       {"modulesTabResumptionDismissButton",
        IDS_NTP_MODULES_TAB_RESUMPTION_DISMISS_BUTTON},
       {"modulesTabResumptionTitle",
@@ -514,6 +522,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddString(
       "fileSuggestionDismissHours",
       base::NumberToString(DriveService::kDismissDuration.InHours()));
+  source->AddString(
+      "setupListModuleDismissDays",
+      base::NumberToString(
+          user_education::features::GetNtpSetupListSnoozeTime().InDays()));
   source->AddString(
       "tabGroupsModuleDismissHours",
       base::NumberToString(
@@ -1071,10 +1083,21 @@ void NewTabPageUI::OnLoad() {
   auto* ntp_promo_controller =
       UserEducationServiceFactory::GetForBrowserContext(profile_)
           ->ntp_promo_controller();
-  const bool show_ntp_promos =
-      !modules_enabled && ntp_promo_controller &&
-      ntp_promo_controller->HasShowablePromos(profile_);
-  update.Set("browserPromosEnabled", show_ntp_promos);
+  std::string ntp_promo_type;
+  if (!modules_enabled && ntp_promo_controller &&
+      ntp_promo_controller->HasShowablePromos(profile_)) {
+    switch (user_education::features::GetNtpBrowserPromoType()) {
+      case user_education::features::NtpBrowserPromoType::kSimple:
+        ntp_promo_type = "simple";
+        break;
+      case user_education::features::NtpBrowserPromoType::kSetupList:
+        ntp_promo_type = "setuplist";
+        break;
+      case user_education::features::NtpBrowserPromoType::kNone:
+        break;
+    }
+  }
+  update.Set("browserPromoType", ntp_promo_type);
 
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));

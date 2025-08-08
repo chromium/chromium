@@ -3,65 +3,18 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
+import './ntp_promo_test_common.js';
 
-import type {NtpPromoProxy, NtpSinglePromoElement} from 'chrome://new-tab-page/lazy_load.js';
-import {NtpPromoProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import type {NtpSinglePromoElement} from 'chrome://new-tab-page/lazy_load.js';
 import {getTrustedHTML} from 'chrome://new-tab-page/new_tab_page.js';
-import {NtpPromoClientCallbackRouter} from 'chrome://new-tab-page/ntp_promo.mojom-webui.js';
-import type {NtpPromoClientRemote, NtpPromoHandlerInterface, Promo} from 'chrome://new-tab-page/ntp_promo.mojom-webui.js';
+import type {Promo} from 'chrome://new-tab-page/ntp_promo.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-class TestNtpPromoHandler extends TestBrowserProxy implements
-    NtpPromoHandlerInterface {
-  constructor() {
-    super([
-      'requestPromos',
-      'onPromosShown',
-      'onPromoClicked',
-    ]);
-  }
+import {TestNtpPromoProxy} from './ntp_promo_test_common.js';
 
-  requestPromos() {
-    this.methodCalled('requestPromos');
-  }
-
-  onPromosShown(eligible: string[], completed: string[]) {
-    this.methodCalled('onPromosShown', eligible, completed);
-  }
-
-  onPromoClicked(promoId: string) {
-    this.methodCalled('onPromoClicked', promoId);
-  }
-}
-
-class TestNtpPromoProxy implements NtpPromoProxy {
-  private testHandler_ = new TestNtpPromoHandler();
-  private callbackRouter_: NtpPromoClientCallbackRouter =
-      new NtpPromoClientCallbackRouter();
-  private callbackRouterRemote_: NtpPromoClientRemote;
-
-  constructor() {
-    this.callbackRouterRemote_ =
-        this.callbackRouter_.$.bindNewPipeAndPassRemote();
-  }
-
-  getHandler(): TestNtpPromoHandler {
-    return this.testHandler_;
-  }
-
-  getCallbackRouter(): NtpPromoClientCallbackRouter {
-    return this.callbackRouter_;
-  }
-
-  getCallbackRouterRemote(): NtpPromoClientRemote {
-    return this.callbackRouterRemote_;
-  }
-}
-
-suite('NtpPromoTest', () => {
+suite('NtpSinglePromoTest', () => {
   let testProxy: TestNtpPromoProxy;
   let ntpPromo: NtpSinglePromoElement;
   const promo: Promo = {
@@ -91,8 +44,7 @@ suite('NtpPromoTest', () => {
   }
 
   setup(() => {
-    testProxy = new TestNtpPromoProxy();
-    NtpPromoProxyImpl.setInstance(testProxy);
+    testProxy = TestNtpPromoProxy.install();
 
     document.body.innerHTML = getTrustedHTML`
     <div id='container'>

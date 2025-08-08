@@ -43,6 +43,10 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   void OnPromoClicked(const std::string& promo_id) override;
   void OnPromosShown(const std::vector<std::string>& eligible_shown,
                      const std::vector<std::string>& completed_shown) override;
+  void SnoozeSetupList() override;
+  void UnsnoozeSetupList() override;
+  void DisableSetupList() override;
+  void UndisableSetupList() override;
 
  private:
   NtpPromoHandler(

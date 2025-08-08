@@ -8,4 +8,15 @@ ntp_promo_ts_files = [
   "ntp_promo/ntp_single_promo.ts",
 ]
 
-ntp_promo_css_files = [ "ntp_promo/ntp_promo.css" ]
+ntp_promo_web_component_files = [
+  "ntp_promo/setup_list.ts",
+  "ntp_promo/setup_list_item.ts",
+  "ntp_promo/setup_list_module_wrapper.ts",
+]
+
+ntp_promo_css_files = [
+  "ntp_promo/ntp_single_promo.css",
+  "ntp_promo/setup_list.css",
+  "ntp_promo/setup_list_item.css",
+  "ntp_promo/setup_list_module_wrapper.css",
+]

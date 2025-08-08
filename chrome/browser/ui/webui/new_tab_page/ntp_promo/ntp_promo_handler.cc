@@ -77,3 +77,23 @@ void NtpPromoHandler::OnPromosShown(
     const std::vector<std::string>& completed_shown) {
   promo_controller_->OnPromosShown(eligible_shown, completed_shown);
 }
+
+void NtpPromoHandler::SnoozeSetupList() {
+  CheckController(promo_controller_);
+  promo_controller_->SetAllPromosSnoozed(true);
+}
+
+void NtpPromoHandler::UnsnoozeSetupList() {
+  CheckController(promo_controller_);
+  promo_controller_->SetAllPromosSnoozed(false);
+}
+
+void NtpPromoHandler::DisableSetupList() {
+  CheckController(promo_controller_);
+  promo_controller_->SetAllPromosDisabled(true);
+}
+
+void NtpPromoHandler::UndisableSetupList() {
+  CheckController(promo_controller_);
+  promo_controller_->SetAllPromosDisabled(false);
+}

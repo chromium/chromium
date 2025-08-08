@@ -61,4 +61,7 @@ export {ModuleElement as TabGroupsModuleElement, tabGroupsDescriptor} from './mo
 export {TabGroupsProxyImpl} from './modules/v2/tab_groups/tab_groups_proxy.js';
 export {NtpPromoProxy, NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';
 export {NtpSinglePromoElement} from './ntp_promo/ntp_single_promo.js';
+export {MAX_SETUP_LIST_ENTRIES, SetupListElement} from './ntp_promo/setup_list.js';
+export {SetupListItemElement} from './ntp_promo/setup_list_item.js';
+export {SetupListModuleWrapperElement} from './ntp_promo/setup_list_module_wrapper.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

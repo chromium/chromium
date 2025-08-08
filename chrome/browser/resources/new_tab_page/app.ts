@@ -216,7 +216,7 @@ export class AppElement extends AppElementBase {
       composeboxEnabled: {type: Boolean},
       composeButtonEnabled: {type: Boolean},
 
-      browserPromosEnabled_: {type: Boolean},
+      browserPromoType_: {type: String},
       realboxShown_: {type: Boolean},
       logoEnabled_: {type: Boolean},
       oneGoogleBarEnabled_: {type: Boolean},
@@ -301,8 +301,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('middleSlotPromoEnabled');
   protected accessor modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
-  protected accessor browserPromosEnabled_: boolean =
-      loadTimeData.getBoolean('browserPromosEnabled');
+  protected accessor browserPromoType_: string =
+      loadTimeData.getString('browserPromoType');
   private accessor middleSlotPromoLoaded_: boolean = false;
   private accessor modulesLoaded_: boolean = false;
   protected accessor modulesShownToUser: boolean = false;

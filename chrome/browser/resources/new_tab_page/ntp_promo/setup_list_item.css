@@ -1,0 +1,81 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+ /* TODO(dfried) */
+
+:host {
+  /* Variable declarations. */
+  --setup-list-action-button-background: var(--color-sys-base-container);
+  --setup-list-action-button-foreground: var(--color-sys-on-surface);
+  --setup-list-action-button-icon-size: 20px;
+  --setup-list-action-button-size: 32px;
+  --setup-list-completed-foreground: var(--color-sys-on-surface-subtle);
+  --setup-list-completed-icon-background: var(--color-sys-neutral-container);
+  --setup-list-completed-icon-foreground: var(--color-sys-tertiary);
+  --setup-list-element-spacing: 24px;
+  --setup-list-icon-background: var(--color-sys-tonal-container);
+  --setup-list-icon-foreground: var(--color-sys-on-tonal-container);
+  --setup-list-icon-size: 40px;
+  --setup-list-icon-image-size: 20px;
+
+  align-items: center;
+  display: flex;
+}
+
+#bodyIcon {
+  --iron-icon-height: var(--setup-list-icon-image-size);
+  --iron-icon-width: var(--setup-list-icon-image-size);
+
+  background-color: var(--setup-list-icon-background);
+  border-radius: var(--setup-list-border-radius);
+  box-sizing: border-box;
+  color: var(--setup-list-icon-foreground);
+  display: inline-block;
+  height: var(--setup-list-icon-size);
+  margin: 0;
+  padding: calc((var(--setup-list-icon-size) -
+                 var(--setup-list-icon-image-size)) / 2);
+  text-align: center;
+  width: var(--setup-list-icon-size);
+}
+
+#bodyIcon.completed {
+  background-color: var(--setup-list-completed-icon-background);
+  color: var(--setup-list-completed-icon-foreground);
+}
+
+#bodyText {
+  display: inline-block;
+  flex: 1;
+  margin-block: 0;
+  margin-inline: var(--setup-list-element-spacing);
+  vertical-align: middle;
+}
+
+#bodyText.completed {
+  color: var(--setup-list-completed-foreground);
+  /* Account for missing action button by adding extra padding on the right. */
+  margin-inline-end: calc(
+      var(--setup-list-element-spacing) + var(--setup-list-action-button-size));
+}
+
+#actionButton {
+  --cr-icon-button-fill-color: var(--setup-list-action-button-foreground);
+  --cr-icon-button-icon-size: var(--setup-list-action-button-icon-size);
+  --cr-icon-button-size: var(--setup-list-action-button-size);
+  --cr-icon-button-stroke-color: var(--setup-list-action-button-foreground);
+
+  box-sizing: border-box;
+  display: inline-block;
+  height: var(--setup-list-action-button-size);
+  margin: 0;
+  width: var(--setup-list-action-button-size);
+}

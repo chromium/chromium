@@ -16,8 +16,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpPromoClientCallbackRouter, NtpPromoHandlerInterface, Promo} from '../ntp_promo.mojom-webui.js';
 
-import {getCss} from './ntp_promo.css.js';
 import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';
+import {getCss} from './ntp_single_promo.css.js';
 import {getHtml} from './ntp_single_promo.html.js';
 
 export interface NtpSinglePromoElement {
@@ -68,8 +68,8 @@ export class NtpSinglePromoElement extends CrLitElement {
     super.connectedCallback();
 
     this.listenerIds_.push(this.callbackRouter_.setPromos.addListener(
-        this.onSetPromos.bind(this))),
-        this.handler_.requestPromos();
+        this.onSetPromos.bind(this)));
+    this.handler_.requestPromos();
   }
 
   override disconnectedCallback() {

@@ -73,9 +73,18 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         </ntp-modules>
       `}
     ` : ''}
-    ${this.browserPromosEnabled_ ? html`
-      <ntp-single-promo></ntp-single-promo>
-    ` : ''}
+    ${ (() => { switch (this.browserPromoType_) {
+     case "simple":
+      return html`
+        <ntp-single-promo></ntp-single-promo>
+      `;
+     case "setuplist":
+      return html`
+        <setup-list-module-wrapper></setup-list-module-wrapper>
+      `;
+     default:
+      return '';
+    } })() }
   ${!this.isFooterVisible_ ? html`
       <a id="backgroundImageAttribution"
           href="${this.backgroundImageAttributionUrl_}"

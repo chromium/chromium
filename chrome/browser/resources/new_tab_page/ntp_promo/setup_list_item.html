@@ -1,0 +1,15 @@
+<!-- Copyright 2025 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+  <cr-icon id="bodyIcon" class="${this.completed ? 'completed' : ''}"
+      icon="ntp-promo:${this.completed ? 'completed' : this.bodyIconName}">
+  </cr-icon>
+  <p id="bodyText" class="${this.completed ? 'completed' : ''}">
+    ${this.bodyText}
+  </p>
+  <cr-icon-button ?hidden="${this.completed}" id="actionButton"
+      iron-icon="cr:chevron-right"
+      aria-label="${this.actionButtonText}"
+      @click="${this.onButtonClick_}">
+  </cr-icon-button>

@@ -27,6 +27,20 @@ interface NtpPromoHandler {
 
   // Called when the user clicks an action button for `promo_id`.
   OnPromoClicked(string promo_id);
+
+  // Specifies that the setup list should be snoozed.
+  SnoozeSetupList();
+
+  // Specifies that the setup list should be unsnoozed. (This is a recovery
+  // state after snoozing.)
+  UnsnoozeSetupList();
+
+  // Specifies that the setup list should be permanently disabled.
+  DisableSetupList();
+
+  // Specifies that the setup list should be un-disabled. (This is a recovery
+  // state after disabling.)
+  UndisableSetupList();
 };
 
 struct Promo {
