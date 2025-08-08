@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_BUBBLE_MANAGER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_BUBBLE_MANAGER_IMPL_H_
 
+#include <memory>
+#include <set>
+
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 
 namespace autofill {
@@ -21,6 +25,52 @@ class BubbleManagerImpl : public BubbleManager {
   void RequestShowController(BubbleControllerBase& controller_to_show) override;
   void OnBubbleHiddenByController(
       BubbleControllerBase& controller_to_hide) override;
+
+ private:
+  struct PendingRequest {
+    PendingRequest(base::WeakPtr<BubbleControllerBase> controller,
+                   base::TimeTicks time_added,
+                   int priority);
+    ~PendingRequest();
+    PendingRequest(const PendingRequest& other);
+    PendingRequest& operator=(const PendingRequest& other);
+
+    // Sorts by priority (descending), then by time (ascending) as a
+    // tie-breaker.
+    bool operator<(const PendingRequest& other) const;
+
+    base::WeakPtr<BubbleControllerBase> controller;
+    base::TimeTicks time_added;
+    int priority;
+  };
+
+  // Checks the pending bubbles queue and shows the highest-priority one if no
+  // bubble is currently active.
+  void ProcessPendingBubbles();
+
+  // Shows the given controller, sets it as the active one, and ensures
+  // it's removed from the pending queue.
+  void ShowAndSetCurrentActive(
+      base::WeakPtr<BubbleControllerBase> controller_to_show);
+
+  // Adds a controller to the pending queue based on (uniqueness by type,
+  // timeout, and password exception).
+  void AddToPendingQueue(base::WeakPtr<BubbleControllerBase> controller);
+
+  // Hides the currently active bubble to show a higher-priority one.
+  void HideActiveBubbleForPreemption(
+      base::WeakPtr<BubbleControllerBase> preempting_controller);
+
+  // Currently active controller that is shown.
+  base::WeakPtr<BubbleControllerBase> active_bubble_controller_ = nullptr;
+
+  // A queue of controllers that have requested to be shown. The container is
+  // kept sorted by priority and creation time.
+  std::set<PendingRequest> pending_bubbles_queue_;
+
+  // A boolean indicating that the manager is in the process of showing a
+  // bubble. This could mean another bubble is in the process of preemption.
+  bool handling_show_request_ = false;
 };
 
 }  // namespace autofill

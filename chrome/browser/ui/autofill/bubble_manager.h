@@ -26,6 +26,29 @@ class BubbleControllerBase;
 //
 // It maintains a queue of pending bubble requests and decides which one to
 // show based on a defined priority system.
+//
+// Here is a rough version of the bubble show algorithm:
+//   * bubble A is showing.
+//   * Now bubble B wants to show.
+//      * If priority(B) > priority(A):
+//         * Hide and queue A, show B.
+//         * On closing B, the next high priority bubble shows.
+//      * If priority(B) < priority(A):
+//         * Queue B.
+//         * On closing A, the next high priortiy bubble shows.
+//      * If priority(B) == priority(A):
+//         * Continue to show A.
+//      * If both A and B are password bubbles, then B replaces A irrespective
+//        of the priority.
+//
+//   * Logic for queueing bubbles:
+//      * Queue is sorted by priority of the bubble and time created.
+//      * There can only be a single entry per bubble type.
+//        If a bubble of a certain priority is to be shown and there is
+//        already one of that priority in the queue, check whether the existing
+//        one has been in the queue for longer than x. If so, replace it. If
+//        not, discard the new entry. Password bubbles are exempted where the
+//        new bubble willalways replace the older one.
 class BubbleManager {
  public:
   virtual ~BubbleManager() = default;

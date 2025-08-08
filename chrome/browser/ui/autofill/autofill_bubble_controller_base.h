@@ -40,6 +40,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   // BubbleControllerBase:
   void ShowBubble() override;
   void HideBubble() override;
+  bool IsShown() const override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;

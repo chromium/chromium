@@ -25,7 +25,9 @@ enum class BubbleType {
   // Denotes bubble for offer notifications.
   kOfferNotification,
   // Denotes bubble for filled card information.
-  kFilledCardInformation
+  kFilledCardInformation,
+  // Denotes password related bubbles.
+  kPassword
 };
 
 // This class serves as the base for all bubble controllers, which manage the
@@ -42,6 +44,9 @@ class BubbleControllerBase {
 
   // Returns the corresponding `BubbleType` for the controller.
   virtual BubbleType GetBubbleType() const = 0;
+
+  // Returns true if the bubble is currently visible.
+  virtual bool IsShown() const = 0;
 
   // Subclasses need to implement this method so that the resulting weak
   // pointers are invalidated as soon as the derived class is destroyed.
