@@ -102,7 +102,7 @@ void VariationsServiceClient::ExitWithMessage(const std::string& message) {
   exit(1);
 }
 
-bool VariationsServiceClient::IsStickyActivationEnabled() const {
+bool VariationsServiceClient::IsStickyActivationEnabled() {
   return false;
 }
 

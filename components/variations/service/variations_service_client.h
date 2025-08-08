@@ -91,7 +91,7 @@ class VariationsServiceClient {
 
   // Whether support for STICKY_AFTER_QUERY activation for studies is enabled.
   // TODO: crbug.com/435630455 - Fully enable and remove this once ready.
-  virtual bool IsStickyActivationEnabled() const;
+  virtual bool IsStickyActivationEnabled();
 
  private:
   // Gets the channel of the embedder. But all variations callers should use

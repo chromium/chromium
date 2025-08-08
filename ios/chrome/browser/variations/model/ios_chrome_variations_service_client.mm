@@ -62,6 +62,13 @@ bool IOSChromeVariationsServiceClient::IsEnterprise() {
 void IOSChromeVariationsServiceClient::
     RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {}
 
+bool IOSChromeVariationsServiceClient::IsStickyActivationEnabled() {
+  // TODO: crbug.com/435630455 - Roll out to later channels once ready.
+  const auto channel = GetChannelForVariations();
+  return channel == version_info::Channel::UNKNOWN ||
+         channel == version_info::Channel::CANARY;
+}
+
 version_info::Channel IOSChromeVariationsServiceClient::GetChannel() {
   return ::GetChannel();
 }

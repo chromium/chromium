@@ -135,6 +135,13 @@ void ChromeVariationsServiceClient::
   }
 }
 
+bool ChromeVariationsServiceClient::IsStickyActivationEnabled() {
+  // TODO: crbug.com/435630455 - Roll out to later channels once ready.
+  const auto channel = GetChannelForVariations();
+  return channel == version_info::Channel::UNKNOWN ||
+         channel == version_info::Channel::CANARY;
+}
+
 version_info::Channel ChromeVariationsServiceClient::GetChannel() {
   return chrome::GetChannel();
 }

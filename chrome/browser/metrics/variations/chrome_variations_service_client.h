@@ -38,6 +38,7 @@ class ChromeVariationsServiceClient
   bool IsEnterprise() override;
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override;
+  bool IsStickyActivationEnabled() override;
 
  private:
   // variations::VariationsServiceClient:
