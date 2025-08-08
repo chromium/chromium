@@ -148,6 +148,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                                           WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI
+      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
 
   // Check that a custom history & sync promo is displayed.
   [ChromeEarlGrey waitForMatcher:PromoScreenPrimaryButtonMatcher()];

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
@@ -81,6 +83,10 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
                                             WebSigninPrimaryButtonMatcher()]
         performAction:grey_tap()];
   }
+
+  //  Dismiss identity signin confirmation snackbar if shown.
+  [SigninEarlGreyUI
+      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
 
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey closeManagedAccountSignInDialogIfAny:fakeIdentity];
@@ -370,4 +376,23 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   // Make sure the fake SSO view controller is fully removed.
   [ChromeEarlGreyUI waitForAppToIdle];
 }
+
++ (void)maybeDismissIdentityConfirmationSnackbarOnSignin:
+    (FakeSystemIdentity*)fakeIdentity {
+  NSString* signedInSnackbarTitle = l10n_util::GetNSStringF(
+      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
+  NSError* error = nil;
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(signedInSnackbarTitle)]
+      assertWithMatcher:grey_notNil()
+                  error:&error];
+  if (error == nil) {
+    // Snackbar is presented, dismiss it.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(signedInSnackbarTitle)]
+        performAction:grey_tap()];
+  }
+}
+
 @end

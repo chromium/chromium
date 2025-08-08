@@ -852,6 +852,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                 kWebSigninPrimaryButtonAccessibilityIdentifier),
                             grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  [SigninEarlGreyUI
+      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(

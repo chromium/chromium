@@ -402,15 +402,16 @@
 
 // Starts the sign-in flow.
 - (void)startSignIn {
-  AuthenticationFlow* authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:self.selectedIdentity
-                                      accessPoint:self.accessPoint
-                             precedingHistorySync:YES
-                                postSignInActions:PostSignInActionSet()
-                         presentingViewController:self.navigationController
-                                       anchorView:nil
-                                       anchorRect:CGRectNull];
+  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
+               initWithBrowser:self.browser
+                      identity:self.selectedIdentity
+                   accessPoint:self.accessPoint
+          precedingHistorySync:YES
+             postSignInActions:
+                 {PostSignInAction::kShowIdentityConfirmationSnackbar}
+      presentingViewController:self.navigationController
+                    anchorView:nil
+                    anchorRect:CGRectNull];
   [self.consistencyPromoSigninMediator
       signinWithAuthenticationFlow:authenticationFlow];
 }

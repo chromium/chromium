@@ -81,6 +81,11 @@
 // should be opened
 + (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity
                    withUnknownCapabilities:(BOOL)unknownCapabilities;
+
+// Dismisses the identity confirmaiton snackbar on signin, if shown.
++ (void)maybeDismissIdentityConfirmationSnackbarOnSignin:
+    (FakeSystemIdentity*)fakeIdentity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_EARL_GREY_UI_TEST_UTIL_H_

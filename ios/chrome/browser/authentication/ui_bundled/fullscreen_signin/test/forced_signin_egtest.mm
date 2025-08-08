@@ -212,6 +212,11 @@ void CompleteSigninFlow() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
+  //  Dismiss signin in confirmation snackbar.
+  [SigninEarlGreyUI
+      maybeDismissIdentityConfirmationSnackbarOnSignin:[FakeSystemIdentity
+                                                           fakeIdentity1]];
+  // History sync opt-in screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];

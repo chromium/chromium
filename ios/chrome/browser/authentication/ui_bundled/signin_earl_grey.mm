@@ -10,6 +10,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -102,6 +103,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
   [self signinWithFakeIdentity:identity waitForSyncTransportActive:YES];
+
+  [SigninEarlGreyUI maybeDismissIdentityConfirmationSnackbarOnSignin:identity];
 }
 
 - (void)signinWithFakeManagedIdentityInPersonalProfile:

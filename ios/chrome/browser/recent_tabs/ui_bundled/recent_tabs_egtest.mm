@@ -339,6 +339,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                 kWebSigninPrimaryButtonAccessibilityIdentifier),
                             grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+  [SigninEarlGreyUI
+      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
