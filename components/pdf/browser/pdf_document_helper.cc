@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
 #include "components/pdf/browser/pdf_frame_util.h"
@@ -109,30 +108,30 @@ void PDFDocumentHelper::SetListener(
   pdf_rwh_->AddObserver(this);
 }
 
-gfx::PointF PDFDocumentHelper::ConvertHelper(const gfx::PointF& point_f,
+gfx::PointF PDFDocumentHelper::ConvertHelper(const gfx::PointF& point,
                                              float scale) {
   if (!pdf_rwh_) {
-    return point_f;
+    return point;
   }
 
   content::RenderWidgetHostView* view = pdf_rwh_->GetView();
   if (!view) {
-    return point_f;
+    return point;
   }
 
   gfx::Vector2dF offset =
       view->TransformPointToRootCoordSpaceF(gfx::PointF()).OffsetFromOrigin();
   offset.Scale(scale);
 
-  return point_f + offset;
+  return point + offset;
 }
 
-gfx::PointF PDFDocumentHelper::ConvertFromRoot(const gfx::PointF& point_f) {
-  return ConvertHelper(point_f, -1.f);
+gfx::PointF PDFDocumentHelper::ConvertFromRoot(const gfx::PointF& point) {
+  return ConvertHelper(point, -1.f);
 }
 
-gfx::PointF PDFDocumentHelper::ConvertToRoot(const gfx::PointF& point_f) {
-  return ConvertHelper(point_f, +1.f);
+gfx::PointF PDFDocumentHelper::ConvertToRoot(const gfx::PointF& point) {
+  return ConvertHelper(point, +1.f);
 }
 
 void PDFDocumentHelper::SelectionChanged(const gfx::PointF& left,
@@ -164,10 +163,9 @@ void PDFDocumentHelper::OnSearchifyStarted() {
 void PDFDocumentHelper::DidScroll() {
   if (!touch_selection_controller_client_manager_) {
     InitTouchSelectionClientManager();
-  }
-
-  if (!touch_selection_controller_client_manager_) {
-    return;
+    if (!touch_selection_controller_client_manager_) {
+      return;
+    }
   }
 
   gfx::SelectionBound start;
@@ -211,6 +209,8 @@ void PDFDocumentHelper::RenderWidgetHostDestroyed(
 bool PDFDocumentHelper::SupportsAnimation() const {
   return false;
 }
+
+void PDFDocumentHelper::SetNeedsAnimate() {}
 
 void PDFDocumentHelper::MoveCaret(const gfx::PointF& position) {
   if (!remote_pdf_client_) {
