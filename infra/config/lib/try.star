@@ -244,16 +244,6 @@ def try_builder(
 
     experiments = experiments or {}
 
-    # TODO(crbug.com/40232671): Remove when the experiment is the default.
-    experiments.setdefault(
-        "chromium_swarming.expose_merge_script_failures",
-        5 if settings.project.startswith("chrome") else 100,
-    )
-
-    # TODO(crbug.com/40276579): Remove when the experiment is the default.
-    if settings.project.startswith("chromium"):
-        experiments.setdefault("swarming.prpc.cli", 100)
-
     # TODO(crbug.com/355218109): Remove when the experiment is the default.
     if settings.project.startswith("chromium"):
         experiments.setdefault("chromium.use_per_builder_build_dir_name", 100)
