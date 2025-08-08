@@ -27,6 +27,7 @@ reviewer.
 <variants name="EwalletScheme">
   <variant name="DuitNow"
       summary="Scheme DuitNow that supports eWallet payflow."/>
+  <variant name="Momo" summary="Scheme Momo that supports eWallet payflow."/>
   <variant name="ShopeePay"
       summary="Scheme ShopeePay that supports eWallet payflow."/>
   <variant name="Tngd" summary="Scheme Tngd that supports eWallet payflow."/>
