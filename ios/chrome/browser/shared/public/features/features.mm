@@ -271,6 +271,9 @@ BASE_FEATURE(kTabGridNewTransitions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsNewTabGridTransitionsEnabled() {
+  if (IsDiamondPrototypeEnabled()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kTabGridNewTransitions);
 }
 
