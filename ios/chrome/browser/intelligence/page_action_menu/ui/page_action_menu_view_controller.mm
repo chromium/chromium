@@ -584,10 +584,18 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 // Dismisses the view controller and starts Reader mode.
 - (void)handleReaderModeTapped:(UIButton*)button {
   RecordAIHubAction(IOSAIHubAction::kReaderMode);
-  PageActionMenuViewController* __weak weakSelf = self;
-  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
-    [weakSelf toggleReaderModeVisibility];
-  }];
+  __weak __typeof(self.readerModeHandler) weakReaderModeHandler =
+      self.readerModeHandler;
+  if ([self.mutator isReaderModeActive]) {
+    [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
+      [weakReaderModeHandler hideReaderMode];
+    }];
+  } else {
+    [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
+      [weakReaderModeHandler
+          showReaderModeFromAccessPoint:ReaderModeAccessPoint::kAIHub];
+    }];
+  }
 }
 
 // Navigates to the Reader mode options.
@@ -597,16 +605,6 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 }
 
 #pragma mark - Private
-
-// Toggles the visibility of the Reading mode UI on the current page.
-- (void)toggleReaderModeVisibility {
-  if ([self.mutator isReaderModeActive]) {
-    [self.readerModeHandler hideReaderMode];
-  } else {
-    [self.readerModeHandler
-        showReaderModeFromAccessPoint:ReaderModeAccessPoint::kAIHub];
-  }
-}
 
 // Updates the availability of the Lens entry point.
 - (void)updateLensAvailability:(UITraitCollection*)traitCollection {
