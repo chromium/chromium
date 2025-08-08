@@ -189,9 +189,9 @@ def list_extensions(extensions_dirs: list[Path]) -> None:
     }
 
     all_extension_names = sorted(
-        set(available_extensions.keys())
-        | set(local_extensions.keys())
-        | set(global_extensions.keys()))
+        (set(available_extensions)
+         | set(local_extensions)
+         | set(global_extensions)) - {'example_server'})
 
     # Print table
     print(f'{"Extension":<20} {"AVAILABLE":<12} {"LOCAL":<10} {"GLOBAL":<10}')

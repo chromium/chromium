@@ -247,6 +247,30 @@ class InstallTest(unittest.TestCase):
         self.assertIn("Error: Extension 'invalid_extension' not found",
                       mock_stderr.getvalue())
 
+    def test_list_extensions_excludes_example_server(self):
+        """Tests that the list_extensions function excludes 'example_server'."""
+        # Create an example_server extension
+        example_server_dir = self.source_extensions_dir / 'example_server'
+        example_server_dir.mkdir()
+        with open(example_server_dir / 'gemini-extension.json',
+                  'w',
+                  encoding='utf-8') as f:
+            f.write('{"name": "example_server", "version": "1.0.0"}')
+
+        extensions_dirs = [
+            self.source_extensions_dir, self.internal_extensions_dir
+        ]
+
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            with patch('install.get_extension_dir',
+                       return_value=self.target_extensions_dir):
+                install.list_extensions(extensions_dirs)
+                output = mock_stdout.getvalue()
+                self.assertNotIn('example_server', output)
+                self.assertIn('sample_1', output)
+                self.assertIn('sample_2', output)
+                self.assertIn('sample_3', output)
+
 
 if __name__ == '__main__':
     unittest.main()
