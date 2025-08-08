@@ -77,7 +77,6 @@ source_set("cells") {
     "//ios/chrome/common/ui/table_view",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//net",
     "//ui/base",
   ]
