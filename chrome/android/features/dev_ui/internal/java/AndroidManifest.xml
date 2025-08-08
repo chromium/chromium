@@ -16,7 +16,7 @@ found in the LICENSE file.
             <dist:install-time>
                 <dist:conditions>
                     <!-- Install DevUI for desktop devices at install time -->
-                    <dist:device-feature dist:name="android.hardware.type.pc"/>
+                    <dist:device-feature dist:name="com.google.desktop.gms"/>
                 </dist:conditions>
             </dist:install-time>
         </dist:delivery>

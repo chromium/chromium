@@ -8,17 +8,17 @@
     platformBuildVersionName="16"
     android:versionCode="OFFSET=33"
     android:versionName="#.#.#.#">
-  <dist:module dist:title="@string/dev_ui_module_title">  # DIFF-ANCHOR: ce49604c
-    <dist:delivery>  # DIFF-ANCHOR: 2f6943d1
-      <dist:install-time>  # DIFF-ANCHOR: 945cd8fb
-        <dist:conditions>  # DIFF-ANCHOR: dab9d630
-          <dist:device-feature dist:name="android.hardware.type.pc"/>
-        </dist:conditions>  # DIFF-ANCHOR: dab9d630
-      </dist:install-time>  # DIFF-ANCHOR: 945cd8fb
+  <dist:module dist:title="@string/dev_ui_module_title">  # DIFF-ANCHOR: e046d2bc
+    <dist:delivery>  # DIFF-ANCHOR: 7a1c5a0b
+      <dist:install-time>  # DIFF-ANCHOR: 909204d0
+        <dist:conditions>  # DIFF-ANCHOR: 5824ed54
+          <dist:device-feature dist:name="com.google.desktop.gms"/>
+        </dist:conditions>  # DIFF-ANCHOR: 5824ed54
+      </dist:install-time>  # DIFF-ANCHOR: 909204d0
       <dist:on-demand/>
-    </dist:delivery>  # DIFF-ANCHOR: 2f6943d1
+    </dist:delivery>  # DIFF-ANCHOR: 7a1c5a0b
     <dist:fusing dist:include="true"/>
-  </dist:module>  # DIFF-ANCHOR: ce49604c
+  </dist:module>  # DIFF-ANCHOR: e046d2bc
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <application/>
 </manifest>
