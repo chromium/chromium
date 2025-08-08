@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h"
 
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -38,6 +39,7 @@ const CGFloat kHighlightScaling = 0.7;
   self = [super init];
 
   if (self) {
+    self.accessibilityIdentifier = kAIHubEntrypointAccessibilityIdentifier;
     self.pointerInteractionEnabled = YES;
     self.minimumDiameter = kMinimumWidth;
     self.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();

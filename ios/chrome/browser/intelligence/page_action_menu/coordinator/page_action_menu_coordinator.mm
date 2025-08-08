@@ -88,6 +88,8 @@ const CGFloat kMenuCornerRadius = 20;
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
+  _navigationController.view.accessibilityIdentifier =
+      kAIHubBottomSheetAccessibilityIdentifier;
   _navigationController.delegate = self;
   _navigationController.presentationController.delegate = self;
   _navigationController.modalPresentationStyle = UIModalPresentationPageSheet;

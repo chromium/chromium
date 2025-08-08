@@ -9,5 +9,9 @@
 
 // The identifier for the AI hub's detent.
 extern NSString* const kAIHubDetentIdentifier;
+// The accessibility identifier for the AI hub's bottom sheet.
+extern NSString* const kAIHubBottomSheetAccessibilityIdentifier;
+// The accessibility identifier for the AI hub's entrypoint.
+extern NSString* const kAIHubEntrypointAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UTILS_AI_HUB_CONSTANTS_H_
