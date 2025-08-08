@@ -178,22 +178,22 @@ ukm::UkmRecorder* ChromePaymentRequestDelegate::GetUkmRecorder() {
 
 std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh)
+  if (!rfh) {
     return std::string();
+  }
 
-  // Check if the profile is authenticated.  Guest profiles or incognito
-  // windows may not have a sign in manager, and are considered not
-  // authenticated.
+  // Check if the profile is signed in. Guest profiles or incognito windows may
+  // not have an IdentityManager, and are considered not signed in.
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .email;
+  if (!identity_manager) {
+    return std::string();
   }
-
-  return std::string();
+  // If there's no primary account, `GetPrimaryAccountInfo()` will return an
+  // empty result.
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+      .email;
 }
 
 PrefService* ChromePaymentRequestDelegate::GetPrefService() {
