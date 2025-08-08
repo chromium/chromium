@@ -92,7 +92,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/enterprise/connectors",
-    "//ios/chrome/browser/enterprise/connectors:features",
     "//ios/chrome/browser/enterprise/connectors:util",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/flags",

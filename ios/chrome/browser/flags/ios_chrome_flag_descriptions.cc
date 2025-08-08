@@ -817,12 +817,6 @@ const char kIOSQuickDeleteDescription[] =
     "Enables a new way for users to more easily delete their browsing data in "
     "iOS.";
 
-const char kIOSEnterpriseRealtimeUrlFilteringName[] =
-    "Enable Enterprise Url Filtering for iOS";
-const char kIOSEnterpriseRealtimeUrlFilteringDescription[] =
-    "When enabled, Enterprise admins can block navigations to urls matching "
-    "rules defined by their organization.";
-
 const char kNewShareExtensionName[] = "New Share Extension for iOS";
 const char kNewShareExtensionDescription[] =
     "Update the share extension UI and add new share entries";

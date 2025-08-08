@@ -469,9 +469,6 @@ extern const char kIOSChooseFromDriveSimulatedClickDescription[];
 extern const char kIOSManageAccountStorageName[];
 extern const char kIOSManageAccountStorageDescription[];
 
-extern const char kIOSEnterpriseRealtimeUrlFilteringName[];
-extern const char kIOSEnterpriseRealtimeUrlFilteringDescription[];
-
 extern const char kNewShareExtensionName[];
 extern const char kNewShareExtensionDescription[];
 

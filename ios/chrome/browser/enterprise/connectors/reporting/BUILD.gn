@@ -48,7 +48,6 @@ source_set("util") {
     "//components/enterprise/connectors/core",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/core:unsafe_resource",
-    "//ios/chrome/browser/enterprise/connectors:features",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",

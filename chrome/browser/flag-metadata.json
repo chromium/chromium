@@ -3334,11 +3334,6 @@
     "expiry_milestone": 141
   },
   {
-     "name": "enable-enterprise-url-filtering",
-     "owners": [ "eic@google.com", "bling-enterprise@google.com" ],
-     "expiry_milestone": 141
-   },
-  {
     "name": "enable-eol-notification-reset-dismissed-prefs",
     "owners": [ "mmourgos@chromium.org", "tbarzic@chromium.org"],
     "expiry_milestone": 116

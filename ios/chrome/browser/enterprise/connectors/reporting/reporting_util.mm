@@ -7,12 +7,10 @@
 #import <string.h>
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
-#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
@@ -43,10 +41,6 @@ namespace enterprise_connectors {
 void ReportEnterpriseUrlFilteringEvent(UrlFilteringEventType event_type,
                                        const GURL& page_url,
                                        web::WebState* web_state) {
-  if (!base::FeatureList::IsEnabled(kIOSEnterpriseRealtimeUrlFiltering)) {
-    return;
-  }
-
   CHECK(web_state);
   SafeBrowsingUnsafeResourceContainer* container =
       SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);

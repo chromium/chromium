@@ -7,7 +7,6 @@
 #import "base/json/json_reader.h"
 #import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
 #import "base/version_info/version_info.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -26,7 +25,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
-#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -293,7 +291,6 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_UrlFilteringEnabled) {
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
-  base::test::ScopedFeatureList feature(kIOSEnterpriseRealtimeUrlFiltering);
   profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
                                     policy::POLICY_SCOPE_USER);
 
@@ -330,10 +327,6 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_MachinePolicyHasPrecedence) {
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
-  base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures(
-      /*enabled_features=*/{kIOSEnterpriseRealtimeUrlFiltering},
-      /*disabled_features=*/{});
   profile()->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
                                     policy::POLICY_SCOPE_USER);
   profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,

@@ -9,7 +9,6 @@
 #import "base/strings/strcat.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -17,7 +16,6 @@
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/metrics_helper.h"
-#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
@@ -172,11 +170,6 @@ class IOSEnterpriseInterstitialTest : public PlatformTest {
 }  // namespace
 
 TEST_F(IOSEnterpriseInterstitialTest, EnterpriseBlock_MetricsRecorded) {
-  base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures(
-      /*enable_features=*/{kIOSEnterpriseRealtimeUrlFiltering},
-      /*disable_features=*/{});
-
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(kBlockDecisionHistogram, 0);
 
@@ -204,11 +197,6 @@ TEST_F(IOSEnterpriseInterstitialTest, EnterpriseBlock_MetricsRecorded) {
 }
 
 TEST_F(IOSEnterpriseInterstitialTest, EnterpriseWarn_MetricsRecorded) {
-  base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures(
-      /*enable_features=*/{kIOSEnterpriseRealtimeUrlFiltering},
-      /*disable_features=*/{});
-
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(kWarnDecisionHistogram, 0);
 

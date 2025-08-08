@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_impl.h"
 
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
@@ -13,7 +12,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
-#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -104,11 +102,6 @@ TEST_F(SafeBrowsingClientImplTest, ShouldCancelPrerenderInMainFrame) {
 // Enterprise Url Filtering.
 TEST_F(SafeBrowsingClientImplTest, ShouldForceSyncRealTimeUrlChecks) {
   EXPECT_FALSE(client()->ShouldForceSyncRealTimeUrlChecks());
-
-  // Enable the feature flag for iOS enterprise real-time URL filtering.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_connectors::kIOSEnterpriseRealtimeUrlFiltering);
 
   // Simulate the enterprise policy being enabled.
   // 1. Set the preference backing the policy to enabled.
