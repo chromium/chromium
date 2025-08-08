@@ -383,6 +383,15 @@ Chromium understands forms better and can autofill them faster for you. This set
   <message name="IDS_SETTINGS_ACCOUNT_DATA_DASHBOARD" desc="This string is found in the Account settings page in Chromium settings to let a user manage the Chromium data that they've saved in their Google Account. It is important that it is consistent with the destination's title 'Chrome data in your account' (except using 'Chromium' instead of 'Chrome') (TC ID 2983573066282140756).">
     Chromium data in your account
   </message>
+  <message name="IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
+    Use your <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>own passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to encrypt all the Chromium data in your Google Account. Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chromium won’t sync.
+  </message>
+  <message name="IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_PASSPHRASE_EXPLANATION_TEXT" desc="Message shown when explicit passphrase is selected.">
+    Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you’ll need to <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>delete the Chromium data in your account<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+  </message>
+  <message name="IDS_SETTINGS_PASSPHRASE_RESET_HINT_ACCOUNT_DATA_ENCRYPTION" desc="Informs user how to change their encryption setting.">
+    If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>delete the Chromium data in your account<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
 
   <!-- Page content -->
   <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">

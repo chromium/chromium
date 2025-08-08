@@ -14854,6 +14854,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
         Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
       </message>
+      <message name="IDS_SYNC_FULL_ACCOUNT_DATA_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
+        Data is encrypted with your sync passphrase. This doesn’t include payment methods and addresses from Google Pay.
+      </message>
+      <message name="IDS_SYNC_FULL_ACCOUNT_DATA_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
+        Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn’t include payment methods and addresses from Google Pay.
+      </message>
 
       <!-- Translate Bubble -->
       <if expr="toolkit_views">

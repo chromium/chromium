@@ -3,6 +3,12 @@
     padding-bottom: 8px;
   }
 
+  .passphrase-reset-container {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+  }
+
   .passphrase-reset-icon {
     margin-inline-end: 8px;
   }
@@ -89,11 +95,12 @@
         <div class="secondary">
           $i18n{syncDataEncryptedText}
           <div on-click="onResetSyncClick_"
-              hidden="[[!syncPrefs.encryptAllData]]">
+              hidden="[[!syncPrefs.encryptAllData]]"
+              class="passphrase-reset-container">
             <cr-icon icon="cr:info-outline"
                 class="passphrase-reset-icon">
             </cr-icon>
-            $i18nRaw{passphraseResetHintEncryption}
+            <span>$i18nRaw{passphraseResetHintEncryption}</span>
           </div>
         </div>
       </cr-expand-button>
